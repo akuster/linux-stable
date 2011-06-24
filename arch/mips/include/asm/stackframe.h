@@ -358,6 +358,9 @@
 		.macro	RESTORE_SP_AND_RET
 		LONG_L	sp, PT_R29(sp)
 		.set	arch=r4000
+#ifdef CONFIG_FAST_ACCESS_TO_THREAD_POINTER
+		LONG_L	k0, FAST_ACCESS_THREAD_OFFSET($0) /* K0 = thread pointer */
+#endif
 		eret
 		.set	mips0
 		.endm
