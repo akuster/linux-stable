@@ -66,7 +66,9 @@ struct tlb_reg_save {
 	unsigned long b;
 } ____cacheline_aligned_in_smp;
 
+#ifndef TEMPORARY_SCRATCHPAD_FOR_KERNEL_OFFSET
 static struct tlb_reg_save handler_reg_save[NR_CPUS];
+#endif
 
 static inline int r45k_bvahwbug(void)
 {
@@ -361,6 +363,13 @@ static struct work_registers build_get_work_registers(u32 **p)
 		r.r3 = 1;
 		return r;
 	}
+#ifdef TEMPORARY_SCRATCHPAD_FOR_KERNEL_OFFSET
+	UASM_i_SW(p, 1, TEMPORARY_SCRATCHPAD_FOR_KERNEL_OFFSET(0), 0);
+	r.r1 = K0;
+	r.r2 = K1;
+	r.r3 = 1;
+	return r;
+#else
 
 	if (num_possible_cpus() > 1) {
 		/* Get smp_processor_id */
@@ -383,6 +392,7 @@ static struct work_registers build_get_work_registers(u32 **p)
 	r.r2 = 1;
 	r.r3 = 2;
 	return r;
+#endif /* TEMPORARY_SCRATCHPAD_FOR_KERNEL_OFFSET */
 }
 
 static void build_restore_work_registers(u32 **p)
@@ -391,9 +401,13 @@ static void build_restore_work_registers(u32 **p)
 		UASM_i_MFC0(p, 1, c0_kscratch(), scratch_reg);
 		return;
 	}
+#ifdef TEMPORARY_SCRATCHPAD_FOR_KERNEL_OFFSET
+	UASM_i_LW(p, 1, TEMPORARY_SCRATCHPAD_FOR_KERNEL_OFFSET(0), 0);
+#else
 	/* K0 already points to save area, restore $1 and $2  */
 	UASM_i_LW(p, 1, offsetof(struct tlb_reg_save, a), K0);
 	UASM_i_LW(p, 2, offsetof(struct tlb_reg_save, b), K0);
+#endif /* TEMPORARY_SCRATCHPAD_FOR_KERNEL_OFFSET */
 }
 
 #ifndef CONFIG_MIPS_PGD_C0_CONTEXT
