@@ -1250,7 +1250,7 @@ static void of_register_spi_devices(struct spi_master *master)
 		}
 
 		/* Select device driver */
-		if (of_modalias_node(nc, spi->modalias,
+		if (of_modalias_node(nc, SPI_MODULE_PREFIX, spi->modalias,
 				     sizeof(spi->modalias)) < 0) {
 			dev_err(&master->dev, "cannot find modalias for %s\n",
 				nc->full_name);
