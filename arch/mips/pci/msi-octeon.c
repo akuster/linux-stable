@@ -290,6 +290,8 @@ static int octeon_irq_irq_to_msi_scatter(int irq)
 	return ((t << 6) & 0xc0) | ((t >> 2) & 0x3f);
 }
 
+#ifdef CONFIG_SMP
+
 static atomic_t affinity_in_progress[4] = {
 	ATOMIC_INIT(1),
 	ATOMIC_INIT(1),
@@ -349,6 +351,7 @@ static int octeon_irq_msi_set_affinity_pci(struct irq_data *data,
 	atomic_add(1, affinity_in_progress + index);
 	return r;
 }
+#endif /* CONFIG_SMP */
 
 static void octeon_irq_msi_enable_pcie(struct irq_data *data)
 {
