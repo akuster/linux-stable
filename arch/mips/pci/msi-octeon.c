@@ -145,6 +145,7 @@ msi_irq_allocated:
 
 	/* MSI interrupts start at logical IRQ OCTEON_IRQ_MSI_BIT0 */
 	irq += index*64;
+	msg.data = irq;
 	irq += OCTEON_IRQ_MSI_BIT0;
 
 	switch (octeon_dma_bar_type) {
@@ -173,7 +174,6 @@ msi_irq_allocated:
 	default:
 		panic("arch_setup_msi_irq: Invalid octeon_dma_bar_type");
 	}
-	msg.data = irq - OCTEON_IRQ_MSI_BIT0;
 
 	/* Update the number of IRQs the device has available to it */
 	control &= ~PCI_MSI_FLAGS_QSIZE;
@@ -267,14 +267,14 @@ static u64 msi_rcv_reg[4];
 static u64 mis_ena_reg[4];
 
 static int (*octeon_irq_msi_to_irq)(int);
-static int (*octeon_irq_iqr_to_msi)(int);
+static int (*octeon_irq_irq_to_msi)(int);
 
 static int octeon_irq_msi_to_irq_linear(int msi)
 {
 	return msi + OCTEON_IRQ_MSI_BIT0;
 }
 
-static int octeon_irq_iqr_to_msi_linear(int irq)
+static int octeon_irq_irq_to_msi_linear(int irq)
 {
 	return irq - OCTEON_IRQ_MSI_BIT0;
 }
@@ -284,7 +284,7 @@ static int octeon_irq_msi_to_irq_scatter(int msi)
 	return (((msi >> 6) & 0x3) | ((msi << 2) & 0xfc)) + OCTEON_IRQ_MSI_BIT0;
 }
 
-static int octeon_irq_iqr_to_msi_scatter(int irq)
+static int octeon_irq_irq_to_msi_scatter(int irq)
 {
 	int t = irq - OCTEON_IRQ_MSI_BIT0;
 	return ((t << 6) & 0xc0) | ((t >> 2) & 0x3f);
@@ -300,7 +300,7 @@ static int octeon_irq_msi_set_affinity_pcie(struct irq_data *data,
 					    const struct cpumask *dest,
 					    bool force)
 {
-	int msi = octeon_irq_iqr_to_msi(data->irq);
+	int msi = octeon_irq_irq_to_msi(data->irq);
 	int index = msi >> 6;
 	int bit;
 	int r;
@@ -327,7 +327,7 @@ static int octeon_irq_msi_set_affinity_pci(struct irq_data *data,
 					   const struct cpumask *dest,
 					   bool force)
 {
-	int msi = octeon_irq_iqr_to_msi(data->irq);
+	int msi = octeon_irq_irq_to_msi(data->irq);
 	int index = msi >> 4;
 	int bit;
 	int r;
@@ -354,7 +354,7 @@ static void octeon_irq_msi_enable_pcie(struct irq_data *data)
 {
 	u64 en;
 	unsigned long flags;
-	int msi_number = data->irq - OCTEON_IRQ_MSI_BIT0;
+	int msi_number = octeon_irq_irq_to_msi(data->irq);
 	int irq_index = msi_number >> 6;
 	int irq_bit = msi_number & 0x3f;
 
@@ -370,7 +370,7 @@ static void octeon_irq_msi_disable_pcie(struct irq_data *data)
 {
 	u64 en;
 	unsigned long flags;
-	int msi_number = data->irq - OCTEON_IRQ_MSI_BIT0;
+	int msi_number = octeon_irq_irq_to_msi(data->irq);
 	int irq_index = msi_number >> 6;
 	int irq_bit = msi_number & 0x3f;
 
@@ -431,7 +431,8 @@ static irqreturn_t __octeon_msi_do_interrupt(int index, u64 msi_bits)
 		/* Acknowledge it first. */
 		cvmx_write_csr(msi_rcv_reg[index], 1ull << bit);
 
-		irq = bit + OCTEON_IRQ_MSI_BIT0 + 64 * index;
+		irq = octeon_irq_msi_to_irq(bit + 64 * index);
+
 		do_IRQ(irq);
 		return IRQ_HANDLED;
 	}
@@ -453,6 +454,7 @@ OCTEON_MSI_INT_HANDLER_X(1);
 OCTEON_MSI_INT_HANDLER_X(2);
 OCTEON_MSI_INT_HANDLER_X(3);
 
+#if 0
 static void octeon_msi_ciu2_enable_on_cpu(unsigned int irq, int cpu)
 {
 	int core;
@@ -572,7 +574,7 @@ static struct notifier_block octeon_msi_cpu_notifier = {
 	.notifier_call = octeon_msi_cpu_callback,
 };
 
-int __init octeon_msi_68XX_init(void)
+static int __init octeon_msi_68XX_init(void)
 {
 	int i;
 	int cpu;
@@ -607,6 +609,7 @@ int __init octeon_msi_68XX_init(void)
 	msi_irq_size = 256;
 	return 0;
 }
+#endif /* 0 */
 
 /*
  * Initializes the MSI interrupt handling code
@@ -617,8 +620,10 @@ int __init octeon_msi_initialize(void)
 	struct irq_chip *msi;
 	u64 msi_map_reg;
 
+#if 0
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX) && !OCTEON_IS_MODEL(OCTEON_CN68XX_PASS1_X))
 		return octeon_msi_68XX_init();
+#endif
 
 	if (octeon_dma_bar_type == OCTEON_DMA_BAR_TYPE_PCIE2) {
 		msi_rcv_reg[0] = CVMX_PEXP_SLI_MSI_RCV0;
@@ -631,7 +636,7 @@ int __init octeon_msi_initialize(void)
 		mis_ena_reg[3] = CVMX_PEXP_SLI_MSI_ENB3;
 		msi = &octeon_irq_chip_msi_pcie;
 		octeon_irq_msi_to_irq = octeon_irq_msi_to_irq_scatter;
-		octeon_irq_iqr_to_msi = octeon_irq_iqr_to_msi_scatter;
+		octeon_irq_irq_to_msi = octeon_irq_irq_to_msi_scatter;
 		msi_map_reg = CVMX_PEXP_SLI_MSI_WR_MAP;
 	} else if (octeon_dma_bar_type == OCTEON_DMA_BAR_TYPE_PCIE) {
 		msi_rcv_reg[0] = CVMX_PEXP_NPEI_MSI_RCV0;
@@ -644,7 +649,7 @@ int __init octeon_msi_initialize(void)
 		mis_ena_reg[3] = CVMX_PEXP_NPEI_MSI_ENB3;
 		msi = &octeon_irq_chip_msi_pcie;
 		octeon_irq_msi_to_irq = octeon_irq_msi_to_irq_scatter;
-		octeon_irq_iqr_to_msi = octeon_irq_iqr_to_msi_scatter;
+		octeon_irq_irq_to_msi = octeon_irq_irq_to_msi_scatter;
 		msi_map_reg = CVMX_PEXP_NPEI_MSI_WR_MAP;
 	} else {
 		msi_rcv_reg[0] = CVMX_NPI_NPI_MSI_RCV;
@@ -658,7 +663,7 @@ int __init octeon_msi_initialize(void)
 		mis_ena_reg[3] = INVALID_GENERATE_ADE;
 		msi = &octeon_irq_chip_msi_pci;
 		octeon_irq_msi_to_irq = octeon_irq_msi_to_irq_linear;
-		octeon_irq_iqr_to_msi = octeon_irq_iqr_to_msi_linear;
+		octeon_irq_irq_to_msi = octeon_irq_irq_to_msi_linear;
 		msi_map_reg = 0;
 	}
 
