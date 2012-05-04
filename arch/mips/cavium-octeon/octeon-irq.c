@@ -1227,6 +1227,7 @@ static void __init octeon_irq_init_ciu(void)
 	/* Mips internal */
 	octeon_irq_init_core();
 
+
 	gpio_node = of_find_compatible_node(NULL, NULL, "cavium,octeon-3860-gpio");
 	if (gpio_node) {
 		struct octeon_irq_gpio_domain_data *gpiod;
@@ -1264,6 +1265,7 @@ static void __init octeon_irq_init_ciu(void)
 
 	octeon_irq_force_ciu_mapping(ciu_domain, OCTEON_IRQ_TWSI, 0, 45);
 	octeon_irq_force_ciu_mapping(ciu_domain, OCTEON_IRQ_RML, 0, 46);
+
 	for (i = 0; i < 4; i++)
 		octeon_irq_force_ciu_mapping(ciu_domain, i + OCTEON_IRQ_TIMER0, 0, i + 52);
 
@@ -1274,7 +1276,6 @@ static void __init octeon_irq_init_ciu(void)
 	for (i = 0; i < 16; i++)
 		octeon_irq_set_ciu_mapping(i + OCTEON_IRQ_WDOG0, 1, i + 0, 0, chip_wd, handle_level_irq);
 
-	octeon_irq_force_ciu_mapping(ciu_domain, OCTEON_IRQ_USB1, 1, 17);
 
 	/* Enable the CIU lines */
 	set_c0_status(STATUSF_IP3 | STATUSF_IP2);
@@ -1724,8 +1725,6 @@ static void __init octeon_irq_init_ciu2(void)
 
 	for (i = 0; i < 4; i++)
 		octeon_irq_force_ciu_mapping(ciu_domain, i + OCTEON_IRQ_TIMER0, 3, i + 8);
-
-	octeon_irq_force_ciu_mapping(ciu_domain, OCTEON_IRQ_USB0, 3, 44);
 
 	for (i = 0; i < 4; i++)
 		octeon_irq_force_ciu_mapping(ciu_domain, i + OCTEON_IRQ_PCI_INT0, 4, i);
