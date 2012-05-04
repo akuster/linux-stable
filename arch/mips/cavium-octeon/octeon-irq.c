@@ -1449,9 +1449,28 @@ static int __init octeon_irq_init_ciu(
 	/* Mips internal */
 	octeon_irq_init_core();
 
-	ciu_domain = irq_domain_add_tree(
-		ciu_node, &octeon_irq_domain_ciu_ops, dd);
-	irq_set_default_host(ciu_domain);
+	gpio_node = of_find_compatible_node(NULL, NULL, "cavium,octeon-3860-gpio");
+	if (gpio_node) {
+		struct octeon_irq_gpio_domain_data *gpiod;
+
+		gpiod = kzalloc(sizeof(*gpiod), GFP_KERNEL);
+		if (gpiod) {
+			/* gpio domain host_data is the base hwirq number. */
+			gpiod->base_hwirq = 16;
+			irq_domain_add_linear(gpio_node, 16, &octeon_irq_domain_gpio_ops, gpiod);
+			of_node_put(gpio_node);
+		} else
+			pr_warn("Cannot allocate memory for GPIO irq_domain.\n");
+	} else
+		pr_warn("Cannot find device node for cavium,octeon-3860-gpio.\n");
+
+	ciu_node = of_find_compatible_node(NULL, NULL, "cavium,octeon-3860-ciu");
+	if (ciu_node) {
+		ciu_domain = irq_domain_add_tree(ciu_node, &octeon_irq_domain_ciu_ops, NULL);
+		irq_set_default_host(ciu_domain);
+		of_node_put(ciu_node);
+	} else
+		panic("Cannot find device node for cavium,octeon-3860-ciu.");
 
 	/* CIU_0 */
 	for (i = 0; i < 16; i++) {
