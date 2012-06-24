@@ -171,29 +171,8 @@ static void cvm_oct_rgmii_poll(struct net_device *dev)
 	else
 		mutex_unlock(&priv->phydev->bus->mdio_lock);
 
-	if (priv->phydev == NULL) {
-		/* Tell core. */
-		if (link_info.s.link_up) {
-			if (!netif_carrier_ok(dev))
-				netif_carrier_on(dev);
-			if (priv->queue != -1)
-				printk_ratelimited("%s: %u Mbps %s duplex, port %2d, queue %2d\n",
-						   dev->name, link_info.s.speed,
-						   (link_info.s.full_duplex) ?
-						   "Full" : "Half",
-						   priv->port, priv->queue);
-			else
-				printk_ratelimited("%s: %u Mbps %s duplex, port %2d, POW\n",
-						   dev->name, link_info.s.speed,
-						   (link_info.s.full_duplex) ?
-						   "Full" : "Half",
-						   priv->port);
-		} else {
-			if (netif_carrier_ok(dev))
-				netif_carrier_off(dev);
-			printk_ratelimited("%s: Link down\n", dev->name);
-		}
-	}
+	if (priv->phydev == NULL)
+		cvm_oct_set_carrier(priv, link_info);
 }
 
 static irqreturn_t cvm_oct_rgmii_rml_interrupt(int cpl, void *dev_id)
