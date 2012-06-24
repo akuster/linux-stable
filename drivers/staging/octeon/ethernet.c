@@ -733,6 +733,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 			priv->of_node = cvm_oct_node_for_port(pip, interface,
 								port_index);
 
+			priv->netdev = dev;
 			INIT_DELAYED_WORK(&priv->port_periodic_work,
 					  cvm_oct_periodic_worker);
 			priv->imode = imode;
@@ -785,6 +786,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 				break;
 			}
 
+			netif_carrier_off(dev);
 			if (!dev->netdev_ops) {
 				free_netdev(dev);
 			} else if (register_netdev(dev) < 0) {

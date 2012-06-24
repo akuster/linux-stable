@@ -130,6 +130,25 @@ static void cvm_oct_note_carrier(struct octeon_ethernet *priv,
 	}
 }
 
+/**
+ * cvm_oct_set_carrier - common wrapper of netif_carrier_{on,off}
+ *
+ * @priv: Device struct.
+ * @link_info: Current state.
+ */
+void cvm_oct_set_carrier(struct octeon_ethernet *priv,
+			 cvmx_helper_link_info_t link_info)
+{
+	cvm_oct_note_carrier(priv, link_info);
+	if (link_info.s.link_up) {
+		if (!netif_carrier_ok(priv->netdev))
+			netif_carrier_on(priv->netdev);
+	} else {
+		if (netif_carrier_ok(priv->netdev))
+			netif_carrier_off(priv->netdev);
+	}
+}
+
 void cvm_oct_adjust_link(struct net_device *dev)
 {
 	struct octeon_ethernet *priv = netdev_priv(dev);
@@ -196,6 +215,12 @@ int cvm_oct_phy_setup_device(struct net_device *dev)
 	priv->last_link = 0;
 	phy_start_aneg(priv->phydev);
 
+no_phy:
+	/*
+	 * If there is no phy, assume a direct MAC connection and that
+	 * the link is up.
+	 */
+	netif_carrier_on(dev);
 	return 0;
 no_phy:
 	/* If there is no phy, assume a direct MAC connection and that
