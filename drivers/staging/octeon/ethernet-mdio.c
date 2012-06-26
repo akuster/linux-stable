@@ -36,7 +36,6 @@
 
 #include "ethernet-defines.h"
 #include "octeon-ethernet.h"
-#include "ethernet-mdio.h"
 #include "ethernet-util.h"
 
 #include <asm/octeon/cvmx-helper-board.h>

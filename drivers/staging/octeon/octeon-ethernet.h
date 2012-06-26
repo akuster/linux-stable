@@ -63,7 +63,8 @@ struct octeon_ethernet {
 	/* Last negotiated link state */
 	uint64_t link_info;
 	/* Called periodically to check link status */
-	void (*poll)(struct net_device *dev);
+	spinlock_t poll_lock;
+	void (*poll) (struct net_device *dev);
 	struct delayed_work	port_periodic_work;
 	struct work_struct	port_work;	/* may be unused. */
 	struct device_node	*of_node;
@@ -72,30 +73,29 @@ struct octeon_ethernet {
 int cvm_oct_free_work(void *work_queue_entry);
 
 extern int cvm_oct_rgmii_init(struct net_device *dev);
-extern void cvm_oct_rgmii_uninit(struct net_device *dev);
 extern int cvm_oct_rgmii_open(struct net_device *dev);
 extern int cvm_oct_rgmii_stop(struct net_device *dev);
 
 extern int cvm_oct_sgmii_init(struct net_device *dev);
-extern void cvm_oct_sgmii_uninit(struct net_device *dev);
 extern int cvm_oct_sgmii_open(struct net_device *dev);
 extern int cvm_oct_sgmii_stop(struct net_device *dev);
 
 extern int cvm_oct_spi_init(struct net_device *dev);
 extern void cvm_oct_spi_uninit(struct net_device *dev);
+
 extern int cvm_oct_xaui_init(struct net_device *dev);
-extern void cvm_oct_xaui_uninit(struct net_device *dev);
 extern int cvm_oct_xaui_open(struct net_device *dev);
 extern int cvm_oct_xaui_stop(struct net_device *dev);
 
 extern int cvm_oct_common_init(struct net_device *dev);
-extern void cvm_oct_common_uninit(struct net_device *dev);
-void cvm_oct_adjust_link(struct net_device *dev);
-int cvm_oct_common_stop(struct net_device *dev);
 
 extern void cvm_oct_set_carrier(struct octeon_ethernet *priv,
 				cvmx_helper_link_info_t link_info);
 extern void cvm_oct_adjust_link(struct net_device *dev);
+
+extern const struct ethtool_ops cvm_oct_ethtool_ops;
+int cvm_oct_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
+int cvm_oct_phy_setup_device(struct net_device *dev);
 
 extern int always_use_pow;
 extern int pow_send_group;

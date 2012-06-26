@@ -280,7 +280,6 @@ void cvm_oct_spi_uninit(struct net_device *dev)
 {
 	int interface;
 
-	cvm_oct_common_uninit(dev);
 	number_spi_ports--;
 	if (number_spi_ports == 0) {
 		for (interface = 0; interface < 2; interface++) {

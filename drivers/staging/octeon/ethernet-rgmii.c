@@ -275,6 +275,12 @@ static irqreturn_t cvm_oct_rgmii_rml_interrupt(int cpl, void *dev_id)
 	return return_status;
 }
 
+static void cvm_oct_rgmii_immediate_poll(struct work_struct *work)
+{
+	struct octeon_ethernet *priv = container_of(work, struct octeon_ethernet, port_work);
+	cvm_oct_rgmii_poll(priv->netdev);
+}
+
 int cvm_oct_rgmii_open(struct net_device *dev)
 {
 	union cvmx_gmxx_prtx_cfg gmx_cfg;
@@ -295,7 +301,6 @@ int cvm_oct_rgmii_open(struct net_device *dev)
 	if (!octeon_is_simulation()) {
 		if (priv->phydev) {
 			int r = phy_read_status(priv->phydev);
-
 			if (r == 0 && priv->phydev->link == 0)
 				netif_carrier_off(dev);
 			cvm_oct_adjust_link(dev);
@@ -303,40 +308,12 @@ int cvm_oct_rgmii_open(struct net_device *dev)
 			link_info = cvmx_helper_link_get(priv->port);
 			if (!link_info.s.link_up)
 				netif_carrier_off(dev);
+			spin_lock(&priv->poll_lock);
 			priv->poll = cvm_oct_rgmii_poll;
+			spin_unlock(&priv->poll_lock);
 		}
 	}
 
-	return 0;
-}
-
-int cvm_oct_rgmii_stop(struct net_device *dev)
-{
-	union cvmx_gmxx_prtx_cfg gmx_cfg;
-	struct octeon_ethernet *priv = netdev_priv(dev);
-	int interface = INTERFACE(priv->port);
-	int index = INDEX(priv->port);
-
-	gmx_cfg.u64 = cvmx_read_csr(CVMX_GMXX_PRTX_CFG(index, interface));
-	gmx_cfg.s.en = 0;
-	cvmx_write_csr(CVMX_GMXX_PRTX_CFG(index, interface), gmx_cfg.u64);
-	return cvm_oct_common_stop(dev);
-}
-
-static void cvm_oct_rgmii_immediate_poll(struct work_struct *work)
-{
-	struct octeon_ethernet *priv =
-		container_of(work, struct octeon_ethernet, port_work);
-	cvm_oct_rgmii_poll(cvm_oct_device[priv->port]);
-}
-
-int cvm_oct_rgmii_init(struct net_device *dev)
-{
-	struct octeon_ethernet *priv = netdev_priv(dev);
-	int r;
-
-	cvm_oct_common_init(dev);
-	dev->netdev_ops->ndo_stop(dev);
 	INIT_WORK(&priv->port_work, cvm_oct_rgmii_immediate_poll);
 	/*
 	 * Due to GMX errata in CN3XXX series chips, it is necessary
@@ -347,10 +324,10 @@ int cvm_oct_rgmii_init(struct net_device *dev)
 	 * properly.
 	 */
 	if (number_rgmii_ports == 0) {
-		r = request_irq(OCTEON_IRQ_RML, cvm_oct_rgmii_rml_interrupt,
-				IRQF_SHARED, "RGMII", &number_rgmii_ports);
-		if (r != 0)
-			return r;
+		rv = request_irq(OCTEON_IRQ_RML, cvm_oct_rgmii_rml_interrupt,
+				 IRQF_SHARED, "RGMII", &number_rgmii_ports);
+		if (rv != 0)
+			return rv;
 	}
 	number_rgmii_ports++;
 
@@ -384,11 +361,16 @@ int cvm_oct_rgmii_init(struct net_device *dev)
 	return 0;
 }
 
-void cvm_oct_rgmii_uninit(struct net_device *dev)
+int cvm_oct_rgmii_stop(struct net_device *dev)
 {
+	union cvmx_gmxx_prtx_cfg gmx_cfg;
 	struct octeon_ethernet *priv = netdev_priv(dev);
+	int interface = INTERFACE(priv->port);
+	int index = INDEX(priv->port);
 
-	cvm_oct_common_uninit(dev);
+	gmx_cfg.u64 = cvmx_read_csr(CVMX_GMXX_PRTX_CFG(index, interface));
+	gmx_cfg.s.en = 0;
+	cvmx_write_csr(CVMX_GMXX_PRTX_CFG(index, interface), gmx_cfg.u64);
 
 	/*
 	 * Only true RGMII ports need to be polled. In GMII mode, port
@@ -424,4 +406,14 @@ void cvm_oct_rgmii_uninit(struct net_device *dev)
 	if (number_rgmii_ports == 0)
 		free_irq(OCTEON_IRQ_RML, &number_rgmii_ports);
 	cancel_work_sync(&priv->port_work);
+
+	return 0;
+}
+
+int cvm_oct_rgmii_init(struct net_device *dev)
+{
+	cvm_oct_common_init(dev);
+	dev->netdev_ops->ndo_stop(dev);
+
+	return 0;
 }
