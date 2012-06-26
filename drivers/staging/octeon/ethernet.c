@@ -43,7 +43,6 @@
 #include "ethernet-mem.h"
 #include "ethernet-rx.h"
 #include "ethernet-tx.h"
-#include "ethernet-mdio.h"
 #include "ethernet-util.h"
 
 #include <asm/octeon/cvmx-pip.h>
@@ -152,12 +151,16 @@ static void cvm_oct_periodic_worker(struct work_struct *work)
 	struct octeon_ethernet *priv = container_of(work,
 						    struct octeon_ethernet,
 						    port_periodic_work.work);
+	void (*poll_fn) (struct net_device *);
 
-	if (priv->poll)
-		priv->poll(cvm_oct_device[priv->port]);
+	spin_lock(&priv->poll_lock);
+	poll_fn = priv->poll;
+	spin_unlock(&priv->poll_lock);
 
-	cvm_oct_device[priv->port]->netdev_ops->ndo_get_stats(
-						cvm_oct_device[priv->port]);
+	if (poll_fn)
+		poll_fn(priv->netdev);
+
+	priv->netdev->netdev_ops->ndo_get_stats(priv->netdev);
 
 	if (!atomic_read(&cvm_oct_poll_queue_stopping))
 		queue_delayed_work(cvm_oct_poll_queue,
@@ -487,17 +490,8 @@ int cvm_oct_common_init(struct net_device *dev)
 	return 0;
 }
 
-void cvm_oct_common_uninit(struct net_device *dev)
-{
-	struct octeon_ethernet *priv = netdev_priv(dev);
-
-	if (priv->phydev)
-		phy_disconnect(priv->phydev);
-}
-
 static const struct net_device_ops cvm_oct_npi_netdev_ops = {
 	.ndo_init		= cvm_oct_common_init,
-	.ndo_uninit		= cvm_oct_common_uninit,
 	.ndo_start_xmit		= cvm_oct_xmit,
 	.ndo_set_rx_mode	= cvm_oct_common_set_multicast_list,
 	.ndo_set_mac_address	= cvm_oct_common_set_mac_address,
@@ -508,24 +502,10 @@ static const struct net_device_ops cvm_oct_npi_netdev_ops = {
 	.ndo_poll_controller	= cvm_oct_poll_controller,
 #endif
 };
-static const struct net_device_ops cvm_oct_xaui_netdev_ops = {
-	.ndo_init		= cvm_oct_xaui_init,
-	.ndo_uninit		= cvm_oct_xaui_uninit,
-	.ndo_open		= cvm_oct_xaui_open,
-	.ndo_stop		= cvm_oct_xaui_stop,
-	.ndo_start_xmit		= cvm_oct_xmit,
-	.ndo_set_rx_mode	= cvm_oct_common_set_multicast_list,
-	.ndo_set_mac_address	= cvm_oct_common_set_mac_address,
-	.ndo_do_ioctl		= cvm_oct_ioctl,
-	.ndo_change_mtu		= cvm_oct_common_change_mtu,
-	.ndo_get_stats		= cvm_oct_common_get_stats,
-#ifdef CONFIG_NET_POLL_CONTROLLER
-	.ndo_poll_controller	= cvm_oct_poll_controller,
-#endif
-};
+
+/* SGMII and XAUI handled the same so they both use this. */
 static const struct net_device_ops cvm_oct_sgmii_netdev_ops = {
 	.ndo_init		= cvm_oct_sgmii_init,
-	.ndo_uninit		= cvm_oct_sgmii_uninit,
 	.ndo_open		= cvm_oct_sgmii_open,
 	.ndo_stop		= cvm_oct_sgmii_stop,
 	.ndo_start_xmit		= cvm_oct_xmit,
@@ -553,7 +533,6 @@ static const struct net_device_ops cvm_oct_spi_netdev_ops = {
 };
 static const struct net_device_ops cvm_oct_rgmii_netdev_ops = {
 	.ndo_init		= cvm_oct_rgmii_init,
-	.ndo_uninit		= cvm_oct_rgmii_uninit,
 	.ndo_open		= cvm_oct_rgmii_open,
 	.ndo_stop		= cvm_oct_rgmii_stop,
 	.ndo_start_xmit		= cvm_oct_xmit,
@@ -732,6 +711,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 								port_index);
 
 			priv->netdev = dev;
+			spin_lock_init(&priv->poll_lock);
 			INIT_DELAYED_WORK(&priv->port_periodic_work,
 					  cvm_oct_periodic_worker);
 			priv->imode = imode;
@@ -758,7 +738,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 				break;
 
 			case CVMX_HELPER_INTERFACE_MODE_XAUI:
-				dev->netdev_ops = &cvm_oct_xaui_netdev_ops;
+				dev->netdev_ops = &cvm_oct_sgmii_netdev_ops;
 				strcpy(dev->name, "xaui%d");
 				break;
 
