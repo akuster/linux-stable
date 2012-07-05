@@ -353,6 +353,9 @@ extern void (*octeon_irq_setup_secondary)(void);
 typedef void (*octeon_irq_ip4_handler_t)(void);
 void octeon_irq_set_ip4_handler(octeon_irq_ip4_handler_t);
 
+int octeon_coreid_for_cpu(int cpu);
+int octeon_cpu_for_coreid(int coreid);
+
 extern void octeon_fixup_irqs(void);
 
 extern struct semaphore octeon_bootbus_sem;
