@@ -29,6 +29,7 @@
 #include <linux/cache.h>
 
 #include <asm/cacheflush.h>
+#include <asm/mipsregs.h>
 #include <asm/cpu-type.h>
 #include <asm/pgtable.h>
 #include <asm/war.h>
@@ -306,8 +307,6 @@ static struct uasm_reloc relocs[128];
 
 static int check_for_high_segbits;
 
-static unsigned int kscratch_used_mask;
-
 static inline int __maybe_unused c0_kscratch(void)
 {
 	switch (current_cpu_type()) {
@@ -317,23 +316,6 @@ static inline int __maybe_unused c0_kscratch(void)
 	default:
 		return 31;
 	}
-}
-
-static int allocate_kscratch(void)
-{
-	int r;
-	unsigned int a = cpu_data[0].kscratch_mask & ~kscratch_used_mask;
-
-	r = ffs(a);
-
-	if (r == 0)
-		return -1;
-
-	r--; /* make it zero based */
-
-	kscratch_used_mask |= (1 << r);
-
-	return r;
 }
 
 static int scratch_reg;
