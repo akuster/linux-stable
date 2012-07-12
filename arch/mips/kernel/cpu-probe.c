@@ -1511,3 +1511,32 @@ void cpu_report(void)
 	if (cpu_has_msa)
 		pr_info("MSA revision is: %08x\n", c->msa_id);
 }
+
+static DEFINE_SPINLOCK(kscratch_used_lock);
+
+static unsigned int kscratch_used_mask;
+
+int allocate_kscratch(void)
+{
+	int r;
+	unsigned int a;
+
+	spin_lock(&kscratch_used_lock);
+
+	a = cpu_data[0].kscratch_mask & ~kscratch_used_mask;
+
+	r = ffs(a);
+
+	if (r == 0) {
+		r = -1;
+		goto out;
+	}
+
+	r--; /* make it zero based */
+
+	kscratch_used_mask |= (1 << r);
+out:
+	spin_unlock(&kscratch_used_lock);
+
+	return r;
+}

@@ -2021,6 +2021,7 @@ static inline unsigned int get_ebase_cpunum(void)
 {
 	return read_c0_ebase() & 0x3ff;
 }
+int allocate_kscratch(void);
 
 #endif /* !__ASSEMBLY__ */
 
