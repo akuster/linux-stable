@@ -78,9 +78,25 @@ extern unsigned int vced_count, vcei_count;
 
 #define TASK_IS_32BIT_ADDR test_thread_flag(TIF_32BIT_ADDR)
 
+# ifdef CONFIG_HUGETLB_PAGE
+/*
+ * Align the STACK_TOP on a HPAGE_SIZE boundry so the stack may be
+ * remapped to a huge page.
+ */
+# define SPECIAL_PAGES_BASE ((TASK_SIZE & PAGE_MASK) - SPECIAL_PAGES_SIZE)
+# define STACK_TOP (SPECIAL_PAGES_BASE & HPAGE_MASK)
+
+# endif /* CONFIG_HUGETLB_PAGE */
+#endif /* CONFIG_64BIT */
+
+#ifndef STACK_TOP
+# define STACK_TOP	((TASK_SIZE & PAGE_MASK) - SPECIAL_PAGES_SIZE)
 #endif
 
-#define STACK_TOP	((TASK_SIZE & PAGE_MASK) - SPECIAL_PAGES_SIZE)
+#ifndef SPECIAL_PAGES_BASE
+# define SPECIAL_PAGES_BASE STACK_TOP
+#endif
+
 
 /*
  * This decides where the kernel will search for a free chunk of vm
