@@ -1445,6 +1445,7 @@ static int __init octeon_irq_init_ciu(
 	}
 	octeon_irq_ciu_chip = chip;
 	octeon_irq_ciu_chip_edge = chip_edge;
+	octeon_irq_ip4 = octeon_irq_ip4_mask;
 
 	/* Mips internal */
 	octeon_irq_init_core();
