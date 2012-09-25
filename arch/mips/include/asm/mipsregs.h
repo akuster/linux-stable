@@ -594,6 +594,32 @@
 #define MIPS_CMGCRF_BASE	(~_ULCAST_((1 << MIPS_CMGCRB_BASE) - 1))
 
 /*
+ * Bits in the MIPS32/64 coprocessor 1 (FPU) revision register.
+ */
+#define MIPS_FPIR_S		(_ULCAST_(1) << 16)
+#define MIPS_FPIR_D		(_ULCAST_(1) << 17)
+#define MIPS_FPIR_PS		(_ULCAST_(1) << 18)
+#define MIPS_FPIR_3D		(_ULCAST_(1) << 19)
+#define MIPS_FPIR_W		(_ULCAST_(1) << 20)
+#define MIPS_FPIR_L		(_ULCAST_(1) << 21)
+#define MIPS_FPIR_F64		(_ULCAST_(1) << 22)
+
+/*
+ * These defines are used on Octeon to implement fast access to the
+ * thread pointer from userspace. Octeon uses a 64bit location in
+ * CVMSEG to store the thread pointer for quick access.
+ *
+ * TLB refill uses location -16 (and below), fast access is -8 (both
+ * from the top of the area.
+ */
+#ifdef CONFIG_FAST_ACCESS_TO_THREAD_POINTER
+#define FAST_ACCESS_THREAD_OFFSET			\
+	(CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE * 128 - 8 - 32768)
+#define FAST_ACCESS_THREAD_REGISTER			\
+	(*(unsigned long *)(FAST_ACCESS_THREAD_OFFSET))
+#endif
+
+/*
  * Bits in the MIPS32 Memory Segmentation registers.
  */
 #define MIPS_SEGCFG_PA_SHIFT	9
