@@ -167,6 +167,7 @@ struct octeon_boot_descriptor {
 union octeon_cvmemctl {
 	uint64_t u64;
 	struct {
+#ifdef __BIG_ENDIAN_BITFIELD
 		/* RO 1 = BIST fail, 0 = BIST pass */
 		__BITFIELD_FIELD(uint64_t tlbbist:1,
 		/* RO 1 = BIST fail, 0 = BIST pass */
