@@ -1,10 +1,10 @@
 /***********************license start***************
- * Author: Cavium Networks
+ * Author: Cavium Inc.
  *
- * Contact: support@caviumnetworks.com
+ * Contact: support@cavium.com
  * This file is part of the OCTEON SDK
  *
- * Copyright (c) 2003-2008 Cavium Networks
+ * Copyright (c) 2003-2010 Cavium Inc.
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
@@ -22,12 +22,8 @@
  * or visit http://www.gnu.org/licenses/.
  *
  * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
+ * Contact Cavium Inc. for more information
  ***********************license end**************************************/
-
-/*
- * Interface to the hardware Fetch and Add Unit.
- */
 
 #ifndef __CVMX_FAU_H__
 #define __CVMX_FAU_H__
@@ -105,6 +101,16 @@ typedef union {
 	} s;
 } cvmx_fau_async_tagwait_result_t;
 
+#ifdef __LITTLE_ENDIAN_BITFIELD
+#define SWIZZLE_8  0x7
+#define SWIZZLE_16 0x6
+#define SWIZZLE_32 0x4
+#else
+#define SWIZZLE_8  0
+#define SWIZZLE_16 0
+#define SWIZZLE_32 0
+#endif
+
 /**
  * Builds a store I/O address for writing to the FAU
  *
@@ -116,7 +122,7 @@ typedef union {
  *		 - Step by 8 for 64 bit access.
  * Returns Address to store for atomic update
  */
-static inline uint64_t __cvmx_fau_store_address(uint64_t noadd, uint64_t reg)
+static inline uint64_t __cvmx_fau_store_address(uint64_t noadd, int reg)
 {
 	return CVMX_ADD_IO_SEG(CVMX_FAU_LOAD_IO_ADDRESS) |
 	       cvmx_build_bits(CVMX_FAU_BITS_NOADD, noadd) |
@@ -139,7 +145,7 @@ static inline uint64_t __cvmx_fau_store_address(uint64_t noadd, uint64_t reg)
  *		  22 bits are available.
  * Returns Address to read from for atomic update
  */
-static inline uint64_t __cvmx_fau_atomic_address(uint64_t tagwait, uint64_t reg,
+static inline uint64_t __cvmx_fau_atomic_address(uint64_t tagwait, int reg,
 						 int64_t value)
 {
 	return CVMX_ADD_IO_SEG(CVMX_FAU_LOAD_IO_ADDRESS) |
@@ -157,8 +163,7 @@ static inline uint64_t __cvmx_fau_atomic_address(uint64_t tagwait, uint64_t reg,
  *		  Note: Only the low 22 bits are available.
  * Returns Value of the register before the update
  */
-static inline int64_t cvmx_fau_fetch_and_add64(cvmx_fau_reg_64_t reg,
-					       int64_t value)
+static inline int64_t cvmx_fau_fetch_and_add64(int reg, int64_t value)
 {
 	return cvmx_read64_int64(__cvmx_fau_atomic_address(0, reg, value));
 }
@@ -172,9 +177,9 @@ static inline int64_t cvmx_fau_fetch_and_add64(cvmx_fau_reg_64_t reg,
  *		  Note: Only the low 22 bits are available.
  * Returns Value of the register before the update
  */
-static inline int32_t cvmx_fau_fetch_and_add32(cvmx_fau_reg_32_t reg,
-					       int32_t value)
+static inline int32_t cvmx_fau_fetch_and_add32(int reg, int32_t value)
 {
+	reg ^= SWIZZLE_32;
 	return cvmx_read64_int32(__cvmx_fau_atomic_address(0, reg, value));
 }
 
@@ -186,9 +191,9 @@ static inline int32_t cvmx_fau_fetch_and_add32(cvmx_fau_reg_32_t reg,
  * @value:   Signed value to add.
  * Returns Value of the register before the update
  */
-static inline int16_t cvmx_fau_fetch_and_add16(cvmx_fau_reg_16_t reg,
-					       int16_t value)
+static inline int16_t cvmx_fau_fetch_and_add16(int reg, int16_t value)
 {
+	reg ^= SWIZZLE_16;
 	return cvmx_read64_int16(__cvmx_fau_atomic_address(0, reg, value));
 }
 
@@ -199,8 +204,9 @@ static inline int16_t cvmx_fau_fetch_and_add16(cvmx_fau_reg_16_t reg,
  * @value:   Signed value to add.
  * Returns Value of the register before the update
  */
-static inline int8_t cvmx_fau_fetch_and_add8(cvmx_fau_reg_8_t reg, int8_t value)
+static inline int8_t cvmx_fau_fetch_and_add8(int reg, int8_t value)
 {
+	reg ^= SWIZZLE_8;
 	return cvmx_read64_int8(__cvmx_fau_atomic_address(0, reg, value));
 }
 
@@ -216,15 +222,14 @@ static inline int8_t cvmx_fau_fetch_and_add8(cvmx_fau_reg_8_t reg, int8_t value)
  *	   the value of the register before the update will be
  *	   returned
  */
-static inline cvmx_fau_tagwait64_t
-cvmx_fau_tagwait_fetch_and_add64(cvmx_fau_reg_64_t reg, int64_t value)
+static inline cvmx_fau_tagwait64_t cvmx_fau_tagwait_fetch_and_add64(int reg,
+								    int64_t value)
 {
 	union {
 		uint64_t i64;
 		cvmx_fau_tagwait64_t t;
 	} result;
-	result.i64 =
-	    cvmx_read64_int64(__cvmx_fau_atomic_address(1, reg, value));
+	result.i64 = cvmx_read64_int64(__cvmx_fau_atomic_address(1, reg, value));
 	return result.t;
 }
 
@@ -240,15 +245,15 @@ cvmx_fau_tagwait_fetch_and_add64(cvmx_fau_reg_64_t reg, int64_t value)
  *	   the value of the register before the update will be
  *	   returned
  */
-static inline cvmx_fau_tagwait32_t
-cvmx_fau_tagwait_fetch_and_add32(cvmx_fau_reg_32_t reg, int32_t value)
+static inline cvmx_fau_tagwait32_t cvmx_fau_tagwait_fetch_and_add32(int reg,
+								    int32_t value)
 {
 	union {
 		uint64_t i32;
 		cvmx_fau_tagwait32_t t;
 	} result;
-	result.i32 =
-	    cvmx_read64_int32(__cvmx_fau_atomic_address(1, reg, value));
+	reg ^= SWIZZLE_32;
+	result.i32 = cvmx_read64_int32(__cvmx_fau_atomic_address(1, reg, value));
 	return result.t;
 }
 
@@ -263,15 +268,15 @@ cvmx_fau_tagwait_fetch_and_add32(cvmx_fau_reg_32_t reg, int32_t value)
  *	   the value of the register before the update will be
  *	   returned
  */
-static inline cvmx_fau_tagwait16_t
-cvmx_fau_tagwait_fetch_and_add16(cvmx_fau_reg_16_t reg, int16_t value)
+static inline cvmx_fau_tagwait16_t cvmx_fau_tagwait_fetch_and_add16(int reg,
+								    int16_t value)
 {
 	union {
 		uint64_t i16;
 		cvmx_fau_tagwait16_t t;
 	} result;
-	result.i16 =
-	    cvmx_read64_int16(__cvmx_fau_atomic_address(1, reg, value));
+	reg ^= SWIZZLE_16;
+	result.i16 = cvmx_read64_int16(__cvmx_fau_atomic_address(1, reg, value));
 	return result.t;
 }
 
@@ -285,13 +290,14 @@ cvmx_fau_tagwait_fetch_and_add16(cvmx_fau_reg_16_t reg, int16_t value)
  *	   the value of the register before the update will be
  *	   returned
  */
-static inline cvmx_fau_tagwait8_t
-cvmx_fau_tagwait_fetch_and_add8(cvmx_fau_reg_8_t reg, int8_t value)
+static inline cvmx_fau_tagwait8_t cvmx_fau_tagwait_fetch_and_add8(int reg,
+								  int8_t value)
 {
 	union {
 		uint64_t i8;
 		cvmx_fau_tagwait8_t t;
 	} result;
+	reg ^= SWIZZLE_8;
 	result.i8 = cvmx_read64_int8(__cvmx_fau_atomic_address(1, reg, value));
 	return result.t;
 }
@@ -299,7 +305,7 @@ cvmx_fau_tagwait_fetch_and_add8(cvmx_fau_reg_8_t reg, int8_t value)
 /**
  * Builds I/O data for async operations
  *
- * @scraddr: Scratch pad byte address to write to.  Must be 8 byte aligned
+ * @scraddr: Scratch pad byte addres to write to.  Must be 8 byte aligned
  * @value:   Signed value to add.
  *		  Note: When performing 32 and 64 bit access, only the low
  *		  22 bits are available.
@@ -344,12 +350,10 @@ static inline uint64_t __cvmx_fau_iobdma_data(uint64_t scraddr, int64_t value,
  *		  Note: Only the low 22 bits are available.
  * Returns Placed in the scratch pad register
  */
-static inline void cvmx_fau_async_fetch_and_add64(uint64_t scraddr,
-						  cvmx_fau_reg_64_t reg,
+static inline void cvmx_fau_async_fetch_and_add64(uint64_t scraddr, int reg,
 						  int64_t value)
 {
-	cvmx_send_single(__cvmx_fau_iobdma_data
-			 (scraddr, value, 0, CVMX_FAU_OP_SIZE_64, reg));
+	cvmx_send_single(__cvmx_fau_iobdma_data(scraddr, value, 0, CVMX_FAU_OP_SIZE_64, reg));
 }
 
 /**
@@ -364,12 +368,10 @@ static inline void cvmx_fau_async_fetch_and_add64(uint64_t scraddr,
  *		  Note: Only the low 22 bits are available.
  * Returns Placed in the scratch pad register
  */
-static inline void cvmx_fau_async_fetch_and_add32(uint64_t scraddr,
-						  cvmx_fau_reg_32_t reg,
+static inline void cvmx_fau_async_fetch_and_add32(uint64_t scraddr, int reg,
 						  int32_t value)
 {
-	cvmx_send_single(__cvmx_fau_iobdma_data
-			 (scraddr, value, 0, CVMX_FAU_OP_SIZE_32, reg));
+	cvmx_send_single(__cvmx_fau_iobdma_data(scraddr, value, 0, CVMX_FAU_OP_SIZE_32, reg));
 }
 
 /**
@@ -383,12 +385,10 @@ static inline void cvmx_fau_async_fetch_and_add32(uint64_t scraddr,
  * @value:   Signed value to add.
  * Returns Placed in the scratch pad register
  */
-static inline void cvmx_fau_async_fetch_and_add16(uint64_t scraddr,
-						  cvmx_fau_reg_16_t reg,
+static inline void cvmx_fau_async_fetch_and_add16(uint64_t scraddr, int reg,
 						  int16_t value)
 {
-	cvmx_send_single(__cvmx_fau_iobdma_data
-			 (scraddr, value, 0, CVMX_FAU_OP_SIZE_16, reg));
+	cvmx_send_single(__cvmx_fau_iobdma_data(scraddr, value, 0, CVMX_FAU_OP_SIZE_16, reg));
 }
 
 /**
@@ -401,12 +401,10 @@ static inline void cvmx_fau_async_fetch_and_add16(uint64_t scraddr,
  * @value:   Signed value to add.
  * Returns Placed in the scratch pad register
  */
-static inline void cvmx_fau_async_fetch_and_add8(uint64_t scraddr,
-						 cvmx_fau_reg_8_t reg,
+static inline void cvmx_fau_async_fetch_and_add8(uint64_t scraddr, int reg,
 						 int8_t value)
 {
-	cvmx_send_single(__cvmx_fau_iobdma_data
-			 (scraddr, value, 0, CVMX_FAU_OP_SIZE_8, reg));
+	cvmx_send_single(__cvmx_fau_iobdma_data(scraddr, value, 0, CVMX_FAU_OP_SIZE_8, reg));
 }
 
 /**
@@ -425,11 +423,10 @@ static inline void cvmx_fau_async_fetch_and_add8(uint64_t scraddr,
  * Returns Placed in the scratch pad register
  */
 static inline void cvmx_fau_async_tagwait_fetch_and_add64(uint64_t scraddr,
-							  cvmx_fau_reg_64_t reg,
+							  int reg,
 							  int64_t value)
 {
-	cvmx_send_single(__cvmx_fau_iobdma_data
-			 (scraddr, value, 1, CVMX_FAU_OP_SIZE_64, reg));
+	cvmx_send_single(__cvmx_fau_iobdma_data(scraddr, value, 1, CVMX_FAU_OP_SIZE_64, reg));
 }
 
 /**
@@ -448,11 +445,10 @@ static inline void cvmx_fau_async_tagwait_fetch_and_add64(uint64_t scraddr,
  * Returns Placed in the scratch pad register
  */
 static inline void cvmx_fau_async_tagwait_fetch_and_add32(uint64_t scraddr,
-							  cvmx_fau_reg_32_t reg,
+							  int reg,
 							  int32_t value)
 {
-	cvmx_send_single(__cvmx_fau_iobdma_data
-			 (scraddr, value, 1, CVMX_FAU_OP_SIZE_32, reg));
+	cvmx_send_single(__cvmx_fau_iobdma_data(scraddr, value, 1, CVMX_FAU_OP_SIZE_32, reg));
 }
 
 /**
@@ -467,15 +463,13 @@ static inline void cvmx_fau_async_tagwait_fetch_and_add32(uint64_t scraddr,
  * @reg:     FAU atomic register to access. 0 <= reg < 2048.
  *		  - Step by 2 for 16 bit access.
  * @value:   Signed value to add.
- *
  * Returns Placed in the scratch pad register
  */
 static inline void cvmx_fau_async_tagwait_fetch_and_add16(uint64_t scraddr,
-							  cvmx_fau_reg_16_t reg,
+							  int reg,
 							  int16_t value)
 {
-	cvmx_send_single(__cvmx_fau_iobdma_data
-			 (scraddr, value, 1, CVMX_FAU_OP_SIZE_16, reg));
+	cvmx_send_single(__cvmx_fau_iobdma_data(scraddr, value, 1, CVMX_FAU_OP_SIZE_16, reg));
 }
 
 /**
@@ -489,15 +483,12 @@ static inline void cvmx_fau_async_tagwait_fetch_and_add16(uint64_t scraddr,
  *
  * @reg:     FAU atomic register to access. 0 <= reg < 2048.
  * @value:   Signed value to add.
- *
  * Returns Placed in the scratch pad register
  */
 static inline void cvmx_fau_async_tagwait_fetch_and_add8(uint64_t scraddr,
-							 cvmx_fau_reg_8_t reg,
-							 int8_t value)
+							 int reg, int8_t value)
 {
-	cvmx_send_single(__cvmx_fau_iobdma_data
-			 (scraddr, value, 1, CVMX_FAU_OP_SIZE_8, reg));
+	cvmx_send_single(__cvmx_fau_iobdma_data(scraddr, value, 1, CVMX_FAU_OP_SIZE_8, reg));
 }
 
 /**
@@ -507,7 +498,7 @@ static inline void cvmx_fau_async_tagwait_fetch_and_add8(uint64_t scraddr,
  *		  - Step by 8 for 64 bit access.
  * @value:   Signed value to add.
  */
-static inline void cvmx_fau_atomic_add64(cvmx_fau_reg_64_t reg, int64_t value)
+static inline void cvmx_fau_atomic_add64(int reg, int64_t value)
 {
 	cvmx_write64_int64(__cvmx_fau_store_address(0, reg), value);
 }
@@ -519,8 +510,9 @@ static inline void cvmx_fau_atomic_add64(cvmx_fau_reg_64_t reg, int64_t value)
  *		  - Step by 4 for 32 bit access.
  * @value:   Signed value to add.
  */
-static inline void cvmx_fau_atomic_add32(cvmx_fau_reg_32_t reg, int32_t value)
+static inline void cvmx_fau_atomic_add32(int reg, int32_t value)
 {
+	reg ^= SWIZZLE_32;
 	cvmx_write64_int32(__cvmx_fau_store_address(0, reg), value);
 }
 
@@ -531,8 +523,9 @@ static inline void cvmx_fau_atomic_add32(cvmx_fau_reg_32_t reg, int32_t value)
  *		  - Step by 2 for 16 bit access.
  * @value:   Signed value to add.
  */
-static inline void cvmx_fau_atomic_add16(cvmx_fau_reg_16_t reg, int16_t value)
+static inline void cvmx_fau_atomic_add16(int reg, int16_t value)
 {
+	reg ^= SWIZZLE_16;
 	cvmx_write64_int16(__cvmx_fau_store_address(0, reg), value);
 }
 
@@ -542,8 +535,9 @@ static inline void cvmx_fau_atomic_add16(cvmx_fau_reg_16_t reg, int16_t value)
  * @reg:     FAU atomic register to access. 0 <= reg < 2048.
  * @value:   Signed value to add.
  */
-static inline void cvmx_fau_atomic_add8(cvmx_fau_reg_8_t reg, int8_t value)
+static inline void cvmx_fau_atomic_add8(int reg, int8_t value)
 {
+	reg ^= SWIZZLE_8;
 	cvmx_write64_int8(__cvmx_fau_store_address(0, reg), value);
 }
 
@@ -554,7 +548,7 @@ static inline void cvmx_fau_atomic_add8(cvmx_fau_reg_8_t reg, int8_t value)
  *		  - Step by 8 for 64 bit access.
  * @value:   Signed value to write.
  */
-static inline void cvmx_fau_atomic_write64(cvmx_fau_reg_64_t reg, int64_t value)
+static inline void cvmx_fau_atomic_write64(int reg, int64_t value)
 {
 	cvmx_write64_int64(__cvmx_fau_store_address(1, reg), value);
 }
@@ -566,8 +560,9 @@ static inline void cvmx_fau_atomic_write64(cvmx_fau_reg_64_t reg, int64_t value)
  *		  - Step by 4 for 32 bit access.
  * @value:   Signed value to write.
  */
-static inline void cvmx_fau_atomic_write32(cvmx_fau_reg_32_t reg, int32_t value)
+static inline void cvmx_fau_atomic_write32(int reg, int32_t value)
 {
+	reg ^= SWIZZLE_32;
 	cvmx_write64_int32(__cvmx_fau_store_address(1, reg), value);
 }
 
@@ -578,8 +573,9 @@ static inline void cvmx_fau_atomic_write32(cvmx_fau_reg_32_t reg, int32_t value)
  *		  - Step by 2 for 16 bit access.
  * @value:   Signed value to write.
  */
-static inline void cvmx_fau_atomic_write16(cvmx_fau_reg_16_t reg, int16_t value)
+static inline void cvmx_fau_atomic_write16(int reg, int16_t value)
 {
+	reg ^= SWIZZLE_16;
 	cvmx_write64_int16(__cvmx_fau_store_address(1, reg), value);
 }
 
@@ -589,8 +585,9 @@ static inline void cvmx_fau_atomic_write16(cvmx_fau_reg_16_t reg, int16_t value)
  * @reg:     FAU atomic register to access. 0 <= reg < 2048.
  * @value:   Signed value to write.
  */
-static inline void cvmx_fau_atomic_write8(cvmx_fau_reg_8_t reg, int8_t value)
+static inline void cvmx_fau_atomic_write8(int reg, int8_t value)
 {
+	reg ^= SWIZZLE_8;
 	cvmx_write64_int8(__cvmx_fau_store_address(1, reg), value);
 }
 
