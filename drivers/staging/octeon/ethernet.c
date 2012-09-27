@@ -163,6 +163,8 @@ static void cvm_oct_periodic_worker(struct work_struct *work)
 
 static void cvm_oct_configure_common_hw(void)
 {
+	union cvmx_ipd_ctl_status ipd_ctl_status;
+
 	/* Setup the FPA */
 	cvmx_fpa_enable();
 	cvm_oct_mem_fill_fpa(CVMX_FPA_PACKET_POOL, CVMX_FPA_PACKET_POOL_SIZE,
