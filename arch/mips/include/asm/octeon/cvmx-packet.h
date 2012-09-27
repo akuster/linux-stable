@@ -57,11 +57,11 @@ union cvmx_buf_ptr {
 		/* Pointer to the first byte of the data, NOT buffer */
 		uint64_t addr:40;
 #else
-	        uint64_t addr:40;
-	        uint64_t size:16;
-	        uint64_t pool:3;
-	        uint64_t back:4;
-	        uint64_t i:1;
+		uint64_t addr:40;
+		uint64_t size:16;
+		uint64_t pool:3;
+		uint64_t back:4;
+		uint64_t i:1;
 #endif
 	} s;
 };

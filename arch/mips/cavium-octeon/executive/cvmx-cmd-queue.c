@@ -82,7 +82,7 @@ static cvmx_cmd_queue_result_t __cvmx_cmd_queue_init_state_ptr(void)
 		memset(__cvmx_cmd_queue_state_ptr, 0,
 		       sizeof(*__cvmx_cmd_queue_state_ptr));
 	else {
-		struct cvmx_bootmem_named_block_desc *block_desc =
+		const struct cvmx_bootmem_named_block_desc *block_desc =
 		    cvmx_bootmem_find_named_block(alloc_name);
 		if (block_desc)
 			__cvmx_cmd_queue_state_ptr =
