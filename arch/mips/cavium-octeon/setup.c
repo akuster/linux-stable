@@ -46,10 +46,6 @@
 
 extern struct plat_smp_ops octeon_smp_ops;
 
-#ifdef CONFIG_PCI
-extern void pci_console_init(const char *arg);
-#endif
-
 static unsigned long long MAX_MEMORY = 512ull << 20;
 
 DEFINE_SEMAPHORE(octeon_bootbus_sem);
@@ -1008,6 +1004,9 @@ append_arg:
 			}
 		}
 	}
+
+	if (strstr(arcs_cmdline, "console=pci"))
+		octeon_pci_console_init(strstr(arcs_cmdline, "console=pci") + 8);
 
 	if (strstr(arcs_cmdline, "console=") == NULL) {
 #ifdef CONFIG_CAVIUM_OCTEON_2ND_KERNEL
