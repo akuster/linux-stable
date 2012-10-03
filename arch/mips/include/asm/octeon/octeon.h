@@ -378,6 +378,8 @@ void octeon_irq_set_ip4_handler(octeon_irq_ip4_handler_t);
 int octeon_coreid_for_cpu(int cpu);
 int octeon_cpu_for_coreid(int coreid);
 
+void octeon_pci_console_init(const char *);
+
 extern void octeon_fixup_irqs(void);
 
 #endif /* __ASM_OCTEON_OCTEON_H */
