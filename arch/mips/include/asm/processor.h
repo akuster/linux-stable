@@ -78,7 +78,7 @@ extern unsigned int vced_count, vcei_count;
 
 #define TASK_IS_32BIT_ADDR test_thread_flag(TIF_32BIT_ADDR)
 
-# ifdef CONFIG_HUGETLB_PAGE
+# ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
 /*
  * Align the STACK_TOP on a HPAGE_SIZE boundry so the stack may be
  * remapped to a huge page.
@@ -86,7 +86,7 @@ extern unsigned int vced_count, vcei_count;
 # define SPECIAL_PAGES_BASE ((TASK_SIZE & PAGE_MASK) - SPECIAL_PAGES_SIZE)
 # define STACK_TOP (SPECIAL_PAGES_BASE & HPAGE_MASK)
 
-# endif /* CONFIG_HUGETLB_PAGE */
+# endif /* CONFIG_MIPS_HUGE_TLB_SUPPORT */
 #endif /* CONFIG_64BIT */
 
 #ifndef STACK_TOP
