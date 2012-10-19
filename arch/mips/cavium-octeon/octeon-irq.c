@@ -1304,6 +1304,12 @@ static void __init octeon_irq_init_ciu(void)
 	for (i = 0; i < 16; i++)
 		octeon_irq_set_ciu_mapping(i + OCTEON_IRQ_WDOG0, 1, i + 0, 0, chip_wd, handle_level_irq);
 
+	if (octeon_has_feature(OCTEON_FEATURE_SRIO)) {
+		octeon_irq_set_ciu_mapping(OCTEON_IRQ_SRIO0, 1, 50, 0, chip, handle_level_irq);
+		octeon_irq_set_ciu_mapping(OCTEON_IRQ_SRIO1, 1, 51, 0, chip, handle_level_irq);
+		octeon_irq_set_ciu_mapping(OCTEON_IRQ_SRIO2, 1, 60, 0, chip, handle_level_irq);
+		octeon_irq_set_ciu_mapping(OCTEON_IRQ_SRIO3, 1, 61, 0, chip, handle_level_irq);
+	}
 
 	/* Enable the CIU lines */
 	set_c0_status(STATUSF_IP3 | STATUSF_IP2);
