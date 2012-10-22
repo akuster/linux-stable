@@ -18,6 +18,12 @@
 
 #include "rio.h"
 
+#ifdef CONFIG_CAVIUM_OCTEON_RAPIDIO
+#include <asm/io.h>
+int octeon_rio_dma_mem(struct rio_dev *rdev, uint64_t local_addr,
+		       uint64_t remote_addr, int size, int is_outbound);
+#endif
+
 /* Sysfs support */
 #define rio_config_attr(field, format_string)					\
 static ssize_t								\
@@ -275,6 +281,14 @@ rio_read_memory(struct file *_, struct kobject *kobj,
 	if (off + count > bin_attr->size)
 		count = bin_attr->size - off;
 
+#ifdef CONFIG_CAVIUM_OCTEON_RAPIDIO
+	if (count > 8) {
+		if (octeon_rio_dma_mem(dev, virt_to_phys(buf), off, count, 0))
+			return 0;
+		else
+			return count;
+	}
+#endif
 	map = rio_map_memory(dev, off, count);
 	if (!map) {
 		dev_err(&dev->dev, "Unable to map RapidIO device resource\n");
@@ -299,6 +313,14 @@ rio_write_memory(struct file *_, struct kobject *kobj,
 	if (off + count > bin_attr->size)
 		count = bin_attr->size - off;
 
+#ifdef CONFIG_CAVIUM_OCTEON_RAPIDIO
+	if (count > 8) {
+		if (octeon_rio_dma_mem(dev, virt_to_phys(buf), off, count, 1))
+			return 0;
+		else
+			return count;
+	}
+#endif
 	map = rio_map_memory(dev, off, count);
 	if (!map) {
 		dev_err(&dev->dev, "Unable to map RapidIO device resource\n");
