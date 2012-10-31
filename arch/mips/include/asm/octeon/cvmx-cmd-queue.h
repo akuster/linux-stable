@@ -286,8 +286,12 @@ static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id,
  */
 static inline void __cvmx_cmd_queue_unlock(__cvmx_cmd_queue_state_t *qptr)
 {
-	qptr->now_serving++;
-	CVMX_SYNCWS;
+	uint8_t ns;
+
+	ns = qptr->now_serving + 1;
+	CVMX_SYNCWS;		/* Order queue manipulation with respect to the unlock.  */
+	qptr->now_serving = ns;
+	CVMX_SYNCWS;		/* nudge out the unlock. */
 }
 
 /**
