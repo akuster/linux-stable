@@ -417,7 +417,7 @@ static inline uint64_t cvmx_get_cycle_global(void)
 	int result;							\
 	do {								\
 		uint64_t done = cvmx_get_cycle() + (uint64_t)timeout_usec * \
-			cvmx_sysinfo_get()->cpu_clock_hz / 1000000;	\
+			octeon_get_clock_rate() / 1000000;		\
 		type c;							\
 		while (1) {						\
 			c.u64 = cvmx_read_csr(address);			\
