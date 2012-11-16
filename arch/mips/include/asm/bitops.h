@@ -471,6 +471,7 @@ static inline void __clear_bit_unlock(unsigned long nr, volatile unsigned long *
 {
 	smp_mb();
 	__clear_bit(nr, addr);
+	nudge_writes();
 }
 
 /*
