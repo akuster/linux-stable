@@ -40,6 +40,7 @@
 #include <asm/time.h>
 
 #include <asm/octeon/octeon.h>
+#include <asm/octeon/octeon-boot-info.h>
 #include <asm/octeon/pci-octeon.h>
 #include <asm/octeon/cvmx-mio-defs.h>
 #include <asm/octeon/cvmx-rst-defs.h>
@@ -264,6 +265,13 @@ static uint64_t crashk_size, crashk_base;
 static int octeon_uart;
 
 extern asmlinkage void handle_int(void);
+
+/*
+ * If set to a non-zero value, the bootloader entry point for
+ * HOTPLUG_CPU and other tricks.
+ */
+u64 octeon_bootloader_entry_addr;
+EXPORT_SYMBOL(octeon_bootloader_entry_addr);
 
 /* If an initrd named block is specified, its name goes here. */
 static char __initdata rd_name[64];
@@ -768,6 +776,7 @@ void __init prom_init(void)
 	struct cvmx_sysinfo *sysinfo;
 	const char *arg;
 	char *p;
+	struct linux_app_boot_info *labi;
 	int i;
 	u64 t;
 	int argc;
@@ -1034,6 +1043,14 @@ append_arg:
 
 	octeon_user_io_init();
 	register_smp_ops(&octeon_smp_ops);
+
+	labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
+	if (labi->labi_signature == LABI_SIGNATURE)
+		octeon_bootloader_entry_addr = labi->InitTLBStart_addr;
+
+#ifdef	SDK_VERSION
+	pr_info("Cavium Inc. SDK-" SDK_VERSION "\n");
+#endif
 }
 
 /* Exclude a single page from the regions obtained in plat_mem_setup. */

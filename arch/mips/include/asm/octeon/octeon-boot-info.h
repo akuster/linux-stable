@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2004, 2005 Cavium Networks
+ * (C) Copyright 2004, 2012 Cavium, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,10 +17,11 @@
  * MA 02111-1307 USA
  */
 
-#ifndef __OCTEON_BOOT_H__
-#define __OCTEON_BOOT_H__
+#ifndef __OCTEON_BOOT_INFO_H__
+#define __OCTEON_BOOT_INFO_H__
 
 #include <linux/types.h>
+#include <asm/octeon/cvmx-spinlock.h>
 
 struct boot_init_vector {
 	/* First stage address - in ram instead of flash */
@@ -74,6 +75,41 @@ struct linux_app_boot_info {
 #endif
 };
 
+/*
+ * The size of this struct should be a fixed size of 1024 bytes.
+ * Additional members should be added towards the end of the strcuture
+ * by adjusting the size of padding.
+ */
+struct cvmx_app_hotplug_info {
+	char app_name[256];
+	uint32_t coremask;
+	uint32_t volatile hotplug_activated_coremask;
+	int32_t valid;
+	int32_t volatile shutdown_done;
+	uint64_t shutdown_callback;
+	uint64_t unplug_callback;
+	uint64_t cores_added_callback;
+	uint64_t cores_removed_callback;
+	uint64_t hotplug_start;
+	uint64_t data;
+	uint32_t volatile hplugged_cores;
+	uint32_t shutdown_cores;
+	uint32_t app_shutdown;
+	uint32_t unplug_cores;
+	uint32_t padding[172];
+};
+
+struct cvmx_app_hotplug_global {
+	uint32_t avail_coremask;
+	struct cvmx_app_hotplug_info hotplug_info_array[32];
+	uint32_t version;
+	cvmx_spinlock_t hotplug_global_lock;
+	int32_t app_under_boot;
+	int32_t app_under_shutdown;
+};
+#define CVMX_APP_HOTPLUG_INFO_REGION_SIZE  sizeof(struct cvmx_app_hotplug_global)
+#define CVMX_APP_HOTPLUG_INFO_REGION_NAME  "cvmx-app-hotplug-block"
+
 /* If not to copy a lot of bootloader's structures
    here is only offset of requested member */
 #define AVAIL_COREMASK_OFFSET_IN_LINUX_APP_BOOT_BLOCK	 0x765c
@@ -92,4 +128,4 @@ struct linux_app_boot_info {
 #define BOOTLOADER_PRIV_DATA_BASE	(EXCEPTION_BASE_BASE + 0x800)
 #define BOOTLOADER_BOOT_VECTOR		(BOOTLOADER_PRIV_DATA_BASE)
 
-#endif /* __OCTEON_BOOT_H__ */
+#endif /* __OCTEON_BOOT_INFO_H__ */
