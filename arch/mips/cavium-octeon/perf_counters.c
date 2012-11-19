@@ -379,7 +379,13 @@ static int proc_perf_show(struct seq_file *m, void *v)
 		int tad;
 		dram_operations = 0;
 		dram_clocks = 0;
-		for (tad = 0; tad < 1; tad++) {
+		for (tad = 0; tad < CVMX_L2C_TADS; tad++) {
+			union cvmx_lmcx_dll_ctl2 ctl2;
+
+			/* Check if LMC controller is enabled. */
+			ctl2.u64 = cvmx_read_csr(CVMX_LMCX_DLL_CTL2(tad));
+			if (ctl2.s.quad_dll_ena == 0)
+				continue;
 			dram_operations += cvmx_read_csr
 					(CVMX_LMCX_OPS_CNT(tad));
 			dram_clocks += cvmx_read_csr
