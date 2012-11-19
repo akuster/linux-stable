@@ -1,7 +1,7 @@
 /*
  * Octeon Watchdog driver
  *
- * Copyright (C) 2007, 2008, 2009, 2010 Cavium Networks
+ * Copyright (C) 2007 - 2012 Cavium, Inc.
  *
  * Converted to use WATCHDOG_CORE by Aaro Koskinen <aaro.koskinen@iki.fi>.
  *
@@ -106,6 +106,15 @@ MODULE_PARM_DESC(nowayout,
 				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
 static u32 nmi_stage1_insns[64] __initdata;
+
+static int disable;
+module_param(disable, int, 0444);
+MODULE_PARM_DESC(disable,
+	"Disable the watchdog entirely (default=0)");
+
+static unsigned long octeon_wdt_is_open;
+static char expect_close;
+
 /* We need one branch and therefore one relocation per target label. */
 static struct uasm_label labels[5] __initdata;
 static struct uasm_reloc relocs[5] __initdata;
@@ -450,6 +459,9 @@ static int octeon_wdt_ping(struct watchdog_device __always_unused *wdog)
 	int cpu;
 	int coreid;
 
+	if (disable)
+		return;
+
 	for_each_online_cpu(cpu) {
 		coreid = cpu2core(cpu);
 		cvmx_write_csr(CVMX_CIU_PP_POKEX(coreid), 1);
@@ -503,6 +515,9 @@ static int octeon_wdt_set_timeout(struct watchdog_device *wdog,
 		return -1;
 
 	octeon_wdt_calc_parameters(t);
+
+	if (disable)
+		return 0;
 
 	for_each_online_cpu(cpu) {
 		coreid = cpu2core(cpu);
@@ -597,6 +612,11 @@ static int __init octeon_wdt_init(void)
 		return ret;
 	}
 
+	if (disable) {
+		pr_notice("disabled\n");
+		return 0;
+	}
+
 	/* Build the NMI handler ... */
 	octeon_wdt_build_stage1();
 
@@ -629,6 +649,8 @@ static void __exit octeon_wdt_cleanup(void)
 
 	watchdog_unregister_device(&octeon_wdt);
 
+	if (disable)
+		return;
 	cpu_notifier_register_begin();
 	__unregister_hotcpu_notifier(&octeon_wdt_cpu_notifier);
 
@@ -650,7 +672,7 @@ static void __exit octeon_wdt_cleanup(void)
 }
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Cavium Networks <support@caviumnetworks.com>");
-MODULE_DESCRIPTION("Cavium Networks Octeon Watchdog driver.");
+MODULE_AUTHOR("Cavium Inc. <support@cavium.com>");
+MODULE_DESCRIPTION("Cavium Inc. OCTEON Watchdog driver.");
 module_init(octeon_wdt_init);
 module_exit(octeon_wdt_cleanup);
