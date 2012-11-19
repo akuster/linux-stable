@@ -3,7 +3,7 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
- * Copyright (C) 2004-2008, 2009, 2010 Cavium Networks
+ * Copyright (C) 2004 - 2012 Cavium, Inc.
  */
 #include <linux/cpu.h>
 #include <linux/delay.h>
@@ -18,17 +18,17 @@
 #include <asm/setup.h>
 
 #include <asm/octeon/octeon.h>
-
-#include "octeon_boot.h"
+#include <asm/octeon/octeon-boot-info.h>
 
 volatile unsigned long octeon_processor_boot = 0xff;
 volatile unsigned long octeon_processor_sp;
 volatile unsigned long octeon_processor_gp;
 
 #ifdef CONFIG_HOTPLUG_CPU
-uint64_t octeon_bootloader_entry_addr;
-EXPORT_SYMBOL(octeon_bootloader_entry_addr);
+static uint32_t octeon_hotplug_entry_addr;
+extern void octeon_hotplug_entry(void);
 #endif
+struct cvmx_app_hotplug_global *octeon_hotplug_global_ptr;
 
 static void octeon_icache_flush(void)
 {
@@ -92,12 +92,18 @@ static irqreturn_t mailbox_interrupt(int irq, void *dev_id)
 	u64 action;
 	int i;
 
-	/* Make sure the function array initialization remains correct. */
+	/*
+	 * Make sure the function array initialization remains
+	 * correct.
+	 */
 	BUILD_BUG_ON(SMP_RESCHEDULE_YOURSELF != (1 << 0));
 	BUILD_BUG_ON(SMP_CALL_FUNCTION       != (1 << 1));
 	BUILD_BUG_ON(SMP_ICACHE_FLUSH        != (1 << 2));
 
-	/* Load the mailbox register to figure out what we're supposed to do */
+	/*
+	 * Load the mailbox register to figure out what we're supposed
+	 * to do.
+	 */
 	action = cvmx_read_csr(mbox_clrx);
 
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
@@ -171,6 +177,7 @@ static void octeon_smp_setup(void)
 #ifdef CONFIG_HOTPLUG_CPU
 	unsigned int num_cores = cvmx_octeon_num_cores();
 #endif
+	struct linux_app_boot_info *labi;
 
 	/* The present CPUs are initially just the boot cpu (CPU 0). */
 	for (id = 0; id < NR_CPUS; id++) {
@@ -194,6 +201,19 @@ static void octeon_smp_setup(void)
 	}
 
 #ifdef CONFIG_HOTPLUG_CPU
+
+	/*
+	 * HOTPLUG_CPU not possible if we don't know the bootloader
+	 * entrypoint.  Stop now before lulling people into thinking
+	 * it might work.
+	 */
+	if (!octeon_bootloader_entry_addr) {
+		if ((octeon_bootinfo->core_mask & 1) == 0)
+			panic("Linux not booted on core 0 with HOTPLUG_CPU");
+		else
+			panic("The bootloader version on this board is not compatible with HOTPLUG_CPU.");
+	}
+
 	/*
 	 * The possible CPUs are all those present on the chip.	 We
 	 * will assign CPU numbers for possible cores as well.	Cores
@@ -209,8 +229,21 @@ static void octeon_smp_setup(void)
 		}
 	}
 #endif
+	octeon_hotplug_global_ptr =
+		(struct cvmx_app_hotplug_global *) cvmx_bootmem_alloc_named_range(
+			CVMX_APP_HOTPLUG_INFO_REGION_SIZE, 0x0, 0x0, 0,
+			CVMX_APP_HOTPLUG_INFO_REGION_NAME);
+	if (!octeon_hotplug_global_ptr) {
+		pr_err("Failed to allocate memory for Hotplug memory block\n");
+		return;
+	}
+	memset(octeon_hotplug_global_ptr, 0, CVMX_APP_HOTPLUG_INFO_REGION_SIZE);
 
-	octeon_smp_hotplug_setup();
+	labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
+	octeon_hotplug_global_ptr->avail_coremask = labi->avail_coremask;
+
+	pr_info("Cavium Hotplug: Available coremask 0x%x\n",
+		octeon_hotplug_global_ptr->avail_coremask);
 }
 
 /**
@@ -265,12 +298,20 @@ void octeon_prepare_cpus(unsigned int max_cpus)
 {
 	u64 mask;
 #ifdef CONFIG_HOTPLUG_CPU
+	unsigned long t;
 	struct linux_app_boot_info *labi;
 
-	labi = (struct linux_app_boot_info *)PHYS_TO_XKSEG_CACHED(LABI_ADDR_IN_BOOTLOADER);
+	labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
 
 	if (labi->labi_signature != LABI_SIGNATURE)
 		panic("The bootloader version on this board is incorrect.");
+
+	t = __pa_symbol(octeon_hotplug_entry);
+
+	if (t >= 0x20000000)
+		panic("The kernel physical load address (%lx) is not compatible with CONFIG_HOTPLUG_CPU.\n", t);
+
+	octeon_hotplug_entry_addr = (uint32_t)CKSEG0ADDR(t);
 #endif
 	/*
 	 * Only the low order mailbox bits are used for IPIs, leave
@@ -341,27 +382,27 @@ static void octeon_cpu_die(unsigned int cpu)
 	 */
 
 	mask = 1 << coreid;
+	octeon_hotplug_global_ptr->avail_coremask |= mask;
+
 	/* LINUX_APP_BOOT_BLOCK is initialized in bootoct binary */
 	block_desc = cvmx_bootmem_find_named_block(LINUX_APP_BOOT_BLOCK_NAME);
 
 	if (!block_desc) {
 		struct linux_app_boot_info *labi;
 
-		labi = (struct linux_app_boot_info *)PHYS_TO_XKSEG_CACHED(LABI_ADDR_IN_BOOTLOADER);
+		labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
 
 		labi->avail_coremask |= mask;
 		new_mask = labi->avail_coremask;
 	} else {		       /* alternative, already initialized */
-		uint32_t *p = (uint32_t *)PHYS_TO_XKSEG_CACHED(block_desc->base_addr +
-							       AVAIL_COREMASK_OFFSET_IN_LINUX_APP_BOOT_BLOCK);
-		*p |= mask;
-		new_mask = *p;
+		new_mask = octeon_hotplug_global_ptr->avail_coremask;
 	}
 
-	pr_info("Reset core %d. Available Coremask = 0x%x \n", coreid, new_mask);
 	mb();
-	cvmx_write_csr(CVMX_CIU_PP_RST, 1 << coreid);
-	cvmx_write_csr(CVMX_CIU_PP_RST, 0);
+
+	pr_info("Reset core %d. Available Coremask = 0x%x\n",
+		coreid, new_mask);
+	cvmx_write_csr(CVMX_CIU_NMI, 1 << coreid);
 }
 
 void play_dead(void)
@@ -372,50 +413,38 @@ void play_dead(void)
 	octeon_processor_boot = 0xff;
 	per_cpu(cpu_state, cpu) = CPU_DEAD;
 
-	mb();
+	wmb(); /* nudge writeback */
 
 	while (1)	/* core will be reset here */
 		;
-}
-
-extern void kernel_entry(unsigned long arg1, ...);
-
-static void start_after_reset(void)
-{
-	kernel_entry(0, 0, 0);	/* set a2 = 0 for secondary core */
 }
 
 static int octeon_update_boot_vector(unsigned int cpu)
 {
 
 	int coreid = cpu_logical_map(cpu);
-	uint32_t avail_coremask;
+	unsigned int avail_coremask;
 	const struct cvmx_bootmem_named_block_desc *block_desc;
-	struct boot_init_vector *boot_vect =
-		(struct boot_init_vector *)PHYS_TO_XKSEG_CACHED(BOOTLOADER_BOOT_VECTOR);
+	struct boot_init_vector *boot_vect = phys_to_virt(BOOTLOADER_BOOT_VECTOR);
 
 	block_desc = cvmx_bootmem_find_named_block(LINUX_APP_BOOT_BLOCK_NAME);
 
 	if (!block_desc) {
 		struct linux_app_boot_info *labi;
 
-		labi = (struct linux_app_boot_info *)PHYS_TO_XKSEG_CACHED(LABI_ADDR_IN_BOOTLOADER);
+		labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
 
 		avail_coremask = labi->avail_coremask;
 		labi->avail_coremask &= ~(1 << coreid);
 	} else {		       /* alternative, already initialized */
-		avail_coremask = *(uint32_t *)PHYS_TO_XKSEG_CACHED(
-			block_desc->base_addr + AVAIL_COREMASK_OFFSET_IN_LINUX_APP_BOOT_BLOCK);
+		avail_coremask = octeon_hotplug_global_ptr->avail_coremask;
+		if (!(avail_coremask & (1<<coreid)))
+			return -1;
 	}
+	/* This core is no longer available */
+	octeon_hotplug_global_ptr->avail_coremask &= ~(1<<coreid);
 
-	if (!(avail_coremask & (1 << coreid))) {
-		/* core not available, assume, that catched by simple-executive */
-		cvmx_write_csr(CVMX_CIU_PP_RST, 1 << coreid);
-		cvmx_write_csr(CVMX_CIU_PP_RST, 0);
-	}
-
-	boot_vect[coreid].app_start_func_addr =
-		(uint32_t) (unsigned long) start_after_reset;
+	boot_vect[coreid].app_start_func_addr = octeon_hotplug_entry_addr;
 	boot_vect[coreid].code_addr = octeon_bootloader_entry_addr;
 
 	mb();
