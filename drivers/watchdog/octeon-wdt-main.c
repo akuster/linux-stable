@@ -1,7 +1,7 @@
 /*
  * Octeon Watchdog driver
  *
- * Copyright (C) 2007, 2008, 2009, 2010 Cavium Networks
+ * Copyright (C) 2007 - 2012 Cavium, Inc.
  *
  * Some parts derived from wdt.c
  *
@@ -102,6 +102,11 @@ module_param(nowayout, bool, S_IRUGO);
 MODULE_PARM_DESC(nowayout,
 	"Watchdog cannot be stopped once started (default="
 				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
+
+static int disable;
+module_param(disable, int, 0444);
+MODULE_PARM_DESC(disable,
+	"Disable the watchdog entirely (default=0)");
 
 static unsigned long octeon_wdt_is_open;
 static char expect_close;
@@ -449,6 +454,9 @@ static void octeon_wdt_ping(void)
 	int cpu;
 	int coreid;
 
+	if (disable)
+		return;
+
 	for_each_online_cpu(cpu) {
 		coreid = cpu2core(cpu);
 		cvmx_write_csr(CVMX_CIU_PP_POKEX(coreid), 1);
@@ -499,6 +507,9 @@ static int octeon_wdt_set_heartbeat(int t)
 		return -1;
 
 	octeon_wdt_calc_parameters(t);
+
+	if (disable)
+		return 0;
 
 	for_each_online_cpu(cpu) {
 		coreid = cpu2core(cpu);
@@ -701,6 +712,11 @@ static int __init octeon_wdt_init(void)
 		goto out;
 	}
 
+	if (disable) {
+		pr_notice("disabled\n");
+		return 0;
+	}
+
 	/* Build the NMI handler ... */
 	octeon_wdt_build_stage1();
 
@@ -734,6 +750,8 @@ static void __exit octeon_wdt_cleanup(void)
 
 	misc_deregister(&octeon_wdt_miscdev);
 
+	if (disable)
+		return;
 	cpu_notifier_register_begin();
 	__unregister_hotcpu_notifier(&octeon_wdt_cpu_notifier);
 
@@ -755,7 +773,7 @@ static void __exit octeon_wdt_cleanup(void)
 }
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Cavium Networks <support@caviumnetworks.com>");
-MODULE_DESCRIPTION("Cavium Networks Octeon Watchdog driver.");
+MODULE_AUTHOR("Cavium Inc. <support@cavium.com>");
+MODULE_DESCRIPTION("Cavium Inc. OCTEON Watchdog driver.");
 module_init(octeon_wdt_init);
 module_exit(octeon_wdt_cleanup);
