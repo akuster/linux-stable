@@ -46,6 +46,16 @@
 #define CVMX_L2C_ALIAS_MASK (CVMX_L2C_IDX_MASK << CVMX_L2C_TAG_ADDR_ALIAS_SHIFT)
 #define CVMX_L2C_MEMBANK_SELECT_SIZE  4096
 
+/* Maximium number of TADs */
+#define CVMX_L2C_MAX_TADS     4
+/* Maximium number of L2C performance counters */
+#define CVMX_L2C_MAX_PCNT     4
+
+/* Number of L2C Tag-and-data sections (TADs) that are connected to LMC. */
+#define CVMX_L2C_TADS  ((OCTEON_IS_MODEL(OCTEON_CN68XX)) ? 4 : 1)
+/* Number of L2C IOBs connected to LMC. */
+#define CVMX_L2C_IOBS  ((OCTEON_IS_MODEL(OCTEON_CN68XX)) ? 2 : 1)
+
 /* Defines for Virtualizations, valid only from Octeon II onwards. */
 #define CVMX_L2C_VRT_MAX_VIRTID_ALLOWED ((OCTEON_IS_MODEL(OCTEON_CN63XX)) ? 64 : 0)
 #define CVMX_L2C_VRT_MAX_MEMSZ_ALLOWED ((OCTEON_IS_MODEL(OCTEON_CN63XX)) ? 32 : 0)
@@ -61,9 +71,6 @@ union cvmx_l2c_tag {
 		uint64_t addr:32;	/* Phys mem (not all bits valid) */
 	} s;
 };
-
-/* Number of L2C Tag-and-data sections (TADs) that are connected to LMC. */
-#define CVMX_L2C_TADS  1
 
   /* L2C Performance Counter events. */
 enum cvmx_l2c_event {
