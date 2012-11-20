@@ -12,6 +12,13 @@
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-mio-defs.h>
 
+/*
+ * By default use only the cvmcount source and leave this one
+ * disabled/unregistered.
+ */
+#define REGISTER_OCTEON_PTP_CSRC 0
+
+#if REGISTER_OCTEON_PTP_CSRC
 static cycle_t octeon_ptp_clock_read(struct clocksource *cs)
 {
 	return octeon_read_ptp_csr(CVMX_MIO_PTP_CLOCK_HI);
@@ -19,10 +26,12 @@ static cycle_t octeon_ptp_clock_read(struct clocksource *cs)
 
 static struct clocksource clocksource_ptp_clock = {
 	.name		= "OCTEON_PTP_CLOCK",
+	.rating		= 400,
 	.read		= octeon_ptp_clock_read,
 	.mask		= CLOCKSOURCE_MASK(64),
 	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
 };
+#endif
 
 int __init ptp_clock_init(void)
 {
@@ -62,10 +71,10 @@ int __init ptp_clock_init(void)
 		ptp_clock_cfg.s.ptp_en = 1;
 		cvmx_write_csr(CVMX_MIO_PTP_CLOCK_CFG, ptp_clock_cfg.u64);
 	}
-
+#if REGISTER_OCTEON_PTP_CSRC
 	/* Add PTP as a high quality clocksource with nano second granularity */
-	clocksource_ptp_clock.rating = 400;
 	clocksource_register_hz(&clocksource_ptp_clock, NSEC_PER_SEC);
+#endif
 	return 0;
 }
 arch_initcall(ptp_clock_init);
