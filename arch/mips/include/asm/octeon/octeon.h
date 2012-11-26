@@ -378,6 +378,8 @@ void octeon_irq_set_ip4_handler(octeon_irq_ip4_handler_t);
 int octeon_coreid_for_cpu(int cpu);
 int octeon_cpu_for_coreid(int coreid);
 
+extern void octeon_fixup_irqs(void);
+
 void octeon_pci_console_init(const char *);
 
 typedef void (*octeon_message_fn_t)(void);
@@ -399,6 +401,6 @@ static inline int octeon_error_tree_disable(enum cvmx_error_groups group, int un
 }
 #endif
 
-extern void octeon_fixup_irqs(void);
+int octeon_i2c_cvmx2i2c(unsigned int cvmx_twsi_bus_num);
 
 #endif /* __ASM_OCTEON_OCTEON_H */
