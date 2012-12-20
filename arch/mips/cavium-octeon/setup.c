@@ -44,6 +44,8 @@
 #include <asm/octeon/pci-octeon.h>
 #include <asm/octeon/cvmx-mio-defs.h>
 
+#include <asm/octeon/cvmx-qlm.h>
+
 extern struct plat_smp_ops octeon_smp_ops;
 
 static unsigned long long MAX_MEMORY = 512ull << 20;
@@ -1088,6 +1090,9 @@ mem_alloc_done:
 	if (total == 0)
 		panic("Unable to allocate memory from "
 		      "cvmx_bootmem_phy_alloc");
+
+	/* Initialize QLM and also apply any erratas */
+	cvmx_qlm_init();
 }
 
 /*
