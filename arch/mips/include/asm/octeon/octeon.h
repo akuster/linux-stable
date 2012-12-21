@@ -184,7 +184,19 @@ union octeon_cvmemctl {
 		/* RO 1 = BIST fail, 0 = BIST pass */
 		uint64_t wbfbist:1;
 		/* Reserved */
-		uint64_t reserved:17;
+		uint64_t reserved:13;
+		/* When set, TLB parity errors can occur. */
+		uint64_t tlbperrena:1;
+		/* OCTEON II - When set, CVMSET LM parity errors are enabled. */
+		uint64_t lmemperrena:1;
+		/* OCTEON II - If set, NUDGE/WRITEBACK_INVALIDATE,
+		 * NUDGE_WB, EVICT_SOON, LC, CONT_WRITE_BACK,
+		 * PREPARE_FOR_STORE and PREPARE_FOR_STORE_THROUGH
+		 * prefetch operations become NOPs. */
+		uint64_t disstpref:1;
+		/* OCTEON II - If set, NORMAL and NOTL2 prefetch
+		 * operations become NOPs. */
+		uint64_t disldpref:1;
 		/* OCTEON II - TLB replacement policy: 0 = bitmask LRU; 1 = NLU.
 		 * This field selects between the TLB replacement policies:
 		 * bitmask LRU or NLU. Bitmask LRU maintains a mask of
@@ -306,7 +318,11 @@ union octeon_cvmemctl {
 		uint64_t didtto2:1;
 		uint64_t pausetime:3;
 		uint64_t tlbnlu:1;
-		uint64_t reserved:17;
+		uint64_t disldpref:1;
+		uint64_t disstpref:1;
+		uint64_t lmemperrena:1;
+		uint64_t tlbperrena:1;
+		uint64_t reserved:13;
 		uint64_t wbfbist:1;
 		uint64_t ptgbist:1;
 		uint64_t dcmbist:1;
@@ -410,6 +426,7 @@ int unregister_co_cache_error_notifier(struct notifier_block *nb);
 #define CO_CACHE_ERROR_RECOVERABLE 0
 #define CO_CACHE_ERROR_UNRECOVERABLE 1
 #define CO_CACHE_ERROR_WB_PARITY 2
+#define CO_CACHE_ERROR_TLB_PARITY 3
 
 extern unsigned long long cache_err_dcache[NR_CPUS];
 
