@@ -17,3 +17,4 @@ obj-$(CONFIG_OF_RESOLVE)  += resolver.o
 
 CFLAGS_fdt.o = -I$(src)/../../scripts/dtc/libfdt
 CFLAGS_fdt_address.o = -I$(src)/../../scripts/dtc/libfdt
+obj-$(CONFIG_OF_MEMORY_ACCESSOR)	+= of_memory_accessor.o
