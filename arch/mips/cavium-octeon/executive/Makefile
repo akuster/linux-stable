@@ -22,6 +22,7 @@ obj-y += cvmx-pko.o cvmx-spi.o cvmx-cmd-queue.o cvmx-helper-cfg.o	\
 	cvmx-helper-loop.o cvmx-helper-spi.o cvmx-helper-util.o
 
 obj-y += cvmx-helper-errata.o cvmx-helper-jtag.o
+obj-y += cvmx-pcie.o
 
 obj-$(CONFIG_USB_OCTEON_HCD)		+= cvmx-usb.o
 obj-$(CONFIG_CAVIUM_OCTEON_NAND)	+= cvmx-nand.o
