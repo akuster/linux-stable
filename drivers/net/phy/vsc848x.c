@@ -508,7 +508,7 @@ static int vsc848x_read_sfp(struct phy_device *phydev)
 	} else if (mode == VITESSE_FUNC_MODE_COPPER) {
 		if (sfp_buffer[8] & 0x4) {
 			mode_str = "10G Passive Copper";
-		} else if (sfp_buffer[8] & 0x2) {
+		} else if (sfp_buffer[8] & 0x8) {
 			mode_str = "10G Active Copper";
 			mode = VITESSE_FUNC_MODE_LIMITING;
 		} else {
