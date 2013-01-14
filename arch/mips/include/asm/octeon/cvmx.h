@@ -514,4 +514,49 @@ static inline int cvmx_octeon_crypto_present(void)
 	return octeon_has_feature(OCTEON_FEATURE_CRYPTO);
 }
 
+enum cvmx_error_groups {
+	CVMX_ERROR_GROUP_INTERNAL,
+	CVMX_ERROR_GROUP_ETHERNET,
+	CVMX_ERROR_GROUP_MGMT_PORT,
+	CVMX_ERROR_GROUP_PCI,
+	CVMX_ERROR_GROUP_SRIO,
+	CVMX_ERROR_GROUP_ILK,
+	CVMX_ERROR_GROUP_USB,
+	CVMX_ERROR_GROUP_LMC,
+	CVMX_ERROR_GROUP_L2C,
+	CVMX_ERROR_GROUP_DFM,
+};
+
+struct cvmx_error_regbit {
+	u8 valid:1;
+	u8 w1c:1;
+	u8 group:6;
+	u8 bit;
+	u16 unit;
+	const char *desc;
+};
+
+struct cvmx_error_muxchild;
+
+struct cvmx_error_childbit {
+	u8 valid;
+	u8 bit;
+	struct cvmx_error_muxchild *children;
+};
+
+struct cvmx_error_muxchild {
+	u64 reg;
+	u64 mask_reg;
+	struct cvmx_error_regbit *bits;
+	struct cvmx_error_childbit *children;
+};
+
+struct cvmx_error_tree {
+	struct cvmx_error_muxchild *tree;
+	u32 prid_mask;
+	u32 prid_val;
+};
+
+extern struct cvmx_error_tree octeon_error_trees[];
+
 #endif /*  __CVMX_H__  */

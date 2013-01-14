@@ -26,3 +26,4 @@ obj-$(CONFIG_OCTEON_ILM)		+= oct_ilm.o
 obj-$(CONFIG_SYSFS)			+= octeon-power-throttle.o
 obj-$(CONFIG_CAVIUM_OCTEON_NAND)	+= octeon-nand.o
 obj-$(CONFIG_MTD)			+= flash_setup.o
+obj-$(CONFIG_CAVIUM_OCTEON_ERROR_TREE)	+= octeon-error-tree.o
