@@ -443,4 +443,112 @@ static inline uint32_t cvmx_octeon_num_cores(void)
 	return cvmx_pop(ciu_fuse);
 }
 
+/**
+ * Read a byte of fuse data
+ * @byte_addr:	 address to read
+ *
+ * Returns fuse value: 0 or 1
+ */
+static uint8_t cvmx_fuse_read_byte(int byte_addr)
+{
+	union cvmx_mio_fus_rcmd read_cmd;
+
+	read_cmd.u64 = 0;
+	read_cmd.s.addr = byte_addr;
+	read_cmd.s.pend = 1;
+	cvmx_write_csr(CVMX_MIO_FUS_RCMD, read_cmd.u64);
+	while ((read_cmd.u64 = cvmx_read_csr(CVMX_MIO_FUS_RCMD))
+	       && read_cmd.s.pend)
+		;
+	return read_cmd.s.dat;
+}
+
+/**
+ * Read a single fuse bit
+ *
+ * @fuse:   Fuse number (0-1024)
+ *
+ * Returns fuse value: 0 or 1
+ */
+static inline int cvmx_fuse_read(int fuse)
+{
+	return (cvmx_fuse_read_byte(fuse >> 3) >> (fuse & 0x7)) & 1;
+}
+
+static inline int cvmx_octeon_model_CN36XX(void)
+{
+	return OCTEON_IS_MODEL(OCTEON_CN38XX)
+		&& !cvmx_octeon_is_pass1()
+		&& cvmx_fuse_read(264);
+}
+
+static inline int cvmx_octeon_zip_present(void)
+{
+	return octeon_has_feature(OCTEON_FEATURE_ZIP);
+}
+
+static inline int cvmx_octeon_dfa_present(void)
+{
+	if (!OCTEON_IS_MODEL(OCTEON_CN38XX)
+	    && !OCTEON_IS_MODEL(OCTEON_CN31XX)
+	    && !OCTEON_IS_MODEL(OCTEON_CN58XX))
+		return 0;
+	else if (OCTEON_IS_MODEL(OCTEON_CN3020))
+		return 0;
+	else if (cvmx_octeon_is_pass1())
+		return 1;
+	else
+		return !cvmx_fuse_read(120);
+}
+
+static inline int cvmx_octeon_crypto_present(void)
+{
+	return octeon_has_feature(OCTEON_FEATURE_CRYPTO);
+}
+
+enum cvmx_error_groups {
+	CVMX_ERROR_GROUP_INTERNAL,
+	CVMX_ERROR_GROUP_ETHERNET,
+	CVMX_ERROR_GROUP_MGMT_PORT,
+	CVMX_ERROR_GROUP_PCI,
+	CVMX_ERROR_GROUP_SRIO,
+	CVMX_ERROR_GROUP_ILK,
+	CVMX_ERROR_GROUP_USB,
+	CVMX_ERROR_GROUP_LMC,
+	CVMX_ERROR_GROUP_L2C,
+	CVMX_ERROR_GROUP_DFM,
+};
+
+struct cvmx_error_regbit {
+	u8 valid:1;
+	u8 w1c:1;
+	u8 group:6;
+	u8 bit;
+	u16 unit;
+	const char *desc;
+};
+
+struct cvmx_error_muxchild;
+
+struct cvmx_error_childbit {
+	u8 valid;
+	u8 bit;
+	struct cvmx_error_muxchild *children;
+};
+
+struct cvmx_error_muxchild {
+	u64 reg;
+	u64 mask_reg;
+	struct cvmx_error_regbit *bits;
+	struct cvmx_error_childbit *children;
+};
+
+struct cvmx_error_tree {
+	struct cvmx_error_muxchild *tree;
+	u32 prid_mask;
+	u32 prid_val;
+};
+
+extern struct cvmx_error_tree octeon_error_trees[];
+
 #endif /*  __CVMX_H__  */
