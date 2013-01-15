@@ -430,5 +430,18 @@ int unregister_co_cache_error_notifier(struct notifier_block *nb);
 
 extern unsigned long long cache_err_dcache[NR_CPUS];
 
+#if IS_ENABLED(CONFIG_CAVIUM_OCTEON_ERROR_TREE)
+int octeon_error_tree_enable(enum cvmx_error_groups group, int unit);
+int octeon_error_tree_disable(enum cvmx_error_groups group, int unit);
+#else
+static inline int octeon_error_tree_enable(enum cvmx_error_groups group, int unit)
+{
+	return 0;
+}
+static inline int octeon_error_tree_disable(enum cvmx_error_groups group, int unit)
+{
+	return 0;
+}
+#endif
 
 #endif /* __ASM_OCTEON_OCTEON_H */
