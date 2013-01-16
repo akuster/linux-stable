@@ -30,3 +30,4 @@ obj-$(CONFIG_CAVIUM_OCTEON_NAND)	+= octeon-nand.o
 obj-$(CONFIG_CAVIUM_OCTEON_ERROR_TREE)	+= octeon-error-tree.o
 obj-$(CONFIG_SYSFS)                     += cacheinfo.o
 obj-$(CONFIG_CAVIUM_OCTEON_KERNEL_CRYPTO) += octeon-crypto.o
+obj-$(CONFIG_OCTEON_ERROR_INJECTOR)	+= octeon-error-injector.o
