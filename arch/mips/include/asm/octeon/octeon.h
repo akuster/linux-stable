@@ -369,6 +369,8 @@ int octeon_request_ipi_handler(octeon_message_fn_t fn);
 void octeon_send_ipi_single(int cpu, unsigned int action);
 void octeon_release_ipi_handler(int action);
 
+#define OCTEON_DEBUG_UART 1
+
 #if IS_ENABLED(CONFIG_CAVIUM_OCTEON_ERROR_TREE)
 int octeon_error_tree_enable(enum cvmx_error_groups group, int unit);
 int octeon_error_tree_disable(enum cvmx_error_groups group, int unit);
