@@ -45,6 +45,7 @@
 #include <asm/octeon/cvmx-mio-defs.h>
 
 #include <asm/octeon/cvmx-qlm.h>
+#include <asm/octeon/cvmx-debug.h>
 
 extern struct plat_smp_ops octeon_smp_ops;
 
@@ -909,6 +910,10 @@ append_arg:
 	labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
 	if (labi->labi_signature == LABI_SIGNATURE)
 		octeon_bootloader_entry_addr = labi->InitTLBStart_addr;
+
+#ifdef CONFIG_CAVIUM_GDB
+	cvmx_debug_init ();
+#endif
 
 #ifdef	SDK_VERSION
 	pr_info("Cavium Inc. SDK-" SDK_VERSION "\n");
