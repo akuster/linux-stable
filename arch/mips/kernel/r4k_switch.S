@@ -33,6 +33,16 @@
 
 #ifndef USE_ALTERNATE_RESUME_IMPL
 /*
+ * FPU context is saved iff the process has used it's FPU in the current
+ * time slice as indicated by _TIF_USEDFPU.  In any case, the CU1 bit for user
+ * space STATUS register should be 0, so that a process *always* starts its
+ * userland with FPU disabled after each context switch.
+ *
+ * FPU will be enabled as soon as the process accesses FPU again, through
+ * do_cpu() trap.
+ */
+
+/*
  * task_struct *resume(task_struct *prev, task_struct *next,
  *		       struct thread_info *next_ti, s32 fp_save)
  */
