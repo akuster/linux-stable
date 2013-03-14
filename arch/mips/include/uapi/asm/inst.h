@@ -593,6 +593,24 @@ struct b_format {			/* BREAK and SYSCALL */
 	;)))
 };
 
+struct c0_format {			/* WAIT, TLB?? */
+	BITFIELD_FIELD(unsigned int opcode : 6,
+	BITFIELD_FIELD(unsigned int co : 1,
+	BITFIELD_FIELD(unsigned int code : 19,
+	BITFIELD_FIELD(unsigned int func : 6,
+	;))))
+};
+
+struct c0m_format {			/* MTC0, MFC0, ... */
+	BITFIELD_FIELD(unsigned int opcode : 6,
+	BITFIELD_FIELD(unsigned int func : 5,
+	BITFIELD_FIELD(unsigned int rt : 5,
+	BITFIELD_FIELD(unsigned int rd : 5,
+	BITFIELD_FIELD(unsigned int code : 8,
+	BITFIELD_FIELD(unsigned int sel : 3,
+	;))))))
+};
+
 struct ps_format {			/* MIPS-3D / paired single format */
 	__BITFIELD_FIELD(unsigned int opcode : 6,
 	__BITFIELD_FIELD(unsigned int rs : 5,
@@ -892,6 +910,8 @@ union mips_instruction {
 	struct f_format f_format;
 	struct ma_format ma_format;
 	struct b_format b_format;
+	struct c0_format c0_format;
+	struct c0m_format c0m_format;
 	struct ps_format ps_format;
 	struct v_format v_format;
 	struct spec3_format spec3_format;
