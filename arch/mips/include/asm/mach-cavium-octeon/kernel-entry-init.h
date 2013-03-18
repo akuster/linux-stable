@@ -14,6 +14,7 @@
 #define CP0_DCACHE_ERR_REG $27, 1
 #define CP0_PRID_OCTEON_PASS1 0x000d0000
 #define CP0_PRID_OCTEON_CN30XX 0x000d0200
+#define CP0_MDEBUG $22, 0
 
 .macro	kernel_entry_setup
 	# Registers set by bootloader:
@@ -190,6 +191,16 @@ continue_in_mapped_space:
 	sync
 	# Flush dcache after config change
 	cache	9, 0($0)
+
+#ifdef	CONFIG_CAVIUM_GDB
+	# Pulse MCD0 signal on CTRL-C to stop all the cores, and set the MCD0
+	# to be not masked by this core so we know the signal is received by
+	# someone
+	dmfc0	v0, CP0_MDEBUG
+	ori	v0, v0, 0x9100
+	dmtc0	v0, CP0_MDEBUG
+#endif
+
 	# Zero all of CVMSEG to make sure parity is correct
 	dli	v0, CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE
 	dsll	v0, 7

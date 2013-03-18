@@ -345,6 +345,13 @@ static void octeon_smp_finish(void)
 	local_irq_enable();
 }
 
+/**
+ * Hook for after all CPUs are online
+ */
+static void octeon_cpus_done(void)
+{
+}
+
 #ifdef CONFIG_HOTPLUG_CPU
 
 /* State of each CPU. */
