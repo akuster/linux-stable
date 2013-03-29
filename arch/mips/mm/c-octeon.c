@@ -331,6 +331,9 @@ static void probe_octeon(void)
 		c->dcache.sets = 8;
 		dcache_size = c->dcache.sets * c->dcache.ways * c->dcache.linesz;
 		c->options |= MIPS_CPU_PREFETCH;
+
+		board_be_handler = octeon2_be_handler;
+		board_mcheck_handler = octeon2_mcheck_handler;
 		break;
 
 	default:
