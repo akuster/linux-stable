@@ -786,6 +786,9 @@ void __init prom_init(void)
 		}
 	}
 
+	/* init octeon feature map */
+	octeon_feature_init();
+
 	/*
 	 * Only enable the LED controller if we're running on a CN38XX, CN58XX,
 	 * or CN56XX. The CN30XX and CN31XX don't have an LED controller.

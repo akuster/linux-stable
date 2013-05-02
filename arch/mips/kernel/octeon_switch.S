@@ -525,6 +525,7 @@ octeon_mult_save3_end:
 	.p2align 7
 	.set push
 	.set noreorder
+	.set arch=octeon3
 	LEAF(octeon_mult_restore)
 	jr	ra
 	 nop
