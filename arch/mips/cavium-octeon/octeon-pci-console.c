@@ -12,6 +12,9 @@
  * client side of the protocol when the OCTEON SOC is in PCI target
  * mode.
  */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
 #include <linux/console.h>
 #include <linux/mutex.h>
 #include <linux/tty.h>
@@ -326,8 +329,10 @@ static __init int octeon_pci_console_module_init(void)
 	if (!octeon_pci_console.ttydrv)
 		return 0;
 	if (octeon_pci_console_setup0(&octeon_pci_console)) {
-		pr_err("ERROR: octeon_pci_console_setup0 failed.\n");
+		pr_notice("Console not created.\n");
 		return -ENODEV;
+	} else {
+		pr_info("Initialized.\n");
 	}
 
 	octeon_pci_console.ttydrv->owner = THIS_MODULE;
