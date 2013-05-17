@@ -67,6 +67,7 @@
 /* The registers saving/restoring is split into two because k0 is stored in the COP0_DESAVE register.  */
 #define REGS0 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25
 #define REGS1 27,28,29,30,31
+#define FPREGS 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
 
 #define SAVE_REGISTER(reg)	\
 	sd reg, 0(k0);		\
@@ -324,6 +325,39 @@ cvmx_mpy_save_finish:
 	.set pop
 fpu_nonexist:
 
+	.set push
+	.set arch=octeon3
+	//Save fp registers in OCTEON3
+	dmfc0 k0, COP0_CONFIG1
+	bbit0 k0,0, fpu_nonexist
+	nop
+
+	dmfc0 k0, COP0_STATUS
+	lui k1,0x2400
+	or k1,k1,k0
+	dmtc0 k1,COP0_STATUS
+	//Save and restore fp regsiters always
+	loadaddr (k1, __cvmx_debug_save_fp_regs_area, 6)
+	.irp    n, FPREGS
+        sdc1      $f\n, 0(k1)
+        addiu   k1, 8
+        .endr
+
+	loadaddr (k1, __cvmx_debug_save_fp_control_area, 1)
+	// Save fir register
+	dmfc1	$4, $0
+	sd	$4, 0(k1)
+
+	// Save fcsr register
+	dmfc1	$4, $31
+	sd	$4, 8(k1)
+	
+	
+	// Restore the cop0 status register
+	dmtc0 k0, COP0_STATUS
+	.set pop
+fpu_nonexist:
+
 	loadaddr(sp, __cvmx_debug_stack_top, 3)
 	// Load the stack pointer as a pointer size.
 #ifdef _ABIN32
@@ -336,13 +370,13 @@ fpu_nonexist:
 	jal	__cvmx_debug_handler_stage3
 	nop
 
+	.set push
+	.set arch=octeon3
 	//Restore fp registers in OCTEON3
 	dmfc0 k0, COP0_CONFIG1
 	bbit0 k0,0, fpu_nonexist_restore
 	nop
 
-	.set push
-	.set arch=octeon3
 	dmfc0 k1, COP0_STATUS
 	lui k0,0x2400
 	or k0,k0,k1
