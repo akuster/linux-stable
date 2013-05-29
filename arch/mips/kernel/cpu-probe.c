@@ -1329,7 +1329,12 @@ void cpu_report(void)
 
 static DEFINE_SPINLOCK(kscratch_used_lock);
 
-static unsigned int kscratch_used_mask;
+static unsigned int kscratch_used_mask
+#ifdef CONFIG_KVM_MIPS_VZ
+/* KVM_MIPS_VZ implemtation uses these two statically. */
+= 0xc
+#endif
+;
 
 int allocate_kscratch(void)
 {

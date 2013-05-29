@@ -1753,6 +1753,11 @@ void __init *set_except_vector(int n, void *addr)
 #endif
 		u32 *buf = (u32 *)(ebase + 0x200);
 		unsigned int k0 = 26;
+#ifdef CONFIG_KVM_MIPS_VZ
+		unsigned int k1 = 27;
+		UASM_i_MTC0(&buf, k0, 31, 2);
+		UASM_i_MTC0(&buf, k1, 31, 3);
+#endif
 		if ((handler & jump_mask) == ((ebase + 0x200) & jump_mask)) {
 			uasm_i_j(&buf, handler & ~jump_mask);
 			uasm_i_nop(&buf);
