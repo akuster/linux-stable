@@ -75,6 +75,8 @@
 #define CP0_TAGHI $29
 #define CP0_ERROREPC $30
 #define CP0_DESAVE $31
+#define CP0_KSCRATCH1 $31, 2
+#define CP0_KSCRATCH2 $31, 3
 
 /*
  * R4640/R4650 cp0 register names.  These registers are listed

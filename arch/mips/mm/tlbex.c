@@ -381,6 +381,10 @@ static void build_restore_work_registers(u32 **p)
 {
 	if (scratch_reg >= 0) {
 		UASM_i_MFC0(p, 1, c0_kscratch(), scratch_reg);
+#ifdef CONFIG_KVM_MIPS_VZ
+		UASM_i_MFC0(p, K0, 31, 2);
+		UASM_i_MFC0(p, K1, 31, 3);
+#endif
 		return;
 	}
 #ifdef TEMPORARY_SCRATCHPAD_FOR_KERNEL_OFFSET
@@ -390,6 +394,10 @@ static void build_restore_work_registers(u32 **p)
 	UASM_i_LW(p, 1, offsetof(struct tlb_reg_save, a), K0);
 	UASM_i_LW(p, 2, offsetof(struct tlb_reg_save, b), K0);
 #endif /* TEMPORARY_SCRATCHPAD_FOR_KERNEL_OFFSET */
+#ifdef CONFIG_KVM_MIPS_VZ
+	UASM_i_MFC0(p, K0, 31, 2);
+	UASM_i_MFC0(p, K1, 31, 3);
+#endif
 }
 
 #ifndef CONFIG_MIPS_PGD_C0_CONTEXT
@@ -1085,6 +1093,11 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 	int vmalloc_branch_delay_filled = 0;
 	const int scratch = 1; /* Our extra working register */
 
+#ifdef CONFIG_KVM_MIPS_VZ
+	UASM_i_MTC0(p, K0, 31, 2);
+	UASM_i_MTC0(p, K1, 31, 3);
+#endif
+
 	rv.huge_pte = scratch;
 	rv.restore_scratch = 0;
 	rv.need_reload_pte = false;
@@ -1250,6 +1263,10 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 		rv.restore_scratch = 1;
 	}
 
+#ifdef CONFIG_KVM_MIPS_VZ
+	UASM_i_MFC0(p, K0, 31, 2);
+	UASM_i_MFC0(p, K1, 31, 3);
+#endif
 	uasm_i_eret(p); /* return from trap */
 
 	return rv;
@@ -1283,6 +1300,10 @@ static void build_r4000_tlb_refill_handler(void)
 							  scratch_reg);
 		vmalloc_mode = refill_scratch;
 	} else {
+#ifdef CONFIG_KVM_MIPS_VZ
+	  UASM_i_MTC0(&p, K0, 31, 2);
+	  UASM_i_MTC0(&p, K1, 31, 3);
+#endif
 		htlb_info.huge_pte = K0;
 		htlb_info.restore_scratch = 0;
 		htlb_info.need_reload_pte = true;
@@ -1318,7 +1339,10 @@ static void build_r4000_tlb_refill_handler(void)
 		build_update_entries(&p, K0, K1);
 		build_tlb_write_entry(&p, &l, &r, tlb_random);
 		uasm_l_leave(&l, p);
-#ifdef CONFIG_FAST_ACCESS_TO_THREAD_POINTER
+#ifdef CONFIG_KVM_MIPS_VZ
+		UASM_i_MFC0(&p, K0, 31, 2);
+		UASM_i_MFC0(&p, K1, 31, 3);
+#elif defined(CONFIG_FAST_ACCESS_TO_THREAD_POINTER)
 		UASM_i_LW(&p, K0, FAST_ACCESS_THREAD_OFFSET, 0);  /* K0 = thread ptr */
 #endif
 		uasm_i_eret(&p); /* return from trap */

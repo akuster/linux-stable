@@ -192,6 +192,16 @@
 #endif
 		LONG_S	k0, PT_R29(sp)
 		LONG_S	$3, PT_R3(sp)
+#ifdef CONFIG_KVM_MIPS_VZ
+		/*
+		 * With KVM_MIPS_VZ, we must not clobber k0/k1
+		 * they were saved before they were used
+		 */
+		MFC0	k0, CP0_KSCRATCH1
+		MFC0	$3, CP0_KSCRATCH2
+		LONG_S	k0, PT_R26(sp)
+		LONG_S	$3, PT_R27(sp)
+#endif
 		/*
 		 * You might think that you don't need to save $0,
 		 * but the FPU emulator and gdb remote debug stub
@@ -358,6 +368,14 @@
 		.macro	RESTORE_SP_AND_RET
 		LONG_L	sp, PT_R29(sp)
 		.set	arch=r4000
+#ifdef CONFIG_KVM_MIPS_VZ
+		LONG_L	k0, PT_R26(sp)
+		LONG_L	k1, PT_R27(sp)
+#elif defined(CONFIG_FAST_ACCESS_TO_THREAD_POINTER)
+		LONG_L	k0, FAST_ACCESS_THREAD_OFFSET($0) /* K0 = thread pointer */
+#endif
+		LONG_L	sp, PT_R29(sp)
+		.set	mips3
 		eret
 		.set	mips0
 		.endm

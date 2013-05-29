@@ -32,6 +32,11 @@
 NESTED(except_vec3_generic, 0, sp)
 	.set	push
 	.set	noat
+#ifdef CONFIG_KVM_MIPS_VZ
+		/* With KVM_MIPS_VZ, we must not clobber k0/k1 */
+	MTC0	k0, CP0_KSCRATCH1
+	MTC0	k1, CP0_KSCRATCH2
+#endif
 #if R5432_CP0_INTERRUPT_WAR
 	mfc0	k0, CP0_INDEX
 #endif
