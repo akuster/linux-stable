@@ -391,7 +391,7 @@ struct kvm_vcpu_arch {
 	unsigned long gprs[32];
 	unsigned long hi;
 	unsigned long lo;
-	unsigned long pc;
+	unsigned long epc;
 
 	/* FPU State */
 	struct mips_fpu_struct fpu;
