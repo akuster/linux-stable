@@ -169,7 +169,8 @@ Ip_u2u1(_wsbh);
 Ip_u3u1u2(_xor);
 Ip_u2u1u3(_xori);
 Ip_u2u1(_yield);
-
+Ip_u1(_zcb);
+Ip_u1(_zcbt);
 
 /* Handle labels. */
 struct uasm_label {
