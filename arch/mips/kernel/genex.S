@@ -462,6 +462,9 @@ NESTED(nmi_handler, PT_SIZE, sp)
 	BUILD_HANDLER mcheck mcheck mce verbose		/* #24 */
 	BUILD_HANDLER mt mt sti silent			/* #25 */
 	BUILD_HANDLER dsp dsp sti silent		/* #26 */
+#ifdef CONFIG_KVM_MIPS_VZ
+	BUILD_HANDLER hypervisor hypervisor cli silent	/* #27 */
+#endif
 	BUILD_HANDLER reserved reserved sti verbose	/* others */
 
 	.align	5
