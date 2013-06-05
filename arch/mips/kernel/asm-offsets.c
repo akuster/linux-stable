@@ -20,6 +20,7 @@
 #include <asm/smp-cps.h>
 
 #include <linux/kvm_host.h>
+#include <asm/kvm_mips_vz.h>
 
 void output_ptreg_defines(void)
 {
@@ -426,6 +427,8 @@ void output_pm_defines(void)
 void output_kvm_defines(void)
 {
 	COMMENT(" KVM/MIPS Specfic offsets. ");
+	OFFSET(KVM_ARCH_IMPL, kvm, arch.impl);
+	OFFSET(KVM_VCPU_KVM, kvm_vcpu, kvm);
 	DEFINE(VCPU_ARCH_SIZE, sizeof(struct kvm_vcpu_arch));
 	OFFSET(VCPU_RUN, kvm_vcpu, run);
 	OFFSET(VCPU_HOST_ARCH, kvm_vcpu, arch);
@@ -484,6 +487,10 @@ void output_kvm_defines(void)
 
 	OFFSET(COP0_TLB_HI, mips_coproc, reg[MIPS_CP0_TLB_HI][0]);
 	OFFSET(COP0_STATUS, mips_coproc, reg[MIPS_CP0_STATUS][0]);
+	BLANK();
+
+	COMMENT(" Linux struct kvm mipsvz offsets. ");
+	OFFSET(KVM_MIPS_VZ_PGD,	kvm_mips_vz, pgd);
 	BLANK();
 }
 
