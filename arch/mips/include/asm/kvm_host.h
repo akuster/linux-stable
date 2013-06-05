@@ -60,7 +60,9 @@
 /* memory slots that does not exposed to userspace */
 #define KVM_PRIVATE_MEM_SLOTS 	0
 
+#ifdef CONFIG_KVM_MIPS_TE
 #define KVM_COALESCED_MMIO_PAGE_OFFSET 1
+#endif
 
 
 
