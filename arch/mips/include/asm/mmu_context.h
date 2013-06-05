@@ -98,8 +98,8 @@ static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
 #define ASID_FIRST_VERSION ((unsigned long)(~ASID_VERSION_MASK) + 1)
 
 /* Normal, classic MIPS get_new_mmu_context */
-static inline void
-get_new_mmu_context(struct mm_struct *mm, unsigned long cpu)
+static inline unsigned long
+get_new_asid(unsigned long cpu)
 {
 	extern void kvm_local_flush_tlb_all(void);
 	unsigned long asid = asid_cache(cpu);
@@ -115,7 +115,13 @@ get_new_mmu_context(struct mm_struct *mm, unsigned long cpu)
 		if (!asid)		/* fix version if needed */
 			asid = ASID_FIRST_VERSION;
 	}
+	return asid;
+}
 
+static inline void
+get_new_mmu_context(struct mm_struct *mm, unsigned long cpu)
+{
+	unsigned long asid = get_new_asid(cpu);
 	cpu_context(cpu, mm) = asid_cache(cpu) = asid;
 }
 
