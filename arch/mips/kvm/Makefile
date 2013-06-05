@@ -13,3 +13,5 @@ kvm-objs := $(common-objs-y) mips.o emulate.o locore.o \
 
 obj-$(CONFIG_KVM)	+= kvm.o
 obj-y			+= callback.o tlb.o
+obj-$(CONFIG_KVM)		+= $(common-objs) kvm_mips.o
+obj-$(CONFIG_KVM_MIPS_TE)	+= kvm_mipste.o
