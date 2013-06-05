@@ -257,6 +257,7 @@ typedef struct {
 #endif
 
 struct mips_abi;
+struct kvm_vcpu;
 
 /*
  * If you change thread_struct remember to change the #defines below too!
@@ -289,6 +290,11 @@ struct thread_struct {
 	unsigned long cp0_badvaddr;	/* Last user fault */
 	unsigned long cp0_baduaddr;	/* Last kernel fault accessing USEG */
 	unsigned long error_code;
+#ifdef CONFIG_KVM_MIPS_VZ
+	struct kvm_vcpu *vcpu;
+	unsigned int mm_asid;
+	unsigned int guest_asid;
+#endif
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
 	struct octeon_cop2_state cp2;
 	struct octeon_cvmseg_state cvmseg;

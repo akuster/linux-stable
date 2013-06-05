@@ -133,6 +133,11 @@ void output_thread_defines(void)
 	       thread.cp0_baduaddr);
 	OFFSET(THREAD_ECODE, task_struct, \
 	       thread.error_code);
+#ifdef CONFIG_KVM_MIPS_VZ
+	OFFSET(THREAD_VCPU, task_struct, thread.vcpu);
+	OFFSET(THREAD_MM_ASID, task_struct, thread.mm_asid);
+	OFFSET(THREAD_GUEST_ASID, task_struct, thread.guest_asid);
+#endif
 	BLANK();
 }
 
