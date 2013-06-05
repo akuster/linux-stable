@@ -28,6 +28,7 @@
 #include <asm/ptrace.h>
 #include <asm/highmem.h>		/* For VMALLOC_END */
 #include <linux/kdebug.h>
+#include <asm/kvm_mips_vz.h>
 
 int show_unhandled_signals = 1;
 
@@ -53,6 +54,13 @@ static void __kprobes __do_page_fault(struct pt_regs *regs, unsigned long write,
 	printk("Cpu%d[%s:%d:%0*lx:%ld:%0*lx]\n", raw_smp_processor_id(),
 	       current->comm, current->pid, field, address, write,
 	       field, regs->cp0_epc);
+#endif
+
+#ifdef CONFIG_KVM_MIPS_VZ
+	if (test_tsk_thread_flag(current, TIF_GUESTMODE)) {
+		if (mipsvz_page_fault(regs, write, address))
+			return;
+	}
 #endif
 
 #ifdef CONFIG_KPROBES
