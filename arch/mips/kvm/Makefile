@@ -13,3 +13,4 @@ obj-$(CONFIG_KVM)	+= kvm.o
 obj-y			+= callback.o tlb.o
 obj-$(CONFIG_KVM)		+= $(common-objs) kvm_mips.o
 obj-$(CONFIG_KVM_MIPS_TE)	+= kvm_mipste.o
+obj-$(CONFIG_KVM_MIPS_VZ)	+= kvm_mipsvz.o kvm_mipsvz_guest.o
