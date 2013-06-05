@@ -61,6 +61,7 @@
 #include <asm/types.h>
 #include <asm/stacktrace.h>
 #include <asm/uasm.h>
+#include <asm/kvm_mips_vz.h>
 
 extern void check_wait(void);
 extern asmlinkage void rollback_handle_int(void);
@@ -1213,6 +1214,12 @@ asmlinkage void do_cpu(struct pt_regs *regs)
 	unsigned long __maybe_unused flags;
 
 	prev_state = exception_enter();
+#ifdef CONFIG_KVM_MIPS_VZ
+	if (test_tsk_thread_flag(current, TIF_GUESTMODE)) {
+		if (mipsvz_cp_unusable(regs))
+			goto out;
+	}
+#endif
 	cpid = (regs->cp0_cause >> CAUSEB_CE) & 3;
 
 	if (cpid != 2)
