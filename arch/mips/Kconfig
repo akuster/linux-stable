@@ -1572,6 +1572,8 @@ config CPU_CAVIUM_OCTEON
 	select CPU_SUPPORTS_HIGHMEM
 	select CPU_SUPPORTS_HUGEPAGES
 	select USB_EHCI_BIG_ENDIAN_MMIO
+	select HAVE_KVM
+	select SYS_HAS_DMA_OPS
 	select MIPS_L1_CACHE_SHIFT_7
 	help
 	  The Cavium Octeon processor is a highly integrated chip containing
