@@ -112,7 +112,7 @@ try_only_one:
 	irq_step = 1 << request_private_bits;
 
 	/* Mask with one bit for each IRQ */
-	search_mask = (1 << irq_step) - 1;
+	search_mask = (1ull << irq_step) - 1;
 
 	/*
 	 * We're going to search msi_free_irq_bitmask_lock for zero
@@ -247,7 +247,7 @@ void arch_teardown_msi_irq(unsigned int irq)
 		number_irqs++;
 	number_irqs++;
 	/* Mask with one bit for each IRQ */
-	bitmask = (1 << number_irqs) - 1;
+	bitmask = (1ull << number_irqs) - 1;
 	/* Shift the mask to the correct bit location */
 	bitmask <<= irq0;
 	if ((msi_free_irq_bitmask[index] & bitmask) != bitmask)
