@@ -52,7 +52,7 @@
 #define KVM_REG_MIPS_CP0_ERROREPC	MIPS_CP0_64(30, 0)
 
 
-#define KVM_MAX_VCPUS		1
+#define KVM_MAX_VCPUS		8
 #define KVM_USER_MEM_SLOTS	8
 /* memory slots that does not exposed to userspace */
 #define KVM_PRIVATE_MEM_SLOTS 	0
