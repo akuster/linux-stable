@@ -152,7 +152,7 @@ void dump_current_addr(unsigned long addr)
 
 	ptep = pte_offset_map(pmdp, addr);
 	pte = *ptep;
-	printk("pte %lx\n", pte_val(pte));
+	printk("pte %llx\n", pte_val(pte));
 	if (pte_huge(pte))
 		printk("  pte is huge\n");
 }
