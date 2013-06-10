@@ -176,15 +176,13 @@ static void cvm_oct_configure_common_hw(void)
 				     CVMX_FPA_OUTPUT_BUFFER_POOL_SIZE, 128);
 
 #ifdef __LITTLE_ENDIAN
-	{
-		union cvmx_ipd_ctl_status ipd_ctl_status;
-		ipd_ctl_status.u64 = cvmx_read_csr(CVMX_IPD_CTL_STATUS);
-		ipd_ctl_status.s.pkt_lend = 1;
-		ipd_ctl_status.s.wqe_lend = 1;
-		cvmx_write_csr(CVMX_IPD_CTL_STATUS, ipd_ctl_status.u64);
-	}
+	ipd_ctl_status.u64 = cvmx_read_csr(CVMX_IPD_CTL_STATUS);
+	ipd_ctl_status.s.pkt_lend = 1;
+	ipd_ctl_status.s.wqe_lend = 1;
+	cvmx_write_csr(CVMX_IPD_CTL_STATUS, ipd_ctl_status.u64);
+#else
+	ipd_ctl_status.u64 = 0LL;
 #endif
-
 	if (USE_RED)
 		cvmx_helper_setup_red(num_packet_buffers / 4,
 				      num_packet_buffers / 8);
