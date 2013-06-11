@@ -1,4 +1,0 @@
-
-config CAVIUM_OCTEON_EXECUTIVE_TWSI
-	def_bool y
-	depends on I2C_OCTEON && OCTEON_ETHERNET
