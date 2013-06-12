@@ -15,7 +15,7 @@ obj-y += cvmx-pko.o cvmx-spi.o cvmx-cmd-queue.o cvmx-helper-cfg.o	\
 	cvmx-ipd.o cvmx-global-resources.o cvmx-range.o	cvmx-agl.o	\
 	cvmx-pki.o cvmx-helper-srio.o cvmx-helper-ilk.o	cvmx-qlm.o	\
 	cvmx-srio.o cvmx-ilk.o cvmx-qlm-tables.o cvmx-spi4000.o		\
-	cvmx-twsi.o	\
+	cvmx-twsi.o cvmx-appcfg-transport.o cvmx-fpa-resource.o		\
 	cvmx-pko-internal-ports-range.o cvmx-helper-agl.o \
 	cvmx-helper-board.o cvmx-helper.o cvmx-helper-xaui.o \
 	cvmx-helper-rgmii.o cvmx-helper-sgmii.o cvmx-helper-npi.o \
