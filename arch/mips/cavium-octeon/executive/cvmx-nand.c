@@ -1,41 +1,56 @@
 /***********************license start***************
- * Author: Cavium Inc.
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * reserved.
  *
- * Contact: support@cavium.com
- * This file is part of the OCTEON SDK
  *
- * Copyright (c) 2003-2010 Cavium Inc.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
  *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Inc. for more information
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+
+ *   * Neither the name of Cavium Inc. nor the names of
+ *     its contributors may be used to endorse or promote products
+ *     derived from this software without specific prior written
+ *     permission.
+
+ * This Software, including technical data, may be subject to U.S. export
+ * control laws, including the U.S. Export Administration Act and its associated
+ * regulations, and may be subject to export or import  regulations in other
+ * countries.
+
+ * TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
+ * AND WITH ALL FAULTS AND CAVIUM INC. MAKES NO PROMISES, REPRESENTATIONS OR
+ * WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT TO
+ * THE SOFTWARE, INCLUDING ITS CONDITION, ITS CONFORMITY TO ANY REPRESENTATION OR
+ * DESCRIPTION, OR THE EXISTENCE OF ANY LATENT OR PATENT DEFECTS, AND CAVIUM
+ * SPECIFICALLY DISCLAIMS ALL IMPLIED (IF ANY) WARRANTIES OF TITLE,
+ * MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A PARTICULAR PURPOSE, LACK OF
+ * VIRUSES, ACCURACY OR COMPLETENESS, QUIET ENJOYMENT, QUIET POSSESSION OR
+ * CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK ARISING OUT OF USE OR
+ * PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
  ***********************license end**************************************/
 
-/*
+/**
+ * @file
  *
  * Interface to the NAND flash controller.
  * See cvmx-nand.h for usage documentation and notes.
  *
+ * <hr>$Revision: 35726 $<hr>
  */
 
+#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <linux/export.h>
-#include <linux/delay.h>
-
+#include <linux/module.h>
 #include <asm/octeon/octeon.h>
+#include <asm/octeon/cvmx-clock.h>
 #include <asm/octeon/cvmx-nand.h>
 #include <asm/octeon/cvmx-ndf-defs.h>
 #include <asm/octeon/cvmx-bootmem.h>
@@ -47,8 +62,20 @@
 #ifndef CVMX_SHARED
 #define CVMX_SHARED
 #endif
-#define WATCHDOG_RESET()
 
+#else
+#include "cvmx.h"
+#include "cvmx-nand.h"
+#include "cvmx-swap.h"
+#include "cvmx-bootmem.h"
+#endif
+#if defined(__U_BOOT__) && defined(CONFIG_HW_WATCHDOG)
+#include <watchdog.h>
+#else
+#define WATCHDOG_RESET()
+#endif
+
+#define NAND_COMMAND_RNDOUT		0x05
 #define NAND_COMMAND_READ_ID            0x90
 #define NAND_COMMAND_READ_PARAM_PAGE    0xec
 #define NAND_COMMAND_RESET              0xff
@@ -59,12 +86,35 @@
 #define NAND_COMMAND_ERASE_FIN          0xd0
 #define NAND_COMMAND_PROGRAM            0x80
 #define NAND_COMMAND_PROGRAM_FIN        0x10
+#define NAND_COMMAND_RNDOUT_START	0xE0
+#define NAND_COMMAND_GET_FEATURES	0xEE
+#define NAND_COMMAND_SET_FEATURES	0xEF
 #define NAND_TIMEOUT_USECS_READ         100000
 #define NAND_TIMEOUT_USECS_WRITE        1000000
 #define NAND_TIMEOUT_USECS_BLOCK_ERASE  1000000
 
+#define NAND_FEATURE_TIMING_MODE		0x01
+#define NAND_FEATURE_OUTPUT_DRIVE_STRENGTH1	0x10
+#define NAND_FEATURE_OUTPUT_DRIVE_STRENGTH2	0x80
+#define NAND_FEATURE_R_B_PULLDOWN_STRENGTH	0x81
+#define NAND_FEATURE_ARRAY_OP_MODE		0x90
+
+
 #define CVMX_NAND_ROUNDUP(_Dividend, _Divisor) (((_Dividend)+((_Divisor)-1))/(_Divisor))
 
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+#undef min
+#define min(X, Y)                               \
+        ({ typeof (X) __x = (X);                \
+           typeof (Y) __y = (Y);                \
+                (__x < __y) ? __x : __y; })
+
+#undef max
+#define max(X, Y)                               \
+        ({ typeof (X) __x = (X);                \
+           typeof (Y) __y = (Y);                \
+                (__x > __y) ? __x : __y; })
+#endif
 /* Structure to store the parameters that we care about that
 ** describe the ONFI speed modes.  This is used to configure
 ** the flash timing to match what is reported in the
@@ -85,10 +135,16 @@ static const onfi_speed_mode_desc_t onfi_speed_modes[] = {
 	{12, 10, 25, 5, 10},	/* Mode 4, requires EDO timings */
 	{10, 7, 20, 5, 10},	/* Mode 5, requries EDO timings */
 	{10, 10, 25, 5, 12},	/* Mode 6, requires EDO timings */
+	{15, 10, 30, 5, 15},	/* Micron NAND512WXA2S 3.3v */
+	{25, 15, 45, 10, 25},	/* Micron NAND512RxA2S 1.8v */
+	{25, 15, 50, 10, 0},	/* Micron NAND128/256WxA 3.3v */
+	{40, 20, 60, 10, 0},	/* Micron NAND256RxA 1.8v */
 };
 
 typedef enum {
 	CVMX_NAND_STATE_16BIT = 1 << 0,
+	CVMX_NAND_MICRON_HW_ECC = 1 << 1,
+	CVMX_NAND_NUMONYX = 1 << 2,
 } cvmx_nand_state_flags_t;
 
 /**
@@ -114,12 +170,24 @@ typedef struct {
  * Array indexed by bootbus chip select with information
  * about NAND devices.
  */
+#if defined(__U_BOOT__)
+/* For u-boot nand boot we need to play some tricks to be able
+* to use this early in boot.  We put them in a special section that is merged
+* with the text segment.  (Using the text segment directly results in an
+* assembler warning.)
+*/
+/*#define USE_DATA_IN_TEXT*/
+#endif
 
 #ifdef USE_DATA_IN_TEXT
-static uint8_t cvmx_nand_buffer[CVMX_NAND_MAX_PAGE_AND_OOB_SIZE] __attribute__ ((aligned(8))) __attribute__ ((section(".data_in_text")));
-static cvmx_nand_state_t cvmx_nand_state[8] __attribute__ ((section(".data_in_text")));
-static cvmx_nand_state_t cvmx_nand_default __attribute__ ((section(".data_in_text")));
-static cvmx_nand_initialize_flags_t cvmx_nand_flags __attribute__ ((section(".data_in_text")));
+static uint8_t cvmx_nand_buffer[CVMX_NAND_MAX_PAGE_AND_OOB_SIZE]
+	__attribute__ ((aligned(8))) __attribute__ ((section(".data_in_text")));
+static cvmx_nand_state_t cvmx_nand_state[8]
+	__attribute__ ((section(".data_in_text")));
+static cvmx_nand_state_t cvmx_nand_default
+	__attribute__ ((section(".data_in_text")));
+static cvmx_nand_initialize_flags_t cvmx_nand_flags
+	__attribute__ ((section(".data_in_text")));
 static int debug_indent __attribute__ ((section(".data_in_text")));
 #else
 static CVMX_SHARED cvmx_nand_state_t cvmx_nand_state[8];
@@ -148,7 +216,6 @@ static CVMX_SHARED const char *cvmx_nand_opcode_labels[] = {
 	"Bus Aquire / Release"	/* 15 */
 };
 
-#define ULL unsigned long long
 /* This macro logs out whenever a function is called if debugging is on */
 #define CVMX_NAND_LOG_CALLED() \
 	if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG)) \
@@ -178,6 +245,9 @@ static CVMX_SHARED const char *cvmx_nand_opcode_labels[] = {
 		return;							\
 	} while (0)
 
+	
+static void __cvmx_nand_hex_dump(uint64_t buffer_address, int buffer_length);
+
 /* Compute the CRC for the ONFI parameter page.  Adapted from sample code
 ** in the specification.
 */
@@ -205,47 +275,134 @@ static uint16_t __onfi_parameter_crc_compute(uint8_t *data)
 }
 
 /**
+ * Adjust the NAND address for 16-bit NAND parts
+ * 
+ * @param chip	chip ID
+ * @param nand_address	NAND address to adjust
+ * 
+ * @return adjusted nand address
+ */
+static inline uint64_t __cvmx_nand_adjust_address(int chip,
+						  uint64_t nand_address)
+{
+	uint64_t page_mask = cvmx_nand_state[chip].page_size - 1;
+	
+	/* For 16 bit mode, addresses within a page are word address, rather
+	 * than byte addresses
+	 */
+	if (cvmx_nand_state[chip].flags & CVMX_NAND_STATE_16BIT)
+		return (nand_address & ~page_mask)
+			| ((nand_address & page_mask) >> 1);
+	else
+		return nand_address;
+}
+
+/**
+ * @INTERNAL
+ * Get the number of bits required to encode the column bits. This
+ * does not include padding to align on a byte boundary.
+ *
+ * @param chip   NAND chip to get data for
+ *
+ * @return Number of column bits
+ */
+static inline int __cvmx_nand_get_column_bits(int chip)
+{
+	/* Numonyx devices are rather strange in that they use different read
+	 * commands to start at offsets 256 and for the OOB area.
+	 */
+	if (cvmx_nand_state[chip].flags & CVMX_NAND_NUMONYX)
+		return 8;
+	return cvmx_pop(cvmx_nand_state[chip].page_size - 1);
+}
+
+/**
+ * @INTERNAL
+ * Get the number of bits required to encode the row bits. This
+ * does not include padding to align on a byte boundary.
+ *
+ * @param chip   NAND chip to get data for
+ *
+ * @return Number of row bits
+ */
+static inline int __cvmx_nand_get_row_bits(int chip)
+{
+	return cvmx_pop(cvmx_nand_state[chip].blocks - 1)
+	       + cvmx_pop(cvmx_nand_state[chip].pages_per_block - 1);
+}
+
+/**
+ * @INTERNAL
+ * Get the number of address cycles required for this NAND part.
+ * This include column bits, padding, page bits, and block bits.
+ *
+ * @param chip   NAND chip to get data for
+ *
+ * @return Number of address cycles on the bus
+ */
+static inline int __cvmx_nand_get_address_cycles(int chip)
+{
+	int address_bits = ((__cvmx_nand_get_column_bits(chip) + 7) >> 3) << 3;
+	address_bits += ((__cvmx_nand_get_row_bits(chip) + 7) >> 3) << 3;
+	return (address_bits + 7) >> 3;
+}
+
+
+/**
  * Validate the ONFI parameter page and return a pointer to
  * the config values.
  *
- * @param_page: Pointer to the raw NAND data returned after a parameter page read. It will
- *                   contain at least 4 copies of the parameter structure.
+ * @param param_page Pointer to the raw NAND data returned after a parameter
+ *		     page read.  It will contain at least 3 copies of the
+ *		     parameter structure.
  *
- * Returns Pointer to a validated paramter page, or NULL if one couldn't be found.
+ * @return Pointer to a validated paramter page, or NULL if one couldn't be found.
  */
-static cvmx_nand_onfi_param_page_t *__cvmx_nand_onfi_process(cvmx_nand_onfi_param_page_t param_page[4])
+cvmx_nand_onfi_param_page_t *
+cvmx_nand_onfi_process(cvmx_nand_onfi_param_page_t param_page[3])
 {
 	int index;
 
-	for (index = 0; index < 4; index++) {
+	for (index = 0; index < 3; index++) {
 		uint16_t crc = __onfi_parameter_crc_compute((void *)&param_page[index]);
 		if (crc == cvmx_le16_to_cpu(param_page[index].crc))
 			break;
 		if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
-			cvmx_dprintf("%s: Paramter page %d is corrupt. (Expected CRC: 0x%04x, computed: 0x%04x)\n", __func__, index, cvmx_le16_to_cpu(param_page[index].crc), crc);
+			cvmx_dprintf("%s: Paramter page %d is corrupt. (Expected CRC: 0x%04x, computed: 0x%04x)\n",
+				     __func__, index,
+				     cvmx_le16_to_cpu(param_page[index].crc),
+				     crc);
 	}
 
-	if (index == 4) {
+	if (index == 3) {
 		if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
-			cvmx_dprintf("%s: All parameter pages fail CRC check.  Checking to see if any look sane.\n", __func__);
+			cvmx_dprintf("%s: All parameter pages fail CRC check.  Checking to see if any look sane.\n",
+				     __func__);
 
 		if (!memcmp(param_page, param_page + 1, 256)) {
 			/* First and second copies match, now check some values */
-			if (param_page[0].pages_per_block != 0 && param_page[0].pages_per_block != 0xFFFFFFFF
-			    && param_page[0].page_data_bytes != 0 && param_page[0].page_data_bytes != 0xFFFFFFFF
-			    && param_page[0].page_spare_bytes != 0 && param_page[0].page_spare_bytes != 0xFFFF
-			    && param_page[0].blocks_per_lun != 0 && param_page[0].blocks_per_lun != 0xFFFFFFFF
-			    && param_page[0].timing_mode != 0 && param_page[0].timing_mode != 0xFFFF) {
+			if (param_page[0].pages_per_block != 0
+			    && param_page[0].pages_per_block != 0xFFFFFFFF
+			    && param_page[0].page_data_bytes != 0
+			    && param_page[0].page_data_bytes != 0xFFFFFFFF
+			    && param_page[0].page_spare_bytes != 0
+			    && param_page[0].page_spare_bytes != 0xFFFF
+			    && param_page[0].blocks_per_lun != 0
+			    && param_page[0].blocks_per_lun != 0xFFFFFFFF
+			    && param_page[0].timing_mode != 0
+			    && param_page[0].timing_mode != 0xFFFF) {
 				/* Looks like we have enough values to use */
 				if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
-					cvmx_dprintf("%s: Page 0 looks sane, using even though CRC fails.\n", __func__);
+					cvmx_dprintf("%s: Page 0 looks sane, using even though CRC fails.\n",
+						     __func__);
 				index = 0;
 			}
 		}
 	}
 
-	if (index == 4) {
-		cvmx_dprintf("%s: WARNING: ONFI part but no valid ONFI parameter pages found.\n", __func__);
+	if (index == 3) {
+		cvmx_dprintf("%s: WARNING: ONFI part but no valid ONFI parameter pages found.\n",
+			     __func__);
 		return NULL;
 	}
 
@@ -296,6 +453,7 @@ static cvmx_nand_onfi_param_page_t *__cvmx_nand_onfi_process(cvmx_nand_onfi_para
 	}
 	return param_page + index;
 }
+EXPORT_SYMBOL(cvmx_nand_onfi_process);
 
 void __set_onfi_timing_mode(int *tim_par, int clocks_us, int mode)
 {
@@ -303,14 +461,16 @@ void __set_onfi_timing_mode(int *tim_par, int clocks_us, int mode)
 	int margin;
 	int pulse_adjust;
 
-	if (mode > 6) {
-		cvmx_dprintf("%s: invalid ONFI timing mode: %d\n", __func__, mode);
+	if ((unsigned)mode >= sizeof(onfi_speed_modes)/sizeof(onfi_speed_modes[0])) {
+		cvmx_dprintf("%s: invalid ONFI timing mode: %d\n",
+			     __func__, mode);
 		return;
 	}
 
-	/* Adjust the read/write pulse duty cycle to make it more even.  The cycle time
-	 ** requirement is longer than the sum of the high low times, so we exend both the high
-	 ** and low times to meet the cycle time requirement.
+	/* Adjust the read/write pulse duty cycle to make it more even.  The
+	 * cycle time requirement is longer than the sum of the high low times,
+	 * so we exend both the high and low times to meet the cycle time
+	 * requirement.
 	 */
 	pulse_adjust = ((mp->twc - mp->twh - mp->twp) / 2 + 1) * clocks_us;
 
@@ -324,7 +484,6 @@ void __set_onfi_timing_mode(int *tim_par, int clocks_us, int mode)
 	tim_par[5] = tim_par[3];	/* Talh, ALE hold time */
 	tim_par[6] = tim_par[1];	/* Trp, RE# pulse width */
 	tim_par[7] = tim_par[2];	/* Treh, RE# high hold time */
-
 }
 
 /* Internal helper function to set chip configuration to use default values */
@@ -337,19 +496,23 @@ static void __set_chip_defaults(int chip, int clocks_us)
 	cvmx_nand_state[chip].pages_per_block = cvmx_nand_default.pages_per_block;
 	cvmx_nand_state[chip].blocks = cvmx_nand_default.blocks;
 	cvmx_nand_state[chip].onfi_timing = cvmx_nand_default.onfi_timing;
-	__set_onfi_timing_mode(cvmx_nand_state[chip].tim_par, clocks_us, cvmx_nand_state[chip].onfi_timing);
+	__set_onfi_timing_mode(cvmx_nand_state[chip].tim_par, clocks_us,
+			       cvmx_nand_state[chip].onfi_timing);
 	if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG)) {
 
 		cvmx_dprintf("%s: Using default NAND parameters.\n", __func__);
 		cvmx_dprintf("%s: Defaults: page size: %d, OOB size: %d, pages per block %d, blocks: %d, timing mode: %d\n",
-			     __func__, cvmx_nand_state[chip].page_size, cvmx_nand_state[chip].oob_size, cvmx_nand_state[chip].pages_per_block,
-			     cvmx_nand_state[chip].blocks, cvmx_nand_state[chip].onfi_timing);
+			     __func__, cvmx_nand_state[chip].page_size,
+			     cvmx_nand_state[chip].oob_size,
+			     cvmx_nand_state[chip].pages_per_block,
+			     cvmx_nand_state[chip].blocks,
+			     cvmx_nand_state[chip].onfi_timing);
 	}
 }
 
 /* Do the proper wait for the ready/busy signal.  First wait
-** for busy to be valid, then wait for busy to de-assert.
-*/
+ * for busy to be valid, then wait for busy to de-assert.
+ */
 static int __wait_for_busy_done(int chip)
 {
 	cvmx_nand_cmd_t cmd;
@@ -363,9 +526,9 @@ static int __wait_for_busy_done(int chip)
 	cmd.wait.n = 2;
 
 	/* Wait for RB to be valied (tWB).
-	 ** Use 5 * tWC as proxy.  In some modes this is
-	 ** much longer than required, but does not affect performance
-	 ** since we will wait much longer for busy to de-assert.
+	 * Use 5 * tWC as proxy.  In some modes this is
+	 * much longer than required, but does not affect performance
+	 * since we will wait much longer for busy to de-assert.
 	 */
 	if (cvmx_nand_submit(cmd))
 		CVMX_NAND_RETURN(CVMX_NAND_NO_MEMORY);
@@ -386,26 +549,29 @@ static int __wait_for_busy_done(int chip)
  * Called to initialize the NAND controller for use. Note that
  * you must be running out of L2 or memory and not NAND before
  * calling this function.
- * When probing for NAND chips, this function attempts to autoconfigure based on the NAND parts detected.
- * It currently supports autodetection for ONFI parts (with valid parameter pages), and some Samsung NAND
- * parts (decoding ID bits.)  If autoconfiguration fails, the defaults set with __set_chip_defaults()
+ * When probing for NAND chips, this function attempts to autoconfigure based on
+ * the NAND parts detected.  It currently supports autodetection for ONFI parts
+ * (with valid parameter pages), and some Samsung NAND parts (decoding ID bits.)
+ *  If autoconfiguration fails, the defaults set with __set_chip_defaults()
  * prior to calling cvmx_nand_initialize() are used.
- * If defaults are set and the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is provided, the defaults are used
- * for all chips in the active_chips mask.
+ * If defaults are set and the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is
+ * provided, the defaults are used for all chips in the active_chips mask.
  *
- * @flags:  Optional initialization flags
- *               If the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is passed, chips are not probed,
- *               and the default parameters (if set with cvmx_nand_set_defaults) are used for all chips
- *               in the active_chips mask.
- * @active_chips:
+ * @param flags  Optional initialization flags
+ *               If the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is passed,
+ *		 chips are not probed, and the default parameters (if set with
+ *		 cvmx_nand_set_defaults) are used for all chips in the
+ *		  active_chips mask.
+ * @param active_chips
  *               Each bit in this parameter represents a chip select that might
  *               contain NAND flash. Any chip select present in this bitmask may
  *               be connected to NAND. It is normally safe to pass 0xff here and
  *               let the API probe all 8 chip selects.
  *
- * Returns Zero on success, a negative cvmx_nand_status error code on failure
+ * @return Zero on success, a negative cvmx_nand_status error code on failure
  */
-cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int active_chips)
+cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags,
+					int active_chips)
 {
 	int chip;
 	int start_chip;
@@ -413,6 +579,9 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 	uint64_t clocks_us;
 	union cvmx_ndf_misc ndf_misc;
 	uint8_t nand_id_buffer[16];
+
+	if (!octeon_has_feature(OCTEON_FEATURE_NAND))
+		CVMX_NAND_RETURN(CVMX_NAND_NO_DEVICE);
 
 	cvmx_nand_flags = flags;
 	CVMX_NAND_LOG_CALLED();
@@ -423,12 +592,17 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 #ifndef USE_DATA_IN_TEXT
 	/* cvmx_nand_buffer is statically allocated in the TEXT_IN_DATA case */
 	if (!cvmx_nand_buffer)
-		cvmx_nand_buffer = cvmx_bootmem_alloc_named_flags(CVMX_NAND_MAX_PAGE_AND_OOB_SIZE, 128, "__nand_buffer", CVMX_BOOTMEM_FLAG_END_ALLOC);
+		cvmx_nand_buffer =
+			cvmx_bootmem_alloc_named_flags(CVMX_NAND_MAX_PAGE_AND_OOB_SIZE,
+						       128, "__nand_buffer",
+						       CVMX_BOOTMEM_FLAG_END_ALLOC);
 
 	if (!cvmx_nand_buffer) {
-		const cvmx_bootmem_named_block_desc_t *block_desc = cvmx_bootmem_find_named_block("__nand_buffer");
+		const cvmx_bootmem_named_block_desc_t *block_desc =
+				cvmx_bootmem_find_named_block("__nand_buffer");
 		if (block_desc)
-			cvmx_nand_buffer = cvmx_phys_to_ptr(block_desc->base_addr);
+			cvmx_nand_buffer =
+					cvmx_phys_to_ptr(block_desc->base_addr);
 	}
 
 	if (!cvmx_nand_buffer)
@@ -446,11 +620,11 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 	cvmx_read_csr(CVMX_NDF_MISC);
 
 	/* Bring the fifo out of reset */
-	udelay(1);
+	cvmx_wait_usec(1);
 	ndf_misc.s.rst_ff = 0;
 	cvmx_write_csr(CVMX_NDF_MISC, ndf_misc.u64);
 	cvmx_read_csr(CVMX_NDF_MISC);
-	udelay(1);
+	cvmx_wait_usec(1);
 
 	/* Clear the ECC counter */
 	/* cvmx_write_csr(CVMX_NDF_ECC_CNT, cvmx_read_csr(CVMX_NDF_ECC_CNT)); */
@@ -458,7 +632,8 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 	/* Clear the interrupt state */
 	cvmx_write_csr(CVMX_NDF_INT, cvmx_read_csr(CVMX_NDF_INT));
 	cvmx_write_csr(CVMX_NDF_INT_EN, 0);
-	cvmx_write_csr(CVMX_MIO_NDF_DMA_INT, cvmx_read_csr(CVMX_MIO_NDF_DMA_INT));
+	cvmx_write_csr(CVMX_MIO_NDF_DMA_INT,
+		       cvmx_read_csr(CVMX_MIO_NDF_DMA_INT));
 	cvmx_write_csr(CVMX_MIO_NDF_DMA_INT_EN, 0);
 
 	/* The simulator crashes if you access non existant devices. Assume
@@ -472,15 +647,19 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 	}
 
 	/* Figure out how many clocks are in one microsecond, rounding up */
-	clocks_us = CVMX_NAND_ROUNDUP(octeon_get_io_clock_rate(), 1000000);
+	clocks_us = CVMX_NAND_ROUNDUP(cvmx_clock_get_rate(CVMX_CLOCK_SCLK),
+				      1000000);
 
 	/* If the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is set, then
-	 ** use the supplied default values to configured the chips in the
-	 ** active_chips mask */
+	 * use the supplied default values to configured the chips in the
+	 * active_chips mask
+	 */
 	if (cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE) {
 		if (cvmx_nand_default.page_size) {
 			for (chip = start_chip; chip < stop_chip; chip++) {
-				/* Skip chip selects that the caller didn't supply in the active chip bits */
+				/* Skip chip selects that the caller didn't
+				 * supply in the active chip bits
+				 */
 				if (((1 << chip) & active_chips) == 0)
 					continue;
 				__set_chip_defaults(chip, clocks_us);
@@ -496,7 +675,9 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 		int probe_failed;
 		int width_16;
 
-		/* Skip chip selects that the caller didn't supply in the active chip bits */
+		/* Skip chip selects that the caller didn't supply in the
+		 * active chip bits
+		 */
 		if (((1 << chip) & active_chips) == 0)
 			continue;
 
@@ -512,11 +693,15 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 		cvmx_nand_state[chip].blocks = 100;
 
 		/* Set timing mode to ONFI mode 0 for initial accesses */
-		__set_onfi_timing_mode(cvmx_nand_state[chip].tim_par, clocks_us, 0);
+		__set_onfi_timing_mode(cvmx_nand_state[chip].tim_par,
+				       clocks_us, 0);
 
-		/* Put the index of which timing parameter to use.  The indexes are into the tim_par
-		 ** which match the indexes of the 8 timing parameters that the hardware supports.
-		 ** Index 0 is not software controlled, and is fixed by hardware. */
+		/* Put the index of which timing parameter to use.  The indexes
+		 * are into the tim_par which match the indexes of the 8 timing
+		 * parameters that the hardware supports.
+		 * Index 0 is not software controlled, and is fixed by
+		 * hardware.
+		 */
 		cvmx_nand_state[chip].clen[0] = 0;	/* Command doesn't need to be held before WE */
 		cvmx_nand_state[chip].clen[1] = 1;	/* Twp, WE# pulse width */
 		cvmx_nand_state[chip].clen[2] = 3;	/* Tclh, CLE hold time */
@@ -535,10 +720,10 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 		cvmx_nand_state[chip].wrn[0] = 1;	/* Twp, WE# pulse width */
 		cvmx_nand_state[chip].wrn[1] = 2;	/* Twh, WE# pulse width high */
 
-		/* Probe and see if we get an answer.  Read more than required, as in
-		 ** 16 bit mode only every other byte is valid.
-		 ** Here we probe twice, once in 8 bit mode, and once in 16 bit mode to autodetect
-		 ** the width.
+		/* Probe and see if we get an answer.  Read more than required,
+		 * as in 16 bit mode only every other byte is valid.
+		 * Here we probe twice, once in 8 bit mode, and once in 16 bit
+		 * mode to autodetect the width.
 		 */
 		probe_failed = 1;
 		for (width_16 = 0; width_16 <= 1 && probe_failed; width_16++) {
@@ -547,15 +732,20 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 			if (width_16)
 				cvmx_nand_state[chip].flags |= CVMX_NAND_STATE_16BIT;
 			memset(cvmx_nand_buffer, 0xff, 16);
-			if (cvmx_nand_read_id(chip, 0x0, cvmx_ptr_to_phys(cvmx_nand_buffer), 16) < 16) {
+			if (cvmx_nand_read_id(chip, 0x0,
+					      cvmx_ptr_to_phys(cvmx_nand_buffer),
+					      16) < 16) {
 				if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
-					cvmx_dprintf("%s: Failed to probe chip %d\n", __func__, chip);
+					cvmx_dprintf("%s: Failed to probe chip %d\n",
+						     __func__, chip);
 				probe_failed = 1;
 
 			}
-			if (*(uint32_t *) cvmx_nand_buffer == 0xffffffff || *(uint32_t *) cvmx_nand_buffer == 0x0) {
+			if (*(uint32_t *) cvmx_nand_buffer == 0xffffffff
+			    || *(uint32_t *) cvmx_nand_buffer == 0x0) {
 				if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
-					cvmx_dprintf("%s: Probe returned nothing for chip %d\n", __func__, chip);
+					cvmx_dprintf("%s: Probe returned nothing for chip %d\n",
+						     __func__, chip);
 				probe_failed = 1;
 			}
 		}
@@ -567,26 +757,60 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 		memcpy(nand_id_buffer, cvmx_nand_buffer, sizeof(nand_id_buffer));
 
 		if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
-			cvmx_dprintf("%s: NAND chip %d has ID 0x%08llx\n", __func__, chip, (unsigned long long int)*(uint64_t *) cvmx_nand_buffer);
-		/* Read more than required, as in 16 bit mode only every other byte is valid. */
-		if (cvmx_nand_read_id(chip, 0x20, cvmx_ptr_to_phys(cvmx_nand_buffer), 8) < 8) {
+			cvmx_dprintf("%s: NAND chip %d has ID 0x%08llx\n",
+				     __func__, chip,
+				     (unsigned long long int)*(uint64_t *)cvmx_nand_buffer);
+					cvmx_nand_reset(chip);
+
+		/* Read more than required, as in 16 bit mode only every other
+		 * byte is valid.
+		 */
+		if (cvmx_nand_read_id(chip, 0x20,
+				      cvmx_ptr_to_phys(cvmx_nand_buffer),
+				      8) < 8) {
 			if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
-				cvmx_dprintf("%s: Failed to probe chip %d\n", __func__, chip);
+				cvmx_dprintf("%s: Failed to probe chip %d\n",
+					     __func__, chip);
 			continue;
 		}
 
-		if (((cvmx_nand_buffer[0] == 'O') && (cvmx_nand_buffer[1] == 'N') && (cvmx_nand_buffer[2] == 'F') && (cvmx_nand_buffer[3] == 'I'))) {
+		if ((cvmx_nand_buffer[0] == 'O') &&
+		    (cvmx_nand_buffer[1] == 'N') &&
+		    (cvmx_nand_buffer[2] == 'F') &&
+		    (cvmx_nand_buffer[3] == 'I')) {
 			/* We have an ONFI part, so read the parameter page */
+			if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
+				cvmx_dprintf("%s: NAND chip %d is ONFI\n",
+					     __func__, chip);
 
-			cvmx_nand_read_param_page(chip, cvmx_ptr_to_phys(cvmx_nand_buffer), 2048);
-			onfi_param_page = __cvmx_nand_onfi_process((cvmx_nand_onfi_param_page_t *) cvmx_nand_buffer);
+
+			cvmx_nand_read_param_page(chip,
+						  cvmx_ptr_to_phys(cvmx_nand_buffer),
+						  256 * 3);
+			if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG)) {
+				cvmx_dprintf("%s: NAND chip %d is ONFI\n",
+					     __func__, chip);
+				__cvmx_nand_hex_dump(cvmx_ptr_to_phys(cvmx_nand_buffer),
+						     256 * 3);
+			}
+			onfi_param_page = cvmx_nand_onfi_process((cvmx_nand_onfi_param_page_t *)cvmx_nand_buffer);
 			if (onfi_param_page) {
-				/* ONFI NAND parts are described by a parameter page.  Here we extract the configuration values
-				 ** from the parameter page that we need to access the chip. */
-				cvmx_nand_state[chip].page_size = cvmx_le32_to_cpu(onfi_param_page->page_data_bytes);
-				cvmx_nand_state[chip].oob_size = cvmx_le16_to_cpu(onfi_param_page->page_spare_bytes);
-				cvmx_nand_state[chip].pages_per_block = cvmx_le32_to_cpu(onfi_param_page->pages_per_block);
-				cvmx_nand_state[chip].blocks = cvmx_le32_to_cpu(onfi_param_page->blocks_per_lun) * onfi_param_page->number_lun;
+				uint8_t features[4];
+				int status;
+
+				/* ONFI NAND parts are described by a parameter
+				 * page.  Here we extract the configuration
+				 * values from the parameter page that we need
+				 * to access the chip.
+				 */
+				cvmx_nand_state[chip].page_size =
+					cvmx_le32_to_cpu(onfi_param_page->page_data_bytes);
+				cvmx_nand_state[chip].oob_size =
+					cvmx_le16_to_cpu(onfi_param_page->page_spare_bytes);
+				cvmx_nand_state[chip].pages_per_block =
+					cvmx_le32_to_cpu(onfi_param_page->pages_per_block);
+				cvmx_nand_state[chip].blocks =
+					cvmx_le32_to_cpu(onfi_param_page->blocks_per_lun) * onfi_param_page->number_lun;
 
 				if (cvmx_le16_to_cpu(onfi_param_page->timing_mode) <= 0x3f) {
 					int mode_mask = cvmx_le16_to_cpu(onfi_param_page->timing_mode);
@@ -596,15 +820,41 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 						if (mode_mask & (1 << i))
 							mode = i;
 					}
+					mode = 0;
 					cvmx_nand_state[chip].onfi_timing = mode;
 				} else {
-					cvmx_dprintf("%s: Invalid timing mode (%d) in ONFI parameter page, ignoring\n", __func__, cvmx_nand_state[chip].onfi_timing);
+					cvmx_dprintf("%s: Invalid timing mode (%d) in ONFI parameter page, ignoring\n",
+						     __func__,
+						     cvmx_nand_state[chip].onfi_timing);
 					cvmx_nand_state[chip].onfi_timing = 0;
 
 				}
 				if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
-					cvmx_dprintf("%s: Using ONFI timing mode: %d\n", __func__, cvmx_nand_state[chip].onfi_timing);
-				__set_onfi_timing_mode(cvmx_nand_state[chip].tim_par, clocks_us, cvmx_nand_state[chip].onfi_timing);
+					cvmx_dprintf("%s: Using ONFI timing mode: %d\n",
+						     __func__,
+						     cvmx_nand_state[chip].onfi_timing);
+
+				/* If get/set parameters are supported attempt
+				 * to put the chip into the mode.
+				 */
+				if (cvmx_le16_to_cpu(onfi_param_page->optional_commands) & 4) {
+					cvmx_dprintf("%s: Setting timing parameter mode to %d\n",
+						     __func__,
+						     cvmx_nand_state[chip].onfi_timing);
+					memset(features, 0, sizeof(features));
+					features[0] = cvmx_nand_state[chip].onfi_timing;
+					cvmx_nand_set_feature(chip,
+							      NAND_FEATURE_TIMING_MODE,
+							      features);
+				}
+				__set_onfi_timing_mode(cvmx_nand_state[chip].tim_par,
+						       clocks_us,
+						       cvmx_nand_state[chip].onfi_timing);
+				status = cvmx_nand_get_status(chip);
+				if ((status & 0xE3) != 0xE0) {
+					cvmx_dprintf("%s: Status 0x%x setting timing feature\n",
+						     __func__, status);
+				}
 				if (cvmx_nand_state[chip].page_size + cvmx_nand_state[chip].oob_size > CVMX_NAND_MAX_PAGE_AND_OOB_SIZE) {
 					cvmx_dprintf("%s: ERROR: Page size (%d) + OOB size (%d) is greater than max size (%d)\n",
 						     __func__, cvmx_nand_state[chip].page_size, cvmx_nand_state[chip].oob_size, CVMX_NAND_MAX_PAGE_AND_OOB_SIZE);
@@ -622,15 +872,28 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 		} else {
 			/* We have a non-ONFI part. */
 			if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
-				cvmx_dprintf("%s: Chip %d doesn't support ONFI.\n", __func__, chip);
+				cvmx_dprintf("%s: Chip %d doesn't support ONFI.  ID: 0x%02x 0x%02x\n",
+					     __func__, chip, nand_id_buffer[0],
+					     nand_id_buffer[1]);
 
-			if (nand_id_buffer[0] == 0xEC) {
-				/* We have a Samsung part, so decode part info from ID bytes */
-				uint64_t nand_size_bits = (64 * 1024 * 1024ULL) << ((nand_id_buffer[4] & 0x70) >> 4);	/* Plane size */
-				cvmx_nand_state[chip].page_size = 1024 << (nand_id_buffer[3] & 0x3);	/* NAND page size in bytes */
+			switch (nand_id_buffer[0]) {
+			case 0xEC: {
+				/* We have a Samsung part, so decode part info
+				 * from ID bytes
+				 */
+				uint64_t nand_size_bits =	/* Plane size */
+					(64 * 1024 * 1024ULL) <<
+						((nand_id_buffer[4] & 0x70) >> 4);
+				/* NAND page size in bytes */
+				cvmx_nand_state[chip].page_size =
+					1024 << (nand_id_buffer[3] & 0x3);
 				/* NAND OOB (spare) size in bytes (per page) */
-				cvmx_nand_state[chip].oob_size = (cvmx_nand_state[chip].page_size / 512) * ((nand_id_buffer[3] & 4) ? 16 : 8);
-				cvmx_nand_state[chip].pages_per_block = (0x10000 << ((nand_id_buffer[3] & 0x30) >> 4)) / cvmx_nand_state[chip].page_size;
+				cvmx_nand_state[chip].oob_size =
+					(cvmx_nand_state[chip].page_size / 512) *
+						((nand_id_buffer[3] & 4) ? 16 : 8);
+				cvmx_nand_state[chip].pages_per_block =
+					(0x10000 << ((nand_id_buffer[3] & 0x30) >> 4))
+						/ cvmx_nand_state[chip].page_size;
 
 				nand_size_bits *= 1 << ((nand_id_buffer[4] & 0xc) >> 2);
 
@@ -638,7 +901,11 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 				if (nand_id_buffer[3] & 0x4)
 					cvmx_nand_state[chip].oob_size *= 2;
 
-				cvmx_nand_state[chip].blocks = nand_size_bits / (8ULL * cvmx_nand_state[chip].page_size * cvmx_nand_state[chip].pages_per_block);
+				cvmx_nand_state[chip].blocks =
+					nand_size_bits / 
+					(8ULL
+					 * cvmx_nand_state[chip].page_size
+					 * cvmx_nand_state[chip].pages_per_block);
 				switch (nand_id_buffer[1]) {
 				case 0xD3:	/* K9F8G08U0M */
 				case 0xDC:	/* K9F4G08U0B */
@@ -650,34 +917,136 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int 
 				}
 
 				if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG)) {
-					cvmx_dprintf("%s: Samsung NAND chip detected, using parameters decoded from ID bytes.\n", __func__);
+					cvmx_dprintf("%s: Samsung NAND chip detected, using parameters decoded from ID bytes.\n",
+						     __func__);
 					cvmx_dprintf("%s: Defaults: page size: %d, OOB size: %d, pages per block %d, part size: %d MBytes, timing mode: %d\n",
-						     __func__, cvmx_nand_state[chip].page_size, cvmx_nand_state[chip].oob_size, cvmx_nand_state[chip].pages_per_block,
-						     (int)(nand_size_bits / (8 * 1024 * 1024)), cvmx_nand_state[chip].onfi_timing);
+						     __func__,
+						     cvmx_nand_state[chip].page_size,
+						     cvmx_nand_state[chip].oob_size,
+						     cvmx_nand_state[chip].pages_per_block,
+						     (int)(nand_size_bits / (8 * 1024 * 1024)),
+						     cvmx_nand_state[chip].onfi_timing);
+					cvmx_dprintf("%s: Address cycles: %d, column bits: %d, row bits: %d, block count: %d\n",
+						     __func__,
+						     __cvmx_nand_get_address_cycles(chip),
+						     __cvmx_nand_get_column_bits(chip),
+						     __cvmx_nand_get_row_bits(chip),
+						     cvmx_nand_state[chip].blocks);
 				}
 
-				__set_onfi_timing_mode(cvmx_nand_state[chip].tim_par, clocks_us, cvmx_nand_state[chip].onfi_timing);
+				__set_onfi_timing_mode(cvmx_nand_state[chip].tim_par,
+						       clocks_us,
+						       cvmx_nand_state[chip].onfi_timing);
 				if (cvmx_nand_state[chip].page_size + cvmx_nand_state[chip].oob_size > CVMX_NAND_MAX_PAGE_AND_OOB_SIZE) {
 					cvmx_dprintf("%s: ERROR: Page size (%d) + OOB size (%d) is greater than max size (%d)\n",
-						     __func__, cvmx_nand_state[chip].page_size, cvmx_nand_state[chip].oob_size, CVMX_NAND_MAX_PAGE_AND_OOB_SIZE);
+						     __func__,
+						     cvmx_nand_state[chip].page_size,
+						     cvmx_nand_state[chip].oob_size,
+						     CVMX_NAND_MAX_PAGE_AND_OOB_SIZE);
 					return CVMX_NAND_ERROR;
 				}
 
-				/* We have completed setup for this Samsung chip, so go on to next chip. */
+				/* We have completed setup for this Samsung
+				 * chip, so go on to next chip.
+				 */
 				continue;
-
 			}
+			case 0x20: {
+				/* We have a Micron/Numonyx part */
+				/* NOTE: Currently there are still issues with
+				 * these devices since they don't seem to
+				 * follow the standard commands.
+				 */
+				uint64_t nand_size_bits = -1;
+				cvmx_nand_state[chip].page_size = 0x200;
+				cvmx_nand_state[chip].oob_size = 16;
+				cvmx_nand_state[chip].pages_per_block = 32;
+				switch (nand_id_buffer[1]) {
+				case 0x73:
+					nand_size_bits = 128 << 20;
+					cvmx_nand_state[chip].onfi_timing = 9;
+					break;
+				case 0x35:
+				case 0x45:
+					nand_size_bits = 256 << 20;
+					cvmx_nand_state[chip].onfi_timing = 10;
+					break;
+				case 0x55:
+				case 0x75:
+					nand_size_bits = 256 << 20;
+					cvmx_nand_state[chip].onfi_timing = 9;
+					break;
+				case 0x76:	/* 3.3v, 8-bit */
+				case 0x56:	/* 3.3v 16-bit */
+					nand_size_bits = 512 << 20;
+					cvmx_nand_state[chip].onfi_timing = 7;
+					break;
+				case 0x36:
+				case 0x46:
+					nand_size_bits = 512 << 20;
+					cvmx_nand_state[chip].onfi_timing = 8;
+					break;
+				default:
+					cvmx_dprintf("%s: Unknown Micron chip ID 0x%02x\n",
+						     __func__, nand_id_buffer[1]);
+					return CVMX_NAND_ERROR;
+				}
+				cvmx_nand_state[chip].flags |= CVMX_NAND_NUMONYX;
+				cvmx_nand_state[chip].blocks =
+					nand_size_bits / 
+						(8 * cvmx_nand_state[chip].page_size * cvmx_nand_state[chip].pages_per_block);
+				if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG)) {
+					cvmx_dprintf("%s: Micron/Numonyx NAND chip detected, using parameters decoded from ID bytes.\n",
+						     __func__);
+					cvmx_dprintf("%s: Defaults: page size: %d, OOB size: %d, pages per block %d, part size: %d MBytes, timing mode: %d\n",
+						     __func__,
+						     cvmx_nand_state[chip].page_size,
+						     cvmx_nand_state[chip].oob_size,
+						     cvmx_nand_state[chip].pages_per_block,
+						     (int)(nand_size_bits / (8 * 1024 * 1024)),
+						     cvmx_nand_state[chip].onfi_timing);
+					cvmx_dprintf("%s: Address cycles: %d, column bits: %d, row bits: %d, block count: %d\n",
+						     __func__,
+						     __cvmx_nand_get_address_cycles(chip),
+						     __cvmx_nand_get_column_bits(chip),
+						     __cvmx_nand_get_row_bits(chip),
+						     cvmx_nand_state[chip].blocks);
+				}
 
+				__set_onfi_timing_mode(cvmx_nand_state[chip].tim_par,
+						       clocks_us,
+						       cvmx_nand_state[chip].onfi_timing);
+				if ((cvmx_nand_state[chip].page_size +
+				     cvmx_nand_state[chip].oob_size) >
+				    CVMX_NAND_MAX_PAGE_AND_OOB_SIZE) {
+					cvmx_dprintf("%s: ERROR: Page size (%d) + OOB size (%d) is greater than max size (%d)\n",
+						     __func__,
+						     cvmx_nand_state[chip].page_size,
+						     cvmx_nand_state[chip].oob_size,
+						     CVMX_NAND_MAX_PAGE_AND_OOB_SIZE);
+					return CVMX_NAND_ERROR;
+				}
+
+				/* We have completed setup for this Samsung
+				 * chip, so go on to next chip.
+				 */
+				continue;
+			}
+			default:
+				break;
+			}
 		}
 
-		/*  We were not able to automatically identify the NAND chip parameters.  If default values were configured,
-		 ** use them. */
+		/*  We were not able to automatically identify the NAND chip
+		 * parameters.  If default values were configured, use them.
+		 */
 		if (cvmx_nand_default.page_size) {
 			__set_chip_defaults(chip, clocks_us);
 		} else {
 
 			if (cvmx_unlikely(cvmx_nand_flags & CVMX_NAND_INITIALIZE_FLAGS_DEBUG))
-				cvmx_dprintf("%s: Unable to determine NAND parameters, and no defaults supplied.\n", __func__);
+				cvmx_dprintf("%s: Unable to determine NAND parameters, and no defaults supplied.\n",
+					     __func__);
 		}
 	}
 	CVMX_NAND_RETURN(CVMX_NAND_SUCCESS);
@@ -688,7 +1057,7 @@ EXPORT_SYMBOL(cvmx_nand_initialize);
  * Call to shutdown the NAND controller after all transactions
  * are done. In most setups this will never be called.
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 cvmx_nand_status_t cvmx_nand_shutdown(void)
 {
@@ -703,7 +1072,7 @@ cvmx_nand_status_t cvmx_nand_shutdown(void)
  * initialize to determine the actual number of NAND chips
  * found. Each bit in the response coresponds to a chip select.
  *
- * Returns Zero if no NAND chips were found. Otherwise a bit is set for
+ * @return Zero if no NAND chips were found. Otherwise a bit is set for
  *         each chip select (1<<chip).
  */
 int cvmx_nand_get_active_chips(void)
@@ -721,17 +1090,19 @@ EXPORT_SYMBOL(cvmx_nand_get_active_chips);
 /**
  * Override the timing parameters for a NAND chip
  *
- * @chip:     Chip select to override
- * @tim_mult:
- * @tim_par:
- * @clen:
- * @alen:
- * @rdn:
- * @wrn:
+ * @param chip     Chip select to override
+ * @param tim_mult
+ * @param tim_par
+ * @param clen
+ * @param alen
+ * @param rdn
+ * @param wrn
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
-cvmx_nand_status_t cvmx_nand_set_timing(int chip, int tim_mult, int tim_par[8], int clen[4], int alen[4], int rdn[4], int wrn[2])
+cvmx_nand_status_t cvmx_nand_set_timing(int chip, int tim_mult, int tim_par[8],
+					int clen[4], int alen[4], int rdn[4],
+					int wrn[2])
 {
 	int i;
 	CVMX_NAND_LOG_CALLED();
@@ -760,7 +1131,7 @@ cvmx_nand_status_t cvmx_nand_set_timing(int chip, int tim_mult, int tim_par[8], 
  * @INTERNAL
  * Get the number of free bytes in the NAND command queue
  *
- * Returns Number of bytes in queue
+ * @return Number of bytes in queue
  */
 static inline int __cvmx_nand_get_free_cmd_bytes(void)
 {
@@ -775,15 +1146,15 @@ static inline int __cvmx_nand_get_free_cmd_bytes(void)
  * will not be used directly. Instead most programs will use the other
  * higher level NAND functions.
  *
- * @cmd:    Command to submit
+ * @param cmd    Command to submit
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 cvmx_nand_status_t cvmx_nand_submit(cvmx_nand_cmd_t cmd)
 {
 	CVMX_NAND_LOG_CALLED();
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) cmd.u64[0]);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) cmd.u64[1]);
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(cmd.u64[0]));
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(cmd.u64[1]));
 	CVMX_NAND_LOG_PARAM("%s", cvmx_nand_opcode_labels[cmd.s.op_code]);
 	switch (cmd.s.op_code) {
 		/* All these commands fit in one 64bit word */
@@ -829,65 +1200,25 @@ cvmx_nand_status_t cvmx_nand_submit(cvmx_nand_cmd_t cmd)
 
 /**
  * @INTERNAL
- * Get the number of bits required to encode the column bits. This
- * does not include padding to align on a byte boundary.
- *
- * @chip:   NAND chip to get data for
- *
- * Returns Number of column bits
- */
-static inline int __cvmx_nand_get_column_bits(int chip)
-{
-	return cvmx_pop(cvmx_nand_state[chip].page_size - 1);
-}
-
-/**
- * @INTERNAL
- * Get the number of bits required to encode the row bits. This
- * does not include padding to align on a byte boundary.
- *
- * @chip:   NAND chip to get data for
- *
- * Returns Number of row bits
- */
-static inline int __cvmx_nand_get_row_bits(int chip)
-{
-	return cvmx_pop(cvmx_nand_state[chip].blocks - 1) + cvmx_pop(cvmx_nand_state[chip].pages_per_block - 1);
-}
-
-/**
- * @INTERNAL
- * Get the number of address cycles required for this NAND part.
- * This include column bits, padding, page bits, and block bits.
- *
- * @chip:   NAND chip to get data for
- *
- * Returns Number of address cycles on the bus
- */
-static inline int __cvmx_nand_get_address_cycles(int chip)
-{
-	int address_bits = ((__cvmx_nand_get_column_bits(chip) + 7) >> 3) << 3;
-	address_bits += ((__cvmx_nand_get_row_bits(chip) + 7) >> 3) << 3;
-	return (address_bits + 7) >> 3;
-}
-
-/**
- * @INTERNAL
  * Build the set of command common to most transactions
- * @chip:      NAND chip to program
- * @cmd_data:  NAND command for CLE cycle 1
- * @num_address_cycles:
+ * @param chip      NAND chip to program
+ * @param cmd_data  NAND command for CLE cycle 1
+ * @param num_address_cycles
  *                  Number of address cycles to put on the bus
- * @nand_address:
+ * @param nand_address
  *                  Data to be put on the bus. It is translated according to
  *                  the rules in the file information section.
  *
- * @cmd_data2: If non zero, adds a second CLE cycle used by a number of NAND
+ * @param cmd_data2 If non zero, adds a second CLE cycle used by a number of NAND
  *                  transactions.
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
-static inline cvmx_nand_status_t __cvmx_nand_build_pre_cmd(int chip, int cmd_data, int num_address_cycles, uint64_t nand_address, int cmd_data2)
+static inline cvmx_nand_status_t __cvmx_nand_build_pre_cmd(int chip,
+							   int cmd_data,
+							   int num_address_cycles,
+							   uint64_t nand_address,
+							   int cmd_data2)
 {
 	cvmx_nand_status_t result;
 	cvmx_nand_cmd_t cmd;
@@ -929,10 +1260,11 @@ static inline cvmx_nand_status_t __cvmx_nand_build_pre_cmd(int chip, int cmd_dat
 		CVMX_NAND_RETURN(result);
 
 	/* Send wait, fixed time
-	 ** This meets chip enable to command latch enable timing.
-	 ** This is tCS - tCLS from the ONFI spec.
-	 ** Use tWP as a proxy, as this is adequate for
-	 ** all ONFI 1.0 timing modes. */
+	 * This meets chip enable to command latch enable timing.
+	 * This is tCS - tCLS from the ONFI spec.
+	 * Use tWP as a proxy, as this is adequate for
+	 * all ONFI 1.0 timing modes.
+	 */
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.wait.two = 2;
 	cmd.wait.n = 1;
@@ -954,7 +1286,11 @@ static inline cvmx_nand_status_t __cvmx_nand_build_pre_cmd(int chip, int cmd_dat
 	if (num_address_cycles) {
 		memset(&cmd, 0, sizeof(cmd));
 		cmd.ale.adr_byte_num = num_address_cycles;
-		if (num_address_cycles < __cvmx_nand_get_address_cycles(chip)) {
+		if (cvmx_nand_state[chip].flags & CVMX_NAND_NUMONYX) {
+			nand_address /= cvmx_nand_state[chip].page_size;
+			cmd.ale.adr_bytes_l = nand_address;
+			cmd.ale.adr_bytes_h = nand_address >> 32;
+		} else if (num_address_cycles < __cvmx_nand_get_address_cycles(chip)) {
 			cmd.ale.adr_bytes_l = nand_address;
 			cmd.ale.adr_bytes_h = nand_address >> 32;
 		} else {
@@ -994,7 +1330,7 @@ static inline cvmx_nand_status_t __cvmx_nand_build_pre_cmd(int chip, int cmd_dat
 /**
  * @INTERNAL
  * Build the set of command common to most transactions
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 static inline cvmx_nand_status_t __cvmx_nand_build_post_cmd(void)
 {
@@ -1026,20 +1362,22 @@ static inline cvmx_nand_status_t __cvmx_nand_build_post_cmd(void)
  * @INTERNAL
  * Setup the NAND DMA engine for a transfer
  *
- * @chip:     Chip select for NAND flash
- * @is_write: Non zero if this is a write
- * @buffer_address:
+ * @param chip     Chip select for NAND flash
+ * @param is_write Non zero if this is a write
+ * @param buffer_address
  *                 Physical memory address to DMA to/from
- * @buffer_length:
+ * @param buffer_length
  *                 Length of the DMA in bytes
  */
-static inline void __cvmx_nand_setup_dma(int chip, int is_write, uint64_t buffer_address, int buffer_length)
+static inline void __cvmx_nand_setup_dma(int chip, int is_write,
+					 uint64_t buffer_address,
+					 int buffer_length)
 {
 	union cvmx_mio_ndf_dma_cfg ndf_dma_cfg;
 	CVMX_NAND_LOG_CALLED();
 	CVMX_NAND_LOG_PARAM("%d", chip);
 	CVMX_NAND_LOG_PARAM("%d", is_write);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) buffer_address);
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(buffer_address));
 	CVMX_NAND_LOG_PARAM("%d", buffer_length);
 	ndf_dma_cfg.u64 = 0;
 	ndf_dma_cfg.s.en = 1;
@@ -1055,9 +1393,9 @@ static inline void __cvmx_nand_setup_dma(int chip, int is_write, uint64_t buffer
 /**
  * Dump a buffer out in hex for debug
  *
- * @buffer_address:
+ * @param buffer_address
  *               Starting physical address
- * @buffer_length:
+ * @param buffer_length
  *               Number of bytes to display
  */
 static void __cvmx_nand_hex_dump(uint64_t buffer_address, int buffer_length)
@@ -1084,23 +1422,29 @@ static void __cvmx_nand_hex_dump(uint64_t buffer_address, int buffer_length)
  * @INTERNAL
  * Perform a low level NAND read command
  *
- * @chip:   Chip to read from
- * @nand_command1:
+ * @param chip   Chip to read from
+ * @param nand_command1
  *               First command cycle value
- * @address_cycles:
+ * @param address_cycles
  *               Number of address cycles after comand 1
- * @nand_address:
+ * @param nand_address
  *               NAND address to use for address cycles
- * @nand_command2:
+ * @param nand_command2
  *               NAND command cycle 2 if not zero
- * @buffer_address:
+ * @param buffer_address
  *               Physical address to DMA into
- * @buffer_length:
+ * @param buffer_length
  *               Length of the transfer in bytes
  *
- * Returns Number of bytes transfered or a negative error code
+ * @return Number of bytes transfered or a negative error code
  */
-static inline int __cvmx_nand_low_level_read(int chip, int nand_command1, int address_cycles, uint64_t nand_address, int nand_command2, uint64_t buffer_address, int buffer_length)
+static inline int __cvmx_nand_low_level_read(int chip,
+					     int nand_command1,
+					     int address_cycles,
+					     uint64_t nand_address,
+					     int nand_command2,
+					     uint64_t buffer_address,
+					     int buffer_length)
 {
 	cvmx_nand_cmd_t cmd;
 	union cvmx_mio_ndf_dma_cfg ndf_dma_cfg;
@@ -1110,9 +1454,9 @@ static inline int __cvmx_nand_low_level_read(int chip, int nand_command1, int ad
 	CVMX_NAND_LOG_PARAM("%d", chip);
 	CVMX_NAND_LOG_PARAM("0x%x", nand_command1);
 	CVMX_NAND_LOG_PARAM("%d", address_cycles);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) nand_address);
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(nand_address));
 	CVMX_NAND_LOG_PARAM("0x%x", nand_command2);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) buffer_address);
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(buffer_address));
 	CVMX_NAND_LOG_PARAM("%d", buffer_length);
 
 	if ((chip < 0) || (chip > 7))
@@ -1127,17 +1471,20 @@ static inline int __cvmx_nand_low_level_read(int chip, int nand_command1, int ad
 		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
 
 	/* Build the command and address cycles */
-	if (__cvmx_nand_build_pre_cmd(chip, nand_command1, address_cycles, nand_address, nand_command2))
+	if (__cvmx_nand_build_pre_cmd(chip, nand_command1, address_cycles,
+				      nand_address, nand_command2))
 		CVMX_NAND_RETURN(CVMX_NAND_NO_MEMORY);
 
 	/* Send WAIT.  This waits for some time, then
-	 ** waits for busy to be de-asserted. */
+	 * waits for busy to be de-asserted.
+	 */
 	if (__wait_for_busy_done(chip))
 		CVMX_NAND_RETURN(CVMX_NAND_NO_MEMORY);
 
 	/* Wait for tRR after busy de-asserts.
-	 ** Use 2* tALS as proxy.  This is overkill in
-	 ** the slow modes, but not bad in the faster ones. */
+	 * Use 2* tALS as proxy.  This is overkill in
+	 * the slow modes, but not bad in the faster ones. 
+	 */
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.wait.two = 2;
 	cmd.wait.n = 4;
@@ -1149,8 +1496,10 @@ static inline int __cvmx_nand_low_level_read(int chip, int nand_command1, int ad
 	/* Send READ */
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.rd.data_bytes = buffer_length;
-	if (cvmx_nand_state[chip].onfi_timing >= 4)
-		cmd.rd.nine = 10;	/* READ_EDO command is required for ONFI timing modes 4 and 5 */
+	if (cvmx_nand_state[chip].onfi_timing >= 4
+	    && cvmx_nand_state[chip].onfi_timing <= 6)
+		/* READ_EDO command is required for ONFI timing modes 4 and 5 */
+		cmd.rd.nine = 10;
 	else
 		cmd.rd.nine = 9;
 	cmd.rd.rdn1 = cvmx_nand_state[chip].rdn[0];
@@ -1166,7 +1515,9 @@ static inline int __cvmx_nand_low_level_read(int chip, int nand_command1, int ad
 		CVMX_NAND_RETURN(CVMX_NAND_NO_MEMORY);
 	WATCHDOG_RESET();
 	/* Wait for the DMA to complete */
-	if (CVMX_WAIT_FOR_FIELD64(CVMX_MIO_NDF_DMA_CFG, union cvmx_mio_ndf_dma_cfg, en, ==, 0, NAND_TIMEOUT_USECS_READ)) {
+	if (CVMX_WAIT_FOR_FIELD64(CVMX_MIO_NDF_DMA_CFG,
+				  union cvmx_mio_ndf_dma_cfg,
+				  en, ==, 0, NAND_TIMEOUT_USECS_READ)) {
 		WATCHDOG_RESET();
 		CVMX_NAND_RETURN(CVMX_NAND_TIMEOUT);
 	}
@@ -1184,24 +1535,27 @@ static inline int __cvmx_nand_low_level_read(int chip, int nand_command1, int ad
  * Read a page from NAND. If the buffer has room, the out of band
  * data will be included.
  *
- * @chip:   Chip select for NAND flash
- * @nand_address:
+ * @param chip   Chip select for NAND flash
+ * @param nand_address
  *               Location in NAND to read. See description in file comment
- * @buffer_address:
+ * @param buffer_address
  *               Physical address to store the result at
- * @buffer_length:
+ * @param buffer_length
  *               Number of bytes to read
  *
- * Returns Bytes read on success, a negative cvmx_nand_status_t error code on failure
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code on
+ *	   failure
  */
-int cvmx_nand_page_read(int chip, uint64_t nand_address, uint64_t buffer_address, int buffer_length)
+int cvmx_nand_page_read(int chip, uint64_t nand_address,
+			uint64_t buffer_address, int buffer_length)
 {
 	int bytes;
+	int command2;
 
 	CVMX_NAND_LOG_CALLED();
 	CVMX_NAND_LOG_PARAM("%d", chip);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) nand_address);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) buffer_address);
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(nand_address));
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(buffer_address));
 	CVMX_NAND_LOG_PARAM("%d", buffer_length);
 
 	if ((chip < 0) || (chip > 7))
@@ -1217,37 +1571,98 @@ int cvmx_nand_page_read(int chip, uint64_t nand_address, uint64_t buffer_address
 	if (!buffer_length)
 		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
 
-	/* For 16 bit mode, addresses within a page are word address, rather than byte addresses */
-	if (cvmx_nand_state[chip].flags & CVMX_NAND_STATE_16BIT)
-		nand_address = (nand_address & ~(cvmx_nand_state[chip].page_size - 1)) | ((nand_address & (cvmx_nand_state[chip].page_size - 1)) >> 1);
+	if (cvmx_nand_state[chip].flags & CVMX_NAND_NUMONYX)
+		command2 = 0;
+	else
+		command2 = NAND_COMMAND_READ_FIN;
 
-	bytes = __cvmx_nand_low_level_read(chip, NAND_COMMAND_READ, __cvmx_nand_get_address_cycles(chip), nand_address, NAND_COMMAND_READ_FIN, buffer_address, buffer_length);
+	nand_address = __cvmx_nand_adjust_address(chip, nand_address);
+
+	bytes = __cvmx_nand_low_level_read(chip, NAND_COMMAND_READ,
+					   __cvmx_nand_get_address_cycles(chip),
+					   nand_address, command2,
+					   buffer_address, buffer_length);
 	CVMX_NAND_RETURN(bytes);
 }
 
 EXPORT_SYMBOL(cvmx_nand_page_read);
 
 /**
+ * Read random data from NAND.  This adjusts the column address before starting
+ * a read operation.
+ *
+ * @param chip   Chip select for NAND flash
+ * @param nand_address
+ *               Location in NAND to read.  NOTE: only the column bits are used.
+ * @param buffer_address
+ *               Physical address to store the result at
+ * @param buffer_length
+ *               Number of bytes to read
+ *
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code on
+ *	   failure
+ */
+int cvmx_nand_random_data_out(int chip, uint64_t nand_address,
+			      uint64_t buffer_address, int buffer_length)
+{
+	int bytes, column_bits, column_mask;
+
+	CVMX_NAND_LOG_CALLED();
+	
+	CVMX_NAND_LOG_PARAM("%d", chip);
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(nand_address));
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(buffer_address));
+	CVMX_NAND_LOG_PARAM("%d", buffer_length);
+
+	if ((chip < 0) || (chip > 7))
+		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
+	if (!cvmx_nand_state[chip].page_size)
+		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
+	if (!buffer_address)
+		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
+	if (buffer_address & 7)
+		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
+	if (buffer_length & 7)
+		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
+	if (!buffer_length)
+		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
+	
+	nand_address = __cvmx_nand_adjust_address(chip, nand_address);
+	column_bits = __cvmx_nand_get_column_bits(chip);
+	column_mask = (1 << column_bits) - 1;
+
+	bytes = __cvmx_nand_low_level_read(chip, NAND_COMMAND_RNDOUT,
+					   (column_bits + 7) / 8,
+					   nand_address & column_mask,
+					   NAND_COMMAND_RNDOUT_START,
+					   buffer_address, buffer_length);
+
+	CVMX_NAND_RETURN(bytes);
+}
+EXPORT_SYMBOL(cvmx_nand_random_data_out);
+
+/**
  * Write a page to NAND. The buffer must contain the entire page
  * including the out of band data.
  *
- * @chip:   Chip select for NAND flash
- * @nand_address:
+ * @param chip   Chip select for NAND flash
+ * @param nand_address
  *               Location in NAND to write. See description in file comment
- * @buffer_address:
+ * @param buffer_address
  *               Physical address to read the data from
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
-cvmx_nand_status_t cvmx_nand_page_write(int chip, uint64_t nand_address, uint64_t buffer_address)
+cvmx_nand_status_t cvmx_nand_page_write(int chip, uint64_t nand_address,
+					uint64_t buffer_address)
 {
 	cvmx_nand_cmd_t cmd;
 	int buffer_length;
 
 	CVMX_NAND_LOG_CALLED();
 	CVMX_NAND_LOG_PARAM("%d", chip);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) nand_address);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) buffer_address);
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(nand_address));
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(buffer_address));
 
 	if ((chip < 0) || (chip > 7))
 		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
@@ -1258,21 +1673,24 @@ cvmx_nand_status_t cvmx_nand_page_write(int chip, uint64_t nand_address, uint64_
 	if (buffer_address & 7)
 		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
 
-	/* For 16 bit mode, addresses within a page are word address, rather than byte addresses */
-	if (cvmx_nand_state[chip].flags & CVMX_NAND_STATE_16BIT)
-		nand_address = (nand_address & ~(cvmx_nand_state[chip].page_size - 1)) | ((nand_address & (cvmx_nand_state[chip].page_size - 1)) >> 1);
+	nand_address = __cvmx_nand_adjust_address(chip, nand_address);
 
-	buffer_length = cvmx_nand_state[chip].page_size + cvmx_nand_state[chip].oob_size;
+	buffer_length =
+		cvmx_nand_state[chip].page_size + cvmx_nand_state[chip].oob_size;
 
-	/* The NAND DMA engine always does transfers in 8 byte blocks, so round the buffer size down
-	 ** to a multiple of 8, otherwise we will transfer too much data to the NAND chip.
-	 ** Note this prevents the last few bytes of the OOB being written.  If these bytes
-	 ** need to be written, then this check needs to be removed, but this will result in
-	 ** extra write cycles beyond the end of the OOB. */
+	/* The NAND DMA engine always does transfers in 8 byte blocks, so round
+	 * the buffer size down to a multiple of 8, otherwise we will transfer
+	 * too much data to the NAND chip.  Note this prevents the last few
+	 * bytes of the OOB being written.  If these bytes need to be written,
+	 * then this check needs to be removed, but this will result in
+	 * extra write cycles beyond the end of the OOB.
+	 */
 	buffer_length &= ~0x7;
 
 	/* Build the command and address cycles */
-	if (__cvmx_nand_build_pre_cmd(chip, NAND_COMMAND_PROGRAM, __cvmx_nand_get_address_cycles(chip), nand_address, 0))
+	if (__cvmx_nand_build_pre_cmd(chip, NAND_COMMAND_PROGRAM,
+				      __cvmx_nand_get_address_cycles(chip),
+				      nand_address, 0))
 		CVMX_NAND_RETURN(CVMX_NAND_NO_MEMORY);
 
 	/* Send WRITE */
@@ -1305,7 +1723,9 @@ cvmx_nand_status_t cvmx_nand_page_write(int chip, uint64_t nand_address, uint64_
 
 	/* Wait for the DMA to complete */
 	WATCHDOG_RESET();
-	if (CVMX_WAIT_FOR_FIELD64(CVMX_MIO_NDF_DMA_CFG, union cvmx_mio_ndf_dma_cfg, en, ==, 0, NAND_TIMEOUT_USECS_WRITE)) {
+	if (CVMX_WAIT_FOR_FIELD64(CVMX_MIO_NDF_DMA_CFG,
+				  union cvmx_mio_ndf_dma_cfg, en, ==, 0,
+				  NAND_TIMEOUT_USECS_WRITE)) {
 		WATCHDOG_RESET();
 		CVMX_NAND_RETURN(CVMX_NAND_TIMEOUT);
 	}
@@ -1316,17 +1736,17 @@ EXPORT_SYMBOL(cvmx_nand_page_write);
 /**
  * Erase a NAND block. A single block contains multiple pages.
  *
- * @chip:   Chip select for NAND flash
- * @nand_address:
+ * @param chip   Chip select for NAND flash
+ * @param nand_address
  *               Location in NAND to erase. See description in file comment
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 cvmx_nand_status_t cvmx_nand_block_erase(int chip, uint64_t nand_address)
 {
 	CVMX_NAND_LOG_CALLED();
 	CVMX_NAND_LOG_PARAM("%d", chip);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) nand_address);
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(nand_address));
 
 	if ((chip < 0) || (chip > 7))
 		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
@@ -1335,7 +1755,9 @@ cvmx_nand_status_t cvmx_nand_block_erase(int chip, uint64_t nand_address)
 
 	/* Build the command and address cycles */
 	if (__cvmx_nand_build_pre_cmd(chip, NAND_COMMAND_ERASE,
-				      (__cvmx_nand_get_row_bits(chip) + 7) >> 3, nand_address >> __cvmx_nand_get_column_bits(chip), NAND_COMMAND_ERASE_FIN))
+				      (__cvmx_nand_get_row_bits(chip) + 7) >> 3,
+				      nand_address >> __cvmx_nand_get_column_bits(chip),
+				      NAND_COMMAND_ERASE_FIN))
 		CVMX_NAND_RETURN(CVMX_NAND_NO_MEMORY);
 
 	/* WAIT for R_B to signal erase is complete  */
@@ -1347,7 +1769,8 @@ cvmx_nand_status_t cvmx_nand_block_erase(int chip, uint64_t nand_address)
 
 	/* Wait for the command queue to be idle, which means the wait is done */
 	WATCHDOG_RESET();
-	if (CVMX_WAIT_FOR_FIELD64(CVMX_NDF_ST_REG, union cvmx_ndf_st_reg, exe_idle, ==, 1, NAND_TIMEOUT_USECS_BLOCK_ERASE)) {
+	if (CVMX_WAIT_FOR_FIELD64(CVMX_NDF_ST_REG, union cvmx_ndf_st_reg,
+				  exe_idle, ==, 1, NAND_TIMEOUT_USECS_BLOCK_ERASE)) {
 		WATCHDOG_RESET();
 		CVMX_NAND_RETURN(CVMX_NAND_TIMEOUT);
 	}
@@ -1357,9 +1780,9 @@ cvmx_nand_status_t cvmx_nand_block_erase(int chip, uint64_t nand_address)
 EXPORT_SYMBOL(cvmx_nand_block_erase);
 
 /* Some reads (read ID, read parameter page) only use the low 8 bits of the bus
-** in 16 bit mode.  We remove the unused bytes so that the data we present to the
-** caller is as expected (same as 8 bit mode.)
-*/
+ * in 16 bit mode.  We remove the unused bytes so that the data we present to
+ * the caller is as expected (same as 8 bit mode.)
+ */
 static void __cvmx_nand_fixup_16bit_id_reads(uint8_t *buf, int buffer_length)
 {
 	/* Decimate data, taking only every other byte. */
@@ -1371,25 +1794,26 @@ static void __cvmx_nand_fixup_16bit_id_reads(uint8_t *buf, int buffer_length)
 /**
  * Read the NAND ID information
  *
- * @chip:   Chip select for NAND flash
- * @nand_address:
+ * @param chip   Chip select for NAND flash
+ * @param nand_address
  *               NAND address to read ID from. Usually this is either 0x0 or 0x20.
- * @buffer_address:
+ * @param buffer_address
  *               Physical address to store data in
- * @buffer_length:
+ * @param buffer_length
  *               Length of the buffer. Usually this is 4-8 bytes.  For 16 bit mode, this must be twice
  *               as large as the actual expected data.
  *
- * Returns Bytes read on success, a negative cvmx_nand_status_t error code on failure
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code on failure
  */
-int cvmx_nand_read_id(int chip, uint64_t nand_address, uint64_t buffer_address, int buffer_length)
+int cvmx_nand_read_id(int chip, uint64_t nand_address, uint64_t buffer_address,
+		      int buffer_length)
 {
 	int bytes;
 
 	CVMX_NAND_LOG_CALLED();
 	CVMX_NAND_LOG_PARAM("%d", chip);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) nand_address);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) buffer_address);
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(nand_address));
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(buffer_address));
 	CVMX_NAND_LOG_PARAM("%d", buffer_length);
 
 	if ((chip < 0) || (chip > 7))
@@ -1401,9 +1825,12 @@ int cvmx_nand_read_id(int chip, uint64_t nand_address, uint64_t buffer_address, 
 	if (!buffer_length)
 		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
 
-	bytes = __cvmx_nand_low_level_read(chip, NAND_COMMAND_READ_ID, 1, nand_address, 0, buffer_address, buffer_length);
+	bytes = __cvmx_nand_low_level_read(chip, NAND_COMMAND_READ_ID, 1,
+					   nand_address, 0, buffer_address,
+					   buffer_length);
 	if (cvmx_nand_state[chip].flags & CVMX_NAND_STATE_16BIT)
-		__cvmx_nand_fixup_16bit_id_reads(cvmx_phys_to_ptr(buffer_address), buffer_length);
+		__cvmx_nand_fixup_16bit_id_reads(cvmx_phys_to_ptr(buffer_address),
+						 buffer_length);
 
 	CVMX_NAND_RETURN(bytes);
 }
@@ -1413,21 +1840,24 @@ EXPORT_SYMBOL(cvmx_nand_read_id);
 /**
  * Read the NAND parameter page
  *
- * @chip:   Chip select for NAND flash
- * @buffer_address:
+ * @param chip   Chip select for NAND flash
+ * @param buffer_address
  *               Physical address to store data in
- * @buffer_length:
- *               Length of the buffer.  Usually 1024 bytes for 8 bit, 2048 for 16 bit mode.
+ * @param buffer_length
+ *               Length of the buffer.  Usually 1024 bytes for 8 bit, 2048
+ *		 for 16 bit mode.
  *
- * Returns Bytes read on success, a negative cvmx_nand_status_t error code on failure
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code
+ *	   on failure
  */
-int cvmx_nand_read_param_page(int chip, uint64_t buffer_address, int buffer_length)
+int cvmx_nand_read_param_page(int chip, uint64_t buffer_address,
+			      int buffer_length)
 {
 	int bytes;
 
 	CVMX_NAND_LOG_CALLED();
 	CVMX_NAND_LOG_PARAM("%d", chip);
-	CVMX_NAND_LOG_PARAM("0x%llx", (ULL) buffer_address);
+	CVMX_NAND_LOG_PARAM("0x%llx", CAST_ULL(buffer_address));
 	CVMX_NAND_LOG_PARAM("%d", buffer_length);
 
 	if ((chip < 0) || (chip > 7))
@@ -1441,18 +1871,22 @@ int cvmx_nand_read_param_page(int chip, uint64_t buffer_address, int buffer_leng
 	if (!buffer_length)
 		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
 
-	bytes = __cvmx_nand_low_level_read(chip, NAND_COMMAND_READ_PARAM_PAGE, 1, 0x0, 0, buffer_address, buffer_length);
+	bytes = __cvmx_nand_low_level_read(chip, NAND_COMMAND_READ_PARAM_PAGE,
+					   1, 0x0, 0,
+					   buffer_address, buffer_length);
 	if (cvmx_nand_state[chip].flags & CVMX_NAND_STATE_16BIT)
-		__cvmx_nand_fixup_16bit_id_reads(cvmx_phys_to_ptr(buffer_address), buffer_length);
+		__cvmx_nand_fixup_16bit_id_reads(cvmx_phys_to_ptr(buffer_address),
+						 buffer_length);
 	CVMX_NAND_RETURN(bytes);
 }
+EXPORT_SYMBOL(cvmx_nand_read_param_page);
 
 /**
  * Get the status of the NAND flash
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns NAND status or a negative cvmx_nand_status_t error code on failure
+ * @return NAND status or a negative cvmx_nand_status_t error code on failure
  */
 int cvmx_nand_get_status(int chip)
 {
@@ -1466,7 +1900,9 @@ int cvmx_nand_get_status(int chip)
 		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
 
 	*((uint8_t *) cvmx_nand_buffer + offset) = 0xff;
-	status = __cvmx_nand_low_level_read(chip, NAND_COMMAND_STATUS, 0, 0, 0, cvmx_ptr_to_phys(cvmx_nand_buffer), 8);
+	status = __cvmx_nand_low_level_read(chip, NAND_COMMAND_STATUS, 0, 0, 0,
+					    cvmx_ptr_to_phys(cvmx_nand_buffer),
+					    8);
 	if (status > 0)
 		status = *((uint8_t *) cvmx_nand_buffer + offset);
 
@@ -1475,12 +1911,110 @@ int cvmx_nand_get_status(int chip)
 EXPORT_SYMBOL(cvmx_nand_get_status);
 
 /**
+ * Gets the specified feature number
+ * 
+ * @param chip     Chip select for NAND flash
+ * @param feat_num Feature number to get
+ * @param feature  P1 - P4 of the feature data
+ * 
+ * @return cvmx_nand_status_t error code
+ */
+cvmx_nand_status_t cvmx_nand_get_feature(int chip, uint8_t feat_num,
+					 uint8_t feature[4])
+{
+	int status;
+	
+	CVMX_NAND_LOG_CALLED();
+	CVMX_NAND_LOG_PARAM("%d", chip);
+	CVMX_NAND_LOG_PARAM("%d", feat_num);
+	CVMX_NAND_LOG_PARAM("%p", feature);
+	
+
+	if ((chip < 0) || (chip > 7))
+		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
+	if (feature == NULL)
+		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
+
+	status = __cvmx_nand_low_level_read(chip, NAND_COMMAND_GET_FEATURES, 1,
+					    feat_num, 0,
+					    cvmx_ptr_to_phys(cvmx_nand_buffer),
+					    8);
+	if (status > 0) {
+		memcpy(feature, cvmx_nand_buffer, 4);
+		CVMX_NAND_RETURN(CVMX_NAND_SUCCESS);
+	}
+	CVMX_NAND_RETURN(status);
+}
+EXPORT_SYMBOL(cvmx_nand_get_feature);
+
+/**
+ * Sets the specified feature number
+ * 
+ * @param chip     Chip select for NAND flash
+ * @param feat_num Feature number to get
+ * @param feature  P1 - P4 of the feature data
+ * 
+ * @return cvmx_nand_status_t error code
+ */
+cvmx_nand_status_t cvmx_nand_set_feature(int chip, uint8_t feat_num,
+					 const uint8_t feature[4])
+{
+	int status;
+	cvmx_nand_cmd_t cmd;
+
+	CVMX_NAND_LOG_CALLED();
+	CVMX_NAND_LOG_PARAM("%d", chip);
+	CVMX_NAND_LOG_PARAM("%d", feat_num);
+	CVMX_NAND_LOG_PARAM("0x%x", feature[0]);
+	CVMX_NAND_LOG_PARAM("0x%x", feature[1]);
+	CVMX_NAND_LOG_PARAM("0x%x", feature[2]);
+	CVMX_NAND_LOG_PARAM("0x%x", feature[3]);
+	
+	if ((chip < 0) || (chip > 7))
+		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
+	if (feature == NULL)
+		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
+
+	if ((status = __cvmx_nand_build_pre_cmd(chip, NAND_COMMAND_SET_FEATURES,
+						1, feat_num, 0)))
+		CVMX_NAND_RETURN(status);
+	memcpy(cvmx_nand_buffer, feature, 4);
+	memset(cvmx_nand_buffer + 4, 0, 4);
+
+	memset(&cmd, 0, sizeof(cmd));
+	cmd.wr.data_bytes = 8;
+	cmd.wr.eight = 8;
+	cmd.wr.wrn1 = cvmx_nand_state[chip].wrn[0];
+	cmd.wr.wrn2 = cvmx_nand_state[chip].wrn[1];
+	if (cvmx_nand_submit(cmd))
+		CVMX_NAND_RETURN(CVMX_NAND_NO_MEMORY);
+
+	__cvmx_nand_setup_dma(chip, 1, cvmx_ptr_to_phys(cvmx_nand_buffer), 8);
+
+	if (__wait_for_busy_done(chip))
+		CVMX_NAND_RETURN(CVMX_NAND_NO_MEMORY);
+
+	if (__cvmx_nand_build_post_cmd())
+		CVMX_NAND_RETURN(CVMX_NAND_NO_MEMORY);
+
+	if (CVMX_WAIT_FOR_FIELD64(CVMX_MIO_NDF_DMA_CFG,
+				  union cvmx_mio_ndf_dma_cfg, en, ==, 0,
+				  NAND_TIMEOUT_USECS_WRITE)) {
+		WATCHDOG_RESET();
+		CVMX_NAND_RETURN(CVMX_NAND_TIMEOUT);
+	}
+	CVMX_NAND_RETURN(CVMX_NAND_SUCCESS);
+}
+EXPORT_SYMBOL(cvmx_nand_set_feature);
+
+/**
  * Get the page size, excluding out of band data. This  function
  * will return zero for chip selects not connected to NAND.
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns Page size in bytes or a negative cvmx_nand_status_t error code on failure
+ * @return Page size in bytes or a negative cvmx_nand_status_t error code
+ *	   on failure
  */
 int cvmx_nand_get_page_size(int chip)
 {
@@ -1492,13 +2026,14 @@ int cvmx_nand_get_page_size(int chip)
 
 	CVMX_NAND_RETURN(cvmx_nand_state[chip].page_size);
 }
+EXPORT_SYMBOL(cvmx_nand_get_page_size);
 
 /**
  * Get the OOB size.
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns OOB in bytes or a negative cvmx_nand_status_t error code on failure
+ * @return OOB in bytes or a negative cvmx_nand_status_t error code on failure
  */
 int cvmx_nand_get_oob_size(int chip)
 {
@@ -1510,13 +2045,14 @@ int cvmx_nand_get_oob_size(int chip)
 
 	CVMX_NAND_RETURN(cvmx_nand_state[chip].oob_size);
 }
+EXPORT_SYMBOL(cvmx_nand_get_oob_size);
 
 /**
  * Get the number of pages per NAND block
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns Number of pages in each block or a negative cvmx_nand_status_t error
+ * @return Number of pages in each block or a negative cvmx_nand_status_t error
  *         code on failure
  */
 int cvmx_nand_get_pages_per_block(int chip)
@@ -1529,13 +2065,15 @@ int cvmx_nand_get_pages_per_block(int chip)
 
 	CVMX_NAND_RETURN(cvmx_nand_state[chip].pages_per_block);
 }
+EXPORT_SYMBOL(cvmx_nand_get_pages_per_block);
 
 /**
  * Get the number of blocks in the NAND flash
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns Number of blocks or a negative cvmx_nand_status_t error code on failure
+ * @return Number of blocks or a negative cvmx_nand_status_t error code
+ *	   on failure
  */
 int cvmx_nand_get_blocks(int chip)
 {
@@ -1551,9 +2089,9 @@ int cvmx_nand_get_blocks(int chip)
 /**
  * Reset the NAND flash
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 cvmx_nand_status_t cvmx_nand_reset(int chip)
 {
@@ -1583,8 +2121,8 @@ EXPORT_SYMBOL(cvmx_nand_reset);
  * This function computes the Octeon specific ECC data used by the NAND boot
  * feature.
  *
- * @block:  pointer to 256 bytes of data
- * @eccp:   pointer to where 8 bytes of ECC data will be stored
+ * @param block  pointer to 256 bytes of data
+ * @param eccp   pointer to where 8 bytes of ECC data will be stored
  */
 void cvmx_nand_compute_boot_ecc(unsigned char *block, unsigned char *eccp)
 {
@@ -1676,9 +2214,9 @@ void cvmx_nand_compute_boot_ecc(unsigned char *block, unsigned char *eccp)
 /**
  * Check an Octeon ECC block, fixing errors if possible
  *
- * @block:  Pointer to block to check
+ * @param block  Pointer to block to check
  *
- * Returns Zero if block has no errors, one if errors were corrected, two
+ * @return Zero if block has no errors, one if errors were corrected, two
  *         if the errors could not be corrected.
  */
 int cvmx_nand_correct_boot_ecc(uint8_t *block)
@@ -1788,9 +2326,12 @@ int cvmx_nand_correct_boot_ecc(uint8_t *block)
 	return 1;
 }
 
-cvmx_nand_status_t cvmx_nand_set_defaults(int page_size, int oob_size, int pages_per_block, int blocks, int onfi_timing_mode)
+cvmx_nand_status_t cvmx_nand_set_defaults(int page_size, int oob_size,
+					  int pages_per_block, int blocks,
+					  int onfi_timing_mode)
 {
-	if (!page_size || !oob_size || !pages_per_block || !blocks || onfi_timing_mode > 5)
+	if (!page_size || !oob_size || !pages_per_block || !blocks
+	    || (unsigned)onfi_timing_mode > sizeof(onfi_speed_modes)/sizeof(onfi_speed_modes[0]))
 		CVMX_NAND_RETURN(CVMX_NAND_INVALID_PARAM);
 
 	cvmx_nand_default.page_size = page_size;
@@ -1801,3 +2342,9 @@ cvmx_nand_status_t cvmx_nand_set_defaults(int page_size, int oob_size, int pages
 
 	CVMX_NAND_RETURN(CVMX_NAND_SUCCESS);
 }
+
+#if defined(CVMX_BUILD_FOR_LINUX_KERNEL)
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Cavium, Inc. <support@cavium.com>");
+MODULE_DESCRIPTION("Cavium Inc. OCTEON NAND helper.");
+#endif

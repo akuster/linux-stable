@@ -19,6 +19,7 @@
 
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/octeon-boot-info.h>
+#include <asm/octeon/cvmx-app-hotplug.h>
 
 volatile unsigned long octeon_processor_boot = 0xff;
 volatile unsigned long octeon_processor_sp;
@@ -240,10 +241,12 @@ static void octeon_smp_setup(void)
 	memset(octeon_hotplug_global_ptr, 0, CVMX_APP_HOTPLUG_INFO_REGION_SIZE);
 
 	labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
+#if 0
 	octeon_hotplug_global_ptr->avail_coremask = labi->avail_coremask;
 
 	pr_info("Cavium Hotplug: Available coremask 0x%x\n",
 		octeon_hotplug_global_ptr->avail_coremask);
+#endif
 }
 
 /**
