@@ -1,10 +1,10 @@
 /**********************************************************************
- * Author: Cavium Networks
+ * Author: Cavium, Inc.
  *
- * Contact: support@caviumnetworks.com
+ * Contact: support@cavium.com
  * This file is part of the OCTEON SDK
  *
- * Copyright (c) 2003-2007 Cavium Networks
+ * Copyright (c) 2003-2012 Cavium, Inc.
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
@@ -22,8 +22,8 @@
  * or visit http://www.gnu.org/licenses/.
  *
  * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
-**********************************************************************/
+ * Contact Cavium, Inc. for more information
+ **********************************************************************/
 
 /*
  * A few defines are used to control the operation of this driver:
@@ -55,10 +55,18 @@
 #ifndef __ETHERNET_DEFINES_H__
 #define __ETHERNET_DEFINES_H__
 
-#include <asm/octeon/cvmx-config.h>
+#define OCTEON_ETHERNET_VERSION "2.0"
 
+/* FAU */
+#define FAU_REG_END (2048)
 
-#define OCTEON_ETHERNET_VERSION "1.9"
+/* FPA defines */
+#define FPA_WQE_POOL_SIZE (1 * CVMX_CACHE_LINE_SIZE)
+#define FPA_PACKET_POOL_SIZE (16 * CVMX_CACHE_LINE_SIZE)
+#define FPA_OUTPUT_BUFFER_POOL_SIZE (8 * CVMX_CACHE_LINE_SIZE)
+
+/* TODO: replace this */
+#define CVMX_SCR_SCRATCH (0)
 
 #ifndef CONFIG_CAVIUM_RESERVE32
 #define CONFIG_CAVIUM_RESERVE32 0
@@ -68,7 +76,7 @@
 #ifdef CONFIG_NETFILTER
 #define REUSE_SKBUFFS_WITHOUT_FREE  0
 #else
-#define REUSE_SKBUFFS_WITHOUT_FREE  1
+#define REUSE_SKBUFFS_WITHOUT_FREE  0
 #endif
 
 #define USE_HW_TCPUDP_CHECKSUM      1
@@ -93,8 +101,7 @@
 /* Maximum number of SKBs to try to free per xmit packet. */
 #define MAX_OUT_QUEUE_DEPTH 1000
 
-#define FAU_TOTAL_TX_TO_CLEAN (CVMX_FAU_REG_END - sizeof(uint32_t))
-#define FAU_NUM_PACKET_BUFFERS_TO_FREE (FAU_TOTAL_TX_TO_CLEAN - sizeof(uint32_t))
+#define FAU_NUM_PACKET_BUFFERS_TO_FREE (FAU_REG_END - sizeof(u32))
 
 #define TOTAL_NUMBER_OF_PORTS       (CVMX_PIP_NUM_INPUT_PORTS+1)
 
