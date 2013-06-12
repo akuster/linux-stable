@@ -1,28 +1,40 @@
 /***********************license start***************
- * Author: Cavium Inc.
+ * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * reserved.
  *
- * Contact: support@cavium.com
- * This file is part of the OCTEON SDK
  *
- * Copyright (c) 2003-2010 Cavium Inc.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
  *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Inc. for more information
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+
+ *   * Neither the name of Cavium Inc. nor the names of
+ *     its contributors may be used to endorse or promote products
+ *     derived from this software without specific prior written
+ *     permission.
+
+ * This Software, including technical data, may be subject to U.S. export  control
+ * laws, including the U.S. Export Administration Act and its  associated
+ * regulations, and may be subject to export or import  regulations in other
+ * countries.
+
+ * TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
+ * AND WITH ALL FAULTS AND CAVIUM INC. MAKES NO PROMISES, REPRESENTATIONS OR
+ * WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT TO
+ * THE SOFTWARE, INCLUDING ITS CONDITION, ITS CONFORMITY TO ANY REPRESENTATION OR
+ * DESCRIPTION, OR THE EXISTENCE OF ANY LATENT OR PATENT DEFECTS, AND CAVIUM
+ * SPECIFICALLY DISCLAIMS ALL IMPLIED (IF ANY) WARRANTIES OF TITLE,
+ * MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A PARTICULAR PURPOSE, LACK OF
+ * VIRUSES, ACCURACY OR COMPLETENESS, QUIET ENJOYMENT, QUIET POSSESSION OR
+ * CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK ARISING OUT OF USE OR
+ * PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
  ***********************license end**************************************/
 
 /**
@@ -78,15 +90,21 @@
  * example, this means that a read of 65 bytes from a column address of 0x7ff
  * would yield byte 2047 of the page and then 64 bytes of OOB data.
  *
+ * <hr>$Revision: 35726 $<hr>
  */
 
 #ifndef __CVMX_NAND_H__
 #define __CVMX_NAND_H__
 
+#ifdef	__cplusplus
+/* *INDENT-OFF* */
+extern "C" {
+/* *INDENT-ON* */
+#endif
 
 /* Maxium PAGE + OOB size supported.  This is used to size
 ** buffers, some that must be statically allocated. */
-#define CVMX_NAND_MAX_PAGE_AND_OOB_SIZE      (4096 + 256)
+#define CVMX_NAND_MAX_PAGE_AND_OOB_SIZE      (16384 + 512)
 
 /* Block size for boot ECC */
 #define CVMX_NAND_BOOT_ECC_BLOCK_SIZE    (256)
@@ -470,17 +488,17 @@ typedef struct __attribute__ ((packed)) {
  * If defaults are set and the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is provided, the defaults are used
  * for all chips in the active_chips mask.
  *
- * @flags:  Optional initialization flags
+ * @param flags  Optional initialization flags
  *               If the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is passed, chips are not probed,
  *               and the default parameters (if set with cvmx_nand_set_defaults) are used for all chips
  *               in the active_chips mask.
- * @active_chips:
+ * @param active_chips
  *               Each bit in this parameter represents a chip select that might
  *               contain NAND flash. Any chip select present in this bitmask may
  *               be connected to NAND. It is normally safe to pass 0xff here and
  *               let the API probe all 8 chip selects.
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 extern cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int active_chips);
 
@@ -494,15 +512,15 @@ extern cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flag
  *   NOTE:  This function signature is _NOT_ stable, and will change in the future as required to support
  *          various NAND chips.
  *
- * @page_size: page size in bytes
- * @oob_size:  Out of band size in bytes (per page)
- * @pages_per_block:
+ * @param page_size page size in bytes
+ * @param oob_size  Out of band size in bytes (per page)
+ * @param pages_per_block
  *                  number of pages per block
- * @blocks:    Total number of blocks in device
- * @onfi_timing_mode:
+ * @param blocks    Total number of blocks in device
+ * @param onfi_timing_mode
  *                  ONFI timing mode
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 extern cvmx_nand_status_t cvmx_nand_set_defaults(int page_size, int oob_size, int pages_per_block, int blocks, int onfi_timing_mode);
 
@@ -510,7 +528,7 @@ extern cvmx_nand_status_t cvmx_nand_set_defaults(int page_size, int oob_size, in
  * Call to shutdown the NAND controller after all transactions
  * are done. In most setups this will never be called.
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 extern cvmx_nand_status_t cvmx_nand_shutdown(void);
 
@@ -520,7 +538,7 @@ extern cvmx_nand_status_t cvmx_nand_shutdown(void);
  * initialize to determine the actual number of NAND chips
  * found. Each bit in the response coresponds to a chip select.
  *
- * Returns Zero if no NAND chips were found. Otherwise a bit is set for
+ * @return Zero if no NAND chips were found. Otherwise a bit is set for
  *         each chip select (1<<chip).
  */
 extern int cvmx_nand_get_active_chips(void);
@@ -528,15 +546,15 @@ extern int cvmx_nand_get_active_chips(void);
 /**
  * Override the timing parameters for a NAND chip
  *
- * @chip:     Chip select to override
- * @tim_mult:
- * @tim_par:
- * @clen:
- * @alen:
- * @rdn:
- * @wrn:
+ * @param chip     Chip select to override
+ * @param tim_mult
+ * @param tim_par
+ * @param clen
+ * @param alen
+ * @param rdn
+ * @param wrn
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 extern cvmx_nand_status_t cvmx_nand_set_timing(int chip, int tim_mult, int tim_par[7], int clen[4], int alen[4], int rdn[4], int wrn[2]);
 
@@ -545,9 +563,9 @@ extern cvmx_nand_status_t cvmx_nand_set_timing(int chip, int tim_mult, int tim_p
  * will not be used directly. Instead most programs will use the other
  * higher level NAND functions.
  *
- * @cmd:    Command to submit
+ * @param cmd    Command to submit
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 extern cvmx_nand_status_t cvmx_nand_submit(cvmx_nand_cmd_t cmd);
 
@@ -555,123 +573,177 @@ extern cvmx_nand_status_t cvmx_nand_submit(cvmx_nand_cmd_t cmd);
  * Read a page from NAND. If the buffer has room, the out of band
  * data will be included.
  *
- * @chip:   Chip select for NAND flash
- * @nand_address:
+ * @param chip   Chip select for NAND flash
+ * @param nand_address
  *               Location in NAND to read. See description in file comment
- * @buffer_address:
+ * @param buffer_address
  *               Physical address to store the result at
- * @buffer_length:
+ * @param buffer_length
  *               Number of bytes to read
  *
- * Returns Bytes read on success, a negative cvmx_nand_status_t error code on failure
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code on failure
  */
 extern int cvmx_nand_page_read(int chip, uint64_t nand_address, uint64_t buffer_address, int buffer_length);
+
+/**
+ * Read random data from NAND.  This adjusts the column address before starting
+ * a read operation.
+ *
+ * @param chip   Chip select for NAND flash
+ * @param nand_address
+ *               Location in NAND to read.  NOTE: only the column bits are used.
+ * @param buffer_address
+ *               Physical address to store the result at
+ * @param buffer_length
+ *               Number of bytes to read
+ *
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code on
+ *	   failure
+ */
+extern int cvmx_nand_random_data_out(int chip, uint64_t nand_address,
+				     uint64_t buffer_address,
+				     int buffer_length);
 
 /**
  * Write a page to NAND. The buffer must contain the entire page
  * including the out of band data.
  *
- * @chip:   Chip select for NAND flash
- * @nand_address:
+ * @param chip   Chip select for NAND flash
+ * @param nand_address
  *               Location in NAND to write. See description in file comment
- * @buffer_address:
+ * @param buffer_address
  *               Physical address to read the data from
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 extern cvmx_nand_status_t cvmx_nand_page_write(int chip, uint64_t nand_address, uint64_t buffer_address);
 
 /**
  * Erase a NAND block. A single block contains multiple pages.
  *
- * @chip:   Chip select for NAND flash
- * @nand_address:
+ * @param chip   Chip select for NAND flash
+ * @param nand_address
  *               Location in NAND to erase. See description in file comment
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 extern cvmx_nand_status_t cvmx_nand_block_erase(int chip, uint64_t nand_address);
 
 /**
  * Read the NAND ID information
  *
- * @chip:   Chip select for NAND flash
- * @nand_address:
+ * @param chip   Chip select for NAND flash
+ * @param nand_address
  *               NAND address to read ID from. Usually this is either 0x0 or 0x20.
- * @buffer_address:
+ * @param buffer_address
  *               Physical address to store data in
- * @buffer_length:
+ * @param buffer_length
  *               Length of the buffer. Usually this is 4 bytes
  *
- * Returns Bytes read on success, a negative cvmx_nand_status_t error code on failure
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code on failure
  */
 extern int cvmx_nand_read_id(int chip, uint64_t nand_address, uint64_t buffer_address, int buffer_length);
 
 /**
  * Read the NAND parameter page
  *
- * @chip:   Chip select for NAND flash
- * @buffer_address:
+ * @param chip   Chip select for NAND flash
+ * @param buffer_address
  *               Physical address to store data in
- * @buffer_length:
+ * @param buffer_length
  *               Length of the buffer. Usually this is 4 bytes
  *
- * Returns Bytes read on success, a negative cvmx_nand_status_t error code on failure
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code on failure
  */
 extern int cvmx_nand_read_param_page(int chip, uint64_t buffer_address, int buffer_length);
 
 /**
+ * Validate the ONFI parameter page and return a pointer to
+ * the config values.
+ *
+ * @param param_page Pointer to the raw NAND data returned after a parameter page read. It will
+ *                   contain at least 3 copies of the parameter structure.
+ *
+ * @return Pointer to a validated paramter page, or NULL if one couldn't be found.
+ */
+extern cvmx_nand_onfi_param_page_t *
+	cvmx_nand_onfi_process(cvmx_nand_onfi_param_page_t param_page[3]);
+/**
  * Get the status of the NAND flash
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns NAND status or a negative cvmx_nand_status_t error code on failure
+ * @return NAND status or a negative cvmx_nand_status_t error code on failure
  */
 extern int cvmx_nand_get_status(int chip);
+
+/**
+ * Gets the specified feature number
+ * 
+ * @param chip     Chip select for NAND flash
+ * @param feat_num Feature number to get
+ * @param feature  P1 - P4 of the feature data
+ * 
+ * @return cvmx_nand_status_t error code
+ */
+cvmx_nand_status_t cvmx_nand_get_feature(int chip, uint8_t feat_num,
+					 uint8_t feature[4]);
+
+/**
+ * Sets the specified feature number
+ * 
+ * @param chip     Chip select for NAND flash
+ * @param feat_num Feature number to get
+ * @param feature  P1 - P4 of the feature data
+ * 
+ * @return cvmx_nand_status_t error code
+ */
+cvmx_nand_status_t cvmx_nand_set_feature(int chip, uint8_t feat_num,
+					 const uint8_t feature[4]);
 
 /**
  * Get the page size, excluding out of band data. This  function
  * will return zero for chip selects not connected to NAND.
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns Page size in bytes or a negative cvmx_nand_status_t error code on failure
+ * @return Page size in bytes or a negative cvmx_nand_status_t error code on failure
  */
 extern int cvmx_nand_get_page_size(int chip);
 
 /**
  * Get the OOB size.
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns OOB in bytes or a negative cvmx_nand_status_t error code on failure
+ * @return OOB in bytes or a negative cvmx_nand_status_t error code on failure
  */
 extern int cvmx_nand_get_oob_size(int chip);
 
 /**
  * Get the number of pages per NAND block
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns Numboer of pages in each block or a negative cvmx_nand_status_t error code on failure
+ * @return Numboer of pages in each block or a negative cvmx_nand_status_t error code on failure
  */
 extern int cvmx_nand_get_pages_per_block(int chip);
 
 /**
  * Get the number of blocks in the NAND flash
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns Number of blocks or a negative cvmx_nand_status_t error code on failure
+ * @return Number of blocks or a negative cvmx_nand_status_t error code on failure
  */
 extern int cvmx_nand_get_blocks(int chip);
 
 /**
  * Reset the NAND flash
  *
- * @chip:   Chip select for NAND flash
+ * @param chip   Chip select for NAND flash
  *
- * Returns Zero on success, a negative cvmx_nand_status_t error code on failure
+ * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
 extern cvmx_nand_status_t cvmx_nand_reset(int chip);
 
@@ -679,11 +751,16 @@ extern cvmx_nand_status_t cvmx_nand_reset(int chip);
  * This function computes the Octeon specific ECC data used by the NAND boot
  * feature.
  *
- * @block:  pointer to 256 bytes of data
- * @eccp:   pointer to where 8 bytes of ECC data will be stored
+ * @param block  pointer to 256 bytes of data
+ * @param eccp   pointer to where 8 bytes of ECC data will be stored
  */
 extern void cvmx_nand_compute_boot_ecc(unsigned char *block, unsigned char *eccp);
 
 extern int cvmx_nand_correct_boot_ecc(uint8_t *block);
+#ifdef	__cplusplus
+/* *INDENT-OFF* */
+}
+/* *INDENT-ON* */
+#endif
 
 #endif /* __CVMX_NAND_H__ */

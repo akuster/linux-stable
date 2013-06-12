@@ -384,7 +384,10 @@ static int proc_perf_show(struct seq_file *m, void *v)
 
 			/* Check if LMC controller is enabled. */
 			ctl2.u64 = cvmx_read_csr(CVMX_LMCX_DLL_CTL2(tad));
-			if (ctl2.s.quad_dll_ena == 0)
+			if (OCTEON_IS_OCTEON3()) {
+				if (ctl2.cn70xx.quad_dll_ena == 0)
+					continue;
+			} else if (ctl2.cn63xx.quad_dll_ena == 0)
 				continue;
 			dram_operations += cvmx_read_csr
 					(CVMX_LMCX_OPS_CNT(tad));
@@ -587,7 +590,7 @@ static int __init proc_perf_init(void)
 	}
 
 	proc_perf_entry = proc_create("octeon_perf", S_IRUGO, NULL,
-				&proc_perf_operations);
+				      &proc_perf_operations);
 
 	/* Octeon2 has different L2C performance counters */
 	if (!(OCTEON_IS_MODEL(OCTEON_CN5XXX) ||
