@@ -373,7 +373,7 @@ static int octeon_cpu_disable(void)
 static void octeon_cpu_die(unsigned int cpu)
 {
 	int coreid = cpu_logical_map(cpu);
-	uint32_t mask, new_mask;
+	uint32_t new_mask ;	/* FIXME: extend beyond 32 cores */
 	const struct cvmx_bootmem_named_block_desc *block_desc;
 
 	while (per_cpu(cpu_state, cpu) != CPU_DEAD)
@@ -383,9 +383,9 @@ static void octeon_cpu_die(unsigned int cpu)
 	 * This is a bit complicated strategics of getting/settig available
 	 * cores mask, copied from bootloader
 	 */
-
-	mask = 1 << coreid;
-	octeon_hotplug_global_ptr->avail_coremask |= mask;
+	cvmx_coremask_set_core( 
+		&octeon_hotplug_global_ptr->avail_coremask,
+		coreid );
 
 	/* LINUX_APP_BOOT_BLOCK is initialized in bootoct binary */
 	block_desc = cvmx_bootmem_find_named_block(LINUX_APP_BOOT_BLOCK_NAME);
@@ -395,16 +395,19 @@ static void octeon_cpu_die(unsigned int cpu)
 
 		labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
 
-		labi->avail_coremask |= mask;
+		labi->avail_coremask |= (1 << coreid);
 		new_mask = labi->avail_coremask;
 	} else {		       /* alternative, already initialized */
-		new_mask = octeon_hotplug_global_ptr->avail_coremask;
+		new_mask  = cvmx_coremask_get32( 
+				&octeon_hotplug_global_ptr->avail_coremask);
 	}
 
 	mb();
 
+	/* FIXME: will only show up to 32 cores */
 	pr_info("Reset core %d. Available Coremask = 0x%x\n",
 		coreid, new_mask);
+	/* FIXME: handle cores over 31 */
 	cvmx_write_csr(CVMX_CIU_NMI, 1 << coreid);
 }
 
@@ -438,21 +441,27 @@ static int octeon_update_boot_vector(unsigned int cpu)
 		labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
 
 		avail_coremask = labi->avail_coremask;
-		labi->avail_coremask &= ~(1 << coreid);
-	} else {		       /* alternative, already initialized */
-		avail_coremask = octeon_hotplug_global_ptr->avail_coremask;
 		if (!(avail_coremask & (1<<coreid)))
 			return -1;
+		labi->avail_coremask &= ~(1 << coreid);
+	} else {		       /* alternative, already initialized */
+		if ( ! cvmx_coremask_is_core_set(
+			&octeon_hotplug_global_ptr->avail_coremask, coreid ))
+			return -1;
+		/* This core is no longer available */
+		cvmx_coremask_clear_core(
+			& octeon_hotplug_global_ptr->avail_coremask,
+			coreid );
 	}
-	/* This core is no longer available */
-	octeon_hotplug_global_ptr->avail_coremask &= ~(1<<coreid);
 
+	/* FIXME: extend beyond 32 cores */
 	boot_vect[coreid].app_start_func_addr = octeon_hotplug_entry_addr;
 	boot_vect[coreid].code_addr = octeon_bootloader_entry_addr;
 
 	mb();
 
-	cvmx_write_csr(CVMX_CIU_NMI, (1 << coreid) & avail_coremask);
+	/* FIXME: extend beyond 32 cores */
+	cvmx_write_csr(CVMX_CIU_NMI, (1 << coreid));
 
 	return 0;
 }
