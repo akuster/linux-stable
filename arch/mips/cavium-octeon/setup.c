@@ -538,10 +538,10 @@ static int is_task_and_current_same(struct task_struct *t)
 	const struct cred *cred = current_cred(), *tcred;
 
 	tcred = __task_cred(t);
-	if ((cred->euid ^ tcred->suid) &&
-	    (cred->euid ^ tcred->uid) &&
-	    (cred->uid  ^ tcred->suid) &&
-	    (cred->uid  ^ tcred->uid)) {
+	if ((__kuid_val(cred->euid) ^ __kuid_val(tcred->suid)) &&
+	    (__kuid_val(cred->euid) ^ __kuid_val(tcred->uid)) &&
+	    (__kuid_val(cred->uid)  ^ __kuid_val(tcred->suid)) &&
+	    (__kuid_val(cred->uid)  ^ __kuid_val(tcred->uid))) {
 		return 0;
 	}
 	return 1;
