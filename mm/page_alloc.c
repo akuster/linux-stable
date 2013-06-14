@@ -578,7 +578,7 @@ static inline void __free_one_page(struct page *page,
 	unsigned long page_idx;
 	unsigned long combined_idx;
 	unsigned long uninitialized_var(buddy_idx);
-	struct page *buddy = NULL;
+	struct page *buddy;
 	int max_order = MAX_ORDER;
 
 	VM_BUG_ON(!zone_is_initialized(zone));
@@ -624,7 +624,6 @@ static inline void __free_one_page(struct page *page,
 		order++;
 	}
 	set_page_order(page, order);
-	VM_BUG_ON(buddy  == NULL );
 
 	/*
 	 * If this is not the largest possible page, check if the buddy
