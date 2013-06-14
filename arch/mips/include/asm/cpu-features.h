@@ -158,6 +158,9 @@
 #ifndef cpu_has_local_ebase
 #define cpu_has_local_ebase	1
 #endif
+#ifndef cpu_has_saa
+#define cpu_has_saa 0
+#endif
 #ifndef cpu_has_octeon2_isa
 #define cpu_has_octeon2_isa 0
 #endif
