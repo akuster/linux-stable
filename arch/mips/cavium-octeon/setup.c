@@ -43,6 +43,7 @@
 #include <asm/octeon/octeon-boot-info.h>
 #include <asm/octeon/pci-octeon.h>
 #include <asm/octeon/cvmx-mio-defs.h>
+#include <asm/octeon/cvmx-rst-defs.h>
 
 #include <asm/octeon/cvmx-qlm.h>
 #include <asm/octeon/cvmx-debug.h>
@@ -733,6 +734,11 @@ void __init prom_init(void)
 		/* I/O clock runs at a different rate than the CPU. */
 		union cvmx_mio_rst_boot rst_boot;
 		rst_boot.u64 = cvmx_read_csr(CVMX_MIO_RST_BOOT);
+		octeon_io_clock_rate = 50000000 * rst_boot.s.pnr_mul;
+	} else if (OCTEON_IS_OCTEON3()) {
+		/* I/O clock runs at a different rate than the CPU. */
+		union cvmx_rst_boot rst_boot;
+		rst_boot.u64 = cvmx_read_csr(CVMX_RST_BOOT);
 		octeon_io_clock_rate = 50000000 * rst_boot.s.pnr_mul;
 	} else {
 		octeon_io_clock_rate = sysinfo->cpu_clock_hz;
