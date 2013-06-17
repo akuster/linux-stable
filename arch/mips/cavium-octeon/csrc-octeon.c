@@ -46,7 +46,6 @@ void __init octeon_setup_delays(void)
 		f = (0x8000000000000000ull / sdiv) * 2;
 	} else if (current_cpu_type() == CPU_CAVIUM_OCTEON3) {
 		union cvmx_rst_boot rst_boot;
-
 		rst_boot.u64 = cvmx_read_csr(CVMX_RST_BOOT);
 		rdiv = rst_boot.s.c_mul;	/* CPU clock */
 		sdiv = rst_boot.s.pnr_mul;	/* I/O clock */
