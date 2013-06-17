@@ -82,7 +82,7 @@
  * internal cycle counter to completely eliminate any causes of
  * bus traffic.
  *
- * <hr> $Revision: 83290 $ <hr>
+ * <hr> $Revision: 85265 $ <hr>
  */
 
 #ifndef __CVMX_CMD_QUEUE_H__
@@ -148,7 +148,7 @@ typedef struct {
 	uint64_t fpa_pool:3;	    /**< FPA pool buffers come from */
 	uint64_t base_ptr_div128:33;
 				    /**< Top of command buffer pointer shifted 7 */
-	uint64_t unused2:3;
+	uint64_t unused2:2;
 	uint64_t pool_size_m1:13;
 				    /**< FPA buffer size in 64bit words minus 1 */
 	uint64_t index:13;	    /**< Number of commands already used in buffer */
@@ -158,7 +158,7 @@ typedef struct {
 
 	uint64_t index:13;
 	uint64_t pool_size_m1:13;
-	uint64_t unused2:3;
+	uint64_t unused2:2;
 	uint64_t base_ptr_div128:33;
 	uint64_t fpa_pool:3;
 #endif
