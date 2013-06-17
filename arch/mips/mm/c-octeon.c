@@ -44,7 +44,7 @@ static void octeon_flush_data_cache_page(unsigned long addr)
     /* Nothing to do */
 }
 
-static inline void octeon_local_flush_icache(void)
+static void octeon_local_flush_icache(void)
 {
 	asm volatile ("synci 0($0)");
 }
@@ -55,6 +55,7 @@ static inline void octeon_local_flush_icache(void)
 static void local_octeon_flush_icache_range(unsigned long start,
 					    unsigned long end)
 {
+	mb();
 	octeon_local_flush_icache();
 }
 
