@@ -48,6 +48,8 @@
 #include <asm/octeon/cvmx-qlm.h>
 #include <asm/octeon/cvmx-debug.h>
 
+#define SDK_VERSION "3.1"
+
 extern struct plat_smp_ops octeon_smp_ops;
 
 static unsigned long long MAX_MEMORY = 512ull << 20;
@@ -943,10 +945,7 @@ append_arg:
 #ifdef CONFIG_CAVIUM_GDB
 	cvmx_debug_init ();
 #endif
-
-#ifdef	SDK_VERSION
 	pr_info("Cavium Inc. SDK-" SDK_VERSION "\n");
-#endif
 }
 
 #ifdef CONFIG_CAVIUM_OCTEON_LOCK_L2
