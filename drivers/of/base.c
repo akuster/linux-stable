@@ -985,36 +985,26 @@ EXPORT_SYMBOL(of_find_matching_node_and_match);
 /**
  * of_modalias_node - Lookup appropriate modalias for a device node
  * @node:	pointer to a device tree node
- * @prefix:	prefix to be added to the compatible property, may be NULL
  * @modalias:	Pointer to buffer that modalias value will be copied into
  * @len:	Length of modalias value
  *
- * Based on the value of the compatible property, this routine will
- * attempt to choose an appropriate modalias value for a particular
- * device tree node.  It does this by stripping the manufacturer
- * prefix (as delimited by a ',') from the first entry in the
- * compatible list property, and appending it to the prefix.
+ * Based on the value of the compatible property, this routine will attempt
+ * to choose an appropriate modalias value for a particular device tree node.
+ * It does this by stripping the manufacturer prefix (as delimited by a ',')
+ * from the first entry in the compatible list property.
  *
  * This routine returns 0 on success, <0 on failure.
  */
-int of_modalias_node(struct device_node *node, const char *prefix,
-		     char *modalias, int len)
+int of_modalias_node(struct device_node *node, char *modalias, int len)
 {
 	const char *compatible, *p;
 	int cplen;
-
-	if (len < 1)
-		return -EINVAL;
 
 	compatible = of_get_property(node, "compatible", &cplen);
 	if (!compatible || strlen(compatible) > cplen)
 		return -ENODEV;
 	p = strchr(compatible, ',');
-	if (prefix)
-		strlcpy(modalias, prefix, len);
-	else
-		modalias[0] = 0;
-	strlcat(modalias, p ? p + 1 : compatible, len);
+	strlcpy(modalias, p ? p + 1 : compatible, len);
 	return 0;
 }
 EXPORT_SYMBOL_GPL(of_modalias_node);
