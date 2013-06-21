@@ -78,16 +78,6 @@ static struct attribute *spi_dev_attrs[] = {
 };
 ATTRIBUTE_GROUPS(spi_dev);
 
-/*
- * modalias will be of the form "spi:name" or "name", match on just
- * the name portion.
- */
-static const char *spi_device_spidev2name(const struct spi_device *sdev)
-{
-	const char *p = strchr(sdev->modalias, ':');
-	return p ? p + 1 : sdev->modalias;
-}
-
 /* modalias support makes "modprobe $MODALIAS" new-style hotplug work,
 
  */
@@ -95,10 +85,8 @@ static const char *spi_device_spidev2name(const struct spi_device *sdev)
 static const struct spi_device_id *spi_match_id(const struct spi_device_id *id,
 						const struct spi_device *sdev)
 {
-	const char *name = spi_device_spidev2name(sdev);
-
 	while (id->name[0]) {
-		if (!strcmp(name, id->name))
+		if (!strcmp(sdev->modalias, id->name))
 			return id;
 		id++;
 	}
@@ -129,7 +117,7 @@ static int spi_match_device(struct device *dev, struct device_driver *drv)
 	if (sdrv->id_table)
 		return !!spi_match_id(sdrv->id_table, spi);
 
-	return strcmp(spi_device_spidev2name(spi), drv->name) == 0;
+	return strcmp(spi->modalias, drv->name) == 0;
 }
 
 static int spi_uevent(struct device *dev, struct kobj_uevent_env *env)
@@ -141,12 +129,7 @@ static int spi_uevent(struct device *dev, struct kobj_uevent_env *env)
 	if (rc != -ENODEV)
 		return rc;
 
-	if (strncmp(SPI_MODULE_PREFIX, spi->modalias,
-		    strlen(SPI_MODULE_PREFIX)) == 0)
-		add_uevent_var(env, "MODALIAS=%s", spi->modalias);
-	else
-		add_uevent_var(env, "MODALIAS=%s%s",
-			       SPI_MODULE_PREFIX, spi->modalias);
+	add_uevent_var(env, "MODALIAS=%s%s", SPI_MODULE_PREFIX, spi->modalias);
 
 	return 0;
 }
@@ -502,7 +485,6 @@ struct spi_device *spi_new_device(struct spi_master *master,
 {
 	struct spi_device	*proxy;
 	int			status;
-	size_t			l;
 
 	/* NOTE:  caller did any chip->bus_num checks necessary.
 	 *
@@ -515,23 +497,13 @@ struct spi_device *spi_new_device(struct spi_master *master,
 	if (!proxy)
 		return NULL;
 
-	if (strncmp(SPI_MODULE_PREFIX, chip->modalias,
-		    strlen(SPI_MODULE_PREFIX)) == 0) {
-		proxy->modalias[0] = 0;
-	} else {
-		l = strlcpy(proxy->modalias, SPI_MODULE_PREFIX,
-			    sizeof(proxy->modalias));
-		WARN_ON(l >= sizeof(proxy->modalias));
-	}
-
-	l = strlcat(proxy->modalias, chip->modalias, sizeof(proxy->modalias));
-
-	WARN_ON(l >= sizeof(proxy->modalias));
+	WARN_ON(strlen(chip->modalias) >= sizeof(proxy->modalias));
 
 	proxy->chip_select = chip->chip_select;
 	proxy->max_speed_hz = chip->max_speed_hz;
 	proxy->mode = chip->mode;
 	proxy->irq = chip->irq;
+	strlcpy(proxy->modalias, chip->modalias, sizeof(proxy->modalias));
 	proxy->dev.platform_data = (void *) chip->platform_data;
 	proxy->controller_data = chip->controller_data;
 	proxy->controller_state = NULL;
