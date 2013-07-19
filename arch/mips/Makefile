@@ -12,7 +12,7 @@
 # for "archclean" cleaning up for this architecture.
 #
 
-KBUILD_DEFCONFIG := cavium-octeon_defconfig
+KBUILD_DEFCONFIG := ip22_defconfig
 
 #
 # Select the object file format to substitute into the linker script.

@@ -63,7 +63,7 @@ menu "Machine selection"
 
 choice
 	prompt "System type"
-	default CAVIUM_OCTEON_REFERENCE_BOARD
+	default SGI_IP22
 
 config MIPS_ALCHEMY
 	bool "Alchemy processor based machines"
