@@ -1556,7 +1556,10 @@ static const struct mips_perf_event *octeon_pmu_map_raw_event(u64 config)
 	raw_event.cntr_mask = CNTR_ALL;
 	raw_event.event_id = base_id;
 
-	if (current_cpu_type() == CPU_CAVIUM_OCTEON2) {
+	if (current_cpu_type() == CPU_CAVIUM_OCTEON3) {
+		if (base_id > 0x65)
+			return ERR_PTR(-EOPNOTSUPP);
+	} else if (current_cpu_type() == CPU_CAVIUM_OCTEON2) {
 		if (base_id > 0x42)
 			return ERR_PTR(-EOPNOTSUPP);
 	} else {
@@ -1682,6 +1685,7 @@ init_hw_perf_events(void)
 	case CPU_CAVIUM_OCTEON:
 	case CPU_CAVIUM_OCTEON_PLUS:
 	case CPU_CAVIUM_OCTEON2:
+	case CPU_CAVIUM_OCTEON3:
 		mipspmu.name = "octeon";
 		mipspmu.general_event_map = &octeon_event_map;
 		mipspmu.cache_event_map = &octeon_cache_map;
