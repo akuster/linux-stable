@@ -9,6 +9,7 @@
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/export.h>
 #include <linux/semaphore.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/map.h>
