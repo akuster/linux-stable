@@ -118,6 +118,17 @@ CVMX_SHARED void (*cvmx_override_pko_queue_priority) (int ipd_port, uint64_t *pr
 EXPORT_SYMBOL(cvmx_override_pko_queue_priority);
 
 /**
+ * cvmx_override_iface_phy_mode(int interface, int index) is a function pointer.
+ * It is meant to allow customization of interfaces which do not have a PHY.
+ *
+ * @returns 0 if MAC decides TX_CONFIG_REG or 1 if PHY decides  TX_CONFIG_REG.
+ *
+ * If this function pointer is NULL then it defaults to the MAC.
+ */
+CVMX_SHARED int (*cvmx_override_iface_phy_mode) (int interface, int index);
+EXPORT_SYMBOL(cvmx_override_iface_phy_mode);
+
+/**
  * cvmx_override_ipd_port_setup(int ipd_port) is a function
  * pointer. It is meant to allow customization of the IPD
  * port/port kind setup before packet input/output comes online.
@@ -154,7 +165,7 @@ int cvmx_helper_get_number_of_interfaces(void)
 	else if (OCTEON_IS_MODEL(OCTEON_CN70XX))
 		return 5;
 	else if (OCTEON_IS_MODEL(OCTEON_CN78XX))
-		return 9;
+		return 10;
 	else
 		return 3;
 }
@@ -215,11 +226,11 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_cn70xx(int interface)
 		inf_mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
 
 		switch(inf_mode.s.mode) {
-		case 1:	
+		case 1:
 			return CVMX_HELPER_INTERFACE_MODE_SGMII;
-		case 2:	
+		case 2:
 			return CVMX_HELPER_INTERFACE_MODE_QSGMII;
-		case 3:	
+		case 3:
 			return CVMX_HELPER_INTERFACE_MODE_RXAUI;
 		default:
 			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
@@ -250,16 +261,17 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_cn78xx(int interface)
 	case 2:
 	case 3:
 	case 4:
+	case 5:
 		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
 
-	case 5:
 	case 6:
+	case 7:
 		return CVMX_HELPER_INTERFACE_MODE_ILK;
 
-	case 7:
+	case 8:
 		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
 
-	case 8:
+	case 9:
 		return CVMX_HELPER_INTERFACE_MODE_LOOP;
 
 	default:
@@ -1341,6 +1353,8 @@ int __cvmx_helper_backpressure_is_misaligned(void)
  * aren't sent out partially setup hardware.
  *
  * @param interface Interface to enable
+ * @param iflags Interface flags
+ * @param pflags Array of flags, one per port on the interface
  *
  * @return Zero on success, negative on failure
  */
@@ -1616,6 +1630,7 @@ int cvmx_helper_ipd_and_packet_input_enable(void)
 {
 	int num_interfaces;
 	int interface;
+	int num_ports;
 
 	/* Enable IPD */
 	cvmx_ipd_enable();
@@ -1627,7 +1642,8 @@ int cvmx_helper_ipd_and_packet_input_enable(void)
 	 */
 	num_interfaces = cvmx_helper_get_number_of_interfaces();
 	for (interface = 0; interface < num_interfaces; interface++) {
-		if (cvmx_helper_ports_on_interface(interface) > 0)
+		num_ports = cvmx_helper_ports_on_interface(interface);
+		if (num_ports > 0)
 			__cvmx_helper_packet_hardware_enable(interface);
 	}
 
@@ -1659,10 +1675,10 @@ int cvmx_initialize_sso_78xx(void)
 	cvmx_sso_nw_tim_t nw_tim;
 	cvmx_sso_aw_cfg_t aw_cfg;
 
-	cvmx_fpa_pool_stack_init(node, SSO_POOL_NUM, 0, MAX_SSO_ENTRIES,
-				 FPA_NATURAL_ALIGNMENT, 4096);
+	cvmx_fpa_pool_stack_init(node, SSO_POOL_NUM, "SSO Pool", 0,
+			MAX_SSO_ENTRIES, FPA_NATURAL_ALIGNMENT, 4096);
 	cvmx_fpa_assign_aura(node, SSO_AURA_NUM, SSO_POOL_NUM);
-	cvmx_fpa_aura_init(node, aura, 0, num_blocks, 0);
+	cvmx_fpa_aura_init(node, aura, "SSO Aura", 0, num_blocks, 0);
 
 	/* Initialize the 256 group/qos queues */
 	for (grp=0; grp<256; grp++)

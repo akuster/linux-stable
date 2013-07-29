@@ -1456,6 +1456,7 @@ static inline uint64_t CVMX_PCIEEPX_CFG023(unsigned long block_id)
 static inline uint64_t CVMX_PCIEEPX_CFG024(unsigned long block_id)
 {
 	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 2))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
 		cvmx_warn("CVMX_PCIEEPX_CFG024(%lu) is invalid on this chip\n", block_id);
 	return 0x0000030000000060ull + ((block_id) & 3) * 0x100000000ull;
@@ -1467,6 +1468,7 @@ static inline uint64_t CVMX_PCIEEPX_CFG024(unsigned long block_id)
 static inline uint64_t CVMX_PCIEEPX_CFG025(unsigned long block_id)
 {
 	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 2))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
 		cvmx_warn("CVMX_PCIEEPX_CFG025(%lu) is invalid on this chip\n", block_id);
 	return 0x0000030000000064ull + ((block_id) & 3) * 0x100000000ull;
@@ -5468,6 +5470,7 @@ union cvmx_pcieepx_cfg024 {
 	uint32_t msimm                        : 32;
 #endif
 	} s;
+	struct cvmx_pcieepx_cfg024_s          cn70xx;
 	struct cvmx_pcieepx_cfg024_s          cn78xx;
 };
 typedef union cvmx_pcieepx_cfg024 cvmx_pcieepx_cfg024_t;
@@ -5489,6 +5492,7 @@ union cvmx_pcieepx_cfg025 {
 	uint32_t msimp                        : 32;
 #endif
 	} s;
+	struct cvmx_pcieepx_cfg025_s          cn70xx;
 	struct cvmx_pcieepx_cfg025_s          cn78xx;
 };
 typedef union cvmx_pcieepx_cfg025 cvmx_pcieepx_cfg025_t;
@@ -7295,7 +7299,47 @@ union cvmx_pcieepx_cfg065 {
 	struct cvmx_pcieepx_cfg065_cn61xx     cn66xx;
 	struct cvmx_pcieepx_cfg065_cn61xx     cn68xx;
 	struct cvmx_pcieepx_cfg065_cn52xx     cn68xxp1;
-	struct cvmx_pcieepx_cfg065_cn61xx     cn70xx;
+	struct cvmx_pcieepx_cfg065_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t reserved_25_31               : 7;
+	uint32_t uatombs                      : 1;  /**< Unsupported AtomicOp Egress Blocked Status */
+	uint32_t reserved_23_23               : 1;
+	uint32_t ucies                        : 1;  /**< Uncorrectable Internal Error Status */
+	uint32_t reserved_21_21               : 1;
+	uint32_t ures                         : 1;  /**< Unsupported Request Error Status */
+	uint32_t ecrces                       : 1;  /**< ECRC Error Status */
+	uint32_t mtlps                        : 1;  /**< Malformed TLP Status */
+	uint32_t ros                          : 1;  /**< Receiver Overflow Status */
+	uint32_t ucs                          : 1;  /**< Unexpected Completion Status */
+	uint32_t cas                          : 1;  /**< Completer Abort Status */
+	uint32_t cts                          : 1;  /**< Completion Timeout Status */
+	uint32_t fcpes                        : 1;  /**< Flow Control Protocol Error Status */
+	uint32_t ptlps                        : 1;  /**< Poisoned TLP Status */
+	uint32_t reserved_6_11                : 6;
+	uint32_t sdes                         : 1;  /**< Surprise Down Error Status (not supported) */
+	uint32_t dlpes                        : 1;  /**< Data Link Protocol Error Status */
+	uint32_t reserved_0_3                 : 4;
+#else
+	uint32_t reserved_0_3                 : 4;
+	uint32_t dlpes                        : 1;
+	uint32_t sdes                         : 1;
+	uint32_t reserved_6_11                : 6;
+	uint32_t ptlps                        : 1;
+	uint32_t fcpes                        : 1;
+	uint32_t cts                          : 1;
+	uint32_t cas                          : 1;
+	uint32_t ucs                          : 1;
+	uint32_t ros                          : 1;
+	uint32_t mtlps                        : 1;
+	uint32_t ecrces                       : 1;
+	uint32_t ures                         : 1;
+	uint32_t reserved_21_21               : 1;
+	uint32_t ucies                        : 1;
+	uint32_t reserved_23_23               : 1;
+	uint32_t uatombs                      : 1;
+	uint32_t reserved_25_31               : 7;
+#endif
+	} cn70xx;
 	struct cvmx_pcieepx_cfg065_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_26_31               : 6;
@@ -7761,7 +7805,47 @@ union cvmx_pcieepx_cfg067 {
 	struct cvmx_pcieepx_cfg067_cn61xx     cn66xx;
 	struct cvmx_pcieepx_cfg067_cn61xx     cn68xx;
 	struct cvmx_pcieepx_cfg067_cn52xx     cn68xxp1;
-	struct cvmx_pcieepx_cfg067_cn61xx     cn70xx;
+	struct cvmx_pcieepx_cfg067_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t reserved_25_31               : 7;
+	uint32_t uatombs                      : 1;  /**< Unsupported AtomicOp Egress Blocked Severity */
+	uint32_t reserved_23_23               : 1;
+	uint32_t ucies                        : 1;  /**< Uncorrectable Internal Error Severity */
+	uint32_t reserved_21_21               : 1;
+	uint32_t ures                         : 1;  /**< Unsupported Request Error Severity */
+	uint32_t ecrces                       : 1;  /**< ECRC Error Severity */
+	uint32_t mtlps                        : 1;  /**< Malformed TLP Severity */
+	uint32_t ros                          : 1;  /**< Receiver Overflow Severity */
+	uint32_t ucs                          : 1;  /**< Unexpected Completion Severity */
+	uint32_t cas                          : 1;  /**< Completer Abort Severity */
+	uint32_t cts                          : 1;  /**< Completion Timeout Severity */
+	uint32_t fcpes                        : 1;  /**< Flow Control Protocol Error Severity */
+	uint32_t ptlps                        : 1;  /**< Poisoned TLP Severity */
+	uint32_t reserved_6_11                : 6;
+	uint32_t sdes                         : 1;  /**< Surprise Down Error Severity (not supported) */
+	uint32_t dlpes                        : 1;  /**< Data Link Protocol Error Severity */
+	uint32_t reserved_0_3                 : 4;
+#else
+	uint32_t reserved_0_3                 : 4;
+	uint32_t dlpes                        : 1;
+	uint32_t sdes                         : 1;
+	uint32_t reserved_6_11                : 6;
+	uint32_t ptlps                        : 1;
+	uint32_t fcpes                        : 1;
+	uint32_t cts                          : 1;
+	uint32_t cas                          : 1;
+	uint32_t ucs                          : 1;
+	uint32_t ros                          : 1;
+	uint32_t mtlps                        : 1;
+	uint32_t ecrces                       : 1;
+	uint32_t ures                         : 1;
+	uint32_t reserved_21_21               : 1;
+	uint32_t ucies                        : 1;
+	uint32_t reserved_23_23               : 1;
+	uint32_t uatombs                      : 1;
+	uint32_t reserved_25_31               : 7;
+#endif
+	} cn70xx;
 	struct cvmx_pcieepx_cfg067_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_26_31               : 6;
@@ -7910,7 +7994,7 @@ union cvmx_pcieepx_cfg068 {
 	struct cvmx_pcieepx_cfg068_cn52xx     cn66xx;
 	struct cvmx_pcieepx_cfg068_cn52xx     cn68xx;
 	struct cvmx_pcieepx_cfg068_cn52xx     cn68xxp1;
-	struct cvmx_pcieepx_cfg068_cn52xx     cn70xx;
+	struct cvmx_pcieepx_cfg068_s          cn70xx;
 	struct cvmx_pcieepx_cfg068_s          cn78xx;
 	struct cvmx_pcieepx_cfg068_s          cnf71xx;
 };
@@ -8302,7 +8386,7 @@ typedef union cvmx_pcieepx_cfg083 cvmx_pcieepx_cfg083_t;
 /**
  * cvmx_pcieep#_cfg084
  *
- * PCIE_CFG112 = One hundred thirteenth 32-bits of PCIE type 0 config space
+ * PCIE_CFG084 = Eighty-fifth 32-bits of PCIE type 0 config space
  * (PCI Express Resizable BAR (RBAR) Control Register)
  */
 union cvmx_pcieepx_cfg084 {
@@ -9151,6 +9235,90 @@ union cvmx_pcieepx_cfg450 {
                                                          * As the The Force Link is a pulse, writing a 1 to it does
                                                            trigger the forced link state event, even thought reading it
                                                            always returns a 0. */
+	uint32_t reserved_12_14               : 3;
+	uint32_t link_cmd                     : 4;  /**< Link Command
+                                                         The Link command that the PCI Express Core will be forced to
+                                                         transmit when bit 15 (Force Link) is set.
+                                                         Command encoding:
+                                                         o PEM_SEND_IDLE              1h
+                                                         o PEM_SEND_EIDLE             2h
+                                                         o PEM_XMT_IN_EIDLE           3h
+                                                         o PEM_MOD_COMPL_PATTERN      4h
+                                                         o PEM_SEND_RCVR_DETECT_SEQ   5h
+                                                         o PEM_SEND_TS1               6h
+                                                         o PEM_SEND_TS2               7h
+                                                         o PEM_COMPLIANCE_PATTERN     8h
+                                                         o PEM_SEND_SDS               9h
+                                                         o PEM_SEND_BEACON            ah
+                                                         o PEM_SEND_N_FTS             bh
+                                                         o PEM_NORM                   ch
+                                                         o PEM_SEND_SKP               dh
+                                                         o PEM_SEND_EIES              eh
+                                                         o PEM_SEND_EIES_SYM          fh */
+	uint32_t link_num                     : 8;  /**< Link Number
+                                                         Not used for Endpoint */
+#else
+	uint32_t link_num                     : 8;
+	uint32_t link_cmd                     : 4;
+	uint32_t reserved_12_14               : 3;
+	uint32_t force_link                   : 1;
+	uint32_t link_state                   : 6;
+	uint32_t reserved_22_23               : 2;
+	uint32_t lpec                         : 8;
+#endif
+	} s;
+	struct cvmx_pcieepx_cfg450_cn52xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t lpec                         : 8;  /**< Low Power Entrance Count
+                                                         The Power Management state will wait for this many clock cycles
+                                                         for the associated completion of a CfgWr to PCIE_CFG017 register
+                                                         Power State (PS) field register to go low-power. This register
+                                                         is intended for applications that do not let the PCI Express
+                                                         bus handle a completion for configuration request to the
+                                                         Power Management Control and Status (PCIE_CFG017) register. */
+	uint32_t reserved_22_23               : 2;
+	uint32_t link_state                   : 6;  /**< Link State
+                                                         The Link state that the PCI Express Bus will be forced to
+                                                         when bit 15 (Force Link) is set.
+                                                         State encoding:
+                                                         o DETECT_QUIET              00h
+                                                         o DETECT_ACT                01h
+                                                         o POLL_ACTIVE               02h
+                                                         o POLL_COMPLIANCE           03h
+                                                         o POLL_CONFIG               04h
+                                                         o PRE_DETECT_QUIET          05h
+                                                         o DETECT_WAIT               06h
+                                                         o CFG_LINKWD_START          07h
+                                                         o CFG_LINKWD_ACEPT          08h
+                                                         o CFG_LANENUM_WAIT          09h
+                                                         o CFG_LANENUM_ACEPT         0Ah
+                                                         o CFG_COMPLETE              0Bh
+                                                         o CFG_IDLE                  0Ch
+                                                         o RCVRY_LOCK                0Dh
+                                                         o RCVRY_SPEED               0Eh
+                                                         o RCVRY_RCVRCFG             0Fh
+                                                         o RCVRY_IDLE                10h
+                                                         o L0                        11h
+                                                         o L0S                       12h
+                                                         o L123_SEND_EIDLE           13h
+                                                         o L1_IDLE                   14h
+                                                         o L2_IDLE                   15h
+                                                         o L2_WAKE                   16h
+                                                         o DISABLED_ENTRY            17h
+                                                         o DISABLED_IDLE             18h
+                                                         o DISABLED                  19h
+                                                         o LPBK_ENTRY                1Ah
+                                                         o LPBK_ACTIVE               1Bh
+                                                         o LPBK_EXIT                 1Ch
+                                                         o LPBK_EXIT_TIMEOUT         1Dh
+                                                         o HOT_RESET_ENTRY           1Eh
+                                                         o HOT_RESET                 1Fh */
+	uint32_t force_link                   : 1;  /**< Force Link
+                                                         Forces the Link to the state specified by the Link State field.
+                                                         The Force Link pulse will trigger Link re-negotiation.
+                                                         * As the The Force Link is a pulse, writing a 1 to it does
+                                                           trigger the forced link state event, even thought reading it
+                                                           always returns a 0. */
 	uint32_t reserved_8_14                : 7;
 	uint32_t link_num                     : 8;  /**< Link Number
                                                          Not used for Endpoint */
@@ -9162,20 +9330,19 @@ union cvmx_pcieepx_cfg450 {
 	uint32_t reserved_22_23               : 2;
 	uint32_t lpec                         : 8;
 #endif
-	} s;
-	struct cvmx_pcieepx_cfg450_s          cn52xx;
-	struct cvmx_pcieepx_cfg450_s          cn52xxp1;
-	struct cvmx_pcieepx_cfg450_s          cn56xx;
-	struct cvmx_pcieepx_cfg450_s          cn56xxp1;
-	struct cvmx_pcieepx_cfg450_s          cn61xx;
-	struct cvmx_pcieepx_cfg450_s          cn63xx;
-	struct cvmx_pcieepx_cfg450_s          cn63xxp1;
-	struct cvmx_pcieepx_cfg450_s          cn66xx;
-	struct cvmx_pcieepx_cfg450_s          cn68xx;
-	struct cvmx_pcieepx_cfg450_s          cn68xxp1;
+	} cn52xx;
+	struct cvmx_pcieepx_cfg450_cn52xx     cn52xxp1;
+	struct cvmx_pcieepx_cfg450_cn52xx     cn56xx;
+	struct cvmx_pcieepx_cfg450_cn52xx     cn56xxp1;
+	struct cvmx_pcieepx_cfg450_cn52xx     cn61xx;
+	struct cvmx_pcieepx_cfg450_cn52xx     cn63xx;
+	struct cvmx_pcieepx_cfg450_cn52xx     cn63xxp1;
+	struct cvmx_pcieepx_cfg450_cn52xx     cn66xx;
+	struct cvmx_pcieepx_cfg450_cn52xx     cn68xx;
+	struct cvmx_pcieepx_cfg450_cn52xx     cn68xxp1;
 	struct cvmx_pcieepx_cfg450_s          cn70xx;
-	struct cvmx_pcieepx_cfg450_s          cn78xx;
-	struct cvmx_pcieepx_cfg450_s          cnf71xx;
+	struct cvmx_pcieepx_cfg450_cn52xx     cn78xx;
+	struct cvmx_pcieepx_cfg450_cn52xx     cnf71xx;
 };
 typedef union cvmx_pcieepx_cfg450 cvmx_pcieepx_cfg450_t;
 
@@ -9593,7 +9760,25 @@ union cvmx_pcieepx_cfg454 {
 	struct cvmx_pcieepx_cfg454_cn61xx     cn66xx;
 	struct cvmx_pcieepx_cfg454_cn61xx     cn68xx;
 	struct cvmx_pcieepx_cfg454_cn52xx     cn68xxp1;
-	struct cvmx_pcieepx_cfg454_cn61xx     cn70xx;
+	struct cvmx_pcieepx_cfg454_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t reserved_24_31               : 8;
+	uint32_t tmanlt                       : 5;  /**< Timer Modifier for Ack/Nak Latency Timer
+                                                         Increases the timer value for the Ack/Nak latency timer, in
+                                                         increments of 64 clock cycles. */
+	uint32_t tmrt                         : 5;  /**< Timer Modifier for Replay Timer
+                                                         Increases the timer value for the replay timer, in increments
+                                                         of 64 clock cycles. */
+	uint32_t reserved_8_13                : 6;
+	uint32_t mfuncn                       : 8;  /**< Max Number of Functions Supported */
+#else
+	uint32_t mfuncn                       : 8;
+	uint32_t reserved_8_13                : 6;
+	uint32_t tmrt                         : 5;
+	uint32_t tmanlt                       : 5;
+	uint32_t reserved_24_31               : 8;
+#endif
+	} cn70xx;
 	struct cvmx_pcieepx_cfg454_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_29_31               : 3;

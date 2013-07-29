@@ -42,7 +42,7 @@
  *
  * This is file defines ASM primitives for the executive.
 
- * <hr>$Revision: 84791 $<hr>
+ * <hr>$Revision: 86220 $<hr>
  *
  *
  */
@@ -66,6 +66,7 @@
 #define COP0_ENTRYLO0	$2,0	/* TLB entryLo0 */
 #define COP0_ENTRYLO1	$3,0	/* TLB entryLo1 */
 #define COP0_CONTEXT	$4,0	/* Context */
+#define COP0_USERLOCAL	$4,2	/* User Local (OCTEON II and later) */
 #define COP0_PAGEMASK	$5,0	/* TLB pagemask */
 #define COP0_PAGEGRAIN	$5,1	/* TLB config for max page sizes */
 #define COP0_WIRED	$6,0	/* TLB number of wired entries */
@@ -89,6 +90,8 @@
 #define COP0_CONFIG1	$16,1	/* Misc config options */
 #define COP0_CONFIG2	$16,2	/* Misc config options */
 #define COP0_CONFIG3	$16,3	/* Misc config options */
+#define COP0_CONFIG4	$16,4	/* Misc config options (OCTEON III and later) */
+#define COP0_CONFIG5	$16,5	/* Misc config options (OCTEON III and later) */
 #define COP0_WATCHLO0	$18,0	/* Address watch registers */
 #define COP0_WATCHLO1	$18,1	/* Address watch registers */
 #define COP0_WATCHHI0	$19,0	/* Address watch registers */
@@ -113,7 +116,10 @@
 #define COP0_DATAHID	$29,3	/* ? */
 #define COP0_ERROREPC	$30,0	/* Error PC */
 #define COP0_DESAVE	$31,0	/* Debug scratch area */
-
+#define COP0_KSCRATCH1	$31,2	/* KScratch 1 (OCTEON II and later) */
+#define COP0_KSCRATCH2	$31,3	/* KScratch 2 (OCTEON II and later) */
+#define COP0_KSCRATCH3	$31,4	/* KScratch 3 (OCTEON III and later) */
+#define COP0_KSCRATCH4	$31,5	/* KScratch 3 (OCTEON III and later) */
 #define COP1_FIR	$0	/* Floating point implementation register */
 #define COP1_FCSR	$31	/* Floating point control and status register */
 

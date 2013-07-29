@@ -482,8 +482,10 @@ union cvmx_mpi_cfg {
                                                          completion of MPI transaction
                                                          1, clock never idles, requires CS deassertion
                                                          assertion between commands */
-	uint64_t idlelo                       : 1;  /**< If 0, SPI_CLK idles high, 1st transition is hi->lo
-                                                         1, SPI_CLK idles low, 1st transition is lo->hi */
+	uint64_t idlelo                       : 1;  /**< 0 = SPI_CK idles high, first transition is high-to-low. This mode corresponds to SPI Block
+                                                         Guide options CPOL = 1, CPHA = 1.
+                                                         1 = SPI_CK idles low, first transition is low-to-high. This mode corresponds to SPI Block
+                                                         Guide options CPOL = 0, CPHA = 0. */
 	uint64_t enable                       : 1;  /**< MPI/SPI master enable.
                                                          0 = UART0_DTR_L/SPI_DO, UART0_DCD_L/SPI_DI,  pins are UART pins.
                                                          1 = UART0_DTR_L/SPI_DO and UART0_DCD_L/SPI_DI pins are MPI/SPI pins.
@@ -548,8 +550,10 @@ union cvmx_mpi_cfg {
                                                          0 = clock idles to value given by IDLELO after completion of MPI/SPI transaction.
                                                          1 = clock never idles, requires SPI_CSn_L deassertion/assertion between commands. */
 	uint64_t idlelo                       : 1;  /**< Clock idle low/clock invert.
-                                                         0 = SPI_CK idles high, first transition is high-to-low.
-                                                         1 = SPI_CK idles low, first transition is low-to-high. */
+                                                         0 = SPI_CK idles high, first transition is high-to-low. This mode corresponds to SPI Block
+                                                         Guide options CPOL = 1, CPHA = 1.
+                                                         1 = SPI_CK idles low, first transition is low-to-high. This mode corresponds to SPI Block
+                                                         Guide options CPOL = 0, CPHA = 0. */
 	uint64_t enable                       : 1;  /**< MPI/SPI enable.
                                                          0 = UART0_DTR_L/SPI_DO, UART0_DCD_L/SPI_DI, UART1_CTS_L/SPI_CS2_L, UART1_RTS_L/SPI_CS3_L
                                                          pins are UART pins.

@@ -47,6 +47,9 @@
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-pki-defs.h>
 #include <asm/octeon/cvmx-pki.h>
+#include <asm/octeon/cvmx-fpa.h>
+#include <asm/octeon/cvmx-pki-cluster.h>
+#include <asm/octeon/cvmx-pki-resources.h>
 #else
 #include "cvmx.h"
 #include "cvmx-version.h"
@@ -54,11 +57,12 @@
 #include "cvmx-pki-defs.h"
 #include "cvmx-pki.h"
 #include "cvmx-fpa.h"
+#include "cvmx-pki-cluster.h"
+#include "cvmx-pki-resources.h"
 #endif
 
-#include "cvmx-pki-cluster.h"
-
 CVMX_SHARED struct cvmx_pki_config pki_config[CVMX_MAX_NODES];
+CVMX_SHARED struct cvmx_pki_profiles pki_profiles[CVMX_MAX_NODES];
 
 /**
  * This function enables pki
@@ -106,7 +110,6 @@ EXPORT_SYMBOL(cvmx_pki_disable);
  */
 int cvmx_pki_setup_clusters(int node)
 {
-
 	int i;
 	for(i=0; i< cvmx_pki_cluster_code_length; i++)
 		cvmx_write_csr_node(node, CVMX_PKI_IMEMX(i),cvmx_pki_cluster_code_default[i]);
@@ -230,8 +233,6 @@ void cvmx_pki_write_style(int node, uint64_t style, uint64_t cluster_mask,
 	cvmx_pki_clx_stylex_alg_t style_alg_reg;
 	cvmx_pki_stylex_buf_t     style_buf_reg;
 	int cluster = 0;
-	int num_entry;
-	int index;
 
 	//vinita to_do break it differnt functions
 	while( cluster < CVMX_PKI_NUM_CLUSTERS) {
@@ -245,7 +246,7 @@ void cvmx_pki_write_style(int node, uint64_t style, uint64_t cluster_mask,
 			//style_cfg_reg.s.fcs_chk = style_cfg.en_FCS_chk;
 			//style_cfg_reg.s.strip_FCS = style_cfg.strip_l2_FCS;
 			//style_cfg_reg.s.minmax_sel = style_cfg.max_min_frame_sel;
-			style_cfg_reg.s.qpg_base = style_cfg.qpg_cfg.base_offset;
+			style_cfg_reg.s.qpg_base = style_cfg.qpg_base_offset;
 			style_cfg_reg.s.qpg_dis_padd = style_cfg.qpg_calc_port_addr;
 			style_cfg_reg.s.qpg_dis_aura = style_cfg.qpg_calc_aura;
 			style_cfg_reg.s.qpg_dis_grp = style_cfg.qpg_calc_group;
@@ -285,21 +286,12 @@ void cvmx_pki_write_style(int node, uint64_t style, uint64_t cluster_mask,
 		cluster++;
 	}
 	style_buf_reg.u64 = cvmx_read_csr_node(node, CVMX_PKI_STYLEX_BUF(style));
-	style_buf_reg.s.first_skip = style_cfg.first_mbuf_skip;
-	style_buf_reg.s.later_skip = style_cfg.later_mbuf_skip;
+	style_buf_reg.s.first_skip = (style_cfg.first_mbuf_skip)/8;
+	style_buf_reg.s.later_skip = style_cfg.later_mbuf_skip/8;
 	style_buf_reg.s.opc_mode = style_cfg.cache_mode;
-	style_buf_reg.s.mb_size = style_cfg.mbuff_size;
+	style_buf_reg.s.mb_size = (style_cfg.mbuff_size)/8;
 	style_buf_reg.s.dis_wq_dat = 0;
 	cvmx_write_csr_node(node,CVMX_PKI_STYLEX_BUF(style), style_buf_reg.u64);
-
-	num_entry = style_cfg.qpg_cfg.num_entries;
-	index = style_cfg.qpg_cfg.base_offset;
-	while(num_entry--) {
-		cvmx_pki_write_qpg_entry(node, index, style_cfg.qpg_cfg.qpg_entry[num_entry].port_add,
-					   style_cfg.qpg_cfg.qpg_entry[num_entry].aura, style_cfg.qpg_cfg.qpg_entry[num_entry].grp_ok,
-					   style_cfg.qpg_cfg.qpg_entry[num_entry].grp_bad);
-		index++;
-	}
 }
 
 
@@ -384,7 +376,7 @@ int cvmx_pki_enable_aura_qos(int node, int aura, bool ena_red,
 	pki_aura_cfg.s.ena_red = ena_red;
 	pki_aura_cfg.s.ena_drop = ena_drop;
 	pki_aura_cfg.s.ena_bp = ena_bp;
-	cvmx_write_csr_node(node, CVMX_PKI_AURAX_CFG(aura),pki_aura_cfg.u64 );
+	cvmx_write_csr_node(node, CVMX_PKI_AURAX_CFG(aura),pki_aura_cfg.u64);
 	return 0;
 }
 
@@ -452,7 +444,7 @@ int cvmx_pki_frame_len_check(int node, int id, int maxframesize, int minframesiz
 	return 0;
 }
 
-int cvmx_pki_config_l2_frame_len(int node, uint64_t maxframesize, uint64_t minframesize)
+int cvmx_pki_set_l2_frame_len(int node, uint64_t maxframesize, uint64_t minframesize)
 {
 	if (cvmx_pki_frame_len_check(node,0,maxframesize, minframesize)) {
 		if (cvmx_pki_frame_len_check(node,1,maxframesize, minframesize)) {
@@ -465,36 +457,697 @@ int cvmx_pki_config_l2_frame_len(int node, uint64_t maxframesize, uint64_t minfr
 		return 0;
 }
 
+/**
+ * This function finds if cluster profile with name already exist
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	profile index in cluster list on SUCCESS
+                -1 if profile not found in cluster list
+ */
+int cvmx_pki_cluster_profile_exist(int node, char *name)
+{
+	int index = pki_profiles[node].cl_profile_list.index;
 
-int cvmx_pki_config_cluster_group(int node, char *name, int cluster_group, uint64_t cluster_mask)
+	while(index--)
+	{
+		if(strcmp(name,pki_profiles[node].cl_profile_list.cl_profile[index].name) == 0)
+			return index;
+	}
+	return -1;
+}
+
+/**
+ * This function finds cluster mask associated with
+ * given cluster profile name.
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	cluster_mask on SUCCESS
+                -1 if profile not found in cluster list
+ */
+int cvmx_pki_find_cluster_mask(int node, char *name)
 {
 	int index;
+	int cl_grp;
+
+	if((index = cvmx_pki_cluster_profile_exist(node,name)) == -1)
+		return -1;
+
+	cl_grp = pki_profiles[node].cl_profile_list.cl_profile[index].cluster_group;
+	return pki_config[node].cluster_cfg[cl_grp].cluster_mask;
+
+}
+
+/**
+ * This function finds cluster group associated with
+ * given cluster profile name
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	cluster group number on SUCCESS
+                -1 if profile not found in cluster list
+ */
+int cvmx_pki_find_cluster_group(int node, char *name)
+{
+	int index;
+
+	if((index = cvmx_pki_cluster_profile_exist(node,name)) == -1)
+		return -1;
+	return pki_profiles[node].cl_profile_list.cl_profile[index].cluster_group;
+}
+
+/**
+ * This function finds if fpa pool profile with
+ * name already exist
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	profile index in pool list on SUCCESS
+                -1 if profile not found in pool list
+ */
+int cvmx_pki_pool_profile_exist(int node, char *name)
+{
+	int index = pki_profiles[node].pool_profile_list.index;
+
+	while(index--)
+	{
+		if(strcmp(name,pki_profiles[node].pool_profile_list.pool_profile[index].pool_name) == 0) {
+			return index;
+		}
+	}
+	return -1;
+}
+
+/**
+ * This function finds if fpa pool number associated with
+ * given profile name
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	pool number on SUCCESS
+                -1 if profile not found in pool list
+ */
+int cvmx_pki_find_pool(int node, char *name)
+{
+	int index;
+
+	if((index = cvmx_pki_pool_profile_exist(node,name)) == -1)
+		return -1;
+	return pki_profiles[node].pool_profile_list.pool_profile[index].pool_cfg.pool_num;
+}
+
+/**
+ * This function finds if fpa aura with given name
+ * exist in aura list
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	aura index in aura list on SUCCESS
+                -1 if profile not found in aura list
+ */
+int cvmx_pki_aura_profile_exist(int node, char *name)
+{
+	int index = pki_profiles[node].aura_profile_list.index;
+
+	while(index--)
+	{
+		if(strcmp(name,pki_profiles[node].aura_profile_list.aura_profile[index].aura_name) == 0)
+			return index;
+	}
+	return -1;
+}
+
+/**
+ * This function finds aura number associated with
+ * given aura name.
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	aura number in aura list on SUCCESS
+                -1 if profile not found in aura list
+ */
+int cvmx_pki_find_aura(int node, char *name)
+{
+	int index;
+
+	if((index = cvmx_pki_aura_profile_exist(node,name)) == -1)
+		return -1;
+	return pki_profiles[node].aura_profile_list.aura_profile[index].aura_num;
+}
+
+/**
+ * This function finds if group with given name
+ * exist in group list
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	index in group list on SUCCESS
+                -1 if profile not found in group list
+ */
+int cvmx_pki_group_profile_exist(int node, char *name)
+{
+	int index = pki_profiles[node].group_profile_list.index;
+
+	while(index--)
+	{
+		if(strcmp(name,pki_profiles[node].group_profile_list.group_profile[index].group_name) == 0)
+			return index;
+	}
+	return -1;
+}
+
+/**
+ * This function finds group number associated with
+ * given group profile name
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	group number on SUCCESS
+                -1 if profile not found in group list
+ */
+int cvmx_pki_find_group(int node, char *name)
+{
+	int index;
+
+	if((index = cvmx_pki_group_profile_exist(node,name)) == -1)
+		return -1;
+	return pki_profiles[node].group_profile_list.group_profile[index].group_num;
+}
+
+/**
+ * This function finds if qpg profile with given name
+ * exist in qpg list
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	index in qpg list on SUCCESS
+                -1 if profile not found in qpg list
+ */
+int cvmx_pki_qpg_profile_exist(int node, char *name)
+{
+	int index = pki_profiles[node].qpg_profile_list.index;
+
+	while(index--)
+	{
+		if(strcmp(name,pki_profiles[node].qpg_profile_list.qpg_profile[index].qpg_name) == 0)
+			return index;
+	}
+	return -1;
+}
+
+/**
+ * This function finds qpg base offset associated with
+ * given qpg profile name.
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	qpg base offset on SUCCESS
+                -1 if profile not found in qpg list
+ */
+int cvmx_pki_find_qpg_base_offset(int node, char *name)
+{
+	int index;
+
+	if((index = cvmx_pki_qpg_profile_exist(node,name)) == -1)
+		return -1;
+	return pki_profiles[node].qpg_profile_list.qpg_profile[index].base_offset;
+}
+
+/**
+ * This function get the buffer size of the given pool number
+ * @param node  node number
+ * @param pool  fpa pool number
+ * @return 	buffer size SUCCESS
+                -1 if pool number is not found in pool list
+ */
+int cvmx_pki_get_pool_buffer_size(int node,int pool)
+{
+	int index = pki_profiles[node].aura_profile_list.index;
+
+	while(index--)
+	{
+		if(pki_profiles[node].pool_profile_list.pool_profile[index].pool_cfg.pool_num == pool) {
+			return pki_profiles[node].pool_profile_list.pool_profile[index].pool_cfg.buffer_size;
+		}
+	}
+	return -1;
+}
+
+/**
+ * This function get the buffer size of the given aura number
+ * @param node  node number
+ * @param pool  fpa aura number
+ * @return 	buffer size SUCCESS
+                -1 if aura number is not found in aura list
+ */
+int cvmx_pki_get_aura_buffer_size(int node, int aura)
+{
+	int index = pki_profiles[node].aura_profile_list.index;
+	int pool_num;
+
+	while(index--)
+	{
+		if(pki_profiles[node].aura_profile_list.aura_profile[index].aura_num == aura) {
+			pool_num = pki_profiles[node].aura_profile_list.aura_profile[index].pool_num;
+			return cvmx_pki_get_pool_buffer_size(node,pool_num);
+		}
+	}
+	return -1;
+}
+
+int cvmx_pki_get_mbuff_size (int node, int base_offset)
+{
+	int index = pki_profiles[node].qpg_profile_list.index;
+	int aura;
+	int min_size;
+	int aura_size;
+	int i;
+
+	while(index--)
+	{
+		if(pki_profiles[node].qpg_profile_list.qpg_profile[index].base_offset == base_offset) {
+			int num_entry = pki_profiles[node].qpg_profile_list.qpg_profile[index].num_entries;
+			aura = pki_config[node].qpg_cfg[base_offset].aura;
+			min_size = cvmx_pki_get_aura_buffer_size(node,aura);
+			for(i=1; i < num_entry; i++) {
+				aura = pki_config[node].qpg_cfg[base_offset+i].aura;
+				aura_size = cvmx_pki_get_aura_buffer_size(node,aura);
+				if(min_size > aura_size)
+					min_size = aura_size;
+			}
+			return min_size;
+		}
+	}
+	return -1;
+}
+
+/**
+ * This function finds if style profile with given name
+ * exist in style list
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	index into style list on SUCCESS
+                -1 if profile not found in style list
+ */
+int cvmx_pki_style_profile_exist(int node, char *name)
+{
+	int index = pki_profiles[node].style_profile_list.index;
+
+	while(index--)
+	{
+		if(strcmp(name,pki_profiles[node].style_profile_list.style_profile[index].name) == 0)
+			return index;
+	}
+	return -1;
+}
+
+/**
+ * This function finds style number associated with
+ * given style profile name.
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	style number on SUCCESS
+                -1 if profile not found in style list
+ */
+int cvmx_pki_find_style(int node, char *name)
+{
+	int index;
+
+	if((index = cvmx_pki_style_profile_exist(node,name)) == -1)
+		return -1;
+	return pki_profiles[node].style_profile_list.style_profile[index].style_num;
+}
+
+/**
+ * This function stores the cluster configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param name  	name associated with this config
+ * @param cl_profile    structure containing cluster profile parameters below
+ * 			-cluster_group (-1 if needs to be allocated)
+ * 			-num_cluster   (number of cluster in the cluster group)
+ * 			-parsing_mask  (parsing mask for the cluster group)
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_cluster_config(int node, struct cvmx_pki_cluster_profile cl_profile)
+{
+	int index;
+	int cluster_group;
+	uint64_t cluster_mask;
 
 	if(node >= CVMX_MAX_NODES) {
 		cvmx_dprintf("Invalid node number %d",node);
 		return -1;
 	}
+	if(cvmx_pki_cluster_profile_exist(node,cl_profile.name) >= 0) {
+		cvmx_dprintf("ERROR:cluster profile already exist with name %s",cl_profile.name);
+		return -1;
+	}
+	if((cluster_group = cvmx_pki_alloc_cluster_group(node, cl_profile.cluster_group,
+	    cl_profile.num_clusters, cl_profile.parsing_mask, &cluster_mask)) == -1) {
+		cvmx_dprintf("ERROR:allocating cluster_group\n");
+		return -1;
+	}
+	cl_profile.cluster_group = cluster_group;
 	//spinlock it
-	index = pki_config[node].cluster_list.index;
+	index = pki_profiles[node].cl_profile_list.index;
 
 	if(index >= CVMX_PKI_MAX_CLUSTER_PROFILES) {
 		cvmx_dprintf("ERROR: Max cluster profiles %d reached\n", index);
 		return -1;
 	}
+	pki_profiles[node].cl_profile_list.index++;
 	//spinlock free
-	pki_config[node].cluster_list.cl_profile[index].cl_group = (uint64_t)cluster_group;
-	pki_config[node].cluster_list.cl_profile[index].cl_mask = cluster_mask;
-	if(strlen(name) > CVMX_PKI_MAX_NAME) {
-		cvmx_dprintf("ERROR: cluster profile name exceeds max length of %d\n",
-			     (int)CVMX_PKI_MAX_NAME);
-		return -1;
-	}
-	strcpy(pki_config[node].cluster_list.cl_profile[index].name, name);
-	pki_config[node].cluster_list.index++;
+
+	pki_profiles[node].cl_profile_list.cl_profile[index] = cl_profile;
+	pki_config[node].cluster_cfg[cluster_group].cluster_mask = cluster_mask;
 	return 0;
 }
 
-int cvmx_pki_pcam_config_entry(int node,uint64_t cl_mask,
+/**
+ * This function stores the pool configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param pool_name  	name associated with this config
+ * @param pool_numb     pool number (-1 if need to be allocated)
+ * @param buffer_size	size of buffers in specified pool
+ * @param num_buffers	numberof buffers in specified pool
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_pool_config(int node, char* pool_name, int pool_num,
+			     uint64_t buffer_size, uint64_t num_buffers)
+{
+	uint64_t index;
+	struct cvmx_pki_pool_profile* pool_profile;
+
+	if(node >= CVMX_MAX_NODES) {
+		cvmx_dprintf("Invalid node number %d",node);
+		return -1;
+	}
+	if(cvmx_pki_pool_profile_exist(node, pool_name) >= 0) {
+		cvmx_dprintf("ERROR:pool profile already exist with name %s",pool_name);
+		return -1;
+	}
+	if(cvmx_fpa_allocate_fpa_pools(node,&pool_num,1) == -1) {
+		cvmx_dprintf("ERROR:allocating pool for pool_config\n");
+		return -1;
+	}
+
+	//spinlock it
+	index = pki_profiles[node].pool_profile_list.index;
+	if(index >= CVMX_PKI_MAX_POOL_PROFILES) {
+		cvmx_dprintf("ERROR: Max pool profile %d reached\n", (int)index);
+		return -1;
+
+	}
+	pki_profiles[node].pool_profile_list.index++;
+	//spinlock free
+
+	pool_profile = &pki_profiles[node].pool_profile_list.pool_profile[index];
+	strcpy(pool_profile->pool_name, pool_name);
+	pool_profile->pool_cfg.pool_num = pool_num;
+	pool_profile->pool_cfg.buffer_size = buffer_size;
+	pool_profile->pool_cfg.buffer_count = num_buffers;
+	return 0;
+}
+
+/**
+ * This function stores the aura configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param aura_name  	name associated with this config
+ * @param aura_num      aura number (-1 if need to be allocated)
+ * @param pool  	pool to which aura is mapped
+ * @param num_buffers	number of buffers to allocate to aura.
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_aura_config(int node, char* aura_name, int aura_num, int pool,
+			      int num_buffers)
+{
+	uint64_t index;
+	struct cvmx_pki_aura_profile* aura_profile;
+
+	if(node >= CVMX_MAX_NODES) {
+		cvmx_dprintf("Invalid node number %d",node);
+		return -1;
+	}
+	if(cvmx_pki_aura_profile_exist(node,aura_name) >= 0) {
+		cvmx_dprintf("ERROR:aura profile already exist with name %s",aura_name);
+		return -1;
+	}
+	if((aura_num = cvmx_fpa_allocate_auras(node,&aura_num,1)) == -1) {
+		cvmx_dprintf("ERROR:allocating aura for aura_config\n");
+		return -1;
+	}
+	//spinlock it
+	index = pki_profiles[node].aura_profile_list.index;
+	if(index >= CVMX_PKI_MAX_AURA_PROFILES) {
+		cvmx_dprintf("ERROR: Max aura profile %d reached\n", (int)index);
+		return -1;
+
+	}
+	pki_profiles[node].aura_profile_list.index++;
+	//spinlock free
+
+	aura_profile = &pki_profiles[node].aura_profile_list.aura_profile[index];
+	strcpy(aura_profile->aura_name, aura_name);
+	aura_profile->aura_num = aura_num;
+	aura_profile->pool_num = pool;
+	aura_profile->buffer_count = num_buffers;
+	return 0;
+}
+
+/**
+ * This function stores the group configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param aura_name  	name associated with this config
+ * @param group		SSO group number (-1 if needs to be allocated)
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_group_config(int node, char *name, int group)
+{
+	uint64_t index;
+	struct cvmx_pki_group_profile* group_profile;
+
+	if(node >= CVMX_MAX_NODES) {
+		cvmx_dprintf("Invalid node number %d",node);
+		return -1;
+	}
+	if(cvmx_pki_group_profile_exist(node, name) >= 0) {
+		cvmx_dprintf("ERROR:group profile already exist with name %s",name);
+		return -1;
+	}
+#if 0 //vinita_to_do uncomment when group_alloc is ready
+	if((group = cvmx_pki_allocate_group(node,group)) == -1) {
+		cvmx_dprintf("ERROR:allocating group for group_config\n");
+		return -1;
+	}
+#endif
+
+	//spinlock it
+	index = pki_profiles[node].group_profile_list.index;
+	if(index >= CVMX_PKI_MAX_GROUP_PROFILES) {
+		cvmx_dprintf("ERROR: Max group profile %d reached\n", (int)index);
+		return -1;
+
+	}
+	pki_profiles[node].group_profile_list.index++;
+	//spinlock free
+
+	group_profile = &pki_profiles[node].group_profile_list.group_profile[index];
+	strcpy(group_profile->group_name, name);
+	group_profile->group_num = group;
+	return 0;
+
+}
+
+/**
+ * This function stores the qpg configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param name  	name associated with this config
+ * @param base_offset	offset in QPG table (-1 if needs to be allocated)
+ * @param num_entries	total number of indexes needs to be allocated from
+ *                      base_offset.
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_qpg_profile(int node, char* name, int base_offset, int num_entries)
+{
+	int64_t index;
+	struct cvmx_pki_qpg_profile* qpg_profile;
+
+	if(node >= CVMX_MAX_NODES) {
+		cvmx_dprintf("Invalid node number %d",node);
+		return -1;
+	}
+	if(cvmx_pki_qpg_profile_exist(node,name) >= 0) {
+		cvmx_dprintf("ERROR:qpg profile already exist with name %s",name);
+		return -1;
+	}
+	if((base_offset = cvmx_pki_alloc_qpg_entry(node,base_offset,num_entries)) == -1) {
+		cvmx_dprintf("ERROR:allocating entry for qpg_table\n");
+		return -1;
+	}
+
+	//spinlock it
+	index = pki_profiles[node].qpg_profile_list.index;
+	if(index >= CVMX_PKI_MAX_QPG_PROFILES) {
+		cvmx_dprintf("ERROR: Max qpg profile %d reached\n", (int)index);
+		return -1;
+
+	}
+	pki_profiles[node].qpg_profile_list.index++;
+	//spinlock free
+
+	qpg_profile = &pki_profiles[node].qpg_profile_list.qpg_profile[index];
+	strcpy(qpg_profile->qpg_name, name);
+	qpg_profile->base_offset = base_offset;
+	qpg_profile->num_entries = num_entries;
+	return 0;
+}
+
+/**
+ * This function stores the group configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param aura_name  	name associated with this config
+ * @param group		SSO group number (-1 if needs to be allocated)
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_qpg_config(int node, char* name, int entry_start,
+			    int entry_end, struct cvmx_pki_qpg_config qpg_config)
+{
+	int index;
+	int base_offset;
+	int num_entry;
+
+	if(node >= CVMX_MAX_NODES) {
+		cvmx_dprintf("Invalid node number %d",node);
+		return -1;
+	}
+	if((index = cvmx_pki_qpg_profile_exist(node,name)) < 0) {
+		cvmx_dprintf("ERROR:qpg profile %s not found\n",name);
+		return -1;
+	}
+	if ((base_offset = pki_profiles[node].qpg_profile_list.qpg_profile[index].base_offset) < 0) {
+		cvmx_dprintf("ERROR: invalid base offset %d in qpg profile %s",base_offset,name);
+		return -1;
+	}
+	num_entry = pki_profiles[node].qpg_profile_list.qpg_profile[index].num_entries;
+	if(entry_start > num_entry || entry_end > num_entry) {
+		cvmx_dprintf("ERROR: start_entry %llu or end_entry %llu is > %llu for qpg_profile %s",
+			     (unsigned long long)entry_start,(unsigned long long)entry_end,(unsigned long long)num_entry,name);
+	}
+	while(entry_start <= entry_end) {
+		pki_config[node].qpg_cfg[base_offset + entry_start] = qpg_config;
+		entry_start++;
+	}
+	return 0;
+}
+
+/**
+ * This function stores the style configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param aura_name  	name associated with this config
+ * @param style_num	style number (-1 if needs to be allocated)
+ * @param style_cfg	pointer to struct which has parameters related
+ *                      to style config
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_style_config(int node, char* style_name, int style_num,
+			       struct cvmx_pki_style_config* style_cfg)
+{
+	uint64_t index;
+	struct cvmx_pki_style_profile* style_profile;
+
+	if(node >= CVMX_MAX_NODES) {
+		cvmx_dprintf("Invalid node number %d",node);
+		return -1;
+	}
+	if(cvmx_pki_style_profile_exist(node,style_name) > 0) {
+		cvmx_dprintf("ERROR: style profile already exist with name %s",style_name);
+		return -1;
+	}
+	if((style_num = cvmx_pki_alloc_style(node,style_num)) == -1) {
+		cvmx_dprintf("ERROR:allocating style for style_config\n");
+		return -1;
+	}
+
+	//spinlock it
+	index = pki_profiles[node].style_profile_list.index;
+	if(index >= CVMX_PKI_MAX_STYLE_PROFILES) {
+		cvmx_dprintf("ERROR: Max style profile %d reached\n", (int)index);
+		return -1;
+
+	}
+	pki_profiles[node].style_profile_list.index++;
+	//spinlock free
+
+	style_profile = &pki_profiles[node].style_profile_list.style_profile[index];
+	strcpy(style_profile->name, style_name);
+	style_profile->style_num = style_num;
+	memcpy(&pki_config[node].style_cfg[style_num], style_cfg, sizeof(struct cvmx_pki_style_config));
+	return index;
+}
+
+/**
+ * This function stores the pkind style configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param pkind  	pkind number
+ * @param style		style number which need to be assigned to pkind
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_pkind_style(int node, int pkind, int style)
+{
+	pki_config[node].pkind_cfg[pkind].initial_style = style;
+	pki_config[node].style_cfg[style].cluster_mask = pki_config[node].pkind_cfg[pkind].cluster_mask;
+	return 0;
+}
+
+/**
+ * This function stores the pkind initial parse mode in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param pkind  	pkind number
+ * @param parse_mode    parse mode to assign to specified pkind.
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+void cvmx_pki_set_pkind_initial_parse_mode(int node, int pkind, int parse_mode)
+{
+	pki_config[node].pkind_cfg[pkind].parsing_mode=parse_mode;
+}
+
+/**
+ * This function stores the pkind cluster configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param pkind  	pkind number
+ * @param style_name	pointer to style name which need to be assigned to pkind
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+void cvmx_pki_set_pkind_cluster_config(int node, int pkind,
+					   int cl_grp, uint64_t cl_mask)
+{
+	pki_config[node].pkind_cfg[pkind].cluster_grp = cl_grp;
+	pki_config[node].pkind_cfg[pkind].cluster_mask = cl_mask;
+
+}
+
+/**
+ * This function stores the pcam entry in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param pcam_index	which pcam entry to configure (-1 to allocate from available entries)
+ * @param cluster_mask	Mask of clusters on which the entry meeds to be appiled.
+ * @param input		structure of pcam input parameter which defines matching creteria.
+ * @param action	structure of pcam action parameters which aill be applied if match is found.
+ * @return              0 on scuccess
+ *			-1 on failure
+ */
+int cvmx_pki_set_pcam_entry(int node, int pcam_index, uint64_t cl_mask,
 			       struct cvmx_pki_pcam_input input,
 			       struct cvmx_pki_pcam_action action)
 {
@@ -506,25 +1159,20 @@ int cvmx_pki_pcam_config_entry(int node,uint64_t cl_mask,
 	}
 
 	//spinlock it
-	index = pki_config[node].pcam_list.index;
+	index = pki_profiles[node].pcam_list.index;
 	if(index >= CVMX_PKI_TOTAL_PCAM_ENTRY) {
 		cvmx_dprintf("ERROR: Max pcam lists %d reached\n", (int)index);
 		return -1;
 
 	}
+	pki_profiles[node].pcam_list.index++;
 	//spinlock free
 
-	pki_config[node].pcam_list.pcam_cfg[index].cluster_mask = cl_mask;
-	pki_config[node].pcam_list.pcam_cfg[index].pcam_input = input;
-	pki_config[node].pcam_list.pcam_cfg[index].pcam_action = action;
-	pki_config[node].pcam_list.index++;
+	pki_profiles[node].pcam_list.pcam_cfg[index].cluster_mask = cl_mask;
+	pki_profiles[node].pcam_list.pcam_cfg[index].entry_num = pcam_index;
+	pki_profiles[node].pcam_list.pcam_cfg[index].pcam_input = input;
+	pki_profiles[node].pcam_list.pcam_cfg[index].pcam_action = action;
 	return 0;
-}
-
-int cvmx_pki_config_QPG_entry(void)
-{
-	return 0;
-
 }
 
 /**
@@ -596,4 +1244,5 @@ void cvmx_pki_show_valid_pcam_entries(int node)
 		}
 	}
 }
+
 

@@ -2761,21 +2761,7 @@ union cvmx_mio_boot_pin_defs {
 	uint64_t u64;
 	struct cvmx_mio_boot_pin_defs_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_57_63               : 7;
-	uint64_t dlm_supply                   : 1;  /**< DLM Power Supply Setting based on DLMC_VPH_SELECT_18 pin 1 = 1.8V 0 = 2.5V All others = Reserved */
-	uint64_t rgm_supply                   : 2;  /**< RGMii Power Supply Setting based on VDD_RGM_SUPPLY_SELECT pin 01 = 1.8V 10 = 2.5V All
-                                                         others = Reserved */
-	uint64_t smi_supply                   : 3;  /**< SMI power supply setting based on VDD_SMI_SUPPLY_SELECT pin:
-                                                         0x1 = 1.8V.
-                                                         0x2 = 2.5V.
-                                                         0x8 = 3.3V.
-                                                         else Reserved. */
-	uint64_t io_supply                    : 3;  /**< I/O power supply setting based on VDD_IO_SUPPLY_SELECT pin:
-                                                         0x1 = 1.8V.
-                                                         0x2 = 2.5V.
-                                                         0x8 = 3.3V.
-                                                         else Reserved. */
-	uint64_t reserved_16_47               : 32;
+	uint64_t reserved_16_63               : 48;
 	uint64_t ale                          : 1;  /**< Region 0 default ALE mode */
 	uint64_t width                        : 1;  /**< Region 0 default bus width */
 	uint64_t reserved_0_13                : 14;
@@ -2783,12 +2769,7 @@ union cvmx_mio_boot_pin_defs {
 	uint64_t reserved_0_13                : 14;
 	uint64_t width                        : 1;
 	uint64_t ale                          : 1;
-	uint64_t reserved_16_47               : 32;
-	uint64_t io_supply                    : 3;
-	uint64_t smi_supply                   : 3;
-	uint64_t rgm_supply                   : 2;
-	uint64_t dlm_supply                   : 1;
-	uint64_t reserved_57_63               : 7;
+	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
 	struct cvmx_mio_boot_pin_defs_cn52xx {
@@ -2867,7 +2848,7 @@ union cvmx_mio_boot_pin_defs {
 	struct cvmx_mio_boot_pin_defs_cn52xx  cn68xxp1;
 	struct cvmx_mio_boot_pin_defs_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_57_63               : 7;
+	uint64_t reserved_33_63               : 31;
 	uint64_t dlm_supply                   : 1;  /**< DLM Power Supply Setting based on DLMC_VPH_SELECT_18 pin 1 = 1.8V 0 = 2.5V All others = Reserved */
 	uint64_t rgm_supply                   : 2;  /**< RGMii Power Supply Setting based on VDD_RGM_SUPPLY_SELECT pin 01 = 1.8V 10 = 2.5V All
                                                          others = Reserved */
@@ -2875,7 +2856,7 @@ union cvmx_mio_boot_pin_defs {
                                                          3.3V All others = Reserved */
 	uint64_t io_supply                    : 3;  /**< I/O Power Supply Setting based on VDD_IO_SUPPLY_SELECT pin 001 = 1.8V 010 = 2.5V 100 =
                                                          3.3V All others = Reserved */
-	uint64_t reserved_17_47               : 31;
+	uint64_t reserved_17_23               : 7;
 	uint64_t ref_sel                      : 1;  /**< Reference Clock Selection based on UART0_RTS_N pin at powerup 0 = DLM_REF_CLK[1] pins div
                                                          2, must be set to 100Mhz 1 = PLL_REF_CLK pin (default), must be set to 50Mhz */
 	uint64_t ale                          : 1;  /**< Set to 1 for backward compatability */
@@ -2895,12 +2876,12 @@ union cvmx_mio_boot_pin_defs {
 	uint64_t width                        : 1;
 	uint64_t ale                          : 1;
 	uint64_t ref_sel                      : 1;
-	uint64_t reserved_17_47               : 31;
+	uint64_t reserved_17_23               : 7;
 	uint64_t io_supply                    : 3;
 	uint64_t smi_supply                   : 3;
 	uint64_t rgm_supply                   : 2;
 	uint64_t dlm_supply                   : 1;
-	uint64_t reserved_57_63               : 7;
+	uint64_t reserved_33_63               : 31;
 #endif
 	} cn70xx;
 	struct cvmx_mio_boot_pin_defs_cn78xx {
@@ -5484,7 +5465,7 @@ union cvmx_mio_fus_read_times {
 	uint64_t reserved_32_63               : 32;
 	uint64_t done                         : 4;  /**< Hold time of CSB, PGENB, and LOAD with respect to falling edge of STROBE for read and
                                                          write mode in PLL_REF_CLK + 1 cycles. Timing specs are th_CS = 6ns, th_PG = 10ns, th_LD_p
-                                                         = 7ns. Default of 0x0 yields 20ns for a PLL_REF_CLK of 50 MHz. */
+                                                         = 7ns. Default of 0x0 yields 20ns for a PLL_REF_CLK of 50 MHz, 10ns at 100MHz. */
 	uint64_t reserved_0_27                : 28;
 #else
 	uint64_t reserved_0_27                : 28;
@@ -5548,20 +5529,20 @@ union cvmx_mio_fus_read_times {
 	uint64_t reserved_32_63               : 32;
 	uint64_t done                         : 4;  /**< Hold time of CSB, PGENB, and LOAD with respect to falling edge of STROBE for read and
                                                          write mode in PLL_REF_CLK + 1 cycles. Timing specs are th_CS = 6ns, th_PG = 10ns, th_LD_p
-                                                         = 7ns. Default of 0x0 yields 20ns for a PLL_REF_CLK of 50 MHz. */
+                                                         = 7ns. Default of 0x0 yields 20ns for a PLL_REF_CLK of 50 MHz, 10ns at 100MHz. */
 	uint64_t ahd                          : 4;  /**< Hold time of A with respect to falling edge of STROBE for read and write modes in
                                                          PLL_REF_CLK + 2 cycles. Timing spec of tsu_A_r and tsu_A_p is 3ns min. Default of 0x0
-                                                         yields 40ns for a PLL_REF_CLK of 50 MHz. */
+                                                         yields 40ns for a PLL_REF_CLK of 50 MHz, 20ns at 100MHz. */
 	uint64_t wrstb_wh                     : 12; /**< Pulse width high of STROBE in write mode in PLL_REF_CLK + 1 cycles. Timing spec of
                                                          twh_SB_p is 9.8us max. Default of 0x1F3 yields 10 us at PLL_REF_CLK of 50 MHz. */
 	uint64_t rdstb_wh                     : 4;  /**< Pulse width high of STROBE in read mode in PLL_REF_CLK + 1 cycles. Timing spec of twh_SB_p
-                                                         is 20ns min. Default of 0x0 yields 20 ns at PLL_REF_CLK of 50 MHz. */
+                                                         is 20ns min. Default of 0x1 yields 40 ns at PLL_REF_CLK of 50 MHz, 20ns at 100MHz. */
 	uint64_t asu                          : 4;  /**< Setup time of A to rising edge of STROBE for read and write modes in PLL_REF_CLK cycles.
-                                                         Timing spec of tsu_A_r and rsu_A-P is 12 ns min. Default of 0x1 yields 20 ns at
-                                                         PLL_REF_CLK of 50 MHz. */
+                                                         Timing spec of tsu_A_r and tsu_A_p is 12 ns min. Default of 0x1 yields 40 ns at
+                                                         PLL_REF_CLK of 50 MHz, 20ns at 100MHz. */
 	uint64_t setup                        : 4;  /**< Setup of CSB, PGENB, LOAD to rising edge of STROBE in read and write modes in PLL_REF_CLK
-                                                         + 1 cycles. TSUCS= 16ns, TSUPG= 14ns, TSULD_R= 10ns. Default of 0x0 yields 20 ns at
-                                                         PLL_REF_CLK of 50 MHz. */
+                                                         + 1 cycles. tsu_CS = 16ns, tsu_PG = 14ns, tsu_LD_r = 10ns. Default of 0x0 yields 20 ns
+                                                         plush ASU cycles at PLL_REF_CLK of 50 MHz, 10ns + ASU at 100MHz. */
 #else
 	uint64_t setup                        : 4;
 	uint64_t asu                          : 4;

@@ -52,6 +52,37 @@ extern int __cvmx_helper_ilk_enumerate(int interface);
 
 /**
  * @INTERNAL
+ * Initialize all calendar entries to the xoff state. This
+ * means no data is sent or received.
+ *
+ * @param interface Interface whose calendar are to be initialized.
+ */
+extern void __cvmx_ilk_init_cal(int interface);
+
+/**
+ * @INTERNAL
+ * Setup the channel's tx calendar entry.
+ *
+ * @param interface Interface channel belongs to
+ * @param channel Channel whose calendar entry is to be updated
+ * @param bpid Bpid assigned to the channel
+ */
+extern void __cvmx_ilk_write_tx_cal_entry(int interface, int channel,
+					  unsigned char bpid);
+
+/**
+ * @INTERNAL
+ * Setup the channel's rx calendar entry.
+ *
+ * @param interface Interface channel belongs to
+ * @param channel Channel whose calendar entry is to be updated
+ * @param pipe PKO assigned to the channel
+ */
+void __cvmx_ilk_write_rx_cal_entry(int interface, int channel,
+				   unsigned char pipe);
+
+/**
+ * @INTERNAL
  * Probe a ILK interface and determine the number of ports
  * connected to it. The ILK interface should still be down after
  * this call.

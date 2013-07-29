@@ -254,24 +254,24 @@ typedef enum {
 
 /* Every field in this struct has to be uint32_t. */
 typedef struct {
-	uint32_t known_cores;
-	uint32_t step_isr;
+	uint64_t known_cores;
+	uint64_t step_isr;
 				/**< True if we are going to step into ISR's. */
-	uint32_t focus_switch;
+	uint64_t focus_switch;
 				/**< Focus can be switched. */
-	uint32_t core_finished;
+	uint64_t core_finished;
 				/**< True if a core has finished and not been processed yet.  */
-	uint32_t command;
+	uint64_t command;
 				/**< Command for all cores (cvmx_debug_command_t) */
-	uint32_t step_all;
+	uint64_t step_all;
 				/**< True if step and continue should affect all cores. False, only the focus core is affected */
-	uint32_t focus_core;
+	uint64_t focus_core;
 				/**< Core currently under control of the debugger */
-	uint32_t active_cores;
+	uint64_t active_cores;
 				/**< Bitmask of cores that should stop on a breakpoint */
-	uint32_t handler_cores;
+	uint64_t handler_cores;
 				/**< Bitmask of cores currently running the exception handler */
-	uint32_t ever_been_in_debug;
+	uint64_t ever_been_in_debug;
 				    /**< True if we have been ever been in the debugger stub at all.  */
 } __attribute__ ((aligned(sizeof(uint64_t)))) cvmx_debug_state_t;
 

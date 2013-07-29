@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -121,6 +121,9 @@ struct cvmx_cfg_port_param {
 	int8_t ccpp_bpid;
 	int8_t ccpp_pko_port_base;
 	int8_t ccpp_pko_num_ports;
+	bool valid;			/** 1 = port valid, 0 = invalid */
+	bool sgmii_phy_mode;		/** 1 = port in PHY mode, 0 = MAC mode */
+	bool sgmii_1000x_mode;		/** 1 = 1000Base-X mode, 0 = SGMII mode */
 };
 
 /*
@@ -194,7 +197,7 @@ extern int __cvmx_helper_cfg_pknd(int interface, int index);
  */
 extern int __cvmx_helper_cfg_bpid(int interface, int index);
 
-/*
+/**
  * @INTERNAL
  * Return the configured pko_port base for the port
  *
@@ -411,6 +414,49 @@ int init_cvmx_pko_que_range(void);
  * Frees up all the allocated ques.
  */
 void cvmx_pko_queue_free_all(void);
+
+/**
+ * Returns if port is valid for a given interface
+ *
+ * @param interface  interface to check
+ * @param index      port index in the interface
+ *
+ * @return status of the port present or not.
+ */
+int cvmx_helper_is_port_valid(int interface, int index);
+
+/**
+ * Set whether or not a port is valid
+ *
+ * @param interface interface to set
+ * @param index     port index to set
+ * @param valid     set 0 to make port invalid, 1 for valid
+ */
+void cvmx_helper_set_port_valid(int interface, int index, bool valid);
+
+/**
+ * @INTERNAL
+ * Return if port is in PHY mode
+ *
+ * @param interface the interface number
+ * @param index the port's index number
+ *
+ * @return 1 if port is in PHY mode, 0 if port is in MAC mode
+ */
+extern bool cvmx_helper_get_mac_phy_mode(int interface, int index);
+extern void cvmx_helper_set_mac_phy_mode(int interface, int index, bool valid);
+
+/**
+ * @INTERNAL
+ * Return if port is in 1000Base X mode
+ *
+ * @param interface the interface number
+ * @param index the port's index number
+ *
+ * @return 1 if port is in 1000Base X mode, 0 if port is in SGMII mode
+ */
+extern bool cvmx_helper_get_1000x_mode(int interface, int index);
+extern void cvmx_helper_set_1000x_mode(int interface, int index, bool valid);
 
 /*
  * Initializes cvmx with user specified config info.

@@ -78,6 +78,270 @@ int __cvmx_helper_ilk_enumerate(int interface)
 
 /**
  * @INTERNAL
+ * Initialize all calendar entries to the xoff state. This
+ * means no data is sent or received.
+ *
+ * @param interface Interface whose calendar are to be initialized.
+ */
+void __cvmx_ilk_init_cal(int interface)
+{
+	cvmx_ilk_txx_idx_cal_t	tx_idx;
+	cvmx_ilk_txx_mem_cal0_t tx_cal0;
+	cvmx_ilk_txx_mem_cal1_t tx_cal1;
+	cvmx_ilk_rxx_idx_cal_t	rx_idx;
+	cvmx_ilk_rxx_mem_cal0_t rx_cal0;
+	cvmx_ilk_rxx_mem_cal1_t rx_cal1;
+	int			i;
+
+	/*
+	 * First we initialize the tx calendar starting from entry 0,
+	 * incrementing the entry with every write.
+	 */
+	tx_idx.u64 = 0;
+	tx_idx.s.inc = 1;
+	cvmx_write_csr(CVMX_ILK_TXX_IDX_CAL(interface), tx_idx.u64);
+
+	/* Set state to xoff for all entries */
+	tx_cal0.u64 = 0;
+	tx_cal0.s.entry_ctl0 = XOFF;
+	tx_cal0.s.entry_ctl1 = XOFF;
+	tx_cal0.s.entry_ctl2 = XOFF;
+	tx_cal0.s.entry_ctl3 = XOFF;
+
+	tx_cal1.u64 = 0;
+	tx_cal1.s.entry_ctl4 = XOFF;
+	tx_cal1.s.entry_ctl5 = XOFF;
+	tx_cal1.s.entry_ctl6 = XOFF;
+	tx_cal1.s.entry_ctl7 = XOFF;
+
+	/* Write all 288 entries */
+	for (i = 0; i < CVMX_ILK_MAX_CAL_IDX; i++) {
+		cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL0(interface), tx_cal0.u64);
+		cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL1(interface), tx_cal1.u64);
+	}
+
+	/*
+	 * Next we initialize the rx calendar starting from entry 0,
+	 * incrementing the entry with every write.
+	 */
+	rx_idx.u64 = 0;
+	rx_idx.s.inc = 1;
+	cvmx_write_csr(CVMX_ILK_RXX_IDX_CAL(interface), rx_idx.u64);
+
+	/* Set state to xoff for all entries */
+	rx_cal0.u64 = 0;
+	rx_cal0.s.entry_ctl0 = XOFF;
+	rx_cal0.s.entry_ctl1 = XOFF;
+	rx_cal0.s.entry_ctl2 = XOFF;
+	rx_cal0.s.entry_ctl3 = XOFF;
+
+	rx_cal1.u64 = 0;
+	rx_cal1.s.entry_ctl4 = XOFF;
+	rx_cal1.s.entry_ctl5 = XOFF;
+	rx_cal1.s.entry_ctl6 = XOFF;
+	rx_cal1.s.entry_ctl7 = XOFF;
+
+	/* Write all 288 entries */
+	for (i = 0; i < CVMX_ILK_MAX_CAL_IDX; i++) {
+		cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL0(interface), rx_cal0.u64);
+		cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL1(interface), rx_cal1.u64);
+	}
+}
+
+/**
+ * @INTERNAL
+ * Setup the channel's tx calendar entry.
+ *
+ * @param interface Interface channel belongs to
+ * @param channel Channel whose calendar entry is to be updated
+ * @param bpid Bpid assigned to the channel
+ */
+void __cvmx_ilk_write_tx_cal_entry(int			interface,
+				   int			channel,
+				   unsigned char	bpid)
+{
+	cvmx_ilk_txx_idx_cal_t	tx_idx;
+	cvmx_ilk_txx_mem_cal0_t	tx_cal0;
+	cvmx_ilk_txx_mem_cal1_t	tx_cal1;
+	int			entry;
+	int			window;
+	int			window_entry;
+#if 1
+
+	/*
+	 * The calendar has 288 entries. Each calendar entry represents a
+	 * channel's flow control state or the link flow control state.
+	 * Starting with the first entry, every sixteenth entry is used for the
+	 * link flow control state. The other 15 entries are used for the
+	 * channels flow control state:
+	 * entry 0   ----> link flow control state
+	 * entry 1   ----> channel 0 flow control state
+	 * entry 2   ----> channel 1 flow control state
+	 * ...
+	 * entry 15  ----> channel 14 flow control state
+	 * entry 16  ----> link flow control state
+	 * entry 17  ----> channel 15 flow control state
+	 *
+	 * Also, the calendar is accessed via windows into it. Each window maps
+	 * to 8 entries.
+	 */
+	entry = 1 + channel + (channel / 15);
+	window = entry / 8;
+	window_entry = entry % 8;
+
+	/* Indicate the window we need to access */
+	tx_idx.u64 = 0;
+	tx_idx.s.index = window;
+	cvmx_write_csr(CVMX_ILK_TXX_IDX_CAL(interface), tx_idx.u64);
+
+	/* Get the window's current value */
+	tx_cal0.u64 = cvmx_read_csr(CVMX_ILK_TXX_MEM_CAL0(interface));
+	tx_cal1.u64 = cvmx_read_csr(CVMX_ILK_TXX_MEM_CAL1(interface));
+
+	/* Force every sixteenth entry as link flow control state */
+	if ((window & 1) == 0)
+		tx_cal0.s.entry_ctl0 = LINK;
+
+	/* Update the entry */
+	switch (window_entry) {
+	case 0:
+		tx_cal0.s.entry_ctl0 = 0;
+		tx_cal0.s.bpid0 = bpid;
+		break;
+	case 1:
+		tx_cal0.s.entry_ctl1 = 0;
+		tx_cal0.s.bpid1 = bpid;
+		break;
+	case 2:
+		tx_cal0.s.entry_ctl2 = 0;
+		tx_cal0.s.bpid2 = bpid;
+		break;
+	case 3:
+		tx_cal0.s.entry_ctl3 = 0;
+		tx_cal0.s.bpid3 = bpid;
+		break;
+	case 4:
+		tx_cal1.s.entry_ctl4 = 0;
+		tx_cal1.s.bpid4 = bpid;
+		break;
+	case 5:
+		tx_cal1.s.entry_ctl5 = 0;
+		tx_cal1.s.bpid5 = bpid;
+		break;
+	case 6:
+		tx_cal1.s.entry_ctl6 = 0;
+		tx_cal1.s.bpid6 = bpid;
+		break;
+	case 7:
+		tx_cal1.s.entry_ctl7 = 0;
+		tx_cal1.s.bpid7 = bpid;
+		break;
+	}
+
+	/* Write the window new value */
+	cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL0(interface), tx_cal0.u64);
+	cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL1(interface), tx_cal1.u64);
+#endif
+}
+
+/**
+ * @INTERNAL
+ * Setup the channel's rx calendar entry.
+ *
+ * @param interface Interface channel belongs to
+ * @param channel Channel whose calendar entry is to be updated
+ * @param pipe PKO assigned to the channel
+ */
+void __cvmx_ilk_write_rx_cal_entry(int			interface,
+				   int			channel,
+				   unsigned char	pipe)
+{
+#if 1
+	cvmx_ilk_rxx_idx_cal_t	rx_idx;
+	cvmx_ilk_rxx_mem_cal0_t	rx_cal0;
+	cvmx_ilk_rxx_mem_cal1_t	rx_cal1;
+	int			entry;
+	int			window;
+	int			window_entry;
+
+	/*
+	 * The calendar has 288 entries. Each calendar entry represents a
+	 * channel's flow control state or the link flow control state.
+	 * Starting with the first entry, every sixteenth entry is used for the
+	 * link flow control state. The other 15 entries are used for the
+	 * channels flow control state:
+	 * entry 0   ----> link flow control state
+	 * entry 1   ----> channel 0 flow control state
+	 * entry 2   ----> channel 1 flow control state
+	 * ...
+	 * entry 15  ----> channel 14 flow control state
+	 * entry 16  ----> link flow control state
+	 * entry 17  ----> channel 15 flow control state
+	 *
+	 * Also, the calendar is accessed via windows into it. Each window maps
+	 * to 8 entries.
+	 */
+	entry = 1 + channel + (channel / 15);
+	window = entry / 8;
+	window_entry = entry % 8;
+
+	/* Indicate the window we need to access */
+	rx_idx.u64 = 0;
+	rx_idx.s.index = window;
+	cvmx_write_csr(CVMX_ILK_RXX_IDX_CAL(interface), rx_idx.u64);
+
+	/* Get the window's current value */
+	rx_cal0.u64 = cvmx_read_csr(CVMX_ILK_RXX_MEM_CAL0(interface));
+	rx_cal1.u64 = cvmx_read_csr(CVMX_ILK_RXX_MEM_CAL1(interface));
+
+	/* Force every sixteenth entry as link flow control state */
+	if ((window & 1) == 0)
+		rx_cal0.s.entry_ctl0 = LINK;
+
+	/* Update the entry */
+	switch (window_entry) {
+	case 0:
+		rx_cal0.s.entry_ctl0 = 0;
+		rx_cal0.s.port_pipe0 = pipe;
+		break;
+	case 1:
+		rx_cal0.s.entry_ctl1 = 0;
+		rx_cal0.s.port_pipe1 = pipe;
+		break;
+	case 2:
+		rx_cal0.s.entry_ctl2 = 0;
+		rx_cal0.s.port_pipe2 = pipe;
+		break;
+	case 3:
+		rx_cal0.s.entry_ctl3 = 0;
+		rx_cal0.s.port_pipe3 = pipe;
+		break;
+	case 4:
+		rx_cal1.s.entry_ctl4 = 0;
+		rx_cal1.s.port_pipe4 = pipe;
+		break;
+	case 5:
+		rx_cal1.s.entry_ctl5 = 0;
+		rx_cal1.s.port_pipe5 = pipe;
+		break;
+	case 6:
+		rx_cal1.s.entry_ctl6 = 0;
+		rx_cal1.s.port_pipe6 = pipe;
+		break;
+	case 7:
+		rx_cal1.s.entry_ctl7 = 0;
+		rx_cal1.s.port_pipe7 = pipe;
+		break;
+	}
+
+	/* Write the window new value */
+	cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL0(interface), rx_cal0.u64);
+	cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL1(interface), rx_cal1.u64);
+#endif
+}
+
+/**
+ * @INTERNAL
  * Probe a ILK interface and determine the number of ports
  * connected to it. The ILK interface should still be down
  * after this call.
@@ -114,7 +378,7 @@ int __cvmx_helper_ilk_probe(int interface)
 
 static int __cvmx_helper_ilk_init_port(int interface)
 {
-	int i, j, num_pknd, res = -1;
+	int i, j, res = -1;
 	static int pipe_base = 0, pknd_base = 0;
 	static cvmx_ilk_pipe_chan_t *pch = NULL, *tmp;
 	static cvmx_ilk_chan_pknd_t *chpknd = NULL, *tmp1;
@@ -203,8 +467,7 @@ static int __cvmx_helper_ilk_init_port(int interface)
 		tmp1++;
 	}
 
-	num_pknd = cvmx_ilk_chans[interface];
-	res = cvmx_ilk_rx_set_pknd(interface, chpknd, num_pknd);
+	res = cvmx_ilk_rx_set_pknd(interface, chpknd, cvmx_ilk_chans[interface]);
 	if (res < 0) {
 		pipe_base -= cvmx_ilk_chans[interface];
 		res = 0;

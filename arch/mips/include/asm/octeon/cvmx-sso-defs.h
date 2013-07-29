@@ -2027,7 +2027,7 @@ union cvmx_sso_err0 {
 	uint64_t reserved_5_31                : 27;
 	uint64_t awempty                      : 1;  /**< Received add work with tag specified as EMPTY. Throws SSO_INTSN_E::SSO_ERR0_AWEMPTY. */
 	uint64_t grpdis                       : 1;  /**< Add work to disabled group. An ADDWQ was received and dropped to a group with
-                                                         SSO_GRP(0..255)_TAQ_THR[RSVD_THR] = 0. Throws SSO_INTSN_E::SSO_ERR0_GRPDIS. */
+                                                         SSO_GRP(0..255)_IAQ_THR[RSVD_THR] = 0. Throws SSO_INTSN_E::SSO_ERR0_GRPDIS. */
 	uint64_t bfp                          : 1;  /**< Bad-fill-packet error. The WAE VLD_CRC field was incorrect, or the XAQ next address was
                                                          zero. Throws SSO_INTSN_E::SSO_ERR0_BFP. */
 	uint64_t awe                          : 1;  /**< Out-of-memory error. (ADDWQ request is dropped.) Throws SSO_INTSN_E::SSO_ERR0_AWE. */
@@ -2633,8 +2633,9 @@ union cvmx_sso_grpx_taq_thr {
 	uint64_t reserved_43_47               : 5;
 	uint64_t max_thr                      : 11; /**< Max threshold for this transitory admission queue, in buffers of 13 entries. Must be >= 3,
                                                          must be >= [RSVD_THR], and to insure full streaming performance on this group, should be
-                                                         at least 16 buffers. SSO may exceed this count by one buffer if and only if persistently
-                                                         backpressured by IOBI. Must not be changed after traffic is sent to this group. */
+                                                         at least 16 buffers. SSO may exceed this count using unreserved free buffers if and only
+                                                         if persistently backpressured by IOBI. Must not be changed after traffic is sent to this
+                                                         group. */
 	uint64_t reserved_11_31               : 21;
 	uint64_t rsvd_thr                     : 11; /**< Reserved threshold for this transitory admission queue, in buffers of 13 entries. Must be
                                                          at least 3 buffers for any groups that are to be used. Changes to this field must also
@@ -2965,7 +2966,7 @@ union cvmx_sso_ientx_qlinks {
 	struct cvmx_sso_ientx_qlinks_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t next_index                   : 12; /**< The next entry in the IQ/AQ/DQ. */
+	uint64_t next_index                   : 12; /**< The next entry in the AQ/CQ/DQ. */
 #else
 	uint64_t next_index                   : 12;
 	uint64_t reserved_12_63               : 52;

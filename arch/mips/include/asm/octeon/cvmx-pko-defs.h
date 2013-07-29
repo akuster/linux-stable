@@ -1620,6 +1620,116 @@ static inline uint64_t CVMX_PKO_PEB_ERR_INT_FUNC(void)
 #define CVMX_PKO_PEB_ERR_INT (CVMX_ADD_IO_SEG(0x0001540000900C00ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_EXT_HDR_DEF_ERR_INFO CVMX_PKO_PEB_EXT_HDR_DEF_ERR_INFO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_EXT_HDR_DEF_ERR_INFO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_EXT_HDR_DEF_ERR_INFO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900C08ull);
+}
+#else
+#define CVMX_PKO_PEB_EXT_HDR_DEF_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C08ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_FCS_SOP_ERR_INFO CVMX_PKO_PEB_FCS_SOP_ERR_INFO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_FCS_SOP_ERR_INFO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_FCS_SOP_ERR_INFO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900C18ull);
+}
+#else
+#define CVMX_PKO_PEB_FCS_SOP_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C18ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_JUMP_DEF_ERR_INFO CVMX_PKO_PEB_JUMP_DEF_ERR_INFO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_JUMP_DEF_ERR_INFO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_JUMP_DEF_ERR_INFO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900C10ull);
+}
+#else
+#define CVMX_PKO_PEB_JUMP_DEF_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C10ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_MACX_CFG_WR_ERR_INFO CVMX_PKO_PEB_MACX_CFG_WR_ERR_INFO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_MACX_CFG_WR_ERR_INFO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_MACX_CFG_WR_ERR_INFO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900C50ull);
+}
+#else
+#define CVMX_PKO_PEB_MACX_CFG_WR_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C50ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_MAX_LINK_ERR_INFO CVMX_PKO_PEB_MAX_LINK_ERR_INFO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_MAX_LINK_ERR_INFO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_MAX_LINK_ERR_INFO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900C48ull);
+}
+#else
+#define CVMX_PKO_PEB_MAX_LINK_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C48ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_PAD_ERR_INFO CVMX_PKO_PEB_PAD_ERR_INFO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_PAD_ERR_INFO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_PAD_ERR_INFO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900C28ull);
+}
+#else
+#define CVMX_PKO_PEB_PAD_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C28ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_PSE_FIFO_ERR_INFO CVMX_PKO_PEB_PSE_FIFO_ERR_INFO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_PSE_FIFO_ERR_INFO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_PSE_FIFO_ERR_INFO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900C20ull);
+}
+#else
+#define CVMX_PKO_PEB_PSE_FIFO_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C20ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_SUBD_ADDR_ERR_INFO CVMX_PKO_PEB_SUBD_ADDR_ERR_INFO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_SUBD_ADDR_ERR_INFO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_SUBD_ADDR_ERR_INFO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900C38ull);
+}
+#else
+#define CVMX_PKO_PEB_SUBD_ADDR_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C38ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_SUBD_SIZE_ERR_INFO CVMX_PKO_PEB_SUBD_SIZE_ERR_INFO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_SUBD_SIZE_ERR_INFO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_SUBD_SIZE_ERR_INFO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900C40ull);
+}
+#else
+#define CVMX_PKO_PEB_SUBD_SIZE_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C40ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_TRUNC_ERR_INFO CVMX_PKO_PEB_TRUNC_ERR_INFO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_TRUNC_ERR_INFO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_TRUNC_ERR_INFO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900C30ull);
+}
+#else
+#define CVMX_PKO_PEB_TRUNC_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C30ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_PQX_DROPPED_BYTES(unsigned long offset)
 {
 	if (!(
@@ -7282,9 +7392,11 @@ union cvmx_pko_pdm_cfg {
 	uint64_t u64;
 	struct cvmx_pko_pdm_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_10_63               : 54;
+	uint64_t reserved_11_63               : 53;
+	uint64_t dis_flsh_cache               : 1;  /**< Set to disable the flush buffer's cache. This will make all fills require full memory
+                                                         latency. For diagnostic use only. */
 	uint64_t pko_pad_minlen               : 7;  /**< Minimum frame padding min length. When */
-	uint64_t diag_mode                    : 1;  /**< Diagnostic mode. Enable to read/write to memories in PDM through CSR interface. */
+	uint64_t diag_mode                    : 1;  /**< Set to enable read/write to memories in PDM through CSR interface.  For diagnostic use only. */
 	uint64_t alloc_lds                    : 1;  /**< Allocate LDS. This signal prevents the loads to IOBP from being allocated in on-chip cache
                                                          (LDWB vs. LDD). Two modes as follows:
                                                          0 = No allocate (LDWB)
@@ -7298,7 +7410,8 @@ union cvmx_pko_pdm_cfg {
 	uint64_t alloc_lds                    : 1;
 	uint64_t diag_mode                    : 1;
 	uint64_t pko_pad_minlen               : 7;
-	uint64_t reserved_10_63               : 54;
+	uint64_t dis_flsh_cache               : 1;
+	uint64_t reserved_11_63               : 53;
 #endif
 	} s;
 	struct cvmx_pko_pdm_cfg_s             cn78xx;
@@ -8003,8 +8116,8 @@ union cvmx_pko_peb_err_int {
 	uint64_t peb_trunc_err                : 1;  /**< Asserted when a PD has truncated data.  Throws PKO_INTSN_E::PEB_TRUNC_ERR. */
 	uint64_t peb_pad_err                  : 1;  /**< Asserted when a PD has data padded to it (SEND_HDR[TOTAL] < sum(SEND_DATA[size])).  Throws
                                                          PKO_INTSN_E::PEB_PAD_ERR. */
-	uint64_t peb_pse_fifo_cfg_err         : 1;  /**< Asserted when PSE sends PD information for a non-configured FIFO.  Throws
-                                                         PKO_INTSN_E::PEB_PSE_FIFO_CFG_ERR. */
+	uint64_t peb_pse_fifo_err             : 1;  /**< Asserted when PSE sends PD information for a non-configured FIFO.  Throws
+                                                         PKO_INTSN_E::PEB_PSE_FIFO_ERR. */
 	uint64_t peb_fcs_sop_err              : 1;  /**< Asserted when FCS SOP value greater than packet size detected.  Throws
                                                          PKO_INTSN_E::PEB_FCS_SOP_ERR. */
 	uint64_t peb_jump_def_err             : 1;  /**< Asserted when JUMP sub-descriptor is not last in a PD.  Throws
@@ -8015,7 +8128,7 @@ union cvmx_pko_peb_err_int {
 	uint64_t peb_ext_hdr_def_err          : 1;
 	uint64_t peb_jump_def_err             : 1;
 	uint64_t peb_fcs_sop_err              : 1;
-	uint64_t peb_pse_fifo_cfg_err         : 1;
+	uint64_t peb_pse_fifo_err             : 1;
 	uint64_t peb_pad_err                  : 1;
 	uint64_t peb_trunc_err                : 1;
 	uint64_t peb_subd_addr_err            : 1;
@@ -8028,6 +8141,224 @@ union cvmx_pko_peb_err_int {
 	struct cvmx_pko_peb_err_int_s         cn78xx;
 };
 typedef union cvmx_pko_peb_err_int cvmx_pko_peb_err_int_t;
+
+/**
+ * cvmx_pko_peb_ext_hdr_def_err_info
+ */
+union cvmx_pko_peb_ext_hdr_def_err_info {
+	uint64_t u64;
+	struct cvmx_pko_peb_ext_hdr_def_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_20_63               : 44;
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_EXT_HDR_DEF_ERR] is set */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_EXT_HDR_DEF_ERR */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_EXT_HDR_DEF_ERR */
+#else
+	uint64_t chan                         : 12;
+	uint64_t fifo                         : 7;
+	uint64_t val                          : 1;
+	uint64_t reserved_20_63               : 44;
+#endif
+	} s;
+	struct cvmx_pko_peb_ext_hdr_def_err_info_s cn78xx;
+};
+typedef union cvmx_pko_peb_ext_hdr_def_err_info cvmx_pko_peb_ext_hdr_def_err_info_t;
+
+/**
+ * cvmx_pko_peb_fcs_sop_err_info
+ */
+union cvmx_pko_peb_fcs_sop_err_info {
+	uint64_t u64;
+	struct cvmx_pko_peb_fcs_sop_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_20_63               : 44;
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_FCS_SOP_ERR] is set. */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_FCS_SOP_ERR */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_FCS_SOP_ERR */
+#else
+	uint64_t chan                         : 12;
+	uint64_t fifo                         : 7;
+	uint64_t val                          : 1;
+	uint64_t reserved_20_63               : 44;
+#endif
+	} s;
+	struct cvmx_pko_peb_fcs_sop_err_info_s cn78xx;
+};
+typedef union cvmx_pko_peb_fcs_sop_err_info cvmx_pko_peb_fcs_sop_err_info_t;
+
+/**
+ * cvmx_pko_peb_jump_def_err_info
+ */
+union cvmx_pko_peb_jump_def_err_info {
+	uint64_t u64;
+	struct cvmx_pko_peb_jump_def_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_20_63               : 44;
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_JUMP_DEF_ERR] is set. */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_JUMP_DEF_ERR */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_JUMP_DEF_ERR */
+#else
+	uint64_t chan                         : 12;
+	uint64_t fifo                         : 7;
+	uint64_t val                          : 1;
+	uint64_t reserved_20_63               : 44;
+#endif
+	} s;
+	struct cvmx_pko_peb_jump_def_err_info_s cn78xx;
+};
+typedef union cvmx_pko_peb_jump_def_err_info cvmx_pko_peb_jump_def_err_info_t;
+
+/**
+ * cvmx_pko_peb_macx_cfg_wr_err_info
+ */
+union cvmx_pko_peb_macx_cfg_wr_err_info {
+	uint64_t u64;
+	struct cvmx_pko_peb_macx_cfg_wr_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_8_63                : 56;
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_MACX_CFG_WR_ERR] is set. */
+	uint64_t mac                          : 7;  /**< MAC number associated with the captured PEB_MACX_CFG_WR_ERR */
+#else
+	uint64_t mac                          : 7;
+	uint64_t val                          : 1;
+	uint64_t reserved_8_63                : 56;
+#endif
+	} s;
+	struct cvmx_pko_peb_macx_cfg_wr_err_info_s cn78xx;
+};
+typedef union cvmx_pko_peb_macx_cfg_wr_err_info cvmx_pko_peb_macx_cfg_wr_err_info_t;
+
+/**
+ * cvmx_pko_peb_max_link_err_info
+ */
+union cvmx_pko_peb_max_link_err_info {
+	uint64_t u64;
+	struct cvmx_pko_peb_max_link_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_20_63               : 44;
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_MAX_LINK_ERR] is set. */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_MAX_LINK_ERR */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_MAX_LINK_ERR */
+#else
+	uint64_t chan                         : 12;
+	uint64_t fifo                         : 7;
+	uint64_t val                          : 1;
+	uint64_t reserved_20_63               : 44;
+#endif
+	} s;
+	struct cvmx_pko_peb_max_link_err_info_s cn78xx;
+};
+typedef union cvmx_pko_peb_max_link_err_info cvmx_pko_peb_max_link_err_info_t;
+
+/**
+ * cvmx_pko_peb_pad_err_info
+ */
+union cvmx_pko_peb_pad_err_info {
+	uint64_t u64;
+	struct cvmx_pko_peb_pad_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_20_63               : 44;
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_PAD_ERR] is set. */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_PAD_ERR */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_PAD_ERR */
+#else
+	uint64_t chan                         : 12;
+	uint64_t fifo                         : 7;
+	uint64_t val                          : 1;
+	uint64_t reserved_20_63               : 44;
+#endif
+	} s;
+	struct cvmx_pko_peb_pad_err_info_s    cn78xx;
+};
+typedef union cvmx_pko_peb_pad_err_info cvmx_pko_peb_pad_err_info_t;
+
+/**
+ * cvmx_pko_peb_pse_fifo_err_info
+ */
+union cvmx_pko_peb_pse_fifo_err_info {
+	uint64_t u64;
+	struct cvmx_pko_peb_pse_fifo_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_20_63               : 44;
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_PSE_FIFO_ERR] is set. */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_PSE_FIFO_ERR */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_PSE_FIFO_ERR */
+#else
+	uint64_t chan                         : 12;
+	uint64_t fifo                         : 7;
+	uint64_t val                          : 1;
+	uint64_t reserved_20_63               : 44;
+#endif
+	} s;
+	struct cvmx_pko_peb_pse_fifo_err_info_s cn78xx;
+};
+typedef union cvmx_pko_peb_pse_fifo_err_info cvmx_pko_peb_pse_fifo_err_info_t;
+
+/**
+ * cvmx_pko_peb_subd_addr_err_info
+ */
+union cvmx_pko_peb_subd_addr_err_info {
+	uint64_t u64;
+	struct cvmx_pko_peb_subd_addr_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_20_63               : 44;
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_SUBD_ADDR_ERR] is set. */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_SUBD_ADDR_ERR */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_SUBD_ADDR_ERR */
+#else
+	uint64_t chan                         : 12;
+	uint64_t fifo                         : 7;
+	uint64_t val                          : 1;
+	uint64_t reserved_20_63               : 44;
+#endif
+	} s;
+	struct cvmx_pko_peb_subd_addr_err_info_s cn78xx;
+};
+typedef union cvmx_pko_peb_subd_addr_err_info cvmx_pko_peb_subd_addr_err_info_t;
+
+/**
+ * cvmx_pko_peb_subd_size_err_info
+ */
+union cvmx_pko_peb_subd_size_err_info {
+	uint64_t u64;
+	struct cvmx_pko_peb_subd_size_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_20_63               : 44;
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_SUBD_SIZE_ERR] is set. */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_SUBD_SIZE_ERR */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_SUBD_SIZE_ERR */
+#else
+	uint64_t chan                         : 12;
+	uint64_t fifo                         : 7;
+	uint64_t val                          : 1;
+	uint64_t reserved_20_63               : 44;
+#endif
+	} s;
+	struct cvmx_pko_peb_subd_size_err_info_s cn78xx;
+};
+typedef union cvmx_pko_peb_subd_size_err_info cvmx_pko_peb_subd_size_err_info_t;
+
+/**
+ * cvmx_pko_peb_trunc_err_info
+ */
+union cvmx_pko_peb_trunc_err_info {
+	uint64_t u64;
+	struct cvmx_pko_peb_trunc_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_20_63               : 44;
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_TRUNC_ERR] is set. */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_TRUNC_ERR */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_TRUNC_ERR */
+#else
+	uint64_t chan                         : 12;
+	uint64_t fifo                         : 7;
+	uint64_t val                          : 1;
+	uint64_t reserved_20_63               : 44;
+#endif
+	} s;
+	struct cvmx_pko_peb_trunc_err_info_s  cn78xx;
+};
+typedef union cvmx_pko_peb_trunc_err_info cvmx_pko_peb_trunc_err_info_t;
 
 /**
  * cvmx_pko_pq#_dropped_bytes
@@ -8144,19 +8475,13 @@ union cvmx_pko_pqx_topology {
 	uint64_t u64;
 	struct cvmx_pko_pqx_topology_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_21_63               : 43;
-	uint64_t link                         : 5;  /**< Link index. Index of the link (a.k.a. the MAC) associated with this port queue. Note that
-                                                         while the hardware reset state has LINK = 0, the hardware is not properly configured for
-                                                         LINK = 0 until an explicit register write occurs. */
-	uint64_t reserved_14_15               : 2;
-	uint64_t peb_fifo                     : 5;  /**< PEB FIFO. The PEB transmit FIFO number. (fixme: A value of 0x1F means unassigned). */
+	uint64_t reserved_14_63               : 50;
+	uint64_t peb_fifo                     : 5;  /**< PEB FIFO. The PEB transmit FIFO number. A value of 0x1F means unassigned. */
 	uint64_t reserved_0_8                 : 9;
 #else
 	uint64_t reserved_0_8                 : 9;
 	uint64_t peb_fifo                     : 5;
-	uint64_t reserved_14_15               : 2;
-	uint64_t link                         : 5;
-	uint64_t reserved_21_63               : 43;
+	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
 	struct cvmx_pko_pqx_topology_s        cn78xx;
@@ -9682,13 +10007,16 @@ union cvmx_pko_ptfx_status {
 	uint64_t u64;
 	struct cvmx_pko_ptfx_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_5_63                : 59;
+	uint64_t reserved_11_63               : 53;
+	uint64_t in_flight_cnt                : 6;  /**< This field returns the number of packets currently in-flight within PEB.  Useful both
+                                                         for reconfiguration (able to disable a FIFO when it is empty) and debugging */
 	uint64_t mac_num                      : 5;  /**< The MAC assigned to the given PKO TX FIFO. A value of 0x1F means unassigned. These
                                                          registers values are derived automatically by the hardware from the
                                                          PKO_MAC(0..27)_CFG[FIFO_NUM] settings. */
 #else
 	uint64_t mac_num                      : 5;
-	uint64_t reserved_5_63                : 59;
+	uint64_t in_flight_cnt                : 6;
+	uint64_t reserved_11_63               : 53;
 #endif
 	} s;
 	struct cvmx_pko_ptfx_status_s         cn78xx;

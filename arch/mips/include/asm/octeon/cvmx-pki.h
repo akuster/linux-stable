@@ -49,6 +49,9 @@
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-pki-defs.h>
+#include <asm/octeon/cvmx-fpa.h>
+#else
+#include "cvmx-fpa.h"
 #endif
 
 #ifdef	__cplusplus
@@ -66,46 +69,120 @@ extern "C" {
 #define CVMX_PKI_NUM_QPG_ENTRY		(2048)
 #define CVMX_PKI_NUM_FRAME_CHECK_VALUES	(2)
 #define CVMX_PKI_NUM_LTYPES		(32)
-#define CVMX_PKI_MAX_CLUSTER_PROFILES   (4)
-#define CVMX_PKI_NUM_STYLE_PROFILES	(1024)
-#define CVMX_PKI_MAX_NAME		(64)
 #define CVMX_PKI_NUM_CLUSTERS		(4)
 #define CVMX_PKI_NUM_CLUSTER_GROUP      (4)
 #define CVMX_PKI_NUM_PCAM_BANK		(2)
 #define CVMX_PKI_NUM_PCAM_ENTRY		(192)
-#define CVMX_PKI_TOTAL_PCAM_ENTRY	((CVMX_PKI_NUM_CLUSTERS) * (CVMX_PKI_NUM_PCAM_BANK) *\
-						(CVMX_PKI_NUM_PCAM_ENTRY))
-#define CVMX_PKI_MAX_QPG_STYLE_INDEX	(8)
-#define CVMX_PKI_MAX_FRAME_SIZE		(65535)
+#define CVMX_PKI_NUM_QPG_STYLE_INDEX	(8)
 #define CVMX_PKI_NUM_FRAME_SIZE_ID	(2)
 #define CVMX_PKI_NUM_CHANNELS		(4096)
 #define CVMX_PKI_NUM_BPID		(1024)
+#define CVMX_PKI_MAX_FRAME_SIZE		(65535)
 #define CVMX_PKI_FIND_AVAL_ENTRY        (-1)
+#define CVMX_PKI_MAX_CLUSTER_PROFILES   (4)
+#define CVMX_PKI_MAX_STYLE_PROFILES	(256)
+#define CVMX_PKI_MAX_NAME		(16)
+#define CVMX_PKI_MAX_POOL_PROFILES	(64) //modify it later
+#define CVMX_PKI_MAX_AURA_PROFILES	(256) //modify it later
+#define CVMX_PKI_MAX_GROUP_PROFILES	(256)
+
+#ifdef CVMX_SUPPORT_SEPARATE_CLUSTER_CONFIG
+#define CVMX_PKI_TOTAL_PCAM_ENTRY	((CVMX_PKI_NUM_CLUSTERS) * (CVMX_PKI_NUM_PCAM_BANK) *\
+						(CVMX_PKI_NUM_PCAM_ENTRY))
+#else
+#define CVMX_PKI_TOTAL_PCAM_ENTRY	(CVMX_PKI_NUM_PCAM_BANK * CVMX_PKI_NUM_PCAM_ENTRY)
+#endif
+
+#define CVMX_PKI_MAX_QPG_PROFILES	(2048)
+#define CVMX_PKI_NOT_ASSIGNED		(-88)
 
 
 struct cvmx_pki_cluster_profile
 {
 	char		name[CVMX_PKI_MAX_NAME];
-	uint64_t	cl_group;
-#define CVMX_PKI_CLUSTER_0	0x1
-#define CVMX_PKI_CLUSTER_1	0x2
-#define	CVMX_PKI_CLUSTER_2	0x4
-#define CVMX_PKI_CLUSTER_3	0x8
-#define CVMX_PKI_CLUSTER_ALL 0xf
-	uint64_t	cl_mask;
+	int 		num_clusters;
+	int 		cluster_group;
+#define CVMX_PKI_PARSE_DSP		0x01
+#define CVMX_PKI_PARSE_FULCRUM		0x02
+#define CVMX_PKI_PARSE_MPLS		0x04
+#define CVMX_PKI_PARSE_L3		0x08
+#define CVMX_PKI_PARSE_IL3		0x10
+#define CVMX_PKI_PARSE_L4 		0x20
+#define CVMX_PKI_PARSE_CUSTOM_L2	0x40
+#define CVMX_PKI_PARSE_CUSTOM_LG	0x80
+#define CVMX_PKI_PARSE_VIRTUALIZATION	0x100
+#define CVMX_PKI_CLUSTER_ALL            0xf
+	uint64_t        parsing_mask;
+
 };
 
 struct cvmx_pki_cluster_list
 {
-	uint64_t index;
+	int index;
 	struct cvmx_pki_cluster_profile cl_profile[CVMX_PKI_MAX_CLUSTER_PROFILES];
+};
+
+struct cvmx_pki_pool_profile
+{
+	char pool_name[CVMX_PKI_MAX_NAME];
+	cvmx_fpa_pool_config_t	pool_cfg;
+};
+
+struct cvmx_pki_pool_list
+{
+	int index;
+	struct cvmx_pki_pool_profile pool_profile[CVMX_PKI_MAX_POOL_PROFILES];
+};
+
+struct cvmx_pki_aura_profile
+{
+	char aura_name[CVMX_PKI_MAX_NAME];
+	int aura_num;
+	int pool_num;
+	int buffer_count;
+};
+
+struct cvmx_pki_aura_list
+{
+	int index;
+	struct cvmx_pki_aura_profile aura_profile[CVMX_PKI_MAX_AURA_PROFILES];
+};
+
+struct cvmx_pki_group_profile
+{
+	char group_name[CVMX_PKI_MAX_NAME];
+	int group_num;
+};
+
+struct cvmx_pki_group_list
+{
+	int index;
+	struct cvmx_pki_group_profile group_profile[CVMX_PKI_MAX_GROUP_PROFILES];
+};
+
+struct cvmx_pki_qpg_profile
+{
+	char qpg_name[CVMX_PKI_MAX_NAME];
+	int base_offset;
+	int num_entries;
+};
+
+struct cvmx_pki_qpg_list
+{
+	int index;
+	struct cvmx_pki_qpg_profile qpg_profile[CVMX_PKI_MAX_QPG_PROFILES];
 };
 
 struct cvmx_pki_style_profile
 {
-	char		name[CVMX_PKI_MAX_NAME];
-	uint64_t	style_num;
-	uint64_t	cluster;
+	char				name[CVMX_PKI_MAX_NAME];
+	int				style_num;
+};
+
+struct cvmx_pki_style_list
+{
+	int    index;
+	struct cvmx_pki_style_profile style_profile[CVMX_PKI_MAX_STYLE_PROFILES];
 };
 
 struct cvmx_pki_framelen_chk {
@@ -115,16 +192,23 @@ struct cvmx_pki_framelen_chk {
 
 struct cvmx_pki_global_config
 {
-	uint64_t			pki_;
 	uint64_t			parsing_mask;
 	uint64_t			clusters_in_use_mask;
 	struct cvmx_pki_framelen_chk    frame_len_chk[CVMX_PKI_NUM_FRAME_SIZE_ID];
 	//enum cvmx_pki_bel		bel_type_map[CVMX_PKI_MAX_LTYPE];
 };
 
+struct cvmx_pki_qpg_config
+{
+	int  port_add;
+	int  aura;
+	int  group_ok;
+	int  group_bad;
+};
+
 struct cvmx_pki_clustergrp_config
 {
-	uint64_t 	users;
+	int		users;
 	uint64_t	cluster_mask;
 };
 
@@ -138,20 +222,21 @@ enum cvmx_pki_pkind_parse_mode{
 
 enum cvmx_pki_parse_mode_chg {
 	CVMX_PKI_PARSE_NO_CHG = 0x0,
-	CVMX_PKI_PARSE_SKIP_LA = 0x1,
-	CVMX_PKI_PARSE_SKIP_LA_TO_LB = 0x3,
-	CVMX_PKI_PARSE_SKIP_LA_TO_LC = 0x7,
-	CVMX_PKI_PARSE_SKIP_LA_TO_LF = 0x3f,
+	CVMX_PKI_PARSE_SKIP_TO_LB = 0x1,
+	CVMX_PKI_PARSE_SKIP_TO_LC = 0x3,
+	CVMX_PKI_PARSE_SKIP_TO_LD = 0x7,
+	CVMX_PKI_PARSE_SKIP_TO_LG = 0x3f,
 	CVMX_PKI_PARSE_SKIP_ALL = 0x7f,
 };
 
 struct cvmx_pki_pkind_config
 {
-        bool				in_use;
-	uint64_t			cluster_grp;
+	int				users;
 	enum cvmx_pki_pkind_parse_mode	parsing_mode;
+	uint64_t 			cluster_mask;
 	uint64_t 			l2_parsing_mask;
-	uint64_t 			initial_style;
+	int	 			initial_style;
+	int				cluster_grp;
 };
 
 struct cvmx_pki_tag_fields
@@ -177,43 +262,6 @@ struct cvmx_pki_tag_fields
 	uint64_t tag_spi:1;
 	uint64_t tag_gtp:1;
 	uint64_t tag_vni:1;
-};
-
-/**
- * Structure to store FPA pool configuration parameters.
-   vinita modify it after FPA block has defined it for 78xx
- */
-struct cvmx_pki_pool_config
-{
-	int64_t aura_num;
-	uint64_t buffer_size;
-	uint64_t buffer_count;
-};
-
-struct cvmx_pki_qpg_entry
-{
-	int port_add;
-	int aura;
-	int grp_ok;
-	int grp_bad;
-};
-
-struct cvmx_pki_qpg_config
-{
-	int base_offset;
-	int num_entries;
-	//vinita, later modify it to use malloc, if it can be use
-	struct cvmx_pki_qpg_entry qpg_entry[CVMX_PKI_MAX_QPG_STYLE_INDEX];
-};
-
-struct cvmx_pki_aura_config
-{
-	bool in_use;
-	char pool_name[CVMX_PKI_MAX_NAME];
-	char aura_name[CVMX_PKI_MAX_NAME];
-	int pool_number;
-	int aura_number;
-	uint64_t buffer_size;
 };
 
 enum cvmx_pki_l2_len_mode {
@@ -243,35 +291,43 @@ enum cvmx_sso_tag_type{
 			- NULL_NULL can be exited by a new work request. A NULL_SWITCH load can also switch the state to NULL */
 };
 
+enum cvmx_pki_qpg_qos {
+	CVMX_PKI_QPG_QOS_NONE = 0,
+	CVMX_PKI_QPG_QOS_VLAN,
+	CVMX_PKI_QPG_QOS_MPLS,
+	CVMX_PKI_QPG_QOS_DSA_SRC,
+	CVMX_PKI_QPG_QOS_DIFFSERV,
+	CVMX_PKI_QPG_QOS_HIGIG
+};
 
 struct cvmx_pki_style_config
 {
-	uint64_t			users;
+	int				users;
 	bool				en_l2_lenchk;
+	uint64_t			cluster_mask;
 	enum cvmx_pki_l2_len_mode	l2_lenchk_mode;
 	bool 				en_maxframe_errchk;
 	bool 				en_minframe_errchk;
-	uint64_t 			max_min_frame_sel;
-	bool 				strip_l2_FCS;
-	bool 				en_FCS_check;
+	int	 			max_min_frame_sel;
+	bool 				strip_l2_fcs;
+	bool 				en_fcs_check;
+	int	 			wqe_header_size;
+	int 				wqe_start_offset;
+	int 				first_mbuf_skip;
+	int	 			later_mbuf_skip;
+	int				mbuff_size;
+	enum cvmx_pki_cache_mode 	cache_mode;
+	bool 				data_wqe_buf_diff;
+	int				wqe_vlan;
+	int				qpg_base_offset;
 	bool 				qpg_calc_port_addr;
 	bool 				qpg_calc_aura;
 	bool 				qpg_calc_group;
-	//uint64_t 			qpg_table_base;
-	uint64_t			qpg_qos;
-	uint64_t 			wqe_header_size;
-	uint64_t 			wqe_start_offset;
-	uint64_t 			first_mbuf_skip;
-	uint64_t 			later_mbuf_skip;
-	uint64_t			mbuff_size;
-	enum cvmx_pki_cache_mode 	cache_mode;
-	bool 				data_wqe_buf_same;
-	uint64_t			wqe_vlan;
+	enum cvmx_pki_qpg_qos		qpg_qos;
+	int				qpg_port_msb;
+	int				qpg_port_shift;
 	enum cvmx_sso_tag_type	 	tag_type;
-	//enum cvmx_pki_tag_mode	 	tag_order;
 	struct cvmx_pki_tag_fields 	tag_fields;
-	struct cvmx_pki_qpg_config      qpg_cfg;
-	struct cvmx_pki_aura_config     aura_cfg[CVMX_PKI_MAX_QPG_STYLE_INDEX];
 };
 
 #define CVMX_PKI_PCAM_TERM_E_NONE_M                            (0x0)
@@ -317,7 +373,7 @@ struct cvmx_pki_pcam_input
 	uint64_t 		style;
 	uint64_t		style_mask;
 	enum cvmx_pki_term	field;
-	uint64_t 		field_mask;
+	uint32_t 		field_mask;
 	uint64_t 		data;
 	uint64_t 		data_mask;
 };
@@ -379,14 +435,15 @@ struct cvmx_pki_pcam_action
 {
 	enum cvmx_pki_parse_mode_chg	parse_mode_chg;
 	enum cvmx_pki_layer_type	layer_type_set;
-	uint64_t			style_add;
-	uint64_t			parse_flag_set;
-	uint64_t			pointer_advance;
+	int				style_add;
+	int				parse_flag_set;
+	int				pointer_advance;
 };
 
 struct cvmx_pki_pcam_config
 {
-	uint64_t			in_use;
+	int				in_use;
+	int 				entry_num;
 	uint64_t			cluster_mask;
 	struct cvmx_pki_pcam_input	pcam_input;
 	struct cvmx_pki_pcam_action	pcam_action;
@@ -394,25 +451,36 @@ struct cvmx_pki_pcam_config
 
 struct cvmx_pki_pcam_list
 {
-	uint64_t 			index;
+	int	 			index;
 	struct cvmx_pki_pcam_config	pcam_cfg[CVMX_PKI_TOTAL_PCAM_ENTRY];
 };
 
-
+/** PKI block configuration*/
 struct cvmx_pki_config
 {
 	struct cvmx_pki_global_config		global_cfg;
 	struct cvmx_pki_clustergrp_config	cluster_cfg[CVMX_PKI_NUM_CLUSTER_GROUP];
-	struct cvmx_pki_pkind_config		pkind_config[CVMX_PKI_NUM_PKIND];
+	struct cvmx_pki_pkind_config		pkind_cfg[CVMX_PKI_NUM_PKIND];
 	struct cvmx_pki_style_config		style_cfg[CVMX_PKI_NUM_FINAL_STYLES];
+	struct cvmx_pki_qpg_config		qpg_cfg[CVMX_PKI_NUM_QPG_ENTRY];
+	//struct cvmx_fpa_pool_config_t		pool_cfg[CVMX_FPA_NUM_POOLS_78XX];
+	//struct cvmx_pki_aura_config		aura_cfg[CVMX_FPA_AURA_NUM];//fpa should have aura config defined but it does not
+};
+
+/** Mapping of profile names to their respective config number*/
+struct cvmx_pki_profiles
+{
 	struct cvmx_pki_pcam_list		pcam_list;
-	struct cvmx_pki_cluster_list    	cluster_list;
-	struct cvmx_pki_style_profile		style_profile[CVMX_PKI_NUM_FINAL_STYLES];
-	//struct cvmx_pki_bp_config_t		bp_cfg;
-	//struct cvmx_pki_red_config_t		red_cfg;
+	struct cvmx_pki_cluster_list    	cl_profile_list;
+	struct cvmx_pki_style_list		style_profile_list;
+	struct cvmx_pki_pool_list		pool_profile_list;
+	struct cvmx_pki_aura_list		aura_profile_list;
+	struct cvmx_pki_group_list	        group_profile_list;
+	struct cvmx_pki_qpg_list	        qpg_profile_list;
 };
 
 extern CVMX_SHARED struct cvmx_pki_config pki_config[CVMX_MAX_NODES];
+extern CVMX_SHARED struct cvmx_pki_profiles pki_profiles[CVMX_MAX_NODES];
 
 /**
  * This function writes qpg entry at specified offset in hardware
@@ -607,8 +675,298 @@ int cvmx_pki_write_aura_bpid(int node, int aura, int bpid);
  *                  max DROP level exceeds.
  *                  1-enable 0-disable
  */
- int cvmx_pki_enable_aura_qos(int node, int aura, bool ena_red,
+int cvmx_pki_enable_aura_qos(int node, int aura, bool ena_red,
 			      bool ena_drop, bool ena_bp);
+
+/**
+ * This function finds if cluster profile with name already exist
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	profile index in cluster list on SUCCESS
+                -1 if profile not found in cluster list
+ */
+int cvmx_pki_cluster_profile_exist(int node, char *name);
+
+/**
+ * This function finds cluster mask associated with
+ * given cluster profile name.
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	cluster_mask on SUCCESS
+                -1 if profile not found in cluster list
+ */
+int cvmx_pki_find_cluster_mask(int node, char *name);
+
+/**
+ * This function finds cluster group associated with
+ * given cluster profile name
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	cluster group number on SUCCESS
+                -1 if profile not found in cluster list
+ */
+int cvmx_pki_find_cluster_group(int node, char *name);
+
+/**
+ * This function finds if fpa pool profile with
+ * name already exist
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	profile index in pool list on SUCCESS
+                -1 if profile not found in pool list
+ */
+int cvmx_pki_pool_profile_exist(int node, char *name);
+
+/**
+ * This function finds if fpa pool number associated with
+ * given profile name
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	pool number on SUCCESS
+                -1 if profile not found in pool list
+ */
+int cvmx_pki_find_pool(int node, char *name);
+
+/**
+ * This function finds if fpa aura with given name
+ * exist in aura list
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	aura index in aura list on SUCCESS
+                -1 if profile not found in aura list
+ */
+int cvmx_pki_aura_profile_exist(int node, char *name);
+
+/**
+ * This function finds aura number associated with
+ * given aura name.
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	aura number in aura list on SUCCESS
+                -1 if profile not found in aura list
+ */
+int cvmx_pki_find_aura(int node, char *name);
+
+/**
+ * This function finds if group with given name
+ * exist in group list
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	index in group list on SUCCESS
+                -1 if profile not found in group list
+ */
+int cvmx_pki_group_profile_exist(int node, char *name);
+
+/**
+ * This function finds group number associated with
+ * given group profile name
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	group number on SUCCESS
+                -1 if profile not found in group list
+ */
+int cvmx_pki_find_group(int node, char *name);
+
+/**
+ * This function finds if qpg profile with given name
+ * exist in qpg list
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	index in qpg list on SUCCESS
+                -1 if profile not found in qpg list
+ */
+int cvmx_pki_qpg_profile_exist(int node, char *name);
+
+/**
+ * This function finds qpg base offset associated with
+ * given qpg profile name.
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	qpg base offset on SUCCESS
+                -1 if profile not found in qpg list
+ */
+int cvmx_pki_find_qpg_base_offset(int node, char *name);
+
+/**
+ * This function get the buffer size of the given pool number
+ * @param node  node number
+ * @param pool  fpa pool number
+ * @return 	buffer size SUCCESS
+                -1 if pool number is not found in pool list
+ */
+int cvmx_pki_get_pool_buffer_size(int node,int pool);
+
+/**
+ * This function get the buffer size of the given aura number
+ * @param node  node number
+ * @param pool  fpa aura number
+ * @return 	buffer size SUCCESS
+                -1 if aura number is not found in aura list
+ */
+int cvmx_pki_get_aura_buffer_size(int node, int aura);
+
+int cvmx_pki_get_mbuff_size (int node, int base_offset);
+
+/**
+ * This function finds if style profile with given name
+ * exist in style list
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	index into style list on SUCCESS
+                -1 if profile not found in style list
+ */
+int cvmx_pki_style_profile_exist(int node, char *name);
+
+/**
+ * This function finds style number associated with
+ * given style profile name.
+ * @param node  node number
+ * @param name  profile name to look for
+ * @return 	style number on SUCCESS
+                -1 if profile not found in style list
+ */
+int cvmx_pki_find_style(int node, char *name);
+
+
+/**
+ * This function stores the cluster configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param name  	name associated with this config
+ * @param cl_profile    structure containing cluster profile parameters below
+ * 			-cluster_group (-1 if needs to be allocated)
+ * 			-num_cluster   (number of cluster in the cluster group)
+ * 			-parsing_mask  (parsing mask for the cluster group)
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_cluster_config(int node, struct cvmx_pki_cluster_profile cl_profile);
+
+/**
+ * This function stores the pool configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param pool_name  	name associated with this config
+ * @param pool_numb     pool number (-1 if need to be allocated)
+ * @param buffer_size	size of buffers in specified pool
+ * @param num_buffers	numberof buffers in specified pool
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_pool_config(int node, char* pool_name, int pool_num,
+			     uint64_t buffer_size, uint64_t num_buffers);
+
+/**
+ * This function stores the aura configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param aura_name  	name associated with this config
+ * @param aura_num      aura number (-1 if need to be allocated)
+ * @param pool  	pool to which aura is mapped
+ * @param num_buffers	number of buffers to allocate to aura.
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_aura_config(int node, char* aura_name, int aura_num, int pool,
+			     int num_buffers);
+
+/**
+ * This function stores the group configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param aura_name  	name associated with this config
+ * @param group		SSO group number (-1 if needs to be allocated)
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_group_config(int node, char *name, int group);
+
+/**
+ * This function stores the qpg configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param name  	name associated with this config
+ * @param base_offset	offset in QPG table (-1 if needs to be allocated)
+ * @param num_entries	total number of indexes needs to be allocated from
+ *                      base_offset.
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_qpg_profile(int node, char* name, int base_offset, int num_entries);
+
+/**
+ * This function stores the group configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param aura_name  	name associated with this config
+ * @param group		SSO group number (-1 if needs to be allocated)
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_qpg_config(int node, char* name, int entry_start,
+			    int entry_end, struct cvmx_pki_qpg_config qpg_config);
+
+/**
+ * This function stores the style configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param aura_name  	name associated with this config
+ * @param style_num	style number (-1 if needs to be allocated)
+ * @param style_cfg	pointer to struct which has parameters related
+ *                      to style config
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_style_config(int node, char* style_name, int style_num,
+			      struct cvmx_pki_style_config* style_cfg);
+
+/**
+ * This function stores the pkind style configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param pkind  	pkind number
+ * @param style_name	pointer to style name which need to be assigned to pkind
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+int cvmx_pki_set_pkind_style(int node, int pkind, int style_name);
+
+/**
+ * This function stores the pkind initial parse mode in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param pkind  	pkind number
+ * @param parse_mode    parse mode to assign to specified pkind.
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+void cvmx_pki_set_pkind_initial_parse_mode(int node, int pkind, int parse_mode);
+
+/**
+ * This function stores the pkind cluster configuration in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param pkind  	pkind number
+ * @param style_name	pointer to style name which need to be assigned to pkind
+ * @return 		0 on SUCCESS
+                        -1 on failure
+ */
+void cvmx_pki_set_pkind_cluster_config(int node, int pkind,
+				       int cl_grp, uint64_t cl_mask);
+
+/**
+ * This function stores the pcam entry in data structure
+ * which is then used to program the hardware.
+ * @param node  	node number
+ * @param cluster_mask	Mask of clusters on which the entry meeds to be appiled.
+ * @param input		structure of pcam input parameter which defines matching creteria.
+ * @param action	structure of pcam action parameters which aill be applied if match is found.
+ * @return              0 on scuccess
+ *			-1 on failure
+ */
+int cvmx_pki_set_pcam_entry(int node, int pcam_index, uint64_t cl_mask,
+			    struct cvmx_pki_pcam_input input,
+			    struct cvmx_pki_pcam_action action);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

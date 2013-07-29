@@ -1636,10 +1636,10 @@ union cvmx_lmcx_bist_ctl {
 	struct cvmx_lmcx_bist_ctl_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t dlcram_bist_status           : 1;  /**< DLC RAM BIST status, 1 means fail. */
-	uint64_t dlcram_bist_done             : 1;  /**< DLC RAM BIST complete indication, 1 means complete. */
-	uint64_t start_bist                   : 1;  /**< Start BIST on DLC memory. */
-	uint64_t clear_bist                   : 1;  /**< Start clear BIST on DLC memory. */
+	uint64_t dlcram_bist_status           : 1;  /**< Reserved. */
+	uint64_t dlcram_bist_done             : 1;  /**< Reserved. */
+	uint64_t start_bist                   : 1;  /**< Reserved. */
+	uint64_t clear_bist                   : 1;  /**< Reserved. */
 #else
 	uint64_t clear_bist                   : 1;
 	uint64_t start_bist                   : 1;
@@ -2249,7 +2249,7 @@ union cvmx_lmcx_comp_ctl2 {
                                                          compensation impedance on N-pulldown. */
 	uint64_t ptune_offset                 : 4;  /**< Ptune Offset value. */
 	uint64_t ntune_offset                 : 4;  /**< Ntune offset value. */
-	uint64_t m180                         : 1;  /**< Reserved; must be zero. INTERNAL: Cap impedance at 180 ohm, instead of 240 ohm. */
+	uint64_t m180                         : 1;  /**< Reserved; must be zero. */
 	uint64_t byp                          : 1;  /**< Bypass mode. When set, PTUNE,NTUNE are the compensation setting. When clear,
                                                          DDR_PTUNE,DDR_NTUNE are the compensation setting. */
 	uint64_t ptune                        : 5;  /**< PCTL impedance control in bypass mode. */
@@ -3512,9 +3512,8 @@ union cvmx_lmcx_config {
 	uint64_t reserved_63_63               : 1;
 	uint64_t bg2_enable                   : 1;  /**< BG2 pin is active for DDR4 mode.  Only has an effect when LMC*_CONFIG[MODEDDR4] = 1.
                                                          Typically only cleared for DDR4 x16 devices, where there is no BG2 pin on the device. */
-	uint64_t mode_x4dev                   : 1;  /**< DDR x4 device mode.  Set when using DIMMs with x4 devices or if using
-                                                         embedded x4 devices, must be 0. */
-	uint64_t mode32b                      : 1;  /**< 32-bit datapath mode. When set, only 32 DQ pins are used, must be 1. */
+	uint64_t mode_x4dev                   : 1;  /**< Always reads as 0 for 70xx devices, there is no x4 device support. */
+	uint64_t mode32b                      : 1;  /**< Always reads as 1 for 70xx devices, only 32b mode is supported. */
 	uint64_t scrz                         : 1;  /**< Hide LMC(0..0)_SCRAMBLE_CFG0 and LMC(0..0)_SCRAMBLE_CFG1 when set. */
 	uint64_t early_unload_d1_r1           : 1;  /**< When set, unload the PHY silo one cycle early for Rank 3 reads.
                                                          The recommended EARLY_UNLOAD_D1_R1 value can be calculated after the final
@@ -3548,19 +3547,26 @@ union cvmx_lmcx_config {
                                                          initialized.  Software must set necessary RANKMASK bits before executing the
                                                          initialization sequence using the LMC*_SEQ_CTL register.  If the rank has been
                                                          selected for init with the RANKMASK bits, the INIT_STATUS bits will be set after
-                                                         successful
-                                                         initialization and after self-refresh exit.  INIT_STATUS determines the chip-selects
-                                                         that assert during refresh, ZQCS, precharge power-down entry/exit, and self-refresh entry
-                                                         SEQ_SEL's. */
+                                                         successful initialization and after self-refresh exit.  INIT_STATUS determines
+                                                         the chip-selects that assert during refresh, ZQCS, precharge power-down entry/exit,
+                                                         and self-refresh entry SEQ_SEL's. */
 	uint64_t mirrmask                     : 4;  /**< "Mask determining which ranks are address-mirrored.
                                                          MIRRMASK<n> = 1 means Rank n addresses are mirrored for
                                                          0 <= n <= 3.
-                                                         A mirrored read/write operation has the following differences:
+                                                         In DDR3, a mirrored read/write operation has the following differences:
                                                          DDR#_BA<1> is swapped with DDR#_BA<0>;
                                                          DDR#_A<8> is swapped with DDR#_A<7>;
                                                          DDR#_A<6> is swapped with DDR#_A<5>;
                                                          DDR#_A<4> is swapped with DDR#_A<3>.
-                                                         When RANK_ENA = 0, MIRRMASK<1> and MIRRMASK<3> MBZ." */
+                                                         In DDR4, a mirrored read/write operation has the following differences:
+                                                         DDR#_BG<1> is swapped with DDR#_BG<0>;
+                                                         DDR#_BA<1> is swapped with DDR#_BA<0>;
+                                                         DDR#_A<13> is swapped with DDR#_A<11>;
+                                                         DDR#_A<8> is swapped with DDR#_A<7>;
+                                                         DDR#_A<6> is swapped with DDR#_A<5>;
+                                                         DDR#_A<4> is swapped with DDR#_A<3>.
+                                                         For 70xx, MIRRMASK<3:2> MBZ.
+                                                         When RANK_ENA = 0, MIRRMASK<1> MBZ." */
 	uint64_t rankmask                     : 4;  /**< Mask to select rank to be leveled/initialized. To write-level/read-level/initialize rank
                                                          i, set RANKMASK< i>
                                                          RANK_ENA = 1 RANK_ENA = 0
@@ -3570,7 +3576,8 @@ union cvmx_lmcx_config {
                                                          RANKMASK<3> = DIMM1_CS1 MBZ
                                                          For read/write leveling, each rank has to be leveled separately, so RANKMASK should only
                                                          have one bit set. RANKMASK is not used during self-refresh entry/exit and precharge power-
-                                                         down entry/exit instruction sequences. When RANK_ENA = 0, RANKMASK<1> and RANKMASK<3> MBZ. */
+                                                         down entry/exit instruction sequences. For 70xx, RANKMASK<3:2> MBZ.  When RANK_ENA = 0,
+                                                         RANKMASK<1> MBZ. */
 	uint64_t rank_ena                     : 1;  /**< "RANK enable (for use with dual-rank DIMMs).
                                                          For dual-rank DIMMs, the RANK_ENA bit will enable the drive of the DDR#_DIMM*_CS*_L and
                                                          ODT_<1:0> pins differently based on the (PBANK_LSB - 1) address bit.
@@ -6213,7 +6220,7 @@ union cvmx_lmcx_dual_memcfg {
 	uint64_t cs_mask                      : 4;  /**< Chip-select mask. This mask corresponds to the four chip-select signals for a memory
                                                          configuration. Each reference address asserts one of the chip-select signals. If that
                                                          chip-select signal has its corresponding CS_MASK bit set, then the config1 parameters are
-                                                         used, otherwise the config0 parameters are used. */
+                                                         used, otherwise the config0 parameters are used.  In 70xx, CS_MASK[3:2] must be cleared. */
 #else
 	uint64_t cs_mask                      : 4;
 	uint64_t reserved_4_15                : 12;
@@ -7914,18 +7921,17 @@ union cvmx_lmcx_nxm {
 	struct cvmx_lmcx_nxm_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_24_63               : 40;
-	uint64_t mem_msb_d1_r1                : 4;  /**< Max row MSB for DIMM1, RANK1/DIMM1 in single ranked. */
-	uint64_t mem_msb_d1_r0                : 4;  /**< Max row MSB for DIMM1, RANK0. */
+	uint64_t mem_msb_d1_r1                : 4;  /**< Reserved.  INTERNAL: Max row MSB for DIMM1, RANK1/DIMM1 in single ranked. */
+	uint64_t mem_msb_d1_r0                : 4;  /**< Reserved.  INTERNAL: Max row MSB for DIMM1, RANK0. */
 	uint64_t mem_msb_d0_r1                : 4;  /**< Max row MSB for DIMM0, RANK1/DIMM0 in single ranked. */
 	uint64_t mem_msb_d0_r0                : 4;  /**< Max row MSB for DIMM0, RANK0. */
 	uint64_t reserved_4_7                 : 4;
-	uint64_t cs_mask                      : 4;  /**< Chip select mask. This mask corresponds to the 4 chip selects for a memory configuration.
-                                                         If LMC(0..0)_CONFIG[RANK_ENA]=0 then this mask must be set in pairs because each reference
-                                                         address will assert a pair of chip selects. If the chip select(s) have a corresponding
-                                                         CS_MASK bit set, then the reference is to nonexistent memory (NXM). LMC will alias a NXM
-                                                         read reference to use the lowest, legal chip select(s) and return zeros. LMC normally
-                                                         discards NXM write operations, but will also alias them when
-                                                         LMC(0..0)_CONTROL[NXM_WRITE_EN]=1. */
+	uint64_t cs_mask                      : 4;  /**< CS_MASK[1:0] corresponds to the 2 chip selects for a memory configuration.  If the
+                                                         memory configuration does not populate a rank of memory for a chip select, the
+                                                         corresponding bit in the CS_MASK field must be set, and for 70xx devices bits
+                                                         CS_MASK[3:2] must always both be set.  LMC will alias a NXM read reference to use
+                                                         the lowest, legal chip select and return 0s for data.  LMC normally discards NXM
+                                                         writes, but will also alias them when LMC*_CONTROL[NXM_WRITE_EN]=1. */
 #else
 	uint64_t cs_mask                      : 4;
 	uint64_t reserved_4_7                 : 4;
@@ -9049,11 +9055,9 @@ union cvmx_lmcx_rodt_mask {
 	struct cvmx_lmcx_rodt_mask_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
-	uint64_t rodt_d1_r1                   : 4;  /**< Read ODT mask DIMM1, RANK1/DIMM1 in SingleRanked. If RANK_ENA=1, RODT_D1_R1<3> must be
-                                                         zero. Otherwise RODT_D1_R1<3:0> is not used and must be zero. */
+	uint64_t rodt_d1_r1                   : 4;  /**< Reserved. */
 	uint64_t reserved_20_23               : 4;
-	uint64_t rodt_d1_r0                   : 4;  /**< Read ODT mask DIMM1, RANK0. If RANK_ENA=1, RODT_D1_RO<2> must be zero. Otherwise,
-                                                         RODT_D1_RO<3:2,1> must be zero. */
+	uint64_t rodt_d1_r0                   : 4;  /**< Reserved. */
 	uint64_t reserved_12_15               : 4;
 	uint64_t rodt_d0_r1                   : 4;  /**< Read ODT mask DIMM0, RANK1/DIMM0 in SingleRanked. If RANK_ENA=1, RODT_D0_R1<1> must be
                                                          zero. Otherwise, RODT_D0_R1<3:0> is not used and must be zero. */
@@ -10615,10 +10619,9 @@ union cvmx_lmcx_wodt_mask {
 	struct cvmx_lmcx_wodt_mask_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
-	uint64_t wodt_d1_r1                   : 4;  /**< Write ODT mask DIMM1, RANK1/DIMM1 in SingleRanked.
-                                                         If RANK_ENA=0, WODT_D1_R1<3:0> must be zero. */
+	uint64_t wodt_d1_r1                   : 4;  /**< Reserved. */
 	uint64_t reserved_20_23               : 4;
-	uint64_t wodt_d1_r0                   : 4;  /**< Write ODT mask DIMM1, RANK0. If RANK_ENA=0, WODT_D1_R0<3,1> must be zero. */
+	uint64_t wodt_d1_r0                   : 4;  /**< Reserved. */
 	uint64_t reserved_12_15               : 4;
 	uint64_t wodt_d0_r1                   : 4;  /**< Write ODT mask DIMM0, RANK1/DIMM0 in SingleRanked. If RANK_ENA=0, WODT_D0_R1<3:0> must be
                                                          zero. */

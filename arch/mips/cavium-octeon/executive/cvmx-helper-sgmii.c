@@ -43,7 +43,7 @@
  * Functions for SGMII initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 84582 $<hr>
+ * <hr>$Revision: 86446 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -91,26 +91,21 @@ static int __cvmx_helper_sgmii_hardware_init_one_time(int interface, int index)
 	gmxx_prtx_cfg.s.en = 0;
 	cvmx_write_csr(CVMX_GMXX_PRTX_CFG(index, interface), gmxx_prtx_cfg.u64);
 
-#if 0
-	/* This really should be called here but it doesn't work for some reason
-	 */
-	/* The Cortina PHY runs in 1000base-X mode */
-	if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_NIC68_4) {
-		union cvmx_pcsx_miscx_ctl_reg pcsx_miscx_ctl_reg;
-
-		pcsx_miscx_ctl_reg.u64 =
-			 cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
-		pcsx_miscx_ctl_reg.s.mode = 1;
-		cvmx_write_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface),
-			       pcsx_miscx_ctl_reg.u64);
-	}
-#endif
 	/*
 	 * Write PCS*_LINK*_TIMER_COUNT_REG[COUNT] with the
 	 * appropriate value. 1000BASE-X specifies a 10ms
 	 * interval. SGMII specifies a 1.6ms interval.
 	 */
-	pcsx_miscx_ctl_reg.u64 = cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
+	pcsx_miscx_ctl_reg.u64 = cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index,
+								       interface));
+	/* Adjust the MAC mode if requested by device tree */
+	pcsx_miscx_ctl_reg.s.mac_phy =
+		cvmx_helper_get_mac_phy_mode(interface, index);
+	pcsx_miscx_ctl_reg.s.mode =
+		cvmx_helper_get_1000x_mode(interface, index);
+	cvmx_write_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface),
+		       pcsx_miscx_ctl_reg.u64);
+
 	pcsx_linkx_timer_count_reg.u64 = cvmx_read_csr(CVMX_PCSX_LINKX_TIMER_COUNT_REG(index, interface));
 	if (pcsx_miscx_ctl_reg.s.mode)
 		/* 1000BASE-X */
@@ -142,19 +137,6 @@ static int __cvmx_helper_sgmii_hardware_init_one_time(int interface, int index)
 		cvmx_write_csr(CVMX_PCSX_ANX_ADV_REG(index, interface),
 			       pcsx_anx_adv_reg.u64);
 	} else {
-#ifdef CVMX_HELPER_CONFIG_NO_PHY
-		/*
-		 * If the interface does not have PHY, then set
-		 * explicitly in PHY mode so that link will be set
-		 * during auto negotiation.
-		 */
-		if (!pcsx_miscx_ctl_reg.s.mac_phy) {
-			cvmx_dprintf("SGMII%d%d: Forcing PHY mode as PHY address is not set\n",
-				     interface, index);
-			pcsx_miscx_ctl_reg.s.mac_phy = 1;
-			cvmx_write_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface), pcsx_miscx_ctl_reg.u64);
-		}
-#endif
 		if (pcsx_miscx_ctl_reg.s.mac_phy) {
 			/* PHY Mode */
 			union cvmx_pcsx_sgmx_an_adv_reg pcsx_sgmx_an_adv_reg;
@@ -196,9 +178,13 @@ static int __cvmx_helper_need_g15618(void)
 static int __cvmx_helper_sgmii_hardware_init_link(int interface, int index)
 {
 	union cvmx_pcsx_mrx_control_reg control_reg;
+	union cvmx_pcsx_miscx_ctl_reg pcsx_miscx_ctl_reg;
+	bool phy_mode;
+	bool mode_1000x;
 
 	if (!cvmx_helper_is_port_valid(interface, index))
 		return 0;
+
 	/*
 	 * Take PCS through a reset sequence.
 	 * PCS*_MR*_CONTROL_REG[PWR_DN] should be cleared to zero.
@@ -232,15 +218,19 @@ static int __cvmx_helper_sgmii_hardware_init_link(int interface, int index)
 		       control_reg.u64);
 
 	/* The Cortina PHY runs in 1000base-X mode */
-	if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_NIC68_4) {
-		union cvmx_pcsx_miscx_ctl_reg pcsx_miscx_ctl_reg;
+	phy_mode = cvmx_helper_get_mac_phy_mode(interface, index);
+	mode_1000x = cvmx_helper_get_1000x_mode(interface, index);
+	pcsx_miscx_ctl_reg.u64 =
+		cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
+	pcsx_miscx_ctl_reg.s.mode = mode_1000x;
+	pcsx_miscx_ctl_reg.s.mac_phy = phy_mode;
+	cvmx_write_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface), pcsx_miscx_ctl_reg.u64);
+	if (phy_mode)
+		/* In PHY mode we can't query the link status so we just
+		 * assume that the link is up.
+		 */
+		return 0;
 
-		pcsx_miscx_ctl_reg.u64 =
-			 cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
-		pcsx_miscx_ctl_reg.s.mode = 1;
-		cvmx_write_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface),
-			       pcsx_miscx_ctl_reg.u64);
-	}
 	/*
 	 * Wait for PCS*_MR*_STATUS_REG[AN_CPT] to be set, indicating
 	 * that sgmii autonegotiation is complete. In MAC mode this
@@ -251,7 +241,7 @@ static int __cvmx_helper_sgmii_hardware_init_link(int interface, int index)
 	    CVMX_WAIT_FOR_FIELD64(CVMX_PCSX_MRX_STATUS_REG(index, interface),
 				  union cvmx_pcsx_mrx_status_reg, an_cpt, ==, 1,
 				  10000)) {
-		/* cvmx_dprintf("SGMII%d: Port %d link timeout\n", interface, index); */
+		cvmx_dprintf("SGMII%d: Port %d link timeout\n", interface, index);
 		return -1;
 	}
 	return 0;
@@ -550,7 +540,7 @@ int __cvmx_helper_sgmii_enable(int interface)
 		union cvmx_gmxx_qsgmii_ctl qsgmii_ctl;
 		qsgmii_ctl.u64 = 0;
 		qsgmii_ctl.s.disparity = 1;
-		cvmx_write_csr(CVMX_GMXX_QSGMII_CTL(interface), qsgmii_ctl.u64);	
+		cvmx_write_csr(CVMX_GMXX_QSGMII_CTL(interface), qsgmii_ctl.u64);
 	}
 
 	for (index = 0; index < num_ports; index++) {
@@ -594,7 +584,6 @@ cvmx_helper_link_info_t __cvmx_helper_sgmii_link_get(int ipd_port)
 	int interface = cvmx_helper_get_interface_num(ipd_port);
 	int index = cvmx_helper_get_interface_index_num(ipd_port);
 	union cvmx_pcsx_mrx_control_reg pcsx_mrx_control_reg;
-	union cvmx_pcsx_mrx_status_reg pcsx_mrx_status_reg;
 	int speed = 1000;
 	int qlm;
 
@@ -634,53 +623,16 @@ cvmx_helper_link_info_t __cvmx_helper_sgmii_link_get(int ipd_port)
 		return result;
 	}
 
-	pcsx_miscx_ctl_reg.u64 = cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
+	pcsx_miscx_ctl_reg.u64 =
+		cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
 	if (pcsx_miscx_ctl_reg.s.mac_phy) {
 		/* PHY Mode */
 		/* Note that this also works for 1000base-X mode */
-		union cvmx_pcsx_anx_results_reg pcsx_anx_results_reg;
 
-		/*
-		 * Don't bother continuing if the SERTES low
-		 * level link is down.
-		 */
-		pcsx_mrx_status_reg.u64 = cvmx_read_csr(CVMX_PCSX_MRX_STATUS_REG(index, interface));
-		if (pcsx_mrx_status_reg.s.lnk_st == 0)
-			if (__cvmx_helper_sgmii_hardware_init_link(interface, index) != 0)
-				return result;
-
-		/* Read the autoneg results */
-		pcsx_anx_results_reg.u64 = cvmx_read_csr(CVMX_PCSX_ANX_RESULTS_REG(index, interface));
-		if (pcsx_anx_results_reg.s.an_cpt) {
-			/*
-			 * Auto negotiation is complete. Set
-			 * status accordingly.
-			 */
-			result.s.full_duplex = pcsx_anx_results_reg.s.dup;
-			result.s.link_up = pcsx_anx_results_reg.s.link_ok;
-			switch (pcsx_anx_results_reg.s.spd) {
-			case 0:
-				result.s.speed = speed / 100;
-				break;
-			case 1:
-				result.s.speed = speed / 10;
-				break;
-			case 2:
-				result.s.speed = speed;
-				break;
-			default:
-				result.s.speed = 0;
-				result.s.link_up = 0;
-				break;
-			}
-		} else {
-			/*
-			 * Auto negotiation isn't
-			 * complete. Return link down.
-			 */
-			result.s.speed = 0;
-			result.s.link_up = 0;
-		}
+		result.s.speed = speed;
+		result.s.full_duplex = 1;
+		result.s.link_up = 1;
+		return result;
 	} else {
 		/* MAC Mode */
 		result = __cvmx_helper_board_link_get(ipd_port);

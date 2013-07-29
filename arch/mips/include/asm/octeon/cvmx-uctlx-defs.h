@@ -637,13 +637,14 @@ union cvmx_uctlx_ctl {
 	uint64_t u64;
 	struct cvmx_uctlx_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t clear_bist                   : 1;  /**< BIST fast-clear mode select.
+	uint64_t clear_bist                   : 1;  /**< BIST fast-clear mode select. A BIST run with this bit set clears all entries in USBH RAMs
+                                                         to 0x0.
                                                          There are 2 major modes of BIST: full and clear. Full BIST is run by the BIST state
-                                                         machine when clear_bist is deasserted during BIST. Clear BIST is run if clear_bist is
-                                                         asserted during BIST. A Clear BIST run will simply clear all entries in USBH RAMs to 0x0.
+                                                         machine when CLEAR_BIST is deasserted during BIST. Clear BIST is run if CLEAR_BIST is
+                                                         asserted during BIST.
                                                          To avoid race conditions, software must first perform a CSR write operation that puts the
-                                                         clear_bist setting into the correct state and then perform another CSR write operation to
-                                                         set the BIST trigger (keeping the clear_bist state constant).
+                                                         CLEAR_BIST setting into the correct state and then perform another CSR write operation to
+                                                         set the BIST trigger (keeping the CLEAR_BIST state constant).
                                                          CLEAR BIST completion is indicated by UCTL(0)_BIST_STATUS[NDONE]. A BIST clear operation
                                                          takes almost 2,000 host-controller-clock cycles for the largest RAM. */
 	uint64_t start_bist                   : 1;  /**< Rising edge starts BIST on the memories in USBH.
@@ -655,129 +656,111 @@ union cvmx_uctlx_ctl {
                                                          BIST defect status can be checked after FULL BIST completion, both of which are indicated
                                                          in UCTL(0)_BIST_STATUS. The full BIST run takes almost 80,000 host-controller-clock cycles
                                                          for the largest RAM. */
-	uint64_t ref_clk_sel                  : 2;  /**< Choose reference clock source for the SuperSpeed and HighSpeed PLL blocks.
-                                                           0x0 = Reference clock source for both PLLs come from the USB pads.
-                                                           0x1 = Reference clock source for SuperSpeed PLL is from the USB pads,
-                                                                 reference clock source for HighSpeed PLL is PLL_REF_CLK.
-                                                           0x2 = Reserved.
-                                                           0x3 = Reference clock source for both PLLs come from PLL_REF_CLK.
-                                                         The PLL_REF_CLK is a 50MHz reference clock from an on-chip PLL.
-                                                         This value can be changed only during UPHY_RST.
-                                                         Note: If REF_CLK_SEL = 0x0, then the reference clock input cannot be
-                                                         spread-spectrum. */
+	uint64_t ref_clk_sel                  : 2;  /**< Reference clock select. Choose reference clock source for the SuperSpeed and HighSpeed PLL
+                                                         blocks.
+                                                         0x0 = Reference clock source for both PLLs come from the USB pads.
+                                                         0x1 = Reference clock source for SuperSpeed PLL is from the USB pads, reference clock
+                                                         source for HighSpeed PLL is PLL_REF_CLK.
+                                                         0x2 = Reserved.
+                                                         0x3 = Reserved.
+                                                         The PLL_REF_CLK is a 50MHz reference clock from an on-chip PLL. This value can be changed
+                                                         only during UPHY_RST.
+                                                         Note: If REF_CLK_SEL = 0x0, then the reference clock input cannot be spread-spectrum. */
 	uint64_t ssc_en                       : 1;  /**< Enables spread-spectrum clock production in the SuperSpeed function.
                                                          If the input reference clock for the SuperSpeed PLL is already spread-spectrum,
                                                          then do not enable this function. The clocks sourced to the SuperSpeed function
                                                          must have spread-spectrum to be compliant with the USB specification.
                                                          The HighSpeed PLL cannot support a spread-spectrum input, so REF_CLK_SEL = 0x0
-                                                         must enable this feature. The PLL_REF_CLK is not spread-spectrum, so REF_CLK_SEL
-                                                         = 0x3 must enable this feature.
+                                                         must enable this feature.
                                                          This value may only be changed during UPHY_RST. */
-	uint64_t ssc_range                    : 3;  /**< Selects the range of spread spectrum modulation when ssc_en is asserted and the PHY is
-                                                         spreading the SuperSpeed transmit clocks.
+	uint64_t ssc_range                    : 3;  /**< Spread-spectrum clock range. Selects the range of spread-spectrum modulation when SSC_EN
+                                                         is asserted and the PHY is spreading the SuperSpeed transmit clocks.
                                                          Applies a fixed offset to the phase accumulator.
-                                                           0x0 : -4980 ppm downspread of clock
-                                                           0x1 : -4492 ppm
-                                                           0x2 : -4003 ppm
-                                                           others: reserved
-                                                         All of these settings are within the USB 3.0 specification.
-                                                         The amount of EMI emission reduction might decrease as the
-                                                         SSC_RANGE increases; therefore, the SSC_RANGE settings can
-                                                         be registered to enable the amount of spreading to be adjusted
-                                                         on a per-application basis.
-                                                         This value may only be changed during UPHY_RST. */
+                                                         0x0 = -4980 ppm downspread of clock
+                                                         0x1 = -4492 ppm
+                                                         0x2 = -4003 ppm
+                                                         0x3-0x7 = reserved
+                                                         All of these settings are within the USB 3.0 specification. The amount of EMI emission
+                                                         reduction might decrease as the SSC_RANGE increases; therefore, the SSC_RANGE settings can
+                                                         be registered to enable the amount of spreading to be adjusted on a per-application basis.
+                                                         This value can be changed only during UPHY_RST. */
 	uint64_t ssc_ref_clk_sel              : 9;  /**< Enables non-standard oscillator frequencies to generate targeted MPLL output rates. Input
                                                          corresponds to the frequency-synthesis coefficient.
                                                          [55:53]: modulus - 1,
                                                          [52:47]: 2's complement push amount
-                                                         A value of 0x0 means this feature is disabled.
-                                                         The legal values are:
-                                                           If REF_CLK_SEL = 0x0 then:
-                                                             0x0 is the only legal value.
-                                                           If REF_CLK_SEL = 0x1 then:
-                                                             0x108: if the external reference clock is 19.2MHz, 24MHz, 26MHz, 38.4MHz, 48MHz,
-                                                                    52MHz, 76.8MHz, 96MHz, 104MHz.
-                                                             0x0: if the external reference clock is another supported frequency (see list
-                                                                  in MPLL_MULTIPLIER description).
-                                                           If REF_CLK_SEL = 0x3 then:
-                                                             0x0 is the only legal value.
-                                                         All other values are reserved.
-                                                         This value may only be changed during UPHY_RST.
-                                                         Note: If REF_CLK_SEL = 0x1 or 0x3, then MPLL_MULTPLIER, REF_CLK_DIV2, and SSC_REF_CLK_SEL
-                                                         must all be programmed to the same frequency setting. */
+                                                         A value of 0x0 means this feature is disabled. The legal values are as follows:
+                                                         If REF_CLK_SEL = 0x0, then 0x0 is the only legal value.
+                                                         If REF_CLK_SEL = 0x1:
+                                                         0x108 = If the external reference clock is 19.2MHz, 24MHz, 26MHz, 38.4MHz, 48MHz, 52MHz,
+                                                         76.8MHz, 96MHz, 104MHz.
+                                                         0x0 = If the external reference clock is another supported frequency (see list in
+                                                         MPLL_MULTIPLIER description).
+                                                         All other values are reserved. This value may only be changed during UPHY_RST.
+                                                         Note: If REF_CLK_SEL = 0x1, then MPLL_MULTPLIER, REF_CLK_DIV2, and SSC_REF_CLK_SEL must
+                                                         all be programmed to the same frequency setting. */
 	uint64_t mpll_multiplier              : 7;  /**< Multiplies the reference clock to a frequency suitable for intended operating speed. The
                                                          legal values are:
-                                                           If REF_CLK_SEL = 0x0 then:
-                                                             0x0 is the only legal value.
-                                                           If REF_CLK_SEL = 0x1 then:
-                                                             0x02 =  19.2MHz on the external reference clock
-                                                             0x7D =  20  MHz on the external reference clock
-                                                             0x68 =  24  MHz on the external reference clock
-                                                             0x64 =  25  MHz on the external reference clock
-                                                             0x60 =  26  MHz on the external reference clock
-                                                             0x41 =  38.4MHz on the external reference clock
-                                                             0x7D =  40  MHz on the external reference clock
-                                                             0x34 =  48  MHz on the external reference clock
-                                                             0x32 =  50  MHz on the external reference clock
-                                                             0x30 =  52  MHz on the external reference clock
-                                                             0x41 =  76.8MHz on the external reference clock
-                                                             0x1A =  96  MHz on the external reference clock
-                                                             0x19 = 100  MHz on the external reference clock
-                                                             0x18 = 104  MHz on the external reference clock if REF_CLK_DIV2 is 0x0
-                                                             0x30 = 104  MHz on the external reference clock if REF_CLK_DIV2 is 0x1
-                                                             0x28 = 125  MHz on the external reference clock
-                                                             0x19 = 200  MHz on the external reference clock
-                                                           If REF_CLK_SEL = 0x3 then:
-                                                             0x32 is the only legal value.
+                                                         If REF_CLK_SEL = 0x0, then 0x0 is the only legal value.
+                                                         If REF_CLK_SEL = 0x1 then:
+                                                         0x02 = 19.2 MHz on the external reference clock
+                                                         0x7D = 20 MHz on the external reference clock
+                                                         0x68 = 24 MHz on the external reference clock
+                                                         0x64 = 25 MHz on the external reference clock
+                                                         0x60 = 26 MHz on the external reference clock
+                                                         0x41 = 38.4 MHz on the external reference clock
+                                                         0x7D = 40 MHz on the external reference clock
+                                                         0x34 = 48 MHz on the external reference clock
+                                                         0x32 = 50 MHz on the external reference clock
+                                                         0x30 = 52 MHz on the external reference clock
+                                                         0x41 = 76.8 MHz on the external reference clock
+                                                         0x1A = 96 MHz on the external reference clock
+                                                         0x19 = 100 MHz on the external reference clock
+                                                         0x18 = 104 MHz on the external reference clock if REF_CLK_DIV2 is 0x0
+                                                         0x30 = 104 MHz on the external reference clock if REF_CLK_DIV2 is 0x1
+                                                         0x28 = 125 MHz on the external reference clock
+                                                         0x19 = 200 MHz on the external reference clock
                                                          All other values are reserved.
                                                          This value may only be changed during UPHY_RST.
-                                                         Note: If REF_CLK_SEL = 0x1 or 0x3, then MPLL_MULTPLIER, REF_CLK_DIV2, and SSC_REF_CLK_SEL
-                                                         must all be programmed to the same frequency setting. When REF_CLK_SEL = 0x0, this value
-                                                         is
+                                                         Note: If REF_CLK_SEL = 0x1, then MPLL_MULTPLIER, REF_CLK_DIV2, and SSC_REF_CLK_SEL must
+                                                         all be programmed to the same frequency setting. When REF_CLK_SEL = 0x0, this value is
                                                          superceded by the REF_CLK_FSEL<5:3> selection. */
 	uint64_t ref_ssp_en                   : 1;  /**< Enables reference clock to the prescaler for SuperSpeed function. This should always be
-                                                         enabled since this output clock is used to drive the UAHC suspend-mode clock during
-                                                         low-power states.
+                                                         enabled since this output clock is used to drive the UAHC suspend-mode clock during low-
+                                                         power states.
                                                          This value can be changed only during UPHY_RST or during low-power states.
-                                                         The reference clock must be running and stable before UPHY_RST is deasserted and
-                                                         before REF_SSP_EN is asserted. */
-	uint64_t ref_clk_div2                 : 1;  /**< Divides the reference clock by 2 before feeding it into the REF_CLK_FSEL divider.
-                                                         The legal values are:
-                                                           If REF_CLK_SEL = 0x0, then:
-                                                             all reference clock frequencies: 0x0 is the only legal value.
-                                                           If REF_CLK_SEL = 0x1, then:
+                                                         The reference clock must be running and stable before UPHY_RST is deasserted and before
+                                                         REF_SSP_EN is asserted. */
+	uint64_t ref_clk_div2                 : 1;  /**< Divides the reference clock by 2 before feeding it into the REF_CLK_FSEL divider. The
+                                                         legal values are:
+                                                         If REF_CLK_SEL = 0x0, then for all reference clock frequencies, 0x0 is the only legal
+                                                         value.
+                                                         If REF_CLK_SEL = 0x1:
                                                              0x1: if external reference clock is 125MHz, 40MHz, 76.8MHz, or 200MHz.
-                                                             0x0 or 0x: if external reference clock is 104MHz (depending on MPLL_MULTIPLIER
-                                                         setting)
+                                                             0x0 or 0x1: if external reference clock is 104MHz
+                                                                         (depending on MPLL_MULTIPLIER setting)
                                                              0x0: if external reference clock is another supported frequency,
                                                                   (see list in MPLL_MULTIPLIER description).
-                                                           If REF_CLK_SEL = 0x3 then:
-                                                             0x0 is the only legal value.
                                                          This value can be changed only during UPHY_RST.
-                                                         Note: If REF_CLK_SEL = 0x1 or 0x3, then MPLL_MULTPLIER, REF_CLK_DIV2, and SSC_REF_CLK_SEL
-                                                         must all be programmed to the same frequency setting. */
-	uint64_t ref_clk_fsel                 : 6;  /**< Selects the reference clock frequency for the SuperSpeed and HighSpeed PLL blocks.
-                                                         The legal values are:
-                                                           If REF_CLK_SEL = 0x0 then:
-                                                             0x27: external reference clock 100  MHz
-                                                             0x2A: external reference clock  24  MHz
-                                                             0x31: external reference clock  20  MHz
-                                                             0x38: external reference clock  19.2MHz
-                                                           If REF_CLK_SEL = 0x1 then:
-                                                             0x7 is the only legal value.
-                                                           If REF_CLK_SEL = 0x3 then:
-                                                             0x7 is the only legal value.
+                                                         Note: If REF_CLK_SEL = 0x1, then MPLL_MULTPLIER, REF_CLK_DIV2, and SSC_REF_CLK_SEL must
+                                                         all be programmed to the same frequency setting. */
+	uint64_t ref_clk_fsel                 : 6;  /**< Selects the reference clock frequency for the SuperSpeed and HighSpeed PLL blocks. The
+                                                         legal values are as follows:
+                                                         If REF_CLK_SEL = 0x0:
+                                                         0x27 = External reference clock 100 MHz
+                                                         0x2A = External reference clock 24 MHz
+                                                         0x31 = External reference clock 20 MHz
+                                                         0x38 = External reference clock 19.2 MHz
+                                                         If REF_CLK_SEL = 0x1, then 0x7 is the only legal value.
                                                          All other values are reserved.
                                                          This value may only be changed during UPHY_RST.
-                                                         Note: When REF_CLK_SEL = 0x1 or 0x3, then MPLL_MULTPLIER, REF_CLK_DIV2, and
-                                                         SSC_REF_CLK_SEL
-                                                         must all be programmed to the same frequency setting. */
+                                                         Note: When REF_CLK_SEL = 0x1, then MPLL_MULTPLIER, REF_CLK_DIV2, and
+                                                         SSC_REF_CLK_SEL must all be programmed to the same frequency setting. */
 	uint64_t reserved_31_31               : 1;
 	uint64_t h_clk_en                     : 1;  /**< Host-controller-clock enable. When set to 1, the host-controller clock is generated. This
                                                          also enables access to UCTL registers 0x30-0xF8. */
 	uint64_t h_clk_byp_sel                : 1;  /**< Select the bypass input to the host-controller-clock divider.
-                                                         0 = use the divided coprocessor clock from the H_CLKDIV divider
-                                                         1 = use the bypass clock from the GPIO pins
+                                                         0 = Use the divided coprocessor clock from the H_CLKDIV divider
+                                                         1 = Use the bypass clock from the GPIO pins
                                                          This signal is just a multiplexer-select signal; it does not enable the host-controller
                                                          clock. You must still set H_CLKDIV_EN separately. H_CLK_BYP_SEL select should not be
                                                          changed unless H_CLKDIV_EN is disabled.
@@ -820,14 +803,14 @@ union cvmx_uctlx_ctl {
 	uint64_t usb3_port_disable            : 1;  /**< Disables the USB3 (SuperSpeed) portion of this PHY. When set to 1, this signal stops
                                                          reporting connect/disconnect events on the port and keeps the port in disabled state. This
                                                          could be used for security reasons where hardware can disable a port regardless of whether
-                                                         XHCI driver enables a port or not.
+                                                         xHCI driver enables a port or not.
                                                          UAHC(0)_HCSPARAMS1[MAXPORTS] is not affected by this signal.
                                                          This is a strap signal; it should be modified only when UPHY_RST is asserted. */
 	uint64_t reserved_17_17               : 1;
 	uint64_t usb2_port_disable            : 1;  /**< Disables USB2 (HighSpeed/FullSpeed/LowSpeed) portion of this PHY. When set to 1, this
                                                          signal stops reporting connect/disconnect events on the port and keeps the port in
                                                          disabled state. This could be used for security reasons where hardware can disable a port
-                                                         regardless of whether XHCI driver enables a port or not.
+                                                         regardless of whether xHCI driver enables a port or not.
                                                          UAHC(0)_HCSPARAMS1[MAXPORTS] is not affected by this signal.
                                                          This is a strap signal; it should only be modified when UPHY_RST is asserted.
                                                          If Port0 is required to be disabled, ensure that the utmi_clk[0] is running at the normal
@@ -900,16 +883,17 @@ typedef union cvmx_uctlx_ctl cvmx_uctlx_ctl_t;
  * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
  * This register can be used to disable ECC correction, insert ECC errors, and debug ECC
  * failures.
- * Fields ECC_ERR* are captured when there are no outstanding ECC errors indicated in INTSTAT
+ * The ECC_ERR* fields are captured when there are no outstanding ECC errors indicated in INTSTAT
  * and a new ECC error arrives. Prioritization for multiple events occurring on the same cycle is
  * indicated by the ECC_ERR_SOURCE enumeration: highest encoded value has highest priority.
- * Fields *ECC_DIS: Disables ECC correction, SBE and DBE errors are still reported.
- * If ECC_DIS is 0x1, then no data-correction occurs.
- * Fields *ECC_FLIP_SYND:  Flip the syndrom[1:0] bits to generate 1-bit/2-bits error for testing.
- *   0x0: normal operation
- *   0x1: SBE on bit[0]
- *   0x2: SBE on bit[1]
- *   0x3: DBE on bit[1:0]
+ * The *ECC_*_DIS fields disable ECC correction; SBE and DBE errors are still reported. If
+ * *ECC_*_DIS = 0x1, then no data-correction occurs.
+ * The *ECC_FLIP_SYND fields flip the syndrome<1:0> bits to generate single-bit/double-bit error
+ * for testing.
+ * 0x0 = normal operation
+ * 0x1 = SBE on bit[0]
+ * 0x2 = SBE on bit[1]
+ * 0x3 = DBE on bit[1:0]
  */
 union cvmx_uctlx_ecc {
 	uint64_t u64;
@@ -1125,11 +1109,11 @@ union cvmx_uctlx_host_cfg {
                                                          set by the Set LTV command. */
 	uint64_t reserved_38_47               : 10;
 	uint64_t fla                          : 6;  /**< HighSpeed jitter adjustment. Indicates the correction required to accommodate mac3 clock
-                                                         and utmi clock jitter to measure 125us duration. With FLA tied to zero, the HighSpeed
+                                                         and utmi clock jitter to measure 125us duration. With FLA tied to 0x0, the HighSpeed
                                                          125us micro-frame is counted for 123933ns. The value needs to be programmed in terms of
                                                          HighSpeed bit times in a 30 MHz cycle. Default value that needs to be driven is 0x20
                                                          (assuming 30 MHz perfect clock).
-                                                         FLA connects to the FLADJ register defined in the XHCI spec in the PCI configuration
+                                                         FLA connects to the FLADJ register defined in the xHCI spec in the PCI configuration
                                                          space. Each count is equal to 16 HighSpeed bit times. By default when this register is
                                                          set to 0x20, it gives 125us interval. Now, based on the clock accuracy, you can decrement
                                                          the count or increment the count to get the 125 us uSOF window.
@@ -1138,30 +1122,30 @@ union cvmx_uctlx_host_cfg {
 	uint64_t reserved_29_31               : 3;
 	uint64_t bme                          : 1;  /**< Bus-master enable. This signal is used to disable the bus-mastering capability of the
                                                          host. Disabling this capability stalls DMA accesses. */
-	uint64_t oci_en                       : 1;  /**< Overcurrent-indication enable.
-                                                         When enabled, OCI input to UAHC is taken from the MIO's GPIO signals and sense-converted
-                                                         based on OCI_ACTIVE_HIGH_EN. The MIO GPIO multiplexer must be programmed accordingly.
+	uint64_t oci_en                       : 1;  /**< Overcurrent-indication enable. When enabled, OCI input to UAHC is taken from the GPIO
+                                                         signals and sense-converted based on OCI_ACTIVE_HIGH_EN. The MIO GPIO multiplexer must be
+                                                         programmed accordingly.
                                                          When disabled, OCI input to UAHC is forced to the correct inactive state based on
                                                          OCI_ACTIVE_HIGH_EN.
                                                          This is a strap signal; it should only be modified when UAHC is in reset (soft-reset
                                                          okay). */
 	uint64_t oci_active_high_en           : 1;  /**< Overcurrent sense selection. The off-chip sense (high/low) is converted to match the host-
                                                          controller's active-high sense.
-                                                         1 = overcurrent indication from off-chip source is active-high.
-                                                         0 = overcurrent indication from off-chip source is active-low.
+                                                         1 = Overcurrent indication from off-chip source is active-high.
+                                                         0 = Overcurrent indication from off-chip source is active-low.
                                                          This is a strap signal; it should only be modified when UAHC is in reset (soft-reset
                                                          okay). */
 	uint64_t ppc_en                       : 1;  /**< Port-power-control enable.
                                                          0 = UAHC(0)_HCCPARAMS[PPC] report port-power-control feature is unavailable.
                                                          1 = UAHC(0)_HCCPARAMS[PPC] reports port-power-control feature is available. PPC output
-                                                         from UAHC is taken to the MIO's GPIO signals and sense-converted based on
-                                                         PPC_ACTIVE_HIGH_EN. The MIO GPIO multiplexer must be programmed accordingly.
+                                                         from UAHC is taken to the GPIO signals and sense-converted based on PPC_ACTIVE_HIGH_EN.
+                                                         The MIO GPIO multiplexer must be programmed accordingly.
                                                          This is a strap signal; it should only be modified when UAHC is in reset (soft-reset
                                                          okay). */
 	uint64_t ppc_active_high_en           : 1;  /**< Port power control sense selection. The active-high port-power-control output to off-chip
                                                          source is converted to match the off-chip sense.
-                                                         1 = port-power control to off-chip source is active-high.
-                                                         0 = port-power control to off-chip source is active-low.
+                                                         1 = Port-power control to off-chip source is active-high.
+                                                         0 = Port-power control to off-chip source is active-low.
                                                          This is a strap signal; it should only be modified when UAHC is in reset (soft reset
                                                          okay). */
 	uint64_t reserved_0_23                : 24;
@@ -1304,9 +1288,8 @@ typedef union cvmx_uctlx_int_reg cvmx_uctlx_int_reg_t;
  *
  * Accessible by: always
  * Reset by: IOI reset (srst_n)
- * Summary of different bits of RSL interrupts.
- * DBE's are detected. SBE's are corrected. For debugging output for ECC DBE/SBE's,
- * see UCTL_ECC register.
+ * This register provides a summary of different bits of RSL interrupts. DBEs are detected and
+ * SBE are corrected. For debugging output for ECC DBEs/SBEs, see UCTL(0)_ECC.
  */
 union cvmx_uctlx_intstat {
 	uint64_t u64;
@@ -1337,13 +1320,11 @@ union cvmx_uctlx_intstat {
 	uint64_t reserved_3_15                : 13;
 	uint64_t xm_bad_dma                   : 1;  /**< Detected bad DMA access from UAHC to IOI. Error information is logged in
                                                          UCTL(0)_SHIM_CFG[XM_BAD_DMA_*]. Received a DMA request from UAHC that violates the
-                                                         assumptions
-                                                         made by the AXI-to-IOI shim. Such scenarios include: illegal length/size combinations and
-                                                         address out-of-bounds.
-                                                         For more information on exact failures, see description in
-                                                         UCTL(0)_SHIM_CFG[XM_BAD_DMA_TYPE].
-                                                         The hardware does not translate the request correctly and results may violate IOI
-                                                         protocols.
+                                                         assumptions made by the AXI-to-IOI shim. Such scenarios include: illegal length/size
+                                                         combinations and address out-of-bounds.
+                                                         For more information on exact failures, see the description in
+                                                         UCTL(0)_SHIM_CFG[XM_BAD_DMA_TYPE]. The hardware does not translate the request correctly
+                                                         and results may violate IOI protocols.
                                                          Throws UCTL_INTSN_E::UCTL(0)_INTSTAT_XM_BAD_DMA. */
 	uint64_t xs_ncb_oob                   : 1;  /**< Detected out-of-bound register access to UAHC over IOI. The UAHC defines 1MB of register
                                                          space, starting at offset 0x0. Any accesses outside of this register space cause this bit
@@ -1527,11 +1508,11 @@ union cvmx_uctlx_portx_cfg_hs {
 	uint64_t tx_res_tune                  : 2;  /**< USB source-impedance adjustment. Some applications require additional devices to be added
                                                          on the USB, such as a series switch, which can add significant series resistance. This bus
                                                          adjusts the driver source impedance to compensate for added series resistance on the USB.
-                                                           0x3: source impedence is decreased by approximately 4 ohms.
-                                                           0x2: source impedence is decreased by approximately 2 ohms.
-                                                           0x1: design default
-                                                           0x0: source impedence is increased by approximately 1.5 ohms.
-                                                         Note: Any setting other than the default can result in source-impedance variation across
+                                                         0x3 = source impedance is decreased by approximately 4 ohm.
+                                                         0x2 = source impedance is decreased by approximately 2 ohm.
+                                                         0x1 = design default.
+                                                         0x0 = source impedance is decreased by approximately 1.5 ohm.
+                                                         Any setting other than the default can result in source-impedance variation across
                                                          process, voltage, and temperature conditions that does not meet USB 2.0 specification
                                                          limits. If this bus is not used, leave it at the default setting. */
 	uint64_t tx_rise_tune                 : 2;  /**< HighSpeed transmitter rise-/fall-time adjustment. Adjusts the rise/fall times of the
@@ -1587,8 +1568,7 @@ typedef union cvmx_uctlx_portx_cfg_hs cvmx_uctlx_portx_cfg_hs_t;
  * Accessible by: only when H_CLKDIV_EN
  * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
  * This register controls configuration and test controls for the portX PHY.
- * INTERNAL: All these settings are for SS or centralized functionality, connect on vp power
- * domain.
+ * INTERNAL: All these settings are for HS functionality, connect on DVDD power domain.
  */
 union cvmx_uctlx_portx_cfg_ss {
 	uint64_t u64;
@@ -1609,29 +1589,28 @@ union cvmx_uctlx_portx_cfg_ss {
                                                          A negative binary bit setting change results in a -15 mVp incremental change in the LOS
                                                          threshold. The 0x0 setting is reserved and must not be used. The default 0x5 setting
                                                          corresponds to approximately 105 mVp.
-                                                             0x0: invalid
-                                                             0x1:  45 mV
-                                                             0x2:  60 mV
-                                                             0x3:  75 mV
-                                                             0x4:  90 mV
-                                                             0x5: 105 mV
-                                                             0x6: 120 mV
-                                                             0x7: 135 mV */
-	uint64_t lane0_ext_pclk_req           : 1;  /**< When asserted, this signal enables the pipe0_pclk output regardless of power state
-                                                         (along with the associated increase in power consumption). You can use this input
-                                                         to enable pipe0_pclk in the P3 state without going through a complete boot sequence. */
+                                                         0x0 = invalid
+                                                         0x1 = 45 mV
+                                                         0x2 = 60 mV
+                                                         0x3 = 75 mV
+                                                         0x4 = 90 mV
+                                                         0x5 = 105 mV (default)
+                                                         0x6 = 120 mV
+                                                         0x7 = 135 mV */
+	uint64_t lane0_ext_pclk_req           : 1;  /**< When asserted, this signal enables the pipe0_pclk output regardless of power state (along
+                                                         with the associated increase in power consumption). You can use this input to enable
+                                                         pipe0_pclk in the P3 state without going through a complete boot sequence. */
 	uint64_t lane0_tx2rx_loopbk           : 1;  /**< When asserted, data from TX predriver is looped back to RX slicers. LOS is bypassed and
                                                          based on the tx0_en input so that rx0_los = !tx_data_en. */
 	uint64_t reserved_42_55               : 14;
-	uint64_t pcs_rx_los_mask_val          : 10; /**< Configurable Loss-of-Signal Mask Width.
-                                                         Sets the number of reference clock cycles to mask the incoming LFPS in U3 and U2 states.
-                                                         Masks the incoming LFPS for the number of reference clock cycles equal to the value of
-                                                         pcs_rx_los_mask_val<9:0>. This control filters out short, non-compliant LFPS glitches
-                                                         sent by a non-compliant host.
+	uint64_t pcs_rx_los_mask_val          : 10; /**< Configurable loss-of-signal mask width. Sets the number of reference clock cycles to mask
+                                                         the incoming LFPS in U3 and U2 states. Masks the incoming LFPS for the number of reference
+                                                         clock cycles equal to the value of pcs_rx_los_mask_val<9:0>. This control filters out
+                                                         short, non-compliant LFPS glitches sent by a noncompliant host.
                                                          For normal operation, set to a targeted mask interval of 10us (value = 10us / Tref_clk).
                                                          If the UCTL(0)_CTL[REF_CLK_DIV2] is used, then (value = 10us / (2 * Tref_clk)).
                                                          These equations are based on the SuperSpeed reference clock frequency.
-                                                         The value of PCS_RX_LOS_MASK_VAL should be:
+                                                         The value of PCS_RX_LOS_MASK_VAL should be as follows:
                                                              Frequency DIV2 LOS_MASK
                                                               200  MHz    1    0x3E8
                                                               125  MHz    0    0x4E2
@@ -1658,11 +1637,11 @@ union cvmx_uctlx_portx_cfg_ss {
                                                          derived from the following equation:
                                                          TX de-emphasis (db) =
                                                          20 * log_base_10((128 - 2 * pcs_tx_deemph)/128)
-                                                         INTERNAL: Default Value is Package-Dependant.
                                                          In general, the parameter controls are static signals to be set prior to taking the PHY
                                                          out of reset. However, you can dynamically change these values on-the-fly for test
                                                          purposes. In this case, changes to the transmitter to reflect the current value occur only
-                                                         after the pipeP_tx_deemph[1:0] input changes. */
+                                                         after the pipeP_tx_deemph[1:0] input changes.
+                                                         INTERNAL: Default value is package dependant. */
 	uint64_t pcs_tx_deemph_6db            : 6;  /**< Fine-tune transmitter driver de-emphasis when set to 6db.
                                                          This static value sets the Tx driver de-emphasis value when pipeP_tx_deemph[1:0] is set to
                                                          0x2 (according to the PIPE3 specification). This bus is provided for completeness and as a
@@ -1670,25 +1649,25 @@ union cvmx_uctlx_portx_cfg_ss {
                                                          the following equation:
                                                          TX de-emphasis (db) =
                                                          20 * log_base_10((128 - 2 * pcs_tx_deemph)/128)
-                                                         INTERNAL: Default Value is Package-Dependant.
                                                          In general, the parameter controls are static signals to be set prior to taking the PHY
                                                          out of reset. However, you can dynamically change these values on-the-fly for test
                                                          purposes. In this case, changes to the transmitter to reflect the current value occur only
-                                                         after the pipeP_tx_deemph[1:0] input changes. */
+                                                         after the pipeP_tx_deemph[1:0] input changes.
+                                                         INTERNAL: Default value is package dependant. */
 	uint64_t pcs_tx_swing_full            : 7;  /**< Launch amplitude of the transmitter. Sets the launch amplitude of the transmitter. The
                                                          values for transmit amplitude are derived from the following equation:
                                                          TX amplitude (V) = vptx * ((pcs_tx_swing_full + 1)/128)
-                                                         INTERNAL: Default Value is Package-Dependant.
                                                          In general, the parameter controls are static signals to be set prior to taking the PHY
                                                          out of reset. However, you can dynamically change these values on-the-fly for test
                                                          purposes. In this case, changes to the transmitter to reflect the current value occur only
-                                                         after the pipeP_tx_deemph[1:0] input changes. */
+                                                         after the pipeP_tx_deemph[1:0] input changes.
+                                                         INTERNAL: Default value is package dependant. */
 	uint64_t lane0_tx_term_offset         : 5;  /**< Transmitter termination offset. Reserved, set to 0x0. */
 	uint64_t reserved_6_7                 : 2;
-	uint64_t res_tune_ack                 : 1;  /**< While asserted, indicates a resistor tune is in progress. */
-	uint64_t res_tune_req                 : 1;  /**< Rising edge triggers a resistor tune request (if one is not already in progress). When
-                                                         asserted, RES_TUNE_ACK goes high until calibration of the termination impedance is
-                                                         complete.
+	uint64_t res_tune_ack                 : 1;  /**< Resistor tune acknowledge. While asserted, indicates a resistor tune is in progress. */
+	uint64_t res_tune_req                 : 1;  /**< Resistor tune request. The rising edge triggers a resistor tune request (if one is not
+                                                         already in progress). When asserted, RES_TUNE_ACK is asserted high until calibration of
+                                                         the termination impedance is complete.
                                                          Tuning disrupts the normal flow of data; therefore, assert RES_TUNE_REQ only when the PHY
                                                          is inactive. The PHY automatically performs a tune when coming out of PRST. */
 	uint64_t reserved_0_3                 : 4;
@@ -1858,11 +1837,10 @@ typedef union cvmx_uctlx_ppaf_wm cvmx_uctlx_ppaf_wm_t;
  *
  * Accessible by: only when H_CLKDIV_EN
  * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
- * This register allows configuration of various shim (UCTL) features.
- * Fields XS_NCB_OOB_* are captured when there are no outstanding OOB errors indicated in INTSTAT
- * and a new OOB error arrives.
- * Fields XS_BAD_DMA_* are captured when there are no outstanding DMA errors indicated in INTSTAT
- * and a new DMA error arrives.
+ * This register allows configuration of various shim (UCTL) features. The fields XS_NCB_OOB_*
+ * are captured when there are no outstanding OOB errors indicated in INTSTAT and a new OOB error
+ * arrives. The fields XS_BAD_DMA_* are captured when there are no outstanding DMA errors
+ * indicated in INTSTAT and a new DMA error arrives.
  */
 union cvmx_uctlx_shim_cfg {
 	uint64_t u64;
@@ -1887,7 +1865,7 @@ union cvmx_uctlx_shim_cfg {
 	uint64_t reserved_14_39               : 26;
 	uint64_t dma_read_cmd                 : 2;  /**< Selects the IOI read command used by DMA accesses. See UCTL_DMA_READ_CMD_E. */
 	uint64_t reserved_11_11               : 1;
-	uint64_t dma_write_cmd                : 1;  /**< Selects the NCB write command used by DMA accesses. See enum UCTL_DMA_WRITE_CMD_E. */
+	uint64_t dma_write_cmd                : 1;  /**< Selects the NCB write command used by DMA accesses. See UCTL_DMA_WRITE_CMD_E. */
 	uint64_t dma_endian_mode              : 2;  /**< Selects the endian format for DMA accesses to the L2C. See UCTL_ENDIAN_MODE_E. */
 	uint64_t reserved_2_7                 : 6;
 	uint64_t csr_endian_mode              : 2;  /**< Selects the endian format for IOI CSR accesses to the UAHC. Note that when UAHC CSRs are

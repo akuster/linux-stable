@@ -54,6 +54,7 @@
 #include <asm/octeon/cvmx-ilk-defs.h>
 #include <asm/octeon/cvmx-helper-util.h>
 #include <asm/octeon/cvmx-helper-ilk.h>
+#include <asm/octeon/cvmx-gserx-defs.h>
 #include <asm/octeon/cvmx-pip-defs.h>
 #else
 #include "cvmx.h"
@@ -91,7 +92,7 @@ CVMX_SHARED cvmx_ilk_LA_mode_t cvmx_ilk_LA_mode[CVMX_NUM_ILK_INTF] = {{0, 0},
 
 void cvmx_ilk_config_set_LA_mode(int interface, int mode)
 {
-	if(interface > CVMX_NUM_ILK_INTF || interface < 0)
+	if(interface >= CVMX_NUM_ILK_INTF || interface < 0)
 		cvmx_dprintf("ERROR: Invalid interface=%d in cvmx_ilk_config_set_LA_mode\n",
 			     interface);
 	else
@@ -100,7 +101,7 @@ void cvmx_ilk_config_set_LA_mode(int interface, int mode)
 
 void cvmx_ilk_config_set_LA_mode_cal(int interface, int mode)
 {
-	if(interface > CVMX_NUM_ILK_INTF || interface < 0)
+	if(interface >= CVMX_NUM_ILK_INTF || interface < 0)
 		cvmx_dprintf("ERROR: Invalid interface=%d in cvmx_ilk_config_set_LA_mode_cal\n",
 			     interface);
 	else
@@ -109,7 +110,7 @@ void cvmx_ilk_config_set_LA_mode_cal(int interface, int mode)
 
 void cvmx_ilk_config_set_lane_mask(int interface, unsigned char mask)
 {
-	if(interface > CVMX_NUM_ILK_INTF || interface < 0)
+	if(interface >= CVMX_NUM_ILK_INTF || interface < 0)
 		cvmx_dprintf("ERROR: Invalid interface=%d in cvmx_ilk_set_lane_mask\n",
 			     interface);
 	else
@@ -118,7 +119,7 @@ void cvmx_ilk_config_set_lane_mask(int interface, unsigned char mask)
 
 void cvmx_ilk_config_set_max_channels(int interface, unsigned char channels)
 {
-	if(interface > CVMX_NUM_ILK_INTF || interface < 0) {
+	if(interface >= CVMX_NUM_ILK_INTF || interface < 0) {
 		cvmx_dprintf("ERROR: Invalid interface=%d in cvmx_ilk_config_set_max_channels\n",
 			     interface);
 		return;
@@ -249,8 +250,11 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 		}
 	}
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		uint8_t qlm, i;
-		cvmx_mio_qlmx_cfg_t mio_qlmx_cfg[4];
+		uint8_t 		qlm, i;
+		cvmx_mio_qlmx_cfg_t 	mio_qlmx_cfg[4];
+		cvmx_gserx_cfg_t	cvmx_gserx_cfg;
+		cvmx_gserx_phy_ctl_t	cvmx_gserx_phy_ctl;
+
 		for (i = 0, qlm = CVMX_ILK_QLM_BASE(); i < 4; i++, qlm++)
 			mio_qlmx_cfg[i].u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(qlm));
 
@@ -279,6 +283,25 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 				return res;
 			} 
 		}
+
+		/*
+		 * Configure the GSER.
+		 * For now, we configured the minimum needed to work with the
+		 * simulator. TODO
+		 */
+		qlm = CVMX_ILK_QLM_BASE() + interface;
+		cvmx_gserx_phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(qlm));
+		cvmx_gserx_phy_ctl.s.phy_pd = 0;
+		cvmx_gserx_phy_ctl.s.phy_reset = 1;
+		cvmx_write_csr(CVMX_GSERX_PHY_CTL(qlm), cvmx_gserx_phy_ctl.u64);
+
+		cvmx_gserx_cfg.u64 = cvmx_read_csr(CVMX_GSERX_CFG(qlm));
+		cvmx_gserx_cfg.s.ila = 1;
+		cvmx_write_csr(CVMX_GSERX_CFG(qlm), cvmx_gserx_cfg.u64);
+
+		cvmx_gserx_phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(qlm));
+		cvmx_gserx_phy_ctl.s.phy_reset = 0;
+		cvmx_write_csr(CVMX_GSERX_PHY_CTL(qlm), cvmx_gserx_phy_ctl.u64);
 	}
 
 	/* power up the serdes */
@@ -338,6 +361,9 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 #endif
 		}
 	}
+
+	/* Initialize all calendar entries to xoff state */
+	__cvmx_ilk_init_cal(interface);
 
 	/* Enable ILK LA mode if configured. */
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
@@ -532,12 +558,9 @@ int cvmx_ilk_rx_set_pknd(int interface, cvmx_ilk_chan_pknd_t * chpknd, unsigned 
  */
 int cvmx_ilk_rx_cal_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pent)
 {
-	int res = -1, num_grp, num_rest, i, j;
+	int res = -1, i;
 	cvmx_ilk_rxx_cfg0_t ilk_rxx_cfg0;
-	cvmx_ilk_rxx_idx_cal_t ilk_rxx_idx_cal;
-	cvmx_ilk_rxx_mem_cal0_t ilk_rxx_mem_cal0;
-	cvmx_ilk_rxx_mem_cal1_t ilk_rxx_mem_cal1;
-	unsigned long int tmp;
+	int num_entries;
 
 	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
 	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
@@ -557,132 +580,29 @@ int cvmx_ilk_rx_cal_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pe
 			pent->ent_ctrl = LINK;
 #endif
 
-	/* set the depth */
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+		/* Update the calendar for each channel */
+		if ((cvmx_ilk_use_la_mode(interface, 0) == 0) ||
+		    (cvmx_ilk_use_la_mode(interface, 0) && 
+		     cvmx_ilk_la_mode_enable_rx_calendar(interface))) {
+			for (i = 0; i < cal_depth; i++) {
+				__cvmx_ilk_write_rx_cal_entry(interface, i,
+							     pent[i].pipe_bpid);
+			}
+		}
+
+		/* Update the depth */
 		ilk_rxx_cfg0.u64 = cvmx_read_csr(CVMX_ILK_RXX_CFG0(interface));
+		num_entries = 1 + cal_depth + (cal_depth - 1) / 15;
+		ilk_rxx_cfg0.s.cal_depth = num_entries;
 		if (cvmx_ilk_use_la_mode(interface, 0)) {
 			ilk_rxx_cfg0.s.mproto_ign = 1;
 			ilk_rxx_cfg0.s.lnk_stats_ena = 1;
 			ilk_rxx_cfg0.s.lnk_stats_wrap = 1;
-			if (cvmx_ilk_la_mode_enable_rx_calendar(interface)) {
-				ilk_rxx_cfg0.s.cal_depth = cvmx_ilk_use_la_mode(interface, 1) ? 2 : 1;
-				ilk_rxx_cfg0.s.cal_ena = 1;
-			} else {
-				ilk_rxx_cfg0.s.cal_depth = 0;
-				ilk_rxx_cfg0.s.cal_ena = 0;
-			}
-		} else
-			ilk_rxx_cfg0.s.cal_depth = cal_depth;
-	
+		}
 		cvmx_write_csr(CVMX_ILK_RXX_CFG0(interface), ilk_rxx_cfg0.u64);
-	
-		/* set the calendar index */
-		num_grp = cal_depth / CVMX_ILK_CAL_GRP_SZ;
-		num_rest = cal_depth % CVMX_ILK_CAL_GRP_SZ;
-		ilk_rxx_idx_cal.u64 = 0;
-		ilk_rxx_idx_cal.s.inc = 1;
-		cvmx_write_csr(CVMX_ILK_RXX_IDX_CAL(interface), ilk_rxx_idx_cal.u64);
-	
-		/* Note that calendar support is somewhat broken through pass 2.0 */
-		if (cvmx_ilk_use_la_mode(interface, 0)) {
-			ilk_rxx_mem_cal0.u64 = 0;
-			ilk_rxx_mem_cal1.u64 = 0;
-	
-			if (cvmx_ilk_la_mode_enable_rx_calendar(interface)) {
-				ilk_rxx_mem_cal0.s.entry_ctl0 = pent->ent_ctrl;
-				ilk_rxx_mem_cal0.s.port_pipe0 = pent->pipe_bpid;
-				pent++;
-	
-				if (cvmx_ilk_use_la_mode(interface, 1)) {
-					ilk_rxx_mem_cal0.s.entry_ctl1 = pent->ent_ctrl;
-					ilk_rxx_mem_cal0.s.port_pipe1 = pent->pipe_bpid;
-				} else
-					ilk_rxx_mem_cal0.s.entry_ctl1 = XOFF;
-				pent++;
-	
-				ilk_rxx_mem_cal0.s.entry_ctl2 = XOFF;
-				ilk_rxx_mem_cal0.s.entry_ctl3 = XOFF;
-				ilk_rxx_mem_cal1.s.entry_ctl4 = XOFF;
-				ilk_rxx_mem_cal1.s.entry_ctl5 = XOFF;
-				ilk_rxx_mem_cal1.s.entry_ctl6 = XOFF;
-				ilk_rxx_mem_cal1.s.entry_ctl7 = XOFF;
-			}
-			cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL0(interface), ilk_rxx_mem_cal0.u64);
-			cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL1(interface), ilk_rxx_mem_cal1.u64);
-			cvmx_read_csr(CVMX_ILK_RXX_MEM_CAL1(interface));
-			ilk_rxx_idx_cal.u64 = cvmx_read_csr(CVMX_ILK_RXX_IDX_CAL(interface));
-	
-			return 0;
-		}
-	
-		/* set the calendar entries. each group has both cal0 and cal1 registers */
-		for (i = 0; i < num_grp; i++) {
-			ilk_rxx_mem_cal0.u64 = 0;
-			for (j = 0; j < CVMX_ILK_CAL_GRP_SZ / 2; j++) {
-				tmp = 0;
-				tmp = pent->pipe_bpid & ~(~tmp << CVMX_ILK_PIPE_BPID_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * j;
-				ilk_rxx_mem_cal0.u64 |= tmp;
-	
-				tmp = 0;
-				tmp = pent->ent_ctrl & ~(~tmp << CVMX_ILK_ENT_CTRL_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * j + CVMX_ILK_PIPE_BPID_SZ;
-				ilk_rxx_mem_cal0.u64 |= tmp;
-				pent++;
-			}
-			cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL0(interface), ilk_rxx_mem_cal0.u64);
-	
-			ilk_rxx_mem_cal1.u64 = 0;
-			for (j = 0; j < CVMX_ILK_CAL_GRP_SZ / 2; j++) {
-				tmp = 0;
-				tmp = pent->pipe_bpid & ~(~tmp << CVMX_ILK_PIPE_BPID_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * j;
-				ilk_rxx_mem_cal1.u64 |= tmp;
-	
-				tmp = 0;
-				tmp = pent->ent_ctrl & ~(~tmp << CVMX_ILK_ENT_CTRL_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * j + CVMX_ILK_PIPE_BPID_SZ;
-				ilk_rxx_mem_cal1.u64 |= tmp;
-				pent++;
-			}
-			cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL1(interface), ilk_rxx_mem_cal1.u64);
-		}
-	
-		/* set the calendar entries, the fraction of a group. but both cal0 and
-		 * cal1 must be written */
-		ilk_rxx_mem_cal0.u64 = 0;
-		ilk_rxx_mem_cal1.u64 = 0;
-		for (i = 0; i < num_rest; i++) {
-			if (i < CVMX_ILK_CAL_GRP_SZ / 2) {
-				tmp = 0;
-				tmp = pent->pipe_bpid & ~(~tmp << CVMX_ILK_PIPE_BPID_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * i;
-				ilk_rxx_mem_cal0.u64 |= tmp;
-	
-				tmp = 0;
-				tmp = pent->ent_ctrl & ~(~tmp << CVMX_ILK_ENT_CTRL_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * i + CVMX_ILK_PIPE_BPID_SZ;
-				ilk_rxx_mem_cal0.u64 |= tmp;
-				pent++;
-			}
-	
-			if (i >= CVMX_ILK_CAL_GRP_SZ / 2) {
-				tmp = 0;
-				tmp = pent->pipe_bpid & ~(~tmp << CVMX_ILK_PIPE_BPID_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * (i - CVMX_ILK_CAL_GRP_SZ / 2);
-				ilk_rxx_mem_cal1.u64 |= tmp;
-	
-				tmp = 0;
-				tmp = pent->ent_ctrl & ~(~tmp << CVMX_ILK_ENT_CTRL_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * (i - CVMX_ILK_CAL_GRP_SZ / 2) + CVMX_ILK_PIPE_BPID_SZ;
-				ilk_rxx_mem_cal1.u64 |= tmp;
-				pent++;
-			}
-		}
-		cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL0(interface), ilk_rxx_mem_cal0.u64);
-		cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL1(interface), ilk_rxx_mem_cal1.u64);
-		cvmx_read_csr(CVMX_ILK_RXX_MEM_CAL1(interface));
 	}
+
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 		cvmx_ilk_rxx_cal_entryx_t rxx_cal_entryx;
 
@@ -827,13 +747,9 @@ EXPORT_SYMBOL(cvmx_ilk_cal_setup_rx);
  */
 int cvmx_ilk_tx_cal_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pent)
 {
-	int res = -1, num_grp, num_rest, i, j;
+	int res = -1, i;
 	cvmx_ilk_txx_cfg0_t ilk_txx_cfg0;
-	cvmx_ilk_txx_idx_cal_t ilk_txx_idx_cal;
-	cvmx_ilk_txx_mem_cal0_t ilk_txx_mem_cal0;
-	cvmx_ilk_txx_mem_cal1_t ilk_txx_mem_cal1;
-	unsigned long int tmp;
-	cvmx_ilk_cal_entry_t *ent_tmp;
+	int num_entries;
 
 	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
 	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
@@ -854,100 +770,19 @@ int cvmx_ilk_tx_cal_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pe
 #endif
 
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
-		if (cvmx_ilk_use_la_mode(interface, 0)) {
-			ilk_txx_idx_cal.u64 = cvmx_read_csr(CVMX_ILK_TXX_IDX_CAL(interface));
-			ilk_txx_idx_cal.s.inc = 1;
-			ilk_txx_idx_cal.s.index = 0;	/* channel */
-			cvmx_write_csr(CVMX_ILK_TXX_IDX_CAL(interface), ilk_txx_idx_cal.u64);
-	
-			ilk_txx_mem_cal0.u64 = 0;
-			ilk_txx_mem_cal1.u64 = 0;
-			ilk_txx_mem_cal0.s.entry_ctl0 = pent->ent_ctrl;
-			ilk_txx_mem_cal0.s.bpid0 = pent->pipe_bpid;
-	
-			pent++;
-			if (cvmx_ilk_use_la_mode(interface, 1)) {
-				ilk_txx_mem_cal0.s.entry_ctl1 = pent->ent_ctrl;
-				ilk_txx_mem_cal0.s.bpid1 = pent->pipe_bpid;
-			} else {
-				ilk_txx_mem_cal0.s.entry_ctl1 = XOFF;
-			}
-			pent++;
-			ilk_txx_mem_cal0.s.entry_ctl2 = XOFF;
-			ilk_txx_mem_cal0.s.entry_ctl3 = XOFF;
-			ilk_txx_mem_cal1.s.entry_ctl4 = XOFF;
-			ilk_txx_mem_cal1.s.entry_ctl5 = XOFF;
-			ilk_txx_mem_cal1.s.entry_ctl6 = XOFF;
-			ilk_txx_mem_cal1.s.entry_ctl7 = XOFF;
-	
-			cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL0(interface), ilk_txx_mem_cal0.u64);
-			cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL1(interface), ilk_txx_mem_cal1.u64);
-			cvmx_read_csr(CVMX_ILK_TXX_MEM_CAL1(interface));
-	
-			ilk_txx_cfg0.u64 = cvmx_read_csr(CVMX_ILK_TXX_CFG0(interface));
-			ilk_txx_cfg0.s.cal_depth = 8;
-			ilk_txx_cfg0.s.lnk_stats_ena = 1;
-			cvmx_write_csr(CVMX_ILK_TXX_CFG0(interface), ilk_txx_cfg0.u64);
-	
-			return 0;
+		/* Update the calendar for each channel */
+		for (i = 0; i < cal_depth; i++) {
+			__cvmx_ilk_write_tx_cal_entry(interface, i,
+						      pent[i].pipe_bpid);
 		}
-	
-		/* tx calendar depth must be a multiple of 8 */
-		num_grp = (cal_depth - 1) / CVMX_ILK_CAL_GRP_SZ + 1;
-		num_rest = cal_depth % CVMX_ILK_CAL_GRP_SZ;
-		if (num_rest != 0) {
-			ent_tmp = pent + cal_depth;
-			for (i = num_rest; i < 8; i++, ent_tmp++) {
-				ent_tmp->pipe_bpid = 0;
-				ent_tmp->ent_ctrl = XOFF;
-			}
-		}
-		cal_depth = num_grp * 8;
-	
-		/* set the depth */
+
+		/* Set the depth (must be multiple of 8)*/
 		ilk_txx_cfg0.u64 = cvmx_read_csr(CVMX_ILK_TXX_CFG0(interface));
-		ilk_txx_cfg0.s.cal_depth = cal_depth;
+		num_entries = 1 + cal_depth + (cal_depth - 1) / 15;
+		ilk_txx_cfg0.s.cal_depth = (num_entries + 7) & ~7;
 		cvmx_write_csr(CVMX_ILK_TXX_CFG0(interface), ilk_txx_cfg0.u64);
-	
-		/* set the calendar index */
-		ilk_txx_idx_cal.u64 = 0;
-		ilk_txx_idx_cal.s.inc = 1;
-		cvmx_write_csr(CVMX_ILK_TXX_IDX_CAL(interface), ilk_txx_idx_cal.u64);
-	
-		/* set the calendar entries. each group has both cal0 and cal1 registers */
-		for (i = 0; i < num_grp; i++) {
-			ilk_txx_mem_cal0.u64 = 0;
-			for (j = 0; j < CVMX_ILK_CAL_GRP_SZ / 2; j++) {
-				tmp = 0;
-				tmp = pent->pipe_bpid & ~(~tmp << CVMX_ILK_PIPE_BPID_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * j;
-				ilk_txx_mem_cal0.u64 |= tmp;
-	
-				tmp = 0;
-				tmp = pent->ent_ctrl & ~(~tmp << CVMX_ILK_ENT_CTRL_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * j + CVMX_ILK_PIPE_BPID_SZ;
-				ilk_txx_mem_cal0.u64 |= tmp;
-				pent++;
-			}
-			cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL0(interface), ilk_txx_mem_cal0.u64);
-	
-			ilk_txx_mem_cal1.u64 = 0;
-			for (j = 0; j < CVMX_ILK_CAL_GRP_SZ / 2; j++) {
-				tmp = 0;
-				tmp = pent->pipe_bpid & ~(~tmp << CVMX_ILK_PIPE_BPID_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * j;
-				ilk_txx_mem_cal1.u64 |= tmp;
-	
-				tmp = 0;
-				tmp = pent->ent_ctrl & ~(~tmp << CVMX_ILK_ENT_CTRL_SZ);
-				tmp <<= (CVMX_ILK_PIPE_BPID_SZ + CVMX_ILK_ENT_CTRL_SZ) * j + CVMX_ILK_PIPE_BPID_SZ;
-				ilk_txx_mem_cal1.u64 |= tmp;
-				pent++;
-			}
-			cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL1(interface), ilk_txx_mem_cal1.u64);
-		}
-		cvmx_read_csr(CVMX_ILK_TXX_MEM_CAL1(interface));
 	}
+
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 		cvmx_ilk_txx_cal_entryx_t txx_cal_entryx;
 
@@ -966,49 +801,6 @@ int cvmx_ilk_tx_cal_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pe
 	}
 
 	return 0;
-}
-
-/**
- * configure backpressure for tx
- *
- * @param interface The identifier of the packet interface to configure and
- *                  use as a ILK interface. cn68xx has 2 interfaces: ilk0 and
- *                  ilk1.
- *
- * @param cal_depth the number of calendar entries
- * @param pent      pointer to calendar entries
- *
- * @return Zero on success, negative on failure.
- */
-int cvmx_ilk_bp_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pent)
-{
-	int res = -1, i;
-	cvmx_ipd_ctl_status_t ipd_ctl_status;
-	cvmx_ilk_cal_entry_t *tmp;
-	unsigned char bpid;
-	cvmx_ipd_bpidx_mbuf_th_t ipd_bpidx_mbuf_th;
-
-	/* enable bp for the interface */
-	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
-		ipd_ctl_status.u64 = cvmx_read_csr(CVMX_IPD_CTL_STATUS);
-		ipd_ctl_status.s.pbp_en = 1;
-		cvmx_write_csr(CVMX_IPD_CTL_STATUS, ipd_ctl_status.u64);
-	
-		/* enable bp for each id */
-		for (i = 0, tmp = pent; i < cal_depth; i++, tmp++) {
-			bpid = tmp->pipe_bpid;
-			ipd_bpidx_mbuf_th.u64 = cvmx_read_csr(CVMX_IPD_BPIDX_MBUF_TH(bpid));
-			ipd_bpidx_mbuf_th.s.page_cnt = 1;	/* 256 buffers */
-			ipd_bpidx_mbuf_th.s.bp_enb = 1;
-			cvmx_write_csr(CVMX_IPD_BPIDX_MBUF_TH(bpid), ipd_bpidx_mbuf_th.u64);
-		}
-		res = 0;
-	}
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		/* TODO: need to add this one */
-	}
-
-	return res;
 }
 
 /**
@@ -1072,18 +864,13 @@ int cvmx_ilk_cal_setup_tx(int interface, int cal_depth, cvmx_ilk_cal_entry_t * p
 	if (res < 0)
 		return res;
 
-#ifdef CVMX_ILK_BP_CONF_ENA
-	res = cvmx_ilk_bp_conf(interface, cal_depth, pent);
-	if (res < 0)
-		return res;
-#endif
-
 	res = cvmx_ilk_tx_cal_ena(interface, cal_ena);
 	return res;
 }
 
 EXPORT_SYMBOL(cvmx_ilk_cal_setup_tx);
 
+//#define CVMX_ILK_STATS_ENA 1
 #ifdef CVMX_ILK_STATS_ENA
 static void cvmx_ilk_reg_dump_rx(int interface)
 {
@@ -1149,7 +936,7 @@ static void cvmx_ilk_reg_dump_rx(int interface)
 
 		for (i = 0; i < CHAN_NUM_DBG; i++) {
 			rxx_chax.u64 = cvmx_read_csr(CVMX_ILK_RXX_CHAX(i, interface));
-			cvmx_dprintf("ilk chan: %d  pki chan: 0x%x\n", i, rxx_chax.port_kind);
+			cvmx_dprintf("ilk chan: %d  pki chan: 0x%x\n", i, rxx_chax.s.port_kind);
 		}
 	}
 
@@ -1330,7 +1117,6 @@ void cvmx_ilk_runtime_status(int interface)
  *
  * @return Zero on success, negative on failure.
  */
-//#define CVMX_ILK_STATS_ENA 1
 int cvmx_ilk_enable(int interface)
 {
 	int res = -1;
@@ -1370,7 +1156,6 @@ int cvmx_ilk_enable(int interface)
 			ilk_txx_cfg1.s.tx_link_fc_jam = 1;
 		}
 	}
-	ilk_txx_cfg1.s.rx_link_fc_ign = 1;	/* cannot use link fc workaround */
 	cvmx_write_csr(CVMX_ILK_TXX_CFG1(interface), ilk_txx_cfg1.u64);
 	cvmx_read_csr(CVMX_ILK_TXX_CFG1(interface));
 
@@ -1652,7 +1437,9 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 				rxx_pkt_cntx.u64 = cvmx_read_csr(CVMX_ILK_RXX_PKT_CNTX(*pstats->chan_list, interface));
 				rxx_byte_cntx.u64 = cvmx_read_csr(CVMX_ILK_RXX_BYTE_CNTX(*pstats->chan_list, interface));
 				cvmx_dprintf("ILK%d Channel%d Rx: %llu packets %llu bytes\n", interface,
-					     *pstats->chan_list, (uint64_t)rxx_pkt_cntx.s.rx_pkt, (uint64_t)rxx_byte_cntx.s.rx_bytes);
+					     *pstats->chan_list, 
+					     (unsigned long long)rxx_pkt_cntx.s.rx_pkt,
+					     (unsigned long long)rxx_byte_cntx.s.rx_bytes);
 			}
 
 			if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
@@ -1680,7 +1467,9 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 				txx_pkt_cntx.u64 = cvmx_read_csr(CVMX_ILK_TXX_PKT_CNTX(*pstats->chan_list, interface));
 				txx_byte_cntx.u64 = cvmx_read_csr(CVMX_ILK_TXX_BYTE_CNTX(*pstats->chan_list, interface));
 				cvmx_dprintf("ILK%d Channel%d Tx: %llu packets %llu bytes\n", interface,
-					     *pstats->chan_list, (uint64_t)txx_pkt_cntx.s.tx_pkt, (uint64_t)txx_byte_cntx.s.tx_bytes);
+					     *pstats->chan_list,
+					     (unsigned long long)txx_pkt_cntx.s.tx_pkt,
+					     (unsigned long long)txx_byte_cntx.s.tx_bytes);
 			}
 
 			pstats++;
@@ -1734,12 +1523,14 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 			rxx_pkt_cntx.u64 = cvmx_read_csr(CVMX_ILK_RXX_PKT_CNTX(i, interface));
 			rxx_byte_cntx.u64 = cvmx_read_csr(CVMX_ILK_RXX_BYTE_CNTX(i, interface));
 			cvmx_dprintf("ILK%d Channel%d Rx: %llu packets %llu bytes\n", interface,
-				     i, (uint64_t)rxx_pkt_cntx.s.rx_pkt, (uint64_t)rxx_byte_cntx.s.rx_bytes);
+				     i, (unsigned long long)rxx_pkt_cntx.s.rx_pkt,
+				     (unsigned long long)rxx_byte_cntx.s.rx_bytes);
 
 			txx_pkt_cntx.u64 = cvmx_read_csr(CVMX_ILK_TXX_PKT_CNTX(i, interface));
 			txx_byte_cntx.u64 = cvmx_read_csr(CVMX_ILK_TXX_BYTE_CNTX(i, interface));
 			cvmx_dprintf("ILK%d Channel%d Tx: %llu packets %llu bytes\n", interface,
-				     i, (uint64_t)txx_pkt_cntx.s.tx_pkt, (uint64_t)txx_byte_cntx.s.tx_bytes);
+				     i, (unsigned long long)txx_pkt_cntx.s.tx_pkt,
+				     (unsigned long long)txx_byte_cntx.s.tx_bytes);
 		}
 	}
 

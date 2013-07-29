@@ -44,7 +44,7 @@
  * Helper functions to abstract board specific data about
  * network ports from the rest of the cvmx-helper files.
  *
- * <hr>$Revision: 77852 $<hr>
+ * <hr>$Revision: 86434 $<hr>
  */
 #ifndef __CVMX_HELPER_BOARD_H__
 #define __CVMX_HELPER_BOARD_H__
@@ -67,12 +67,14 @@ typedef enum {
 	MARVELL_GENERIC_PHY,
  	VITESSE_GENERIC_PHY,
 	CORTINA_PHY,
+ 	INBAND_PHY,
 } cvmx_phy_type_t;
 
 /** Used to record the host mode used by the Cortina CS4321 PHY */
 typedef enum {
 	CVMX_PHY_HOST_MODE_UNKNOWN,
 	CVMX_PHY_HOST_MODE_SGMII,
+	CVMX_PHY_HOST_MODE_QSGMII,
 	CVMX_PHY_HOST_MODE_XAUI,
 	CVMX_PHY_HOST_MODE_RXAUI,
 } cvmx_phy_host_mode_t;
@@ -319,6 +321,19 @@ cvmx_phy_host_mode_t cvmx_helper_board_get_phy_host_mode(int ipd_port);
  */
 int cvmx_helper_board_get_phy_info(cvmx_phy_info_t *phy_info, int ipd_port);
 #endif
+
+/**
+ * @INTERNAL
+ * This function outputs the port flags for the specified interface and port.
+ *
+ * @param interface interface to get the port flags for
+ * @param index     port on interface to get the port flags for
+ * @param[out] pflags port flags for the specified port.  Not modified if the
+ *		      data is unavailable.
+ *
+ * @return 0 for success, -1 if info no available.
+ */
+int __cvmx_helper_board_get_port_flags(int interface, int index);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
