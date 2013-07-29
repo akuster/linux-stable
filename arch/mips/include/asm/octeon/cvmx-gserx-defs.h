@@ -801,15 +801,114 @@ static inline uint64_t CVMX_GSERX_PCIE_TX_VBOOST_LVL(unsigned long block_id)
 #define CVMX_GSERX_PCIE_TX_VBOOST_LVL(block_id) (CVMX_ADD_IO_SEG(0x0001180090080440ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PHYX_SCOPE_MASKX(unsigned long a, unsigned long b, unsigned long c)
+static inline uint64_t CVMX_GSERX_PHYX_IDCODE_HI(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((a == 0)) && ((b <= 2)) && ((c <= 7))))))
-		cvmx_warn("CVMX_GSERX_PHYX_SCOPE_MASKX(%lu,%lu,%lu) is invalid on this chip\n", a, b, c);
-	return CVMX_ADD_IO_SEG(0x0001180090000120ull) + ((a) << 0) + ((b) << 19) + ((c) << 3);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id == 0))))))
+		cvmx_warn("CVMX_GSERX_PHYX_IDCODE_HI(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090400008ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288;
 }
 #else
-#define CVMX_GSERX_PHYX_SCOPE_MASKX(a, b, c) (CVMX_ADD_IO_SEG(0x0001180090000120ull) + ((a) << 0) + ((b) << 19) + ((c) << 3))
+#define CVMX_GSERX_PHYX_IDCODE_HI(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090400008ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_PHYX_IDCODE_LO(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id == 0))))))
+		cvmx_warn("CVMX_GSERX_PHYX_IDCODE_LO(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090400000ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288;
+}
+#else
+#define CVMX_GSERX_PHYX_IDCODE_LO(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090400000ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_PHYX_LANE0_RX_LBERT_CTL(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id == 0))))))
+		cvmx_warn("CVMX_GSERX_PHYX_LANE0_RX_LBERT_CTL(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x00011800904080B0ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288;
+}
+#else
+#define CVMX_GSERX_PHYX_LANE0_RX_LBERT_CTL(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904080B0ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_PHYX_LANE0_RX_LBERT_ERR(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id == 0))))))
+		cvmx_warn("CVMX_GSERX_PHYX_LANE0_RX_LBERT_ERR(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x00011800904080B8ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288;
+}
+#else
+#define CVMX_GSERX_PHYX_LANE0_RX_LBERT_ERR(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904080B8ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_PHYX_LANE0_TXDEBUG(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id == 0))))))
+		cvmx_warn("CVMX_GSERX_PHYX_LANE0_TXDEBUG(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090408080ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288;
+}
+#else
+#define CVMX_GSERX_PHYX_LANE0_TXDEBUG(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090408080ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_PHYX_LANE0_TX_LBERT_CTL(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id == 0))))))
+		cvmx_warn("CVMX_GSERX_PHYX_LANE0_TX_LBERT_CTL(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x00011800904080A8ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288;
+}
+#else
+#define CVMX_GSERX_PHYX_LANE0_TX_LBERT_CTL(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904080A8ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_PHYX_LANE1_RX_LBERT_CTL(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id == 0))))))
+		cvmx_warn("CVMX_GSERX_PHYX_LANE1_RX_LBERT_CTL(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x00011800904088B0ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288;
+}
+#else
+#define CVMX_GSERX_PHYX_LANE1_RX_LBERT_CTL(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904088B0ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_PHYX_LANE1_RX_LBERT_ERR(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id == 0))))))
+		cvmx_warn("CVMX_GSERX_PHYX_LANE1_RX_LBERT_ERR(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x00011800904088B8ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288;
+}
+#else
+#define CVMX_GSERX_PHYX_LANE1_RX_LBERT_ERR(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904088B8ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_PHYX_LANE1_TXDEBUG(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id == 0))))))
+		cvmx_warn("CVMX_GSERX_PHYX_LANE1_TXDEBUG(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090408880ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288;
+}
+#else
+#define CVMX_GSERX_PHYX_LANE1_TXDEBUG(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090408880ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_PHYX_LANE1_TX_LBERT_CTL(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id == 0))))))
+		cvmx_warn("CVMX_GSERX_PHYX_LANE1_TX_LBERT_CTL(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x00011800904088A8ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288;
+}
+#else
+#define CVMX_GSERX_PHYX_LANE1_TX_LBERT_CTL(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904088A8ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_PHY_CTL(unsigned long block_id)
@@ -1219,15 +1318,15 @@ union cvmx_gserx_br_rxx_ctl {
                                                          set the preset bit. When preset is set, RX training is disabled.
                                                          To perform a preset, set this bit prior to setting training enable.
                                                          Note that it is illegal to set both the preset and initialize bits at the same time.
-                                                         - 1: preset is set.  A single CU message is sent to the link partner
-                                                         - 0: preset is clear */
+                                                          1 = Preset is set.  A single CU message is sent to the link partner.
+                                                          0 = Preset is clear. */
 	uint64_t rxt_initialize               : 1;  /**< When in SW Base-R Training Mode, this bit is used to determine how to
                                                          set the initialize bit the the Coefficient Update Message at the start
                                                          of RX training.
                                                          To perform a initialize, set this bit prior to setting training enable.
                                                          Note that it is illegal to set both the preset and initialize bits at the same time.
-                                                         - 1: training starts with initialize set
-                                                         - 0: training starts with initialize clear */
+                                                          1 = Training starts with initialize set.
+                                                          0 = Training starts with initialize clear. */
 #else
 	uint64_t rxt_initialize               : 1;
 	uint64_t rxt_preset                   : 1;
@@ -1276,10 +1375,10 @@ union cvmx_gserx_br_rxx_eer {
                                                          this register will clear this bit. */
 	uint64_t rxt_esm                      : 14; /**< When RX Base-R Link Training is being performed under software control,
                                                          This is the Equalization Status Message from the RAW PCS.
-                                                         bits[13:6]: figure of merit
-                                                         bits[5:4]:  RX recommended TXPOST direction change
-                                                         bits[3:2]:  RX recommended TXMAIN direction change
-                                                         bits[5:4]:  RX recommended TXPRE direction change */
+                                                         bits[13:6]: Figure of merit.
+                                                         bits[5:4]:  RX recommended TXPOST direction change.
+                                                         bits[3:2]:  RX recommended TXMAIN direction change.
+                                                         bits[5:4]:  RX recommended TXPRE direction change. */
 #else
 	uint64_t rxt_esm                      : 14;
 	uint64_t rxt_esv                      : 1;
@@ -1348,9 +1447,6 @@ typedef union cvmx_gserx_br_txx_cu cvmx_gserx_br_txx_cu_t;
 
 /**
  * cvmx_gser#_br_tx#_cur
- *
- * GSER SW Base-R TX Coeffiecient Update Request
- *
  */
 union cvmx_gserx_br_txx_cur {
 	uint64_t u64;
@@ -1400,23 +1496,20 @@ union cvmx_gserx_cfg {
 	struct cvmx_gserx_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
-	uint64_t bgx_quad                     : 1;  /**< For non-OCI links, this indicates the BGX is
-                                                         in quad aggregation mode when BGX is also set.
+	uint64_t bgx_quad                     : 1;  /**< For non-OCI links, indicates the BGX is
+                                                         in quad aggregation mode when [BGX] is also set.
                                                          A single controller is used for all 4 lanes.
                                                          For OCI links this bit has no meaning. */
-	uint64_t bgx_dual                     : 1;  /**< For non-OCI links, this indicates the BGX is
-                                                         in dual aggregation mode when BGX is also set.
+	uint64_t bgx_dual                     : 1;  /**< For non-OCI links, indicates the BGX is
+                                                         in dual aggregation mode when [BGX] is also set.
                                                          A single controller is used for lanes 0 & 1 and
                                                          another controller is used for lanes 2 & 3.
                                                          For OCI links this bit has no meaning. */
-	uint64_t bgx                          : 1;  /**< For non-OCI links, this indicates the GSER is configured
-                                                         for BGX mode.
-                                                         For OCI links this bit has no meaning. */
-	uint64_t ila                          : 1;  /**< For non-OCI links, this indicates the GSER is configured
-                                                         for ILK/ILA mode.
-                                                         For OCI links, this indicates the GSER is configured
-                                                         for OCI mode. */
-	uint64_t pcie                         : 1;  /**< For non-OCI links, this indicates the GSER is configured
+	uint64_t bgx                          : 1;  /**< For non-OCI links, indicates the GSER is configured for BGX mode. For OCI links this bit
+                                                         has no meaning. */
+	uint64_t ila                          : 1;  /**< For non-OCI links, indicates the GSER is configured for ILK/ILA mode. For OCI links, this
+                                                         indicates the GSER is configured for OCI mode. */
+	uint64_t pcie                         : 1;  /**< For non-OCI links, indicates the GSER is configured
                                                          for PCIE mode.
                                                          For OCI links this bit has no meaning. */
 #else
@@ -2279,19 +2372,8 @@ typedef union cvmx_gserx_dlmx_tx_term_offset cvmx_gserx_dlmx_tx_term_offset_t;
  *
  * RAW PCS Per Lane Global Settings Mode 0 Register
  * Per Lane registers are specific to a paticular lane.
- * The Protocol selects the specific protocol register as follows.
- * P0:  PCIE1
- * P1:  PCIE2
- * P2:  PCIE3
- * P3:  KX
- * P4:  XAUI
- * P5:  KR
- * P6:  SGMII
- * P7:  QSGMII
- * P8:  RXAUI
- * P9:  PCIE1_125
- * P10: PCIE2_125
- * P11: PCIE3_125
+ * The Protocol selects the specific protocol register as
+ * enumerated by GSER_LMODE_E.
  */
 union cvmx_gserx_lanex_px_mode_0 {
 	uint64_t u64;
@@ -2307,16 +2389,16 @@ union cvmx_gserx_lanex_px_mode_0 {
 	uint64_t srate                        : 3;  /**< Used to generate strobe to effectively divide the clock down
                                                          to a slower rate. */
 	uint64_t op_range                     : 1;  /**< When set DFE is enabled.  Otherwise DFE is disabled. */
-	uint64_t tx_mode                      : 2;  /**< TX Data Width.
-                                                         - 00: 8-bit  raw data (not supported)
-                                                         - 01: 10-bit raw data (not supported)
-                                                         - 10: 16-bit raw data (not supported)
-                                                         - 11: 20-bit raw data */
-	uint64_t rx_mode                      : 2;  /**< RX Data Width.
-                                                         - 00: 8-bit  raw data (not supported)
-                                                         - 01: 10-bit raw data (not supported)
-                                                         - 10: 16-bit raw data (not supported)
-                                                         - 11: 20-bit raw data */
+	uint64_t tx_mode                      : 2;  /**< TX Data Width:
+                                                         0x0 = 8-bit  raw data (not supported).
+                                                         0x1 = 10-bit raw data (not supported).
+                                                         0x2 = 16-bit raw data (not supported).
+                                                         0x3 = 20-bit raw data. */
+	uint64_t rx_mode                      : 2;  /**< RX Data Width:
+                                                         0x0 = 8-bit  raw data (not supported).
+                                                         0x1 = 10-bit raw data (not supported).
+                                                         0x2 = 16-bit raw data (not supported).
+                                                         0x3 = 20-bit raw data. */
 #else
 	uint64_t rx_mode                      : 2;
 	uint64_t tx_mode                      : 2;
@@ -2336,32 +2418,20 @@ typedef union cvmx_gserx_lanex_px_mode_0 cvmx_gserx_lanex_px_mode_0_t;
 /**
  * cvmx_gser#_lane#_p#_mode_1
  *
- * RAW PCS Per Lane Global Settings Mode 1 Register
  * Per Lane registers are specific to a paticular lane.
- * The Protocol selects the specific protocol register as follows.
- * P0:  PCIE1
- * P1:  PCIE2
- * P2:  PCIE3
- * P3:  KX
- * P4:  XAUI
- * P5:  KR
- * P6:  SGMII
- * P7:  QSGMII
- * P8:  RXAUI
- * P9:  PCIE1_125
- * P10: PCIE2_125
- * P11: PCIE3_125
+ * The Protocol selects the specific protocol register as
+ * enumerated by GSER_LMODE_E.
  */
 union cvmx_gserx_lanex_px_mode_1 {
 	uint64_t u64;
 	struct cvmx_gserx_lanex_px_mode_1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t vma_kr_sel                   : 1;  /**< 0: Disabled.  Coarse step adaptation selected
-                                                         - 1: Enabled.  Fine step adaptation selected */
-	uint64_t vma_mm                       : 1;  /**< 0: Adaptive DFE
-                                                         - 1: Manual DFE */
-	uint64_t cdr_fgain                    : 4;  /**< CDR Frequency Gain. */
+	uint64_t vma_kr_sel                   : 1;  /**< 0 = Disabled.  Coarse step adaptation selected.
+                                                         1 = Enabled.  Fine step adaptation selected. */
+	uint64_t vma_mm                       : 1;  /**< 0 = Adaptive DFE.
+                                                         1 = Manual DFE. */
+	uint64_t cdr_fgain                    : 4;  /**< CDR frequency gain. */
 	uint64_t ph_acc_adj                   : 10; /**< Phase accumulator adjust. */
 #else
 	uint64_t ph_acc_adj                   : 10;
@@ -2417,9 +2487,9 @@ union cvmx_gserx_lanex_vma_coarse_ctrl_1 {
 	struct cvmx_gserx_lanex_vma_coarse_ctrl_1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
-	uint64_t ctle_pmax                    : 4;  /**< RX CTLE Peak maximum value. */
-	uint64_t ctle_pmin                    : 4;  /**< RX CTLE Peak minimum value. */
-	uint64_t ctle_pstep                   : 2;  /**< CTLE Peak Peak step size. */
+	uint64_t ctle_pmax                    : 4;  /**< RX CTLE peak maximum value. */
+	uint64_t ctle_pmin                    : 4;  /**< RX CTLE peak minimum value. */
+	uint64_t ctle_pstep                   : 2;  /**< CTLE peak step size. */
 #else
 	uint64_t ctle_pstep                   : 2;
 	uint64_t ctle_pmin                    : 4;
@@ -2434,17 +2504,17 @@ typedef union cvmx_gserx_lanex_vma_coarse_ctrl_1 cvmx_gserx_lanex_vma_coarse_ctr
 /**
  * cvmx_gser#_lane#_vma_coarse_ctrl_2
  *
- * RAW PCS Per Lane Coarse VMA Control Configuration 2 Register
  * Per Lane registers are specific to a paticular lane.
+ *
  */
 union cvmx_gserx_lanex_vma_coarse_ctrl_2 {
 	uint64_t u64;
 	struct cvmx_gserx_lanex_vma_coarse_ctrl_2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
-	uint64_t pctle_gmax                   : 4;  /**< RX PRE-CTLE Gain maximum value. */
-	uint64_t pctle_gmin                   : 4;  /**< RX PRE-CTLE Gain minimum value. */
-	uint64_t pctle_gstep                  : 2;  /**< CTLE PRE-Peak Gain step size. */
+	uint64_t pctle_gmax                   : 4;  /**< RX PRE-CTLE gain maximum value. */
+	uint64_t pctle_gmin                   : 4;  /**< RX PRE-CTLE gain minimum value. */
+	uint64_t pctle_gstep                  : 2;  /**< CTLE PRE-peak gain step size. */
 #else
 	uint64_t pctle_gstep                  : 2;
 	uint64_t pctle_gmin                   : 4;
@@ -2479,9 +2549,6 @@ typedef union cvmx_gserx_lane_lpbken cvmx_gserx_lane_lpbken_t;
 
 /**
  * cvmx_gser#_lane_mode
- *
- * GSER Lane Mode
- *
  */
 union cvmx_gserx_lane_mode {
 	uint64_t u64;
@@ -2490,19 +2557,7 @@ union cvmx_gserx_lane_mode {
 	uint64_t reserved_4_63                : 60;
 	uint64_t lmode                        : 4;  /**< For links that are not in PCIE mode (including all OCI links),
                                                          ties to the mac_pcs_lane_mode[3:0] pins of the RAW PCS.
-                                                          0x0: PCIE1
-                                                          0x1: PCIE2
-                                                          0x2: PCIE3
-                                                          0x3: KX
-                                                          0x4: XAUI
-                                                          0x5: KR
-                                                          0x6: SGMII
-                                                          0x7: QSGMII
-                                                          0x8: RXAUI
-                                                          0x9: PCIE1_125
-                                                          0xa: PCIE2_125
-                                                          0xb: PCIE3_125
-                                                          0xc - 0xf: Reserved. */
+                                                         Enumerated by GSER_LMODE_E. */
 #else
 	uint64_t lmode                        : 4;
 	uint64_t reserved_4_63                : 60;
@@ -2534,9 +2589,6 @@ typedef union cvmx_gserx_lane_poff cvmx_gserx_lane_poff_t;
 
 /**
  * cvmx_gser#_lane_srst
- *
- * GSER Lane Soft Reset
- *
  */
 union cvmx_gserx_lane_srst {
 	uint64_t u64;
@@ -2696,17 +2748,22 @@ union cvmx_gserx_pcie_pipe_port_sel {
 	struct cvmx_gserx_pcie_pipe_port_sel_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
-	uint64_t cfg_pem1_lane                : 1;  /**< Configures the PIPE/PHY configuration for PEM1 when all 4 PIPEs are enabled.
-                                                         Only set this bit for the 3x1 PCIe mode.  In all other modes this bit needs
-                                                         to be clear. */
+	uint64_t cfg_pem1_dlm2                : 1;  /**< The PIPE/PHY configuration for PEM1 when in 4-Pipe Mode.
+                                                          Used as status for determining which DLM PEM1 is tied to.
+                                                          This bit should not be set in Single Pipe or 2-Pipe Mode.
+                                                         - 0: PEM1 is tied to DLM1.  This is 3x1 PCIe mode when all 4 PIPES are enabled.
+                                                         - 1: PEM1 is tied to DLM2.  This is 2x1 PCIe mode with SATA */
 	uint64_t pipe_port_sel                : 2;  /**< PIPE enable request.  Change only when phy_reset is asserted.
                                                          - 00: Disables all PIPEs
-                                                         - 01: Enables PIPE0 only.  This is 1x4 PCIe mode.
-                                                         - 10: Enables PIPEs 0 and 1. This is 2x2 PCIe mode or 1x2 PCIe mode with SATA.
-                                                         - 11: Enables PIPEs 0, 1, 2, and 3. This is 2x1 PCIe mode with SATA or 3x1 PCIe mode. */
+                                                         - 01: Single Pipe Mode. Enables PIPE0 only.
+                                                             This is 1x4 PCIe mode.
+                                                         - 10: 2-Pipe Mode.  Enables PIPEs 0 and 1.
+                                                             This is 2x2 PCIe mode or 1x2 PCIe mode with SATA.
+                                                         - 11: 4-Pipe Mode. Enables PIPEs 0, 1, 2, and 3.
+                                                             This is 2x1 PCIe mode with SATA or 3x1 PCIe mode. */
 #else
 	uint64_t pipe_port_sel                : 2;
-	uint64_t cfg_pem1_lane                : 1;
+	uint64_t cfg_pem1_dlm2                : 1;
 	uint64_t reserved_3_63                : 61;
 #endif
 	} s;
@@ -2960,25 +3017,295 @@ union cvmx_gserx_pcie_tx_vboost_lvl {
 typedef union cvmx_gserx_pcie_tx_vboost_lvl cvmx_gserx_pcie_tx_vboost_lvl_t;
 
 /**
- * cvmx_gser#_phy#_scope_mask#
+ * cvmx_gser#_phy#_idcode_hi
  *
- * Starting count value of PHY Mask register
+ * PHY Version Hi.
  *
  */
-union cvmx_gserx_phyx_scope_maskx {
+union cvmx_gserx_phyx_idcode_hi {
 	uint64_t u64;
-	struct cvmx_gserx_phyx_scope_maskx_s {
+	struct cvmx_gserx_phyx_idcode_hi_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t mask_val                     : 16; /**< The internal PHY MASK_VAL_N registers. */
+	uint64_t idcode_hi                    : 16; /**< The PHY version high. */
 #else
-	uint64_t mask_val                     : 16;
+	uint64_t idcode_hi                    : 16;
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
-	struct cvmx_gserx_phyx_scope_maskx_s  cn70xx;
+	struct cvmx_gserx_phyx_idcode_hi_s    cn70xx;
 };
-typedef union cvmx_gserx_phyx_scope_maskx cvmx_gserx_phyx_scope_maskx_t;
+typedef union cvmx_gserx_phyx_idcode_hi cvmx_gserx_phyx_idcode_hi_t;
+
+/**
+ * cvmx_gser#_phy#_idcode_lo
+ *
+ * PHY Version Low.
+ *
+ */
+union cvmx_gserx_phyx_idcode_lo {
+	uint64_t u64;
+	struct cvmx_gserx_phyx_idcode_lo_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t idcode_lo                    : 16; /**< The PHY version low. */
+#else
+	uint64_t idcode_lo                    : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_gserx_phyx_idcode_lo_s    cn70xx;
+};
+typedef union cvmx_gserx_phyx_idcode_lo cvmx_gserx_phyx_idcode_lo_t;
+
+/**
+ * cvmx_gser#_phy#_lane0_rx_lbert_ctl
+ *
+ * PHY LANE0 RX LBERT Control.
+ *
+ */
+union cvmx_gserx_phyx_lane0_rx_lbert_ctl {
+	uint64_t u64;
+	struct cvmx_gserx_phyx_lane0_rx_lbert_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_5_63                : 59;
+	uint64_t sync                         : 1;  /**< Synchronizes pattern matcher with incoming data.  A write of a 1
+                                                         to this bit resets the error counter and starts a synchronization of
+                                                         the PM.  Once this bit is set, there is no need to write the field back
+                                                         to a zero. */
+	uint64_t mode                         : 4;  /**< Pattern to match.  When changing modes, the field must be set to zero
+                                                          first.  This field should match what was configured for the TX LBERT
+                                                          Control register.
+                                                         - 0: disabled
+                                                         - 1: lfsr31     X^31 + X^28 + 1
+                                                         - 2: lfsr23     X^23 + X^18 + 1
+                                                         - 3: lfsr15     X^15 + X^14 + 1
+                                                         - 4: lfsr7      X^7 + X^6 + 1
+                                                         - 5: d[n] = d[n-10]
+                                                         - 6: d[n] = !d[n-10]
+                                                         - 7: d[n] = !d[n-20]
+                                                          - 15-8: Reserved. */
+#else
+	uint64_t mode                         : 4;
+	uint64_t sync                         : 1;
+	uint64_t reserved_5_63                : 59;
+#endif
+	} s;
+	struct cvmx_gserx_phyx_lane0_rx_lbert_ctl_s cn70xx;
+};
+typedef union cvmx_gserx_phyx_lane0_rx_lbert_ctl cvmx_gserx_phyx_lane0_rx_lbert_ctl_t;
+
+/**
+ * cvmx_gser#_phy#_lane0_rx_lbert_err
+ *
+ * PHY LANE0 RX LBERT Error.
+ * A read of this register, or a SYNC from the RX LBERT Control register
+ * resets the error count.  If all bits in this regisert are set, the
+ * error counter has saturated.
+ */
+union cvmx_gserx_phyx_lane0_rx_lbert_err {
+	uint64_t u64;
+	struct cvmx_gserx_phyx_lane0_rx_lbert_err_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t ov14                         : 1;  /**< If this bit is set, and COUNT[15] is also set, signals a overflow of counter. */
+	uint64_t count                        : 15; /**< Current error count if OV14 field is active, then multiply count
+                                                         by 128 to get the actual count. */
+#else
+	uint64_t count                        : 15;
+	uint64_t ov14                         : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_gserx_phyx_lane0_rx_lbert_err_s cn70xx;
+};
+typedef union cvmx_gserx_phyx_lane0_rx_lbert_err cvmx_gserx_phyx_lane0_rx_lbert_err_t;
+
+/**
+ * cvmx_gser#_phy#_lane0_tx_lbert_ctl
+ *
+ * PHY LANE0 TX LBERT Control.
+ *
+ */
+union cvmx_gserx_phyx_lane0_tx_lbert_ctl {
+	uint64_t u64;
+	struct cvmx_gserx_phyx_lane0_tx_lbert_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_15_63               : 49;
+	uint64_t pat0                         : 10; /**< 10-bit pattern for modes that use this field.  Ignored for
+                                                         other modes. */
+	uint64_t trig_err                     : 1;  /**< Single shot inversion of the LSB of the current symbol.
+                                                         Any write of 1 to this bit will insert an error. */
+	uint64_t mode                         : 4;  /**< Pattern to generate.  When changing modes, the field must be set to zero
+                                                          first.
+                                                         - 0: disabled
+                                                         - 1: lfsr31     X^31 + X^28 + 1
+                                                         - 2: lfsr23     X^23 + X^18 + 1
+                                                         - 3: lfsr15     X^15 + X^14 + 1
+                                                         - 4: lfsr7      X^7 + X^6 + 1
+                                                         - 5: Fixed word (PAT0)
+                                                         - 6: DC-balanced word (PAT0, ~PAT0)
+                                                         - 7: Word pattern (20-bit)
+                                                          - 15-8: Reserved. */
+#else
+	uint64_t mode                         : 4;
+	uint64_t trig_err                     : 1;
+	uint64_t pat0                         : 10;
+	uint64_t reserved_15_63               : 49;
+#endif
+	} s;
+	struct cvmx_gserx_phyx_lane0_tx_lbert_ctl_s cn70xx;
+};
+typedef union cvmx_gserx_phyx_lane0_tx_lbert_ctl cvmx_gserx_phyx_lane0_tx_lbert_ctl_t;
+
+/**
+ * cvmx_gser#_phy#_lane0_txdebug
+ *
+ * PHY LANE0 TX DEBUG.
+ *
+ */
+union cvmx_gserx_phyx_lane0_txdebug {
+	uint64_t u64;
+	struct cvmx_gserx_phyx_lane0_txdebug_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_12_63               : 52;
+	uint64_t rxdet_meas_time              : 8;  /**< Time to wait for rxdet measurement. */
+	uint64_t detrx_always                 : 1;  /**< Always signals 1 for rx_detect ignoring analog. */
+	uint64_t dtb_sel                      : 3;  /**< Selects data to drive on the DTB. */
+#else
+	uint64_t dtb_sel                      : 3;
+	uint64_t detrx_always                 : 1;
+	uint64_t rxdet_meas_time              : 8;
+	uint64_t reserved_12_63               : 52;
+#endif
+	} s;
+	struct cvmx_gserx_phyx_lane0_txdebug_s cn70xx;
+};
+typedef union cvmx_gserx_phyx_lane0_txdebug cvmx_gserx_phyx_lane0_txdebug_t;
+
+/**
+ * cvmx_gser#_phy#_lane1_rx_lbert_ctl
+ *
+ * PHY LANE1 TX LBERT Control.
+ *
+ */
+union cvmx_gserx_phyx_lane1_rx_lbert_ctl {
+	uint64_t u64;
+	struct cvmx_gserx_phyx_lane1_rx_lbert_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_4_63                : 60;
+	uint64_t sync                         : 1;  /**< Synchronizes pattern matcher with incoming data.  A write of a 1
+                                                         to this bit resets the error counter and starts a synchronization of
+                                                         the PM.  Once this bit is set, there is no need to write the field back
+                                                         to a zero. */
+	uint64_t mode                         : 3;  /**< Pattern to match.  When changing modes, the field must be set to zero
+                                                          first.  This field should match what was configured for the TX LBERT
+                                                          Control register.
+                                                         - 0: disabled
+                                                         - 1: lfsr31     X^31 + X^28 + 1
+                                                         - 2: lfsr23     X^23 + X^18 + 1
+                                                         - 3: lfsr15     X^15 + X^14 + 1
+                                                         - 4: lfsr7      X^7 + X^6 + 1
+                                                         - 5: d[n] = d[n-10]
+                                                         - 6: d[n] = !d[n-10]
+                                                         - 7: d[n] = !d[n-20] */
+#else
+	uint64_t mode                         : 3;
+	uint64_t sync                         : 1;
+	uint64_t reserved_4_63                : 60;
+#endif
+	} s;
+	struct cvmx_gserx_phyx_lane1_rx_lbert_ctl_s cn70xx;
+};
+typedef union cvmx_gserx_phyx_lane1_rx_lbert_ctl cvmx_gserx_phyx_lane1_rx_lbert_ctl_t;
+
+/**
+ * cvmx_gser#_phy#_lane1_rx_lbert_err
+ *
+ * PHY LANE1 RX LBERT Error.
+ * A read of this register, or a SYNC from the RX LBERT Control register
+ * resets the error count.  If all bits in this regisert are set, the
+ * error counter has saturated.
+ */
+union cvmx_gserx_phyx_lane1_rx_lbert_err {
+	uint64_t u64;
+	struct cvmx_gserx_phyx_lane1_rx_lbert_err_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t ov14                         : 1;  /**< If this bit is set, and COUNT[15] is also set, signals a overflow of counter. */
+	uint64_t count                        : 15; /**< Current error count if OV14 field is active, then multiply count
+                                                         by 128 to get the actual count. */
+#else
+	uint64_t count                        : 15;
+	uint64_t ov14                         : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_gserx_phyx_lane1_rx_lbert_err_s cn70xx;
+};
+typedef union cvmx_gserx_phyx_lane1_rx_lbert_err cvmx_gserx_phyx_lane1_rx_lbert_err_t;
+
+/**
+ * cvmx_gser#_phy#_lane1_tx_lbert_ctl
+ *
+ * PHY LANE1 RX LBERT Control.
+ *
+ */
+union cvmx_gserx_phyx_lane1_tx_lbert_ctl {
+	uint64_t u64;
+	struct cvmx_gserx_phyx_lane1_tx_lbert_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_15_63               : 49;
+	uint64_t pat0                         : 10; /**< 10-bit pattern for modes that use this field.  Ignored for
+                                                         other modes. */
+	uint64_t trig_err                     : 1;  /**< Single shot inversion of the LSB of the current symbol.
+                                                         Any write of 1 to this bit will insert an error. */
+	uint64_t mode                         : 4;  /**< Pattern to generate.  When changing modes, the field must be set to zero
+                                                          first.
+                                                         - 0: disabled
+                                                         - 1: lfsr31     X^31 + X^28 + 1
+                                                         - 2: lfsr23     X^23 + X^18 + 1
+                                                         - 3: lfsr15     X^15 + X^14 + 1
+                                                         - 4: lfsr7      X^7 + X^6 + 1
+                                                         - 5: Fixed word (PAT0)
+                                                         - 6: DC-balanced word (PAT0, ~PAT0)
+                                                         - 7: Word pattern (20-bit)
+                                                          - 15-8: Reserved. */
+#else
+	uint64_t mode                         : 4;
+	uint64_t trig_err                     : 1;
+	uint64_t pat0                         : 10;
+	uint64_t reserved_15_63               : 49;
+#endif
+	} s;
+	struct cvmx_gserx_phyx_lane1_tx_lbert_ctl_s cn70xx;
+};
+typedef union cvmx_gserx_phyx_lane1_tx_lbert_ctl cvmx_gserx_phyx_lane1_tx_lbert_ctl_t;
+
+/**
+ * cvmx_gser#_phy#_lane1_txdebug
+ *
+ * PHY LANE1 TX DEBUG.
+ *
+ */
+union cvmx_gserx_phyx_lane1_txdebug {
+	uint64_t u64;
+	struct cvmx_gserx_phyx_lane1_txdebug_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_12_63               : 52;
+	uint64_t rxdet_meas_time              : 8;  /**< Time to wait for rxdet measurement. */
+	uint64_t detrx_always                 : 1;  /**< Always signals 1 for rx_detect ignoring analog. */
+	uint64_t dtb_sel                      : 3;  /**< Selects data to drive on the DTB. */
+#else
+	uint64_t dtb_sel                      : 3;
+	uint64_t detrx_always                 : 1;
+	uint64_t rxdet_meas_time              : 8;
+	uint64_t reserved_12_63               : 52;
+#endif
+	} s;
+	struct cvmx_gserx_phyx_lane1_txdebug_s cn70xx;
+};
+typedef union cvmx_gserx_phyx_lane1_txdebug cvmx_gserx_phyx_lane1_txdebug_t;
 
 /**
  * cvmx_gser#_phy_ctl
@@ -2991,9 +3318,9 @@ union cvmx_gserx_phy_ctl {
 	struct cvmx_gserx_phy_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
-	uint64_t phy_pd                       : 1;  /**< Tied to the mac_pcs_refclk_pd pin of the RAW PCS
+	uint64_t phy_pd                       : 1;  /**< Tied to the mac_pcs_refclk_pd pin of the RAW PCS.
                                                          When asserted, the PHY is powered down. */
-	uint64_t phy_reset                    : 1;  /**< Tied to the phy_reset pin of the RAW PCS
+	uint64_t phy_reset                    : 1;  /**< Tied to the phy_reset pin of the RAW PCS.
                                                          When asserted, the PHY is held in reset. */
 #else
 	uint64_t phy_reset                    : 1;
@@ -3029,19 +3356,8 @@ typedef union cvmx_gserx_pipe_lpbk cvmx_gserx_pipe_lpbk_t;
  *
  * RAW PCS PLL Global Settings Mode 0 Register
  * Global registers are shared across the entire PCS
- * The Protocol selects the specific protocol register as follows.
- * P0:  PCIE1
- * P1:  PCIE2
- * P2:  PCIE3
- * P3:  KX
- * P4:  XAUI
- * P5:  KR
- * P6:  SGMII
- * P7:  RXAUI
- * P9:  CEI
- * P9:  PCIE1_125
- * P10: PCIE2_125
- * P11: PCIE3_125
+ * The Protocol selects the specific protocol register as
+ * enumerated by GSER_LMODE_E.
  */
 union cvmx_gserx_pll_px_mode_0 {
 	uint64_t u64;
@@ -3065,21 +3381,9 @@ typedef union cvmx_gserx_pll_px_mode_0 cvmx_gserx_pll_px_mode_0_t;
 /**
  * cvmx_gser#_pll_p#_mode_1
  *
- * RAW PCS PLL Global Settings Mode 0 Register
  * Global registers are shared across the entire PCS
- * The Protocol selects the specific protocol register as follows.
- * P0:  PCIE1
- * P1:  PCIE2
- * P2:  PCIE3
- * P3:  KX
- * P4:  XAUI
- * P5:  KR
- * P6:  SGMII
- * P7:  RXAUI
- * P8:  CEI
- * P9:  PCIE1_125
- * P10: PCIE2_125
- * P11: PCIE3_125
+ * The Protocol selects the specific protocol register as
+ * enumerated by GSER_LMODE_E.
  */
 union cvmx_gserx_pll_px_mode_1 {
 	uint64_t u64;
@@ -3107,16 +3411,13 @@ typedef union cvmx_gserx_pll_px_mode_1 cvmx_gserx_pll_px_mode_1_t;
 
 /**
  * cvmx_gser#_pll_stat
- *
- * GSER PLL Status
- *
  */
 union cvmx_gserx_pll_stat {
 	uint64_t u64;
 	struct cvmx_gserx_pll_stat_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t pll_lock                     : 1;  /**< This is the RAW PCS PLL Lock indication. */
+	uint64_t pll_lock                     : 1;  /**< RAW PCS PLL lock indication. */
 #else
 	uint64_t pll_lock                     : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3151,19 +3452,16 @@ typedef union cvmx_gserx_qlm_stat cvmx_gserx_qlm_stat_t;
 
 /**
  * cvmx_gser#_refclk_sel
- *
- * GSER Reference Clock Control.
- *
  */
 union cvmx_gserx_refclk_sel {
 	uint64_t u64;
 	struct cvmx_gserx_refclk_sel_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
-	uint64_t pcie_refclk125               : 1;  /**< For non-OCI links, indicates a 125Mhz Reference clock. */
-	uint64_t com_clk_sel                  : 1;  /**< For non-OCI links, this allows the reference clock to
-                                                         be sourced from the external clock mux (when set). */
-	uint64_t use_com1                     : 1;  /**< For non-OCI links, this is the external mux select.
+	uint64_t pcie_refclk125               : 1;  /**< For non-OCI links, indicates a 125 Mhz Reference clock. */
+	uint64_t com_clk_sel                  : 1;  /**< For non-OCI links, when set the reference clock is
+                                                         sourced from the external clock mux. */
+	uint64_t use_com1                     : 1;  /**< For non-OCI links, external mux select.
                                                          When set, qlmc_refclkn/p_1 are selected as the reference clock
                                                          When clear, qlmc_refclkn/p_0 are selected as the reference clock. */
 #else
@@ -3227,8 +3525,8 @@ union cvmx_gserx_rx_eie_detsts {
 	struct cvmx_gserx_rx_eie_detsts_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t cdrlock                      : 4;  /**< Lane X CDR lock time has been met after the detection of the Electrical
-                                                         Idle Exit condition. */
+	uint64_t cdrlock                      : 4;  /**< Lane X CDR lock time has been met after the detection of the electrical
+                                                         idle exit condition. */
 	uint64_t eiests                       : 4;  /**< Status from lane X's RX indicating the detection of a electical IDLE exit
                                                          condition.  Note that this is a dynamic indication and valid when the
                                                          associated mac_pcs_rx_eie_det_en[3:0] bit is set. */
@@ -3276,11 +3574,11 @@ union cvmx_gserx_rx_pstate {
 	uint64_t reserved_3_63                : 61;
 	uint64_t rxpstate                     : 3;  /**< For links that are not in PCIE mode (including all OCI links),
                                                          ties to the mac_pcs_rx_pstate[3:0] pins of the RAW PCS.
-                                                          - 000:  P0
-                                                          - 001:  P0s
-                                                          - 010:  P1
-                                                          - 011:  P2
-                                                          1xx:  Reserved */
+                                                          0x0 = P0.
+                                                          0x1 = P0s.
+                                                          0x2 = P1.
+                                                          0x3 = P2.
+                                                          else = Reserved. */
 #else
 	uint64_t rxpstate                     : 3;
 	uint64_t reserved_3_63                : 61;
@@ -3300,7 +3598,7 @@ union cvmx_gserx_rxtx_stat {
 	uint64_t reserved_3_63                : 61;
 	uint64_t lmc                          : 1;  /**< For links that are not in PCIE mode (including all OCI links),
                                                          this bit is set for a lane mode change (a write
-                                                         to GSER_LANE_MODE that changes the value of the Lane Mode.
+                                                         to GSER_LANE_MODE) that changes the value of the Lane Mode.
                                                          This bit is clear when each lane acknowledges the change. */
 	uint64_t tpsc                         : 1;  /**< For links that are not in PCIE mode (including all OCI links),
                                                          this bit is set for a TX Power state change (a write
@@ -3640,30 +3938,18 @@ typedef union cvmx_gserx_sata_tx_invert cvmx_gserx_sata_tx_invert_t;
 /**
  * cvmx_gser#_slice#_p#_mode
  *
- * RAW PCS Slice Mode Register
  * Slice Registers are shared across two adjacent lanes. SLICE0 access
  * lane pairs 0 & 1. SLICE1 acceses lane pairs 2 & 3.
- * The Protocol selects the specific protocol register as follows.
- * P0:  PCIE1
- * P1:  PCIE2
- * P2:  PCIE3
- * P3:  KX
- * P4:  XAUI
- * P5:  KR
- * P6:  SGMII
- * P7:  QSGMII
- * P8:  RXAUI
- * P9:  PCIE1_125
- * P10: PCIE2_125
- * P11: PCIE3_125
+ * The Protocol selects the specific protocol register as
+ * enumerated by GSER_LMODE_E.
  */
 union cvmx_gserx_slicex_px_mode {
 	uint64_t u64;
 	struct cvmx_gserx_slicex_px_mode_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
-	uint64_t s_spare                      : 2;  /**< bit 14: enable rx1_div33 clock in the SerDes
-                                                         bit 13: enable rx0_div33 clock in the SerDes */
+	uint64_t s_spare                      : 2;  /**< <14>: Enable rx1_div33 clock in the SerDes.
+                                                         <13>: Enable rx0_div33 clock in the SerDes. */
 	uint64_t ldll_isel                    : 2;  /**< Lane DLL current select. */
 	uint64_t sdll_isel                    : 2;  /**< Slice DLL current select. */
 	uint64_t pi_bwsel                     : 3;  /**< PI bandwidth select. */
@@ -3692,17 +3978,17 @@ union cvmx_gserx_spd {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
 	uint64_t spd                          : 4;  /**< For OCI links,
-                                                         spd[3]: When set, indicates 125Mhz reference clock,
+                                                         spd<3>: When set, indicates 125Mhz reference clock,
                                                                  When clear, indicates 100Mhz reference clock.
-                                                         spd[2:0]:
-                                                         0x0: 1.25G
-                                                         0x1: 2.5G
-                                                         0x2: 3.125G
-                                                         0x3: 5G
-                                                         0x4: 6.25G
-                                                         0x5: 8G
-                                                         0x6: 10G
-                                                         0x7: SW Mode (Phy comes up in powerdown state)
+                                                         spd<2:0>:
+                                                         0x0 = 1.25G
+                                                         0x1 = 2.5G
+                                                         0x2 = 3.125G
+                                                         0x3 = 5G
+                                                         0x4 = 6.25G
+                                                         0x5 = 8G
+                                                         0x6 = 10G
+                                                         0x7 = Software mode, PHY comes up in powerdown state.
                                                          For non-OCI links these bits are not used. */
 #else
 	uint64_t spd                          : 4;
@@ -3742,11 +4028,11 @@ union cvmx_gserx_tx_pstate {
 	uint64_t reserved_3_63                : 61;
 	uint64_t txpstate                     : 3;  /**< For links that are not in PCIE mode (including all OCI links),
                                                          ties to the mac_pcs_tx_pstate[3:0] pins of the RAW PCS.
-                                                          - 000:  P0
-                                                          - 001:  P0s
-                                                          - 010:  P1
-                                                          - 011:  P2
-                                                          1xx:  Reserved. */
+                                                          0x0 = P0.
+                                                          0x1 = P0s.
+                                                          0x2 = P1.
+                                                          0x3 = P2.
+                                                          else = Reserved. */
 #else
 	uint64_t txpstate                     : 3;
 	uint64_t reserved_3_63                : 61;

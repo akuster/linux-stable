@@ -447,16 +447,18 @@ union cvmx_oclax_cdhx_ctl {
 	uint64_t dis_stamp                    : 1;  /**< Remove time stamps from data stream. */
 	uint64_t cap_ctl                      : 4;  /**< Minterms that will cause data to be captured. These minterms are the four inputs to a 4-1
                                                          mux selected by PLA1 and 0. The output is thus calulated from the equation:
-                                                         out = (    (<3> & PLA1 & PLA0)
-                                                         || (<2> & PLA1 & !PLA0)
-                                                         || (<1> & !PLA1 & PLA0)
-                                                         || (<0> & !PLA1 & !PLA0))
+                                                         fsmcap0 = OCLA(0..4)_FSM(0)_STATE[state0][CAP]
+                                                         fsmcap1 = OCLA(0..4)_FSM(1)_STATE[state1][CAP]
+                                                         out = (    (<3> & fsmcap0 & fsmcap0)
+                                                         || (<2> & fsmcap1 & !fsmcap0)
+                                                         || (<1> & !fsmcap1 & fsmcap0)
+                                                         || (<0> & !fsmcap1 & !fsmcap0))
                                                          Common examples:
                                                          0x0 = No capture
-                                                         0x2 = Capture when PLA0 requests capture
-                                                         0x4 = Capture when PLA1 requests capture
-                                                         0x6 = Capture on PLA0 | PLA1
-                                                         0x8 = Capture on PLA0 & PLA1
+                                                         0x2 = Capture when fsmcap0 requests capture
+                                                         0x4 = Capture when fsmcap1 requests capture
+                                                         0x6 = Capture on fsmcap0 | fsmcap1
+                                                         0x8 = Capture on fsmcap0 & fsmcap1
                                                          0xF = Always capture. */
 #else
 	uint64_t cap_ctl                      : 4;
@@ -480,7 +482,7 @@ union cvmx_oclax_const {
 	uint64_t reserved_16_63               : 48;
 	uint64_t dat_size                     : 16; /**< Size of data RAM in units of 36-bit entries. This value is subject to change between chip
                                                          passes, and software should thus use this value rather than a hard coded constant.
-                                                         OCLA(0..3) size is 8192, OCLA(4) size is 4096. */
+                                                         OCLA(0..3) size is 4096, OCLA(4) size is 8192. */
 #else
 	uint64_t dat_size                     : 16;
 	uint64_t reserved_16_63               : 48;
@@ -650,7 +652,7 @@ typedef union cvmx_oclax_fifo_wrap cvmx_oclax_fifo_wrap_t;
 /**
  * cvmx_ocla#_fsm#_and#_i#
  *
- * Values for PLA-AND plane. AND(0..31) represents the 32 allowed AND terms. I(0..1) for I=0
+ * Values for PLA-AND plane. AND(0..15) represents the 15 allowed AND terms. I(0..1) for I=0
  * indicates the term non-inverted, for I=1 indicates the term inverted. Any AND tree may be
  * disabled by setting the same bit in both _I(0) and _I(1), as '((1) & !(1))' is always false.
  */
@@ -751,9 +753,7 @@ union cvmx_oclax_gen_ctl {
                                                          signal to release the trigger (it is not edge sensitive.) */
 	uint64_t den                          : 1;  /**< Enable data bus and counter clocking. When set, the OCLA inbound data bus may be used and
                                                          counters may increment. When clear, the bus is always zero and internal flops may be clock
-                                                         gated off to save power. Must be set for normal operation. INTERNAL: When clear, RTL must
-                                                         assert that the data bus is zero, to make sure at full chip that no block is 'spamming'
-                                                         non-zero OCLA data after reset. */
+                                                         gated off to save power. Must be set for normal operation. */
 	uint64_t stt                          : 1;  /**< Store to DDR directly, bypassing L2 cache. */
 	uint64_t reserved_0_0                 : 1;
 #else
@@ -1049,8 +1049,8 @@ union cvmx_oclax_state_int {
                                                          holds FSM1 in state zero, writing one to OCLA(0..4)_STATE_INT[FSM1_RST] removes the hold. */
 	uint64_t fsm0_rst                     : 1;  /**< FSM0 hold in state zero. Writing one to OCLA(0..4)_STATE_SET[FSM0_RST] sets this bit and
                                                          holds FSM0 in state zero, writing one to OCLA(0..4)_STATE_INT[FSM0_RST] removes the hold. */
-	uint64_t fsm1_ena                     : 1;  /**< FSM1 sequencing and capturing enabled. */
-	uint64_t fsm0_ena                     : 1;  /**< FSM0 sequencing and capturing enabled. */
+	uint64_t fsm1_ena                     : 1;  /**< FSM1 sequencing enabled. */
+	uint64_t fsm0_ena                     : 1;  /**< FSM0 sequencing enabled. */
 	uint64_t reserved_19_31               : 13;
 	uint64_t ddrfull                      : 1;  /**< DDR buffer wrapped. Asserted when OCLA(0..4)_STACK_CUR has wrapped and been re-initialized
                                                          to OCLA(0..4)_STACK_BASE. */

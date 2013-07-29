@@ -42,7 +42,7 @@
  *
  * Interface to the hardware Free Pool Allocator.
  *
- * <hr>$Revision: 85179 $<hr>
+ * <hr>$Revision: 86473 $<hr>
  *
  */
 
@@ -69,6 +69,8 @@ extern "C" {
 #define CVMX_FPA_AURA_NUM       1024
 #define CVMX_FPA_MIN_BLOCK_SIZE 128
 #define CVMX_FPA_ALIGNMENT      128
+#define CVMX_FPA_POOL_NAME_LEN  16
+#define CVMX_FPA_AURA_NAME_LEN  16
 
 /**
  * Structure describing the data format used for stores to the FPA.
@@ -192,7 +194,7 @@ enum fpa_pool_alignment {
  * Structure describing the current state of a FPA pool.
  */
 typedef struct {
-	const char *name;		/**< Name it was created under */
+	char name[CVMX_FPA_POOL_NAME_LEN];	/**< FPA Pool Name */
 	uint64_t size;			/**< Size of each block */
 	void *base;			/**< The base memory address of whole block */
 	uint64_t stack_base;               /**< Base address of stack of FPA pool */
@@ -206,6 +208,7 @@ typedef struct {
  * Structure which contains information on auras.
  */
 typedef struct {
+	char name[CVMX_FPA_AURA_NAME_LEN];
 	int pool_num;
 } cvmx_fpa_aura_info_t;
 
@@ -608,6 +611,7 @@ int cvmx_fpa_release_pool(int pool);
  * the FPA pool with kernel memory as opposed to using bootmem.
  * @param node     - specifies the node of FPA pool.
  * @parma pool     - Specifies the FPA pool number.
+ * @param name     - Specifies the FPA pool name.
  * @param mem_node - specifies the node from which the memory for the stack
  *                   is allocated.
  * @param max_buffer_cnt - specifies the maximum buffers that FPA pool can hold.
@@ -616,8 +620,9 @@ int cvmx_fpa_release_pool(int pool);
  *                         to specify the size of each buffer in the FPA .
  *
  */
-int cvmx_fpa_pool_stack_init(int node, int pool, int mem_node, int max_buffer_cnt,
-			     enum fpa_pool_alignment align, int buffer_sz);
+int cvmx_fpa_pool_stack_init(int node, int pool, char *name, int mem_node,
+		int max_buffer_cnt, enum fpa_pool_alignment align,
+		int buffer_sz);
 
 /**
  * This call will allocated buffers_cnt number of buffers from  the bootmemory
@@ -630,13 +635,14 @@ int cvmx_fpa_pool_stack_init(int node, int pool, int mem_node, int max_buffer_cn
  * in the pool using it's own allocation mechanism.
  * @param node     - specifies the node of aura to be initialized
  * @parma aura     - specifies the aura to be initalized.
+ * @param name     - specifies the name of aura to be initalized.
  * @param mem_node - specifies the node from which the memory for the buffers
  *                   is allocated.
  * @param ptr_dis - Need to look into this more but is on the lines of of whether
  * the hardware checks double frees.
  */
-int cvmx_fpa_aura_init(int node, int aura, int mem_node, int buffers_cnt,
-		       int ptr_dis);
+int cvmx_fpa_aura_init(int node, int aura, char *name, int mem_node,
+		int buffers_cnt, int ptr_dis);
 int cvmx_fpa_config_red_params(int node, int qos_avg_en, int red_lvl_dly, int avg_dly);
 
 /**
@@ -660,6 +666,16 @@ static inline int cvmx_fpa_assign_aura(int node, int aura, int pool_index)
 
 int cvmx_fpa_allocate_auras(int node, int auras_allocated[], int count);
 int cvmx_fpa_free_auras(int node, int *pools_allocated, int count);
+/**
+ * This will allocate count number of FPA pools on the specified node to the
+ * calling application. These pools will be for exclusive use of the application
+ * until they are freed.
+ * @param pools_allocated is an array of length count allocated by the application
+ * before invoking the cvmx_allocate_fpa_pool call. On return it will contain the
+ * index numbers of the pools allocated.
+ * @return 0 on success and -1 on failure.
+ */
+int cvmx_fpa_allocate_fpa_pools(int node, int pools_allocated[], int count);
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
 }

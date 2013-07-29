@@ -779,15 +779,15 @@ union cvmx_ocx_com_int {
 	uint64_t mem_badid                    : 1;  /**< Memory request or response cannot be send because Node ID is invalid. Transaction has been dropped. */
 	uint64_t copr_badid                   : 1;  /**< Scheduler add work or buffer pool return cannot be sent because Node ID is invalid.
                                                          Transaction has been dropped. */
-	uint64_t win_req_badid                : 1;  /**< Window request specified in SLI_WIN_RD_ADDR, SLI_WIN_WR_ADDR or OCX_PP_CMD cannot be sent
-                                                         because Node ID is invalid. Transaction has been dropped. */
-	uint64_t win_req_tout                 : 1;  /**< Window request was dropped because it could not be send during the period specified by
-                                                         OCX_WIN_TIMER. */
-	uint64_t win_req_xmit                 : 1;  /**< Window request specified in SLI_WIN_RD_ADDR, SLI_WIN_WR_ADDR or OCX_WIN_CMD has been
-                                                         scheduled for transmission. If the command was not expecting a response, then a new
-                                                         command may be issued. */
-	uint64_t win_rsp                      : 1;  /**< A response to a previous SLI window request or core request has been received. A new
-                                                         command may be issued. */
+	uint64_t win_req_badid                : 1;  /**< Window request specified in SLI_WIN_RD_ADDR, SLI_WIN_WR_ADDR, OCX_WIN_CMD or OCX_PP_CMD
+                                                         cannot be sent because Node ID is invalid. Transaction has been dropped. */
+	uint64_t win_req_tout                 : 1;  /**< Window or core request was dropped because it could not be send during the period
+                                                         specified by OCX_WIN_TIMER. */
+	uint64_t win_req_xmit                 : 1;  /**< Window request specified in SLI_WIN_RD_ADDR, SLI_WIN_WR_ADDR, OCX_WIN_CMD or OCX_PP_CMD
+                                                         has been scheduled for transmission. If the command was not expecting a response, then a
+                                                         new command may be issued. */
+	uint64_t win_rsp                      : 1;  /**< A response to a previous window request or core request has been received. A new command
+                                                         may be issued. */
 	uint64_t reserved_24_47               : 24;
 	uint64_t rx_lane                      : 24; /**< SerDes RX lane interrupt. See OCX_LNE_STATUS[23..0] for more information. */
 #else

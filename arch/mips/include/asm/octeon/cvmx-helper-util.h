@@ -42,7 +42,7 @@
  *
  * Small helper utilities.
  *
- * <hr>$Revision: 84558 $<hr>
+ * <hr>$Revision: 86308 $<hr>
  */
 
 #ifndef __CVMX_HELPER_UTIL_H__
@@ -60,10 +60,8 @@ typedef char cvmx_bpid_t;
 #define CVMX_MAX_PKND		((cvmx_pknd_t) 64)
 #define CVMX_MAX_BPID		((cvmx_bpid_t) 64)
 
-#define CVMX_HELPER_MAX_IFACE		9
+#define CVMX_HELPER_MAX_IFACE		10
 #define CVMX_HELPER_MAX_PORTS		16
-
-extern CVMX_SHARED bool __cvmx_helper_port_invalid[CVMX_HELPER_MAX_IFACE][CVMX_HELPER_MAX_PORTS];
 
 /**
  * Convert a interface mode into a human readable string
@@ -325,26 +323,6 @@ extern int cvmx_helper_get_interface_num(int ipd_port);
  * @return Interface index number
  */
 extern int cvmx_helper_get_interface_index_num(int ipd_port);
-
-/**
- * Returns if port is valid for a given interface
- *
- * @param interface  interface to check
- * @param index      port index in the interface
- *
- * @return status of the port present or not.
- */
-extern int cvmx_helper_is_port_valid(int interface, int index);
-
-/**
- * Set the value returned by cvmx_helper_is_port_valid()
- *
- * @param interface  interface to check
- * @param index      port index in the interface
- * @param valid      true or false.
- *
- */
-void cvmx_helper_set_port_valid(int interface, int index, bool valid);
 
 /**
  * Get port kind for a given port in an interface.

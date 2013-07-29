@@ -42,7 +42,7 @@
  *
  * Helper functions for common, but complicated tasks.
  *
- * <hr>$Revision: 84302 $<hr>
+ * <hr>$Revision: 86434 $<hr>
  */
 
 #ifndef __CVMX_HELPER_H__
@@ -110,6 +110,8 @@ extern "C" {
         CVMX_HELPER_WRITE_CSR(CVMX_HELPER_CSR_INIT_READ, chcsr_csr,     \
             chcsr_type, chcsr_chip, chcsr_fld, chcsr_val)
 
+/* These flags are passed to __cvmx_helper_packet_hardware_enable */
+
 typedef enum {
 	CVMX_HELPER_INTERFACE_MODE_DISABLED,
 	CVMX_HELPER_INTERFACE_MODE_RGMII,
@@ -168,6 +170,17 @@ void cvmx_rgmii_set_back_pressure(uint64_t backpressure_dis);
  * calling any cvmx-helper operations.
  */
 extern CVMX_SHARED void (*cvmx_override_pko_queue_priority) (int ipd_port, uint64_t * priorities);
+
+/**
+ * cvmx_override_iface_phy_mode(int interface, int index) is a function pointer.
+ * It is meant to allow customization of interfaces which do not have a PHY.
+ *
+ * @returns 0 if MAC decides TX_CONFIG_REG or 1 if PHY decides  TX_CONFIG_REG.
+ *
+ * If this function pointer is NULL then it defaults to the MAC.
+ */
+extern CVMX_SHARED int (*cvmx_override_iface_phy_mode) (int interface,
+							int index);
 
 /**
  * cvmx_override_ipd_port_setup(int ipd_port) is a function

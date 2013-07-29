@@ -78,6 +78,77 @@
 #endif
 
 
+/**
+ * @INTERNAL
+ * These are the interface types needed to convert interface numbers to ipd
+ * ports.
+ *
+ * @param GMII
+ *	This type is used for sgmii, rgmii, xaui and rxaui interfaces.
+ * @param ILK
+ *	This type is used for ilk interfaces.
+ * @param NPI
+ *	This type is used for npi interfaces.
+ * @param LB
+ *	This type is used for loopback interfaces.
+ */
+typedef enum {
+	GMII,
+	ILK,
+	NPI,
+	LB
+} port_map_if_type_t;
+
+/**
+ * @INTERNAL
+ * This structure is used to map interface numbers to ipd ports.
+ *
+ * @param type
+ *	Interface type
+ * @param first_ipd_port
+ *	First IPD port number assigned to this interface.
+ * @param last_ipd_port
+ *	Last IPD port number assigned to this interface.
+ */
+struct ipd_port_map {
+	port_map_if_type_t	type;
+	int			first_ipd_port;
+	int			last_ipd_port;
+};
+
+/**
+ * @INTERNAL
+ * Interface number to ipd port map for the octeon 68xx.
+ */
+static const struct ipd_port_map ipd_port_map_68xx[CVMX_HELPER_MAX_IFACE] = {
+	{GMII,	0x800,	0x8ff},		/* Interface 0 */
+	{GMII,	0x900,	0x9ff},		/* Interface 1 */
+	{GMII,	0xa00,	0xaff},		/* Interface 2 */
+	{GMII,	0xb00,	0xbff},		/* Interface 3 */
+	{GMII,	0xc00,	0xcff},		/* Interface 4 */
+	{ILK,	0x400,	0x4ff},		/* Interface 5 */
+	{ILK,	0x500,	0x5ff},		/* Interface 6 */
+	{NPI,	0x100,	0x120},		/* Interface 7 */
+	{LB,	0x000,	0x008},		/* Interface 8 */
+};
+
+/**
+ * @INTERNAL
+ * Interface number to ipd port map for the octeon 78xx.
+ */
+static const struct ipd_port_map ipd_port_map_78xx[CVMX_HELPER_MAX_IFACE] = {
+	{GMII,	0x800,	0x8ff},		/* Interface 0 */
+	{GMII,	0x900,	0x9ff},		/* Interface 1 */
+	{GMII,	0xa00,	0xaff},		/* Interface 2 */
+	{GMII,	0xb00,	0xbff},		/* Interface 3 */
+	{GMII,	0xc00,	0xcff},		/* Interface 4 */
+	{GMII,	0xd00,	0xdff},		/* Interface 5 */
+	{ILK,	0x400,	0x4ff},		/* Interface 6 */
+	{ILK,	0x500,	0x5ff},		/* Interface 7 */
+	{NPI,	0x100,	0x120},		/* Interface 8 */
+	{LB,	0x000,	0x008},		/* Interface 9 */
+};
+
 struct cvmx_iface {
 	int cvif_ipd_nports;
 	int cvif_has_fcs;	/* PKO fcs for this interface. */
@@ -90,11 +161,6 @@ struct cvmx_iface {
  * gets the number of its ports.
  */
 static CVMX_SHARED struct cvmx_iface cvmx_interfaces[CVMX_HELPER_MAX_IFACE];
-
-CVMX_SHARED bool __cvmx_helper_port_invalid[CVMX_HELPER_MAX_IFACE][CVMX_HELPER_MAX_PORTS] = {[0 ... (CVMX_HELPER_MAX_IFACE - 1)] = {[0 ... (CVMX_HELPER_MAX_PORTS - 1)] = 1}};
-#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
-EXPORT_SYMBOL(__cvmx_helper_port_invalid);
-#endif
 
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 /**
@@ -496,11 +562,13 @@ int __cvmx_helper_setup_gmx(int interface, int num_ports)
 	 * Tell GMX the number of RX ports on this interface.  This only applies
 	 * to *GMII and XAUI ports.
 	 */
-	if (cvmx_helper_interface_get_mode(interface) == CVMX_HELPER_INTERFACE_MODE_RGMII ||
-	    cvmx_helper_interface_get_mode(interface) == CVMX_HELPER_INTERFACE_MODE_SGMII ||
-	    cvmx_helper_interface_get_mode(interface) == CVMX_HELPER_INTERFACE_MODE_GMII ||
-	    cvmx_helper_interface_get_mode(interface) == CVMX_HELPER_INTERFACE_MODE_XAUI ||
-	    cvmx_helper_interface_get_mode(interface) == CVMX_HELPER_INTERFACE_MODE_RXAUI) {
+	switch (cvmx_helper_interface_get_mode(interface)) {
+	case CVMX_HELPER_INTERFACE_MODE_RGMII:
+	case CVMX_HELPER_INTERFACE_MODE_SGMII:
+	case CVMX_HELPER_INTERFACE_MODE_QSGMII:
+	case CVMX_HELPER_INTERFACE_MODE_GMII:
+	case CVMX_HELPER_INTERFACE_MODE_XAUI:
+	case CVMX_HELPER_INTERFACE_MODE_RXAUI:
 		if (num_ports > 4) {
 			cvmx_dprintf("__cvmx_helper_setup_gmx: Illegal num_ports\n");
 			return -1;
@@ -509,6 +577,10 @@ int __cvmx_helper_setup_gmx(int interface, int num_ports)
 		gmx_rx_prts.u64 = cvmx_read_csr(CVMX_GMXX_RX_PRTS(interface));
 		gmx_rx_prts.s.prts = num_ports;
 		cvmx_write_csr(CVMX_GMXX_RX_PRTS(interface), gmx_rx_prts.u64);
+		break;
+
+	default:
+		break;
 	}
 
 	/*
@@ -611,21 +683,34 @@ EXPORT_SYMBOL(cvmx_helper_get_pko_port);
 int cvmx_helper_get_ipd_port(int interface, int port)
 {
 	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
-		if (interface >= 0 && interface <= 4) {
-			cvmx_helper_interface_mode_t mode = cvmx_helper_interface_get_mode(interface);
-			if (mode == CVMX_HELPER_INTERFACE_MODE_XAUI ||
-			    mode == CVMX_HELPER_INTERFACE_MODE_RXAUI)
-				return 0x840 + (interface * 0x100);
-			else
-				return 0x800 + (interface * 0x100) + (port * 16);
-		} else if (interface == 5 || interface == 6)
-			return 0x400 + (interface - 5) * 0x100 + port;
-		else if (interface == 7)
-			return 0x100 + port;
-		else if (interface == 8)
-			return port;
+		const struct ipd_port_map	*port_map;
+		int				ipd_port;
+
+		if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+			port_map = ipd_port_map_68xx;
+		else if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+			port_map = ipd_port_map_78xx;
 		else
 			return -1;
+
+		ipd_port = port_map[interface].first_ipd_port;
+		if (port_map[interface].type == GMII) {
+			cvmx_helper_interface_mode_t mode =
+				cvmx_helper_interface_get_mode(interface);
+			if (mode == CVMX_HELPER_INTERFACE_MODE_XAUI ||
+			    mode == CVMX_HELPER_INTERFACE_MODE_RXAUI)
+				return ipd_port + 0x40;
+			else
+				return ipd_port + (port * 16);
+		} else if (port_map[interface].type == ILK)
+			return ipd_port + port;
+		else if (port_map[interface].type == NPI)
+			return ipd_port + port;
+		else if (port_map[interface].type == LB)
+			return ipd_port + port;
+		else
+			return -1;
+
 	} else if (cvmx_helper_interface_get_mode(interface) ==
 			CVMX_HELPER_INTERFACE_MODE_AGL) {
 		return 24;
@@ -865,24 +950,24 @@ void cvmx_helper_show_stats(int port)
 int cvmx_helper_get_interface_num(int ipd_port)
 {
 	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
-		if (ipd_port >= 0x800 && ipd_port < 0x900)
-			return 0;
-		else if (ipd_port >= 0x900 && ipd_port < 0xa00)
-			return 1;
-		else if (ipd_port >= 0xa00 && ipd_port < 0xb00)
-			return 2;
-		else if (ipd_port >= 0xb00 && ipd_port < 0xc00)
-			return 3;
-		else if (ipd_port >= 0xc00 && ipd_port < 0xd00)
-			return 4;
-		else if (ipd_port >= 0x400 && ipd_port < 0x500)
-			return 5;
-		else if (ipd_port >= 0x500 && ipd_port < 0x600)
-			return 6;
-		else if (ipd_port >= 0x100 && ipd_port < 0x120)
-			return 7;
-		else if (ipd_port < 8)
-			return 8;
+		const struct ipd_port_map	*port_map;
+		int				i;
+
+		if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+			port_map = ipd_port_map_68xx;
+		else if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+			port_map = ipd_port_map_78xx;
+		else
+			return -1;
+
+		for (i = 0; i < CVMX_HELPER_MAX_IFACE; i++) {
+			if (ipd_port >= port_map[i].first_ipd_port &&
+			    ipd_port <= port_map[i].last_ipd_port)
+				return i;
+		}
+
+		return -1;
+
 	} else if (OCTEON_IS_MODEL(OCTEON_CN70XX) && ipd_port == 24) {
 		return 4;
 	} else {
@@ -949,24 +1034,3 @@ int cvmx_helper_get_interface_index_num(int ipd_port)
 	return -1;
 }
 EXPORT_SYMBOL_GPL(cvmx_helper_get_interface_index_num);
-
-/**
- * Returns if port is valid for a given interface
- *
- * @param interface  interface to check
- * @param index      port index in the interface
- *
- * @return status of the port present or not.
- */
-int cvmx_helper_is_port_valid(int interface, int index)
-{
-	return  !__cvmx_helper_port_invalid[interface][index];
-}
-EXPORT_SYMBOL(cvmx_helper_is_port_valid);
-
-void cvmx_helper_set_port_valid(int interface, int index, bool valid)
-{
-	__cvmx_helper_port_invalid[interface][index] = !valid;
-}
-EXPORT_SYMBOL(cvmx_helper_set_port_valid);
-

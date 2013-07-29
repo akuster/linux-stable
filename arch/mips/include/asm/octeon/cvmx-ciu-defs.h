@@ -1364,7 +1364,7 @@ union cvmx_ciu_bist {
 	struct cvmx_ciu_bist_cn61xx           cn66xx;
 	struct cvmx_ciu_bist_s                cn68xx;
 	struct cvmx_ciu_bist_s                cn68xxp1;
-	struct cvmx_ciu_bist_cn61xx           cn70xx;
+	struct cvmx_ciu_bist_cn52xx           cn70xx;
 	struct cvmx_ciu_bist_cn61xx           cnf71xx;
 };
 typedef union cvmx_ciu_bist cvmx_ciu_bist_t;

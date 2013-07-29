@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -82,7 +82,9 @@
 CVMX_SHARED struct cvmx_cfg_port_param cvmx_cfg_port[CVMX_HELPER_MAX_IFACE][CVMX_HELPER_CFG_MAX_PORT_PER_IFACE] =
 	{[0 ... CVMX_HELPER_MAX_IFACE - 1] = {[0 ... CVMX_HELPER_CFG_MAX_PORT_PER_IFACE - 1] =
 					      { CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE,
-						CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE}}};
+						CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE,
+						CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE,
+						CVMX_HELPER_CFG_INVALID_VALUE}}};
 /*
  * Indexed by the pko_port number
  */
@@ -478,6 +480,7 @@ void cvmx_helper_cfg_set_jabber_and_frame_max()
 
 		switch (imode) {
 		case CVMX_HELPER_INTERFACE_MODE_SGMII:
+		case CVMX_HELPER_INTERFACE_MODE_QSGMII:
 		case CVMX_HELPER_INTERFACE_MODE_XAUI:
 		case CVMX_HELPER_INTERFACE_MODE_RXAUI:
 			for (port = 0; port < num_ports; port++)
@@ -677,10 +680,55 @@ static int cvmx_helper_cfg_init_pko_iports_and_queues_using_static_config(void)
 	return rv;
 }
 
+/**
+ * Returns if port is valid for a given interface
+ *
+ * @param interface  interface to check
+ * @param index      port index in the interface
+ *
+ * @return status of the port present or not.
+ */
+int cvmx_helper_is_port_valid(int interface, int index)
+{
+	return  cvmx_cfg_port[interface][index].valid;
+}
+EXPORT_SYMBOL(cvmx_helper_is_port_valid);
+
+void cvmx_helper_set_port_valid(int interface, int index, bool valid)
+{
+	cvmx_cfg_port[interface][index].valid = valid;
+}
+EXPORT_SYMBOL(cvmx_helper_set_port_valid);
+
+void cvmx_helper_set_mac_phy_mode(int interface, int index, bool valid)
+{
+	cvmx_cfg_port[interface][index].sgmii_phy_mode = valid;
+}
+EXPORT_SYMBOL(cvmx_helper_set_mac_phy_mode);
+
+bool cvmx_helper_get_mac_phy_mode(int interface, int index)
+{
+	return cvmx_cfg_port[interface][index].sgmii_phy_mode;
+}
+EXPORT_SYMBOL(cvmx_helper_get_mac_phy_mode);
+
+void cvmx_helper_set_1000x_mode(int interface, int index, bool valid)
+{
+	cvmx_cfg_port[interface][index].sgmii_1000x_mode = valid;
+}
+EXPORT_SYMBOL(cvmx_helper_set_1000x_mode);
+
+bool cvmx_helper_get_1000x_mode(int interface, int index)
+{
+	return cvmx_cfg_port[interface][index].sgmii_1000x_mode;
+}
+EXPORT_SYMBOL(cvmx_helper_get_1000x_mode);
+
 int __cvmx_helper_init_port_valid(void)
 {
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 	int i, j, n;
+	bool valid;
 
 	for (i = 0; i < cvmx_helper_get_number_of_interfaces(); i++) {
 		static void *fdt_addr = 0;
@@ -691,10 +739,9 @@ int __cvmx_helper_init_port_valid(void)
 		n = cvmx_helper_interface_enumerate(i);
 		for (j = 0; j < n; j++) {
 			int ipd_port = cvmx_helper_get_ipd_port(i, j);
-			if (__cvmx_helper_board_get_port_from_dt(fdt_addr, ipd_port) == 1)
-				cvmx_helper_set_port_valid(i, j, true);
-			else
-				cvmx_helper_set_port_valid(i, j, false);
+			valid = (__cvmx_helper_board_get_port_from_dt(fdt_addr,
+								      ipd_port) == 1);
+			cvmx_helper_set_port_valid(i, j, valid);
 		}
 	}
 #endif
@@ -819,6 +866,12 @@ int __cvmx_helper_init_port_config_data(void)
 
 		for (port = 0; port < num_ports; port++) {
 			bool init_req = false;
+
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+
+			if (__cvmx_helper_board_get_port_flags(interface, port))
+				continue;
+#endif
 			if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
 				port_base = __cvmx_helper_cfg_pko_port_base(interface, port);
 				if (port_base == CVMX_HELPER_CFG_INVALID_VALUE)

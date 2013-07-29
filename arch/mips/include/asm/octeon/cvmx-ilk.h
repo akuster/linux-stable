@@ -61,11 +61,15 @@ extern "C" {
 
 /* CSR typedefs have been moved to cvmx-ilk-defs.h */
 
+/*
+ * Note: this macro must match the first ilk port in the ipd_port_map_68xx[]
+ * and ipd_port_map_78xx[] arrays.
+ */
 static inline int CVMX_ILK_GBL_BASE(void) {
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
 		return 5;
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
-		return 5;
+		return 6;
 	return -1;
 }
 static inline int CVMX_ILK_QLM_BASE(void) {
@@ -126,6 +130,7 @@ typedef struct {
 } cvmx_ilk_stats_ctrl_t;
 
 #define CVMX_ILK_MAX_CAL      288
+#define CVMX_ILK_MAX_CAL_IDX  (CVMX_ILK_MAX_CAL / 8)
 #define CVMX_ILK_TX_MIN_CAL   1
 #define CVMX_ILK_RX_MIN_CAL   1
 #define CVMX_ILK_CAL_GRP_SZ   8

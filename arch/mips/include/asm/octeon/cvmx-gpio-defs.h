@@ -1161,21 +1161,28 @@ union cvmx_gpio_usbh_ctl {
 	uint64_t u64;
 	struct cvmx_gpio_usbh_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_13_63               : 51;
-	uint64_t sel1                         : 5;  /**< Selects the GPIO(0..19) received data (GPIO_RX_DAT[DAT]) for USB1
-                                                         over-current control. With SEL1 values 20-31,
-                                                         signal is always zero. */
-	uint64_t reserved_5_7                 : 3;
-	uint64_t sel                          : 5;  /**< Selects the GPIO(0..19) input pin for USBH over-current control. With SEL values 20-31,
-                                                         signal is always zero. */
+	uint64_t reserved_0_63                : 64;
 #else
-	uint64_t sel                          : 5;
-	uint64_t reserved_5_7                 : 3;
-	uint64_t sel1                         : 5;
-	uint64_t reserved_13_63               : 51;
+	uint64_t reserved_0_63                : 64;
 #endif
 	} s;
-	struct cvmx_gpio_usbh_ctl_s           cn70xx;
+	struct cvmx_gpio_usbh_ctl_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_13_63               : 51;
+	uint64_t sel                          : 5;  /**< Selects the GPIO(0..19) received data (GPIO_RX_DAT[DAT]) for USB0
+                                                         over-current control. With SEL0 values 20-31, signal is always zero.
+                                                         CSR read out for bit 12..8 will have SEL1(4..0) value. */
+	uint64_t reserved_5_7                 : 3;
+	uint64_t sel1                         : 5;  /**< Selects the GPIO(0..19) received data (GPIO_RX_DAT[DAT]) USB1
+                                                         over-current control. With SEL1 values 20-31, signal is always zero.
+                                                         CSR read out for bit 4..0 will have SEL(12..8) value. */
+#else
+	uint64_t sel1                         : 5;
+	uint64_t reserved_5_7                 : 3;
+	uint64_t sel                          : 5;
+	uint64_t reserved_13_63               : 51;
+#endif
+	} cn70xx;
 	struct cvmx_gpio_usbh_ctl_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;

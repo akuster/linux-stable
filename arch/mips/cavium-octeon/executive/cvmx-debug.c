@@ -354,7 +354,7 @@ void cvmx_debug_init(void)
 		state = cvmx_debug_get_state();
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 		{
-		uint32_t coremask = cvmx_coremask_get32(pcm);
+		uint64_t coremask = cvmx_coremask_get64(pcm);
 		state.known_cores |= coremask;
 		state.core_finished &= ~coremask;
 		}
@@ -381,7 +381,7 @@ void cvmx_debug_init(void)
 		state.step_isr = 1;
 		/* COMMAND_NOP might not be 0. */
 		state.command = COMMAND_NOP;
-		cvmx_debug_printf("Known cores at init: 0x%x\n", (int)state.known_cores);
+		cvmx_debug_printf("Known cores at init: 0x%llx\n", (long long)state.known_cores);
 		cvmx_debug_update_state(state);
 
 		/* Initialize __cvmx_debug_stack_top_all. */
@@ -1133,8 +1133,8 @@ static void cvmx_debug_sync_up_cores(void)
 	   and we don't change the array. */
 	do {
 asm("": : :	"memory");
-	} while (cvmx_debug_globals->state[offsetof(cvmx_debug_state_t, step_all) / sizeof(uint32_t)]
-		 && cvmx_debug_globals->state[offsetof(cvmx_debug_state_t, handler_cores) / sizeof(uint32_t)] != 0);
+	} while (cvmx_debug_globals->state[offsetof(cvmx_debug_state_t, step_all) / sizeof(uint64_t)]
+		 && cvmx_debug_globals->state[offsetof(cvmx_debug_state_t, handler_cores) / sizeof(uint64_t)] != 0);
 }
 
 /* Delay the focus core a little if it is likely another core needs to steal

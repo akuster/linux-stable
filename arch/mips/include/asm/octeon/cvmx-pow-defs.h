@@ -643,8 +643,10 @@ union cvmx_pow_bist_stat {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
 	uint64_t cam                          : 1;  /**< POW CAM BIST status */
-	uint64_t nbr                          : 3;  /**< NCB receiver memory BIST status */
-	uint64_t nbt                          : 4;  /**< NCB transmitter memory BIST status */
+	uint64_t reserved_10_10               : 1;
+	uint64_t nbr                          : 2;  /**< NCB receiver memory BIST status */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t nbt                          : 2;  /**< NCB transmitter memory BIST status */
 	uint64_t index                        : 1;  /**< Index memory BIST status */
 	uint64_t fidx                         : 1;  /**< Forward index memory BIST status */
 	uint64_t pend                         : 1;  /**< Pending switch memory BIST status */
@@ -654,8 +656,10 @@ union cvmx_pow_bist_stat {
 	uint64_t pend                         : 1;
 	uint64_t fidx                         : 1;
 	uint64_t index                        : 1;
-	uint64_t nbt                          : 4;
-	uint64_t nbr                          : 3;
+	uint64_t nbt                          : 2;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t nbr                          : 2;
+	uint64_t reserved_10_10               : 1;
 	uint64_t cam                          : 1;
 	uint64_t reserved_12_63               : 52;
 #endif

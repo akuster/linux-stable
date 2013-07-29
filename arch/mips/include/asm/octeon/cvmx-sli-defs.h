@@ -4157,8 +4157,9 @@ union cvmx_sli_int_sum {
 	uint64_t pcnt                         : 1;  /**< Packet counter has an interrupt. The specific rings can be found in SLI_PKT_CNT_INT.
                                                          Throws SLI_INTSN_E::SLI_INT_PCNT. */
 	uint64_t reserved_1_3                 : 3;
-	uint64_t rml_to                       : 1;  /**< A read or write transfer did not complete within 0xFFFF coprocessor-clock cycles. Throws
-                                                         SLI_INTSN_E::SLI_INT_RML_TO. */
+	uint64_t rml_to                       : 1;  /**< A read or write transfer to a RSL, or the assertion from the OCX that read data is
+                                                         available after sending a read command to the OCX, that did not complete within
+                                                         SLI_WINDOW_CTL[TIME] coprocessor-clock cycles. Throws a SLI_INTSN_E::SLI_INT_RML_TO. */
 #else
 	uint64_t rml_to                       : 1;
 	uint64_t reserved_1_3                 : 3;
@@ -5773,8 +5774,8 @@ typedef union cvmx_sli_pktx_input_control cvmx_sli_pktx_input_control_t;
 /**
  * cvmx_sli_pkt#_instr_baddr
  *
- * This register contains the start-of-instruction for input packets.
- *
+ * This register contains the start-of-instruction for input packets. The address must be
+ * addressed-aligned to the size of the instruction.
  */
 union cvmx_sli_pktx_instr_baddr {
 	uint64_t u64;
@@ -6891,8 +6892,8 @@ typedef union cvmx_sli_pkt_input_control cvmx_sli_pkt_input_control_t;
 /**
  * cvmx_sli_pkt_instr_enb
  *
- * This register enables the instruction fetch for a packet ring.
- *
+ * "This register enables the instruction fetch for a packet ring. This is the PF version also
+ * see SLI_PKT#_INPUT_CONTROL[ENB]."
  */
 union cvmx_sli_pkt_instr_enb {
 	uint64_t u64;
@@ -7323,8 +7324,8 @@ typedef union cvmx_sli_pkt_out_bp_en cvmx_sli_pkt_out_bp_en_t;
 /**
  * cvmx_sli_pkt_out_enb
  *
- * This register enables the output packet engines.
- *
+ * "This register enables the output packet engines. This is the PF version. Also see
+ * SLI_PKT#_OUTPUT_CONTROL[ENB]."
  */
 union cvmx_sli_pkt_out_enb {
 	uint64_t u64;

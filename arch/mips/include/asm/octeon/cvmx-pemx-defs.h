@@ -1206,8 +1206,9 @@ union cvmx_pemx_cfg {
                                                          When clear, no lane swapping is performed. */
 	uint64_t hostmd                       : 1;  /**< When set, the PEM is configured to be a Root Complex.
                                                          When clear, the PEM is configured to be an End Point. */
-	uint64_t md                           : 3;  /**< This field will overwrite the pin settings for speed and lane
-                                                         configuration:
+	uint64_t md                           : 3;  /**< This field will overwrite the pin settings for speed and lane.
+                                                         NOTE - The lower two bits of the MD field must
+                                                         be the same across all configured PEMs!
                                                            000 - Gen2 Speed, 2-lanes
                                                            001 - Gen2 Speed, 1-lane
                                                            010 - Gen2 Speed, 4-lanes
@@ -2090,8 +2091,7 @@ union cvmx_pemx_dbg_info_en {
 	uint64_t tpcdbe2                      : 1;  /**< Allows PEM_DBG_INFO[51] to generate an interrupt. */
 	uint64_t reserved_49_50               : 2;
 	uint64_t tpcsbe2                      : 1;  /**< Allows PEM_DBG_INFO[48] to generate an interrupt. */
-	uint64_t reserved_36_47               : 12;
-	uint64_t tpfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[35] to generate an interrupt. */
+	uint64_t reserved_35_47               : 13;
 	uint64_t tpfsbe0                      : 1;  /**< Allows PEM_DBG_INFO[34] to generate an interrupt. */
 	uint64_t datq_pe                      : 1;  /**< Allows PEM_DBG_INFO[33] to generate an interrupt. */
 	uint64_t hdrq_pe                      : 1;  /**< Allows PEM_DBG_INFO[32] to generate an interrupt. */
@@ -2163,8 +2163,7 @@ union cvmx_pemx_dbg_info_en {
 	uint64_t hdrq_pe                      : 1;
 	uint64_t datq_pe                      : 1;
 	uint64_t tpfsbe0                      : 1;
-	uint64_t tpfsbe1                      : 1;
-	uint64_t reserved_36_47               : 12;
+	uint64_t reserved_35_47               : 13;
 	uint64_t tpcsbe2                      : 1;
 	uint64_t reserved_49_50               : 2;
 	uint64_t tpcdbe2                      : 1;
@@ -2249,16 +2248,16 @@ union cvmx_pemx_dbg_info_en {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_46_63               : 18;
 	uint64_t tpcdbe1                      : 1;  /**< Allows PEM_DBG_INFO[45] to generate an interrupt. */
-	uint64_t tpcdbe0                      : 1;  /**< Allows PEM_DBG_INFO[44] to generate an interrupt. */
-	uint64_t tpcsbe1                      : 1;  /**< Allows PEM_DBG_INFO[43] to generate an interrupt. */
+	uint64_t tpcsbe1                      : 1;  /**< Allows PEM_DBG_INFO[44] to generate an interrupt. */
+	uint64_t tpcdbe0                      : 1;  /**< Allows PEM_DBG_INFO[43] to generate an interrupt. */
 	uint64_t tpcsbe0                      : 1;  /**< Allows PEM_DBG_INFO[42] to generate an interrupt. */
 	uint64_t tnfdbe1                      : 1;  /**< Allows PEM_DBG_INFO[41] to generate an interrupt. */
-	uint64_t tnfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[40] to generate an interrupt. */
-	uint64_t tnfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[39] to generate an interrupt. */
+	uint64_t tnfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[40] to generate an interrupt. */
+	uint64_t tnfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[39] to generate an interrupt. */
 	uint64_t tnfsbe0                      : 1;  /**< Allows PEM_DBG_INFO[38] to generate an interrupt. */
 	uint64_t tpfdbe1                      : 1;  /**< Allows PEM_DBG_INFO[37] to generate an interrupt. */
-	uint64_t tpfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[36] to generate an interrupt. */
-	uint64_t tpfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[35] to generate an interrupt. */
+	uint64_t tpfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[36] to generate an interrupt. */
+	uint64_t tpfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[35] to generate an interrupt. */
 	uint64_t tpfsbe0                      : 1;  /**< Allows PEM_DBG_INFO[34] to generate an interrupt. */
 	uint64_t datq_pe                      : 1;  /**< Allows PEM_DBG_INFO[33] to generate an interrupt. */
 	uint64_t hdrq_pe                      : 1;  /**< Allows PEM_DBG_INFO[32] to generate an interrupt. */
@@ -2330,16 +2329,16 @@ union cvmx_pemx_dbg_info_en {
 	uint64_t hdrq_pe                      : 1;
 	uint64_t datq_pe                      : 1;
 	uint64_t tpfsbe0                      : 1;
-	uint64_t tpfsbe1                      : 1;
 	uint64_t tpfdbe0                      : 1;
+	uint64_t tpfsbe1                      : 1;
 	uint64_t tpfdbe1                      : 1;
 	uint64_t tnfsbe0                      : 1;
-	uint64_t tnfsbe1                      : 1;
 	uint64_t tnfdbe0                      : 1;
+	uint64_t tnfsbe1                      : 1;
 	uint64_t tnfdbe1                      : 1;
 	uint64_t tpcsbe0                      : 1;
-	uint64_t tpcsbe1                      : 1;
 	uint64_t tpcdbe0                      : 1;
+	uint64_t tpcsbe1                      : 1;
 	uint64_t tpcdbe1                      : 1;
 	uint64_t reserved_46_63               : 18;
 #endif

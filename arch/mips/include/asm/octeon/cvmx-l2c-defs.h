@@ -1417,6 +1417,9 @@ static inline uint64_t CVMX_L2C_XMDX_PFC(unsigned long offset)
  *
  * (2) When a HOLERD/BIGRD occurs or HOLEWR/BIGWR blocks a store L2C_TAD(0..7)_ERR will be
  * loaded.  L2C_TAD(0..7)_ERR will be not be locked for a BIGRD, however.
+ *
+ * (3) The BIG logic only applies to local addresses.  A command for a remote address will not
+ * cause a BIGRD/BIGWR on the requesting node.
  */
 union cvmx_l2c_big_ctl {
 	uint64_t u64;
@@ -5716,15 +5719,18 @@ union cvmx_l2c_oci_ctl {
 	uint64_t u64;
 	struct cvmx_l2c_oci_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_3_63                : 61;
+	uint64_t reserved_4_63                : 60;
 	uint64_t iofrcl                       : 1;  /**< When set, L2C services all I/O reads and writes on the local node, regardless of the value
                                                          of the node ID bits in the physical address. During normal operation this bit is expected
                                                          to be 0. */
 	uint64_t gksegnode                    : 2;  /**< Initialized to OCI node on reset; writable by software. */
+	uint64_t enaoci                       : 1;  /**< When set, do OCI processing. When clear, OCI references will cause RDDISOCI/WRDISOCI
+                                                         interrupts (NYI). */
 #else
+	uint64_t enaoci                       : 1;
 	uint64_t gksegnode                    : 2;
 	uint64_t iofrcl                       : 1;
-	uint64_t reserved_3_63                : 61;
+	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
 	struct cvmx_l2c_oci_ctl_s             cn78xx;
@@ -6874,7 +6880,9 @@ union cvmx_l2c_tadx_int {
 	uint64_t u64;
 	struct cvmx_l2c_tadx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_34_63               : 30;
+	uint64_t reserved_36_63               : 28;
+	uint64_t wrdisoci                     : 1;  /**< (NYI) Illegal write to remote node with L2C_TAD_CTL[ENAOCI] clear. */
+	uint64_t rddisoci                     : 1;  /**< (NYI) Illegal read to remote node with L2C_TAD_CTL[ENAOCI] clear. */
 	uint64_t rtgdbe                       : 1;  /**< RTG double-bit error */
 	uint64_t rtgsbe                       : 1;  /**< RTG single-bit error */
 	uint64_t reserved_15_31               : 17;
@@ -6900,7 +6908,9 @@ union cvmx_l2c_tadx_int {
 	uint64_t reserved_15_31               : 17;
 	uint64_t rtgsbe                       : 1;
 	uint64_t rtgdbe                       : 1;
-	uint64_t reserved_34_63               : 30;
+	uint64_t rddisoci                     : 1;
+	uint64_t wrdisoci                     : 1;
+	uint64_t reserved_36_63               : 28;
 #endif
 	} s;
 	struct cvmx_l2c_tadx_int_cn61xx {
@@ -7000,7 +7010,62 @@ union cvmx_l2c_tadx_int {
 	uint64_t reserved_34_63               : 30;
 #endif
 	} cn70xx;
-	struct cvmx_l2c_tadx_int_cn70xx       cn78xx;
+	struct cvmx_l2c_tadx_int_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_36_63               : 28;
+	uint64_t wrdisoci                     : 1;  /**< (NYI) Illegal write to remote node with L2C_TAD_CTL[ENAOCI] clear. */
+	uint64_t rddisoci                     : 1;  /**< (NYI) Illegal read to remote node with L2C_TAD_CTL[ENAOCI] clear. */
+	uint64_t rtgdbe                       : 1;  /**< RTG double-bit error */
+	uint64_t rtgsbe                       : 1;  /**< RTG single-bit error */
+	uint64_t reserved_17_31               : 15;
+	uint64_t wrdislmc                     : 1;  /**< Illegal write to disabled LMC error. A DRAM write arrived before the LMC(s) were enabled. */
+	uint64_t rddislmc                     : 1;  /**< Illegal read to disabled LMC error. A DRAM read arrived before the LMC(s) were enabled. */
+	uint64_t bigrd                        : 1;  /**< Read reference past L2C_BIG_CTL[MAXDRAM] occurred. */
+	uint64_t bigwr                        : 1;  /**< Write reference past L2C_BIG_CTL[MAXDRAM] occurred. */
+	uint64_t holerd                       : 1;  /**< Read reference to 256MB hole occurred. */
+	uint64_t holewr                       : 1;  /**< Write reference to 256MB hole occurred. */
+	uint64_t noway                        : 1;  /**< No way was available for allocation. L2C sets NOWAY during its processing of a transaction
+                                                         whenever it needed/wanted to allocate a WAY in the L2 cache, but was unable to. NOWAY==1
+                                                         is (generally) not an indication that L2C failed to complete transactions. Rather, it is a
+                                                         hint of possible performance degradation. (For example, L2C must read-modify-write DRAM
+                                                         for every transaction that updates some, but not all, of the bytes in a cache block,
+                                                         misses in the L2 cache, and cannot allocate a WAY.) There is one 'failure' case where L2C
+                                                         will set NOWAY: when it cannot leave a block locked in the L2 cache as part of a LCKL2
+                                                         transaction. See L2C_TTG_ERR for logged information. */
+	uint64_t tagdbe                       : 1;  /**< TAG double-bit error occurred. See L2C_TTG_ERR for logged information. */
+	uint64_t tagsbe                       : 1;  /**< TAG single-bit error occurred. See L2C_TTG_ERR for logged information. */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t fbfdbe                       : 1;  /**< FBF double-bit error occurred. See L2C_TQD_ERR for logged information. */
+	uint64_t fbfsbe                       : 1;  /**< FBF single-bit error occurred. See L2C_TQD_ERR for logged information. */
+	uint64_t sbfdbe                       : 1;  /**< SBF double-bit error occurred. See L2C_TQD_ERR for logged information. */
+	uint64_t sbfsbe                       : 1;  /**< SBF single-bit error occurred. See L2C_TQD_ERR for logged information. */
+	uint64_t l2ddbe                       : 1;  /**< L2D double-bit error occurred. See L2C_TQD_ERR for logged information. */
+	uint64_t l2dsbe                       : 1;  /**< L2D single-bit error occurred. See L2C_TQD_ERR for logged information. */
+#else
+	uint64_t l2dsbe                       : 1;
+	uint64_t l2ddbe                       : 1;
+	uint64_t sbfsbe                       : 1;
+	uint64_t sbfdbe                       : 1;
+	uint64_t fbfsbe                       : 1;
+	uint64_t fbfdbe                       : 1;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t tagsbe                       : 1;
+	uint64_t tagdbe                       : 1;
+	uint64_t noway                        : 1;
+	uint64_t holewr                       : 1;
+	uint64_t holerd                       : 1;
+	uint64_t bigwr                        : 1;
+	uint64_t bigrd                        : 1;
+	uint64_t rddislmc                     : 1;
+	uint64_t wrdislmc                     : 1;
+	uint64_t reserved_17_31               : 15;
+	uint64_t rtgsbe                       : 1;
+	uint64_t rtgdbe                       : 1;
+	uint64_t rddisoci                     : 1;
+	uint64_t wrdisoci                     : 1;
+	uint64_t reserved_36_63               : 28;
+#endif
+	} cn78xx;
 	struct cvmx_l2c_tadx_int_cn61xx       cnf71xx;
 };
 typedef union cvmx_l2c_tadx_int cvmx_l2c_tadx_int_t;
@@ -7346,13 +7411,13 @@ union cvmx_l2c_tad_ctl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
 	uint64_t exlrq                        : 4;  /**< Extra LFBs to reserve for locally generated XMC commands. None are reserved for functional
-                                                         correctness. */
+                                                         correctness.  Ignored if L2C_OCI_CTL[ENAOCI] is 0. */
 	uint64_t exrrq                        : 4;  /**< Extra LFBs to reserve for Rxxx OCI commands beyond the 1 required for OCI protocol
-                                                         functional correctness. */
+                                                         functional correctness.  Ignored if L2C_OCI_CTL[ENAOCI] is 0. */
 	uint64_t exfwd                        : 4;  /**< Extra LFBs to reserve for Fxxx/SINV OCI commands beyond the 1 required for OCI protocol
-                                                         functional correctness. */
+                                                         functional correctness.  Ignored if L2C_OCI_CTL[ENAOCI] is 0. */
 	uint64_t exvic                        : 4;  /**< Extra LFBs to reserve for VICx OCI commands beyond the 1 required for OCI protocol
-                                                         functional correctness. */
+                                                         functional correctness.  Ignored if L2C_OCI_CTL[ENAOCI] is 0. */
 	uint64_t vbf_thresh                   : 4;  /**< VBF threshold. When the number of in-use VBFs exceeds this number the L2C TAD increases
                                                          the priority of all its writes in the LMC. */
 	uint64_t maxvbf                       : 4;  /**< Maximum VBFs in use at once (0 means 16, 1-15 as expected). */
@@ -7488,7 +7553,7 @@ union cvmx_l2c_ttgx_bist_status {
 	uint64_t reserved_48_63               : 16;
 	uint64_t rtgfl                        : 16; /**< BIST failure status for RTG ways 0-15 */
 	uint64_t reserved_18_31               : 14;
-	uint64_t lrulfbfl                     : 1;  /**< BIST failure status for LRULFB memory */
+	uint64_t lrulfbfl                     : 1;  /**< Always zero for CN78XX. */
 	uint64_t lrufl                        : 1;  /**< BIST failure status for tag LRU */
 	uint64_t tagfl                        : 16; /**< BIST failure status for TAG ways 0-15 */
 #else

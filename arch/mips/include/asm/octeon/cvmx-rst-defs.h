@@ -198,12 +198,13 @@ union cvmx_rst_boot {
 	uint64_t vrm_err                      : 1;  /**< VRM did not complete operations within 5.25mS of DCOK being asserted. PLLs were released
                                                          automatically. */
 	uint64_t reserved_37_56               : 20;
-	uint64_t c_mul                        : 7;  /**< Core clock multiplier.
-                                                         C_MUL = (core CLK speed) / (ref clock speed)
-                                                         'ref clock speed' should always be 50MHz. */
-	uint64_t pnr_mul                      : 6;  /**< Coprocessor clock multiplier.
-                                                         PNR_MUL = (coprocessor CLK speed) /(ref clock speed)
-                                                         'ref clock speed' should always be 50MHz. */
+	uint64_t c_mul                        : 7;  /**< Core-clock multiplier. C_MUL = (core-clock speed) / (ref-clock speed). 'ref-clock speed'
+                                                         should always be 50MHz. */
+	uint64_t pnr_mul                      : 6;  /**< Coprocessor-clock multiplier. PNR_MUL = (coprocessor-clock speed) /(ref-clock speed).
+                                                         'ref-clock speed' should always be 50MHz.
+                                                         For PCIe Gen1, the coprocessor-clock speed must be greater than 250MHz; for PCIe Gen2, the
+                                                         coprocessor-clock speed must be greater than 500MHz; for PCIe Gen3, the coprocessor-clock
+                                                         speed must be greater than 800MHz. */
 	uint64_t reserved_21_23               : 3;
 	uint64_t lboot_oci                    : 3;  /**< Last boot cause mask; resets only with DCOK.
                                                          <20> Warm reset due to OCI Link 2 going down.
@@ -464,7 +465,7 @@ union cvmx_rst_power_dbg {
 	struct cvmx_rst_power_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
-	uint64_t str                          : 3;  /**< Reserved. INTERNAL: Internal power driver strength. Resets only on Cold Reset. */
+	uint64_t str                          : 3;  /**< Reserved. INTERNAL: Internal power driver strength. Resets only on cold reset. */
 #else
 	uint64_t str                          : 3;
 	uint64_t reserved_3_63                : 61;
@@ -477,7 +478,7 @@ typedef union cvmx_rst_power_dbg cvmx_rst_power_dbg_t;
 /**
  * cvmx_rst_pp_power
  *
- * These bits should only be changed while the corresponding PP is in reset (see CIU3_PP_RST).
+ * These bits should only be changed when the corresponding core is in reset (CIU3_PP_RST).
  *
  */
 union cvmx_rst_pp_power {
@@ -485,7 +486,7 @@ union cvmx_rst_pp_power {
 	struct cvmx_rst_pp_power_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t gate                         : 48; /**< When set, corresponding PP has voltage removed to save power. */
+	uint64_t gate                         : 48; /**< When set, corresponding core has voltage removed to save power. */
 #else
 	uint64_t gate                         : 48;
 	uint64_t reserved_48_63               : 16;

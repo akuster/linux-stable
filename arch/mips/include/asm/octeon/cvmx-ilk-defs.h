@@ -1894,7 +1894,7 @@ union cvmx_ilk_rxx_cfg0 {
                                                          Supported range:
                                                          ILK_RX(0..1)_CFG1[SKIP_CNT] + 32 < MFRM_LEN <= 4096 */
 	uint64_t brst_shrt                    : 7;  /**< Minimum interval between burst control words, as a multiple of eight bytes. Supported
-                                                         range from 8 to 512 bytes (i.e. 0 < BRST_SHRT <= 64).
+                                                         range from 8 to 512 bytes (i.e. 4 <= BRST_SHRT <= 64).
                                                          This field affects the ILK_RX(0..1)_STAT4[BRST_SHRT_ERR_CNT] counter. It does not affect
                                                          correct operation of the link. */
 	uint64_t lane_rev                     : 1;  /**< Lane reversal. When enabled, lane destriping is performed from most-significant lane
@@ -4071,7 +4071,11 @@ union cvmx_ilk_txx_cfg1 {
 	uint64_t u64;
 	struct cvmx_ilk_txx_cfg1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_43_63               : 21;
+	uint64_t reserved_53_63               : 11;
+	uint64_t brst_min                     : 5;  /**< Minimum size of a data burst, as a multiple of 32-byte blocks. 0 disables the scheduling
+                                                         enhancement. When non-zero, must satisfy:
+                                                         (BRST_SHRT*8) <= (BRST_MIN*32) <= (BRST_MAX*64)/2. */
+	uint64_t reserved_43_47               : 5;
 	uint64_t ser_limit                    : 10; /**< Reduce latency by limiting the amount of data in flight for each SerDes.
                                                          SER_LIMIT >= (((17 + NUM_LANES) * (BAUD/SCLK/20)) + 4) * 20.
                                                          For instance, for sclk=1.1GHz,BAUD=10.3125,NUM_LANES=16 :
@@ -4116,7 +4120,9 @@ union cvmx_ilk_txx_cfg1 {
 	uint64_t pipe_crd_dis                 : 1;
 	uint64_t pkt_busy                     : 1;
 	uint64_t ser_limit                    : 10;
-	uint64_t reserved_43_63               : 21;
+	uint64_t reserved_43_47               : 5;
+	uint64_t brst_min                     : 5;
+	uint64_t reserved_53_63               : 11;
 #endif
 	} s;
 	struct cvmx_ilk_txx_cfg1_cn68xx {
