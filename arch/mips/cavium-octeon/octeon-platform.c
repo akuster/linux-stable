@@ -619,6 +619,37 @@ end_led:
 		}
 	}
 
+	/* DWC2 USB */
+	alias_prop = fdt_getprop(initial_boot_params, aliases,
+				 "usbn", NULL);
+	if (alias_prop) {
+		int usbn = fdt_path_offset(initial_boot_params, alias_prop);
+
+		if (usbn >= 0 && (OCTEON_IS_OCTEON2() ||
+				  !octeon_has_feature(OCTEON_FEATURE_USB))) {
+			pr_debug("Deleting usbn\n");
+			fdt_nop_node(initial_boot_params, usbn);
+			fdt_nop_property(initial_boot_params, aliases, "usbn");
+		} else  {
+			__be32 new_f[1];
+			cvmx_helper_board_usb_clock_types_t c;
+			c = __cvmx_helper_board_usb_get_clock_type();
+			switch (c) {
+			case USB_CLOCK_TYPE_REF_48:
+				new_f[0] = cpu_to_be32(48000000);
+				fdt_setprop_inplace(initial_boot_params, usbn,
+						    "refclk-frequency",  new_f, sizeof(new_f));
+				/* Fall through ...*/
+			case USB_CLOCK_TYPE_REF_12:
+				/* Missing "refclk-type" defaults to external. */
+				fdt_nop_property(initial_boot_params, usbn, "refclk-type");
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
 	return 0;
 }
 
