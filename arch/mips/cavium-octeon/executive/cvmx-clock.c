@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -53,8 +53,12 @@
 #include <asm/octeon/cvmx-pexp-defs.h>
 #include <asm/octeon/cvmx-dbg-defs.h>
 #include <asm/octeon/cvmx-rst-defs.h>
+#elif defined(CVMX_BUILD_FOR_UBOOT)
+#include <asm/arch/cvmx.h>
+#include <asm/arch/cvmx-access.h>
 #else
 #include "cvmx.h"
+#include "cvmx-access.h"
 #endif
 
 #ifndef CVMX_BUILD_FOR_UBOOT
@@ -66,10 +70,11 @@ static uint64_t rate_dclk = 0;
 /**
  * Get clock rate based on the clock type.
  *
+ * @param node  - CPU node number
  * @param clock - Enumeration of the clock type.
  * @return      - return the clock rate.
  */
-uint64_t cvmx_clock_get_rate(cvmx_clock_t clock)
+uint64_t cvmx_clock_get_rate_node(int node, cvmx_clock_t clock)
 {
 	const uint64_t REF_CLOCK = 50000000;
 
@@ -90,7 +95,7 @@ uint64_t cvmx_clock_get_rate(cvmx_clock_t clock)
 			rate_sclk = rate_eclk;
 		} else if (OCTEON_IS_OCTEON3()) {
 			cvmx_rst_boot_t rst_boot;
-			rst_boot.u64 = cvmx_read_csr(CVMX_RST_BOOT);
+			rst_boot.u64 = cvmx_read_csr_node(node, CVMX_RST_BOOT);
 			rate_eclk = REF_CLOCK * rst_boot.s.c_mul;
 			rate_sclk = REF_CLOCK * rst_boot.s.pnr_mul;
 		} else if (octeon_has_feature(OCTEON_FEATURE_PCIE)) {
@@ -126,6 +131,17 @@ uint64_t cvmx_clock_get_rate(cvmx_clock_t clock)
 
 	cvmx_dprintf("cvmx_clock_get_rate: Unknown clock type\n");
 	return 0;
+}
+
+EXPORT_SYMBOL(cvmx_clock_get_rate_node);
+
+uint64_t cvmx_clock_get_rate(cvmx_clock_t clock)
+{
+#if !defined(CVMX_BUILD_FOR_LINUX_HOST)
+	return cvmx_clock_get_rate_node(cvmx_get_node_num(), clock);
+#else
+	return cvmx_clock_get_rate_node(0, clock);
+#endif
 }
 
 EXPORT_SYMBOL(cvmx_clock_get_rate);

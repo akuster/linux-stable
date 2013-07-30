@@ -166,7 +166,6 @@ void __cvmx_ilk_write_tx_cal_entry(int			interface,
 	int			entry;
 	int			window;
 	int			window_entry;
-#if 1
 
 	/*
 	 * The calendar has 288 entries. Each calendar entry represents a
@@ -241,7 +240,6 @@ void __cvmx_ilk_write_tx_cal_entry(int			interface,
 	/* Write the window new value */
 	cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL0(interface), tx_cal0.u64);
 	cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL1(interface), tx_cal1.u64);
-#endif
 }
 
 /**
@@ -256,7 +254,6 @@ void __cvmx_ilk_write_rx_cal_entry(int			interface,
 				   int			channel,
 				   unsigned char	pipe)
 {
-#if 1
 	cvmx_ilk_rxx_idx_cal_t	rx_idx;
 	cvmx_ilk_rxx_mem_cal0_t	rx_cal0;
 	cvmx_ilk_rxx_mem_cal1_t	rx_cal1;
@@ -337,7 +334,6 @@ void __cvmx_ilk_write_rx_cal_entry(int			interface,
 	/* Write the window new value */
 	cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL0(interface), rx_cal0.u64);
 	cvmx_write_csr(CVMX_ILK_RXX_MEM_CAL1(interface), rx_cal1.u64);
-#endif
 }
 
 /**
