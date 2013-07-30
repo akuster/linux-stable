@@ -310,6 +310,7 @@ enum cvmx_board_types_enum {
 	/* Set aside a range for customer private use.  The SDK won't
 	 ** use any numbers in this range. */
 	CVMX_BOARD_TYPE_CUST_PRIVATE_MIN = 20001,
+	CVMX_BOARD_TYPE_UBNT_E100 = 20002,
 	CVMX_BOARD_TYPE_CUST_PRIVATE_MAX = 30000,
 
 	/* Range for IO modules */
@@ -424,6 +425,7 @@ static inline const char *cvmx_board_type_to_string(enum cvmx_board_types_enum t
 
 		    /* Customer private range */
 		    ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_CUST_PRIVATE_MIN)
+		    ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_UBNT_E100)
 		    ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_CUST_PRIVATE_MAX)
 
 		    /* Module range */
