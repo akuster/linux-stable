@@ -384,7 +384,7 @@ static int proc_perf_show(struct seq_file *m, void *v)
 
 			/* Check if LMC controller is enabled. */
 			ctl2.u64 = cvmx_read_csr(CVMX_LMCX_DLL_CTL2(tad));
-			if (OCTEON_IS_OCTEON3()) {
+			if (current_cpu_type() == CPU_CAVIUM_OCTEON3) {
 				if (ctl2.cn70xx.quad_dll_ena == 0)
 					continue;
 			} else if (ctl2.cn63xx.quad_dll_ena == 0)

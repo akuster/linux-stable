@@ -198,7 +198,8 @@ static __init int octeon_power_throttle_init(void)
 	unsigned int cpu = 0;
 	int err = 0;
 
-	if (!(OCTEON_IS_OCTEON2() || OCTEON_IS_OCTEON3()))
+	if (!(current_cpu_type() == CPU_CAVIUM_OCTEON2 ||
+		current_cpu_type() == CPU_CAVIUM_OCTEON3))
 		return 0;
 
 	get_online_cpus();

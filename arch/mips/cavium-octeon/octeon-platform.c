@@ -625,7 +625,7 @@ end_led:
 	if (alias_prop) {
 		int usbn = fdt_path_offset(initial_boot_params, alias_prop);
 
-		if (usbn >= 0 && (OCTEON_IS_OCTEON2() ||
+		if (usbn >= 0 && (current_cpu_type() == CPU_CAVIUM_OCTEON2 ||
 				  !octeon_has_feature(OCTEON_FEATURE_USB))) {
 			pr_debug("Deleting usbn\n");
 			fdt_nop_node(initial_boot_params, usbn);
