@@ -506,7 +506,7 @@ void octeon_user_io_init(void)
 	cvmmemctl.s.cvmsegenau = 0;
 
 	/* Enable TLB parity error reporting on OCTEON II */
-	if (OCTEON_IS_OCTEON2())
+	if (current_cpu_type() == CPU_CAVIUM_OCTEON2)
 		cvmmemctl.s.tlbperrena = 1;
 
 	write_c0_cvmmemctl(cvmmemctl.u64);
@@ -745,12 +745,12 @@ void __init prom_init(void)
 	sysinfo->dfa_ref_clock_hz = octeon_bootinfo->dfa_ref_clock_hz;
 	sysinfo->bootloader_config_flags = octeon_bootinfo->config_flags;
 
-	if (OCTEON_IS_OCTEON2()) {
+	if (current_cpu_type() == CPU_CAVIUM_OCTEON2) {
 		/* I/O clock runs at a different rate than the CPU. */
 		union cvmx_mio_rst_boot rst_boot;
 		rst_boot.u64 = cvmx_read_csr(CVMX_MIO_RST_BOOT);
 		octeon_io_clock_rate = 50000000 * rst_boot.s.pnr_mul;
-	} else if (OCTEON_IS_OCTEON3()) {
+	} else if (current_cpu_type() == CPU_CAVIUM_OCTEON3) {
 		/* I/O clock runs at a different rate than the CPU. */
 		union cvmx_rst_boot rst_boot;
 		rst_boot.u64 = cvmx_read_csr(CVMX_RST_BOOT);
