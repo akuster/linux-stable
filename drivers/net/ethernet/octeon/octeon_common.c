@@ -7,6 +7,8 @@
  */
 
 #include <linux/module.h>
+#include <linux/netdevice.h>
+#include <linux/etherdevice.h>
 
 #include <asm/octeon/octeon.h>
 #include "octeon_common.h"
@@ -16,7 +18,6 @@
 
 #define GMX_PRT_CFG                 0x10
 
-#define GMX_RX_JABBER               0x38
 #define GMX_RX_ADR_CTL              0x100
 #define GMX_RX_ADR_CAM_EN           0x108
 #define GMX_RX_ADR_CAM0             0x180
@@ -25,6 +26,7 @@
 #define GMX_RX_ADR_CAM3             0x198
 #define GMX_RX_ADR_CAM4             0x1a0
 #define GMX_RX_ADR_CAM5             0x1a8
+
 
 struct cvm_oct_cam_state {
 	u64 cam[6];
@@ -122,6 +124,7 @@ void cvm_oct_common_set_rx_filtering(struct net_device *dev, u64 base_reg, spinl
 }
 EXPORT_SYMBOL(cvm_oct_common_set_rx_filtering);
 
+
 /**
  * Set the hardware MAC address for a device.
  * @dev      : Device to work on
@@ -144,37 +147,6 @@ int cvm_oct_common_set_mac_address(struct net_device *dev, void *addr,
 	return 0;
 }
 EXPORT_SYMBOL(cvm_oct_common_set_mac_address);
-
-/**
- * cvm_oct_common_change_mtu - change the link MTU
- * @dev:     Device to change
- * @mtu:     The new MTU
- *
- * Returns Zero on success
- */
-int cvm_oct_common_change_mtu(struct net_device *dev, int mtu, u64 base_reg,
-		int max_mtu_limit)
-{
-	int max_packet = mtu + FRAME_HEADER;
-
-	if (max_packet < 64 || max_packet > max_mtu_limit) {
-		netdev_err(dev, "MTU must be between %d and %d.\n",
-			64 - FRAME_HEADER, max_mtu_limit - FRAME_HEADER);
-		return -EINVAL;
-	}
-
-	dev->mtu = mtu;
-
-	/* Set the hardware to truncate packets larger than
-	 * the MTU. The jabber register must be set to a
-	 * multiple of 8 bytes, so round up.
-	 */
-	if (base_reg)
-		cvmx_write_csr(base_reg + GMX_RX_JABBER, (max_packet + 7) & ~7u);
-
-	return 0;
-}
-EXPORT_SYMBOL(cvm_oct_common_change_mtu);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Cavium, Inc. Common Network Driver");
