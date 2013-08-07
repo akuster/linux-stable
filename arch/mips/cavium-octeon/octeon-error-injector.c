@@ -23,6 +23,21 @@ int test_param;
 module_param(test_param, int, S_IRUGO);
 MODULE_PARM_DESC(test_param, "Parameter used in the test case.");
 
+static void octeon_error_injector_l1_dcache_parity(void)
+{
+	if (OCTEON_IS_OCTEON3())
+		write_octeon_c0_errctl(1ull<<11);
+	else if (OCTEON_IS_OCTEON2())
+		write_octeon_c0_dcacheerr(1ull<<3);
+}
+
+static void octeon_error_injector_tlb_parity(void)
+{
+	if (OCTEON_IS_OCTEON3())
+		write_octeon_c0_errctl(1ull<<15);
+	else if (OCTEON_IS_OCTEON2())
+		write_octeon_c0_dcacheerr(1ull<<6);
+}
 
 static void octeon_error_injector_memory_read(void)
 {
@@ -77,6 +92,12 @@ static int __init octeon_error_injector_init(void)
 		break;
 	case 2:
 		octeon_error_injector_fpa1();
+		break;
+	case 3:
+		octeon_error_injector_l1_dcache_parity();
+		break;
+	case 4:
+		octeon_error_injector_tlb_parity();
 		break;
 	default:
 		pr_err("Error: Unrecognized test number: %d\n",  test_number);
