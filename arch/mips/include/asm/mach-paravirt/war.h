@@ -21,5 +21,9 @@
 #define ICACHE_REFILLS_WORKAROUND_WAR	0
 #define R10000_LLSC_WAR			0
 #define MIPS34K_MISSED_ITLB_WAR		0
+<<<<<<< HEAD
+=======
+#define CAVIUM_OCTEON_DCACHE_PREFETCH_WAR 0
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 
 #endif /* __ASM_MIPS_MACH_PARAVIRT_WAR_H */

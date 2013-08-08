@@ -44,7 +44,11 @@ early_param("numcpus", set_numcpus);
 static void paravirt_smp_setup(void)
 {
 	int id;
+<<<<<<< HEAD
 	unsigned int cpunum = get_ebase_cpunum();
+=======
+	unsigned int cpunum = mips_cpunum();
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 
 	if (WARN_ON(cpunum >= NR_CPUS))
 		return;
@@ -99,11 +103,24 @@ static void paravirt_smp_finish(void)
 	local_irq_enable();
 }
 
+<<<<<<< HEAD
 static void paravirt_boot_secondary(int cpu, struct task_struct *idle)
 {
 	paravirt_smp_gp[cpu] = (unsigned long)task_thread_info(idle);
 	smp_wmb();
 	paravirt_smp_sp[cpu] = __KSTK_TOS(idle);
+=======
+static void paravirt_cpus_done(void)
+{
+}
+
+static void paravirt_boot_secondary(int cpu, struct task_struct *idle)
+{
+	paravirt_smp_gp[cpu] = (unsigned long)(task_thread_info(idle));
+	wmb();
+	paravirt_smp_sp[cpu] = __KSTK_TOS(idle);
+	mb();
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 }
 
 static irqreturn_t paravirt_reched_interrupt(int irq, void *dev_id)
@@ -137,6 +154,10 @@ struct plat_smp_ops paravirt_smp_ops = {
 	.send_ipi_mask		= paravirt_send_ipi_mask,
 	.init_secondary		= paravirt_init_secondary,
 	.smp_finish		= paravirt_smp_finish,
+<<<<<<< HEAD
+=======
+	.cpus_done		= paravirt_cpus_done,
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 	.boot_secondary		= paravirt_boot_secondary,
 	.smp_setup		= paravirt_smp_setup,
 	.prepare_cpus		= paravirt_prepare_cpus,
