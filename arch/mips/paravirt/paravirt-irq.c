@@ -15,12 +15,20 @@
 
 #define MBOX_BITS_PER_CPU 2
 
+<<<<<<< HEAD
 static int cpunum_for_cpu(int cpu)
+=======
+int cpunum_for_cpu(int cpu)
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 {
 #ifdef CONFIG_SMP
 	return cpu_logical_map(cpu);
 #else
+<<<<<<< HEAD
 	return get_ebase_cpunum();
+=======
+	return mips_cpunum();
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 #endif
 }
 
@@ -101,7 +109,21 @@ static void irq_core_bus_sync_unlock(struct irq_data *data)
 	struct core_chip_data *cd = irq_data_get_irq_chip_data(data);
 
 	if (cd->desired_en != cd->current_en) {
+<<<<<<< HEAD
 		on_each_cpu(irq_core_set_enable_local, data, 1);
+=======
+		/*
+		 * Can be called in early init when on_each_cpu() will
+		 * unconditionally enable irqs, so handle the case
+		 * where only a single CPU is online specially, and
+		 * directly call.
+		 */
+		if (num_online_cpus() == 1)
+			irq_core_set_enable_local(data);
+		else
+			on_each_cpu(irq_core_set_enable_local, data, 1);
+
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 		cd->current_en = cd->desired_en;
 	}
 
@@ -152,7 +174,11 @@ static void __init irq_init_core(void)
 						 handle_percpu_irq);
 			break;
 		default:
+<<<<<<< HEAD
 			break;
+=======
+			irq_reserve_irq(irq);
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 		}
 	}
 }
@@ -202,6 +228,18 @@ static void irq_pci_unmask(struct irq_data *data)
 	__raw_writel(mask, mips_irq_chip + mips_irq_chip_reg_en_w1s);
 }
 
+<<<<<<< HEAD
+=======
+static int irq_pci_set_affinity(struct irq_data *data, const struct cpumask *dest, bool force)
+{
+	return 0;
+}
+
+static void irq_pci_cpu_offline(struct irq_data *data)
+{
+}
+
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 static struct irq_chip irq_chip_pci = {
 	.name = "PCI",
 	.irq_enable = irq_pci_enable,
@@ -209,6 +247,11 @@ static struct irq_chip irq_chip_pci = {
 	.irq_ack = irq_pci_ack,
 	.irq_mask = irq_pci_mask,
 	.irq_unmask = irq_pci_unmask,
+<<<<<<< HEAD
+=======
+	.irq_set_affinity = irq_pci_set_affinity,
+	.irq_cpu_offline = irq_pci_cpu_offline,
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 };
 
 static void irq_mbox_all(struct irq_data *data,  void __iomem *base)
@@ -243,7 +286,11 @@ static void irq_mbox_ack(struct irq_data *data)
 
 	WARN_ON(mbox >= MBOX_BITS_PER_CPU);
 
+<<<<<<< HEAD
 	mask = 1 << (get_ebase_cpunum() * MBOX_BITS_PER_CPU + mbox);
+=======
+	mask = 1 << (mips_cpunum() * MBOX_BITS_PER_CPU + mbox);
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 	__raw_writel(mask, mips_irq_chip + mips_irq_chip_reg_raw_w1c + sizeof(u32));
 }
 
@@ -261,7 +308,11 @@ void irq_mbox_ipi(int cpu, unsigned int actions)
 static void irq_mbox_cpu_onoffline(struct irq_data *data,  void __iomem *base)
 {
 	unsigned int mbox = data->irq - MIPS_IRQ_MBOX0;
+<<<<<<< HEAD
 	unsigned int cpuid = get_ebase_cpunum();
+=======
+	unsigned int cpuid = mips_cpunum();
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 	u32 mask;
 
 	WARN_ON(mbox >= MBOX_BITS_PER_CPU);
@@ -324,11 +375,17 @@ static void __init irq_pci_init(void)
 
 static void irq_pci_dispatch(void)
 {
+<<<<<<< HEAD
 	unsigned int cpuid = get_ebase_cpunum();
 	u32 en;
 
 	en = __raw_readl(mips_irq_chip + mips_irq_chip_reg_src +
 			(cpuid * mips_irq_cpu_stride));
+=======
+	unsigned int cpuid = mips_cpunum();
+
+	u32 en = __raw_readl(mips_irq_chip + mips_irq_chip_reg_src + (cpuid * mips_irq_cpu_stride));
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 
 	if (!en) {
 		en = __raw_readl(mips_irq_chip + mips_irq_chip_reg_src + (cpuid * mips_irq_cpu_stride) + sizeof(u32));

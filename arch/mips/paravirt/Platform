@@ -5,4 +5,8 @@ platform-$(CONFIG_MIPS_PARAVIRT)	+= paravirt/
 cflags-$(CONFIG_MIPS_PARAVIRT)		+=				\
 		-I$(srctree)/arch/mips/include/asm/mach-paravirt
 
+<<<<<<< HEAD
 load-$(CONFIG_MIPS_PARAVIRT)	= 0xffffffff80010000
+=======
+load-$(CONFIG_MIPS_PARAVIRT)	+= 0xffffffff80010000
+>>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
