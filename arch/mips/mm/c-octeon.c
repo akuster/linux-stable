@@ -44,7 +44,7 @@ static void octeon_flush_data_cache_page(unsigned long addr)
     /* Nothing to do */
 }
 
-static void octeon_local_flush_icache(void)
+static void octeon_local_flush_icache(void *ignore)
 {
 	asm volatile ("synci 0($0)");
 }
@@ -56,7 +56,7 @@ static void local_octeon_flush_icache_range(unsigned long start,
 					    unsigned long end)
 {
 	mb();
-	octeon_local_flush_icache();
+	octeon_local_flush_icache(NULL);
 }
 
 /**
@@ -67,32 +67,23 @@ static void local_octeon_flush_icache_range(unsigned long start,
  */
 static void octeon_flush_icache_all_cores(struct vm_area_struct *vma)
 {
-	extern void octeon_send_ipi_single(int cpu, unsigned int action);
-#ifdef CONFIG_SMP
-	int cpu;
-	cpumask_t mask;
-#endif
+	const struct cpumask *mask;
 
 	mb();
-	octeon_local_flush_icache();
-#ifdef CONFIG_SMP
 	preempt_disable();
-	cpu = smp_processor_id();
 
 	/*
 	 * If we have a vma structure, we only need to worry about
 	 * cores it has been used on
 	 */
 	if (vma)
-		mask = *mm_cpumask(vma->vm_mm);
+		mask = mm_cpumask(vma->vm_mm);
 	else
-		mask = *cpu_online_mask;
-	cpumask_clear_cpu(cpu, &mask);
-	for_each_cpu(cpu, &mask)
-		octeon_send_ipi_single(cpu, SMP_ICACHE_FLUSH);
+		mask = cpu_online_mask;
+
+	on_each_cpu_mask(mask, octeon_local_flush_icache, NULL, false);
 
 	preempt_enable();
-#endif
 }
 
 
