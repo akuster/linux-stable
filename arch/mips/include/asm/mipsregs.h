@@ -2147,6 +2147,76 @@ static inline unsigned int get_ebase_cpunum(void)
 }
 int allocate_kscratch(void);
 
+static inline unsigned long hypcall0(unsigned long num)
+{
+	register unsigned long n asm("v0");
+	register unsigned long r asm("v0");
+
+	n = num;
+	__asm__ __volatile__(
+		".word 0x42000028"	/* HYPCALL */
+		: "=r" (r) : "r" (n) : "memory"
+		);
+
+	return r;
+}
+
+static inline unsigned long hypcall1(unsigned long num, unsigned long arg0)
+{
+	register unsigned long n asm("v0");
+	register unsigned long r asm("v0");
+	register unsigned long a0 asm("a0");
+
+	n = num;
+	a0 = arg0;
+	__asm__ __volatile__(
+		".word 0x42000028"	/* HYPCALL */
+		: "=r" (r) : "r" (n), "r" (a0) : "memory"
+		);
+
+	return r;
+}
+
+static inline unsigned long hypcall2(unsigned long num, unsigned long arg0,
+				     unsigned long arg1)
+{
+	register unsigned long n asm("v0");
+	register unsigned long r asm("v0");
+	register unsigned long a0 asm("a0");
+	register unsigned long a1 asm("a1");
+
+	n = num;
+	a0 = arg0;
+	a1 = arg1;
+	__asm__ __volatile__(
+		".word 0x42000028"	/* HYPCALL */
+		: "=r" (r) : "r" (n), "r" (a0), "r" (a1) : "memory"
+		);
+
+	return r;
+}
+
+static inline unsigned long hypcall3(unsigned long num, unsigned long arg0,
+				     unsigned long arg1, unsigned long arg2)
+{
+	register unsigned long n asm("v0");
+	register unsigned long r asm("v0");
+	register unsigned long a0 asm("a0");
+	register unsigned long a1 asm("a1");
+	register unsigned long a2 asm("a2");
+
+	n = num;
+	a0 = arg0;
+	a1 = arg1;
+	a2 = arg2;
+	__asm__ __volatile__(
+		".word 0x42000028"	/* HYPCALL */
+		: "=r" (r) : "r" (n), "r" (a0), "r" (a1), "r" (a2) : "memory"
+		);
+
+	return r;
+}
+
 #endif /* !__ASSEMBLY__ */
 
 #endif /* _ASM_MIPSREGS_H */
