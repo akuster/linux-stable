@@ -12,7 +12,7 @@
 CFLAGS_octeon-platform.o = -I$(src)/../../../scripts/dtc/libfdt
 CFLAGS_setup.o = -I$(src)/../../../scripts/dtc/libfdt
 
-obj-y := cpu.o setup.o octeon-platform.o octeon-irq.o csrc-octeon.o \
+obj-y := setup.o octeon-platform.o octeon-irq.o csrc-octeon.o \
 	octeon-hw-status.o octeon_info.o
 obj-y += dma-octeon.o
 obj-y += csrc-octeon-ptp.o
