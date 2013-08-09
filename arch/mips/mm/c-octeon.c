@@ -314,6 +314,7 @@ static int octeon3_mcheck_handler(struct pt_regs *regs)
 	return MIPS_MC_NOT_HANDLED;
 }
 
+void (*octeon_scache_init)(void);
 /**
  * Probe Octeon's caches
  *
@@ -322,7 +323,6 @@ static void probe_octeon(void)
 {
 	unsigned long icache_size;
 	unsigned long dcache_size;
-	unsigned long scache_size;
 	unsigned int config1;
 	struct cpuinfo_mips *c = &current_cpu_data;
 	int cputype = current_cpu_type();
@@ -410,17 +410,6 @@ static void probe_octeon(void)
 	c->icache.sets = icache_size / (c->icache.linesz * c->icache.ways);
 	c->dcache.sets = dcache_size / (c->dcache.linesz * c->dcache.ways);
 
-	scache_size = cvmx_l2c_get_cache_size_bytes();
-
-	c->scache.sets = cvmx_l2c_get_num_sets();
-	c->scache.ways = cvmx_l2c_get_num_assoc();
-	c->scache.waybit = ffs(scache_size / c->scache.ways) - 1;
-	c->scache.waysize = scache_size / c->scache.ways;
-	c->scache.linesz = 128;
-	c->scache.flags |= MIPS_CPU_PREFETCH;
-
-	c->tcache.flags |= MIPS_CACHE_NOT_PRESENT;
-
 	if (smp_processor_id() == 0) {
 		pr_notice("Primary instruction cache %ldkB, %s, %d way, "
 			  "%d sets, linesize %d bytes.\n",
@@ -433,10 +422,9 @@ static void probe_octeon(void)
 			  "linesize %d bytes.\n",
 			  dcache_size >> 10, c->dcache.ways,
 			  c->dcache.sets, c->dcache.linesz);
-		pr_notice("Secondary unified cache %ldkB, %d-way, %d sets, linesize %d bytes.\n",
-			  scache_size >> 10, c->scache.ways,
-			  c->scache.sets, c->scache.linesz);
 	}
+	if (octeon_scache_init)
+		octeon_scache_init();
 }
 
 static void  octeon_cache_error_setup(void)
