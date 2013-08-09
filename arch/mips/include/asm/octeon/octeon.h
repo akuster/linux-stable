@@ -388,6 +388,8 @@ static inline int octeon_error_tree_disable(enum cvmx_error_groups group, int un
 int octeon_i2c_cvmx2i2c(unsigned int cvmx_twsi_bus_num);
 
 extern struct semaphore octeon_bootbus_sem;
+
+extern void (*octeon_scache_init)(void);
 int register_co_cache_error_notifier(struct notifier_block *nb);
 int unregister_co_cache_error_notifier(struct notifier_block *nb);
 #define CO_CACHE_ERROR_RECOVERABLE 0
