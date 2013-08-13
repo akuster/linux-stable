@@ -31,9 +31,15 @@ extern void octeon_hotplug_entry(void);
 #endif
 struct cvmx_app_hotplug_global *octeon_hotplug_global_ptr;
 
+static void octeon_icache_flush(void)
+{
+	asm volatile ("synci 0($0)\n");
+}
+
 static octeon_message_fn_t  octeon_message_functions[8] = {
 	scheduler_ipi,
 	smp_call_function_interrupt,
+	octeon_icache_flush,
 };
 
 static  int octeon_message_free_mask = 0xf8;
@@ -93,6 +99,7 @@ static irqreturn_t mailbox_interrupt(int irq, void *dev_id)
 	 */
 	BUILD_BUG_ON(SMP_RESCHEDULE_YOURSELF != (1 << 0));
 	BUILD_BUG_ON(SMP_CALL_FUNCTION       != (1 << 1));
+	BUILD_BUG_ON(SMP_ICACHE_FLUSH        != (1 << 2));
 
 	/*
 	 * Load the mailbox register to figure out what we're supposed
