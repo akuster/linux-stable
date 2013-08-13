@@ -52,7 +52,16 @@ static void octeon_local_flush_icache(void *ignore)
 /*
  * Flush local I-cache for the specified range.
  */
-static void local_octeon_flush_icache_range(unsigned long start,
+static void octeon_local_flush_icache_all(void)
+{
+	mb();
+	octeon_local_flush_icache(NULL);
+}
+
+/*
+ * Flush local I-cache for the specified range.
+ */
+static void octeon_local_flush_icache_range(unsigned long start,
 					    unsigned long end)
 {
 	mb();
@@ -455,9 +464,10 @@ void octeon_cache_init(void)
 	flush_cache_range		= octeon_flush_cache_range;
 	flush_cache_sigtramp		= octeon_flush_cache_sigtramp;
 	flush_icache_all		= octeon_flush_icache_all;
+	local_flush_icache_all		= octeon_local_flush_icache_all;
 	flush_data_cache_page		= octeon_flush_data_cache_page;
 	flush_icache_range		= octeon_flush_icache_range;
-	local_flush_icache_range	= local_octeon_flush_icache_range;
+	local_flush_icache_range	= octeon_local_flush_icache_range;
 
 	__flush_kernel_vmap_range	= octeon_flush_kernel_vmap_range;
 
