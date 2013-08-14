@@ -142,10 +142,10 @@ EXPORT_SYMBOL(octeon_send_ipi_single);
 static inline void octeon_send_ipi_mask(const struct cpumask *mask,
 					unsigned int action)
 {
-	unsigned int i;
+	int cpu;
 
-	for_each_cpu_mask(i, *mask)
-		octeon_send_ipi_single(i, action);
+	for_each_cpu(cpu, mask)
+		octeon_send_ipi_single(cpu, action);
 }
 
 /**
