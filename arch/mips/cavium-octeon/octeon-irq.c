@@ -9,6 +9,7 @@
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
 #include <linux/bitops.h>
+#include <linux/of_irq.h>
 #include <linux/percpu.h>
 #include <linux/slab.h>
 #include <linux/irq.h>
@@ -1049,9 +1050,8 @@ static int octeon_irq_ciu_map(struct irq_domain *d,
 	return 0;
 }
 
-static int octeon_irq_gpio_map_common(struct irq_domain *d,
-				      unsigned int virq, irq_hw_number_t hw,
-				      int line_limit, struct irq_chip *chip)
+static int octeon_irq_gpio_map(struct irq_domain *d,
+			       unsigned int virq, irq_hw_number_t hw)
 {
 	struct octeon_irq_gpio_domain_data *gpiod = d->host_data;
 	unsigned int line, bit;
@@ -1061,18 +1061,12 @@ static int octeon_irq_gpio_map_common(struct irq_domain *d,
 
 	line = (hw + gpiod->base_hwirq) >> 6;
 	bit = (hw + gpiod->base_hwirq) & 63;
-	if (line > line_limit || octeon_irq_ciu_to_irq[line][bit] != 0)
+	if (line > ARRAY_SIZE(octeon_irq_ciu_to_irq) || octeon_irq_ciu_to_irq[line][bit] != 0)
 		return -EINVAL;
 
 	octeon_irq_set_ciu_mapping(virq, line, bit, hw,
-				   chip, octeon_irq_handle_gpio);
+				   octeon_irq_gpio_chip, octeon_irq_handle_gpio);
 	return 0;
-}
-
-static int octeon_irq_gpio_map(struct irq_domain *d,
-			       unsigned int virq, irq_hw_number_t hw)
-{
-	return octeon_irq_gpio_map_common(d, virq, hw, 1, octeon_irq_gpio_chip);
 }
 
 static struct irq_domain_ops octeon_irq_domain_ciu_ops = {
@@ -1217,15 +1211,13 @@ static void octeon_irq_setup_secondary_ciu2(void)
 		clear_c0_status(STATUSF_IP4);
 }
 
-static void __init octeon_irq_init_ciu(void)
+static int __init octeon_irq_init_ciu(struct device_node *ciu_node, struct device_node *parent)
 {
 	unsigned int i;
 	struct irq_chip *chip;
 	struct irq_chip *chip_edge;
 	struct irq_chip *chip_mbox;
 	struct irq_chip *chip_wd;
-	struct device_node *gpio_node;
-	struct device_node *ciu_node;
 	struct irq_domain *ciu_domain = NULL;
 
 	octeon_irq_init_ciu_percpu();
@@ -1256,28 +1248,8 @@ static void __init octeon_irq_init_ciu(void)
 	/* Mips internal */
 	octeon_irq_init_core();
 
-	gpio_node = of_find_compatible_node(NULL, NULL, "cavium,octeon-3860-gpio");
-	if (gpio_node) {
-		struct octeon_irq_gpio_domain_data *gpiod;
-
-		gpiod = kzalloc(sizeof(*gpiod), GFP_KERNEL);
-		if (gpiod) {
-			/* gpio domain host_data is the base hwirq number. */
-			gpiod->base_hwirq = 16;
-			irq_domain_add_linear(gpio_node, 16, &octeon_irq_domain_gpio_ops, gpiod);
-			of_node_put(gpio_node);
-		} else
-			pr_warn("Cannot allocate memory for GPIO irq_domain.\n");
-	} else
-		pr_warn("Cannot find device node for cavium,octeon-3860-gpio.\n");
-
-	ciu_node = of_find_compatible_node(NULL, NULL, "cavium,octeon-3860-ciu");
-	if (ciu_node) {
-		ciu_domain = irq_domain_add_tree(ciu_node, &octeon_irq_domain_ciu_ops, NULL);
-		irq_set_default_host(ciu_domain);
-		of_node_put(ciu_node);
-	} else
-		panic("Cannot find device node for cavium,octeon-3860-ciu.");
+	ciu_domain = irq_domain_add_tree(ciu_node, &octeon_irq_domain_ciu_ops, NULL);
+	irq_set_default_host(ciu_domain);
 
 	/* CIU_0 */
 	for (i = 0; i < 16; i++)
@@ -1314,8 +1286,59 @@ static void __init octeon_irq_init_ciu(void)
 	/* Enable the CIU lines */
 	set_c0_status(STATUSF_IP3 | STATUSF_IP2);
 	clear_c0_status(STATUSF_IP4);
+
+	return 0;
 }
 
+static int __init octeon_irq_init_gpio(struct device_node *gpio_node, struct device_node *parent)
+{
+	struct octeon_irq_gpio_domain_data *gpiod;
+	u32 interrupt_cells;
+	unsigned int base_hwirq;
+	int r;
+
+	r = of_property_read_u32(parent, "#interrupt-cells", &interrupt_cells);
+	if (r)
+		return r;
+
+	if (interrupt_cells == 1) {
+		u32 v;
+		r = of_property_read_u32_index(gpio_node, "interrupts", 0, &v);
+		if (r) {
+			pr_warn("No \"interrupts\" property.\n");
+			return r;
+		}
+		base_hwirq = v;
+	} else if (interrupt_cells == 2) {
+		u32 v0, v1;
+		r = of_property_read_u32_index(gpio_node, "interrupts", 0, &v0);
+		if (r) {
+			pr_warn("No \"interrupts\" property.\n");
+			return r;
+		}
+		r = of_property_read_u32_index(gpio_node, "interrupts", 1, &v1);
+		if (r) {
+			pr_warn("No \"interrupts\" property.\n");
+			return r;
+		}
+		base_hwirq = (v0 << 6) | v1;
+	} else {
+		pr_warn("Bad \"#interrupt-cells\" property: %u\n", interrupt_cells);
+		return -EINVAL;
+	}
+
+	gpiod = kzalloc(sizeof(*gpiod), GFP_KERNEL);
+	if (gpiod) {
+		/* gpio domain host_data is the base hwirq number. */
+		gpiod->base_hwirq = base_hwirq;
+		irq_domain_add_linear(gpio_node, 16, &octeon_irq_domain_gpio_ops, gpiod);
+	} else {
+		pr_warn("Cannot allocate memory for GPIO irq_domain.\n");
+		return -ENOMEM;
+	}
+
+	return 0;
+}
 /*
  * Watchdog interrupts are special.  They are associated with a single
  * core, so we hardwire the affinity to that core.
@@ -1638,20 +1661,10 @@ static int octeon_irq_ciu2_map(struct irq_domain *d,
 
 	return 0;
 }
-static int octeon_irq_ciu2_gpio_map(struct irq_domain *d,
-				    unsigned int virq, irq_hw_number_t hw)
-{
-	return octeon_irq_gpio_map_common(d, virq, hw, 7, &octeon_irq_chip_ciu2_gpio);
-}
 
 static struct irq_domain_ops octeon_irq_domain_ciu2_ops = {
 	.map = octeon_irq_ciu2_map,
 	.xlate = octeon_irq_ciu2_xlat,
-};
-
-static struct irq_domain_ops octeon_irq_domain_ciu2_gpio_ops = {
-	.map = octeon_irq_ciu2_gpio_map,
-	.xlate = octeon_irq_gpio_xlat,
 };
 
 static void octeon_irq_ciu2(void)
@@ -1721,16 +1734,15 @@ out:
 	return;
 }
 
-static void __init octeon_irq_init_ciu2(void)
+static int __init octeon_irq_init_ciu2(struct device_node *ciu_node, struct device_node *parent)
 {
 	unsigned int i;
-	struct device_node *gpio_node;
-	struct device_node *ciu_node;
 	struct irq_domain *ciu_domain = NULL;
 
 	octeon_irq_init_ciu2_percpu();
 	octeon_irq_setup_secondary = octeon_irq_setup_secondary_ciu2;
 
+	octeon_irq_gpio_chip = &octeon_irq_chip_ciu2_gpio;
 	octeon_irq_ip2 = octeon_irq_ciu2;
 	octeon_irq_ip3 = octeon_irq_ciu2_mbox;
 	octeon_irq_ip4 = octeon_irq_ip4_mask;
@@ -1738,28 +1750,8 @@ static void __init octeon_irq_init_ciu2(void)
 	/* Mips internal */
 	octeon_irq_init_core();
 
-	gpio_node = of_find_compatible_node(NULL, NULL, "cavium,octeon-3860-gpio");
-	if (gpio_node) {
-		struct octeon_irq_gpio_domain_data *gpiod;
-
-		gpiod = kzalloc(sizeof(*gpiod), GFP_KERNEL);
-		if (gpiod) {
-			/* gpio domain host_data is the base hwirq number. */
-			gpiod->base_hwirq = 7 << 6;
-			irq_domain_add_linear(gpio_node, 16, &octeon_irq_domain_ciu2_gpio_ops, gpiod);
-			of_node_put(gpio_node);
-		} else
-			pr_warn("Cannot allocate memory for GPIO irq_domain.\n");
-	} else
-		pr_warn("Cannot find device node for cavium,octeon-3860-gpio.\n");
-
-	ciu_node = of_find_compatible_node(NULL, NULL, "cavium,octeon-6880-ciu2");
-	if (ciu_node) {
-		ciu_domain = irq_domain_add_tree(ciu_node, &octeon_irq_domain_ciu2_ops, NULL);
-		irq_set_default_host(ciu_domain);
-		of_node_put(ciu_node);
-	} else
-		panic("Cannot find device node for cavium,octeon-6880-ciu2.");
+	ciu_domain = irq_domain_add_tree(ciu_node, &octeon_irq_domain_ciu2_ops, NULL);
+	irq_set_default_host(ciu_domain);
 
 	/* CUI2 */
 	for (i = 0; i < 64; i++)
@@ -1786,7 +1778,15 @@ static void __init octeon_irq_init_ciu2(void)
 	/* Enable the CIU lines */
 	set_c0_status(STATUSF_IP3 | STATUSF_IP2);
 	clear_c0_status(STATUSF_IP4);
+	return 0;
 }
+
+static struct of_device_id ciu_types[] = {
+	{.compatible = "cavium,octeon-3860-ciu", .data = octeon_irq_init_ciu},
+	{.compatible = "cavium,octeon-3860-gpio", .data = octeon_irq_init_gpio},
+	{.compatible = "cavium,octeon-6880-ciu2", .data = octeon_irq_init_ciu2},
+	{}
+};
 
 void __init arch_init_irq(void)
 {
@@ -1795,10 +1795,7 @@ void __init arch_init_irq(void)
 	cpumask_clear(irq_default_affinity);
 	cpumask_set_cpu(smp_processor_id(), irq_default_affinity);
 #endif
-	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
-		octeon_irq_init_ciu2();
-	else
-		octeon_irq_init_ciu();
+	of_irq_init(ciu_types);
 }
 
 asmlinkage void plat_irq_dispatch(void)
