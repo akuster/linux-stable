@@ -1450,28 +1450,8 @@ static int __init octeon_irq_init_ciu(
 	/* Mips internal */
 	octeon_irq_init_core();
 
-	gpio_node = of_find_compatible_node(NULL, NULL, "cavium,octeon-3860-gpio");
-	if (gpio_node) {
-		struct octeon_irq_gpio_domain_data *gpiod;
-
-		gpiod = kzalloc(sizeof(*gpiod), GFP_KERNEL);
-		if (gpiod) {
-			/* gpio domain host_data is the base hwirq number. */
-			gpiod->base_hwirq = 16;
-			irq_domain_add_linear(gpio_node, 16, &octeon_irq_domain_gpio_ops, gpiod);
-			of_node_put(gpio_node);
-		} else
-			pr_warn("Cannot allocate memory for GPIO irq_domain.\n");
-	} else
-		pr_warn("Cannot find device node for cavium,octeon-3860-gpio.\n");
-
-	ciu_node = of_find_compatible_node(NULL, NULL, "cavium,octeon-3860-ciu");
-	if (ciu_node) {
-		ciu_domain = irq_domain_add_tree(ciu_node, &octeon_irq_domain_ciu_ops, NULL);
-		irq_set_default_host(ciu_domain);
-		of_node_put(ciu_node);
-	} else
-		panic("Cannot find device node for cavium,octeon-3860-ciu.");
+	ciu_domain = irq_domain_add_tree(ciu_node, &octeon_irq_domain_ciu_ops, NULL);
+	irq_set_default_host(ciu_domain);
 
 	/* CIU_0 */
 	for (i = 0; i < 16; i++) {
@@ -1572,7 +1552,6 @@ static int __init octeon_irq_init_gpio(
 
 	if (interrupt_cells == 1) {
 		u32 v;
-
 		r = of_property_read_u32_index(gpio_node, "interrupts", 0, &v);
 		if (r) {
 			pr_warn("No \"interrupts\" property.\n");
@@ -1581,7 +1560,6 @@ static int __init octeon_irq_init_gpio(
 		base_hwirq = v;
 	} else if (interrupt_cells == 2) {
 		u32 v0, v1;
-
 		r = of_property_read_u32_index(gpio_node, "interrupts", 0, &v0);
 		if (r) {
 			pr_warn("No \"interrupts\" property.\n");
