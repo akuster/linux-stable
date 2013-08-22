@@ -400,6 +400,7 @@ typedef void (*octeon_message_fn_t)(void);
 int octeon_request_ipi_handler(octeon_message_fn_t fn);
 void octeon_send_ipi_single(int cpu, unsigned int action);
 void octeon_release_ipi_handler(int action);
+void octeon_ciu3_mbox_send(int cpu, unsigned int mbox);
 
 #define OCTEON_DEBUG_UART 1
 
