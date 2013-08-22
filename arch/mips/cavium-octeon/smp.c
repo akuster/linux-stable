@@ -515,7 +515,89 @@ struct plat_smp_ops octeon_smp_ops = {
 #endif
 };
 
+static irqreturn_t octeon_78xx_reched_interrupt(int irq, void *dev_id)
+{
+	scheduler_ipi();
+	return IRQ_HANDLED;
+}
+
+static irqreturn_t octeon_78xx_call_function_interrupt(int irq, void *dev_id)
+{
+	smp_call_function_interrupt();
+	return IRQ_HANDLED;
+}
+
+static irqreturn_t octeon_78xx_icache_flush_interrupt(int irq, void *dev_id)
+{
+	octeon_icache_flush();
+	return IRQ_HANDLED;
+}
+
+/*
+ * Callout to firmware before smp_init
+ */
+static void octeon_78xx_prepare_cpus(unsigned int max_cpus)
+{
+	if (request_irq(OCTEON_IRQ_MBOX0 + 0, octeon_78xx_reched_interrupt,
+			IRQF_PERCPU | IRQF_NO_THREAD, "Scheduler",
+			octeon_78xx_reched_interrupt)) {
+		panic("Cannot request_irq for SchedulerIPI");
+	}
+	if (request_irq(OCTEON_IRQ_MBOX0 + 1, octeon_78xx_call_function_interrupt,
+			IRQF_PERCPU | IRQF_NO_THREAD, "SMP-Call",
+			octeon_78xx_call_function_interrupt)) {
+		panic("Cannot request_irq for SMP-Call");
+	}
+	if (request_irq(OCTEON_IRQ_MBOX0 + 2, octeon_78xx_icache_flush_interrupt,
+			IRQF_PERCPU | IRQF_NO_THREAD, "ICache-Flush",
+			octeon_78xx_icache_flush_interrupt)) {
+		panic("Cannot request_irq for ICache-Flush");
+	}
+}
+
+static inline void octeon_78xx_send_ipi_single(int cpu, unsigned int action)
+{
+	int i;
+
+	for (i = 0; i < 8; i++) {
+		if (action & 1)
+			octeon_ciu3_mbox_send(cpu, i);
+		action >>= 1;
+	}
+}
+
+static inline void octeon_78xx_send_ipi_mask(const struct cpumask *mask,
+					     unsigned int action)
+{
+	unsigned int cpu;
+
+	for_each_cpu(cpu, mask)
+		octeon_78xx_send_ipi_single(cpu, action);
+}
+
+struct plat_smp_ops octeon_smp_ops_78xx = {
+	.send_ipi_single	= octeon_78xx_send_ipi_single,
+	.send_ipi_mask		= octeon_78xx_send_ipi_mask,
+	.init_secondary		= octeon_init_secondary,
+	.smp_finish		= octeon_smp_finish,
+	.cpus_done		= octeon_cpus_done,
+	.boot_secondary		= octeon_boot_secondary,
+	.smp_setup		= octeon_smp_setup,
+	.prepare_cpus		= octeon_78xx_prepare_cpus,
+#ifdef CONFIG_HOTPLUG_CPU
+	.cpu_disable		= octeon_cpu_disable,
+	.cpu_die		= octeon_cpu_die,
+#endif
+};
+
 void __init octeon_setup_smp(void)
 {
-	register_smp_ops(&octeon_smp_ops);
+	struct plat_smp_ops *ops;
+
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		ops = &octeon_smp_ops_78xx;
+	else
+		ops = &octeon_smp_ops;
+
+	register_smp_ops(ops);
 }
