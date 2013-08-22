@@ -76,8 +76,8 @@ static void octeon_local_flush_icache_range(unsigned long start,
  */
 static void octeon_flush_icache_all_cores(struct vm_area_struct *vma)
 {
-	extern struct plat_smp_ops *mp_ops;	/* private */
 #ifdef CONFIG_SMP
+	extern struct plat_smp_ops *mp_ops;	/* private */
 	int cpu;
 	cpumask_t mask;
 #endif
