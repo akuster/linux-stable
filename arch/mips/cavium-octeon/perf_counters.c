@@ -470,6 +470,9 @@ static const struct file_operations proc_perf_operations = {
  */
 static int __init proc_perf_init(void)
 {
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return 0;
+
 	pr_notice("/proc/octeon_perf: Octeon performance counter interface loaded\n");
 
 	proc_perf_label[CVMX_CORE_PERF_NONE] = "none";
