@@ -832,7 +832,7 @@ append_arg:
 #endif
 
 	octeon_user_io_init();
-	register_smp_ops(&octeon_smp_ops);
+	octeon_setup_smp();
 
 	labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
 	if (labi->labi_signature == LABI_SIGNATURE)
