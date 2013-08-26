@@ -501,7 +501,7 @@ late_initcall(register_cavium_notifier);
 
 #endif	/* CONFIG_HOTPLUG_CPU */
 
-struct plat_smp_ops octeon_smp_ops = {
+static struct plat_smp_ops octeon_smp_ops = {
 	.send_ipi_single	= octeon_send_ipi_single,
 	.send_ipi_mask		= octeon_send_ipi_mask,
 	.init_secondary		= octeon_init_secondary,
@@ -555,7 +555,7 @@ static void octeon_78xx_prepare_cpus(unsigned int max_cpus)
 	}
 }
 
-static inline void octeon_78xx_send_ipi_single(int cpu, unsigned int action)
+static void octeon_78xx_send_ipi_single(int cpu, unsigned int action)
 {
 	int i;
 
@@ -566,8 +566,8 @@ static inline void octeon_78xx_send_ipi_single(int cpu, unsigned int action)
 	}
 }
 
-static inline void octeon_78xx_send_ipi_mask(const struct cpumask *mask,
-					     unsigned int action)
+static void octeon_78xx_send_ipi_mask(const struct cpumask *mask,
+				      unsigned int action)
 {
 	unsigned int cpu;
 
@@ -575,7 +575,7 @@ static inline void octeon_78xx_send_ipi_mask(const struct cpumask *mask,
 		octeon_78xx_send_ipi_single(cpu, action);
 }
 
-struct plat_smp_ops octeon_smp_ops_78xx = {
+static struct plat_smp_ops octeon_78xx_smp_ops = {
 	.send_ipi_single	= octeon_78xx_send_ipi_single,
 	.send_ipi_mask		= octeon_78xx_send_ipi_mask,
 	.init_secondary		= octeon_init_secondary,
@@ -595,7 +595,7 @@ void __init octeon_setup_smp(void)
 	struct plat_smp_ops *ops;
 
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
-		ops = &octeon_smp_ops_78xx;
+		ops = &octeon_78xx_smp_ops;
 	else
 		ops = &octeon_smp_ops;
 
