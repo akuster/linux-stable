@@ -566,6 +566,17 @@ static inline uint64_t CVMX_DPI_SLI_PRTX_ERR_INFO(unsigned long offset)
 #else
 #define CVMX_DPI_SLI_PRTX_ERR_INFO(offset) (CVMX_ADD_IO_SEG(0x0001DF0000000940ull) + ((offset) & 3) * 8)
 #endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_DPI_SWA_Q_VMID CVMX_DPI_SWA_Q_VMID_FUNC()
+static inline uint64_t CVMX_DPI_SWA_Q_VMID_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_DPI_SWA_Q_VMID not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001DF0000000030ull);
+}
+#else
+#define CVMX_DPI_SWA_Q_VMID (CVMX_ADD_IO_SEG(0x0001DF0000000030ull))
+#endif
 
 /**
  * cvmx_dpi_bist_status
@@ -1583,17 +1594,17 @@ union cvmx_dpi_ecc_int {
 	uint64_t u64;
 	struct cvmx_dpi_ecc_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_55_63               : 9;
-	uint64_t ram_dbe                      : 23; /**< Set when a double-bit error is detected in the corresponding ram. Throws
+	uint64_t reserved_63_63               : 1;
+	uint64_t ram_dbe                      : 31; /**< Set when a double-bit error is detected in the corresponding ram. Throws
                                                          DPI_INTSN_E::DPI_ERR_RAM_DBE. */
-	uint64_t reserved_23_31               : 9;
-	uint64_t ram_sbe                      : 23; /**< Set when a single-bit error is detected in the corresponding ram. Throws
+	uint64_t reserved_31_31               : 1;
+	uint64_t ram_sbe                      : 31; /**< Set when a single-bit error is detected in the corresponding ram. Throws
                                                          DPI_INTSN_E::DPI_ERR_RAM_SBE. */
 #else
-	uint64_t ram_sbe                      : 23;
-	uint64_t reserved_23_31               : 9;
-	uint64_t ram_dbe                      : 23;
-	uint64_t reserved_55_63               : 9;
+	uint64_t ram_sbe                      : 31;
+	uint64_t reserved_31_31               : 1;
+	uint64_t ram_dbe                      : 31;
+	uint64_t reserved_63_63               : 1;
 #endif
 	} s;
 	struct cvmx_dpi_ecc_int_s             cn78xx;
@@ -2688,5 +2699,38 @@ union cvmx_dpi_sli_prtx_err_info {
 	struct cvmx_dpi_sli_prtx_err_info_cn61xx cnf71xx;
 };
 typedef union cvmx_dpi_sli_prtx_err_info cvmx_dpi_sli_prtx_err_info_t;
+
+/**
+ * cvmx_dpi_swa_q_vmid
+ *
+ * This register defines.
+ *
+ */
+union cvmx_dpi_swa_q_vmid {
+	uint64_t u64;
+	struct cvmx_dpi_swa_q_vmid_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t vmid7                        : 8;  /**< The SWA VMID for Queue 7. */
+	uint64_t vmid6                        : 8;  /**< The SWA VMID for Queue 6. */
+	uint64_t vmid5                        : 8;  /**< The SWA VMID for Queue 5. */
+	uint64_t vmid4                        : 8;  /**< The SWA VMID for Queue 4. */
+	uint64_t vmid3                        : 8;  /**< The SWA VMID for Queue 3. */
+	uint64_t vmid2                        : 8;  /**< The SWA VMID for Queue 2. */
+	uint64_t vmid1                        : 8;  /**< The SWA VMID for Queue 1. */
+	uint64_t vmid0                        : 8;  /**< The SWA VMID for Queue 0. */
+#else
+	uint64_t vmid0                        : 8;
+	uint64_t vmid1                        : 8;
+	uint64_t vmid2                        : 8;
+	uint64_t vmid3                        : 8;
+	uint64_t vmid4                        : 8;
+	uint64_t vmid5                        : 8;
+	uint64_t vmid6                        : 8;
+	uint64_t vmid7                        : 8;
+#endif
+	} s;
+	struct cvmx_dpi_swa_q_vmid_s          cn78xx;
+};
+typedef union cvmx_dpi_swa_q_vmid cvmx_dpi_swa_q_vmid_t;
 
 #endif

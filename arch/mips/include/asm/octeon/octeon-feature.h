@@ -67,12 +67,12 @@ typedef enum {
  * runtime. It provides a unified way to answer yes-or-no quetions.
  */
 typedef enum {
-	OCTEON_ATTR_FIRST_CORE,	/* first core in the boot coremask */
+	OCTEON_ATTR_INIT_CORE,	/* initial core to run the app when booted */
 	OCTEON_ATTR_TRACED,	/* the core is traced */
 	OCTEON_ATTR_NO_IOCFG,	/* skip IO config in cvmx_user_app_init() */
 	OCTEON_ATTR_MAX
 } octeon_attr_t;
-#define OCTEON_IS_FIRST_CORE()	octeon_has_attr(OCTEON_ATTR_FIRST_CORE)
+#define OCTEON_IS_INIT_CORE()	octeon_has_attr(OCTEON_ATTR_INIT_CORE)
 #define OCTEON_IS_TRACED()	octeon_has_attr(OCTEON_ATTR_TRACED)
 #define OCTEON_IS_NO_IOCFG()	octeon_has_attr(OCTEON_ATTR_NO_IOCFG)
 

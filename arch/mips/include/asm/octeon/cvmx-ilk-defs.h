@@ -3335,7 +3335,8 @@ union cvmx_ilk_rx_lnex_cfg {
                                                          destripped.
                                                          If the lane is in internal loopback mode, this field is ignored and skip words are always
                                                          discarded in the lane logic. */
-	uint64_t reserved_6_7                 : 2;
+	uint64_t reserved_7_7                 : 1;
+	uint64_t rx_dis_disp_chk              : 1;  /**< Disable the RX disparity check, see ILK_RX_LNE(0..15)_INT[DISP_ERR]. */
 	uint64_t rx_scrm_sync                 : 1;  /**< RX scrambler-synchronization status. A 1 means synchronization has been achieved. */
 	uint64_t rx_bdry_sync                 : 1;  /**< RX word-boundary-synchronization status. A 1 means synchronization has been achieved */
 	uint64_t rx_dis_ukwn                  : 1;  /**< Disable normal response to unknown words. Unknown words are still logged but do not cause
@@ -3351,12 +3352,49 @@ union cvmx_ilk_rx_lnex_cfg {
 	uint64_t rx_dis_ukwn                  : 1;
 	uint64_t rx_bdry_sync                 : 1;
 	uint64_t rx_scrm_sync                 : 1;
-	uint64_t reserved_6_7                 : 2;
+	uint64_t rx_dis_disp_chk              : 1;
+	uint64_t reserved_7_7                 : 1;
 	uint64_t rx_dis_psh_skip              : 1;
 	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
-	struct cvmx_ilk_rx_lnex_cfg_s         cn68xx;
+	struct cvmx_ilk_rx_lnex_cfg_cn68xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_9_63                : 55;
+	uint64_t rx_dis_psh_skip              : 1;  /**< When RX_DIS_PSH_SKIP=0, skip words are de-stripped.
+                                                         When RX_DIS_PSH_SKIP=1, skip words are discarded in the lane
+                                                         logic.
+
+                                                         If the lane is in internal loopback mode, RX_DIS_PSH_SKIP
+                                                         is ignored and skip words are always discarded in the lane
+                                                         logic.
+
+                                                         ***NOTE: Added in pass 2.0 */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t rx_scrm_sync                 : 1;  /**< Rx scrambler synchronization status
+                                                         '1' means synchronization achieved
+
+                                                         ***NOTE: Added in pass 2.0 */
+	uint64_t rx_bdry_sync                 : 1;  /**< Rx word boundary sync status
+                                                         '1' means synchronization achieved */
+	uint64_t rx_dis_ukwn                  : 1;  /**< Disable normal response to unknown words.  They are still
+                                                         logged but do not cause an error to all open channels. */
+	uint64_t rx_dis_scram                 : 1;  /**< Disable lane scrambler (debug) */
+	uint64_t stat_rdclr                   : 1;  /**< CSR read to ILK_RX_LNEx_STAT* clears the selected counter after
+                                                         returning its current value. */
+	uint64_t stat_ena                     : 1;  /**< Enable RX lane statistics counters */
+#else
+	uint64_t stat_ena                     : 1;
+	uint64_t stat_rdclr                   : 1;
+	uint64_t rx_dis_scram                 : 1;
+	uint64_t rx_dis_ukwn                  : 1;
+	uint64_t rx_bdry_sync                 : 1;
+	uint64_t rx_scrm_sync                 : 1;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t rx_dis_psh_skip              : 1;
+	uint64_t reserved_9_63                : 55;
+#endif
+	} cn68xx;
 	struct cvmx_ilk_rx_lnex_cfg_cn68xxp1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
@@ -3388,7 +3426,8 @@ union cvmx_ilk_rx_lnex_int {
 	uint64_t u64;
 	struct cvmx_ilk_rx_lnex_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_9_63                : 55;
+	uint64_t reserved_10_63               : 54;
+	uint64_t disp_err                     : 1;  /**< RX disparity error encountered. Throws ILK_INTSN_E::ILK_RXLNE(0..15)_DISP_ERR. */
 	uint64_t bad_64b67b                   : 1;  /**< Bad 64B/67B code word encountered. Once the bad word reaches the burst control unit (as
                                                          denoted by ILK_RX(0..1)_INT[LANE_BAD_WORD]) it is discarded and all open packets receive
                                                          an error. Throws ILK_INTSN_E::ILK_RXLNE(0..15)_BAD_64B67B. */
@@ -3414,11 +3453,43 @@ union cvmx_ilk_rx_lnex_int {
 	uint64_t stat_msg                     : 1;
 	uint64_t stat_cnt_ovfl                : 1;
 	uint64_t bad_64b67b                   : 1;
-	uint64_t reserved_9_63                : 55;
+	uint64_t disp_err                     : 1;
+	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
-	struct cvmx_ilk_rx_lnex_int_s         cn68xx;
-	struct cvmx_ilk_rx_lnex_int_s         cn68xxp1;
+	struct cvmx_ilk_rx_lnex_int_cn68xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_9_63                : 55;
+	uint64_t bad_64b67b                   : 1;  /**< Bad 64B/67B codeword encountered.  Once the bad word reaches
+                                                         the burst control unit (as deonted by
+                                                         ILK_RXx_INT[LANE_BAD_WORD]) it will be tossed and all open
+                                                         packets will receive an error. */
+	uint64_t stat_cnt_ovfl                : 1;  /**< Rx lane statistic counter overflow */
+	uint64_t stat_msg                     : 1;  /**< Status bits for the link or a lane transitioned from a '1'
+                                                         (healthy) to a '0' (problem) */
+	uint64_t dskew_fifo_ovfl              : 1;  /**< Rx deskew fifo overflow occurred. */
+	uint64_t scrm_sync_loss               : 1;  /**< 4 consecutive bad sync words or 3 consecutive scramble state
+                                                         mismatches */
+	uint64_t ukwn_cntl_word               : 1;  /**< Unknown framing control word. Block type does not match any of
+                                                         (SYNC,SCRAM,SKIP,DIAG) */
+	uint64_t crc32_err                    : 1;  /**< Diagnostic CRC32 errors */
+	uint64_t bdry_sync_loss               : 1;  /**< Rx logic loses word boundary sync (16 tries).  Hardware will
+                                                         automatically attempt to regain word boundary sync */
+	uint64_t serdes_lock_loss             : 1;  /**< Rx SERDES loses lock */
+#else
+	uint64_t serdes_lock_loss             : 1;
+	uint64_t bdry_sync_loss               : 1;
+	uint64_t crc32_err                    : 1;
+	uint64_t ukwn_cntl_word               : 1;
+	uint64_t scrm_sync_loss               : 1;
+	uint64_t dskew_fifo_ovfl              : 1;
+	uint64_t stat_msg                     : 1;
+	uint64_t stat_cnt_ovfl                : 1;
+	uint64_t bad_64b67b                   : 1;
+	uint64_t reserved_9_63                : 55;
+#endif
+	} cn68xx;
+	struct cvmx_ilk_rx_lnex_int_cn68xx    cn68xxp1;
 	struct cvmx_ilk_rx_lnex_int_s         cn78xx;
 };
 typedef union cvmx_ilk_rx_lnex_int cvmx_ilk_rx_lnex_int_t;

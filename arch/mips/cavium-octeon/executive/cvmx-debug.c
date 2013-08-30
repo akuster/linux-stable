@@ -370,7 +370,7 @@ void cvmx_debug_init(void)
 	// Put a barrier until all cores have got to this point.
 	cvmx_coremask_barrier_sync(pcm);
 
-	if (cvmx_coremask_is_first_core(pcm))
+	if (cvmx_is_init_core())
 #endif
 	{
 		cvmx_debug_printf("cvmx_debug_init core: %d\n", core);
@@ -405,7 +405,7 @@ void cvmx_debug_init(void)
 
 	/*  Install the break handler after might tripper the debugger exception. */
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-	if (cvmx_coremask_is_first_core(pcm))
+	if (cvmx_is_init_core())
 #endif
 	{
 		if (comm->install_break_handler)
@@ -1291,10 +1291,14 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 		/* If we did not get a command and the communication changed return,
 		   we are changing the communications. */
 		if (command == COMMAND_NOP && cvmx_debug_globals->comm_changed) {
-			/* FIXME, this should a sync not based on cvmx_coremask_barrier_sync.  */
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+			cvmx_coremask_t cm;
+
+			/* FIXME: Debugger is limited at 64 cores */
+			cvmx_coremask_set64(&cm, state.handler_cores);
+			/* FIXME, this should a sync not based on cvmx_coremask_barrier_sync.  */
 			/* Sync up.  */
-			cvmx_coremask_barrier_sync(state.handler_cores);
+			cvmx_coremask_barrier_sync(&cm);
 #endif
 			return 1;
 		}

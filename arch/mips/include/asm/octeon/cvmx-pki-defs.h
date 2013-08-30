@@ -1132,7 +1132,7 @@ union cvmx_pki_buf_ctl {
 	uint64_t pkt_off                      : 1;  /**< Packet buffer off. When this bit is set to 1, the PKI does not buffer the received packet
                                                          data; when it is clear to 0, the PKI works normally, buffering the received packet data. */
 	uint64_t reserved_3_4                 : 2;
-	uint64_t pbp_en                       : 1;  /**< Bpid enable. When set, enables the sending of bpid level backpressure to the CN78XX input
+	uint64_t pbp_en                       : 1;  /**< Bpid enable. When set, enables the sending of bpid level backpressure to the input
                                                          interface.
                                                          The application should not de-assert this bit after asserting it. The receivers of this
                                                          bit may have been put into backpressure mode and can only be released by PKI informing
@@ -1196,36 +1196,32 @@ union cvmx_pki_clx_ecc_ctl {
 	uint64_t u64;
 	struct cvmx_pki_clx_ecc_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_26_63               : 38;
+	uint64_t reserved_24_63               : 40;
 	uint64_t pcam1_flip                   : 2;  /**< PCAM1 flip syndrome bits on write. */
 	uint64_t pcam0_flip                   : 2;  /**< PCAM  flip syndrome bits on write. */
-	uint64_t smem_flip                    : 2;  /**< SMEM flip syndrome bits on write. */
-	uint64_t kmem_flip                    : 2;  /**< KMEM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM ram to
+	uint64_t smem_flip                    : 2;  /**< SMEM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM ram to
                                                          test single-bit or double-bit error handling. */
 	uint64_t dmem_flip                    : 1;  /**< DMEM flip parity. */
 	uint64_t rf_flip                      : 1;  /**< RF flip parity. */
-	uint64_t reserved_6_15                : 10;
+	uint64_t reserved_5_15                : 11;
 	uint64_t pcam1_cdis                   : 1;  /**< PCAM1 ECC correction disable. */
 	uint64_t pcam0_cdis                   : 1;  /**< PCAM0 ECC correction disable. */
 	uint64_t smem_cdis                    : 1;  /**< SMEM ECC correction disable. */
-	uint64_t kmem_cdis                    : 1;  /**< KMEM ECC correction disable. */
 	uint64_t dmem_cdis                    : 1;  /**< DMEM parity poising disable. */
 	uint64_t rf_cdis                      : 1;  /**< RF RAM parity poising disable. */
 #else
 	uint64_t rf_cdis                      : 1;
 	uint64_t dmem_cdis                    : 1;
-	uint64_t kmem_cdis                    : 1;
 	uint64_t smem_cdis                    : 1;
 	uint64_t pcam0_cdis                   : 1;
 	uint64_t pcam1_cdis                   : 1;
-	uint64_t reserved_6_15                : 10;
+	uint64_t reserved_5_15                : 11;
 	uint64_t rf_flip                      : 1;
 	uint64_t dmem_flip                    : 1;
-	uint64_t kmem_flip                    : 2;
 	uint64_t smem_flip                    : 2;
 	uint64_t pcam0_flip                   : 2;
 	uint64_t pcam1_flip                   : 2;
-	uint64_t reserved_26_63               : 38;
+	uint64_t reserved_24_63               : 40;
 #endif
 	} s;
 	struct cvmx_pki_clx_ecc_ctl_s         cn78xx;
@@ -1239,29 +1235,25 @@ union cvmx_pki_clx_ecc_int {
 	uint64_t u64;
 	struct cvmx_pki_clx_ecc_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_10_63               : 54;
+	uint64_t reserved_8_63                : 56;
 	uint64_t pcam1_dbe                    : 1;  /**< PCAM1 ECC double bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_PCAM1_DBE. */
 	uint64_t pcam1_sbe                    : 1;  /**< PCAM1 ECC single bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_PCAM1_SBE. */
 	uint64_t pcam0_dbe                    : 1;  /**< PCAM0 ECC double bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_PCAM0_DBE. */
 	uint64_t pcam0_sbe                    : 1;  /**< PCAM0 ECC single bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_PCAM0_SBE. */
 	uint64_t smem_dbe                     : 1;  /**< SMEM ECC double bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_SMEM_DBE. */
 	uint64_t smem_sbe                     : 1;  /**< SMEM ECC single bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_SMEM_SBE. */
-	uint64_t kmem_dbe                     : 1;  /**< KMEM ECC double bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_KMEM_DBE. */
-	uint64_t kmem_sbe                     : 1;  /**< KMEM ECC single bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_KMEM_SBE. */
 	uint64_t dmem_perr                    : 1;  /**< DMEM parity error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_DMEM_PERR. */
 	uint64_t rf_perr                      : 1;  /**< RF RAM parity error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_RF_PERR. */
 #else
 	uint64_t rf_perr                      : 1;
 	uint64_t dmem_perr                    : 1;
-	uint64_t kmem_sbe                     : 1;
-	uint64_t kmem_dbe                     : 1;
 	uint64_t smem_sbe                     : 1;
 	uint64_t smem_dbe                     : 1;
 	uint64_t pcam0_sbe                    : 1;
 	uint64_t pcam0_dbe                    : 1;
 	uint64_t pcam1_sbe                    : 1;
 	uint64_t pcam1_dbe                    : 1;
-	uint64_t reserved_10_63               : 54;
+	uint64_t reserved_8_63                : 56;
 #endif
 	} s;
 	struct cvmx_pki_clx_ecc_int_s         cn78xx;
@@ -1724,8 +1716,9 @@ union cvmx_pki_clx_stylex_cfg {
                                                          patterns. IPv6 outlaws this and the spec says to always check UDP checksum.
                                                          0 = Spec compliant, do not allow optional code.
                                                          1 = Treat IPv6 as IPv4; the all-0s pattern will cause a UDP checksum pass. */
-	uint64_t lenerr_en                    : 1;  /**< L2 length error check enable. Check if frame was received with L2 length error, see LENERR
-                                                         in Table 10-2. This check is typically not enabled for incoming packets on the DPI ports. */
+	uint64_t lenerr_en                    : 1;  /**< L2 length error check enable. Check if frame was received with L2 length error. This check
+                                                         is typically not enabled for incoming packets on the DPI ports. INTERNAL: Sequencer clears
+                                                         this bit for PKI_BE when SNAP length checks are not appropriate. */
 	uint64_t lenerr_eqpad                 : 1;  /**< L2 length checks exact pad size.
                                                          0 = Length check uses greater then or equal comparison. Packets must have at least minimum
                                                          padding, but may have more. This mode must be used when there may be extra Etherypes
@@ -1736,10 +1729,10 @@ union cvmx_pki_clx_stylex_cfg {
                                                          checks.
                                                          0 = use PKI_FRM_LEN_CHK0
                                                          1 = use PKI_FRM_LEN_CHK1 */
-	uint64_t maxerr_en                    : 1;  /**< Max frame error check enable. See MAXLEN in Table 10-2. */
-	uint64_t minerr_en                    : 1;  /**< Min frame error check enable. See MINLEN in Table 10-2. This check is typically not
-                                                         enabled for incoming packets on the DPI ports. */
-	uint64_t reserved_24_24               : 1;
+	uint64_t maxerr_en                    : 1;  /**< Max frame error check enable. */
+	uint64_t minerr_en                    : 1;  /**< Min frame error check enable. This check is typically not enabled for incoming packets on
+                                                         the DPI ports. */
+	uint64_t qpg_dis_grptag               : 1;  /**< Disable computing group using WQE[TAG]. */
 	uint64_t fcs_strip                    : 1;  /**< Strip L2 FCS bytes from packet, decrease WQE[LEN] by 4 bytes. */
 	uint64_t fcs_chk                      : 1;  /**< FCS Checking enabled. */
 	uint64_t rawdrp                       : 1;  /**< Allow RAW packet drop.
@@ -1768,7 +1761,7 @@ union cvmx_pki_clx_stylex_cfg {
 	uint64_t rawdrp                       : 1;
 	uint64_t fcs_chk                      : 1;
 	uint64_t fcs_strip                    : 1;
-	uint64_t reserved_24_24               : 1;
+	uint64_t qpg_dis_grptag               : 1;
 	uint64_t minerr_en                    : 1;
 	uint64_t maxerr_en                    : 1;
 	uint64_t minmax_sel                   : 1;
@@ -1791,22 +1784,25 @@ union cvmx_pki_clx_stylex_cfg2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
 	uint64_t tag_inc                      : 4;  /**< Include masked tags using PKI_TAG_INC(0..31)_MASK. Each bit indicates to include the
-                                                         corresponding PKI_TAG_INC_MASK range, see WQE[TAG]. Multiple TAG_INCs may be selected to
-                                                         allow a tag calculation to include data from floating Layer B through Layer G positions. */
+                                                         corresponding PKI_TAG_INC_MASK range, see PKI_INST_HDR_S. */
 	uint64_t reserved_25_27               : 3;
-	uint64_t tag_masken                   : 1;  /**< Apply PKI_STYLE(0..63)_TAG_MASK to computed tag. */
+	uint64_t tag_masken                   : 1;  /**< Apply PKI_STYLE(0..63)_TAG_MASK to computed tag. INTERNAL: Sequencer must clear for PKI BE
+                                                         when the tag comes from the PKI_INST_HDR_S. */
 	uint64_t tag_src_lg                   : 1;  /**< Include Layer G source address in tuple tag generation. */
 	uint64_t tag_src_lf                   : 1;  /**< Include Layer F source address in tuple tag generation. */
 	uint64_t tag_src_le                   : 1;  /**< Include Layer E source address in tuple tag generation. */
 	uint64_t tag_src_ld                   : 1;  /**< Include Layer D source address in tuple tag generation. */
 	uint64_t tag_src_lc                   : 1;  /**< Include Layer C source address in tuple tag generation. */
-	uint64_t tag_src_lb                   : 1;  /**< Include Layer B source address in tuple tag generation. */
+	uint64_t tag_src_lb                   : 1;  /**< Include Layer B source address in tuple tag generation. INTERNAL: Sequencer must clear
+                                                         TAG_SRC_L* for PKI BE when TCP SYNs are not tagged, or when the tag comes from the
+                                                         PKI_INST_HDR_S. */
 	uint64_t tag_dst_lg                   : 1;  /**< Include Layer G destination address in tuple tag generation. */
 	uint64_t tag_dst_lf                   : 1;  /**< Include Layer F destination address in tuple tag generation. */
 	uint64_t tag_dst_le                   : 1;  /**< Include Layer E destination address in tuple tag generation. */
 	uint64_t tag_dst_ld                   : 1;  /**< Include Layer D destination address in tuple tag generation. */
 	uint64_t tag_dst_lc                   : 1;  /**< Include Layer C destination address in tuple tag generation. */
-	uint64_t tag_dst_lb                   : 1;  /**< Include Layer B destination address in tuple tag generation. */
+	uint64_t tag_dst_lb                   : 1;  /**< Include Layer B destination address in tuple tag generation. INTERNAL: Sequencer must
+                                                         clear TAG_SRC_L* for PKI BE when the tag comes from the PKI_INST_HDR_S. */
 	uint64_t len_lg                       : 1;  /**< Check length of Layer G. */
 	uint64_t len_lf                       : 1;  /**< Check length of Layer F. */
 	uint64_t len_le                       : 1;  /**< Check length of Layer E. */
@@ -2128,8 +2124,8 @@ union cvmx_pki_frm_len_chkx {
 	struct cvmx_pki_frm_len_chkx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t maxlen                       : 16; /**< Byte count for max-sized frame check. See MAXLEN in Table 10-2 for adjustments to this value. */
-	uint64_t minlen                       : 16; /**< Byte count for min-sized frame check.See MINLEN in Table 10-2. */
+	uint64_t maxlen                       : 16; /**< Byte count for max-sized frame check. */
+	uint64_t minlen                       : 16; /**< Byte count for min-sized frame check. */
 #else
 	uint64_t minlen                       : 16;
 	uint64_t maxlen                       : 16;
@@ -2270,7 +2266,10 @@ union cvmx_pki_icgx_cfg {
 	uint64_t clusters                     : 4;  /**< Bit-mask of clusters in this cluster group. A given cluster can only be enabled in a
                                                          single cluster group. A value of 0 disables the cluster group, all packets to this group
                                                          will be dropped. IGC(0)'s entry resets to 0xF, all other entries to 0x0. */
-	uint64_t reserved_26_31               : 6;
+	uint64_t reserved_27_31               : 5;
+	uint64_t release_rqd                  : 1;  /**< Release required. For diagnostic use only. INTERNAL:
+                                                         0 = Release of r64 to r95 will occur immediately, no release microop is needed.
+                                                         1 = Release will wait until release microop executes. */
 	uint64_t mlo                          : 1;  /**< Memory low bypass enable. For diagnostic use only. INTERNAL:
                                                          0 = KMEM specifies contents of r48 to r63. The sequencer code expects this setting.
                                                          1 = KMEM specifies contents of r32 to r47. This may be desirable when PKIENA=0 to allow
@@ -2294,7 +2293,8 @@ union cvmx_pki_icgx_cfg {
 	uint64_t timer                        : 12;
 	uint64_t pena                         : 1;
 	uint64_t mlo                          : 1;
-	uint64_t reserved_26_31               : 6;
+	uint64_t release_rqd                  : 1;
+	uint64_t reserved_27_31               : 5;
 	uint64_t clusters                     : 4;
 	uint64_t reserved_36_47               : 12;
 	uint64_t maxipe_use                   : 5;
@@ -2514,10 +2514,12 @@ union cvmx_pki_qpg_tblx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
 	uint64_t padd                         : 12; /**< Port to channel adder for calculating WQE[CHAN]. */
-	uint64_t reserved_42_47               : 6;
-	uint64_t grp_ok                       : 10; /**< SSO Group to schedule packet to and to load WQE[GRP] with if no error is detected. */
-	uint64_t reserved_26_31               : 6;
-	uint64_t grp_bad                      : 10; /**< SSO Group to schedule packet to and to load WQE[GRP] with if an error is detected. */
+	uint64_t grptag_ok                    : 3;  /**< Number of WQE[TAG] bits to add into WQE[GRP] if no error is detected. */
+	uint64_t reserved_42_44               : 3;
+	uint64_t grp_ok                       : 10; /**< SSO group to schedule packet to and to load WQE[GRP] with if no error is detected. */
+	uint64_t grptag_bad                   : 3;  /**< Number of WQE[TAG] bits to add into WQE[GRP] if an error is detected. */
+	uint64_t reserved_26_28               : 3;
+	uint64_t grp_bad                      : 10; /**< SSO group to schedule packet to and to load WQE[GRP] with if an error is detected. */
 	uint64_t reserved_12_15               : 4;
 	uint64_t aura_node                    : 2;  /**< Aura node number. The node number is part of the upper aura bits, however PKI can only
                                                          allocate from auras on the local node, therefore these bits are hardcoded to the node
@@ -2528,9 +2530,11 @@ union cvmx_pki_qpg_tblx {
 	uint64_t aura_node                    : 2;
 	uint64_t reserved_12_15               : 4;
 	uint64_t grp_bad                      : 10;
-	uint64_t reserved_26_31               : 6;
+	uint64_t reserved_26_28               : 3;
+	uint64_t grptag_bad                   : 3;
 	uint64_t grp_ok                       : 10;
-	uint64_t reserved_42_47               : 6;
+	uint64_t reserved_42_44               : 3;
+	uint64_t grptag_ok                    : 3;
 	uint64_t padd                         : 12;
 	uint64_t reserved_60_63               : 4;
 #endif
@@ -2922,9 +2926,8 @@ union cvmx_pki_statx_stat17 {
 	struct cvmx_pki_statx_stat17_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t drp_mcast                    : 48; /**< Number of packets with IPv4 or IPv6 L3 multicast destination address, or IPv6 L3 multicast
-                                                         destination address that were dropped due to RED or buffer exhaustion. See WQE[L3M] for
-                                                         the definition of L2 multicast. */
+	uint64_t drp_mcast                    : 48; /**< Number of packets with IPv4 or IPv6 L3 multicast destination address that were dropped due
+                                                         to RED or buffer exhaustion. See WQE[L3M] for the definition of L3 multicast. */
 #else
 	uint64_t drp_mcast                    : 48;
 	uint64_t reserved_48_63               : 16;
@@ -3336,8 +3339,8 @@ typedef union cvmx_pki_tag_incx_mask cvmx_pki_tag_incx_mask_t;
 /**
  * cvmx_pki_tag_secret
  *
- * The source and destination initial values (IVs) in tag generation provide a mechanism for each
- * CN78XX to be unique.
+ * The source and destination initial values (IVs) in tag generation provide a mechanism for
+ * seeding with a random initialization value to reduce cache collision attacks.
  */
 union cvmx_pki_tag_secret {
 	uint64_t u64;

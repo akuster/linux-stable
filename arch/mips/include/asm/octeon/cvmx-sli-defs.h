@@ -742,13 +742,12 @@ static inline uint64_t CVMX_SLI_PKTX_INSTR_HEADER(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_SLI_PKTX_INSTR_HEADER(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000003400ull + ((offset) & 63) * 16;
+	return 0x0000000000003400ull + ((offset) & 31) * 16;
 }
 #else
-#define CVMX_SLI_PKTX_INSTR_HEADER(offset) (0x0000000000003400ull + ((offset) & 63) * 16)
+#define CVMX_SLI_PKTX_INSTR_HEADER(offset) (0x0000000000003400ull + ((offset) & 31) * 16)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_INT_LEVELS(unsigned long offset)
@@ -4157,9 +4156,11 @@ union cvmx_sli_int_sum {
 	uint64_t pcnt                         : 1;  /**< Packet counter has an interrupt. The specific rings can be found in SLI_PKT_CNT_INT.
                                                          Throws SLI_INTSN_E::SLI_INT_PCNT. */
 	uint64_t reserved_1_3                 : 3;
-	uint64_t rml_to                       : 1;  /**< A read or write transfer to a RSL, or the assertion from the OCX that read data is
-                                                         available after sending a read command to the OCX, that did not complete within
-                                                         SLI_WINDOW_CTL[TIME] coprocessor-clock cycles. Throws a SLI_INTSN_E::SLI_INT_RML_TO. */
+	uint64_t rml_to                       : 1;  /**< A read or write transfer to a RSL that did not complete within SLI_WINDOW_CTL[TIME] sclk
+                                                         cycles, or
+                                                         a notification from the OCI that is has sent a previously written command and can take
+                                                         another within
+                                                         SLI_WINDOW_CTL[OCX_TIME]. Throws a SLI_INTSN_E::SLI_INT_RML_TO. */
 #else
 	uint64_t rml_to                       : 1;
 	uint64_t reserved_1_3                 : 3;
@@ -5871,7 +5872,7 @@ typedef union cvmx_sli_pktx_instr_fifo_rsize cvmx_sli_pktx_instr_fifo_rsize_t;
 /**
  * cvmx_sli_pkt#_instr_header
  *
- * "SLI_PKT[0..63]_INSTR_HEADER = SLI Packet ring# Instruction Header.
+ * "SLI_PKT[0..31]_INSTR_HEADER = SLI Packet ring# Instruction Header.
  * VAlues used to build input packet header."
  */
 union cvmx_sli_pktx_instr_header {
@@ -6016,7 +6017,6 @@ union cvmx_sli_pktx_instr_header {
 	struct cvmx_sli_pktx_instr_header_s   cn68xx;
 	struct cvmx_sli_pktx_instr_header_cn61xx cn68xxp1;
 	struct cvmx_sli_pktx_instr_header_cn61xx cn70xx;
-	struct cvmx_sli_pktx_instr_header_s   cn78xx;
 	struct cvmx_sli_pktx_instr_header_cn61xx cnf71xx;
 };
 typedef union cvmx_sli_pktx_instr_header cvmx_sli_pktx_instr_header_t;
@@ -8274,6 +8274,22 @@ union cvmx_sli_window_ctl {
 	uint64_t u64;
 	struct cvmx_sli_window_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t ocx_time                     : 32; /**< When a command acknowledge or a request to fetch read-data is expected from the OCI, The
+                                                         SLI will
+                                                         wait this many sclks before determining the OCI is not going to respond and timeout the
+                                                         request. */
+	uint64_t time                         : 32; /**< Time to wait in core clocks for a
+                                                         BAR0 access to completeon the NCB
+                                                         before timing out. A value of 0 will cause no
+                                                         timeouts. A minimum value of 0x200000 should be
+                                                         used when this register is not set to 0x0. */
+#else
+	uint64_t time                         : 32;
+	uint64_t ocx_time                     : 32;
+#endif
+	} s;
+	struct cvmx_sli_window_ctl_cn61xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
 	uint64_t time                         : 32; /**< Time to wait in core clocks for a
                                                          BAR0 access to completeon the NCB
@@ -8284,16 +8300,15 @@ union cvmx_sli_window_ctl {
 	uint64_t time                         : 32;
 	uint64_t reserved_32_63               : 32;
 #endif
-	} s;
-	struct cvmx_sli_window_ctl_s          cn61xx;
-	struct cvmx_sli_window_ctl_s          cn63xx;
-	struct cvmx_sli_window_ctl_s          cn63xxp1;
-	struct cvmx_sli_window_ctl_s          cn66xx;
-	struct cvmx_sli_window_ctl_s          cn68xx;
-	struct cvmx_sli_window_ctl_s          cn68xxp1;
-	struct cvmx_sli_window_ctl_s          cn70xx;
+	} cn61xx;
+	struct cvmx_sli_window_ctl_cn61xx     cn63xx;
+	struct cvmx_sli_window_ctl_cn61xx     cn63xxp1;
+	struct cvmx_sli_window_ctl_cn61xx     cn66xx;
+	struct cvmx_sli_window_ctl_cn61xx     cn68xx;
+	struct cvmx_sli_window_ctl_cn61xx     cn68xxp1;
+	struct cvmx_sli_window_ctl_cn61xx     cn70xx;
 	struct cvmx_sli_window_ctl_s          cn78xx;
-	struct cvmx_sli_window_ctl_s          cnf71xx;
+	struct cvmx_sli_window_ctl_cn61xx     cnf71xx;
 };
 typedef union cvmx_sli_window_ctl cvmx_sli_window_ctl_t;
 

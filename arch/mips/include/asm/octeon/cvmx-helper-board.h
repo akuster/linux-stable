@@ -44,7 +44,7 @@
  * Helper functions to abstract board specific data about
  * network ports from the rest of the cvmx-helper files.
  *
- * <hr>$Revision: 86434 $<hr>
+ * <hr>$Revision: 86922 $<hr>
  */
 #ifndef __CVMX_HELPER_BOARD_H__
 #define __CVMX_HELPER_BOARD_H__
@@ -321,19 +321,6 @@ cvmx_phy_host_mode_t cvmx_helper_board_get_phy_host_mode(int ipd_port);
  */
 int cvmx_helper_board_get_phy_info(cvmx_phy_info_t *phy_info, int ipd_port);
 #endif
-
-/**
- * @INTERNAL
- * This function outputs the port flags for the specified interface and port.
- *
- * @param interface interface to get the port flags for
- * @param index     port on interface to get the port flags for
- * @param[out] pflags port flags for the specified port.  Not modified if the
- *		      data is unavailable.
- *
- * @return 0 for success, -1 if info no available.
- */
-int __cvmx_helper_board_get_port_flags(int interface, int index);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

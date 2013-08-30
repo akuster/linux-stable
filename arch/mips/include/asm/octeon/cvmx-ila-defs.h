@@ -1145,7 +1145,8 @@ union cvmx_ila_rx_lnex_cfg {
                                                          destripped.
                                                          If the lane is in internal loopback mode, this field is ignored and skip words are always
                                                          discarded in the lane logic. */
-	uint64_t reserved_6_7                 : 2;
+	uint64_t reserved_7_7                 : 1;
+	uint64_t rx_dis_disp_chk              : 1;  /**< Disable the RX disparity check, see ILA_RX_LNE(0..7)_INT[DISP_ERR]. */
 	uint64_t rx_scrm_sync                 : 1;  /**< RX scrambler-synchronization status. A 1 means synchronization has been achieved. */
 	uint64_t rx_bdry_sync                 : 1;  /**< RX word-boundary-synchronization status. A 1 means synchronization has been achieved */
 	uint64_t rx_dis_ukwn                  : 1;  /**< Disable normal response to unknown words. Unknown words are still logged but do not cause
@@ -1161,7 +1162,8 @@ union cvmx_ila_rx_lnex_cfg {
 	uint64_t rx_dis_ukwn                  : 1;
 	uint64_t rx_bdry_sync                 : 1;
 	uint64_t rx_scrm_sync                 : 1;
-	uint64_t reserved_6_7                 : 2;
+	uint64_t rx_dis_disp_chk              : 1;
+	uint64_t reserved_7_7                 : 1;
 	uint64_t rx_dis_psh_skip              : 1;
 	uint64_t reserved_9_63                : 55;
 #endif
@@ -1177,7 +1179,8 @@ union cvmx_ila_rx_lnex_int {
 	uint64_t u64;
 	struct cvmx_ila_rx_lnex_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_9_63                : 55;
+	uint64_t reserved_10_63               : 54;
+	uint64_t disp_err                     : 1;  /**< RX disparity error encountered. Throws ILA_INTSN_E::ILA_RXLNE(0..7)_DISP_ERR. */
 	uint64_t bad_64b67b                   : 1;  /**< Bad 64B/67B code word encountered. Once the bad word reaches the burst-control unit (as
                                                          indicated by ILA_RX(0)_INT[LANE_BAD_WORD]) it is discarded and all open packets receive an
                                                          error. Throws ILA_INTSN_E::ILA_RXLNE(0..7)_BAD_64B67B. */
@@ -1203,7 +1206,8 @@ union cvmx_ila_rx_lnex_int {
 	uint64_t stat_msg                     : 1;
 	uint64_t stat_cnt_ovfl                : 1;
 	uint64_t bad_64b67b                   : 1;
-	uint64_t reserved_9_63                : 55;
+	uint64_t disp_err                     : 1;
+	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
 	struct cvmx_ila_rx_lnex_int_s         cn78xx;

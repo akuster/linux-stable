@@ -415,10 +415,10 @@ int cvmx_allocate_global_resource_range(struct global_resource_tag tag, uint64_t
 	return base;
 }
 
-int cvmx_allocate_global_resource_range_non_contiguous(struct global_resource_tag tag,
-						      uint64_t owner,
-						      int nelements,
-						      int allocated_elements[]) {
+int cvmx_resource_alloc_many(struct global_resource_tag tag,
+			     uint64_t owner,
+			     int nelements,
+			     int allocated_elements[]) {
 	uint64_t addr = cvmx_get_global_resource(tag,1);
 	int rv;
 
@@ -432,7 +432,6 @@ int cvmx_allocate_global_resource_range_non_contiguous(struct global_resource_ta
 	rv = cvmx_range_alloc_non_contiguos(addr, owner, nelements, allocated_elements);
 	__cvmx_global_resource_unlock();
 	return rv;
-
 }
 
 int cvmx_reserve_global_resource_range(struct global_resource_tag tag,

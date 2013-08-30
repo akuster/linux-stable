@@ -125,7 +125,7 @@ struct cvmx_app_hotplug_global {
 typedef struct cvmx_app_hotplug_global cvmx_app_hotplug_global_t;
 
 int is_core_being_hot_plugged(void);
-int is_app_being_booted_or_shutdown(void);
+int is_app_under_boot_or_shutdown(void);
 void set_app_unber_boot(int val);
 void set_app_under_shutdown(int val);
 int cvmx_app_hotplug_shutdown_request(const struct cvmx_coremask *, int);

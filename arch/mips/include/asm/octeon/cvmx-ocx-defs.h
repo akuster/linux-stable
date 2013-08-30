@@ -814,7 +814,10 @@ union cvmx_ocx_com_linkx_ctl {
 	uint64_t u64;
 	struct cvmx_ocx_com_linkx_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_8_63                : 56;
+	uint64_t reserved_9_63                : 55;
+	uint64_t loopback                     : 1;  /**< Reserved. INTERNAL: Diagnostic data loopback.Set to force outgoing link to inbound port.
+                                                         All data and link credits are returned and appear to come from link partner. Typically
+                                                         SERDES should be disabled during this operation. */
 	uint64_t reinit                       : 1;  /**< Reinitialize Link. Setting bit forces link back into init state and also sets DROP bit.
                                                          Bit must be cleared for link to operate normally. */
 	uint64_t gate                         : 1;  /**< Enable clock gating on this link to save power. */
@@ -838,7 +841,8 @@ union cvmx_ocx_com_linkx_ctl {
 	uint64_t auto_clr                     : 1;
 	uint64_t gate                         : 1;
 	uint64_t reinit                       : 1;
-	uint64_t reserved_8_63                : 56;
+	uint64_t loopback                     : 1;
+	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
 	struct cvmx_ocx_com_linkx_ctl_s       cn78xx;
@@ -1036,7 +1040,8 @@ union cvmx_ocx_lnex_int {
 	uint64_t u64;
 	struct cvmx_ocx_lnex_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_9_63                : 55;
+	uint64_t reserved_10_63               : 54;
+	uint64_t disp_err                     : 1;  /**< RX disparity error encountered. */
 	uint64_t bad_64b67b                   : 1;  /**< Bad 64B/67B codeword encountered. Once the bad word reaches the burst control unit, as
                                                          denoted by OCX_RXx_INT[LANE_BAD_WORD], it is tossed and all open packets will receive an
                                                          error. */
@@ -1059,7 +1064,8 @@ union cvmx_ocx_lnex_int {
 	uint64_t stat_msg                     : 1;
 	uint64_t stat_cnt_ovfl                : 1;
 	uint64_t bad_64b67b                   : 1;
-	uint64_t reserved_9_63                : 55;
+	uint64_t disp_err                     : 1;
+	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
 	struct cvmx_ocx_lnex_int_s            cn78xx;

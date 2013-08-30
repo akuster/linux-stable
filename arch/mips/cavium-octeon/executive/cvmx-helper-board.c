@@ -429,6 +429,20 @@ int __cvmx_helper_board_get_port_from_dt(void *fdt_addr, int ipd_port)
 	if (dbg)
 		cvmx_dprintf("%s: eth subnode offset %d from %s\n",
 			     __func__, eth, name_buffer);
+
+	if (eth < 0) 
+		return -1;
+
+	if (fdt_getprop(fdt_addr, eth, "cavium,sgmii-mac-phy-mode", NULL))
+		cvmx_helper_set_mac_phy_mode(interface_num, port_index, true);
+	else
+		cvmx_helper_set_mac_phy_mode(interface_num, port_index, false);
+
+	if (fdt_getprop(fdt_addr, eth, "cavium,sgmii-mac-1000x-mode", NULL))
+		cvmx_helper_set_1000x_mode(interface_num, port_index, true);
+	else
+		cvmx_helper_set_1000x_mode(interface_num, port_index, false);
+
 	return (eth >= 0);
 }
 
@@ -460,6 +474,7 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 	uint64_t *smi_addrp;
 	uint64_t smi_addr = 0;
 	int dbg = device_tree_dbg;
+	int interface;
 
 	phy_info->phy_addr = -1;
 	phy_info->direct_connect = -1;
@@ -493,15 +508,15 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 				     "ipd_port=%d\n", ipd_port);
 		return -1;
 	}
+
+	interface = cvmx_helper_get_interface_num(ipd_port);
 	/* Get handle to phy */
 	phy_handle = (uint32_t *) fdt_getprop(fdt_addr, eth, "phy-handle", NULL);
 	if (!phy_handle) {
-		int interface;
 		cvmx_helper_interface_mode_t if_mode;
 		/* Note that it's OK for RXAUI and ILK to not have a PHY
 		 * connected (i.e. EBB boards in loopback).
 		 */
-		interface = cvmx_helper_get_interface_num(ipd_port);
 		if_mode = cvmx_helper_interface_get_mode(interface);
 		if (if_mode != CVMX_HELPER_INTERFACE_MODE_RXAUI &&
 		    if_mode != CVMX_HELPER_INTERFACE_MODE_ILK) {
@@ -1893,93 +1908,5 @@ int __cvmx_helper_board_usb_get_num_ports(int supported_ports)
 	}
 
 	return supported_ports;
-}
-
-#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-/**
- * @INTERNAL
- * This function outputs the port flags for the specified interface and port.
- *
- * @param interface interface to get the port flags for
- * @param index     port on interface to get the port flags for
- * @param[out] pflags port flags for the specified port.  Not modified if the
- *		      data is unavailable.
- *
- * @return 0 for success, -1 if info no available.
- */
-int __cvmx_helper_board_get_port_flags(int interface, int index)
-{
-	static void *fdt_addr;
-	int ipd_port;
-	int aliases, eth;
-	cvmx_helper_interface_mode_t interface_mode =
-				cvmx_helper_interface_get_mode(interface);
-
-	switch (interface_mode) {
-	case CVMX_HELPER_INTERFACE_MODE_ILK:
-	case CVMX_HELPER_INTERFACE_MODE_LOOP:
-	case CVMX_HELPER_INTERFACE_MODE_SRIO:
-	case CVMX_HELPER_INTERFACE_MODE_PCIE:
-	case CVMX_HELPER_INTERFACE_MODE_NPI:
-		/* These interface types have no device tree entries */
-		return 0;
-	case CVMX_HELPER_INTERFACE_MODE_AGL:
-		/* Their is no device tree for agl interface when running
-		   on simulator. */
-		if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM)
-			return 0;
-		break;
-	default:
-		break;
-	}
-
-	if (fdt_addr == 0)
-		fdt_addr = __cvmx_phys_addr_to_ptr(cvmx_sysinfo_get()->fdt_addr,
-						   OCTEON_FDT_MAX_SIZE);
-
-	if (!fdt_addr) {
-		cvmx_dprintf("No device tree found.\n");
-		return -1;
-	}
-
-	aliases = fdt_path_offset(fdt_addr, "/aliases");
-	if (aliases < 0) {
-		cvmx_dprintf("Error: no /aliases node in device tree.\n");
-		return -1;
-	}
-
-	ipd_port = cvmx_helper_get_ipd_port(interface, index);
-	eth = __pip_eth_node(fdt_addr, aliases, ipd_port);
-	if (eth < 0)
-		return 0;
-
-	if (fdt_getprop(fdt_addr, eth, "cavium,sgmii-mac-phy-mode", NULL))
-		cvmx_helper_set_mac_phy_mode(interface, index, true);
-	else
-		cvmx_helper_set_mac_phy_mode(interface, index, false);
-
-	if (fdt_getprop(fdt_addr, eth, "cavium,sgmii-mac-1000x-mode", NULL))
-		cvmx_helper_set_1000x_mode(interface, index, true);
-	else
-		cvmx_helper_set_1000x_mode(interface, index, false);
-
-	return 0;
-}
-#endif
-/**
- * @INTERNAL
- * This function outputs the port flags for the specified interface and port.
- *
- * @param interface interface to get the port flags for
- * @param[out] iflags interface flags for the specified port.  Not modified if
- *		      the data is unavailable.
- *
- * @return 0 for success, -1 if info no available.
- *
- * NOTE: As of 6/21/2013 no interface flags have been defined.
- */
-int __cvmx_helper_board_get_interface_flags(int interface, uint32_t *iflags)
-{
-	return 0;
 }
 

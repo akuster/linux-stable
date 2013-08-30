@@ -3650,8 +3650,8 @@ union cvmx_sso_ppx_sx_grpmskx {
                                                          GRPMSK(3) for groups <255:192>
                                                          A value of 0x0 in each GRPMSK(0..3) for a given core prevents the core from receiving new
                                                          work. Cores that will never receive work should use GRPMSK(0..3)=0x0; while this setting
-                                                         is not special in CN78XX, for backward and forward compatibility this may enable
-                                                         reallocation of internal resources to the remaining (non-zero-mask) cores. */
+                                                         is not special in SSO, for backward and forward compatibility this may enable reallocation
+                                                         of internal resources to the remaining (non-zero-mask) cores. */
 #else
 	uint64_t grp_msk                      : 64;
 #endif
@@ -4032,7 +4032,7 @@ union cvmx_sso_sl_ppx_pendtag {
 	uint64_t u64;
 	struct cvmx_sso_sl_ppx_pendtag_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pend_switch                  : 1;  /**< Send when there is a pending SWTAG, SWTAG_DESCHED, or SWTAG_FULL to ORDERED or ATOMIC. If
+	uint64_t pend_switch                  : 1;  /**< Set when there is a pending SWTAG, SWTAG_DESCHED, or SWTAG_FULL to ORDERED or ATOMIC. If
                                                          the register read was issued after an indexed GET_WORK, the DESCHED portion of a
                                                          SWTAG_DESCHED cannot still be pending. */
 	uint64_t pend_get_work                : 1;  /**< Set when there is a pending GET_WORK. */
@@ -4079,7 +4079,7 @@ union cvmx_sso_sl_ppx_pendwqp {
 	uint64_t u64;
 	struct cvmx_sso_sl_ppx_pendwqp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pend_switch                  : 1;  /**< Send when there is a pending SWTAG, SWTAG_DESCHED, or SWTAG_FULL to ORDERED or ATOMIC. If
+	uint64_t pend_switch                  : 1;  /**< Set when there is a pending SWTAG, SWTAG_DESCHED, or SWTAG_FULL to ORDERED or ATOMIC. If
                                                          the status load was issued after an indexed GET_WORK, the DESCHED portion of a
                                                          SWTAG_DESCHED cannot still be pending. */
 	uint64_t pend_get_work                : 1;  /**< Set when there is a pending GET_WORK. */

@@ -1723,13 +1723,12 @@ static inline uint64_t CVMX_PEXP_SLI_PKTX_INSTR_HEADER(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_PEXP_SLI_PKTX_INSTR_HEADER(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011F0000013400ull) + ((offset) & 63) * 16;
+	return CVMX_ADD_IO_SEG(0x00011F0000013400ull) + ((offset) & 31) * 16;
 }
 #else
-#define CVMX_PEXP_SLI_PKTX_INSTR_HEADER(offset) (CVMX_ADD_IO_SEG(0x00011F0000013400ull) + ((offset) & 63) * 16)
+#define CVMX_PEXP_SLI_PKTX_INSTR_HEADER(offset) (CVMX_ADD_IO_SEG(0x00011F0000013400ull) + ((offset) & 31) * 16)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PEXP_SLI_PKTX_IN_BP(unsigned long offset)

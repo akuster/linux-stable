@@ -136,9 +136,9 @@ int cvmx_fpa_allocate_fpa_pools(int node, int pools_allocated[], int count)
 			     " node=%d\n", node);
 		return -1;
 	}
-	rv = cvmx_allocate_global_resource_range_non_contiguous(tag, owner,
-							       count,
-							       pools_allocated);
+	rv = cvmx_resource_alloc_many(tag, owner,
+				      count,
+				      pools_allocated);
 	return rv;
 }
 
@@ -173,9 +173,9 @@ int cvmx_fpa_allocate_auras(int node, int auras_allocated[], int count)
 			     " node=%d\n", node);
 		return -1;
 	}
-	rv = cvmx_allocate_global_resource_range_non_contiguous(tag, owner,
-							       count,
-							       auras_allocated);
+	rv = cvmx_resource_alloc_many(tag, owner,
+				      count,
+				      auras_allocated);
 	return rv;
 
 }

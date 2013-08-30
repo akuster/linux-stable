@@ -130,16 +130,16 @@ void __cvmx_ilk_init_cal(int interface)
 
 	/* Set state to xoff for all entries */
 	rx_cal0.u64 = 0;
-	rx_cal0.s.entry_ctl0 = XOFF;
-	rx_cal0.s.entry_ctl1 = XOFF;
-	rx_cal0.s.entry_ctl2 = XOFF;
-	rx_cal0.s.entry_ctl3 = XOFF;
+	rx_cal0.s.entry_ctl0 = XON;
+	rx_cal0.s.entry_ctl1 = XON;
+	rx_cal0.s.entry_ctl2 = XON;
+	rx_cal0.s.entry_ctl3 = XON;
 
 	rx_cal1.u64 = 0;
-	rx_cal1.s.entry_ctl4 = XOFF;
-	rx_cal1.s.entry_ctl5 = XOFF;
-	rx_cal1.s.entry_ctl6 = XOFF;
-	rx_cal1.s.entry_ctl7 = XOFF;
+	rx_cal1.s.entry_ctl4 = XON;
+	rx_cal1.s.entry_ctl5 = XON;
+	rx_cal1.s.entry_ctl6 = XON;
+	rx_cal1.s.entry_ctl7 = XON;
 
 	/* Write all 288 entries */
 	for (i = 0; i < CVMX_ILK_MAX_CAL_IDX; i++) {

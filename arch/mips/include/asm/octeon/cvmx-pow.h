@@ -87,6 +87,9 @@ extern "C" {
 #define CVMX_ENABLE_POW_CHECKS 1
 #endif
 
+#define CVMX_SSO_NUM_GROUPS_78XX	(256)
+#define CVMX_SSO_NUM_GROUPS_SET		(CVMX_SSO_NUM_GROUPS_78XX/64)
+
 /**
  * Wait flag values for pow functions.
  */
@@ -725,7 +728,7 @@ typedef union {
 		uint64_t pend_get_work:1;
 					    /**< Set when there is a pending GET_WORK */
 		uint64_t pend_get_work_wait:1;
-					    /**< when pend_get_work is set, this biit indicates that the 
+					    /**< when pend_get_work is set, this biit indicates that the
                                                  wait bit was set. */
 		uint64_t pend_nosched:1;
 					    /**< Set when nosched is desired and pend_desched is set. */
@@ -822,7 +825,7 @@ typedef union {
 		uint64_t pend_get_work:1;
 					    /**< Set when there is a pending GET_WORK */
 		uint64_t pend_get_work_wait:1;
-					    /**< when pend_get_work is set, this biit indicates that the 
+					    /**< when pend_get_work is set, this biit indicates that the
                                                  wait bit was set. */
 		uint64_t pend_nosched:1;
 					    /**< Set when nosched is desired and pend_desched is set. */
@@ -1557,6 +1560,13 @@ typedef union {
 
 /* CSR typedefs have been moved to cvmx-pow-defs.h */
 
+/*enum for group priority parameters which needs modification*/
+enum cvmx_sso_group_modify_mask{
+	CVMX_SSO_MODIFY_GROUP_PRIORITY = 0x01,
+	CVMX_SSO_MODIFY_GROUP_WEIGHT = 0x02,
+	CVMX_SSO_MODIFY_GROUP_AFFINITY = 0x04
+};
+
 /**
  * Get the POW tag for this core. This returns the current
  * tag type, tag, group, and POW entry index associated with
@@ -2257,6 +2267,116 @@ static inline void cvmx_pow_set_group_mask(uint64_t core_num, uint64_t mask)
 		grp_msk.s.grp_msk = mask;
 		cvmx_write_csr(CVMX_POW_PP_GRP_MSKX(core_num), grp_msk.u64);
 	}
+}
+
+/**
+ * This function sets the group mask for a core.  The group mask
+ * indicates which groups each core will accept work from. There are
+ * 256 groups in 78xx.
+ *
+ * @param node 		node number
+ * @param core_num   	core to apply mask to
+ * @param mask_set	78XX has 2 set of masks per core each with 256 groups.
+ *                      Cores can choose which mask set to get work from when
+                        getting the work.
+ * @param mask   	Group mask. There are 256 groups, divided in 4 of 64 bit mask sets.
+ * 	        	Each 1 bit in the mask enables the core to accept work from
+ *      	        the corresponding group.
+ */
+static inline void cvmx_pow_set_group_mask_78xx(int node, uint64_t core_num,
+		uint64_t mask_set, const uint64_t mask[])
+{
+	int grp;
+
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_sso_ppx_sx_grpmskx_t grp_msk;
+		for (grp = 0; grp < CVMX_SSO_NUM_GROUPS_SET; grp++) {
+			if(mask_set & 1) {
+				grp_msk.u64 = cvmx_read_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core_num, 0, grp));
+				grp_msk.s.grp_msk |= mask[grp];
+				cvmx_write_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core_num, 0, grp), grp_msk.u64);
+			}
+			if(mask_set & 2) {
+				grp_msk.u64 = cvmx_read_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core_num, 1, grp));
+				grp_msk.s.grp_msk |= mask[grp];
+				cvmx_write_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core_num, 1, grp), grp_msk.u64);
+			}
+		}
+	}
+}
+
+/**
+ * This function sets the the affinity of group to the cores in 78xx.
+ * It sets up all the cores in core_mask to accept work from the specified group.
+ *
+ * @param node 		node number
+ * @param group  	group to accept work from.
+ * @param core_mask	mask of all the cores which will accept work from this group
+ * @param mask_set	every core has set of 2 masks which can be set to accept work
+ *                      from 256 groups. At the time of get_work, cores can choose which
+ *			mask_set to get work from.
+ */
+static inline void cvmx_sso_set_group_core_affinity(int node, int group,
+		uint64_t core_mask, int mask_set)
+{
+	cvmx_sso_ppx_sx_grpmskx_t grp_msk;
+	int core;
+	int grp_index  = group >> 6;
+	int bit_pos = group % 64;
+
+	//cvmx_dprintf("Vinita group=%d grp_index=%d bit_pos=%d core_mask=0x%lx\n",group,grp_index,bit_pos,core_mask);
+	while((core = __builtin_ffsll(core_mask))) {
+		core--;
+		if(mask_set & 1) {
+			grp_msk.u64 = cvmx_read_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core, 0, grp_index));
+			grp_msk.s.grp_msk |= (uint64_t)(1ull << bit_pos);
+			cvmx_write_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core, 0, grp_index), grp_msk.u64);
+		}
+		if(mask_set & 2) {
+			grp_msk.u64 = cvmx_read_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core, 1, grp_index));
+			grp_msk.s.grp_msk |= (uint64_t)(1ull << bit_pos);
+			cvmx_write_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core, 1, grp_index), grp_msk.u64);
+		}
+		core_mask &= core_mask - 1;
+	}
+
+}
+
+/**
+ * This function sets the priority and group affinity arbitration for each group.
+ *
+ * @param node 		node number
+ * @param group  	group to apply mask parameters to
+ * @param priority	priority of the group relative to other groups
+ *			0x0 - highest priority
+ *			0x7 - lowest priority
+ * @param weight	Cross-group arbitration weight to apply to this group.
+ *			valid values are 1-63
+ *			h/w default is 0x3f
+ * @param affinity	Processor affinity arbitration weight to apply to this group.
+ *			If zero, affinity is disabled.
+ *			valid values are 0-15
+ *			h/w default which is 0xf.
+ * @param modify_mask   mask of the parameters which needs to be modified.
+ *			enum cvmx_sso_group_modify_mask
+ *                      to modify only priority -- set bit0
+ *                      to modify only weight   -- set bit1
+ *			to modify only affinity -- set bit2
+ */
+static inline void cvmx_sso_set_group_priority(int node , int group, int priority,
+					       int weight, int affinity,
+					       enum cvmx_sso_group_modify_mask modify_mask)
+{
+	cvmx_sso_grpx_pri_t grp_pri;
+
+	grp_pri.u64 = cvmx_read_csr_node(node, CVMX_SSO_GRPX_PRI(group));
+	if(modify_mask & CVMX_SSO_MODIFY_GROUP_PRIORITY)
+		grp_pri.s.pri = priority;
+	if(modify_mask & CVMX_SSO_MODIFY_GROUP_WEIGHT)
+		grp_pri.s.weight = weight;
+	if(modify_mask & CVMX_SSO_MODIFY_GROUP_AFFINITY)
+		grp_pri.s.affinity = affinity;
+	cvmx_write_csr_node(node,CVMX_SSO_GRPX_PRI(group),grp_pri.u64);
 }
 
 /**

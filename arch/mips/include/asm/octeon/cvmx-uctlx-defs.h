@@ -659,13 +659,14 @@ union cvmx_uctlx_ctl {
 	uint64_t ref_clk_sel                  : 2;  /**< Reference clock select. Choose reference clock source for the SuperSpeed and HighSpeed PLL
                                                          blocks.
                                                          0x0 = Reference clock source for both PLLs come from the USB pads.
-                                                         0x1 = Reference clock source for SuperSpeed PLL is from the USB pads, reference clock
-                                                         source for HighSpeed PLL is PLL_REF_CLK.
+                                                         0x1 = Reserved
                                                          0x2 = Reserved.
                                                          0x3 = Reserved.
-                                                         The PLL_REF_CLK is a 50MHz reference clock from an on-chip PLL. This value can be changed
-                                                         only during UPHY_RST.
-                                                         Note: If REF_CLK_SEL = 0x0, then the reference clock input cannot be spread-spectrum. */
+                                                         This value can be changed only during UPHY_RST.
+                                                         Note: If REF_CLK_SEL = 0x0, then the reference clock input cannot be spread-spectrum.
+                                                         INTERNAL: For the 0x1 selection, reference clock source for SuperSpeed PLL is from the USB
+                                                         pads, reference clock source for HighSpeed PLL is PLL_REF_CLK. But in 78xx, PLL_REF_CLK
+                                                         cannot be routed to USB without violating jitter requirements */
 	uint64_t ssc_en                       : 1;  /**< Enables spread-spectrum clock production in the SuperSpeed function.
                                                          If the input reference clock for the SuperSpeed PLL is already spread-spectrum,
                                                          then do not enable this function. The clocks sourced to the SuperSpeed function
@@ -688,73 +689,29 @@ union cvmx_uctlx_ctl {
                                                          corresponds to the frequency-synthesis coefficient.
                                                          [55:53]: modulus - 1,
                                                          [52:47]: 2's complement push amount
-                                                         A value of 0x0 means this feature is disabled. The legal values are as follows:
-                                                         If REF_CLK_SEL = 0x0, then 0x0 is the only legal value.
-                                                         If REF_CLK_SEL = 0x1:
-                                                         0x108 = If the external reference clock is 19.2MHz, 24MHz, 26MHz, 38.4MHz, 48MHz, 52MHz,
-                                                         76.8MHz, 96MHz, 104MHz.
-                                                         0x0 = If the external reference clock is another supported frequency (see list in
-                                                         MPLL_MULTIPLIER description).
-                                                         All other values are reserved. This value may only be changed during UPHY_RST.
-                                                         Note: If REF_CLK_SEL = 0x1, then MPLL_MULTPLIER, REF_CLK_DIV2, and SSC_REF_CLK_SEL must
-                                                         all be programmed to the same frequency setting. */
-	uint64_t mpll_multiplier              : 7;  /**< Multiplies the reference clock to a frequency suitable for intended operating speed. The
-                                                         legal values are:
-                                                         If REF_CLK_SEL = 0x0, then 0x0 is the only legal value.
-                                                         If REF_CLK_SEL = 0x1 then:
-                                                         0x02 = 19.2 MHz on the external reference clock
-                                                         0x7D = 20 MHz on the external reference clock
-                                                         0x68 = 24 MHz on the external reference clock
-                                                         0x64 = 25 MHz on the external reference clock
-                                                         0x60 = 26 MHz on the external reference clock
-                                                         0x41 = 38.4 MHz on the external reference clock
-                                                         0x7D = 40 MHz on the external reference clock
-                                                         0x34 = 48 MHz on the external reference clock
-                                                         0x32 = 50 MHz on the external reference clock
-                                                         0x30 = 52 MHz on the external reference clock
-                                                         0x41 = 76.8 MHz on the external reference clock
-                                                         0x1A = 96 MHz on the external reference clock
-                                                         0x19 = 100 MHz on the external reference clock
-                                                         0x18 = 104 MHz on the external reference clock if REF_CLK_DIV2 is 0x0
-                                                         0x30 = 104 MHz on the external reference clock if REF_CLK_DIV2 is 0x1
-                                                         0x28 = 125 MHz on the external reference clock
-                                                         0x19 = 200 MHz on the external reference clock
-                                                         All other values are reserved.
+                                                         Must leave at reset value of 0x0.
+                                                         This value may only be changed during UPHY_RST. */
+	uint64_t mpll_multiplier              : 7;  /**< Multiplies the reference clock to a frequency suitable for intended operating speed.
+                                                         Must leave at reset value of 0x0.
                                                          This value may only be changed during UPHY_RST.
-                                                         Note: If REF_CLK_SEL = 0x1, then MPLL_MULTPLIER, REF_CLK_DIV2, and SSC_REF_CLK_SEL must
-                                                         all be programmed to the same frequency setting. When REF_CLK_SEL = 0x0, this value is
-                                                         superceded by the REF_CLK_FSEL<5:3> selection. */
+                                                         This value is superceded by the REF_CLK_FSEL<5:3> selection. */
 	uint64_t ref_ssp_en                   : 1;  /**< Enables reference clock to the prescaler for SuperSpeed function. This should always be
                                                          enabled since this output clock is used to drive the UAHC suspend-mode clock during low-
                                                          power states.
                                                          This value can be changed only during UPHY_RST or during low-power states.
                                                          The reference clock must be running and stable before UPHY_RST is deasserted and before
                                                          REF_SSP_EN is asserted. */
-	uint64_t ref_clk_div2                 : 1;  /**< Divides the reference clock by 2 before feeding it into the REF_CLK_FSEL divider. The
-                                                         legal values are:
-                                                         If REF_CLK_SEL = 0x0, then for all reference clock frequencies, 0x0 is the only legal
-                                                         value.
-                                                         If REF_CLK_SEL = 0x1:
-                                                             0x1: if external reference clock is 125MHz, 40MHz, 76.8MHz, or 200MHz.
-                                                             0x0 or 0x1: if external reference clock is 104MHz
-                                                                         (depending on MPLL_MULTIPLIER setting)
-                                                             0x0: if external reference clock is another supported frequency,
-                                                                  (see list in MPLL_MULTIPLIER description).
-                                                         This value can be changed only during UPHY_RST.
-                                                         Note: If REF_CLK_SEL = 0x1, then MPLL_MULTPLIER, REF_CLK_DIV2, and SSC_REF_CLK_SEL must
-                                                         all be programmed to the same frequency setting. */
+	uint64_t ref_clk_div2                 : 1;  /**< Divides the reference clock by 2 before feeding it into the REF_CLK_FSEL divider.
+                                                         Must leave at reset value of 0x0.
+                                                         This value can be changed only during UPHY_RST. */
 	uint64_t ref_clk_fsel                 : 6;  /**< Selects the reference clock frequency for the SuperSpeed and HighSpeed PLL blocks. The
                                                          legal values are as follows:
-                                                         If REF_CLK_SEL = 0x0:
                                                          0x27 = External reference clock 100 MHz
                                                          0x2A = External reference clock 24 MHz
                                                          0x31 = External reference clock 20 MHz
                                                          0x38 = External reference clock 19.2 MHz
-                                                         If REF_CLK_SEL = 0x1, then 0x7 is the only legal value.
                                                          All other values are reserved.
-                                                         This value may only be changed during UPHY_RST.
-                                                         Note: When REF_CLK_SEL = 0x1, then MPLL_MULTPLIER, REF_CLK_DIV2, and
-                                                         SSC_REF_CLK_SEL must all be programmed to the same frequency setting. */
+                                                         This value may only be changed during UPHY_RST. */
 	uint64_t reserved_31_31               : 1;
 	uint64_t h_clk_en                     : 1;  /**< Host-controller-clock enable. When set to 1, the host-controller clock is generated. This
                                                          also enables access to UCTL registers 0x30-0xF8. */

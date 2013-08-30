@@ -57,8 +57,8 @@
 #include "cvmx-pki-defs.h"
 #include "cvmx-pki.h"
 #include "cvmx-fpa.h"
-#include "cvmx-pki-cluster.h"
 #include "cvmx-pki-resources.h"
+#include "cvmx-pki-cluster.h"
 #endif
 
 CVMX_SHARED struct cvmx_pki_config pki_config[CVMX_MAX_NODES];
@@ -599,11 +599,11 @@ int cvmx_pki_find_aura(int node, char *name)
  */
 int cvmx_pki_group_profile_exist(int node, char *name)
 {
-	int index = pki_profiles[node].group_profile_list.index;
+	int index = pki_profiles[node].sso_grp_profile_list.index;
 
 	while(index--)
 	{
-		if(strcmp(name,pki_profiles[node].group_profile_list.group_profile[index].group_name) == 0)
+		if(strcmp(name,pki_profiles[node].sso_grp_profile_list.grp_profile[index].grp_name) == 0)
 			return index;
 	}
 	return -1;
@@ -623,7 +623,7 @@ int cvmx_pki_find_group(int node, char *name)
 
 	if((index = cvmx_pki_group_profile_exist(node,name)) == -1)
 		return -1;
-	return pki_profiles[node].group_profile_list.group_profile[index].group_num;
+	return pki_profiles[node].sso_grp_profile_list.grp_profile[index].grp_num;
 }
 
 /**
@@ -914,22 +914,20 @@ int cvmx_pki_set_aura_config(int node, char* aura_name, int aura_num, int pool,
  * This function stores the group configuration in data structure
  * which is then used to program the hardware.
  * @param node  	node number
- * @param aura_name  	name associated with this config
- * @param group		SSO group number (-1 if needs to be allocated)
+ * @param grp_profile	struct to SSO group profile to configure
  * @return 		0 on SUCCESS
                         -1 on failure
  */
-int cvmx_pki_set_group_config(int node, char *name, int group)
+int cvmx_pki_set_sso_group_config(int node, struct cvmx_pki_sso_grp_profile grp_profile)
 {
 	uint64_t index;
-	struct cvmx_pki_group_profile* group_profile;
 
 	if(node >= CVMX_MAX_NODES) {
 		cvmx_dprintf("Invalid node number %d",node);
 		return -1;
 	}
-	if(cvmx_pki_group_profile_exist(node, name) >= 0) {
-		cvmx_dprintf("ERROR:group profile already exist with name %s",name);
+	if(cvmx_pki_group_profile_exist(node, grp_profile.grp_name) >= 0) {
+		cvmx_dprintf("ERROR:group profile already exist with name %s",grp_profile.grp_name);
 		return -1;
 	}
 #if 0 //vinita_to_do uncomment when group_alloc is ready
@@ -940,18 +938,16 @@ int cvmx_pki_set_group_config(int node, char *name, int group)
 #endif
 
 	//spinlock it
-	index = pki_profiles[node].group_profile_list.index;
-	if(index >= CVMX_PKI_MAX_GROUP_PROFILES) {
+	index = pki_profiles[node].sso_grp_profile_list.index;
+	if(index >= CVMX_PKI_MAX_SSO_GROUP_PROFILES) {
 		cvmx_dprintf("ERROR: Max group profile %d reached\n", (int)index);
 		return -1;
 
 	}
-	pki_profiles[node].group_profile_list.index++;
+	pki_profiles[node].sso_grp_profile_list.index++;
 	//spinlock free
 
-	group_profile = &pki_profiles[node].group_profile_list.group_profile[index];
-	strcpy(group_profile->group_name, name);
-	group_profile->group_num = group;
+	pki_profiles[node].sso_grp_profile_list.grp_profile[index] = grp_profile;
 	return 0;
 
 }
@@ -1245,4 +1241,51 @@ void cvmx_pki_show_valid_pcam_entries(int node)
 	}
 }
 
+/**
+ * This function shows the pkind attributes in readable format,
+ * read directly from hardware.
+ * @param node    node number
+ */
+void cvmx_pki_show_pkind_attributes(int node, int pkind)
+{
+	int cluster=0;
+	int index;
+	cvmx_pki_pkindx_icgsel_t pkind_clsel;
+	cvmx_pki_clx_pkindx_style_t pkind_cfg_style;
+	cvmx_pki_icgx_cfg_t pki_cl_grp;
+	cvmx_pki_clx_stylex_cfg_t style_cfg;
+	cvmx_pki_clx_stylex_alg_t style_alg;
 
+	if(pkind >= CVMX_PKI_NUM_PKIND) {
+		cvmx_dprintf("ERROR: PKIND %d is beyond range\n", pkind);
+		return;
+	}
+	pkind_clsel.u64 = cvmx_read_csr_node(node, CVMX_PKI_PKINDX_ICGSEL(pkind));
+	cvmx_dprintf("cluster group:	%d\n", pkind_clsel.s.icg);
+	pki_cl_grp.u64 = cvmx_read_csr_node(node, CVMX_PKI_ICGX_CFG(pkind_clsel.s.icg));
+	cvmx_dprintf("cluster mask of the group:	0x%x\n",pki_cl_grp.s.clusters);
+
+	while( cluster < CVMX_PKI_NUM_CLUSTERS) {
+		if(pki_cl_grp.s.clusters & (0x01L << cluster)) {
+			//vinita_to_do later modify in human readble format or now just print register value
+			pkind_cfg_style.u64 = cvmx_read_csr_node(node, CVMX_PKI_CLX_PKINDX_STYLE(pkind, cluster));
+			cvmx_dprintf("initial parse Mode: %d\n",pkind_cfg_style.s.pm);
+			cvmx_dprintf("initial_style: %d\n", pkind_cfg_style.s.style);
+			style_alg.u64 = cvmx_read_csr_node(node, CVMX_PKI_CLX_STYLEX_ALG(pkind_cfg_style.s.style, cluster));
+			cvmx_dprintf("style_alg: 0x%llx\n", (unsigned long long)style_alg.u64);
+			style_cfg.u64 = cvmx_read_csr_node(node, CVMX_PKI_CLX_STYLEX_CFG(pkind_cfg_style.s.style, cluster));
+			cvmx_dprintf("style_cfg: 0x%llx\n", (unsigned long long)style_cfg.u64);
+			cvmx_dprintf("style_cfg2: 0x%llx\n",
+				     (unsigned long long)cvmx_read_csr_node(node, CVMX_PKI_CLX_STYLEX_CFG2(pkind_cfg_style.s.style, cluster)));
+			cvmx_dprintf("style_buf: 0x%llx\n",
+				     (unsigned long long)cvmx_read_csr_node(node, CVMX_PKI_STYLEX_BUF(pkind_cfg_style.s.style)));
+			break;
+		}
+	}
+	cvmx_dprintf("qpg base: %d\n",style_cfg.s.qpg_base);
+	cvmx_dprintf("qpg qos: %d\n",style_alg.s.qpg_qos);
+	for(index=0; index < 8; index++) {
+		cvmx_dprintf("qpg index %d: 0x%llx\n", (index+style_cfg.s.qpg_base),
+			     (unsigned long long)cvmx_read_csr_node(node, CVMX_PKI_QPG_TBLX(style_cfg.s.qpg_base+index)));
+	}
+}

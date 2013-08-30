@@ -337,11 +337,10 @@ union cvmx_lapx_cfg {
                                                          When ENA transitions from 0 to 1, LAP will build the free list and empty all queue lists.
                                                          Results are unpredictable if ENA is toggled with traffic outstanding. */
 	uint64_t lab_size                     : 3;  /**< Number of LABs versus size of each LAB. This register may only be changed when [ENA]=0.
-                                                         0x0 = 96 LABs, 16 words/LAB (1024 bits)
-                                                         0x1 = 128 LABs, 12 words/LAB (768 bits)
-                                                         0x2 = 192 LABs, 8 words/LAB (512 bits)
-                                                         0x3 = 256 LABs, 6 words/LAB (384 bits)
-                                                         0x4-0x7 Reserved */
+                                                         0x0 = 128 LABs, 16 words/LAB (1024 bits)
+                                                         0x1 = 170 LABs, 12 words/LAB (768 bits)
+                                                         0x2 = 256 LABs, 8 words/LAB (512 bits)
+                                                         0x3-0x7 Reserved */
 #else
 	uint64_t lab_size                     : 3;
 	uint64_t ena                          : 1;
