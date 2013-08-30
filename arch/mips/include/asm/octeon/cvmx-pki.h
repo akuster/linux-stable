@@ -84,7 +84,7 @@ extern "C" {
 #define CVMX_PKI_MAX_NAME		(16)
 #define CVMX_PKI_MAX_POOL_PROFILES	(64) //modify it later
 #define CVMX_PKI_MAX_AURA_PROFILES	(256) //modify it later
-#define CVMX_PKI_MAX_GROUP_PROFILES	(256)
+#define CVMX_PKI_MAX_SSO_GROUP_PROFILES	(256)
 
 #ifdef CVMX_SUPPORT_SEPARATE_CLUSTER_CONFIG
 #define CVMX_PKI_TOTAL_PCAM_ENTRY	((CVMX_PKI_NUM_CLUSTERS) * (CVMX_PKI_NUM_PCAM_BANK) *\
@@ -148,16 +148,20 @@ struct cvmx_pki_aura_list
 	struct cvmx_pki_aura_profile aura_profile[CVMX_PKI_MAX_AURA_PROFILES];
 };
 
-struct cvmx_pki_group_profile
+struct cvmx_pki_sso_grp_profile
 {
-	char group_name[CVMX_PKI_MAX_NAME];
-	int group_num;
+	char grp_name[CVMX_PKI_MAX_NAME];
+	int grp_num;
+	int priority;
+	int weight;
+	int affinity;
+	uint64_t core_affinity_mask;
+	uint64_t core_affinity_mask_set;
 };
-
-struct cvmx_pki_group_list
+struct cvmx_pki_sso_grp_list
 {
 	int index;
-	struct cvmx_pki_group_profile group_profile[CVMX_PKI_MAX_GROUP_PROFILES];
+	struct cvmx_pki_sso_grp_profile grp_profile[CVMX_PKI_MAX_SSO_GROUP_PROFILES];
 };
 
 struct cvmx_pki_qpg_profile
@@ -475,7 +479,7 @@ struct cvmx_pki_profiles
 	struct cvmx_pki_style_list		style_profile_list;
 	struct cvmx_pki_pool_list		pool_profile_list;
 	struct cvmx_pki_aura_list		aura_profile_list;
-	struct cvmx_pki_group_list	        group_profile_list;
+	struct cvmx_pki_sso_grp_list	        sso_grp_profile_list;
 	struct cvmx_pki_qpg_list	        qpg_profile_list;
 };
 
@@ -874,12 +878,11 @@ int cvmx_pki_set_aura_config(int node, char* aura_name, int aura_num, int pool,
  * This function stores the group configuration in data structure
  * which is then used to program the hardware.
  * @param node  	node number
- * @param aura_name  	name associated with this config
- * @param group		SSO group number (-1 if needs to be allocated)
+ * @param grp_profile	struct to SSO group profile to configure
  * @return 		0 on SUCCESS
                         -1 on failure
  */
-int cvmx_pki_set_group_config(int node, char *name, int group);
+int cvmx_pki_set_sso_group_config(int node, struct cvmx_pki_sso_grp_profile grp_profile);
 
 /**
  * This function stores the qpg configuration in data structure

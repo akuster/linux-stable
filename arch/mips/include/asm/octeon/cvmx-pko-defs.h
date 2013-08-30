@@ -108,6 +108,17 @@ static inline uint64_t CVMX_PKO_DPFI_STATUS_FUNC(void)
 #define CVMX_PKO_DPFI_STATUS (CVMX_ADD_IO_SEG(0x0001540000C00000ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_DQX_BYTES(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+		cvmx_warn("CVMX_PKO_DQX_BYTES(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00015400000000C8ull) + ((offset) & 1023) * 512;
+}
+#else
+#define CVMX_PKO_DQX_BYTES(offset) (CVMX_ADD_IO_SEG(0x00015400000000C8ull) + ((offset) & 1023) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_DQX_CIR(unsigned long offset)
 {
 	if (!(
@@ -139,6 +150,28 @@ static inline uint64_t CVMX_PKO_DQX_DROPPED_PACKETS(unsigned long offset)
 }
 #else
 #define CVMX_PKO_DQX_DROPPED_PACKETS(offset) (CVMX_ADD_IO_SEG(0x00015400000000D0ull) + ((offset) & 1023) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_DQX_FIFO(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+		cvmx_warn("CVMX_PKO_DQX_FIFO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001540000300078ull) + ((offset) & 1023) * 512;
+}
+#else
+#define CVMX_PKO_DQX_FIFO(offset) (CVMX_ADD_IO_SEG(0x0001540000300078ull) + ((offset) & 1023) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_DQX_PACKETS(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+		cvmx_warn("CVMX_PKO_DQX_PACKETS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00015400000000C0ull) + ((offset) & 1023) * 512;
+}
+#else
+#define CVMX_PKO_DQX_PACKETS(offset) (CVMX_ADD_IO_SEG(0x00015400000000C0ull) + ((offset) & 1023) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_DQX_PICK(unsigned long offset)
@@ -194,28 +227,6 @@ static inline uint64_t CVMX_PKO_DQX_SCHED_STATE(unsigned long offset)
 }
 #else
 #define CVMX_PKO_DQX_SCHED_STATE(offset) (CVMX_ADD_IO_SEG(0x0001540000280028ull) + ((offset) & 1023) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_DQX_SENT_BYTES(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
-		cvmx_warn("CVMX_PKO_DQX_SENT_BYTES(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00015400000000C8ull) + ((offset) & 1023) * 512;
-}
-#else
-#define CVMX_PKO_DQX_SENT_BYTES(offset) (CVMX_ADD_IO_SEG(0x00015400000000C8ull) + ((offset) & 1023) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_DQX_SENT_PACKETS(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
-		cvmx_warn("CVMX_PKO_DQX_SENT_PACKETS(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00015400000000C0ull) + ((offset) & 1023) * 512;
-}
-#else
-#define CVMX_PKO_DQX_SENT_PACKETS(offset) (CVMX_ADD_IO_SEG(0x00015400000000C0ull) + ((offset) & 1023) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_DQX_SHAPE(unsigned long offset)
@@ -328,6 +339,28 @@ static inline uint64_t CVMX_PKO_L1_SQX_CIR(unsigned long offset)
 #define CVMX_PKO_L1_SQX_CIR(offset) (CVMX_ADD_IO_SEG(0x0001540000000018ull) + ((offset) & 31) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_L1_SQX_DROPPED_BYTES(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_PKO_L1_SQX_DROPPED_BYTES(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00015400000000B8ull) + ((offset) & 31) * 512;
+}
+#else
+#define CVMX_PKO_L1_SQX_DROPPED_BYTES(offset) (CVMX_ADD_IO_SEG(0x00015400000000B8ull) + ((offset) & 31) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_L1_SQX_DROPPED_PACKETS(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_PKO_L1_SQX_DROPPED_PACKETS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00015400000000B0ull) + ((offset) & 31) * 512;
+}
+#else
+#define CVMX_PKO_L1_SQX_DROPPED_PACKETS(offset) (CVMX_ADD_IO_SEG(0x00015400000000B0ull) + ((offset) & 31) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_L1_SQX_GREEN(unsigned long offset)
 {
 	if (!(
@@ -337,6 +370,28 @@ static inline uint64_t CVMX_PKO_L1_SQX_GREEN(unsigned long offset)
 }
 #else
 #define CVMX_PKO_L1_SQX_GREEN(offset) (CVMX_ADD_IO_SEG(0x0001540000080058ull) + ((offset) & 31) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_L1_SQX_GREEN_BYTES(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_PKO_L1_SQX_GREEN_BYTES(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001540000000088ull) + ((offset) & 31) * 512;
+}
+#else
+#define CVMX_PKO_L1_SQX_GREEN_BYTES(offset) (CVMX_ADD_IO_SEG(0x0001540000000088ull) + ((offset) & 31) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_L1_SQX_GREEN_PACKETS(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_PKO_L1_SQX_GREEN_PACKETS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001540000000080ull) + ((offset) & 31) * 512;
+}
+#else
+#define CVMX_PKO_L1_SQX_GREEN_PACKETS(offset) (CVMX_ADD_IO_SEG(0x0001540000000080ull) + ((offset) & 31) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_L1_SQX_LINK(unsigned long offset)
@@ -381,6 +436,28 @@ static inline uint64_t CVMX_PKO_L1_SQX_RED(unsigned long offset)
 }
 #else
 #define CVMX_PKO_L1_SQX_RED(offset) (CVMX_ADD_IO_SEG(0x0001540000080068ull) + ((offset) & 31) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_L1_SQX_RED_BYTES(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_PKO_L1_SQX_RED_BYTES(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00015400000000A8ull) + ((offset) & 31) * 512;
+}
+#else
+#define CVMX_PKO_L1_SQX_RED_BYTES(offset) (CVMX_ADD_IO_SEG(0x00015400000000A8ull) + ((offset) & 31) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_L1_SQX_RED_PACKETS(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_PKO_L1_SQX_RED_PACKETS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00015400000000A0ull) + ((offset) & 31) * 512;
+}
+#else
+#define CVMX_PKO_L1_SQX_RED_PACKETS(offset) (CVMX_ADD_IO_SEG(0x00015400000000A0ull) + ((offset) & 31) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_L1_SQX_SHAPE(unsigned long offset)
@@ -436,6 +513,28 @@ static inline uint64_t CVMX_PKO_L1_SQX_YELLOW(unsigned long offset)
 }
 #else
 #define CVMX_PKO_L1_SQX_YELLOW(offset) (CVMX_ADD_IO_SEG(0x0001540000080060ull) + ((offset) & 31) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_L1_SQX_YELLOW_BYTES(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_PKO_L1_SQX_YELLOW_BYTES(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001540000000098ull) + ((offset) & 31) * 512;
+}
+#else
+#define CVMX_PKO_L1_SQX_YELLOW_BYTES(offset) (CVMX_ADD_IO_SEG(0x0001540000000098ull) + ((offset) & 31) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_L1_SQX_YELLOW_PACKETS(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_PKO_L1_SQX_YELLOW_PACKETS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001540000000090ull) + ((offset) & 31) * 512;
+}
+#else
+#define CVMX_PKO_L1_SQX_YELLOW_PACKETS(offset) (CVMX_ADD_IO_SEG(0x0001540000000090ull) + ((offset) & 31) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_L2_SQX_CIR(unsigned long offset)
@@ -1032,6 +1131,17 @@ static inline uint64_t CVMX_PKO_LUTX(unsigned long offset)
 #define CVMX_PKO_LUTX(offset) (CVMX_ADD_IO_SEG(0x0001540000B00000ull) + ((offset) & 1023) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_LUT_BIST_DONE CVMX_PKO_LUT_BIST_DONE_FUNC()
+static inline uint64_t CVMX_PKO_LUT_BIST_DONE_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_LUT_BIST_DONE not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000B02020ull);
+}
+#else
+#define CVMX_PKO_LUT_BIST_DONE (CVMX_ADD_IO_SEG(0x0001540000B02020ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_LUT_BIST_STATUS CVMX_PKO_LUT_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_LUT_BIST_STATUS_FUNC(void)
 {
@@ -1312,6 +1422,17 @@ static inline uint64_t CVMX_PKO_MEM_THROTTLE_PIPE_FUNC(void)
 #define CVMX_PKO_MEM_THROTTLE_PIPE (CVMX_ADD_IO_SEG(0x0001180050001050ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_NCB_BIST_STATUS CVMX_PKO_NCB_BIST_STATUS_FUNC()
+static inline uint64_t CVMX_PKO_NCB_BIST_STATUS_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_NCB_BIST_STATUS not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000EFFF00ull);
+}
+#else
+#define CVMX_PKO_NCB_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001540000EFFF00ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_NCB_ECC_CTL0 CVMX_PKO_NCB_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_NCB_ECC_CTL0_FUNC(void)
 {
@@ -1400,6 +1521,17 @@ static inline uint64_t CVMX_PKO_NCB_TX_ERR_WORD_FUNC(void)
 #define CVMX_PKO_NCB_TX_ERR_WORD (CVMX_ADD_IO_SEG(0x0001540000E00000ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_BIST_STATUS CVMX_PKO_PDM_BIST_STATUS_FUNC()
+static inline uint64_t CVMX_PKO_PDM_BIST_STATUS_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PDM_BIST_STATUS not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00015400008FFF00ull);
+}
+#else
+#define CVMX_PKO_PDM_BIST_STATUS (CVMX_ADD_IO_SEG(0x00015400008FFF00ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PDM_CFG CVMX_PKO_PDM_CFG_FUNC()
 static inline uint64_t CVMX_PKO_PDM_CFG_FUNC(void)
 {
@@ -1420,6 +1552,28 @@ static inline uint64_t CVMX_PKO_PDM_DQX_MINPAD(unsigned long offset)
 }
 #else
 #define CVMX_PKO_PDM_DQX_MINPAD(offset) (CVMX_ADD_IO_SEG(0x00015400008F0000ull) + ((offset) & 1023) * 8)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_DRPBUF_DBG CVMX_PKO_PDM_DRPBUF_DBG_FUNC()
+static inline uint64_t CVMX_PKO_PDM_DRPBUF_DBG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PDM_DRPBUF_DBG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00015400008000B0ull);
+}
+#else
+#define CVMX_PKO_PDM_DRPBUF_DBG (CVMX_ADD_IO_SEG(0x00015400008000B0ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_DWPBUF_DBG CVMX_PKO_PDM_DWPBUF_DBG_FUNC()
+static inline uint64_t CVMX_PKO_PDM_DWPBUF_DBG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PDM_DWPBUF_DBG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00015400008000A8ull);
+}
+#else
+#define CVMX_PKO_PDM_DWPBUF_DBG (CVMX_ADD_IO_SEG(0x00015400008000A8ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PDM_ECC_CTL0 CVMX_PKO_PDM_ECC_CTL0_FUNC()
@@ -1477,6 +1631,28 @@ static inline uint64_t CVMX_PKO_PDM_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PDM_ECC_SBE_STS_CMB0 (CVMX_ADD_IO_SEG(0x00015400008FFFE8ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_ISRD_DBG CVMX_PKO_PDM_ISRD_DBG_FUNC()
+static inline uint64_t CVMX_PKO_PDM_ISRD_DBG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PDM_ISRD_DBG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000800090ull);
+}
+#else
+#define CVMX_PKO_PDM_ISRD_DBG (CVMX_ADD_IO_SEG(0x0001540000800090ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_ISRM_DBG CVMX_PKO_PDM_ISRM_DBG_FUNC()
+static inline uint64_t CVMX_PKO_PDM_ISRM_DBG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PDM_ISRM_DBG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000800098ull);
+}
+#else
+#define CVMX_PKO_PDM_ISRM_DBG (CVMX_ADD_IO_SEG(0x0001540000800098ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PDM_MEM_ADDR CVMX_PKO_PDM_MEM_ADDR_FUNC()
 static inline uint64_t CVMX_PKO_PDM_MEM_ADDR_FUNC(void)
 {
@@ -1521,6 +1697,17 @@ static inline uint64_t CVMX_PKO_PDM_MEM_RW_STS_FUNC(void)
 #define CVMX_PKO_PDM_MEM_RW_STS (CVMX_ADD_IO_SEG(0x0001540000800028ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_MWPBUF_DBG CVMX_PKO_PDM_MWPBUF_DBG_FUNC()
+static inline uint64_t CVMX_PKO_PDM_MWPBUF_DBG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PDM_MWPBUF_DBG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00015400008000A0ull);
+}
+#else
+#define CVMX_PKO_PDM_MWPBUF_DBG (CVMX_ADD_IO_SEG(0x00015400008000A0ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PDM_SENDPKT_LMTXX_ERR CVMX_PKO_PDM_SENDPKT_LMTXX_ERR_FUNC()
 static inline uint64_t CVMX_PKO_PDM_SENDPKT_LMTXX_ERR_FUNC(void)
 {
@@ -1541,6 +1728,28 @@ static inline uint64_t CVMX_PKO_PDM_STS_FUNC(void)
 }
 #else
 #define CVMX_PKO_PDM_STS (CVMX_ADD_IO_SEG(0x0001540000800008ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_BIST_DONE CVMX_PKO_PEB_BIST_DONE_FUNC()
+static inline uint64_t CVMX_PKO_PEB_BIST_DONE_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_BIST_DONE not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900D08ull);
+}
+#else
+#define CVMX_PKO_PEB_BIST_DONE (CVMX_ADD_IO_SEG(0x0001540000900D08ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_BIST_STATUS CVMX_PKO_PEB_BIST_STATUS_FUNC()
+static inline uint64_t CVMX_PKO_PEB_BIST_STATUS_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_BIST_STATUS not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900D00ull);
+}
+#else
+#define CVMX_PKO_PEB_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001540000900D00ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PEB_ECC_CTL0 CVMX_PKO_PEB_ECC_CTL0_FUNC()
@@ -1728,105 +1937,6 @@ static inline uint64_t CVMX_PKO_PEB_TRUNC_ERR_INFO_FUNC(void)
 }
 #else
 #define CVMX_PKO_PEB_TRUNC_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C30ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_PQX_DROPPED_BYTES(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_PKO_PQX_DROPPED_BYTES(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00015400000000B8ull) + ((offset) & 31) * 512;
-}
-#else
-#define CVMX_PKO_PQX_DROPPED_BYTES(offset) (CVMX_ADD_IO_SEG(0x00015400000000B8ull) + ((offset) & 31) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_PQX_DROPPED_PACKETS(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_PKO_PQX_DROPPED_PACKETS(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00015400000000B0ull) + ((offset) & 31) * 512;
-}
-#else
-#define CVMX_PKO_PQX_DROPPED_PACKETS(offset) (CVMX_ADD_IO_SEG(0x00015400000000B0ull) + ((offset) & 31) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_PQX_GREEN_SENT_BYTES(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_PKO_PQX_GREEN_SENT_BYTES(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001540000000088ull) + ((offset) & 31) * 512;
-}
-#else
-#define CVMX_PKO_PQX_GREEN_SENT_BYTES(offset) (CVMX_ADD_IO_SEG(0x0001540000000088ull) + ((offset) & 31) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_PQX_GREEN_SENT_PACKETS(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_PKO_PQX_GREEN_SENT_PACKETS(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001540000000080ull) + ((offset) & 31) * 512;
-}
-#else
-#define CVMX_PKO_PQX_GREEN_SENT_PACKETS(offset) (CVMX_ADD_IO_SEG(0x0001540000000080ull) + ((offset) & 31) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_PQX_RED_SENT_BYTES(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_PKO_PQX_RED_SENT_BYTES(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00015400000000A8ull) + ((offset) & 31) * 512;
-}
-#else
-#define CVMX_PKO_PQX_RED_SENT_BYTES(offset) (CVMX_ADD_IO_SEG(0x00015400000000A8ull) + ((offset) & 31) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_PQX_RED_SENT_PACKETS(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_PKO_PQX_RED_SENT_PACKETS(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00015400000000A0ull) + ((offset) & 31) * 512;
-}
-#else
-#define CVMX_PKO_PQX_RED_SENT_PACKETS(offset) (CVMX_ADD_IO_SEG(0x00015400000000A0ull) + ((offset) & 31) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_PQX_TOPOLOGY(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_PKO_PQX_TOPOLOGY(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001540000000000ull) + ((offset) & 31) * 512;
-}
-#else
-#define CVMX_PKO_PQX_TOPOLOGY(offset) (CVMX_ADD_IO_SEG(0x0001540000000000ull) + ((offset) & 31) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_PQX_YELLOW_SENT_BYTES(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_PKO_PQX_YELLOW_SENT_BYTES(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001540000000098ull) + ((offset) & 31) * 512;
-}
-#else
-#define CVMX_PKO_PQX_YELLOW_SENT_BYTES(offset) (CVMX_ADD_IO_SEG(0x0001540000000098ull) + ((offset) & 31) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PKO_PQX_YELLOW_SENT_PACKETS(unsigned long offset)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_PKO_PQX_YELLOW_SENT_PACKETS(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001540000000090ull) + ((offset) & 31) * 512;
-}
-#else
-#define CVMX_PKO_PQX_YELLOW_SENT_PACKETS(offset) (CVMX_ADD_IO_SEG(0x0001540000000090ull) + ((offset) & 31) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PSE_DQ_ECC_CTL0 CVMX_PKO_PSE_DQ_ECC_CTL0_FUNC()
@@ -2540,7 +2650,7 @@ union cvmx_pko_dpfi_flush {
                                                          valid pointers from the pointer cache and return them to the FPA. The flush operation is
                                                          complete when the CACHE_FLUSHED flag in the PKO_DFPI_STATUS register is set. Clearing the
                                                          FLUSH_EN flag results in the DPFI reloading its pointer cache. This flush mechanism should
-                                                         only be enabled when the PKO is quiescent and is intended as test/debug feature. */
+                                                         only be enabled when the PKO is quiescent and all DQs have been closed. */
 #else
 	uint64_t flush_en                     : 1;
 	uint64_t reserved_1_63                : 63;
@@ -2577,7 +2687,9 @@ union cvmx_pko_dpfi_status {
 	uint64_t u64;
 	struct cvmx_pko_dpfi_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_13_63               : 51;
+	uint64_t ptr_cnt                      : 32; /**< The number of pointers currently in use for storing descriptors
+                                                         and meta-packets plus those available in the DPFI pointer cache. */
+	uint64_t reserved_13_31               : 19;
 	uint64_t isrd_ptr1_rtn_full           : 1;  /**< 1 = ISRD pointer return register 1 contains a valid pointer
                                                          0 = ISRD pointer return register 1 is empty */
 	uint64_t isrd_ptr0_rtn_full           : 1;  /**< 1 = ISRD pointer return register 0 contains a valid pointer
@@ -2602,7 +2714,8 @@ union cvmx_pko_dpfi_status {
                                                          0 = FPA is providing pointers when requested. */
 	uint64_t dpfi_empty                   : 1;  /**< 1 = DPFI pointer cache is empty.
                                                          0 = DPFI pointer cache is not empty. */
-	uint64_t cache_flushed                : 1;  /**< 1 = Cache flush has completed.
+	uint64_t cache_flushed                : 1;  /**< 1 = Cache flush has completed. PKO_DPFI_STATUS[PTR_CNT] will read zero if all
+                                                             outstanding pointers have been returned to the FPA.
                                                          0 = Cache flush not enabled or in-progress. */
 #else
 	uint64_t cache_flushed                : 1;
@@ -2618,12 +2731,31 @@ union cvmx_pko_dpfi_status {
 	uint64_t isrm_ptr1_rtn_full           : 1;
 	uint64_t isrd_ptr0_rtn_full           : 1;
 	uint64_t isrd_ptr1_rtn_full           : 1;
-	uint64_t reserved_13_63               : 51;
+	uint64_t reserved_13_31               : 19;
+	uint64_t ptr_cnt                      : 32;
 #endif
 	} s;
 	struct cvmx_pko_dpfi_status_s         cn78xx;
 };
 typedef union cvmx_pko_dpfi_status cvmx_pko_dpfi_status_t;
+
+/**
+ * cvmx_pko_dq#_bytes
+ */
+union cvmx_pko_dqx_bytes {
+	uint64_t u64;
+	struct cvmx_pko_dqx_bytes_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t count                        : 48; /**< Count. The running count of bytes. Note that this count wraps. */
+#else
+	uint64_t count                        : 48;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_pko_dqx_bytes_s           cn78xx;
+};
+typedef union cvmx_pko_dqx_bytes cvmx_pko_dqx_bytes_t;
 
 /**
  * cvmx_pko_dq#_cir
@@ -2693,6 +2825,46 @@ union cvmx_pko_dqx_dropped_packets {
 	struct cvmx_pko_dqx_dropped_packets_s cn78xx;
 };
 typedef union cvmx_pko_dqx_dropped_packets cvmx_pko_dqx_dropped_packets_t;
+
+/**
+ * cvmx_pko_dq#_fifo
+ */
+union cvmx_pko_dqx_fifo {
+	uint64_t u64;
+	struct cvmx_pko_dqx_fifo_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_15_63               : 49;
+	uint64_t p_con                        : 1;  /**< Reserved. */
+	uint64_t head                         : 7;  /**< See PKO_L2_SQ(0..511)_POINTERS[PREV]. */
+	uint64_t tail                         : 7;  /**< See PKO_L2_SQ(0..511)_POINTERS[NEXT]. */
+#else
+	uint64_t tail                         : 7;
+	uint64_t head                         : 7;
+	uint64_t p_con                        : 1;
+	uint64_t reserved_15_63               : 49;
+#endif
+	} s;
+	struct cvmx_pko_dqx_fifo_s            cn78xx;
+};
+typedef union cvmx_pko_dqx_fifo cvmx_pko_dqx_fifo_t;
+
+/**
+ * cvmx_pko_dq#_packets
+ */
+union cvmx_pko_dqx_packets {
+	uint64_t u64;
+	struct cvmx_pko_dqx_packets_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_40_63               : 24;
+	uint64_t count                        : 40; /**< Count. The running count of packets. Note that this count wraps. */
+#else
+	uint64_t count                        : 40;
+	uint64_t reserved_40_63               : 24;
+#endif
+	} s;
+	struct cvmx_pko_dqx_packets_s         cn78xx;
+};
+typedef union cvmx_pko_dqx_packets cvmx_pko_dqx_packets_t;
 
 /**
  * cvmx_pko_dq#_pick
@@ -2840,42 +3012,6 @@ union cvmx_pko_dqx_schedule {
 typedef union cvmx_pko_dqx_schedule cvmx_pko_dqx_schedule_t;
 
 /**
- * cvmx_pko_dq#_sent_bytes
- */
-union cvmx_pko_dqx_sent_bytes {
-	uint64_t u64;
-	struct cvmx_pko_dqx_sent_bytes_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_48_63               : 16;
-	uint64_t count                        : 48; /**< Count. The running count of bytes. Note that this count wraps. */
-#else
-	uint64_t count                        : 48;
-	uint64_t reserved_48_63               : 16;
-#endif
-	} s;
-	struct cvmx_pko_dqx_sent_bytes_s      cn78xx;
-};
-typedef union cvmx_pko_dqx_sent_bytes cvmx_pko_dqx_sent_bytes_t;
-
-/**
- * cvmx_pko_dq#_sent_packets
- */
-union cvmx_pko_dqx_sent_packets {
-	uint64_t u64;
-	struct cvmx_pko_dqx_sent_packets_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_40_63               : 24;
-	uint64_t count                        : 40; /**< Count. The running count of packets. Note that this count wraps. */
-#else
-	uint64_t count                        : 40;
-	uint64_t reserved_40_63               : 24;
-#endif
-	} s;
-	struct cvmx_pko_dqx_sent_packets_s    cn78xx;
-};
-typedef union cvmx_pko_dqx_sent_packets cvmx_pko_dqx_sent_packets_t;
-
-/**
  * cvmx_pko_dq#_shape
  */
 union cvmx_pko_dqx_shape {
@@ -2940,7 +3076,15 @@ union cvmx_pko_dqx_sw_xoff {
 	uint64_t u64;
 	struct cvmx_pko_dqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
+	uint64_t reserved_4_63                : 60;
+	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
+                                                         28).
+                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
+                                                         the path has drained." */
+	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+                                                         ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -2948,7 +3092,10 @@ union cvmx_pko_dqx_sw_xoff {
                                                          XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
-	uint64_t reserved_1_63                : 63;
+	uint64_t drain                        : 1;
+	uint64_t drain_null_link              : 1;
+	uint64_t drain_irq                    : 1;
+	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
 	struct cvmx_pko_dqx_sw_xoff_s         cn78xx;
@@ -3128,6 +3275,42 @@ union cvmx_pko_l1_sqx_cir {
 typedef union cvmx_pko_l1_sqx_cir cvmx_pko_l1_sqx_cir_t;
 
 /**
+ * cvmx_pko_l1_sq#_dropped_bytes
+ */
+union cvmx_pko_l1_sqx_dropped_bytes {
+	uint64_t u64;
+	struct cvmx_pko_l1_sqx_dropped_bytes_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t count                        : 48; /**< Count. The running count of bytes. Note that this count wraps. */
+#else
+	uint64_t count                        : 48;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_pko_l1_sqx_dropped_bytes_s cn78xx;
+};
+typedef union cvmx_pko_l1_sqx_dropped_bytes cvmx_pko_l1_sqx_dropped_bytes_t;
+
+/**
+ * cvmx_pko_l1_sq#_dropped_packets
+ */
+union cvmx_pko_l1_sqx_dropped_packets {
+	uint64_t u64;
+	struct cvmx_pko_l1_sqx_dropped_packets_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_40_63               : 24;
+	uint64_t count                        : 40; /**< Count. The running count of packets. Note that this count wraps. */
+#else
+	uint64_t count                        : 40;
+	uint64_t reserved_40_63               : 24;
+#endif
+	} s;
+	struct cvmx_pko_l1_sqx_dropped_packets_s cn78xx;
+};
+typedef union cvmx_pko_l1_sqx_dropped_packets cvmx_pko_l1_sqx_dropped_packets_t;
+
+/**
  * cvmx_pko_l1_sq#_green
  */
 union cvmx_pko_l1_sqx_green {
@@ -3135,12 +3318,12 @@ union cvmx_pko_l1_sqx_green {
 	struct cvmx_pko_l1_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. */
+	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
 	uint64_t reserved_25_31               : 7;
-	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. */
+	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. */
+                                                         scheduling queue are active. For internal use only. */
 #else
 	uint64_t active_vec                   : 10;
 	uint64_t reserved_10_15               : 6;
@@ -3153,6 +3336,42 @@ union cvmx_pko_l1_sqx_green {
 	struct cvmx_pko_l1_sqx_green_s        cn78xx;
 };
 typedef union cvmx_pko_l1_sqx_green cvmx_pko_l1_sqx_green_t;
+
+/**
+ * cvmx_pko_l1_sq#_green_bytes
+ */
+union cvmx_pko_l1_sqx_green_bytes {
+	uint64_t u64;
+	struct cvmx_pko_l1_sqx_green_bytes_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t count                        : 48; /**< Count. The running count of bytes. Note that this count wraps. */
+#else
+	uint64_t count                        : 48;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_pko_l1_sqx_green_bytes_s  cn78xx;
+};
+typedef union cvmx_pko_l1_sqx_green_bytes cvmx_pko_l1_sqx_green_bytes_t;
+
+/**
+ * cvmx_pko_l1_sq#_green_packets
+ */
+union cvmx_pko_l1_sqx_green_packets {
+	uint64_t u64;
+	struct cvmx_pko_l1_sqx_green_packets_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_40_63               : 24;
+	uint64_t count                        : 40; /**< Count. The running count of packets. Note that this count wraps. */
+#else
+	uint64_t count                        : 40;
+	uint64_t reserved_40_63               : 24;
+#endif
+	} s;
+	struct cvmx_pko_l1_sqx_green_packets_s cn78xx;
+};
+typedef union cvmx_pko_l1_sqx_green_packets cvmx_pko_l1_sqx_green_packets_t;
 
 /**
  * cvmx_pko_l1_sq#_link
@@ -3280,12 +3499,12 @@ union cvmx_pko_l1_sqx_red {
 	struct cvmx_pko_l1_sqx_red_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. */
+	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
 	uint64_t reserved_25_31               : 7;
-	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. */
+	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. */
+                                                         scheduling queue are active. For internal use only. */
 #else
 	uint64_t active_vec                   : 10;
 	uint64_t reserved_10_15               : 6;
@@ -3298,6 +3517,42 @@ union cvmx_pko_l1_sqx_red {
 	struct cvmx_pko_l1_sqx_red_s          cn78xx;
 };
 typedef union cvmx_pko_l1_sqx_red cvmx_pko_l1_sqx_red_t;
+
+/**
+ * cvmx_pko_l1_sq#_red_bytes
+ */
+union cvmx_pko_l1_sqx_red_bytes {
+	uint64_t u64;
+	struct cvmx_pko_l1_sqx_red_bytes_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t count                        : 48; /**< Count. The running count of bytes. Note that this count wraps. */
+#else
+	uint64_t count                        : 48;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_pko_l1_sqx_red_bytes_s    cn78xx;
+};
+typedef union cvmx_pko_l1_sqx_red_bytes cvmx_pko_l1_sqx_red_bytes_t;
+
+/**
+ * cvmx_pko_l1_sq#_red_packets
+ */
+union cvmx_pko_l1_sqx_red_packets {
+	uint64_t u64;
+	struct cvmx_pko_l1_sqx_red_packets_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_40_63               : 24;
+	uint64_t count                        : 40; /**< Count. The running count of packets. Note that this count wraps. */
+#else
+	uint64_t count                        : 40;
+	uint64_t reserved_40_63               : 24;
+#endif
+	} s;
+	struct cvmx_pko_l1_sqx_red_packets_s  cn78xx;
+};
+typedef union cvmx_pko_l1_sqx_red_packets cvmx_pko_l1_sqx_red_packets_t;
 
 /**
  * cvmx_pko_l1_sq#_shape
@@ -3354,7 +3609,15 @@ union cvmx_pko_l1_sqx_sw_xoff {
 	uint64_t u64;
 	struct cvmx_pko_l1_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
+	uint64_t reserved_4_63                : 60;
+	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
+                                                         28).
+                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
+                                                         the path has drained." */
+	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+                                                         ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -3362,7 +3625,10 @@ union cvmx_pko_l1_sqx_sw_xoff {
                                                          XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
-	uint64_t reserved_1_63                : 63;
+	uint64_t drain                        : 1;
+	uint64_t drain_null_link              : 1;
+	uint64_t drain_irq                    : 1;
+	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
 	struct cvmx_pko_l1_sqx_sw_xoff_s      cn78xx;
@@ -3427,12 +3693,12 @@ union cvmx_pko_l1_sqx_yellow {
 	struct cvmx_pko_l1_sqx_yellow_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. */
+	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
 	uint64_t reserved_25_31               : 7;
-	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. */
+	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. */
+                                                         scheduling queue are active. For internal use only. */
 #else
 	uint64_t active_vec                   : 10;
 	uint64_t reserved_10_15               : 6;
@@ -3445,6 +3711,42 @@ union cvmx_pko_l1_sqx_yellow {
 	struct cvmx_pko_l1_sqx_yellow_s       cn78xx;
 };
 typedef union cvmx_pko_l1_sqx_yellow cvmx_pko_l1_sqx_yellow_t;
+
+/**
+ * cvmx_pko_l1_sq#_yellow_bytes
+ */
+union cvmx_pko_l1_sqx_yellow_bytes {
+	uint64_t u64;
+	struct cvmx_pko_l1_sqx_yellow_bytes_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t count                        : 48; /**< Count. The running count of bytes. Note that this count wraps. */
+#else
+	uint64_t count                        : 48;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_pko_l1_sqx_yellow_bytes_s cn78xx;
+};
+typedef union cvmx_pko_l1_sqx_yellow_bytes cvmx_pko_l1_sqx_yellow_bytes_t;
+
+/**
+ * cvmx_pko_l1_sq#_yellow_packets
+ */
+union cvmx_pko_l1_sqx_yellow_packets {
+	uint64_t u64;
+	struct cvmx_pko_l1_sqx_yellow_packets_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_40_63               : 24;
+	uint64_t count                        : 40; /**< Count. The running count of packets. Note that this count wraps. */
+#else
+	uint64_t count                        : 40;
+	uint64_t reserved_40_63               : 24;
+#endif
+	} s;
+	struct cvmx_pko_l1_sqx_yellow_packets_s cn78xx;
+};
+typedef union cvmx_pko_l1_sqx_yellow_packets cvmx_pko_l1_sqx_yellow_packets_t;
 
 /**
  * cvmx_pko_l2_sq#_cir
@@ -3487,12 +3789,12 @@ union cvmx_pko_l2_sqx_green {
 	struct cvmx_pko_l2_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. */
+	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
 	uint64_t reserved_25_31               : 7;
-	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. */
+	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. */
+                                                         scheduling queue are active. For internal use only. */
 #else
 	uint64_t active_vec                   : 10;
 	uint64_t reserved_10_15               : 6;
@@ -3615,12 +3917,12 @@ union cvmx_pko_l2_sqx_red {
 	struct cvmx_pko_l2_sqx_red_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. */
+	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
 	uint64_t reserved_25_31               : 7;
-	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. */
+	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. */
+                                                         scheduling queue are active. For internal use only. */
 #else
 	uint64_t active_vec                   : 10;
 	uint64_t reserved_10_15               : 6;
@@ -3749,7 +4051,15 @@ union cvmx_pko_l2_sqx_sw_xoff {
 	uint64_t u64;
 	struct cvmx_pko_l2_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
+	uint64_t reserved_4_63                : 60;
+	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
+                                                         28).
+                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
+                                                         the path has drained." */
+	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+                                                         ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -3757,7 +4067,10 @@ union cvmx_pko_l2_sqx_sw_xoff {
                                                          XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
-	uint64_t reserved_1_63                : 63;
+	uint64_t drain                        : 1;
+	uint64_t drain_null_link              : 1;
+	uint64_t drain_irq                    : 1;
+	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
 	struct cvmx_pko_l2_sqx_sw_xoff_s      cn78xx;
@@ -3805,12 +4118,12 @@ union cvmx_pko_l2_sqx_yellow {
 	struct cvmx_pko_l2_sqx_yellow_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. */
+	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
 	uint64_t reserved_25_31               : 7;
-	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. */
+	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. */
+                                                         scheduling queue are active. For internal use only. */
 #else
 	uint64_t active_vec                   : 10;
 	uint64_t reserved_10_15               : 6;
@@ -4157,7 +4470,15 @@ union cvmx_pko_l3_sqx_sw_xoff {
 	uint64_t u64;
 	struct cvmx_pko_l3_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
+	uint64_t reserved_4_63                : 60;
+	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
+                                                         28).
+                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
+                                                         the path has drained." */
+	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+                                                         ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -4165,7 +4486,10 @@ union cvmx_pko_l3_sqx_sw_xoff {
                                                          XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
-	uint64_t reserved_1_63                : 63;
+	uint64_t drain                        : 1;
+	uint64_t drain_null_link              : 1;
+	uint64_t drain_irq                    : 1;
+	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
 	struct cvmx_pko_l3_sqx_sw_xoff_s      cn78xx;
@@ -4521,7 +4845,15 @@ union cvmx_pko_l4_sqx_sw_xoff {
 	uint64_t u64;
 	struct cvmx_pko_l4_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
+	uint64_t reserved_4_63                : 60;
+	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
+                                                         28).
+                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
+                                                         the path has drained." */
+	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+                                                         ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -4529,7 +4861,10 @@ union cvmx_pko_l4_sqx_sw_xoff {
                                                          XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
-	uint64_t reserved_1_63                : 63;
+	uint64_t drain                        : 1;
+	uint64_t drain_null_link              : 1;
+	uint64_t drain_irq                    : 1;
+	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_sw_xoff_s      cn78xx;
@@ -4885,7 +5220,15 @@ union cvmx_pko_l5_sqx_sw_xoff {
 	uint64_t u64;
 	struct cvmx_pko_l5_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
+	uint64_t reserved_4_63                : 60;
+	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
+                                                         28).
+                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
+                                                         the path has drained." */
+	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+                                                         ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -4893,7 +5236,10 @@ union cvmx_pko_l5_sqx_sw_xoff {
                                                          XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
-	uint64_t reserved_1_63                : 63;
+	uint64_t drain                        : 1;
+	uint64_t drain_null_link              : 1;
+	uint64_t drain_irq                    : 1;
+	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_sw_xoff_s      cn78xx;
@@ -4979,19 +5325,35 @@ union cvmx_pko_lutx {
 typedef union cvmx_pko_lutx cvmx_pko_lutx_t;
 
 /**
+ * cvmx_pko_lut_bist_done
+ */
+union cvmx_pko_lut_bist_done {
+	uint64_t u64;
+	struct cvmx_pko_lut_bist_done_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_1_63                : 63;
+	uint64_t bist_done                    : 1;  /**< C2Q LUT BIST done. */
+#else
+	uint64_t bist_done                    : 1;
+	uint64_t reserved_1_63                : 63;
+#endif
+	} s;
+	struct cvmx_pko_lut_bist_done_s       cn78xx;
+};
+typedef union cvmx_pko_lut_bist_done cvmx_pko_lut_bist_done_t;
+
+/**
  * cvmx_pko_lut_bist_status
  */
 union cvmx_pko_lut_bist_status {
 	uint64_t u64;
 	struct cvmx_pko_lut_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_2_63                : 62;
-	uint64_t bist_done                    : 1;  /**< FIXME needs work - must indicate done status of each RAM. */
-	uint64_t bist_status                  : 1;  /**< FIXME needs work - must indicate status of each RAM. */
+	uint64_t reserved_1_63                : 63;
+	uint64_t bist_status                  : 1;  /**< C2Q LUT BIST status. */
 #else
 	uint64_t bist_status                  : 1;
-	uint64_t bist_done                    : 1;
-	uint64_t reserved_2_63                : 62;
+	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
 	struct cvmx_pko_lut_bist_status_s     cn78xx;
@@ -7195,6 +7557,32 @@ union cvmx_pko_mem_throttle_pipe {
 typedef union cvmx_pko_mem_throttle_pipe cvmx_pko_mem_throttle_pipe_t;
 
 /**
+ * cvmx_pko_ncb_bist_status
+ */
+union cvmx_pko_ncb_bist_status {
+	uint64_t u64;
+	struct cvmx_pko_ncb_bist_status_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t ncbi_l2_out_ram_bist_status  : 1;  /**< BIST status for NCBI_L2_OUT_RAM. */
+	uint64_t ncbi_pp_out_ram_bist_status  : 1;  /**< BIST status for NCBI_PP_OUT_RAM. */
+	uint64_t ncbo_pdm_cmd_dat_ram_bist_status : 1;/**< BIST status for NCBO_PDM_CMD_DAT_RAM. */
+	uint64_t ncbi_l2_pdm_pref_ram_bist_status : 1;/**< BIST status for NCBI_L2_PDM_PREF_RAM. */
+	uint64_t ncbo_pp_fif_ram_bist_status  : 1;  /**< BIST status for NCBO_PP_FIF_RAM. */
+	uint64_t reserved_0_58                : 59;
+#else
+	uint64_t reserved_0_58                : 59;
+	uint64_t ncbo_pp_fif_ram_bist_status  : 1;
+	uint64_t ncbi_l2_pdm_pref_ram_bist_status : 1;
+	uint64_t ncbo_pdm_cmd_dat_ram_bist_status : 1;
+	uint64_t ncbi_pp_out_ram_bist_status  : 1;
+	uint64_t ncbi_l2_out_ram_bist_status  : 1;
+#endif
+	} s;
+	struct cvmx_pko_ncb_bist_status_s     cn78xx;
+};
+typedef union cvmx_pko_ncb_bist_status cvmx_pko_ncb_bist_status_t;
+
+/**
  * cvmx_pko_ncb_ecc_ctl0
  */
 union cvmx_pko_ncb_ecc_ctl0 {
@@ -7386,6 +7774,62 @@ union cvmx_pko_ncb_tx_err_word {
 typedef union cvmx_pko_ncb_tx_err_word cvmx_pko_ncb_tx_err_word_t;
 
 /**
+ * cvmx_pko_pdm_bist_status
+ */
+union cvmx_pko_pdm_bist_status {
+	uint64_t u64;
+	struct cvmx_pko_pdm_bist_status_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t flshb_cache_lo_ram_bist_status : 1;/**< BIST status for FLSHB_CACHE_LO_RAM. */
+	uint64_t flshb_cache_hi_ram_bist_status : 1;/**< BIST status for FLSHB_CACHE_HI_RAM. */
+	uint64_t isrm_ca_iinst_ram_bist_status : 1; /**< BIST status for ISRM_CA_IINST_RAM. */
+	uint64_t isrm_ca_cm_ram_bist_status   : 1;  /**< BIST status for ISRM_CA_CM_RAM. */
+	uint64_t isrm_st_ram2_bist_status     : 1;  /**< BIST status for ISRM_ST_RAM2. */
+	uint64_t isrm_st_ram1_bist_status     : 1;  /**< BIST status for ISRM_ST_RAM1. */
+	uint64_t isrm_st_ram0_bist_status     : 1;  /**< BIST status for ISRM_ST_RAM0. */
+	uint64_t isrd_st_ram3_bist_status     : 1;  /**< BIST status for ISRD_ST_RAM3. */
+	uint64_t isrd_st_ram2_bist_status     : 1;  /**< BIST status for ISRD_ST_RAM2. */
+	uint64_t isrd_st_ram1_bist_status     : 1;  /**< BIST status for ISRD_ST_RAM1. */
+	uint64_t isrd_st_ram0_bist_status     : 1;  /**< BIST status for ISRD_ST_RAM0. */
+	uint64_t drp_hi_ram_bist_status       : 1;  /**< BIST status for DRP_HI_RAM. */
+	uint64_t drp_lo_ram_bist_status       : 1;  /**< BIST status for DRP_LO_RAM. */
+	uint64_t dwp_hi_ram_bist_status       : 1;  /**< BIST status for DWP_HI_RAM. */
+	uint64_t dwp_lo_ram_bist_status       : 1;  /**< BIST status for DWP_LO_RAM. */
+	uint64_t mwp_hi_ram_bist_status       : 1;  /**< BIST status for MWP_HI_RAM. */
+	uint64_t mwp_lo_ram_bist_status       : 1;  /**< BIST status for MWP_LO_RAM. */
+	uint64_t fillb_m_dat_ram_bist_status  : 1;  /**< BIST status for FILLB_M_DAT_RAM. */
+	uint64_t fillb_d_dat_ram_bist_status  : 1;  /**< BIST status for FILLB_D_DAT_RAM. */
+	uint64_t minpad_ram_bist_status       : 1;  /**< BIST status for MINPAD_RAM. */
+	uint64_t reserved_0_43                : 44;
+#else
+	uint64_t reserved_0_43                : 44;
+	uint64_t minpad_ram_bist_status       : 1;
+	uint64_t fillb_d_dat_ram_bist_status  : 1;
+	uint64_t fillb_m_dat_ram_bist_status  : 1;
+	uint64_t mwp_lo_ram_bist_status       : 1;
+	uint64_t mwp_hi_ram_bist_status       : 1;
+	uint64_t dwp_lo_ram_bist_status       : 1;
+	uint64_t dwp_hi_ram_bist_status       : 1;
+	uint64_t drp_lo_ram_bist_status       : 1;
+	uint64_t drp_hi_ram_bist_status       : 1;
+	uint64_t isrd_st_ram0_bist_status     : 1;
+	uint64_t isrd_st_ram1_bist_status     : 1;
+	uint64_t isrd_st_ram2_bist_status     : 1;
+	uint64_t isrd_st_ram3_bist_status     : 1;
+	uint64_t isrm_st_ram0_bist_status     : 1;
+	uint64_t isrm_st_ram1_bist_status     : 1;
+	uint64_t isrm_st_ram2_bist_status     : 1;
+	uint64_t isrm_ca_cm_ram_bist_status   : 1;
+	uint64_t isrm_ca_iinst_ram_bist_status : 1;
+	uint64_t flshb_cache_hi_ram_bist_status : 1;
+	uint64_t flshb_cache_lo_ram_bist_status : 1;
+#endif
+	} s;
+	struct cvmx_pko_pdm_bist_status_s     cn78xx;
+};
+typedef union cvmx_pko_pdm_bist_status cvmx_pko_pdm_bist_status_t;
+
+/**
  * cvmx_pko_pdm_cfg
  */
 union cvmx_pko_pdm_cfg {
@@ -7440,6 +7884,62 @@ union cvmx_pko_pdm_dqx_minpad {
 	struct cvmx_pko_pdm_dqx_minpad_s      cn78xx;
 };
 typedef union cvmx_pko_pdm_dqx_minpad cvmx_pko_pdm_dqx_minpad_t;
+
+/**
+ * cvmx_pko_pdm_drpbuf_dbg
+ */
+union cvmx_pko_pdm_drpbuf_dbg {
+	uint64_t u64;
+	struct cvmx_pko_pdm_drpbuf_dbg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_19_63               : 45;
+	uint64_t cur_state                    : 3;  /**< This is current state from the pbuf controller. */
+	uint64_t track_rd_cnt                 : 6;  /**< This is the track read count value. */
+	uint64_t track_wr_cnt                 : 6;  /**< This is the track write count value. */
+	uint64_t mem_en                       : 4;  /**< These are the memory write/chip enable signals. The order of the bits is:
+                                                         - 3: low wen
+                                                         - 2: low cen
+                                                         - 1: high wen
+                                                         - 0: high cen */
+#else
+	uint64_t mem_en                       : 4;
+	uint64_t track_wr_cnt                 : 6;
+	uint64_t track_rd_cnt                 : 6;
+	uint64_t cur_state                    : 3;
+	uint64_t reserved_19_63               : 45;
+#endif
+	} s;
+	struct cvmx_pko_pdm_drpbuf_dbg_s      cn78xx;
+};
+typedef union cvmx_pko_pdm_drpbuf_dbg cvmx_pko_pdm_drpbuf_dbg_t;
+
+/**
+ * cvmx_pko_pdm_dwpbuf_dbg
+ */
+union cvmx_pko_pdm_dwpbuf_dbg {
+	uint64_t u64;
+	struct cvmx_pko_pdm_dwpbuf_dbg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_19_63               : 45;
+	uint64_t cur_state                    : 3;  /**< This is current state from the pbuf controller. */
+	uint64_t track_rd_cnt                 : 6;  /**< This is the track read count value. */
+	uint64_t track_wr_cnt                 : 6;  /**< This is the track write count value. */
+	uint64_t mem_en                       : 4;  /**< These are the memory write/chip enable signals. The order of the bits is:
+                                                         - 3: low wen
+                                                         - 2: low cen
+                                                         - 1: high wen
+                                                         - 0: high cen */
+#else
+	uint64_t mem_en                       : 4;
+	uint64_t track_wr_cnt                 : 6;
+	uint64_t track_rd_cnt                 : 6;
+	uint64_t cur_state                    : 3;
+	uint64_t reserved_19_63               : 45;
+#endif
+	} s;
+	struct cvmx_pko_pdm_dwpbuf_dbg_s      cn78xx;
+};
+typedef union cvmx_pko_pdm_dwpbuf_dbg cvmx_pko_pdm_dwpbuf_dbg_t;
 
 /**
  * cvmx_pko_pdm_ecc_ctl0
@@ -7686,6 +8186,150 @@ union cvmx_pko_pdm_ecc_sbe_sts_cmb0 {
 typedef union cvmx_pko_pdm_ecc_sbe_sts_cmb0 cvmx_pko_pdm_ecc_sbe_sts_cmb0_t;
 
 /**
+ * cvmx_pko_pdm_isrd_dbg
+ */
+union cvmx_pko_pdm_isrd_dbg {
+	uint64_t u64;
+	struct cvmx_pko_pdm_isrd_dbg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_44_63               : 20;
+	uint64_t in_arb_reqs                  : 8;  /**< Input arbitration request signals. The order of the bits is:
+                                                         - 43: Fill Response - normal path request
+                                                         - 42: Fill Response - flushb path request
+                                                         - 41: CP queue-open request
+                                                         - 40: CP queue-closed request
+                                                         - 39: CP queue-query request
+                                                         - 38: CP send-packet request
+                                                         - 37: PEB fill request
+                                                         - 36: PEB read request */
+	uint64_t in_arb_gnts                  : 7;  /**< Input arbitration grant signals. The order of the bits is:
+                                                         - 35: Fill Response grant
+                                                         - 34: CP - queue-open grant
+                                                         - 33: CP - queue-close grant
+                                                         - 32: CP - queue-query grant
+                                                         - 31: CP - send-packet grant
+                                                         - 30: PEB Fill grant
+                                                         - 29: PEB Read grant */
+	uint64_t cmt_arb_reqs                 : 7;  /**< Commit arbitration request signals. The order of the bits is:
+                                                         - 28: Fill Response grant
+                                                         - 27: CP - queue-open grant
+                                                         - 26: CP - queue-close grant
+                                                         - 25: CP - queue-query grant
+                                                         - 24: CP - send-packet grant
+                                                         - 23: PEB Fill grant
+                                                         - 22: PEB Read grant */
+	uint64_t cmt_arb_gnts                 : 7;  /**< Commit arbitration grant signals. The order of the bits is:
+                                                         - 21: Fill Response grant
+                                                         - 20: CP - queue-open grant
+                                                         - 19: CP - queue-close grant
+                                                         - 18: CP - queue-query grant
+                                                         - 17: CP - send-packet grant
+                                                         - 16: PEB Fill grant
+                                                         - 15: PEB Read grant */
+	uint64_t in_use                       : 4;  /**< In use signals indicate the execution units are in use. The order of the bits is:
+                                                         - 14: PEB fill unit
+                                                         - 13: PEB read unit
+                                                         - 12: CP unit
+                                                         - 11: Fill Response unit */
+	uint64_t has_cred                     : 4;  /**< Has credit signals indicate there is sufficient credit to commit. The order of the bits
+                                                         is:
+                                                           - 10: Flush Buffer has credit
+                                                          - 9: Fill Buffer has credit
+                                                          - 8: DW command output fifo has credit
+                                                          - 7: DR command output fifo has credit */
+	uint64_t val_exec                     : 7;  /**< Valid bits for the execution units; means the unit can commit if it gets the grant of the
+                                                         commit arb and other conditions are met.
+                                                         The order of the bits is :
+                                                          - 6: fill response unit
+                                                          - 5: CP unit - queue-open
+                                                          - 4: CP unit - queue-close
+                                                          - 3: CP unit - queue-probe
+                                                          - 2: CP unit - send-packet
+                                                          - 1: PEB Fill unit
+                                                          - 0: PEB Read unit */
+#else
+	uint64_t val_exec                     : 7;
+	uint64_t has_cred                     : 4;
+	uint64_t in_use                       : 4;
+	uint64_t cmt_arb_gnts                 : 7;
+	uint64_t cmt_arb_reqs                 : 7;
+	uint64_t in_arb_gnts                  : 7;
+	uint64_t in_arb_reqs                  : 8;
+	uint64_t reserved_44_63               : 20;
+#endif
+	} s;
+	struct cvmx_pko_pdm_isrd_dbg_s        cn78xx;
+};
+typedef union cvmx_pko_pdm_isrd_dbg cvmx_pko_pdm_isrd_dbg_t;
+
+/**
+ * cvmx_pko_pdm_isrm_dbg
+ */
+union cvmx_pko_pdm_isrm_dbg {
+	uint64_t u64;
+	struct cvmx_pko_pdm_isrm_dbg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_34_63               : 30;
+	uint64_t in_arb_reqs                  : 7;  /**< Input arbitration request signals. The order of the bits is:
+                                                         - 33: PSE ack
+                                                         - 32: Fill Response - normal path request
+                                                         - 31: Fill Response - flushb path request
+                                                         - 30: CP queue-open
+                                                         - 29: CP queue-closed
+                                                         - 28: CP queue-query
+                                                         - 27: CP send-packet */
+	uint64_t in_arb_gnts                  : 6;  /**< Input arbitration grant signals. The order of the bits is:
+                                                         - 26: PSE ack
+                                                         - 25: Fill Response
+                                                         - 24: CP - queue-open
+                                                         - 23: CP - queue-close
+                                                         - 22: CP - queue-query
+                                                         - 21: CP - send-packet */
+	uint64_t cmt_arb_reqs                 : 6;  /**< Commit arbitration request signals. The order of the bits is:
+                                                         - 20: PSE ack
+                                                         - 19: Fill Response
+                                                         - 18: CP - queue-open
+                                                         - 17: CP - queue-close
+                                                         - 16: CP - queue-query
+                                                         - 15: CP - send-packet */
+	uint64_t cmt_arb_gnts                 : 6;  /**< Commit arbitration grant signals. The order of the bits is:
+                                                          - 14: PSE ack
+                                                          - 13: Fill Response
+                                                          - 12: CP - queue-open
+                                                          - 11: CP - queue-close
+                                                          - 10: CP - queue-query
+                                                         - 9: CP - send-packet */
+	uint64_t in_use                       : 3;  /**< In use signals indicate the execution units are in use. The order of the bits is:
+                                                         - 8: (PSE) ack unit
+                                                         - 7: Fill Response unit
+                                                         - 6: CP unit */
+	uint64_t has_cred                     : 3;  /**< Has credit signals indicate there is sufficient credit to commit. The order of the bits
+                                                         is:
+                                                          - 5: Flush Buffer has credit
+                                                          - 4: Fill Buffer has credit
+                                                          - 3: MWP command output fifo has credit */
+	uint64_t val_exec                     : 3;  /**< Valid bits for the execution units; means the unit can commit if it gets the grant of the
+                                                         commit arb and other conditions are met.
+                                                         The order of the bits is :
+                                                          - 2: (PSE) ack unit
+                                                          - 1: Fill response unit
+                                                          - 0: CP unit - ALL */
+#else
+	uint64_t val_exec                     : 3;
+	uint64_t has_cred                     : 3;
+	uint64_t in_use                       : 3;
+	uint64_t cmt_arb_gnts                 : 6;
+	uint64_t cmt_arb_reqs                 : 6;
+	uint64_t in_arb_gnts                  : 6;
+	uint64_t in_arb_reqs                  : 7;
+	uint64_t reserved_34_63               : 30;
+#endif
+	} s;
+	struct cvmx_pko_pdm_isrm_dbg_s        cn78xx;
+};
+typedef union cvmx_pko_pdm_isrm_dbg cvmx_pko_pdm_isrm_dbg_t;
+
+/**
  * cvmx_pko_pdm_mem_addr
  */
 union cvmx_pko_pdm_mem_addr {
@@ -7766,6 +8410,34 @@ union cvmx_pko_pdm_mem_rw_sts {
 typedef union cvmx_pko_pdm_mem_rw_sts cvmx_pko_pdm_mem_rw_sts_t;
 
 /**
+ * cvmx_pko_pdm_mwpbuf_dbg
+ */
+union cvmx_pko_pdm_mwpbuf_dbg {
+	uint64_t u64;
+	struct cvmx_pko_pdm_mwpbuf_dbg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_19_63               : 45;
+	uint64_t cur_state                    : 3;  /**< This is current state from the pbuf controller. */
+	uint64_t track_rd_cnt                 : 6;  /**< This is the track read count value. */
+	uint64_t track_wr_cnt                 : 6;  /**< This is the track write count value. */
+	uint64_t mem_en                       : 4;  /**< These are the memory write/chip enable signals. The order of the bits is:
+                                                         - 3: low wen
+                                                         - 2: low cen
+                                                         - 1: high wen
+                                                         - 0: high cen */
+#else
+	uint64_t mem_en                       : 4;
+	uint64_t track_wr_cnt                 : 6;
+	uint64_t track_rd_cnt                 : 6;
+	uint64_t cur_state                    : 3;
+	uint64_t reserved_19_63               : 45;
+#endif
+	} s;
+	struct cvmx_pko_pdm_mwpbuf_dbg_s      cn78xx;
+};
+typedef union cvmx_pko_pdm_mwpbuf_dbg cvmx_pko_pdm_mwpbuf_dbg_t;
+
+/**
  * cvmx_pko_pdm_sendpkt_lmtxx_err
  */
 union cvmx_pko_pdm_sendpkt_lmtxx_err {
@@ -7796,7 +8468,13 @@ union cvmx_pko_pdm_sts {
 	uint64_t u64;
 	struct cvmx_pko_pdm_sts_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_6_63                : 58;
+	uint64_t reserved_9_63                : 55;
+	uint64_t mwpbuf_data_val_err          : 1;  /**< recieved signal that MWPBUF had data valid error. Throws
+                                                         PKO_INTSN_E::PKO_MWPBUF_DATA_VAL_ERR. */
+	uint64_t drpbuf_data_val_err          : 1;  /**< recieved signal that DRPBUF had data valid error. Throws
+                                                         PKO_INTSN_E::PKO_DRPBUF_DATA_VAL_ERR. */
+	uint64_t dwpbuf_data_val_err          : 1;  /**< recieved signal that DWPBUF had data valid error. Throws
+                                                         PKO_INTSN_E::PKO_DWPBUF_DATA_VAL_ERR. */
 	uint64_t sendpkt_lmtdma_err           : 1;  /**< recieved signal that FPA cannot allocate pointer. Throws
                                                          PKO_INTSN_E::PKO_SENDPKT_LMTDMA_ERR. */
 	uint64_t sendpkt_lmtst_err            : 1;  /**< recieved signal that FPA cannot allocate pointer. Throws
@@ -7814,12 +8492,153 @@ union cvmx_pko_pdm_sts {
 	uint64_t fpa_no_ptrs                  : 1;
 	uint64_t sendpkt_lmtst_err            : 1;
 	uint64_t sendpkt_lmtdma_err           : 1;
-	uint64_t reserved_6_63                : 58;
+	uint64_t dwpbuf_data_val_err          : 1;
+	uint64_t drpbuf_data_val_err          : 1;
+	uint64_t mwpbuf_data_val_err          : 1;
+	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
 	struct cvmx_pko_pdm_sts_s             cn78xx;
 };
 typedef union cvmx_pko_pdm_sts cvmx_pko_pdm_sts_t;
+
+/**
+ * cvmx_pko_peb_bist_done
+ */
+union cvmx_pko_peb_bist_done {
+	uint64_t u64;
+	struct cvmx_pko_peb_bist_done_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_26_63               : 38;
+	uint64_t add_work_fifo                : 1;  /**< ADD_WORK_FIFO RAM BIST done. */
+	uint64_t pdm_pse_buf_ram              : 1;  /**< PDM_PSE_BUF RAM BIST done. */
+	uint64_t iobp0_fifo_ram               : 1;  /**< IOBP0_FIFO RAM BIST done. */
+	uint64_t iobp1_fifo_ram               : 1;  /**< IOBP1_FIFO RAM BIST done. */
+	uint64_t state_mem0                   : 1;  /**< STATE_MEM0 RAM BIST done. */
+	uint64_t state_mem1                   : 1;  /**< STATE_MEM1 RAM BIST done. */
+	uint64_t state_mem2                   : 1;  /**< STATE_MEM2 RAM BIST done. */
+	uint64_t state_mem3                   : 1;  /**< STATE_MEM3 RAM BIST done. */
+	uint64_t iobp1_uid_fifo_ram           : 1;  /**< IOBP1_UID_FIFO RAM BIST done. */
+	uint64_t nxt_link_ptr_ram             : 1;  /**< NXT_LINK_PTR RAM BIST done. */
+	uint64_t pd_bank0_ram                 : 1;  /**< PD_BANK0 RAM BIST done. */
+	uint64_t pd_bank1_ram                 : 1;  /**< PD_BANK1 RAM BIST done. */
+	uint64_t pd_bank2_ram                 : 1;  /**< PD_BANK2 RAM BIST done. */
+	uint64_t pd_bank3_ram                 : 1;  /**< PD_BANK3 RAM BIST done. */
+	uint64_t pd_var_bank_ram              : 1;  /**< PD_VAR_BANK RAM BIST done. */
+	uint64_t pdm_resp_buf_ram             : 1;  /**< PDM_RESP_BUF RAM BIST done. */
+	uint64_t tx_fifo_pkt_ram              : 1;  /**< TX_FIFO_PKT RAM BIST done. */
+	uint64_t tx_fifo_hdr_ram              : 1;  /**< TX_FIFO_HDR RAM BIST done. */
+	uint64_t tx_fifo_crc_ram              : 1;  /**< TX_FIFO_CRC RAM BIST done. */
+	uint64_t ts_addwork_ram               : 1;  /**< TS_ADDWORK RAM BIST done. */
+	uint64_t send_mem_ts_fifo             : 1;  /**< SEND_MEM_TS_FIFO RAM BIST done. */
+	uint64_t send_mem_stdn_fifo           : 1;  /**< SEND_MEM_STDN_FIFO RAM BIST done. */
+	uint64_t send_mem_fifo                : 1;  /**< SEND_MEM_FIFO RAM BIST done. */
+	uint64_t pkt_mrk_ram                  : 1;  /**< PKT_MRK RAM BIST done. */
+	uint64_t peb_st_inf_ram               : 1;  /**< PEB_ST_INF RAM BIST done. */
+	uint64_t peb_sm_jmp_ram               : 1;  /**< PEB_SM_JMP RAM BIST done.
+                                                         1 = BIST complete.
+                                                         0 = BIST in progress. */
+#else
+	uint64_t peb_sm_jmp_ram               : 1;
+	uint64_t peb_st_inf_ram               : 1;
+	uint64_t pkt_mrk_ram                  : 1;
+	uint64_t send_mem_fifo                : 1;
+	uint64_t send_mem_stdn_fifo           : 1;
+	uint64_t send_mem_ts_fifo             : 1;
+	uint64_t ts_addwork_ram               : 1;
+	uint64_t tx_fifo_crc_ram              : 1;
+	uint64_t tx_fifo_hdr_ram              : 1;
+	uint64_t tx_fifo_pkt_ram              : 1;
+	uint64_t pdm_resp_buf_ram             : 1;
+	uint64_t pd_var_bank_ram              : 1;
+	uint64_t pd_bank3_ram                 : 1;
+	uint64_t pd_bank2_ram                 : 1;
+	uint64_t pd_bank1_ram                 : 1;
+	uint64_t pd_bank0_ram                 : 1;
+	uint64_t nxt_link_ptr_ram             : 1;
+	uint64_t iobp1_uid_fifo_ram           : 1;
+	uint64_t state_mem3                   : 1;
+	uint64_t state_mem2                   : 1;
+	uint64_t state_mem1                   : 1;
+	uint64_t state_mem0                   : 1;
+	uint64_t iobp1_fifo_ram               : 1;
+	uint64_t iobp0_fifo_ram               : 1;
+	uint64_t pdm_pse_buf_ram              : 1;
+	uint64_t add_work_fifo                : 1;
+	uint64_t reserved_26_63               : 38;
+#endif
+	} s;
+	struct cvmx_pko_peb_bist_done_s       cn78xx;
+};
+typedef union cvmx_pko_peb_bist_done cvmx_pko_peb_bist_done_t;
+
+/**
+ * cvmx_pko_peb_bist_status
+ */
+union cvmx_pko_peb_bist_status {
+	uint64_t u64;
+	struct cvmx_pko_peb_bist_status_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_26_63               : 38;
+	uint64_t add_work_fifo                : 1;  /**< ADD_WORK_FIFO RAM BIST status. */
+	uint64_t pdm_pse_buf_ram              : 1;  /**< PDM_PSE_BUF RAM BIST status. */
+	uint64_t iobp0_fifo_ram               : 1;  /**< IOBP0_FIFO RAM BIST status. */
+	uint64_t iobp1_fifo_ram               : 1;  /**< IOBP1_FIFO RAM BIST status. */
+	uint64_t state_mem0                   : 1;  /**< STATE_MEM0 RAM BIST status. */
+	uint64_t state_mem1                   : 1;  /**< STATE_MEM1 RAM BIST status. */
+	uint64_t state_mem2                   : 1;  /**< STATE_MEM2 RAM BIST status. */
+	uint64_t state_mem3                   : 1;  /**< STATE_MEM3 RAM BIST status. */
+	uint64_t iobp1_uid_fifo_ram           : 1;  /**< IOBP1_UID_FIFO RAM BIST status. */
+	uint64_t nxt_link_ptr_ram             : 1;  /**< NXT_LINK_PTR RAM BIST status. */
+	uint64_t pd_bank0_ram                 : 1;  /**< PD_BANK0 RAM BIST status. */
+	uint64_t pd_bank1_ram                 : 1;  /**< PD_BANK1 RAM BIST status. */
+	uint64_t pd_bank2_ram                 : 1;  /**< PD_BANK2 RAM BIST status. */
+	uint64_t pd_bank3_ram                 : 1;  /**< PD_BANK3 RAM BIST status. */
+	uint64_t pd_var_bank_ram              : 1;  /**< PD_VAR_BANK RAM BIST status. */
+	uint64_t pdm_resp_buf_ram             : 1;  /**< PDM_RESP_BUF RAM BIST status. */
+	uint64_t tx_fifo_pkt_ram              : 1;  /**< TX_FIFO_PKT RAM BIST status. */
+	uint64_t tx_fifo_hdr_ram              : 1;  /**< TX_FIFO_HDR RAM BIST status. */
+	uint64_t tx_fifo_crc_ram              : 1;  /**< TX_FIFO_CRC RAM BIST status. */
+	uint64_t ts_addwork_ram               : 1;  /**< TS_ADDWORK RAM BIST status. */
+	uint64_t send_mem_ts_fifo             : 1;  /**< SEND_MEM_TS_FIFO RAM BIST status. */
+	uint64_t send_mem_stdn_fifo           : 1;  /**< SEND_MEM_STDN_FIFO RAM BIST status. */
+	uint64_t send_mem_fifo                : 1;  /**< SEND_MEM_FIFO RAM BIST status. */
+	uint64_t pkt_mrk_ram                  : 1;  /**< PKT_MRK RAM BIST status. */
+	uint64_t peb_st_inf_ram               : 1;  /**< PEB_ST_INF RAM BIST status. */
+	uint64_t peb_sm_jmp_ram               : 1;  /**< PEB_SM_JMP RAM BIST status. 0 = BIST passed; 1 = BIST failed. */
+#else
+	uint64_t peb_sm_jmp_ram               : 1;
+	uint64_t peb_st_inf_ram               : 1;
+	uint64_t pkt_mrk_ram                  : 1;
+	uint64_t send_mem_fifo                : 1;
+	uint64_t send_mem_stdn_fifo           : 1;
+	uint64_t send_mem_ts_fifo             : 1;
+	uint64_t ts_addwork_ram               : 1;
+	uint64_t tx_fifo_crc_ram              : 1;
+	uint64_t tx_fifo_hdr_ram              : 1;
+	uint64_t tx_fifo_pkt_ram              : 1;
+	uint64_t pdm_resp_buf_ram             : 1;
+	uint64_t pd_var_bank_ram              : 1;
+	uint64_t pd_bank3_ram                 : 1;
+	uint64_t pd_bank2_ram                 : 1;
+	uint64_t pd_bank1_ram                 : 1;
+	uint64_t pd_bank0_ram                 : 1;
+	uint64_t nxt_link_ptr_ram             : 1;
+	uint64_t iobp1_uid_fifo_ram           : 1;
+	uint64_t state_mem3                   : 1;
+	uint64_t state_mem2                   : 1;
+	uint64_t state_mem1                   : 1;
+	uint64_t state_mem0                   : 1;
+	uint64_t iobp1_fifo_ram               : 1;
+	uint64_t iobp0_fifo_ram               : 1;
+	uint64_t pdm_pse_buf_ram              : 1;
+	uint64_t add_work_fifo                : 1;
+	uint64_t reserved_26_63               : 38;
+#endif
+	} s;
+	struct cvmx_pko_peb_bist_status_s     cn78xx;
+};
+typedef union cvmx_pko_peb_bist_status cvmx_pko_peb_bist_status_t;
 
 /**
  * cvmx_pko_peb_ecc_ctl0
@@ -8359,170 +9178,6 @@ union cvmx_pko_peb_trunc_err_info {
 	struct cvmx_pko_peb_trunc_err_info_s  cn78xx;
 };
 typedef union cvmx_pko_peb_trunc_err_info cvmx_pko_peb_trunc_err_info_t;
-
-/**
- * cvmx_pko_pq#_dropped_bytes
- */
-union cvmx_pko_pqx_dropped_bytes {
-	uint64_t u64;
-	struct cvmx_pko_pqx_dropped_bytes_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_48_63               : 16;
-	uint64_t count                        : 48; /**< Count. The running count of bytes. Note that this count wraps. */
-#else
-	uint64_t count                        : 48;
-	uint64_t reserved_48_63               : 16;
-#endif
-	} s;
-	struct cvmx_pko_pqx_dropped_bytes_s   cn78xx;
-};
-typedef union cvmx_pko_pqx_dropped_bytes cvmx_pko_pqx_dropped_bytes_t;
-
-/**
- * cvmx_pko_pq#_dropped_packets
- */
-union cvmx_pko_pqx_dropped_packets {
-	uint64_t u64;
-	struct cvmx_pko_pqx_dropped_packets_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_40_63               : 24;
-	uint64_t count                        : 40; /**< Count. The running count of packets. Note that this count wraps. */
-#else
-	uint64_t count                        : 40;
-	uint64_t reserved_40_63               : 24;
-#endif
-	} s;
-	struct cvmx_pko_pqx_dropped_packets_s cn78xx;
-};
-typedef union cvmx_pko_pqx_dropped_packets cvmx_pko_pqx_dropped_packets_t;
-
-/**
- * cvmx_pko_pq#_green_sent_bytes
- */
-union cvmx_pko_pqx_green_sent_bytes {
-	uint64_t u64;
-	struct cvmx_pko_pqx_green_sent_bytes_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_48_63               : 16;
-	uint64_t count                        : 48; /**< Count. The running count of bytes. Note that this count wraps. */
-#else
-	uint64_t count                        : 48;
-	uint64_t reserved_48_63               : 16;
-#endif
-	} s;
-	struct cvmx_pko_pqx_green_sent_bytes_s cn78xx;
-};
-typedef union cvmx_pko_pqx_green_sent_bytes cvmx_pko_pqx_green_sent_bytes_t;
-
-/**
- * cvmx_pko_pq#_green_sent_packets
- */
-union cvmx_pko_pqx_green_sent_packets {
-	uint64_t u64;
-	struct cvmx_pko_pqx_green_sent_packets_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_40_63               : 24;
-	uint64_t count                        : 40; /**< Count. The running count of packets. Note that this count wraps. */
-#else
-	uint64_t count                        : 40;
-	uint64_t reserved_40_63               : 24;
-#endif
-	} s;
-	struct cvmx_pko_pqx_green_sent_packets_s cn78xx;
-};
-typedef union cvmx_pko_pqx_green_sent_packets cvmx_pko_pqx_green_sent_packets_t;
-
-/**
- * cvmx_pko_pq#_red_sent_bytes
- */
-union cvmx_pko_pqx_red_sent_bytes {
-	uint64_t u64;
-	struct cvmx_pko_pqx_red_sent_bytes_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_48_63               : 16;
-	uint64_t count                        : 48; /**< Count. The running count of bytes. Note that this count wraps. */
-#else
-	uint64_t count                        : 48;
-	uint64_t reserved_48_63               : 16;
-#endif
-	} s;
-	struct cvmx_pko_pqx_red_sent_bytes_s  cn78xx;
-};
-typedef union cvmx_pko_pqx_red_sent_bytes cvmx_pko_pqx_red_sent_bytes_t;
-
-/**
- * cvmx_pko_pq#_red_sent_packets
- */
-union cvmx_pko_pqx_red_sent_packets {
-	uint64_t u64;
-	struct cvmx_pko_pqx_red_sent_packets_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_40_63               : 24;
-	uint64_t count                        : 40; /**< Count. The running count of packets. Note that this count wraps. */
-#else
-	uint64_t count                        : 40;
-	uint64_t reserved_40_63               : 24;
-#endif
-	} s;
-	struct cvmx_pko_pqx_red_sent_packets_s cn78xx;
-};
-typedef union cvmx_pko_pqx_red_sent_packets cvmx_pko_pqx_red_sent_packets_t;
-
-/**
- * cvmx_pko_pq#_topology
- */
-union cvmx_pko_pqx_topology {
-	uint64_t u64;
-	struct cvmx_pko_pqx_topology_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_14_63               : 50;
-	uint64_t peb_fifo                     : 5;  /**< PEB FIFO. The PEB transmit FIFO number. A value of 0x1F means unassigned. */
-	uint64_t reserved_0_8                 : 9;
-#else
-	uint64_t reserved_0_8                 : 9;
-	uint64_t peb_fifo                     : 5;
-	uint64_t reserved_14_63               : 50;
-#endif
-	} s;
-	struct cvmx_pko_pqx_topology_s        cn78xx;
-};
-typedef union cvmx_pko_pqx_topology cvmx_pko_pqx_topology_t;
-
-/**
- * cvmx_pko_pq#_yellow_sent_bytes
- */
-union cvmx_pko_pqx_yellow_sent_bytes {
-	uint64_t u64;
-	struct cvmx_pko_pqx_yellow_sent_bytes_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_48_63               : 16;
-	uint64_t count                        : 48; /**< Count. The running count of bytes. Note that this count wraps. */
-#else
-	uint64_t count                        : 48;
-	uint64_t reserved_48_63               : 16;
-#endif
-	} s;
-	struct cvmx_pko_pqx_yellow_sent_bytes_s cn78xx;
-};
-typedef union cvmx_pko_pqx_yellow_sent_bytes cvmx_pko_pqx_yellow_sent_bytes_t;
-
-/**
- * cvmx_pko_pq#_yellow_sent_packets
- */
-union cvmx_pko_pqx_yellow_sent_packets {
-	uint64_t u64;
-	struct cvmx_pko_pqx_yellow_sent_packets_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_40_63               : 24;
-	uint64_t count                        : 40; /**< Count. The running count of packets. Note that this count wraps. */
-#else
-	uint64_t count                        : 40;
-	uint64_t reserved_40_63               : 24;
-#endif
-	} s;
-	struct cvmx_pko_pqx_yellow_sent_packets_s cn78xx;
-};
-typedef union cvmx_pko_pqx_yellow_sent_packets cvmx_pko_pqx_yellow_sent_packets_t;
 
 /**
  * cvmx_pko_pse_dq_ecc_ctl0

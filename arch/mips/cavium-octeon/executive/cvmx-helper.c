@@ -64,6 +64,7 @@
 #include <asm/octeon/cvmx-pip.h>
 #include <asm/octeon/cvmx-pko.h>
 #include <asm/octeon/cvmx-ipd.h>
+#include <asm/octeon/cvmx-qlm.h>
 #include <asm/octeon/cvmx-spi.h>
 #include <asm/octeon/cvmx-clock.h>
 #include <asm/octeon/cvmx-helper.h>
@@ -82,6 +83,7 @@
 #include "cvmx-pip.h"
 #include "cvmx-pko.h"
 #include "cvmx-ipd.h"
+#include "cvmx-qlm.h"
 #include "cvmx-spi.h"
 #include "cvmx-helper.h"
 #include "cvmx-helper-board.h"
@@ -89,6 +91,264 @@
 #include "cvmx-helper-cfg.h"
 #endif
 
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by an interface.
+ *
+ * @param mode		Interface mode.
+ *
+ * @param enumerate	Method the get number of interface ports.
+ *
+ * @param probe		Method to probe an interface to get the number of
+ *			connected ports.
+ *
+ * @param enable	Method to enable an interface
+ *
+ * @param link_get	Method to get the state of an interface link.
+ *
+ * @param link_set	Method to configure an interface link to the specified
+ *			state.
+ *
+ * @param loopback	Method to configure a port in loopback.
+ */
+struct iface_ops_s {
+	cvmx_helper_interface_mode_t	mode;
+	int				(*enumerate)(int interface);
+	int				(*probe)(int interface);
+	int				(*enable)(int interface);
+	cvmx_helper_link_info_t		(*link_get)(int ipd_port);
+	int				(*link_set)(int ipd_port,
+					     cvmx_helper_link_info_t link_info);
+	int				(*loopback)(int ipd_port,
+						    int en_in, int en_ex);
+};
+
+/**
+ * @INTERNAL
+ * This structure is used by disabled interfaces.
+ */
+static const struct iface_ops_s iface_ops_dis = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_DISABLED,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as gmii.
+ */
+static const struct iface_ops_s iface_ops_gmii = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_GMII,
+	.enumerate	= __cvmx_helper_rgmii_enumerate,
+	.probe		= __cvmx_helper_rgmii_probe,
+	.enable		= __cvmx_helper_rgmii_enable,
+	.link_get	= __cvmx_helper_gmii_link_get,
+	.link_set	= __cvmx_helper_rgmii_link_set,
+	.loopback	= __cvmx_helper_rgmii_configure_loopback,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as rgmii.
+ */
+static const struct iface_ops_s iface_ops_rgmii = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_RGMII,
+	.enumerate	= __cvmx_helper_rgmii_enumerate,
+	.probe		= __cvmx_helper_rgmii_probe,
+	.enable		= __cvmx_helper_rgmii_enable,
+	.link_get	= __cvmx_helper_rgmii_link_get,
+	.link_set	= __cvmx_helper_rgmii_link_set,
+	.loopback	= __cvmx_helper_rgmii_configure_loopback,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as sgmii that use the gmx mac.
+ */
+static const struct iface_ops_s iface_ops_sgmii = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_SGMII,
+	.enumerate	= __cvmx_helper_sgmii_enumerate,
+	.probe		= __cvmx_helper_sgmii_probe,
+	.enable		= __cvmx_helper_sgmii_enable,
+	.link_get	= __cvmx_helper_sgmii_link_get,
+	.link_set	= __cvmx_helper_sgmii_link_set,
+	.loopback	= __cvmx_helper_sgmii_configure_loopback,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as sgmii that use the bgx mac.
+ */
+static const struct iface_ops_s iface_ops_bgx_sgmii = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_SGMII,
+	.enumerate	= __cvmx_helper_sgmii_enumerate,
+	.probe		= __cvmx_helper_bgx_sgmii_probe,
+	.enable		= __cvmx_helper_bgx_sgmii_enable,
+	.link_get	= __cvmx_helper_bgx_sgmii_link_get,
+	.link_set	= __cvmx_helper_bgx_sgmii_link_set,
+	.loopback	= __cvmx_helper_bgx_sgmii_configure_loopback,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as qsgmii.
+ */
+static const struct iface_ops_s iface_ops_qsgmii = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_QSGMII,
+	.enumerate	= __cvmx_helper_sgmii_enumerate,
+	.probe		= __cvmx_helper_sgmii_probe,
+	.enable		= __cvmx_helper_sgmii_enable,
+	.link_get	= __cvmx_helper_sgmii_link_get,
+	.link_set	= __cvmx_helper_sgmii_link_set,
+	.loopback	= __cvmx_helper_sgmii_configure_loopback,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as xaui using the gmx mac.
+ */
+static const struct iface_ops_s iface_ops_xaui = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_XAUI,
+	.enumerate	= __cvmx_helper_xaui_enumerate,
+	.probe		= __cvmx_helper_xaui_probe,
+	.enable		= __cvmx_helper_xaui_enable,
+	.link_get	= __cvmx_helper_xaui_link_get,
+	.link_set	= __cvmx_helper_xaui_link_set,
+	.loopback	= __cvmx_helper_xaui_configure_loopback,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as xaui using the bgx mac.
+ */
+static const struct iface_ops_s iface_ops_bgx_xaui = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_XAUI,
+	.enumerate	= __cvmx_helper_xaui_enumerate,
+	.probe		= __cvmx_helper_bgx_xaui_probe,
+	.enable		= __cvmx_helper_bgx_xaui_enable,
+	.link_get	= __cvmx_helper_bgx_xaui_link_get,
+	.link_set	= __cvmx_helper_bgx_xaui_link_set,
+	.loopback	= __cvmx_helper_bgx_xaui_configure_loopback,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as rxaui.
+ */
+static const struct iface_ops_s iface_ops_rxaui = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_RXAUI,
+	.enumerate	= __cvmx_helper_xaui_enumerate,
+	.probe		= __cvmx_helper_xaui_probe,
+	.enable		= __cvmx_helper_xaui_enable,
+	.link_get	= __cvmx_helper_xaui_link_get,
+	.link_set	= __cvmx_helper_xaui_link_set,
+	.loopback	= __cvmx_helper_xaui_configure_loopback,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as ilk.
+ */
+static const struct iface_ops_s iface_ops_ilk = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_ILK,
+	.enumerate	= __cvmx_helper_ilk_enumerate,
+	.probe		= __cvmx_helper_ilk_probe,
+	.enable		= __cvmx_helper_ilk_enable,
+	.link_get	= __cvmx_helper_ilk_link_get,
+	.link_set	= __cvmx_helper_ilk_link_set,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as npi.
+ */
+static const struct iface_ops_s iface_ops_npi = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_NPI,
+	.enumerate	= __cvmx_helper_npi_enumerate,
+	.probe		= __cvmx_helper_npi_probe,
+	.enable		= __cvmx_helper_npi_enable,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as srio.
+ */
+static const struct iface_ops_s iface_ops_srio = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_SRIO,
+	.enumerate	= __cvmx_helper_srio_enumerate,
+	.probe		= __cvmx_helper_srio_probe,
+	.enable		= __cvmx_helper_srio_enable,
+	.link_get	= __cvmx_helper_srio_link_get,
+	.link_set	= __cvmx_helper_srio_link_set,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as agl.
+ */
+static const struct iface_ops_s iface_ops_agl = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_AGL,
+	.enumerate	= __cvmx_helper_agl_enumerate,
+	.probe		= __cvmx_helper_agl_probe,
+	.enable		= __cvmx_helper_agl_enable,
+	.link_get	= __cvmx_helper_agl_link_get,
+	.link_set	= __cvmx_helper_agl_link_set,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as picmg.
+ */
+static const struct iface_ops_s iface_ops_picmg = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_PICMG,
+	.enumerate	= __cvmx_helper_sgmii_enumerate,
+	.probe		= __cvmx_helper_sgmii_probe,
+	.enable		= __cvmx_helper_sgmii_enable,
+	.link_get	= __cvmx_helper_sgmii_link_get,
+	.link_set	= __cvmx_helper_sgmii_link_set,
+	.loopback	= __cvmx_helper_sgmii_configure_loopback,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as spi.
+ */
+static const struct iface_ops_s iface_ops_spi = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_SPI,
+	.enumerate	= __cvmx_helper_spi_enumerate,
+	.probe		= __cvmx_helper_spi_probe,
+	.enable		= __cvmx_helper_spi_enable,
+	.link_get	= __cvmx_helper_spi_link_get,
+	.link_set	= __cvmx_helper_spi_link_set,
+};
+
+/**
+ * @INTERNAL
+ * This structure specifies the interface methods used by interfaces
+ * configured as loop.
+ */
+static const struct iface_ops_s iface_ops_loop = {
+	.mode		= CVMX_HELPER_INTERFACE_MODE_LOOP,
+	.enumerate	= __cvmx_helper_loop_enumerate,
+	.probe		= __cvmx_helper_loop_probe,
+};
+
+CVMX_SHARED const struct iface_ops_s *iface_ops[CVMX_HELPER_MAX_IFACE] = {
+	[0 ... CVMX_HELPER_MAX_IFACE - 1] = NULL
+};
 
 CVMX_SHARED uint64_t  cvmx_rgmii_backpressure_dis=1;
 
@@ -207,46 +467,35 @@ EXPORT_SYMBOL(cvmx_helper_ports_on_interface);
  */
 static cvmx_helper_interface_mode_t __cvmx_get_mode_cn70xx(int interface)
 {
-	union cvmx_gmxx_inf_mode inf_mode;
-	static int first_time = 1;
-
-	/* Hack for SGMII interface to work on simulator. Will remove it
-	   once DLM is configured properly.
-	 */
-	if (first_time) {
-		inf_mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
-		inf_mode.s.mode = 1;
-		inf_mode.s.en = 0;
-		cvmx_write_csr(CVMX_GMXX_INF_MODE(interface), inf_mode.u64);
-		first_time = 0;
-	}
-
-	/* SGMII/XAUI/QSGMII */
+	/* SGMII/RXAUI/QSGMII */
 	if (interface < 2) {
-		inf_mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
+		enum cvmx_qlm_mode qlm_mode = cvmx_qlm_get_dlm_mode(0, interface);
 
-		switch(inf_mode.s.mode) {
-		case 1:
-			return CVMX_HELPER_INTERFACE_MODE_SGMII;
-		case 2:
-			return CVMX_HELPER_INTERFACE_MODE_QSGMII;
-		case 3:
-			return CVMX_HELPER_INTERFACE_MODE_RXAUI;
-		default:
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-		}
+		if (qlm_mode == CVMX_QLM_MODE_SGMII)
+			iface_ops[interface] = &iface_ops_sgmii;
+		else if (qlm_mode == CVMX_QLM_MODE_QSGMII)
+			iface_ops[interface] = &iface_ops_qsgmii;
+		else if (qlm_mode == CVMX_QLM_MODE_RXAUI)
+			iface_ops[interface] = &iface_ops_rxaui;
+		else
+			iface_ops[interface] = &iface_ops_dis;
 	}
-	if (interface == 2) /* DPI */
-		return CVMX_HELPER_INTERFACE_MODE_NPI;
+	else if (interface == 2) /* DPI */
+		iface_ops[interface] = &iface_ops_npi;
 	else if (interface == 3) /* LOOP */
-		return CVMX_HELPER_INTERFACE_MODE_LOOP;
+		iface_ops[interface] = &iface_ops_loop;
 	else if (interface == 4) { /* RGMII (AGL) */
 		cvmx_agl_prtx_ctl_t prtx_ctl;
 		prtx_ctl.u64 = cvmx_read_csr(CVMX_AGL_PRTX_CTL(0));
 		if (prtx_ctl.s.mode == 0)
-			return CVMX_HELPER_INTERFACE_MODE_AGL;
+			iface_ops[interface] = &iface_ops_agl;
+		else 
+			iface_ops[interface] = &iface_ops_dis;
 	}
-	return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	else
+		iface_ops[interface] = &iface_ops_dis;
+
+	return iface_ops[interface]->mode;
 }
 
 /**
@@ -255,28 +504,51 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_cn70xx(int interface)
  */
 static cvmx_helper_interface_mode_t __cvmx_get_mode_cn78xx(int interface)
 {
+	/*
+	 * Until gser configuration is in place, we hard code the interface
+	 * mode here. This means that for the time being, this function and 
+	 * cvmx_qlm_get_mode() have to be in sync since they are both hard
+	 * coded.
+	 */
 	switch (interface) {
 	case 0:
 	case 1:
+		iface_ops[interface] = &iface_ops_bgx_sgmii;
+		break;
+
 	case 2:
+		/*
+		 * Interface 2's qlm is used by ilk so it can never be
+		 * connected to a bgx mac. Disable it for now.
+		 */
+		iface_ops[interface] = &iface_ops_dis;
+		break;
+
 	case 3:
 	case 4:
 	case 5:
-		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		iface_ops[interface] = &iface_ops_bgx_xaui;
+		break;
 
 	case 6:
 	case 7:
-		return CVMX_HELPER_INTERFACE_MODE_ILK;
+		iface_ops[interface] = &iface_ops_ilk;
+		break;
 
 	case 8:
-		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		iface_ops[interface] = &iface_ops_dis;
+		break;
 
 	case 9:
-		return CVMX_HELPER_INTERFACE_MODE_LOOP;
+		iface_ops[interface] = &iface_ops_loop;
+		break;
 
 	default:
-		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		iface_ops[interface] = &iface_ops_dis;
+		break;
 	}
+
+	return iface_ops[interface]->mode;
 }
 
 /**
@@ -286,72 +558,87 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_cn78xx(int interface)
 static cvmx_helper_interface_mode_t __cvmx_get_mode_cn68xx(int interface)
 {
 	union cvmx_mio_qlmx_cfg qlm_cfg;
+
 	switch (interface) {
 	case 0:
 		qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(0));
 		/* QLM is disabled when QLM SPD is 15. */
 		if (qlm_cfg.s.qlm_spd == 15)
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-
-		if (qlm_cfg.s.qlm_cfg == 7)
-			return CVMX_HELPER_INTERFACE_MODE_RXAUI;
+			iface_ops[interface] = &iface_ops_dis;
+		else if (qlm_cfg.s.qlm_cfg == 7)
+			iface_ops[interface] = &iface_ops_rxaui;
 		else if (qlm_cfg.s.qlm_cfg == 2)
-			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+			iface_ops[interface] = &iface_ops_sgmii;
 		else if (qlm_cfg.s.qlm_cfg == 3)
-			return CVMX_HELPER_INTERFACE_MODE_XAUI;
+			iface_ops[interface] = &iface_ops_xaui;
 		else
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+			iface_ops[interface] = &iface_ops_dis;
+		break;
+
 	case 1:
 		qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(0));
 		/* QLM is disabled when QLM SPD is 15. */
 		if (qlm_cfg.s.qlm_spd == 15)
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-
-		if (qlm_cfg.s.qlm_cfg == 7)
-			return CVMX_HELPER_INTERFACE_MODE_RXAUI;
+			iface_ops[interface] = &iface_ops_dis;
+		else if (qlm_cfg.s.qlm_cfg == 7)
+			iface_ops[interface] = &iface_ops_rxaui;
 		else
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+			iface_ops[interface] = &iface_ops_dis;
+		break;
+
 	case 2:
 	case 3:
 	case 4:
 		qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(interface));
 		/* QLM is disabled when QLM SPD is 15. */
 		if (qlm_cfg.s.qlm_spd == 15)
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-
-		if (qlm_cfg.s.qlm_cfg == 2)
-			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+			iface_ops[interface] = &iface_ops_dis;
+		else if (qlm_cfg.s.qlm_cfg == 2)
+			iface_ops[interface] = &iface_ops_sgmii;
 		else if (qlm_cfg.s.qlm_cfg == 3)
-			return CVMX_HELPER_INTERFACE_MODE_XAUI;
+			iface_ops[interface] = &iface_ops_xaui;
 		else
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+			iface_ops[interface] = &iface_ops_dis;
+		break;
+
 	case 5:
 	case 6:
 		qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(interface - 4));
 		/* QLM is disabled when QLM SPD is 15. */
 		if (qlm_cfg.s.qlm_spd == 15)
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-
-		if (qlm_cfg.s.qlm_cfg == 1)
-			return CVMX_HELPER_INTERFACE_MODE_ILK;
+			iface_ops[interface] = &iface_ops_dis;
+		else if (qlm_cfg.s.qlm_cfg == 1)
+			iface_ops[interface] = &iface_ops_ilk;
 		else
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+			iface_ops[interface] = &iface_ops_dis;
+		break;
+
 	case 7:
 		qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(3));
 		/* QLM is disabled when QLM SPD is 15. */
 		if (qlm_cfg.s.qlm_spd == 15) {
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+			iface_ops[interface] = &iface_ops_dis;
 		} else if (qlm_cfg.s.qlm_cfg != 0) {
 			qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(1));
 			if (qlm_cfg.s.qlm_cfg != 0)
-				return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+				iface_ops[interface] = &iface_ops_dis;
+			else
+				iface_ops[interface] = &iface_ops_npi;
 		}
-		return CVMX_HELPER_INTERFACE_MODE_NPI;
+		else
+			iface_ops[interface] = &iface_ops_npi;
+		break;
+
 	case 8:
-		return CVMX_HELPER_INTERFACE_MODE_LOOP;
+		iface_ops[interface] = &iface_ops_loop;
+		break;
+
 	default:
-		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		iface_ops[interface] = &iface_ops_dis;
+		break;
 	}
+
+	return iface_ops[interface]->mode;
 }
 
 /**
@@ -366,37 +653,36 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_octeon2(int interface)
 		return __cvmx_get_mode_cn68xx(interface);
 
 	if (interface == 2)
-		return CVMX_HELPER_INTERFACE_MODE_NPI;
-
-	if (interface == 3)
-		return CVMX_HELPER_INTERFACE_MODE_LOOP;
-
-	/* Only present in CN63XX & CN66XX Octeon model */
-	if ((OCTEON_IS_MODEL(OCTEON_CN63XX) &&
-	     (interface == 4 || interface == 5)) ||
-	    (OCTEON_IS_MODEL(OCTEON_CN66XX) &&
-	     interface >= 4 && interface <= 7)) {
+		iface_ops[interface] = &iface_ops_npi;
+	else if (interface == 3)
+		iface_ops[interface] = &iface_ops_loop;
+	else if ((OCTEON_IS_MODEL(OCTEON_CN63XX) &&
+		  (interface == 4 || interface == 5)) ||
+		 (OCTEON_IS_MODEL(OCTEON_CN66XX) &&
+		  interface >= 4 && interface <= 7)) {
+		/* Only present in CN63XX & CN66XX Octeon model */
 		union cvmx_sriox_status_reg sriox_status_reg;
 
 		/* cn66xx pass1.0 has only 2 SRIO interfaces. */
 		if ((interface == 5 || interface == 7) &&
 		    OCTEON_IS_MODEL(OCTEON_CN66XX_PASS1_0))
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-		/*
-		 * Later passes of cn66xx support SRIO0 - x4/x2/x1,
-		 * SRIO2 - x2/x1, SRIO3 - x1
-		 */
+			iface_ops[interface] = &iface_ops_dis;
 		else if (interface == 5 && OCTEON_IS_MODEL(OCTEON_CN66XX))
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-
-		sriox_status_reg.u64 = cvmx_read_csr(CVMX_SRIOX_STATUS_REG(interface - 4));
-		if (sriox_status_reg.s.srio)
-			return CVMX_HELPER_INTERFACE_MODE_SRIO;
-		else
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+			/*
+			 * Later passes of cn66xx support SRIO0 - x4/x2/x1,
+			 * SRIO2 - x2/x1, SRIO3 - x1
+			 */
+			iface_ops[interface] = &iface_ops_dis;
+		else {
+			sriox_status_reg.u64 = 
+				cvmx_read_csr(CVMX_SRIOX_STATUS_REG(interface - 4));
+			if (sriox_status_reg.s.srio)
+				iface_ops[interface] = &iface_ops_srio;
+			else
+				iface_ops[interface] = &iface_ops_dis;
+		}
 	}
-
-	if (OCTEON_IS_MODEL(OCTEON_CN66XX)) {
+	else if (OCTEON_IS_MODEL(OCTEON_CN66XX)) {
 		union cvmx_mio_qlmx_cfg mio_qlm_cfg;
 
 		/* QLM2 is SGMII0 and QLM1 is SGMII1 */
@@ -404,71 +690,81 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_octeon2(int interface)
 			mio_qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(2));
 		else if (interface == 1)
 			mio_qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(1));
-		else
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		else {
+			iface_ops[interface] = &iface_ops_dis;
+			return iface_ops[interface]->mode;
+		}
 
 		if (mio_qlm_cfg.s.qlm_spd == 15)
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-
-		if (mio_qlm_cfg.s.qlm_cfg == 9)
-			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+			iface_ops[interface] = &iface_ops_dis;
+		else if (mio_qlm_cfg.s.qlm_cfg == 9)
+			iface_ops[interface] = &iface_ops_sgmii;
 		else if (mio_qlm_cfg.s.qlm_cfg == 11)
-			return CVMX_HELPER_INTERFACE_MODE_XAUI;
+			iface_ops[interface] = &iface_ops_xaui;
 		else
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+			iface_ops[interface] = &iface_ops_dis;
 	} else if (OCTEON_IS_MODEL(OCTEON_CN61XX)) {
 		union cvmx_mio_qlmx_cfg qlm_cfg;
 
-		if (interface == 0) {
+		if (interface == 0)
 			qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(2));
-			if (qlm_cfg.s.qlm_cfg == 2)
-				return CVMX_HELPER_INTERFACE_MODE_SGMII;
-			else if (qlm_cfg.s.qlm_cfg == 3)
-				return CVMX_HELPER_INTERFACE_MODE_XAUI;
-			else
-				return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-		} else if (interface == 1) {
+		else if (interface == 1)
 			qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(0));
-			if (qlm_cfg.s.qlm_cfg == 2)
-				return CVMX_HELPER_INTERFACE_MODE_SGMII;
-			else if (qlm_cfg.s.qlm_cfg == 3)
-				return CVMX_HELPER_INTERFACE_MODE_XAUI;
-			else
-				return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		else {
+			iface_ops[interface] = &iface_ops_dis;
+			return iface_ops[interface]->mode;
 		}
+
+		if (qlm_cfg.s.qlm_spd == 15)
+			iface_ops[interface] = &iface_ops_dis;
+		else if (qlm_cfg.s.qlm_cfg == 2)
+			iface_ops[interface] = &iface_ops_sgmii;
+		else if (qlm_cfg.s.qlm_cfg == 3)
+			iface_ops[interface] = &iface_ops_xaui;
+		else
+			iface_ops[interface] = &iface_ops_dis;
 	} else if (OCTEON_IS_MODEL(OCTEON_CNF71XX)) {
 		if (interface == 0) {
 			union cvmx_mio_qlmx_cfg qlm_cfg;
 			qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(0));
 			if (qlm_cfg.s.qlm_cfg == 2)
-				return CVMX_HELPER_INTERFACE_MODE_SGMII;
+				iface_ops[interface] = &iface_ops_sgmii;
+			else
+				iface_ops[interface] = &iface_ops_dis;
 		}
-		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-	}
-
-	if (interface == 1 && OCTEON_IS_MODEL(OCTEON_CN63XX))
-		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-
-	mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
-
-	if (OCTEON_IS_MODEL(OCTEON_CN63XX)) {
-		switch (mode.cn63xx.mode) {
-		case 0:
-			return CVMX_HELPER_INTERFACE_MODE_SGMII;
-		case 1:
-			return CVMX_HELPER_INTERFACE_MODE_XAUI;
-		default:
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-		}
-	} else {
-		if (!mode.s.en)
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-
-		if (mode.s.type)
-			return CVMX_HELPER_INTERFACE_MODE_GMII;
 		else
-			return CVMX_HELPER_INTERFACE_MODE_RGMII;
+			iface_ops[interface] = &iface_ops_dis;
 	}
+	else if (interface == 1 && OCTEON_IS_MODEL(OCTEON_CN63XX))
+		iface_ops[interface] = &iface_ops_dis;
+	else {
+		mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
+
+		if (OCTEON_IS_MODEL(OCTEON_CN63XX)) {
+			switch (mode.cn63xx.mode) {
+			case 0:
+				iface_ops[interface] = &iface_ops_sgmii;
+				break;
+
+			case 1:
+				iface_ops[interface] = &iface_ops_xaui;
+				break;
+
+			default:
+				iface_ops[interface] = &iface_ops_dis;
+				break;
+			}
+		} else {
+			if (!mode.s.en)
+				iface_ops[interface] = &iface_ops_dis;
+			else if (mode.s.type)
+				iface_ops[interface] = &iface_ops_gmii;
+			else
+				iface_ops[interface] = &iface_ops_rgmii;
+		}
+	}
+
+	return iface_ops[interface]->mode;
 }
 
 /**
@@ -642,6 +938,14 @@ cvmx_helper_interface_mode_t cvmx_helper_interface_get_mode(int interface)
 		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
 
 	/*
+	 * Check if the interface mode has been already cached. If it has,
+	 * simply return it. Otherwise, fall through the rest of the code to
+	 * determine the interface mode and cache it in iface_ops.
+	 */
+	if (iface_ops[interface] != NULL)
+		return iface_ops[interface]->mode;
+
+	/*
 	 * OCTEON III models
 	 */
 	if (OCTEON_IS_MODEL(OCTEON_CN70XX))
@@ -660,17 +964,15 @@ cvmx_helper_interface_mode_t cvmx_helper_interface_get_mode(int interface)
 	 * Octeon and Octeon Plus models
 	 */
 	if (interface == 2)
-		return CVMX_HELPER_INTERFACE_MODE_NPI;
-
-	if (interface == 3) {
+		iface_ops[interface] = &iface_ops_npi;
+	else if (interface == 3) {
 		if (OCTEON_IS_MODEL(OCTEON_CN56XX)
 		    || OCTEON_IS_MODEL(OCTEON_CN52XX))
-			return CVMX_HELPER_INTERFACE_MODE_LOOP;
+			iface_ops[interface] = &iface_ops_loop;
 		else
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+			iface_ops[interface] = &iface_ops_dis;
 	}
-
-	if (interface == 0 &&
+	else if (interface == 0 &&
 	    cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_CN3005_EVB_HS5 &&
 	    cvmx_sysinfo_get()->board_rev_major == 1) {
 		/*
@@ -683,45 +985,57 @@ cvmx_helper_interface_mode_t cvmx_helper_interface_get_mode(int interface)
 		 * output of this function) there is no difference in
 		 * setup between GMII and RGMII modes.
 		 */
-		return CVMX_HELPER_INTERFACE_MODE_GMII;
+		iface_ops[interface] = &iface_ops_gmii;
 	}
 
-	/* Interface 1 is always disabled on CN31XX and CN30XX */
-	if ((interface == 1)
+	else if ((interface == 1)
 	    && (OCTEON_IS_MODEL(OCTEON_CN31XX)
 		|| OCTEON_IS_MODEL(OCTEON_CN30XX)
 		|| OCTEON_IS_MODEL(OCTEON_CN50XX)
 		|| OCTEON_IS_MODEL(OCTEON_CN52XX)))
-		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		/* Interface 1 is always disabled on CN31XX and CN30XX */
+		iface_ops[interface] = &iface_ops_dis;
+	else {
+		mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
 
-	mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
+		if (OCTEON_IS_MODEL(OCTEON_CN56XX) ||
+		    OCTEON_IS_MODEL(OCTEON_CN52XX)) {
+			switch (mode.cn56xx.mode) {
+			case 0:
+				iface_ops[interface] = &iface_ops_dis;
+				break;
+ 
+			case 1:
+				iface_ops[interface] = &iface_ops_xaui;
+				break;
 
-	if (OCTEON_IS_MODEL(OCTEON_CN56XX) || OCTEON_IS_MODEL(OCTEON_CN52XX)) {
-		switch (mode.cn56xx.mode) {
-		case 0:
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
-		case 1:
-			return CVMX_HELPER_INTERFACE_MODE_XAUI;
-		case 2:
-			return CVMX_HELPER_INTERFACE_MODE_SGMII;
-		case 3:
-			return CVMX_HELPER_INTERFACE_MODE_PICMG;
-		default:
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+			case 2:
+				iface_ops[interface] = &iface_ops_sgmii;
+				break;
+
+			case 3:
+				iface_ops[interface] = &iface_ops_picmg;
+				break;
+
+			default:
+				iface_ops[interface] = &iface_ops_dis;
+				break;
+			}
+		} else {
+			if (!mode.s.en)
+				iface_ops[interface] = &iface_ops_dis;
+			else if (mode.s.type) {
+				if (OCTEON_IS_MODEL(OCTEON_CN38XX) ||
+				    OCTEON_IS_MODEL(OCTEON_CN58XX))
+					iface_ops[interface] = &iface_ops_spi;
+				else
+					iface_ops[interface] = &iface_ops_gmii;
+			} else
+				iface_ops[interface] = &iface_ops_rgmii;
 		}
-	} else {
-		if (!mode.s.en)
-			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+ 	}
 
-		if (mode.s.type) {
-			if (OCTEON_IS_MODEL(OCTEON_CN38XX) ||
-			    OCTEON_IS_MODEL(OCTEON_CN58XX))
-				return CVMX_HELPER_INTERFACE_MODE_SPI;
-			else
-				return CVMX_HELPER_INTERFACE_MODE_GMII;
-		} else
-			return CVMX_HELPER_INTERFACE_MODE_RGMII;
-	}
+	return iface_ops[interface]->mode;
 }
 EXPORT_SYMBOL_GPL(cvmx_helper_interface_get_mode);
 
@@ -849,56 +1163,13 @@ static int cvmx_helper_fcs_op(int interface, int nports, int has_fcs)
  */
 int cvmx_helper_interface_enumerate(int interface)
 {
-	switch (cvmx_helper_interface_get_mode(interface)) {
-		/* XAUI is a single high speed port */
-	case CVMX_HELPER_INTERFACE_MODE_XAUI:
-	case CVMX_HELPER_INTERFACE_MODE_RXAUI:
-		return __cvmx_helper_xaui_enumerate(interface);
-		/*
-		 * RGMII/GMII/MII are all treated about the same. Most
-		 * functions refer to these ports as RGMII
-		 */
-	case CVMX_HELPER_INTERFACE_MODE_RGMII:
-	case CVMX_HELPER_INTERFACE_MODE_GMII:
-		return __cvmx_helper_rgmii_enumerate(interface);
-		/*
-		 * SPI4 can have 1-16 ports depending on the device at
-		 * the other end.
-		 */
-	case CVMX_HELPER_INTERFACE_MODE_SPI:
-		return __cvmx_helper_spi_enumerate(interface);
-		/*
-		 * SGMII can have 1-4 ports depending on how many are
-		 * hooked up.
-		 */
-	case CVMX_HELPER_INTERFACE_MODE_SGMII:
-	case CVMX_HELPER_INTERFACE_MODE_QSGMII:
-	case CVMX_HELPER_INTERFACE_MODE_PICMG:
-		return __cvmx_helper_sgmii_enumerate(interface);
-		/* PCI target Network Packet Interface */
-	case CVMX_HELPER_INTERFACE_MODE_NPI:
-		return __cvmx_helper_npi_enumerate(interface);
-		/*
-		 * Special loopback only ports. These are not the same
-		 * as other ports in loopback mode.
-		 */
-	case CVMX_HELPER_INTERFACE_MODE_LOOP:
-		return __cvmx_helper_loop_enumerate(interface);
-		/* SRIO has 2^N ports, where N is number of interfaces */
-	case CVMX_HELPER_INTERFACE_MODE_SRIO:
-		return __cvmx_helper_srio_enumerate(interface);
+	int	result = 0;
 
-	case CVMX_HELPER_INTERFACE_MODE_ILK:
-		return __cvmx_helper_ilk_enumerate(interface);
+	cvmx_helper_interface_get_mode(interface);
+	if (iface_ops[interface]->enumerate)
+		result = iface_ops[interface]->enumerate(interface);
 
-	case CVMX_HELPER_INTERFACE_MODE_AGL:
-		return __cvmx_helper_agl_enumerate(interface);
-		/* These types don't support ports to IPD/PKO */
-	case CVMX_HELPER_INTERFACE_MODE_DISABLED:
-	case CVMX_HELPER_INTERFACE_MODE_PCIE:
-	default:
-		return 0;
-	}
+	return result;
 }
 EXPORT_SYMBOL(cvmx_helper_interface_enumerate);
 
@@ -927,7 +1198,12 @@ int cvmx_helper_interface_probe(int interface)
 
 	nports = -1;
 	has_fcs = 0;
-	switch (cvmx_helper_interface_get_mode(interface)) {
+
+	cvmx_helper_interface_get_mode(interface);
+	if (iface_ops[interface]->probe)
+		nports = iface_ops[interface]->probe(interface);
+
+	switch (iface_ops[interface]->mode) {
 		/* These types don't support ports to IPD/PKO */
 	case CVMX_HELPER_INTERFACE_MODE_DISABLED:
 	case CVMX_HELPER_INTERFACE_MODE_PCIE:
@@ -936,7 +1212,6 @@ int cvmx_helper_interface_probe(int interface)
 		/* XAUI is a single high speed port */
 	case CVMX_HELPER_INTERFACE_MODE_XAUI:
 	case CVMX_HELPER_INTERFACE_MODE_RXAUI:
-		nports = __cvmx_helper_xaui_probe(interface);
 		has_fcs = 1;
 		padding = CVMX_PKO_PADDING_60;
 		break;
@@ -946,7 +1221,6 @@ int cvmx_helper_interface_probe(int interface)
 		 */
 	case CVMX_HELPER_INTERFACE_MODE_RGMII:
 	case CVMX_HELPER_INTERFACE_MODE_GMII:
-		nports = __cvmx_helper_rgmii_probe(interface);
 		padding = CVMX_PKO_PADDING_60;
 		break;
 		/*
@@ -954,7 +1228,6 @@ int cvmx_helper_interface_probe(int interface)
 		 * the other end.
 		 */
 	case CVMX_HELPER_INTERFACE_MODE_SPI:
-		nports = __cvmx_helper_spi_probe(interface);
 		padding = CVMX_PKO_PADDING_60;
 		break;
 		/*
@@ -965,31 +1238,25 @@ int cvmx_helper_interface_probe(int interface)
 	case CVMX_HELPER_INTERFACE_MODE_QSGMII:
 		padding = CVMX_PKO_PADDING_60;
 	case CVMX_HELPER_INTERFACE_MODE_PICMG:
-		nports = __cvmx_helper_sgmii_probe(interface);
 		has_fcs = 1;
 		break;
 		/* PCI target Network Packet Interface */
 	case CVMX_HELPER_INTERFACE_MODE_NPI:
-		nports = __cvmx_helper_npi_probe(interface);
 		break;
 		/*
 		 * Special loopback only ports. These are not the same
 		 * as other ports in loopback mode.
 		 */
 	case CVMX_HELPER_INTERFACE_MODE_LOOP:
-		nports = __cvmx_helper_loop_probe(interface);
 		break;
 		/* SRIO has 2^N ports, where N is number of interfaces */
 	case CVMX_HELPER_INTERFACE_MODE_SRIO:
-		nports = __cvmx_helper_srio_probe(interface);
 		break;
 	case CVMX_HELPER_INTERFACE_MODE_ILK:
-		nports = __cvmx_helper_ilk_probe(interface);
 		padding = CVMX_PKO_PADDING_60;
 		has_fcs = 1;
 		break;
 	case CVMX_HELPER_INTERFACE_MODE_AGL:
-		nports = __cvmx_helper_agl_probe(interface);
 		has_fcs = 1;
 		break;
 	}
@@ -1361,57 +1628,10 @@ int __cvmx_helper_backpressure_is_misaligned(void)
 static int __cvmx_helper_packet_hardware_enable(int interface)
 {
 	int result = 0;
-	switch (cvmx_helper_interface_get_mode(interface)) {
-		/* These types don't support ports to IPD/PKO */
-	case CVMX_HELPER_INTERFACE_MODE_DISABLED:
-	case CVMX_HELPER_INTERFACE_MODE_PCIE:
-	case CVMX_HELPER_INTERFACE_MODE_LOOP:
-		/* Nothing to do */
-		break;
-		/* XAUI is a single high speed port */
-	case CVMX_HELPER_INTERFACE_MODE_XAUI:
-	case CVMX_HELPER_INTERFACE_MODE_RXAUI:
-		result = __cvmx_helper_xaui_enable(interface);
-		break;
-		/*
-		 * RGMII/GMII/MII are all treated about the same. Most
-		 * functions refer to these ports as RGMII.
-		 */
-	case CVMX_HELPER_INTERFACE_MODE_RGMII:
-	case CVMX_HELPER_INTERFACE_MODE_GMII:
-		result = __cvmx_helper_rgmii_enable(interface);
-		break;
-		/*
-		 * SPI4 can have 1-16 ports depending on the device at
-		 * the other end.
-		 */
-	case CVMX_HELPER_INTERFACE_MODE_SPI:
-		result = __cvmx_helper_spi_enable(interface);
-		break;
-		/*
-		 * SGMII can have 1-4 ports depending on how many are
-		 * hooked up.
-		 */
-	case CVMX_HELPER_INTERFACE_MODE_SGMII:
-	case CVMX_HELPER_INTERFACE_MODE_QSGMII:
-	case CVMX_HELPER_INTERFACE_MODE_PICMG:
-		result = __cvmx_helper_sgmii_enable(interface);
-		break;
-		/* PCI target Network Packet Interface */
-	case CVMX_HELPER_INTERFACE_MODE_NPI:
-		result = __cvmx_helper_npi_enable(interface);
-		break;
-		/* SRIO has 2^N ports, where N is number of interfaces */
-	case CVMX_HELPER_INTERFACE_MODE_SRIO:
-		result = __cvmx_helper_srio_enable(interface);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_ILK:
-		result = __cvmx_helper_ilk_enable(interface);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_AGL:
-		result = __cvmx_helper_agl_enable(interface);
-		break;
-	}
+
+	cvmx_helper_interface_get_mode(interface);
+	if (iface_ops[interface]->enable)
+		result = iface_ops[interface]->enable(interface);
 	result |= __cvmx_helper_board_hardware_enable(interface);
 	return result;
 }
@@ -1810,7 +2030,6 @@ int cvmx_helper_uninitialize_sso(void)
 	cvmx_sso_rwq_psh_fptr_t fptr;
 	cvmx_sso_fpage_cnt_t fpage_cnt;
 	int num_to_transfer, i;
-	char *mem;
 
 	if (!OCTEON_IS_MODEL(OCTEON_CN68XX))
 		return 0;
@@ -1856,7 +2075,7 @@ int cvmx_helper_uninitialize_sso(void)
 			cvmx_dprintf("head_ptr.s.ptr != tail_ptr.s.ptr, idx: %d\n", i);
 		}
 
-		mem = cvmx_phys_to_ptr(((uint64_t) head_ptr.s.ptr) << 7);
+		cvmx_phys_to_ptr(((uint64_t) head_ptr.s.ptr) << 7);
 		/* Leak the memory */
 	}
 
@@ -1864,7 +2083,7 @@ int cvmx_helper_uninitialize_sso(void)
 		do {
 			pop_fptr.u64 = cvmx_read_csr(CVMX_SSO_RWQ_POP_FPTR);
 			if (pop_fptr.s.val) {
-				mem = cvmx_phys_to_ptr(((uint64_t) pop_fptr.s.fptr) << 7);
+				cvmx_phys_to_ptr(((uint64_t) pop_fptr.s.fptr) << 7);
 				/* Leak the memory */
 			}
 		} while (pop_fptr.s.val);
@@ -2567,49 +2786,10 @@ cvmx_helper_link_info_t cvmx_helper_link_get(int ipd_port)
 	    index >= cvmx_helper_ports_on_interface(interface))
 		return result;
 
-	switch (cvmx_helper_interface_get_mode(interface)) {
-	case CVMX_HELPER_INTERFACE_MODE_DISABLED:
-	case CVMX_HELPER_INTERFACE_MODE_PCIE:
-		/* Network links are not supported */
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_XAUI:
-	case CVMX_HELPER_INTERFACE_MODE_RXAUI:
-		result = __cvmx_helper_xaui_link_get(ipd_port);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_GMII:
-		if (index == 0)
-			result = __cvmx_helper_rgmii_link_get(ipd_port);
-		else {
-			result.s.full_duplex = 1;
-			result.s.link_up = 1;
-			result.s.speed = 1000;
-		}
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_RGMII:
-		result = __cvmx_helper_rgmii_link_get(ipd_port);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_SPI:
-		result = __cvmx_helper_spi_link_get(ipd_port);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_SGMII:
-	case CVMX_HELPER_INTERFACE_MODE_QSGMII:
-	case CVMX_HELPER_INTERFACE_MODE_PICMG:
-		result = __cvmx_helper_sgmii_link_get(ipd_port);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_SRIO:
-		result = __cvmx_helper_srio_link_get(ipd_port);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_ILK:
-		result = __cvmx_helper_ilk_link_get(ipd_port);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_AGL:
-		result = __cvmx_helper_agl_link_get(ipd_port);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_NPI:
-	case CVMX_HELPER_INTERFACE_MODE_LOOP:
-		/* Network links are not supported */
-		break;
-	}
+	cvmx_helper_interface_get_mode(interface);
+	if (iface_ops[interface]->link_get)
+		result = iface_ops[interface]->link_get(ipd_port);
+
 	return result;
 }
 EXPORT_SYMBOL(cvmx_helper_link_get);
@@ -2635,43 +2815,10 @@ int cvmx_helper_link_set(int ipd_port, cvmx_helper_link_info_t link_info)
 	if (index >= cvmx_helper_ports_on_interface(interface))
 		return -1;
 
-	switch (cvmx_helper_interface_get_mode(interface)) {
-	case CVMX_HELPER_INTERFACE_MODE_DISABLED:
-	case CVMX_HELPER_INTERFACE_MODE_PCIE:
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_XAUI:
-	case CVMX_HELPER_INTERFACE_MODE_RXAUI:
-		result = __cvmx_helper_xaui_link_set(ipd_port, link_info);
-		break;
-		/*
-		 * RGMII/GMII/MII are all treated about the same. Most
-		 * functions refer to these ports as RGMII.
-		 */
-	case CVMX_HELPER_INTERFACE_MODE_RGMII:
-	case CVMX_HELPER_INTERFACE_MODE_GMII:
-		result = __cvmx_helper_rgmii_link_set(ipd_port, link_info);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_SPI:
-		result = __cvmx_helper_spi_link_set(ipd_port, link_info);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_SGMII:
-	case CVMX_HELPER_INTERFACE_MODE_QSGMII:
-	case CVMX_HELPER_INTERFACE_MODE_PICMG:
-		result = __cvmx_helper_sgmii_link_set(ipd_port, link_info);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_SRIO:
-		result = __cvmx_helper_srio_link_set(ipd_port, link_info);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_ILK:
-		result = __cvmx_helper_ilk_link_set(ipd_port, link_info);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_AGL:
-		result = __cvmx_helper_agl_link_set(ipd_port, link_info);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_NPI:
-	case CVMX_HELPER_INTERFACE_MODE_LOOP:
-		break;
-	}
+	cvmx_helper_interface_get_mode(interface);
+	if (iface_ops[interface]->link_set)
+		result = iface_ops[interface]->link_set(ipd_port, link_info);
+
 	/*
 	 * Set the port_link_info here so that the link status is
 	 * updated no matter how cvmx_helper_link_set is called. We
@@ -2707,36 +2854,12 @@ int cvmx_helper_configure_loopback(int ipd_port, int enable_internal,
 	    index >= cvmx_helper_ports_on_interface(interface))
 		return -1;
 
-	switch (cvmx_helper_interface_get_mode(interface)) {
-	case CVMX_HELPER_INTERFACE_MODE_DISABLED:
-	case CVMX_HELPER_INTERFACE_MODE_PCIE:
-	case CVMX_HELPER_INTERFACE_MODE_SRIO:
-	case CVMX_HELPER_INTERFACE_MODE_ILK:
-	case CVMX_HELPER_INTERFACE_MODE_SPI:
-	case CVMX_HELPER_INTERFACE_MODE_NPI:
-	case CVMX_HELPER_INTERFACE_MODE_LOOP:
-	case CVMX_HELPER_INTERFACE_MODE_AGL:
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_XAUI:
-	case CVMX_HELPER_INTERFACE_MODE_RXAUI:
-		result = __cvmx_helper_xaui_configure_loopback(ipd_port,
-							       enable_internal,
-							       enable_external);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_RGMII:
-	case CVMX_HELPER_INTERFACE_MODE_GMII:
-		result = __cvmx_helper_rgmii_configure_loopback(ipd_port,
-								enable_internal,
-								enable_external);
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_SGMII:
-	case CVMX_HELPER_INTERFACE_MODE_QSGMII:
-	case CVMX_HELPER_INTERFACE_MODE_PICMG:
-		result = __cvmx_helper_sgmii_configure_loopback(ipd_port,
-								enable_internal,
-								enable_external);
-		break;
-	}
+	cvmx_helper_interface_get_mode(interface);
+	if (iface_ops[interface]->loopback)
+		result = iface_ops[interface]->loopback(ipd_port,
+							enable_internal,
+							enable_external);
+
 	return result;
 }
 

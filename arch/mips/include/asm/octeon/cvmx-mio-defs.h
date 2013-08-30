@@ -2212,10 +2212,7 @@ typedef union cvmx_mio_boot_bist_stat cvmx_mio_boot_bist_stat_t;
  * cvmx_mio_boot_comp
  *
  * This register sets the termination of boot-bus output pins.
- * Reset value is as follows:
- * no pullups,                               PCTL=6, NCTL=6 (50 ohm termination)
- * pullup on boot_ad[9]                      PCTL=7, NCTL=7 (40 ohm termination)
- * pullup on boot_ad[10].                    PCTL=4, NCTL=4 (75 ohm termination)
+ *
  */
 union cvmx_mio_boot_comp {
 	uint64_t u64;
@@ -2390,7 +2387,7 @@ union cvmx_mio_boot_dma_cfgx {
 	uint64_t size                         : 20; /**< DMA engine 0-1 size. SIZE is specified in number of bus transfers, where one transfer is
                                                          equal to the following number of bytes, dependent on MIO_BOOT_DMA_TIMn[WIDTH] and
                                                          MIO_BOOT_DMA_TIMn[DDR]:
-                                                         WIDTH DDR Transfer Size (bytes)
+                                                         WIDTH DDR  Transfer Size (bytes)
                                                          0 0 2
                                                          0 1 4
                                                          1 0 4

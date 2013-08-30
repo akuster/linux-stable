@@ -179,19 +179,44 @@ static inline uint64_t CVMX_PEMX_BAR_CTL(unsigned long block_id)
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PEMX_BIST_STATUS(unsigned long block_id)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 2))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_PEMX_BIST_STATUS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800C0000018ull) + ((block_id) & 3) * 0x1000000ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((block_id <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800C0000018ull) + ((block_id) & 1) * 0x1000000ull;
+			break;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((block_id <= 2))
+				return CVMX_ADD_IO_SEG(0x00011800C0000018ull) + ((block_id) & 3) * 0x1000000ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((block_id <= 3))
+				return CVMX_ADD_IO_SEG(0x00011800C0000440ull) + ((block_id) & 3) * 0x1000000ull;
+			break;
+	}
+	cvmx_warn("CVMX_PEMX_BIST_STATUS (block_id = %lu) not supported on this chip\n", block_id);
+	return CVMX_ADD_IO_SEG(0x00011800C0000018ull) + ((block_id) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_PEMX_BIST_STATUS(block_id) (CVMX_ADD_IO_SEG(0x00011800C0000018ull) + ((block_id) & 3) * 0x1000000ull)
+static inline uint64_t CVMX_PEMX_BIST_STATUS(unsigned long block_id)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800C0000018ull) + (block_id) * 0x1000000ull;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800C0000018ull) + (block_id) * 0x1000000ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800C0000440ull) + (block_id) * 0x1000000ull;
+	}
+	return CVMX_ADD_IO_SEG(0x00011800C0000018ull) + (block_id) * 0x1000000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PEMX_BIST_STATUS2(unsigned long block_id)
@@ -209,10 +234,6 @@ static inline uint64_t CVMX_PEMX_BIST_STATUS2(unsigned long block_id)
 			if ((block_id <= 2))
 				return CVMX_ADD_IO_SEG(0x00011800C0000440ull) + ((block_id) & 3) * 0x1000000ull;
 			break;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 3))
-				return CVMX_ADD_IO_SEG(0x00011800C0000440ull) + ((block_id) & 3) * 0x1000000ull;
-			break;
 	}
 	cvmx_warn("CVMX_PEMX_BIST_STATUS2 (block_id = %lu) not supported on this chip\n", block_id);
 	return CVMX_ADD_IO_SEG(0x00011800C0000420ull) + ((block_id) & 1) * 0x1000000ull;
@@ -228,8 +249,6 @@ static inline uint64_t CVMX_PEMX_BIST_STATUS2(unsigned long block_id)
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00011800C0000420ull) + (block_id) * 0x1000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800C0000440ull) + (block_id) * 0x1000000ull;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00011800C0000440ull) + (block_id) * 0x1000000ull;
 	}
 	return CVMX_ADD_IO_SEG(0x00011800C0000420ull) + (block_id) * 0x1000000ull;
@@ -406,26 +425,58 @@ static inline uint64_t CVMX_PEMX_DIAG_STATUS(unsigned long block_id)
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PEMX_ECC_ENA(unsigned long block_id)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 2))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_PEMX_ECC_ENA(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800C00000C0ull) + ((block_id) & 3) * 0x1000000ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((block_id <= 2))
+				return CVMX_ADD_IO_SEG(0x00011800C00000C0ull) + ((block_id) & 3) * 0x1000000ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((block_id <= 3))
+				return CVMX_ADD_IO_SEG(0x00011800C0000448ull) + ((block_id) & 3) * 0x1000000ull;
+			break;
+	}
+	cvmx_warn("CVMX_PEMX_ECC_ENA (block_id = %lu) not supported on this chip\n", block_id);
+	return CVMX_ADD_IO_SEG(0x00011800C0000448ull) + ((block_id) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_PEMX_ECC_ENA(block_id) (CVMX_ADD_IO_SEG(0x00011800C00000C0ull) + ((block_id) & 3) * 0x1000000ull)
+static inline uint64_t CVMX_PEMX_ECC_ENA(unsigned long block_id)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800C00000C0ull) + (block_id) * 0x1000000ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800C0000448ull) + (block_id) * 0x1000000ull;
+	}
+	return CVMX_ADD_IO_SEG(0x00011800C0000448ull) + (block_id) * 0x1000000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PEMX_ECC_SYND_CTRL(unsigned long block_id)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 2))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_PEMX_ECC_SYND_CTRL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800C00000C8ull) + ((block_id) & 3) * 0x1000000ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((block_id <= 2))
+				return CVMX_ADD_IO_SEG(0x00011800C00000C8ull) + ((block_id) & 3) * 0x1000000ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((block_id <= 3))
+				return CVMX_ADD_IO_SEG(0x00011800C0000450ull) + ((block_id) & 3) * 0x1000000ull;
+			break;
+	}
+	cvmx_warn("CVMX_PEMX_ECC_SYND_CTRL (block_id = %lu) not supported on this chip\n", block_id);
+	return CVMX_ADD_IO_SEG(0x00011800C0000450ull) + ((block_id) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_PEMX_ECC_SYND_CTRL(block_id) (CVMX_ADD_IO_SEG(0x00011800C00000C8ull) + ((block_id) & 3) * 0x1000000ull)
+static inline uint64_t CVMX_PEMX_ECC_SYND_CTRL(unsigned long block_id)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800C00000C8ull) + (block_id) * 0x1000000ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800C0000450ull) + (block_id) * 0x1000000ull;
+	}
+	return CVMX_ADD_IO_SEG(0x00011800C0000450ull) + (block_id) * 0x1000000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PEMX_INB_READ_CREDITS(unsigned long block_id)
@@ -883,52 +934,54 @@ typedef union cvmx_pemx_bar_ctl cvmx_pemx_bar_ctl_t;
 /**
  * cvmx_pem#_bist_status
  *
- * Contains the diffrent interrupt summary bits of the PEM.
- *
+ * "PEM#_BIST_STATUS2 = PEM BIST Status Register
+ * Results from BIST runs of PEM's memories."
  */
 union cvmx_pemx_bist_status {
 	uint64_t u64;
 	struct cvmx_pemx_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_25_63               : 39;
-	uint64_t retrya                       : 1;  /**< Retry Buffer Memory A */
-	uint64_t retryb                       : 1;  /**< Retry Buffer Memory B */
+	uint64_t reserved_26_63               : 38;
 	uint64_t retryc                       : 1;  /**< Retry Buffer Memory C */
-	uint64_t reserved_21_21               : 1;
-	uint64_t rqhdra0                      : 1;  /**< Rx Queue Header Memory A0 */
-	uint64_t rqhdra1                      : 1;  /**< Rx Queue Header Memory A1 */
-	uint64_t rqhdra2                      : 1;  /**< Rx Queue Header Memory A2 */
-	uint64_t rqhdrb0                      : 1;  /**< Rx Queue Header Memory B0 */
-	uint64_t rqhdrb1                      : 1;  /**< Rx Queue Header Memory B1 */
-	uint64_t rqhdrb2                      : 1;  /**< Rx Queue Header Memory B2 */
-	uint64_t rqdataa0                     : 1;  /**< Rx Queue Data Memory A0 */
-	uint64_t rqdataa1                     : 1;  /**< Rx Queue Data Memory A1 */
-	uint64_t rqdataa2                     : 1;  /**< Rx Queue Data Memory A2 */
-	uint64_t rqdataa3                     : 1;  /**< Rx Queue Data Memory A3 */
-	uint64_t rqdataa4                     : 1;  /**< Rx Queue Data Memory A4 */
-	uint64_t rqdatab0                     : 1;  /**< Rx Queue Data Memory B0 */
-	uint64_t rqdatab1                     : 1;  /**< Rx Queue Data Memory B1 */
+	uint64_t reserved_24_24               : 1;
+	uint64_t rqhdrb0                      : 1;  /**< Rx Queue Header Memory Buffer 0 */
+	uint64_t rqhdrb1                      : 1;  /**< Rx Queue Header Memory Buffer 1 */
+	uint64_t rqdatab0                     : 1;  /**< Rx Queue Data Buffer 0 */
+	uint64_t rqdatab1                     : 1;  /**< Rx Queue Data Buffer 1 */
+	uint64_t tlpan_d0                     : 1;  /**< BIST Status for the tlp_n_afifo_data0 */
+	uint64_t tlpan_d1                     : 1;  /**< BIST Status for the tlp_n_afifo_data1 */
+	uint64_t tlpan_ctl                    : 1;  /**< BIST Status for the tlp_n_afifo_ctl */
+	uint64_t tlpap_d0                     : 1;  /**< BIST Status for the tlp_p_afifo_data0 */
+	uint64_t tlpap_d1                     : 1;  /**< BIST Status for the tlp_p_afifo_data1 */
+	uint64_t tlpap_ctl                    : 1;  /**< BIST Status for the tlp_p_afifo_ctl */
+	uint64_t tlpac_d0                     : 1;  /**< BIST Status for the tlp_c_afifo_data0 */
+	uint64_t tlpac_d1                     : 1;  /**< BIST Status for the tlp_c_afifo_data1 */
+	uint64_t tlpac_ctl                    : 1;  /**< BIST Status for the tlp_c_afifo_ctl */
+	uint64_t peai_p2e                     : 1;  /**< BIST Status for the peai__pesc_fifo */
+	uint64_t tlpn_d0                      : 1;  /**< BIST Status for the tlp_n_fifo_data0 */
+	uint64_t tlpn_d1                      : 1;  /**< BIST Status for the tlp_n_fifo_data1 */
 	uint64_t reserved_0_7                 : 8;
 #else
 	uint64_t reserved_0_7                 : 8;
+	uint64_t tlpn_d1                      : 1;
+	uint64_t tlpn_d0                      : 1;
+	uint64_t peai_p2e                     : 1;
+	uint64_t tlpac_ctl                    : 1;
+	uint64_t tlpac_d1                     : 1;
+	uint64_t tlpac_d0                     : 1;
+	uint64_t tlpap_ctl                    : 1;
+	uint64_t tlpap_d1                     : 1;
+	uint64_t tlpap_d0                     : 1;
+	uint64_t tlpan_ctl                    : 1;
+	uint64_t tlpan_d1                     : 1;
+	uint64_t tlpan_d0                     : 1;
 	uint64_t rqdatab1                     : 1;
 	uint64_t rqdatab0                     : 1;
-	uint64_t rqdataa4                     : 1;
-	uint64_t rqdataa3                     : 1;
-	uint64_t rqdataa2                     : 1;
-	uint64_t rqdataa1                     : 1;
-	uint64_t rqdataa0                     : 1;
-	uint64_t rqhdrb2                      : 1;
 	uint64_t rqhdrb1                      : 1;
 	uint64_t rqhdrb0                      : 1;
-	uint64_t rqhdra2                      : 1;
-	uint64_t rqhdra1                      : 1;
-	uint64_t rqhdra0                      : 1;
-	uint64_t reserved_21_21               : 1;
+	uint64_t reserved_24_24               : 1;
 	uint64_t retryc                       : 1;
-	uint64_t retryb                       : 1;
-	uint64_t retrya                       : 1;
-	uint64_t reserved_25_63               : 39;
+	uint64_t reserved_26_63               : 38;
 #endif
 	} s;
 	struct cvmx_pemx_bist_status_cn61xx {
@@ -980,59 +1033,61 @@ union cvmx_pemx_bist_status {
 	} cn70xx;
 	struct cvmx_pemx_bist_status_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_25_63               : 39;
-	uint64_t retrya                       : 1;  /**< Retry Buffer Memory A */
-	uint64_t retryb                       : 1;  /**< Retry Buffer Memory B */
+	uint64_t reserved_26_63               : 38;
 	uint64_t retryc                       : 1;  /**< Retry Buffer Memory C */
 	uint64_t sot                          : 1;  /**< Start of Transfer Memory */
-	uint64_t rqhdra0                      : 1;  /**< Rx Queue Header Memory A0 */
-	uint64_t rqhdra1                      : 1;  /**< Rx Queue Header Memory A1 */
-	uint64_t rqhdra2                      : 1;  /**< Rx Queue Header Memory A2 */
-	uint64_t rqhdrb0                      : 1;  /**< Rx Queue Header Memory B0 */
-	uint64_t rqhdrb1                      : 1;  /**< Rx Queue Header Memory B1 */
-	uint64_t rqhdrb2                      : 1;  /**< Rx Queue Header Memory B2 */
-	uint64_t rqdataa0                     : 1;  /**< Rx Queue Data Memory A0 */
-	uint64_t rqdataa1                     : 1;  /**< Rx Queue Data Memory A1 */
-	uint64_t rqdataa2                     : 1;  /**< Rx Queue Data Memory A2 */
-	uint64_t rqdataa3                     : 1;  /**< Rx Queue Data Memory A3 */
-	uint64_t rqdataa4                     : 1;  /**< Rx Queue Data Memory A4 */
-	uint64_t rqdatab0                     : 1;  /**< Rx Queue Data Memory B0 */
-	uint64_t rqdatab1                     : 1;  /**< Rx Queue Data Memory B1 */
-	uint64_t rqdatab2                     : 1;  /**< Rx Queue Data Memory B2 */
-	uint64_t rqdatab3                     : 1;  /**< Rx Queue Data Memory B3 */
-	uint64_t rqdatab4                     : 1;  /**< Rx Queue Data Memory B4 */
-	uint64_t rqdatac0                     : 1;  /**< Rx Queue Data Memory C0 */
-	uint64_t rqdatac1                     : 1;  /**< Rx Queue Data Memory C1 */
-	uint64_t rqdatac2                     : 1;  /**< Rx Queue Data Memory C2 */
-	uint64_t rqdatac3                     : 1;  /**< Rx Queue Data Memory C3 */
-	uint64_t rqdatac4                     : 1;  /**< Rx Queue Data Memory C4 */
+	uint64_t rqhdrb0                      : 1;  /**< Rx Queue Header Memory Buffer 0 */
+	uint64_t rqhdrb1                      : 1;  /**< Rx Queue Header Memory Buffer 1 */
+	uint64_t rqdatab0                     : 1;  /**< Rx Queue Data Buffer 0 */
+	uint64_t rqdatab1                     : 1;  /**< Rx Queue Data Buffer 1 */
+	uint64_t tlpan_d0                     : 1;  /**< BIST Status for the tlp_n_afifo_data0 */
+	uint64_t tlpan_d1                     : 1;  /**< BIST Status for the tlp_n_afifo_data1 */
+	uint64_t tlpan_ctl                    : 1;  /**< BIST Status for the tlp_n_afifo_ctl */
+	uint64_t tlpap_d0                     : 1;  /**< BIST Status for the tlp_p_afifo_data0 */
+	uint64_t tlpap_d1                     : 1;  /**< BIST Status for the tlp_p_afifo_data1 */
+	uint64_t tlpap_ctl                    : 1;  /**< BIST Status for the tlp_p_afifo_ctl */
+	uint64_t tlpac_d0                     : 1;  /**< BIST Status for the tlp_c_afifo_data0 */
+	uint64_t tlpac_d1                     : 1;  /**< BIST Status for the tlp_c_afifo_data1 */
+	uint64_t tlpac_ctl                    : 1;  /**< BIST Status for the tlp_c_afifo_ctl */
+	uint64_t peai_p2e                     : 1;  /**< BIST Status for the peai__pesc_fifo */
+	uint64_t tlpn_d0                      : 1;  /**< BIST Status for the tlp_n_fifo_data0 */
+	uint64_t tlpn_d1                      : 1;  /**< BIST Status for the tlp_n_fifo_data1 */
+	uint64_t tlpn_ctl                     : 1;  /**< BIST Status for the tlp_n_fifo_ctl */
+	uint64_t tlpp_d0                      : 1;  /**< BIST Status for the tlp_p_fifo_data0 */
+	uint64_t tlpp_d1                      : 1;  /**< BIST Status for the tlp_p_fifo_data1 */
+	uint64_t tlpp_ctl                     : 1;  /**< BIST Status for the tlp_p_fifo_ctl */
+	uint64_t tlpc_d0                      : 1;  /**< BIST Status for the tlp_c_fifo_data0 */
+	uint64_t tlpc_d1                      : 1;  /**< BIST Status for the tlp_c_fifo_data1 */
+	uint64_t tlpc_ctl                     : 1;  /**< BIST Status for the tlp_c_fifo_ctl */
+	uint64_t m2s                          : 1;  /**< BIST Status for the m2s_fifo */
 #else
-	uint64_t rqdatac4                     : 1;
-	uint64_t rqdatac3                     : 1;
-	uint64_t rqdatac2                     : 1;
-	uint64_t rqdatac1                     : 1;
-	uint64_t rqdatac0                     : 1;
-	uint64_t rqdatab4                     : 1;
-	uint64_t rqdatab3                     : 1;
-	uint64_t rqdatab2                     : 1;
+	uint64_t m2s                          : 1;
+	uint64_t tlpc_ctl                     : 1;
+	uint64_t tlpc_d1                      : 1;
+	uint64_t tlpc_d0                      : 1;
+	uint64_t tlpp_ctl                     : 1;
+	uint64_t tlpp_d1                      : 1;
+	uint64_t tlpp_d0                      : 1;
+	uint64_t tlpn_ctl                     : 1;
+	uint64_t tlpn_d1                      : 1;
+	uint64_t tlpn_d0                      : 1;
+	uint64_t peai_p2e                     : 1;
+	uint64_t tlpac_ctl                    : 1;
+	uint64_t tlpac_d1                     : 1;
+	uint64_t tlpac_d0                     : 1;
+	uint64_t tlpap_ctl                    : 1;
+	uint64_t tlpap_d1                     : 1;
+	uint64_t tlpap_d0                     : 1;
+	uint64_t tlpan_ctl                    : 1;
+	uint64_t tlpan_d1                     : 1;
+	uint64_t tlpan_d0                     : 1;
 	uint64_t rqdatab1                     : 1;
 	uint64_t rqdatab0                     : 1;
-	uint64_t rqdataa4                     : 1;
-	uint64_t rqdataa3                     : 1;
-	uint64_t rqdataa2                     : 1;
-	uint64_t rqdataa1                     : 1;
-	uint64_t rqdataa0                     : 1;
-	uint64_t rqhdrb2                      : 1;
 	uint64_t rqhdrb1                      : 1;
 	uint64_t rqhdrb0                      : 1;
-	uint64_t rqhdra2                      : 1;
-	uint64_t rqhdra1                      : 1;
-	uint64_t rqhdra0                      : 1;
 	uint64_t sot                          : 1;
 	uint64_t retryc                       : 1;
-	uint64_t retryb                       : 1;
-	uint64_t retrya                       : 1;
-	uint64_t reserved_25_63               : 39;
+	uint64_t reserved_26_63               : 38;
 #endif
 	} cn78xx;
 	struct cvmx_pemx_bist_status_cn61xx   cnf71xx;
@@ -1049,21 +1104,17 @@ union cvmx_pemx_bist_status2 {
 	uint64_t u64;
 	struct cvmx_pemx_bist_status2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_19_63               : 45;
-	uint64_t tlpn_d0                      : 1;  /**< BIST Status for the tlp_n_fifo_data0 */
-	uint64_t tlpn_d1                      : 1;  /**< BIST Status for the tlp_n_fifo_data1 */
-	uint64_t reserved_16_16               : 1;
-	uint64_t tlpp_d0                      : 1;  /**< BIST Status for the tlp_p_fifo_data0 */
-	uint64_t tlpp_d1                      : 1;  /**< BIST Status for the tlp_p_fifo_data1 */
-	uint64_t reserved_0_13                : 14;
+	uint64_t reserved_13_63               : 51;
+	uint64_t tlpn_d                       : 1;  /**< BIST Status for the tlp_n_fifo_data */
+	uint64_t tlpn_ctl                     : 1;  /**< BIST Status for the tlp_n_fifo_ctl */
+	uint64_t tlpp_d                       : 1;  /**< BIST Status for the tlp_p_fifo_data */
+	uint64_t reserved_0_9                 : 10;
 #else
-	uint64_t reserved_0_13                : 14;
-	uint64_t tlpp_d1                      : 1;
-	uint64_t tlpp_d0                      : 1;
-	uint64_t reserved_16_16               : 1;
-	uint64_t tlpn_d1                      : 1;
-	uint64_t tlpn_d0                      : 1;
-	uint64_t reserved_19_63               : 45;
+	uint64_t reserved_0_9                 : 10;
+	uint64_t tlpp_d                       : 1;
+	uint64_t tlpn_ctl                     : 1;
+	uint64_t tlpn_d                       : 1;
+	uint64_t reserved_13_63               : 51;
 #endif
 	} s;
 	struct cvmx_pemx_bist_status2_cn61xx {
@@ -1133,53 +1184,6 @@ union cvmx_pemx_bist_status2 {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} cn70xx;
-	struct cvmx_pemx_bist_status2_cn78xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_20_63               : 44;
-	uint64_t peai_p2e                     : 1;  /**< BIST Status for the peai__pesc_fifo */
-	uint64_t tlpn_d0                      : 1;  /**< BIST Status for the tlp_n_fifo_data0 */
-	uint64_t tlpn_d1                      : 1;  /**< BIST Status for the tlp_n_fifo_data1 */
-	uint64_t tlpn_ctl                     : 1;  /**< BIST Status for the tlp_n_fifo_ctl */
-	uint64_t tlpp_d0                      : 1;  /**< BIST Status for the tlp_p_fifo_data0 */
-	uint64_t tlpp_d1                      : 1;  /**< BIST Status for the tlp_p_fifo_data1 */
-	uint64_t tlpp_ctl                     : 1;  /**< BIST Status for the tlp_p_fifo_ctl */
-	uint64_t tlpc_d0                      : 1;  /**< BIST Status for the tlp_c_fifo_data0 */
-	uint64_t tlpc_d1                      : 1;  /**< BIST Status for the tlp_c_fifo_data1 */
-	uint64_t tlpc_ctl                     : 1;  /**< BIST Status for the tlp_c_fifo_ctl */
-	uint64_t tlpan_d0                     : 1;  /**< BIST Status for the tlp_n_afifo_data0 */
-	uint64_t tlpan_d1                     : 1;  /**< BIST Status for the tlp_n_afifo_data1 */
-	uint64_t tlpan_ctl                    : 1;  /**< BIST Status for the tlp_n_afifo_ctl */
-	uint64_t tlpap_d0                     : 1;  /**< BIST Status for the tlp_p_afifo_data0 */
-	uint64_t tlpap_d1                     : 1;  /**< BIST Status for the tlp_p_afifo_data1 */
-	uint64_t tlpap_ctl                    : 1;  /**< BIST Status for the tlp_p_afifo_ctl */
-	uint64_t tlpac_d0                     : 1;  /**< BIST Status for the tlp_c_afifo_data0 */
-	uint64_t tlpac_d1                     : 1;  /**< BIST Status for the tlp_c_afifo_data1 */
-	uint64_t tlpac_ctl                    : 1;  /**< BIST Status for the tlp_c_afifo_ctl */
-	uint64_t m2s                          : 1;  /**< BIST Status for the m2s_fifo */
-#else
-	uint64_t m2s                          : 1;
-	uint64_t tlpac_ctl                    : 1;
-	uint64_t tlpac_d1                     : 1;
-	uint64_t tlpac_d0                     : 1;
-	uint64_t tlpap_ctl                    : 1;
-	uint64_t tlpap_d1                     : 1;
-	uint64_t tlpap_d0                     : 1;
-	uint64_t tlpan_ctl                    : 1;
-	uint64_t tlpan_d1                     : 1;
-	uint64_t tlpan_d0                     : 1;
-	uint64_t tlpc_ctl                     : 1;
-	uint64_t tlpc_d1                      : 1;
-	uint64_t tlpc_d0                      : 1;
-	uint64_t tlpp_ctl                     : 1;
-	uint64_t tlpp_d1                      : 1;
-	uint64_t tlpp_d0                      : 1;
-	uint64_t tlpn_ctl                     : 1;
-	uint64_t tlpn_d1                      : 1;
-	uint64_t tlpn_d0                      : 1;
-	uint64_t peai_p2e                     : 1;
-	uint64_t reserved_20_63               : 44;
-#endif
-	} cn78xx;
 	struct cvmx_pemx_bist_status2_cn61xx  cnf71xx;
 };
 typedef union cvmx_pemx_bist_status2 cvmx_pemx_bist_status2_t;
@@ -1194,19 +1198,39 @@ union cvmx_pemx_cfg {
 	uint64_t u64;
 	struct cvmx_pemx_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_0_63                : 64;
+	uint64_t reserved_5_63                : 59;
+	uint64_t laneswap                     : 1;  /**< This field will overwrite the pin setting for lane swapping.
+                                                         When set, lane swapping is performed to/from the SerDes.
+                                                         When clear, no lane swapping is performed. */
+	uint64_t reserved_2_3                 : 2;
+	uint64_t md                           : 2;  /**< This field will overwrite the pin settings for speed.
+                                                         00 - EP Mode, Gen1 Speed
+                                                         01 - EP Mode, Gen2 Speed
+                                                         10 - EP Mode, Gen3 Speed
+                                                         11 - Rsvd */
 #else
-	uint64_t reserved_0_63                : 64;
+	uint64_t md                           : 2;
+	uint64_t reserved_2_3                 : 2;
+	uint64_t laneswap                     : 1;
+	uint64_t reserved_5_63                : 59;
 #endif
 	} s;
 	struct cvmx_pemx_cfg_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
-	uint64_t laneswap                     : 1;  /**< When set, lane swapping is performed to/from the SerDes.
+	uint64_t laneswap                     : 1;  /**< This field will overwrite the pin setting for lane swapping.
+                                                         When set, lane swapping is performed to/from the SerDes.
                                                          When clear, no lane swapping is performed. */
-	uint64_t hostmd                       : 1;  /**< When set, the PEM is configured to be a Root Complex.
+	uint64_t hostmd                       : 1;  /**< This field will overwrite the pin settings for host mode.
+                                                         When set, the PEM is configured to be a Root Complex.
                                                          When clear, the PEM is configured to be an End Point. */
-	uint64_t md                           : 3;  /**< This field will overwrite the pin settings for speed and lane.
+	uint64_t md                           : 3;  /**< This field will overwrite the pin settings for speed and lane
+                                                         configuration. This value is used to set the Maximum Link Width
+                                                         field in the core's Link Capabilities Register (CFG031) to
+                                                         indicate the maximum number of lanes supported. Note that less
+                                                         lanes than the specified maximum can be configured for use via
+                                                         the core's Link Control Register (CFG032) Negotiated Link Width
+                                                         field.
                                                          NOTE - The lower two bits of the MD field must
                                                          be the same across all configured PEMs!
                                                            000 - Gen2 Speed, 2-lanes
@@ -1226,22 +1250,32 @@ union cvmx_pemx_cfg {
 	} cn70xx;
 	struct cvmx_pemx_cfg_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_4_63                : 60;
-	uint64_t laneswap                     : 1;  /**< When set, lane swapping is performed to/from the SerDes.
+	uint64_t reserved_5_63                : 59;
+	uint64_t laneswap                     : 1;  /**< This field will overwrite the pin setting for lane swapping.
+                                                         When set, lane swapping is performed to/from the SerDes.
                                                          When clear, no lane swapping is performed. */
-	uint64_t lanes8                       : 1;  /**< When set, the PEM is configured for 8-lanes,
-                                                         When clear, the PEM is configured for 4-lanes */
-	uint64_t md                           : 2;  /**< When both bits are set, the PEM is configured to be a Root Complex.
-                                                         When both bits are not set, the PEM is configured to be a End Point:
-                                                           00 - EP Mode, Gen1 Speed
-                                                           01 - EP Mode, Gen2 Speed
-                                                           10 - EP Mode, Gen3 Speed
-                                                           11 - RC Mode */
+	uint64_t lanes8                       : 1;  /**< This field will overwrite the pin setting for number of lanes.
+                                                         When set, the PEM is configured for a maximum of 8-lanes,
+                                                         When clear, the PEM is configured for a maximum of 4-lanes.
+                                                         This value is used to set the Maximum Link Width field in the
+                                                         core's Link Capabilities Register (CFG031) to indicate the
+                                                         maximum number of lanes supported. Note that less lanes than
+                                                         the specified maximum can be configured for use via the core's
+                                                         Link Control Register (CFG032) Negotiated Link Width field. */
+	uint64_t hostmd                       : 1;  /**< This field will overwrite the pin settings for host mode.
+                                                         When set, the PEM is configured to be a Root Complex.
+                                                         When clear, the PEM is configured to be an End Point. */
+	uint64_t md                           : 2;  /**< This field will overwrite the pin settings for speed.
+                                                         00 - EP Mode, Gen1 Speed
+                                                         01 - EP Mode, Gen2 Speed
+                                                         10 - EP Mode, Gen3 Speed
+                                                         11 - Rsvd */
 #else
 	uint64_t md                           : 2;
+	uint64_t hostmd                       : 1;
 	uint64_t lanes8                       : 1;
 	uint64_t laneswap                     : 1;
-	uint64_t reserved_4_63                : 60;
+	uint64_t reserved_5_63                : 59;
 #endif
 	} cn78xx;
 };
@@ -1381,6 +1415,93 @@ union cvmx_pemx_ctl_status {
 	uint64_t u64;
 	struct cvmx_pemx_ctl_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_7_63                : 57;
+	uint64_t nf_ecrc                      : 1;  /**< Do not forward peer-to-peer ECRC TLPs. */
+	uint64_t dly_one                      : 1;  /**< When set the output client state machines will
+                                                         wait one cycle before starting a new TLP out. */
+	uint64_t lnk_enb                      : 1;  /**< When set '1' the link is enabled when '0' the
+                                                         link is disabled. This bit only is active when in
+                                                         RC mode. */
+	uint64_t ro_ctlp                      : 1;  /**< When set '1' C-TLPs that have the RO bit set will
+                                                         not wait for P-TLPs that normaly would be sent
+                                                         first. */
+	uint64_t fast_lm                      : 1;  /**< When '1' forces fast link mode. */
+	uint64_t inv_ecrc                     : 1;  /**< When '1' causes the LSB of the ECRC to be inverted. */
+	uint64_t inv_lcrc                     : 1;  /**< When '1' causes the LSB of the LCRC to be inverted. */
+#else
+	uint64_t inv_lcrc                     : 1;
+	uint64_t inv_ecrc                     : 1;
+	uint64_t fast_lm                      : 1;
+	uint64_t ro_ctlp                      : 1;
+	uint64_t lnk_enb                      : 1;
+	uint64_t dly_one                      : 1;
+	uint64_t nf_ecrc                      : 1;
+	uint64_t reserved_7_63                : 57;
+#endif
+	} s;
+	struct cvmx_pemx_ctl_status_cn61xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t auto_sd                      : 1;  /**< Link Hardware Autonomous Speed Disable. */
+	uint64_t dnum                         : 5;  /**< Primary bus device number. */
+	uint64_t pbus                         : 8;  /**< Primary bus number. */
+	uint64_t reserved_32_33               : 2;
+	uint64_t cfg_rtry                     : 16; /**< The time x 0x10000 in core clocks to wait for a
+                                                         CPL to a CFG RD that does not carry a Retry Status.
+                                                         Until such time that the timeout occurs and Retry
+                                                         Status is received for a CFG RD, the Read CFG Read
+                                                         will be resent. A value of 0 disables retries and
+                                                         treats a CPL Retry as a CPL UR.
+                                                         When enabled only one CFG RD may be issued until
+                                                         either successful completion or CPL UR. */
+	uint64_t reserved_12_15               : 4;
+	uint64_t pm_xtoff                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
+                                                         to the PCIe core pm_xmt_turnoff port. RC mode. */
+	uint64_t pm_xpme                      : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
+                                                         to the PCIe core pm_xmt_pme port. EP mode. */
+	uint64_t ob_p_cmd                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
+                                                         to the PCIe core outband_pwrup_cmd port. EP mode. */
+	uint64_t reserved_7_8                 : 2;
+	uint64_t nf_ecrc                      : 1;  /**< Do not forward peer-to-peer ECRC TLPs. */
+	uint64_t dly_one                      : 1;  /**< When set the output client state machines will
+                                                         wait one cycle before starting a new TLP out. */
+	uint64_t lnk_enb                      : 1;  /**< When set '1' the link is enabled when '0' the
+                                                         link is disabled. This bit only is active when in
+                                                         RC mode. */
+	uint64_t ro_ctlp                      : 1;  /**< When set '1' C-TLPs that have the RO bit set will
+                                                         not wait for P-TLPs that normaly would be sent
+                                                         first. */
+	uint64_t fast_lm                      : 1;  /**< When '1' forces fast link mode. */
+	uint64_t inv_ecrc                     : 1;  /**< When '1' causes the LSB of the ECRC to be inverted. */
+	uint64_t inv_lcrc                     : 1;  /**< When '1' causes the LSB of the LCRC to be inverted. */
+#else
+	uint64_t inv_lcrc                     : 1;
+	uint64_t inv_ecrc                     : 1;
+	uint64_t fast_lm                      : 1;
+	uint64_t ro_ctlp                      : 1;
+	uint64_t lnk_enb                      : 1;
+	uint64_t dly_one                      : 1;
+	uint64_t nf_ecrc                      : 1;
+	uint64_t reserved_7_8                 : 2;
+	uint64_t ob_p_cmd                     : 1;
+	uint64_t pm_xpme                      : 1;
+	uint64_t pm_xtoff                     : 1;
+	uint64_t reserved_12_15               : 4;
+	uint64_t cfg_rtry                     : 16;
+	uint64_t reserved_32_33               : 2;
+	uint64_t pbus                         : 8;
+	uint64_t dnum                         : 5;
+	uint64_t auto_sd                      : 1;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} cn61xx;
+	struct cvmx_pemx_ctl_status_cn61xx    cn63xx;
+	struct cvmx_pemx_ctl_status_cn61xx    cn63xxp1;
+	struct cvmx_pemx_ctl_status_cn61xx    cn66xx;
+	struct cvmx_pemx_ctl_status_cn61xx    cn68xx;
+	struct cvmx_pemx_ctl_status_cn61xx    cn68xxp1;
+	struct cvmx_pemx_ctl_status_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_51_63               : 13;
 	uint64_t inv_dpar                     : 1;  /**< Invert the generated parity to be written into the
                                                          the most significant Data Queue Buffer ram block
@@ -1446,14 +1567,29 @@ union cvmx_pemx_ctl_status {
 	uint64_t inv_dpar                     : 1;
 	uint64_t reserved_51_63               : 13;
 #endif
-	} s;
-	struct cvmx_pemx_ctl_status_cn61xx {
+	} cn70xx;
+	struct cvmx_pemx_ctl_status_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_48_63               : 16;
+	uint64_t inv_dpar                     : 1;  /**< Invert the generated parity to be written into the
+                                                         the most significant Data Queue Buffer ram block
+                                                         to force a parity error when it is later read. */
+	uint64_t inv_hpar                     : 1;  /**< Invert the generated parity to be written into the
+                                                         most significant Header Queue Buffer ram block
+                                                         to force a parity error when it is later read. */
+	uint64_t inv_rpar                     : 1;  /**< Invert the generated parity to be written into the
+                                                         most significant Retry Buffer ram block to force
+                                                         a parity error when it is later read. */
 	uint64_t auto_sd                      : 1;  /**< Link Hardware Autonomous Speed Disable. */
 	uint64_t dnum                         : 5;  /**< Primary bus device number. */
 	uint64_t pbus                         : 8;  /**< Primary bus number. */
-	uint64_t reserved_32_33               : 2;
+	uint64_t no_fwd_prg                   : 16; /**< The time x 0x10000 in core clocks to wait for the
+                                                         TLP FIFOs to be able to unload an entry. If there is
+                                                         no forward progress, such that the timeout occurs,
+                                                         credits will be returned to the SLI and an interrupt
+                                                         (if enabled) will be asserted. Any more TLPs received
+                                                         will be dropped on the floor and the credits
+                                                         associated with those TLPs will be returned, as well.
+                                                         This state will hold until a mac reset is received. */
 	uint64_t cfg_rtry                     : 16; /**< The time x 0x10000 in core clocks to wait for a
                                                          CPL to a CFG RD that does not carry a Retry Status.
                                                          Until such time that the timeout occurs and Retry
@@ -1462,14 +1598,14 @@ union cvmx_pemx_ctl_status {
                                                          treats a CPL Retry as a CPL UR.
                                                          When enabled only one CFG RD may be issued until
                                                          either successful completion or CPL UR. */
-	uint64_t reserved_12_15               : 4;
+	uint64_t reserved_11_14               : 4;
 	uint64_t pm_xtoff                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
                                                          to the PCIe core pm_xmt_turnoff port. RC mode. */
 	uint64_t pm_xpme                      : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
                                                          to the PCIe core pm_xmt_pme port. EP mode. */
 	uint64_t ob_p_cmd                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
                                                          to the PCIe core outband_pwrup_cmd port. EP mode. */
-	uint64_t reserved_7_8                 : 2;
+	uint64_t reserved_7_7                 : 1;
 	uint64_t nf_ecrc                      : 1;  /**< Do not forward peer-to-peer ECRC TLPs. */
 	uint64_t dly_one                      : 1;  /**< When set the output client state machines will
                                                          wait one cycle before starting a new TLP out. */
@@ -1490,26 +1626,21 @@ union cvmx_pemx_ctl_status {
 	uint64_t lnk_enb                      : 1;
 	uint64_t dly_one                      : 1;
 	uint64_t nf_ecrc                      : 1;
-	uint64_t reserved_7_8                 : 2;
+	uint64_t reserved_7_7                 : 1;
 	uint64_t ob_p_cmd                     : 1;
 	uint64_t pm_xpme                      : 1;
 	uint64_t pm_xtoff                     : 1;
-	uint64_t reserved_12_15               : 4;
+	uint64_t reserved_11_14               : 4;
 	uint64_t cfg_rtry                     : 16;
-	uint64_t reserved_32_33               : 2;
+	uint64_t no_fwd_prg                   : 16;
 	uint64_t pbus                         : 8;
 	uint64_t dnum                         : 5;
 	uint64_t auto_sd                      : 1;
-	uint64_t reserved_48_63               : 16;
+	uint64_t inv_rpar                     : 1;
+	uint64_t inv_hpar                     : 1;
+	uint64_t inv_dpar                     : 1;
 #endif
-	} cn61xx;
-	struct cvmx_pemx_ctl_status_cn61xx    cn63xx;
-	struct cvmx_pemx_ctl_status_cn61xx    cn63xxp1;
-	struct cvmx_pemx_ctl_status_cn61xx    cn66xx;
-	struct cvmx_pemx_ctl_status_cn61xx    cn68xx;
-	struct cvmx_pemx_ctl_status_cn61xx    cn68xxp1;
-	struct cvmx_pemx_ctl_status_s         cn70xx;
-	struct cvmx_pemx_ctl_status_s         cn78xx;
+	} cn78xx;
 	struct cvmx_pemx_ctl_status_cn61xx    cnf71xx;
 };
 typedef union cvmx_pemx_ctl_status cvmx_pemx_ctl_status_t;
@@ -1524,7 +1655,9 @@ union cvmx_pemx_dbg_info {
 	uint64_t u64;
 	struct cvmx_pemx_dbg_info_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_50_63               : 14;
+	uint64_t reserved_53_63               : 11;
+	uint64_t lofp                         : 1;  /**< Lack of Forward Progress at TLP FIFOs timeout occured. */
+	uint64_t reserved_50_51               : 2;
 	uint64_t c_d1_dbe                     : 1;  /**< Detected a TLP CPL Fifo data1 double bit error */
 	uint64_t c_d1_sbe                     : 1;  /**< Detected a TLP CPL Fifo data1 single bit error */
 	uint64_t c_d0_dbe                     : 1;  /**< Detected a TLP CPL Fifo data0 double bit error */
@@ -1648,7 +1781,9 @@ union cvmx_pemx_dbg_info {
 	uint64_t c_d0_dbe                     : 1;
 	uint64_t c_d1_sbe                     : 1;
 	uint64_t c_d1_dbe                     : 1;
-	uint64_t reserved_50_63               : 14;
+	uint64_t reserved_50_51               : 2;
+	uint64_t lofp                         : 1;
+	uint64_t reserved_53_63               : 11;
 #endif
 	} s;
 	struct cvmx_pemx_dbg_info_cn61xx {
@@ -1917,7 +2052,8 @@ union cvmx_pemx_dbg_info {
 	} cn70xx;
 	struct cvmx_pemx_dbg_info_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_52_63               : 12;
+	uint64_t reserved_53_63               : 11;
+	uint64_t lofp                         : 1;  /**< Lack of Forward Progress at TLP FIFOs timeout occured. */
 	uint64_t c_c_dbe                      : 1;  /**< Detected a TLP CPL Fifo ctrl double bit error */
 	uint64_t c_c_sbe                      : 1;  /**< Detected a TLP CPL Fifo ctrl single bit error */
 	uint64_t c_d1_dbe                     : 1;  /**< Detected a TLP CPL Fifo data1 double bit error */
@@ -2070,7 +2206,8 @@ union cvmx_pemx_dbg_info {
 	uint64_t c_d1_dbe                     : 1;
 	uint64_t c_c_sbe                      : 1;
 	uint64_t c_c_dbe                      : 1;
-	uint64_t reserved_52_63               : 12;
+	uint64_t lofp                         : 1;
+	uint64_t reserved_53_63               : 11;
 #endif
 	} cn78xx;
 	struct cvmx_pemx_dbg_info_cn61xx      cnf71xx;
@@ -2087,7 +2224,8 @@ union cvmx_pemx_dbg_info_en {
 	uint64_t u64;
 	struct cvmx_pemx_dbg_info_en_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_52_63               : 12;
+	uint64_t reserved_53_63               : 11;
+	uint64_t lofp_en                      : 1;  /**< Allows PEM_DBG_INFO[52] to generate an interrupt. */
 	uint64_t tpcdbe2                      : 1;  /**< Allows PEM_DBG_INFO[51] to generate an interrupt. */
 	uint64_t reserved_49_50               : 2;
 	uint64_t tpcsbe2                      : 1;  /**< Allows PEM_DBG_INFO[48] to generate an interrupt. */
@@ -2167,7 +2305,8 @@ union cvmx_pemx_dbg_info_en {
 	uint64_t tpcsbe2                      : 1;
 	uint64_t reserved_49_50               : 2;
 	uint64_t tpcdbe2                      : 1;
-	uint64_t reserved_52_63               : 12;
+	uint64_t lofp_en                      : 1;
+	uint64_t reserved_53_63               : 11;
 #endif
 	} s;
 	struct cvmx_pemx_dbg_info_en_cn61xx {
@@ -2345,7 +2484,8 @@ union cvmx_pemx_dbg_info_en {
 	} cn70xx;
 	struct cvmx_pemx_dbg_info_en_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_52_63               : 12;
+	uint64_t reserved_53_63               : 11;
+	uint64_t lofp_en                      : 1;  /**< Allows PEM_DBG_INFO[52] to generate an interrupt. */
 	uint64_t tpcdbe2                      : 1;  /**< Allows PEM_DBG_INFO[51] to generate an interrupt. */
 	uint64_t tpcdbe1                      : 1;  /**< Allows PEM_DBG_INFO[50] to generate an interrupt. */
 	uint64_t tpcdbe0                      : 1;  /**< Allows PEM_DBG_INFO[49] to generate an interrupt. */
@@ -2451,7 +2591,8 @@ union cvmx_pemx_dbg_info_en {
 	uint64_t tpcdbe0                      : 1;
 	uint64_t tpcdbe1                      : 1;
 	uint64_t tpcdbe2                      : 1;
-	uint64_t reserved_52_63               : 12;
+	uint64_t lofp_en                      : 1;
+	uint64_t reserved_53_63               : 11;
 #endif
 	} cn78xx;
 	struct cvmx_pemx_dbg_info_en_cn61xx   cnf71xx;
@@ -2510,7 +2651,7 @@ typedef union cvmx_pemx_diag_status cvmx_pemx_diag_status_t;
 /**
  * cvmx_pem#_ecc_ena
  *
- * Contains enables for ECC RAMs
+ * Contains enables for TLP FIFO ECC RAMs
  *
  */
 union cvmx_pemx_ecc_ena {
@@ -2581,7 +2722,7 @@ typedef union cvmx_pemx_ecc_ena cvmx_pemx_ecc_ena_t;
  * cvmx_pem#_ecc_synd_ctrl
  *
  * PEM_ECC_SYND_CTL
- * Contains Syndrome Control for ECC RAMs
+ * Contains Syndrome Control for TLP FIFO ECC RAMs
  */
 union cvmx_pemx_ecc_synd_ctrl {
 	uint64_t u64;

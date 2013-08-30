@@ -405,8 +405,8 @@ typedef union cvmx_ase_backdoor_req_ctl cvmx_ase_backdoor_req_ctl_t;
  * cvmx_ase_backdoor_req_data#
  *
  * The lowest address is first beat (aka control word) and has the SOP. The next address is next
- * beat, etc. The ASE_BACKDOOR_REQ_CTL[CNT]th address has the EOP. See further information in
- * ASE_BACKDOOR_REQ_CTL.
+ * beat, etc. The register offset indicated by ASE_BACKDOOR_REQ_CTL[CNT] has the EOP. See further
+ * information in ASE_BACKDOOR_REQ_CTL.
  */
 union cvmx_ase_backdoor_req_datax {
 	uint64_t u64;
@@ -451,8 +451,8 @@ typedef union cvmx_ase_backdoor_rsp_ctl cvmx_ase_backdoor_rsp_ctl_t;
  * cvmx_ase_backdoor_rsp_data#
  *
  * The lowest address is first beat (aka control word) and has the SOP. The next address is next
- * beat, etc. The ASE_BACKDOOR_RSP_CTL[CNT]th address has the EOP. See further information in
- * ASE_BACKDOOR_RSP_CTL.
+ * beat, etc. The register offset indicated by ASE_BACKDOOR_RSP_CTL[CNT] has the EOP. See further
+ * information in ASE_BACKDOOR_RSP_CTL.
  */
 union cvmx_ase_backdoor_rsp_datax {
 	uint64_t u64;
@@ -617,7 +617,7 @@ typedef union cvmx_ase_config cvmx_ase_config_t;
  * cvmx_ase_ecc_ctl
  *
  * This register can be used to disable ECC checks, insert ECC errors.
- * Fields *ECC_DIS Disable SBE detection/correction and DBE detection. If ECC_DIS is 0x1, then no
+ * Fields *ECC_DIS disable SBE detection/correction and DBE detection. If ECC_DIS is 0x1, then no
  * errors are detected.
  * Fields *ECC_FLIP_SYND flip the syndrome<1:0> bits to generate 1-bit/2-bits error for testing.
  * 0x0 = normal operation
@@ -693,7 +693,7 @@ typedef union cvmx_ase_ecc_ctl cvmx_ase_ecc_ctl_t;
 /**
  * cvmx_ase_ecc_int
  *
- * This register contains the interrupt status for ECC failures. In all cases below EXCEPT
+ * This register contains the interrupt status for ECC failures. In all cases below, except
  * LUE_KDT_*, any request that generates an error has its response marked as errored. The
  * LUE_KDT_DBE error is not indicated in the response packet; the only indication of this error
  * is the interrupt mechanism.
@@ -776,7 +776,7 @@ typedef union cvmx_ase_ecc_int cvmx_ase_ecc_int_t;
  * cvmx_ase_gen_int
  *
  * This register contains the interrupt status for general ASE interrupts. Errors reported in bit
- * positions <38:32>, <7:2>, and <0> are most likely due to software programming errors.
+ * positions <39:32>, <7:2>, and <0> are most likely due to software programming errors.
  * In all LUE* cases below, any request that generates an error has its response marked as
  * errored. These LUE* interrupts are for diagnostic use, not for error handling. For all the
  * LUE* errors below, additional information can be obtained by reading ASE_LUE_ERROR_LOG.

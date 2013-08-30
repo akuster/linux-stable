@@ -1219,7 +1219,7 @@ int cvmx_ilk_disable(int interface)
 #endif
 
 	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN68XX)))
+	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)

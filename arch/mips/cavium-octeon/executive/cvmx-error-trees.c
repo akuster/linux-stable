@@ -3698,8 +3698,6 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 						NULL /*cvmx_error_childbit*/
 					},
 					{0}}},
-				{1, 51 /* sum2 */, (struct cvmx_error_muxchild[]){
-					{0}}},
 				{1, 57 /* pcm */, (struct cvmx_error_muxchild[]){
 					{CVMX_ADD_IO_SEG(0x0001070000010028ull) + ((0) & 3) * 16384 /* CVMX_PCMX_INT_SUM(0) */, CVMX_ADD_IO_SEG(0x0001070000010020ull) + ((0) & 3) * 16384 /* CVMX_PCMX_INT_ENA(0) */, (struct cvmx_error_regbit[]){
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "PCMX_INT_SUM(0)[FSYNCMISSED]"},
@@ -3736,7 +3734,159 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 					{0}}},
 				{0}}
 			},
-			{CVMX_ADD_IO_SEG(0x0001070000008000ull) + ((0) & 3) * 8 /* CVMX_CIU_SUM1_PPX_IP2(0) */, 0, NULL /* cvmx_error_regbit */, (struct cvmx_error_childbit[]){
+			{CVMX_ADD_IO_SEG(0x0001070000000108ull) /* CVMX_CIU_INT_SUM1 */, 0, NULL /* cvmx_error_regbit */, (struct cvmx_error_childbit[]){
+				{1, 24 /* l2c */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x000107000000E000ull) /* CVMX_CIU_CIB_L2C_RAWX(0) */, CVMX_ADD_IO_SEG(0x000107000000E100ull) /* CVMX_CIU_CIB_L2C_ENX(0) */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_L2C, 0, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_L2DSBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 1, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_L2DDBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 2, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_SBFSBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 3, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_SBFDBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 4, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_FBFSBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 5, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_FBFDBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 6, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_TAGSBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 7, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_TAGDBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 8, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_NOWAY]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 9, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_HOLEWR]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 10, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_HOLERD]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 11, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_BIGWR]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 12, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_BIGRD]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 13, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_WRDISLMC]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 14, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_RDDISLMC]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 15, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_RTGSBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 16, 0, "CIU_CIB_L2C_RAWX(0)[TADX_INT_RTGDBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 17, 0, "CIU_CIB_L2C_RAWX(0)[MCIX_INT_VBFSBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 18, 0, "CIU_CIB_L2C_RAWX(0)[MCIX_INT_VBFDBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 19, 0, "CIU_CIB_L2C_RAWX(0)[CBCX_INT_RSDSBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 20, 0, "CIU_CIB_L2C_RAWX(0)[CBCX_INT_RSDDBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 21, 0, "CIU_CIB_L2C_RAWX(0)[CBCX_INT_IOCCMDSBE]"},
+							{1, 1, CVMX_ERROR_GROUP_L2C, 22, 0, "CIU_CIB_L2C_RAWX(0)[CBCX_INT_IOCCMDDBE]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 25 /* ipd */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x00014F0000000168ull) /* CVMX_IPD_INT_SUM */, CVMX_ADD_IO_SEG(0x00014F0000000160ull) /* CVMX_IPD_INT_ENB */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "IPD_INT_SUM[PRC_PAR0]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "IPD_INT_SUM[PRC_PAR1]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 2, 0, "IPD_INT_SUM[PRC_PAR2]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "IPD_INT_SUM[PRC_PAR3]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 4, 0, "IPD_INT_SUM[BP_SUB]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 5, 0, "IPD_INT_SUM[DC_OVR]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 6, 0, "IPD_INT_SUM[CC_OVR]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 7, 0, "IPD_INT_SUM[C_COLL]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 8, 0, "IPD_INT_SUM[D_COLL]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 9, 0, "IPD_INT_SUM[BC_OVR]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 23 /* pow */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x0001670000000218ull) /* CVMX_POW_ECC_ERR */, CVMX_ADD_IO_SEG(0x0001670000000218ull) /* CVMX_POW_ECC_ERR */, (struct cvmx_error_regbit[]){
+							{1, 0, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "POW_ECC_ERR[SBE]"},
+							{1, 0, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "POW_ECC_ERR[DBE]"},
+							{1, 0, CVMX_ERROR_GROUP_INTERNAL, 12, 0, "POW_ECC_ERR[RPE]"},
+							{1, 0, CVMX_ERROR_GROUP_INTERNAL, 16, 0, "POW_ECC_ERR[IOP]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 30 /* rad */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x0001180070000088ull) /* CVMX_RAD_REG_ERROR */, CVMX_ADD_IO_SEG(0x0001180070000090ull) /* CVMX_RAD_REG_INT_MASK */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "RAD_REG_ERROR[DOORBELL]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 26 /* pip */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x00011800A0000008ull) /* CVMX_PIP_INT_REG */, CVMX_ADD_IO_SEG(0x00011800A0000010ull) /* CVMX_PIP_INT_EN */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "PIP_INT_REG[PRTNXA]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 4, 0, "PIP_INT_REG[BADTAG]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 5, 0, "PIP_INT_REG[SKPRUNT]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 6, 0, "PIP_INT_REG[TODOOVR]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 7, 0, "PIP_INT_REG[FEPERR]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 8, 0, "PIP_INT_REG[BEPERR]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 12, 0, "PIP_INT_REG[PUNYERR]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 27 /* pko */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x0001180050000088ull) /* CVMX_PKO_REG_ERROR */, CVMX_ADD_IO_SEG(0x0001180050000090ull) /* CVMX_PKO_REG_INT_MASK */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "PKO_REG_ERROR[PARITY]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "PKO_REG_ERROR[DOORBELL]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 2, 0, "PKO_REG_ERROR[CURRZERO]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 50 /* pem2 */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x00011800C0000428ull) + ((2) & 3) * 0x1000000ull /* CVMX_PEMX_INT_SUM(2) */, CVMX_ADD_IO_SEG(0x00011800C0000430ull) + ((2) & 3) * 0x1000000ull /* CVMX_PEMX_INT_ENB(2) */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_PCI, 1, 2, "PEMX_INT_SUM(2)[SE]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 4, 2, "PEMX_INT_SUM(2)[UP_B1]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 5, 2, "PEMX_INT_SUM(2)[UP_B2]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 6, 2, "PEMX_INT_SUM(2)[UP_BX]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 7, 2, "PEMX_INT_SUM(2)[UN_B1]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 8, 2, "PEMX_INT_SUM(2)[UN_B2]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 9, 2, "PEMX_INT_SUM(2)[UN_BX]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 11, 2, "PEMX_INT_SUM(2)[RDLK]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 12, 2, "PEMX_INT_SUM(2)[CRS_ER]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 13, 2, "PEMX_INT_SUM(2)[CRS_DR]"},
+							{0}},
+						(struct cvmx_error_childbit[]){
+						{1, 10 /* exc */, (struct cvmx_error_muxchild[]){
+							{CVMX_ADD_IO_SEG(0x00011800C00000D0ull) + ((2) & 3) * 0x1000000ull /* CVMX_PEMX_DBG_INFO(2) */, CVMX_ADD_IO_SEG(0x00011800C00000A0ull) + ((2) & 3) * 0x1000000ull /* CVMX_PEMX_DBG_INFO_EN(2) */, (struct cvmx_error_regbit[]){
+									{1, 1, CVMX_ERROR_GROUP_PCI, 0, 2, "PEMX_DBG_INFO(2)[SPOISON]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 2, 2, "PEMX_DBG_INFO(2)[RTLPLLE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 3, 2, "PEMX_DBG_INFO(2)[RECRCE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 4, 2, "PEMX_DBG_INFO(2)[RPOISON]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 5, 2, "PEMX_DBG_INFO(2)[RCEMRC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 6, 2, "PEMX_DBG_INFO(2)[RNFEMRC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 7, 2, "PEMX_DBG_INFO(2)[RFEMRC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 8, 2, "PEMX_DBG_INFO(2)[RPMERC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 9, 2, "PEMX_DBG_INFO(2)[RPTAMRC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 10, 2, "PEMX_DBG_INFO(2)[RUMEP]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 11, 2, "PEMX_DBG_INFO(2)[RVDM]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 12, 2, "PEMX_DBG_INFO(2)[ACTO]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 13, 2, "PEMX_DBG_INFO(2)[RTE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 14, 2, "PEMX_DBG_INFO(2)[MRE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 15, 2, "PEMX_DBG_INFO(2)[RDWDLE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 16, 2, "PEMX_DBG_INFO(2)[RTWDLE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 17, 2, "PEMX_DBG_INFO(2)[DPEOOSD]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 18, 2, "PEMX_DBG_INFO(2)[FCPVWT]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 19, 2, "PEMX_DBG_INFO(2)[RPE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 20, 2, "PEMX_DBG_INFO(2)[FCUV]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 21, 2, "PEMX_DBG_INFO(2)[RQO]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 22, 2, "PEMX_DBG_INFO(2)[RAUC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 23, 2, "PEMX_DBG_INFO(2)[RACUR]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 24, 2, "PEMX_DBG_INFO(2)[RACCA]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 25, 2, "PEMX_DBG_INFO(2)[CAAR]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 26, 2, "PEMX_DBG_INFO(2)[RARWDNS]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 27, 2, "PEMX_DBG_INFO(2)[RAMTLP]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 28, 2, "PEMX_DBG_INFO(2)[RACPP]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 29, 2, "PEMX_DBG_INFO(2)[RAWWPP]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 30, 2, "PEMX_DBG_INFO(2)[ECRC_E]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 31, 2, "PEMX_DBG_INFO(2)[RTRY_PE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 32, 2, "PEMX_DBG_INFO(2)[HDRQ_PE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 33, 2, "PEMX_DBG_INFO(2)[DATQ_PE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 34, 2, "PEMX_DBG_INFO(2)[P_D_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 35, 2, "PEMX_DBG_INFO(2)[P_D_DBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 36, 2, "PEMX_DBG_INFO(2)[P_C_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 37, 2, "PEMX_DBG_INFO(2)[P_C_DBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 38, 2, "PEMX_DBG_INFO(2)[N_D_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 39, 2, "PEMX_DBG_INFO(2)[N_D_DBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 40, 2, "PEMX_DBG_INFO(2)[N_C_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 41, 2, "PEMX_DBG_INFO(2)[N_C_DBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 42, 2, "PEMX_DBG_INFO(2)[C_D_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 43, 2, "PEMX_DBG_INFO(2)[C_D_DBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 44, 2, "PEMX_DBG_INFO(2)[C_C_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 45, 2, "PEMX_DBG_INFO(2)[C_C_DBE]"},
+									{0}},
+								NULL /*cvmx_error_childbit*/
+							},
+							{0}}},
+						{0}}
+					},
+					{0}}},
 				{1, 48 /* pem0 */, (struct cvmx_error_muxchild[]){
 					{CVMX_ADD_IO_SEG(0x00011800C0000428ull) + ((0) & 3) * 0x1000000ull /* CVMX_PEMX_INT_SUM(0) */, CVMX_ADD_IO_SEG(0x00011800C0000430ull) + ((0) & 3) * 0x1000000ull /* CVMX_PEMX_INT_ENB(0) */, (struct cvmx_error_regbit[]){
 							{1, 1, CVMX_ERROR_GROUP_PCI, 1, 0, "PEMX_INT_SUM(0)[SE]"},
@@ -3805,27 +3955,72 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 						{0}}
 					},
 					{0}}},
-				{1, 46 /* agl */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x00011800E0000518ull) /* CVMX_AGL_GMX_BAD_REG */, 0, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 32, 0, "AGL_GMX_BAD_REG[OVRFLW]"},
-							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 33, 0, "AGL_GMX_BAD_REG[TXPOP]"},
-							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 34, 0, "AGL_GMX_BAD_REG[TXPSH]"},
-							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 2, 0, "AGL_GMX_BAD_REG[OUT_OVR]"},
-							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 22, 0, "AGL_GMX_BAD_REG[LOSTSTAT]"},
+				{1, 49 /* pem1 */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x00011800C0000428ull) + ((1) & 3) * 0x1000000ull /* CVMX_PEMX_INT_SUM(1) */, CVMX_ADD_IO_SEG(0x00011800C0000430ull) + ((1) & 3) * 0x1000000ull /* CVMX_PEMX_INT_ENB(1) */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_PCI, 1, 1, "PEMX_INT_SUM(1)[SE]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 4, 1, "PEMX_INT_SUM(1)[UP_B1]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 5, 1, "PEMX_INT_SUM(1)[UP_B2]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 6, 1, "PEMX_INT_SUM(1)[UP_BX]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 7, 1, "PEMX_INT_SUM(1)[UN_B1]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 8, 1, "PEMX_INT_SUM(1)[UN_B2]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 9, 1, "PEMX_INT_SUM(1)[UN_BX]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 11, 1, "PEMX_INT_SUM(1)[RDLK]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 12, 1, "PEMX_INT_SUM(1)[CRS_ER]"},
+							{1, 1, CVMX_ERROR_GROUP_PCI, 13, 1, "PEMX_INT_SUM(1)[CRS_DR]"},
 							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{CVMX_ADD_IO_SEG(0x00011800E0000000ull) + ((0) & 0) * 2048 /* CVMX_AGL_GMX_RXX_INT_REG(0) */, CVMX_ADD_IO_SEG(0x00011800E0000008ull) + ((0) & 0) * 2048 /* CVMX_AGL_GMX_RXX_INT_EN(0) */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 8, 0, "AGL_GMX_RXX_INT_REG(0)[SKPERR]"},
-							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 10, 0, "AGL_GMX_RXX_INT_REG(0)[OVRERR]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{CVMX_ADD_IO_SEG(0x00011800E0000500ull) /* CVMX_AGL_GMX_TX_INT_REG */, CVMX_ADD_IO_SEG(0x00011800E0000508ull) /* CVMX_AGL_GMX_TX_INT_EN */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 0, 0, "AGL_GMX_TX_INT_REG[PKO_NXA]"},
-							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 2, 0, "AGL_GMX_TX_INT_REG[UNDFLW]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
+						(struct cvmx_error_childbit[]){
+						{1, 10 /* exc */, (struct cvmx_error_muxchild[]){
+							{CVMX_ADD_IO_SEG(0x00011800C00000D0ull) + ((1) & 3) * 0x1000000ull /* CVMX_PEMX_DBG_INFO(1) */, CVMX_ADD_IO_SEG(0x00011800C00000A0ull) + ((1) & 3) * 0x1000000ull /* CVMX_PEMX_DBG_INFO_EN(1) */, (struct cvmx_error_regbit[]){
+									{1, 1, CVMX_ERROR_GROUP_PCI, 0, 1, "PEMX_DBG_INFO(1)[SPOISON]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 2, 1, "PEMX_DBG_INFO(1)[RTLPLLE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 3, 1, "PEMX_DBG_INFO(1)[RECRCE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 4, 1, "PEMX_DBG_INFO(1)[RPOISON]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 5, 1, "PEMX_DBG_INFO(1)[RCEMRC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 6, 1, "PEMX_DBG_INFO(1)[RNFEMRC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 7, 1, "PEMX_DBG_INFO(1)[RFEMRC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 8, 1, "PEMX_DBG_INFO(1)[RPMERC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 9, 1, "PEMX_DBG_INFO(1)[RPTAMRC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 10, 1, "PEMX_DBG_INFO(1)[RUMEP]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 11, 1, "PEMX_DBG_INFO(1)[RVDM]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 12, 1, "PEMX_DBG_INFO(1)[ACTO]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 13, 1, "PEMX_DBG_INFO(1)[RTE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 14, 1, "PEMX_DBG_INFO(1)[MRE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 15, 1, "PEMX_DBG_INFO(1)[RDWDLE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 16, 1, "PEMX_DBG_INFO(1)[RTWDLE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 17, 1, "PEMX_DBG_INFO(1)[DPEOOSD]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 18, 1, "PEMX_DBG_INFO(1)[FCPVWT]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 19, 1, "PEMX_DBG_INFO(1)[RPE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 20, 1, "PEMX_DBG_INFO(1)[FCUV]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 21, 1, "PEMX_DBG_INFO(1)[RQO]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 22, 1, "PEMX_DBG_INFO(1)[RAUC]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 23, 1, "PEMX_DBG_INFO(1)[RACUR]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 24, 1, "PEMX_DBG_INFO(1)[RACCA]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 25, 1, "PEMX_DBG_INFO(1)[CAAR]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 26, 1, "PEMX_DBG_INFO(1)[RARWDNS]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 27, 1, "PEMX_DBG_INFO(1)[RAMTLP]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 28, 1, "PEMX_DBG_INFO(1)[RACPP]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 29, 1, "PEMX_DBG_INFO(1)[RAWWPP]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 30, 1, "PEMX_DBG_INFO(1)[ECRC_E]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 31, 1, "PEMX_DBG_INFO(1)[RTRY_PE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 32, 1, "PEMX_DBG_INFO(1)[HDRQ_PE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 33, 1, "PEMX_DBG_INFO(1)[DATQ_PE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 34, 1, "PEMX_DBG_INFO(1)[P_D_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 35, 1, "PEMX_DBG_INFO(1)[P_D_DBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 36, 1, "PEMX_DBG_INFO(1)[P_C_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 37, 1, "PEMX_DBG_INFO(1)[P_C_DBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 38, 1, "PEMX_DBG_INFO(1)[N_D_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 39, 1, "PEMX_DBG_INFO(1)[N_D_DBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 40, 1, "PEMX_DBG_INFO(1)[N_C_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 41, 1, "PEMX_DBG_INFO(1)[N_C_DBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 42, 1, "PEMX_DBG_INFO(1)[C_D_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 43, 1, "PEMX_DBG_INFO(1)[C_D_DBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 44, 1, "PEMX_DBG_INFO(1)[C_C_SBE]"},
+									{1, 1, CVMX_ERROR_GROUP_PCI, 45, 1, "PEMX_DBG_INFO(1)[C_C_DBE]"},
+									{0}},
+								NULL /*cvmx_error_childbit*/
+							},
+							{0}}},
+						{0}}
 					},
 					{0}}},
 				{1, 22 /* fpa */, (struct cvmx_error_muxchild[]){
@@ -3887,27 +4082,93 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 						NULL /*cvmx_error_childbit*/
 					},
 					{0}}},
-				{1, 25 /* ipd */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x00014F0000000168ull) /* CVMX_IPD_INT_SUM */, CVMX_ADD_IO_SEG(0x00014F0000000160ull) /* CVMX_IPD_INT_ENB */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "IPD_INT_SUM[PRC_PAR0]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "IPD_INT_SUM[PRC_PAR1]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 2, 0, "IPD_INT_SUM[PRC_PAR2]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "IPD_INT_SUM[PRC_PAR3]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 4, 0, "IPD_INT_SUM[BP_SUB]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 5, 0, "IPD_INT_SUM[DC_OVR]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 6, 0, "IPD_INT_SUM[CC_OVR]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 7, 0, "IPD_INT_SUM[C_COLL]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 8, 0, "IPD_INT_SUM[D_COLL]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 9, 0, "IPD_INT_SUM[BC_OVR]"},
+				{1, 32 /* dfa */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x0001180037000028ull) /* CVMX_DFA_ERROR */, CVMX_ADD_IO_SEG(0x0001180037000030ull) /* CVMX_DFA_INTMSK */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "DFA_ERROR[DBLOVF]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "DFA_ERROR[DC0PERR]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 13, 0, "DFA_ERROR[DLC0_OVFERR]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 17, 0, "DFA_ERROR[DFANXM]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 18, 0, "DFA_ERROR[REPLERR]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 19 /* nand */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x0001070001000020ull) /* CVMX_NDF_INT */, CVMX_ADD_IO_SEG(0x0001070001000028ull) /* CVMX_NDF_INT_EN */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 2, 0, "NDF_INT[WDOG]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "NDF_INT[SM_BAD]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 4, 0, "NDF_INT[ECC_1BIT]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 5, 0, "NDF_INT[ECC_MULT]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 6, 0, "NDF_INT[OVRF]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 29 /* tim */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x0001180058000088ull) /* CVMX_TIM_REG_ERROR */, CVMX_ADD_IO_SEG(0x0001180058000090ull) /* CVMX_TIM_REG_INT_MASK */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "TIM_REG_ERROR[MASK]"},
 							{0}},
 						NULL /*cvmx_error_childbit*/
 					},
 					{0}}},
 				{1, 52 /* lmc0 */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x00011800880001F0ull) + ((0) & 0) * 0x1000000ull /* CVMX_LMCX_INT(0) */, CVMX_ADD_IO_SEG(0x00011800880001E8ull) + ((0) & 0) * 0x1000000ull /* CVMX_LMCX_INT_EN(0) */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_LMC, 1, 0, "LMCX_INT(0)[SEC_ERR]"},
-							{1, 1, CVMX_ERROR_GROUP_LMC, 0, 0, "LMCX_INT(0)[NXM_WR_ERR]"},
-							{1, 1, CVMX_ERROR_GROUP_LMC, 5, 0, "LMCX_INT(0)[DED_ERR]"},
+					{CVMX_ADD_IO_SEG(0x000107000000E200ull) /* CVMX_CIU_CIB_LMCX_RAWX(0,0) */, CVMX_ADD_IO_SEG(0x000107000000E300ull) /* CVMX_CIU_CIB_LMCX_ENX(0,0) */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_LMC, 1, 0, "CIU_CIB_LMCX_RAWX(0,0)[INT_SEC_ERRX]"},
+							{1, 1, CVMX_ERROR_GROUP_LMC, 5, 0, "CIU_CIB_LMCX_RAWX(0,0)[INT_DED_ERRX]"},
+							{1, 1, CVMX_ERROR_GROUP_LMC, 0, 0, "CIU_CIB_LMCX_RAWX(0,0)[INT_NXM_WR_ERR]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 31 /* key */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x0001180020000000ull) /* CVMX_KEY_INT_SUM */, CVMX_ADD_IO_SEG(0x0001180020000008ull) /* CVMX_KEY_INT_ENB */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "KEY_INT_SUM[KEY_SBE]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "KEY_INT_SUM[KEY_DBE]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 63 /* rst */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x000107000000E400ull) /* CVMX_CIU_CIB_RST_RAWX(0) */, CVMX_ADD_IO_SEG(0x000107000000E500ull) /* CVMX_CIU_CIB_RST_ENX(0) */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "CIU_CIB_RST_RAWX(0)[INT_LINKX]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "CIU_CIB_RST_RAWX(0)[INT_PERSTX]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 21 /* iob */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x00011800F0000058ull) /* CVMX_IOB_INT_SUM */, CVMX_ADD_IO_SEG(0x00011800F0000060ull) /* CVMX_IOB_INT_ENB */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "IOB_INT_SUM[NP_SOP]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "IOB_INT_SUM[NP_EOP]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 2, 0, "IOB_INT_SUM[P_SOP]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "IOB_INT_SUM[P_EOP]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 4, 0, "IOB_INT_SUM[NP_DAT]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 5, 0, "IOB_INT_SUM[P_DAT]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 6, 0, "IOB_INT_SUM[INB_MAT]"},
+							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 7, 0, "IOB_INT_SUM[OUTB_MAT]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{0}}},
+				{1, 46 /* agl */, (struct cvmx_error_muxchild[]){
+					{CVMX_ADD_IO_SEG(0x00011800E0000518ull) /* CVMX_AGL_GMX_BAD_REG */, 0, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 32, 0, "AGL_GMX_BAD_REG[OVRFLW]"},
+							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 33, 0, "AGL_GMX_BAD_REG[TXPOP]"},
+							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 34, 0, "AGL_GMX_BAD_REG[TXPSH]"},
+							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 2, 0, "AGL_GMX_BAD_REG[OUT_OVR]"},
+							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 22, 0, "AGL_GMX_BAD_REG[LOSTSTAT]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{CVMX_ADD_IO_SEG(0x00011800E0000000ull) + ((0) & 0) * 2048 /* CVMX_AGL_GMX_RXX_INT_REG(0) */, CVMX_ADD_IO_SEG(0x00011800E0000008ull) + ((0) & 0) * 2048 /* CVMX_AGL_GMX_RXX_INT_EN(0) */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 8, 0, "AGL_GMX_RXX_INT_REG(0)[SKPERR]"},
+							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 10, 0, "AGL_GMX_RXX_INT_REG(0)[OVRERR]"},
+							{0}},
+						NULL /*cvmx_error_childbit*/
+					},
+					{CVMX_ADD_IO_SEG(0x00011800E0000500ull) /* CVMX_AGL_GMX_TX_INT_REG */, CVMX_ADD_IO_SEG(0x00011800E0000508ull) /* CVMX_AGL_GMX_TX_INT_EN */, (struct cvmx_error_regbit[]){
+							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 0, 0, "AGL_GMX_TX_INT_REG[PKO_NXA]"},
+							{1, 1, CVMX_ERROR_GROUP_MGMT_PORT, 2, 0, "AGL_GMX_TX_INT_REG[UNDFLW]"},
 							{0}},
 						NULL /*cvmx_error_childbit*/
 					},
@@ -4208,101 +4469,6 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 						NULL /*cvmx_error_childbit*/
 					},
 					{0}}},
-				{1, 19 /* nand */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x0001070001000020ull) /* CVMX_NDF_INT */, CVMX_ADD_IO_SEG(0x0001070001000028ull) /* CVMX_NDF_INT_EN */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 2, 0, "NDF_INT[WDOG]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "NDF_INT[SM_BAD]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 4, 0, "NDF_INT[ECC_1BIT]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 5, 0, "NDF_INT[ECC_MULT]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 6, 0, "NDF_INT[OVRF]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{0}}},
-				{1, 27 /* pko */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x0001180050000088ull) /* CVMX_PKO_REG_ERROR */, CVMX_ADD_IO_SEG(0x0001180050000090ull) /* CVMX_PKO_REG_INT_MASK */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "PKO_REG_ERROR[PARITY]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "PKO_REG_ERROR[DOORBELL]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 2, 0, "PKO_REG_ERROR[CURRZERO]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{0}}},
-				{1, 29 /* tim */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x0001180058000088ull) /* CVMX_TIM_REG_ERROR */, CVMX_ADD_IO_SEG(0x0001180058000090ull) /* CVMX_TIM_REG_INT_MASK */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "TIM_REG_ERROR[MASK]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{0}}},
-				{1, 49 /* pem1 */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x00011800C0000428ull) + ((1) & 3) * 0x1000000ull /* CVMX_PEMX_INT_SUM(1) */, CVMX_ADD_IO_SEG(0x00011800C0000430ull) + ((1) & 3) * 0x1000000ull /* CVMX_PEMX_INT_ENB(1) */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_PCI, 1, 1, "PEMX_INT_SUM(1)[SE]"},
-							{1, 1, CVMX_ERROR_GROUP_PCI, 4, 1, "PEMX_INT_SUM(1)[UP_B1]"},
-							{1, 1, CVMX_ERROR_GROUP_PCI, 5, 1, "PEMX_INT_SUM(1)[UP_B2]"},
-							{1, 1, CVMX_ERROR_GROUP_PCI, 6, 1, "PEMX_INT_SUM(1)[UP_BX]"},
-							{1, 1, CVMX_ERROR_GROUP_PCI, 7, 1, "PEMX_INT_SUM(1)[UN_B1]"},
-							{1, 1, CVMX_ERROR_GROUP_PCI, 8, 1, "PEMX_INT_SUM(1)[UN_B2]"},
-							{1, 1, CVMX_ERROR_GROUP_PCI, 9, 1, "PEMX_INT_SUM(1)[UN_BX]"},
-							{1, 1, CVMX_ERROR_GROUP_PCI, 11, 1, "PEMX_INT_SUM(1)[RDLK]"},
-							{1, 1, CVMX_ERROR_GROUP_PCI, 12, 1, "PEMX_INT_SUM(1)[CRS_ER]"},
-							{1, 1, CVMX_ERROR_GROUP_PCI, 13, 1, "PEMX_INT_SUM(1)[CRS_DR]"},
-							{0}},
-						(struct cvmx_error_childbit[]){
-						{1, 10 /* exc */, (struct cvmx_error_muxchild[]){
-							{CVMX_ADD_IO_SEG(0x00011800C00000D0ull) + ((1) & 3) * 0x1000000ull /* CVMX_PEMX_DBG_INFO(1) */, CVMX_ADD_IO_SEG(0x00011800C00000A0ull) + ((1) & 3) * 0x1000000ull /* CVMX_PEMX_DBG_INFO_EN(1) */, (struct cvmx_error_regbit[]){
-									{1, 1, CVMX_ERROR_GROUP_PCI, 0, 1, "PEMX_DBG_INFO(1)[SPOISON]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 2, 1, "PEMX_DBG_INFO(1)[RTLPLLE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 3, 1, "PEMX_DBG_INFO(1)[RECRCE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 4, 1, "PEMX_DBG_INFO(1)[RPOISON]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 5, 1, "PEMX_DBG_INFO(1)[RCEMRC]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 6, 1, "PEMX_DBG_INFO(1)[RNFEMRC]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 7, 1, "PEMX_DBG_INFO(1)[RFEMRC]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 8, 1, "PEMX_DBG_INFO(1)[RPMERC]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 9, 1, "PEMX_DBG_INFO(1)[RPTAMRC]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 10, 1, "PEMX_DBG_INFO(1)[RUMEP]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 11, 1, "PEMX_DBG_INFO(1)[RVDM]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 12, 1, "PEMX_DBG_INFO(1)[ACTO]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 13, 1, "PEMX_DBG_INFO(1)[RTE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 14, 1, "PEMX_DBG_INFO(1)[MRE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 15, 1, "PEMX_DBG_INFO(1)[RDWDLE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 16, 1, "PEMX_DBG_INFO(1)[RTWDLE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 17, 1, "PEMX_DBG_INFO(1)[DPEOOSD]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 18, 1, "PEMX_DBG_INFO(1)[FCPVWT]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 19, 1, "PEMX_DBG_INFO(1)[RPE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 20, 1, "PEMX_DBG_INFO(1)[FCUV]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 21, 1, "PEMX_DBG_INFO(1)[RQO]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 22, 1, "PEMX_DBG_INFO(1)[RAUC]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 23, 1, "PEMX_DBG_INFO(1)[RACUR]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 24, 1, "PEMX_DBG_INFO(1)[RACCA]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 25, 1, "PEMX_DBG_INFO(1)[CAAR]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 26, 1, "PEMX_DBG_INFO(1)[RARWDNS]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 27, 1, "PEMX_DBG_INFO(1)[RAMTLP]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 28, 1, "PEMX_DBG_INFO(1)[RACPP]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 29, 1, "PEMX_DBG_INFO(1)[RAWWPP]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 30, 1, "PEMX_DBG_INFO(1)[ECRC_E]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 31, 1, "PEMX_DBG_INFO(1)[RTRY_PE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 32, 1, "PEMX_DBG_INFO(1)[HDRQ_PE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 33, 1, "PEMX_DBG_INFO(1)[DATQ_PE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 34, 1, "PEMX_DBG_INFO(1)[P_D_SBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 35, 1, "PEMX_DBG_INFO(1)[P_D_DBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 36, 1, "PEMX_DBG_INFO(1)[P_C_SBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 37, 1, "PEMX_DBG_INFO(1)[P_C_DBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 38, 1, "PEMX_DBG_INFO(1)[N_D_SBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 39, 1, "PEMX_DBG_INFO(1)[N_D_DBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 40, 1, "PEMX_DBG_INFO(1)[N_C_SBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 41, 1, "PEMX_DBG_INFO(1)[N_C_DBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 42, 1, "PEMX_DBG_INFO(1)[C_D_SBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 43, 1, "PEMX_DBG_INFO(1)[C_D_DBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 44, 1, "PEMX_DBG_INFO(1)[C_C_SBE]"},
-									{1, 1, CVMX_ERROR_GROUP_PCI, 45, 1, "PEMX_DBG_INFO(1)[C_C_DBE]"},
-									{0}},
-								NULL /*cvmx_error_childbit*/
-							},
-							{0}}},
-						{0}}
-					},
-					{0}}},
 				{1, 34 /* sli */, (struct cvmx_error_muxchild[]){
 					{CVMX_ADD_IO_SEG(0x00011F0000010330ull) /* CVMX_PEXP_SLI_INT_SUM */, CVMX_ADD_IO_SEG(0x00011F0000013CD0ull) /* CVMX_PEXP_SLI_INT_ENB_CIU */, (struct cvmx_error_regbit[]){
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "PEXP_SLI_INT_SUM[RML_TO]"},
@@ -4343,62 +4509,6 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 						NULL /*cvmx_error_childbit*/
 					},
 					{0}}},
-				{1, 31 /* key */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x0001180020000000ull) /* CVMX_KEY_INT_SUM */, CVMX_ADD_IO_SEG(0x0001180020000008ull) /* CVMX_KEY_INT_ENB */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "KEY_INT_SUM[KEY_SBE]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "KEY_INT_SUM[KEY_DBE]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{0}}},
-				{1, 23 /* pow */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x0001670000000218ull) /* CVMX_POW_ECC_ERR */, CVMX_ADD_IO_SEG(0x0001670000000218ull) /* CVMX_POW_ECC_ERR */, (struct cvmx_error_regbit[]){
-							{1, 0, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "POW_ECC_ERR[SBE]"},
-							{1, 0, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "POW_ECC_ERR[DBE]"},
-							{1, 0, CVMX_ERROR_GROUP_INTERNAL, 12, 0, "POW_ECC_ERR[RPE]"},
-							{1, 0, CVMX_ERROR_GROUP_INTERNAL, 16, 0, "POW_ECC_ERR[IOP]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{0}}},
-				{1, 26 /* pip */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x00011800A0000008ull) /* CVMX_PIP_INT_REG */, CVMX_ADD_IO_SEG(0x00011800A0000010ull) /* CVMX_PIP_INT_EN */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "PIP_INT_REG[PRTNXA]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 4, 0, "PIP_INT_REG[BADTAG]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 5, 0, "PIP_INT_REG[SKPRUNT]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 6, 0, "PIP_INT_REG[TODOOVR]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 7, 0, "PIP_INT_REG[FEPERR]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 8, 0, "PIP_INT_REG[BEPERR]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 12, 0, "PIP_INT_REG[PUNYERR]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{0}}},
-				{1, 32 /* dfa */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x0001180037000028ull) /* CVMX_DFA_ERROR */, CVMX_ADD_IO_SEG(0x0001180037000030ull) /* CVMX_DFA_INTMSK */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "DFA_ERROR[DBLOVF]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "DFA_ERROR[DC0PERR]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 13, 0, "DFA_ERROR[DLC0_OVFERR]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 17, 0, "DFA_ERROR[DFANXM]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 18, 0, "DFA_ERROR[REPLERR]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{0}}},
-				{1, 21 /* iob */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x00011800F0000058ull) /* CVMX_IOB_INT_SUM */, CVMX_ADD_IO_SEG(0x00011800F0000060ull) /* CVMX_IOB_INT_ENB */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "IOB_INT_SUM[NP_SOP]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 1, 0, "IOB_INT_SUM[NP_EOP]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 2, 0, "IOB_INT_SUM[P_SOP]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "IOB_INT_SUM[P_EOP]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 4, 0, "IOB_INT_SUM[NP_DAT]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 5, 0, "IOB_INT_SUM[P_DAT]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 6, 0, "IOB_INT_SUM[INB_MAT]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 7, 0, "IOB_INT_SUM[OUTB_MAT]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{0}}},
 				{1, 35 /* dpi */, (struct cvmx_error_muxchild[]){
 					{CVMX_ADD_IO_SEG(0x0001DF0000000008ull) /* CVMX_DPI_INT_REG */, CVMX_ADD_IO_SEG(0x0001DF0000000010ull) /* CVMX_DPI_INT_EN */, (struct cvmx_error_regbit[]){
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "DPI_INT_REG[NDERR]"},
@@ -4430,13 +4540,6 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 					},
 					{CVMX_ADD_IO_SEG(0x0001DF0000000060ull) /* CVMX_DPI_REQ_ERR_RST */, 0, (struct cvmx_error_regbit[]){
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "DPI_REQ_ERR_RST[QERR]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{0}}},
-				{1, 30 /* rad */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x0001180070000088ull) /* CVMX_RAD_REG_ERROR */, CVMX_ADD_IO_SEG(0x0001180070000090ull) /* CVMX_RAD_REG_INT_MASK */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "RAD_REG_ERROR[DOORBELL]"},
 							{0}},
 						NULL /*cvmx_error_childbit*/
 					},

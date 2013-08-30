@@ -226,8 +226,8 @@ int octeon_clear_attr(octeon_attr_t attr)
 void __init octeon_attr_init(void)
 {
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-	if (cvmx_coremask_is_first_core(&cvmx_sysinfo_get()->core_mask))
-		octeon_set_attr((int)OCTEON_ATTR_FIRST_CORE);
+	if (cvmx_is_init_core())
+		octeon_set_attr((int)OCTEON_ATTR_INIT_CORE);
 #endif
 }
 

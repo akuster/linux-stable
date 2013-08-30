@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2011  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2011-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -42,13 +42,27 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 74158 $<hr>
+ * <hr>$Revision: 87408 $<hr>
  */
 
 #ifndef __CVMX_QLM_H__
 #define __CVMX_QLM_H__
 
 #include "cvmx.h"
+
+/*
+ * Interface 0 on the 78xx can be connected to qlm 0 or qlm 2. When interface
+ * 0 is connected to qlm 0, this macro must be set to 0. When interface 0 is
+ * connected to qlm 2, this macro must be set to 1.
+ */
+#define MUX_78XX_IFACE0		0
+
+/*
+ * Interface 1 on the 78xx can be connected to qlm 1 or qlm 3. When interface
+ * 1 is connected to qlm 1, this macro must be set to 0. When interface 1 is
+ * connected to qlm 3, this macro must be set to 1.
+ */
+#define MUX_78XX_IFACE1		0
 
 /* Uncomment this line to print QLM JTAG state */
 /* #define CVMX_QLM_DUMP_STATE 1 */
@@ -159,16 +173,33 @@ enum cvmx_qlm_mode {
 	CVMX_QLM_MODE_SRIO_2X2,	/* 2x2 short / long */
 	CVMX_QLM_MODE_SRIO_4X1,	/* 4x1 short / long */
 	CVMX_QLM_MODE_ILK,
+	CVMX_QLM_MODE_QSGMII,
+	CVMX_QLM_MODE_SGMII_SGMII,
+	CVMX_QLM_MODE_SGMII_DISABLED,
+	CVMX_QLM_MODE_DISABLED_SGMII,
+	CVMX_QLM_MODE_SGMII_QSGMII,
+	CVMX_QLM_MODE_QSGMII_QSGMII,
+	CVMX_QLM_MODE_QSGMII_DISABLED,
+	CVMX_QLM_MODE_DISABLED_QSGMII,
+	CVMX_QLM_MODE_QSGMII_SGMII,
+	CVMX_QLM_MODE_RXAUI_1X2,
+};
+
+enum cvmx_gmx_inf_mode {
+	CVMX_GMX_INF_MODE_DISABLED = 0,
+	CVMX_GMX_INF_MODE_SGMII = 1,     /* Other interface can be SGMII or QSGMII */
+	CVMX_GMX_INF_MODE_QSGMII = 2,    /* Other interface can be SGMII or QSGMII */
+	CVMX_GMX_INF_MODE_RXAUI = 3,     /* Only interface 0, interface 1 must be DISABLED */
 };
 
 /*
  * Read QLM and return mode.
  */
 extern enum cvmx_qlm_mode cvmx_qlm_get_mode(int qlm);
+extern enum cvmx_qlm_mode cvmx_qlm_get_dlm_mode(int qlm, int interface);
 
 extern void cvmx_qlm_display_registers(int qlm);
 
-extern int cvmx_qlm_configure_qlm(int qlm, int speed, int mode,
-				  int rc, int pcie2x1);
+extern int cvmx_qlm_measure_clock(int qlm);
 
 #endif /* __CVMX_QLM_H__ */

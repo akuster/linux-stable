@@ -83,8 +83,8 @@ CVMX_SHARED struct cvmx_cfg_port_param cvmx_cfg_port[CVMX_HELPER_MAX_IFACE][CVMX
 	{[0 ... CVMX_HELPER_MAX_IFACE - 1] = {[0 ... CVMX_HELPER_CFG_MAX_PORT_PER_IFACE - 1] =
 					      { CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE,
 						CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE,
-						CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE,
-						CVMX_HELPER_CFG_INVALID_VALUE}}};
+						CVMX_HELPER_CFG_INVALID_VALUE, 0,
+						0}}};
 /*
  * Indexed by the pko_port number
  */
@@ -504,7 +504,7 @@ void cvmx_helper_cfg_set_jabber_and_frame_max()
 			cvmx_pip_set_frame_check(interface, -1);
 			for (port = 0; port < num_ports; port++) {
 				int ipd_port = cvmx_helper_get_ipd_port(interface, port);
-				cvmx_ilk_enable_la_header(ipd_port, 1);
+				cvmx_ilk_enable_la_header(ipd_port, 0);
 			}
 			break;
 		case CVMX_HELPER_INTERFACE_MODE_SRIO:
@@ -867,11 +867,6 @@ int __cvmx_helper_init_port_config_data(void)
 		for (port = 0; port < num_ports; port++) {
 			bool init_req = false;
 
-#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-
-			if (__cvmx_helper_board_get_port_flags(interface, port))
-				continue;
-#endif
 			if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
 				port_base = __cvmx_helper_cfg_pko_port_base(interface, port);
 				if (port_base == CVMX_HELPER_CFG_INVALID_VALUE)

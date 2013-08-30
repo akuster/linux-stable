@@ -51,8 +51,10 @@
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <linux/types.h>
 #include <asm/octeon/cvmx-asm.h>
+#elif defined(__U_BOOT__)
+# include <asm/arch/cvmx-asm.h>
 #else
-#include "cvmx-asm.h"
+# include "cvmx-asm.h"
 #endif
 
 #define OCTEON_BOOT_MOVEABLE_MAGIC	0xDB00110ad358eace

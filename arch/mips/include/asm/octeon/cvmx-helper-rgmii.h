@@ -43,7 +43,7 @@
  * Functions for RGMII/GMII/MII initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 73842 $<hr>
+ * <hr>$Revision: 86586 $<hr>
  */
 #ifndef __CVMX_HELPER_RGMII_H__
 #define __CVMX_HELPER_RGMII_H__
@@ -81,6 +81,19 @@ extern void cvmx_helper_rgmii_internal_loopback(int port);
  * @return Zero on success
  */
 extern int __cvmx_helper_rgmii_enable(int interface);
+
+/**
+ * @INTERNAL
+ * Return the link state of an IPD/PKO port as returned by
+ * auto negotiation. The result of this function may not match
+ * Octeon's link config if auto negotiation has changed since
+ * the last call to cvmx_helper_link_set().
+ *
+ * @param ipd_port IPD/PKO port to query
+ *
+ * @return Link state
+ */
+extern cvmx_helper_link_info_t __cvmx_helper_gmii_link_get(int ipd_port);
 
 /**
  * @INTERNAL

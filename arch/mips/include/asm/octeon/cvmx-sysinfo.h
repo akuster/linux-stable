@@ -42,7 +42,7 @@
  *
  * This module provides system/board information obtained by the bootloader.
  *
- * <hr>$Revision: 83018 $<hr>
+ * <hr>$Revision: 87314 $<hr>
  *
  */
 
@@ -92,7 +92,7 @@ struct cvmx_sysinfo {
 	cvmx_coremask_t core_mask;
 			     /**< coremask defining cores running application */
 	uint32_t init_core;
-			     /**< Deprecated, use cvmx_coremask_first_core() to select init core */
+			     /**< The initial boot core for this application */
 	uint64_t exception_base_addr;
 				       /**< exception base address, as set by bootloader */
 	uint32_t cpu_clock_hz;
@@ -146,6 +146,34 @@ typedef struct cvmx_sysinfo cvmx_sysinfo_t;
  */
 
 extern struct cvmx_sysinfo *cvmx_sysinfo_get(void);
+
+/*
+ * This function determines if the current core is the initial boot core
+ * for the application, which may not necesarily be the numerically lowest
+ * core number in the core mask.
+ * RETURNS 1 if the current core is the initial core for the application,
+ * -1 on error, and 0 otherwise.
+ *
+ * NOTE: Use this function instead of OCTEON_IS_FIRST_CORE() or 
+ * cvmx_coremask_is_first_core() to protect code sections that
+ * need to be executted only on one core.
+ * Also, note that when hotplugging is enabled, the initial core
+ * will not be allowed to be unplugged, unless the entire application is
+ * being shut down.
+ */
+static inline int cvmx_is_init_core(void)
+{
+#ifdef CVMX_BUILD_FOR_TOOLCHAIN
+  extern int __octeon_init_core_p;
+  return __octeon_init_core_p;
+#else
+	struct cvmx_sysinfo * si = cvmx_sysinfo_get();
+	if( si != NULL )
+		return si->init_core == cvmx_get_core_num();
+	else
+		return -1;
+#endif
+}
 
 /**
  * This function adds the current cpu to sysinfo coremask

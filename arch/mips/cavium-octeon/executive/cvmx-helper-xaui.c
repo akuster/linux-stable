@@ -43,7 +43,7 @@
  * Functions for XAUI initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 83639 $<hr>
+ * <hr>$Revision: 87025 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -55,12 +55,17 @@
 #include <asm/octeon/cvmx-pcsx-defs.h>
 #include <asm/octeon/cvmx-pcsxx-defs.h>
 #include <asm/octeon/cvmx-ciu-defs.h>
+#include <asm/octeon/cvmx-bgxx-defs.h>
+#include <asm/octeon/cvmx-gser.h>
+#include <asm/octeon/cvmx-bgx.h>
 #else
 
 #include "cvmx.h"
 #include "cvmx-helper.h"
 #include "cvmx-helper-cfg.h"
 #include "cvmx-qlm.h"
+#include "cvmx-gser.h"
+#include "cvmx-bgx.h"
 #endif
 
 
@@ -69,12 +74,14 @@ int __cvmx_helper_xaui_enumerate(int interface)
 	union cvmx_gmxx_hg2_control gmx_hg2_control;
 
 	if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
-		cvmx_gmxx_inf_mode_t inf_mode;
-		inf_mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(0));
-		if (inf_mode.s.mode == 3)	/* RXAUI */
+		enum cvmx_qlm_mode qlm_mode = cvmx_qlm_get_dlm_mode(0, interface);
+
+		if (qlm_mode == CVMX_QLM_MODE_RXAUI)
 			return 1;
 		return 0;
 		/* FIXME for higig2 */
+	} else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		return 1;
 	}
 	/* If HiGig2 is enabled return 16 ports, otherwise return 1 port */
 	gmx_hg2_control.u64 = cvmx_read_csr(CVMX_GMXX_HG2_CONTROL(interface));
@@ -96,7 +103,7 @@ int __cvmx_helper_xaui_enumerate(int interface)
  */
 int __cvmx_helper_xaui_probe(int interface)
 {
-	int i;
+	int i, ports;
 	union cvmx_gmxx_inf_mode mode;
 
 	/*
@@ -144,6 +151,11 @@ int __cvmx_helper_xaui_probe(int interface)
 			return 0;
 	}
 
+	ports =  __cvmx_helper_xaui_enumerate(interface);
+
+	if (ports <= 0)
+		return 0;
+
 	/*
 	 * Due to errata GMX-700 on CN56XXp1.x and CN52XXp1.x, the
 	 * interface needs to be enabled before IPD otherwise per port
@@ -155,7 +167,7 @@ int __cvmx_helper_xaui_probe(int interface)
 
 	__cvmx_helper_setup_gmx(interface, 1);
 
-	if (!OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+	if (!OCTEON_IS_MODEL(OCTEON_CN68XX) && !OCTEON_IS_MODEL(OCTEON_CN70XX)) {
 		/*
 		 * Setup PKO to support 16 ports for HiGig2 virtual
 		 * ports. We're pointing all of the PKO packet ports
@@ -180,7 +192,7 @@ int __cvmx_helper_xaui_probe(int interface)
 		}
 	}
 
-	return __cvmx_helper_xaui_enumerate(interface);
+	return ports;
 }
 
 /**
@@ -511,4 +523,134 @@ extern int __cvmx_helper_xaui_configure_loopback(int ipd_port,
 
 	/* Take the link through a reset */
 	return __cvmx_helper_xaui_link_init(interface);
+}
+
+/**
+ * @INTERNAL
+ * Probe a XAUI interface and determine the number of ports
+ * connected to it. The XAUI interface should still be down
+ * after this call.
+ *
+ * @param interface Interface to probe
+ *
+ * @return Number of ports on the interface. Zero to disable.
+ */
+int __cvmx_helper_bgx_xaui_probe(int interface)
+{
+	int	qlm;
+
+	/*
+	 * Check the QLM is configured correctly for XAUI, verify the
+	 * speed as well as the mode.
+	 */
+	qlm = cvmx_qlm_interface(interface);
+	if (cvmx_qlm_get_mode(qlm) != CVMX_QLM_MODE_XAUI)
+		return 0;
+
+	return __cvmx_helper_sgmii_enumerate(interface);
+}
+
+/**
+ * @INTERNAL
+ * Bringup and enable a XAUI interface. After this call packet
+ * I/O should be fully functional. This is called with IPD
+ * enabled but PKO disabled.
+ *
+ * @param interface Interface to bring up
+ *
+ * @return Zero on success, negative on failure
+ */
+int __cvmx_helper_bgx_xaui_enable(int interface)
+{
+	cvmx_bgxx_cmrx_rx_id_map_t	bgx_cmr_rx_id_map;
+	int				num_ports;
+	int				pknd;
+	int				i;
+
+	num_ports = cvmx_helper_ports_on_interface(interface);
+
+	/* Configure the gser */
+	gser_init(interface, CVMX_HELPER_INTERFACE_MODE_XAUI);
+
+	/* Configure the bgx mac */
+	bgx_init(interface, CVMX_HELPER_INTERFACE_MODE_XAUI);
+
+	/*
+	 * Must hardcode the port kind here until the pko initializion is
+	 * complete. This must be removed once the pko initialization is
+	 * working. TODO
+	 */
+	pknd = 50 + (num_ports * interface);
+	for (i = 0; i < num_ports; i++) {
+		bgx_cmr_rx_id_map.u64 = 0;
+		bgx_cmr_rx_id_map.s.rid = 2 + i;
+		bgx_cmr_rx_id_map.s.pknd = pknd + i;
+		cvmx_write_csr(CVMX_BGXX_CMRX_RX_ID_MAP(i, interface),
+			       bgx_cmr_rx_id_map.u64);
+	}
+
+	return 0;
+}
+
+/**
+ * @INTERNAL
+ * Return the link state of an IPD/PKO port as returned by
+ * auto negotiation. The result of this function may not match
+ * Octeon's link config if auto negotiation has changed since
+ * the last call to cvmx_helper_link_set().
+ *
+ * @param ipd_port IPD/PKO port to query
+ *
+ * @return Link state
+ */
+cvmx_helper_link_info_t __cvmx_helper_bgx_xaui_link_get(int ipd_port)
+{
+	cvmx_helper_link_info_t result;
+
+	/* Hardcoded for now. TODO */
+	result.s.link_up = 1;
+	result.s.full_duplex = 1;
+	result.s.speed = 10000;
+
+	return result;
+}
+
+/**
+ * @INTERNAL
+ * Configure an IPD/PKO port for the specified link state. This
+ * function does not influence auto negotiation at the PHY level.
+ * The passed link state must always match the link state returned
+ * by cvmx_helper_link_get(). It is normally best to use
+ * cvmx_helper_link_autoconf() instead.
+ *
+ * @param ipd_port  IPD/PKO port to configure
+ * @param link_info The new link state
+ *
+ * @return Zero on success, negative on failure
+ */
+int __cvmx_helper_bgx_xaui_link_set(int				ipd_port,
+				    cvmx_helper_link_info_t	link_info)
+{
+	return 0;
+}
+
+/**
+ * @INTERNAL
+ * Configure a port for internal and/or external loopback. Internal loopback
+ * causes packets sent by the port to be received by Octeon. External loopback
+ * causes packets received from the wire to sent out again.
+ *
+ * @param ipd_port IPD/PKO port to loopback.
+ * @param enable_internal
+ *                 Non zero if you want internal loopback
+ * @param enable_external
+ *                 Non zero if you want external loopback
+ *
+ * @return Zero on success, negative on failure.
+ */
+extern int __cvmx_helper_bgx_xaui_configure_loopback(int ipd_port,
+						     int enable_internal,
+						     int enable_external)
+{
+	return 0;
 }

@@ -676,9 +676,9 @@ union cvmx_ciu3_intr_ram_ecc_st {
 	uint64_t u64;
 	struct cvmx_ciu3_intr_ram_ecc_st_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_59_63               : 5;
-	uint64_t addr                         : 11; /**< Latch the address for latest SBE/DBE that occurred. */
-	uint64_t reserved_6_47                : 42;
+	uint64_t reserved_52_63               : 12;
+	uint64_t addr                         : 20; /**< Latch the address for latest SBE/DBE that occurred. */
+	uint64_t reserved_6_31                : 26;
 	uint64_t sisc_dbe                     : 1;  /**< SISC Double-bit error observed. Throws CIU_INTSN_E::CIU3_ECC_SISC_DBE. */
 	uint64_t sisc_sbe                     : 1;  /**< SISC Single-bit error observed. Throws CIU_INTSN_E::CIU3_ECC_SISC_SBE. */
 	uint64_t idt_dbe                      : 1;  /**< IDT Double-bit error observed. Throws CIU_INTSN_E::CIU3_ECC_IDT_DBE. */
@@ -692,9 +692,9 @@ union cvmx_ciu3_intr_ram_ecc_st {
 	uint64_t idt_dbe                      : 1;
 	uint64_t sisc_sbe                     : 1;
 	uint64_t sisc_dbe                     : 1;
-	uint64_t reserved_6_47                : 42;
-	uint64_t addr                         : 11;
-	uint64_t reserved_59_63               : 5;
+	uint64_t reserved_6_31                : 26;
+	uint64_t addr                         : 20;
+	uint64_t reserved_52_63               : 12;
 #endif
 	} s;
 	struct cvmx_ciu3_intr_ram_ecc_st_s    cn78xx;

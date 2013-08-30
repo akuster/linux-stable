@@ -200,7 +200,7 @@ int __cvmx_helper_agl_enable(int interface)
 		pko_mem_port_ptrs.u64 = cvmx_read_csr(CVMX_PKO_MEM_PORT_PTRS);
 		if (pko_mem_port_ptrs.s.pid == 24) {
 			pko_mem_port_ptrs.s.eid = 10;
-			pko_mem_port_ptrs.s.bp_port = 63;
+			pko_mem_port_ptrs.s.bp_port = 40;
 			cvmx_write_csr(CVMX_PKO_MEM_PORT_PTRS, pko_mem_port_ptrs.u64);
 			break;
 		}

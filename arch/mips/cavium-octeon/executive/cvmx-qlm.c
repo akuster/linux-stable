@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2011  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2011-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 84617 $<hr>
+ * <hr>$Revision: 87438 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -51,6 +51,7 @@
 #include <asm/octeon/cvmx-qlm.h>
 #include <asm/octeon/cvmx-clock.h>
 #include <asm/octeon/cvmx-gmxx-defs.h>
+#include <asm/octeon/cvmx-gserx-defs.h>
 #include <asm/octeon/cvmx-sriox-defs.h>
 #include <asm/octeon/cvmx-sriomaintx-defs.h>
 #include <asm/octeon/cvmx-pciercx-defs.h>
@@ -133,6 +134,20 @@ int cvmx_qlm_interface(int interface)
 			return 0;
 		else
 			cvmx_dprintf("Warning: cvmx_qlm_interface: Invalid interface %d\n", interface);
+	} else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		switch (interface) {
+		case 0:
+			return MUX_78XX_IFACE0 ? 2 : 0;
+		case 1:
+			return MUX_78XX_IFACE1 ? 3 : 1;
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			return interface + 2;
+		default:
+			break;
+		}
 	} else {
 		/* Must be cn68XX */
 		switch (interface) {
@@ -678,14 +693,131 @@ int cvmx_qlm_get_gbaud_mhz(int qlm)
 		default:
 			return 0;	/* Disabled */
 		}
+	} else if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
+		cvmx_gserx_dlmx_mpll_status_t mpll_status;
+		cvmx_gserx_dlmx_ref_clkdiv2_t ref_clkdiv2;
+		cvmx_gserx_dlmx_mpll_multiplier_t mpll_multiplier;
+		uint64_t meas_refclock;
+		uint64_t mhz;
+
+		/* Return zero if the PLL hasn't locked */
+		mpll_status.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_MPLL_STATUS(qlm, 0));
+#ifdef CVMX_BUILD_FOR_LINUX_HOST
+		if (mpll_status.s.mpll_status == 0)
+			return 0;
+#else
+		if ((cvmx_sysinfo_get()->board_type != CVMX_BOARD_TYPE_SIM)
+	    	    && (mpll_status.s.mpll_status == 0))
+			return 0;
+#endif
+		meas_refclock = cvmx_qlm_measure_clock(qlm);
+		mhz = meas_refclock / 1000000;
+		/* Measure the reference clock */
+		/* Divide it by two if the DLM is configure that way */
+		ref_clkdiv2.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_REF_CLKDIV2(qlm, 0));
+		if (ref_clkdiv2.s.ref_clkdiv2)
+			mhz /= 2;
+		/* Multiply to get the final frequency */
+		mpll_multiplier.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_MPLL_MULTIPLIER(qlm, 0));
+		mhz *= mpll_multiplier.s.mpll_multiplier;
+		return mhz;
 	}
 	return 0;
 }
 
-/*
- * Read QLM and return mode.
- */
-enum cvmx_qlm_mode cvmx_qlm_get_mode(int qlm)
+static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn70xx(int qlm)
+{
+#ifndef CVMX_BUILD_FOR_LINUX_HOST
+	if (cvmx_sysinfo_get()->board_type != CVMX_BOARD_TYPE_SIM) {
+		union cvmx_gserx_dlmx_phy_reset phy_reset;
+
+		phy_reset.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_PHY_RESET(0, qlm));
+		if (phy_reset.s.phy_reset)
+			return CVMX_QLM_MODE_DISABLED;
+
+	}
+#endif
+
+	switch(qlm) {
+	case 0: /* DLM0/DLM1 - SGMII/QSGMII/RXAUI */
+		{
+			union cvmx_gmxx_inf_mode inf_mode0, inf_mode1;
+
+			inf_mode0.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(0));
+			inf_mode1.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(1));
+
+			/* SGMII0 SGMII1 */
+			switch (inf_mode0.s.mode) {
+			case CVMX_GMX_INF_MODE_SGMII:
+				switch (inf_mode1.s.mode) {
+				case CVMX_GMX_INF_MODE_SGMII:
+					return CVMX_QLM_MODE_SGMII_SGMII;
+				case CVMX_GMX_INF_MODE_QSGMII:
+					return CVMX_QLM_MODE_SGMII_QSGMII;
+				default:
+					return CVMX_QLM_MODE_SGMII_DISABLED;
+				}
+			case CVMX_GMX_INF_MODE_QSGMII:
+				switch (inf_mode1.s.mode) {
+				case CVMX_GMX_INF_MODE_SGMII:
+					return CVMX_QLM_MODE_QSGMII_SGMII;
+				case CVMX_GMX_INF_MODE_QSGMII:
+					return CVMX_QLM_MODE_QSGMII_QSGMII;
+				default:
+					return CVMX_QLM_MODE_QSGMII_DISABLED;
+				}
+			case CVMX_GMX_INF_MODE_RXAUI:
+				return CVMX_QLM_MODE_RXAUI_1X2;
+			default:
+				return CVMX_QLM_MODE_DISABLED;
+			}
+		}
+	default:
+		return CVMX_QLM_MODE_DISABLED;
+	}
+
+	return CVMX_QLM_MODE_DISABLED;
+}
+
+enum cvmx_qlm_mode cvmx_qlm_get_dlm_mode(int qlm, int interface)
+{
+	enum cvmx_qlm_mode qlm_mode = __cvmx_qlm_get_mode_cn70xx(qlm);
+
+	switch (interface) {
+	case 0:
+		switch (qlm_mode) {
+		case CVMX_QLM_MODE_SGMII_SGMII:
+		case CVMX_QLM_MODE_SGMII_DISABLED:
+		case CVMX_QLM_MODE_SGMII_QSGMII:
+			return CVMX_QLM_MODE_SGMII;
+		case CVMX_QLM_MODE_QSGMII_QSGMII:
+		case CVMX_QLM_MODE_QSGMII_DISABLED:
+		case CVMX_QLM_MODE_QSGMII_SGMII:
+			return CVMX_QLM_MODE_QSGMII;
+		case CVMX_QLM_MODE_RXAUI_1X2:
+			return CVMX_QLM_MODE_RXAUI;
+		default:
+			return CVMX_QLM_MODE_DISABLED;
+		}
+	case 1:
+		switch (qlm_mode) {
+		case CVMX_QLM_MODE_SGMII_SGMII:
+		case CVMX_QLM_MODE_DISABLED_SGMII:
+		case CVMX_QLM_MODE_QSGMII_SGMII:
+			return CVMX_QLM_MODE_SGMII;
+		case CVMX_QLM_MODE_QSGMII_QSGMII:
+		case CVMX_QLM_MODE_DISABLED_QSGMII:
+		case CVMX_QLM_MODE_SGMII_QSGMII:
+			return CVMX_QLM_MODE_QSGMII;
+		default:
+			return CVMX_QLM_MODE_DISABLED;
+		}
+	default:
+		return CVMX_QLM_MODE_DISABLED;
+	}
+}
+
+static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn6xxx(int qlm)
 {
 	cvmx_mio_qlmx_cfg_t qlmx_cfg;
 
@@ -822,6 +954,44 @@ enum cvmx_qlm_mode cvmx_qlm_get_mode(int qlm)
 	return CVMX_QLM_MODE_DISABLED;
 }
 
+static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn78xx(int qlm)
+{
+	/*
+	 * Until gser configuration is in place, we hard code the
+	 * qlm mode here. This means that for the time being, this
+	 * function and __cvmx_get_mode_cn78xx() have to be in sync
+	 * since they are both hard coded. Note that register 
+	 * CVMX_MIO_QLMX_CFG is not yet modeled by the simulator.
+	 */
+	switch(qlm) {
+	case 0:
+	case 1:
+		return CVMX_QLM_MODE_SGMII;
+	case 4:
+		return CVMX_QLM_MODE_ILK;
+	case 5:
+	case 6:
+	case 7:
+		return CVMX_QLM_MODE_XAUI;
+	}
+	return CVMX_QLM_MODE_DISABLED;
+}
+
+/*
+ * Read QLM and return mode.
+ */
+enum cvmx_qlm_mode cvmx_qlm_get_mode(int qlm)
+{
+	if (OCTEON_IS_OCTEON2())
+		return __cvmx_qlm_get_mode_cn6xxx(qlm);
+	else if (OCTEON_IS_MODEL(OCTEON_CN70XX))
+		return __cvmx_qlm_get_mode_cn70xx(qlm);
+	else if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return __cvmx_qlm_get_mode_cn78xx(qlm);
+
+	return CVMX_QLM_MODE_DISABLED;
+}
+
 /**
  * Measure the reference clock of a QLM
  *
@@ -829,7 +999,7 @@ enum cvmx_qlm_mode cvmx_qlm_get_mode(int qlm)
  *
  * @return Clock rate in Hz
  *       */
-static int __cvmx_qlm_measure_clock(int qlm)
+int cvmx_qlm_measure_clock(int qlm)
 {
 	cvmx_mio_ptp_clock_cfg_t ptp_clock;
 	uint64_t count;
@@ -844,7 +1014,6 @@ static int __cvmx_qlm_measure_clock(int qlm)
 	if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM)
 		return 156250000;
 #endif
-
 	/* Disable the PTP event counter while we configure it */
 	ptp_clock.u64 = cvmx_read_csr(CVMX_MIO_PTP_CLOCK_CFG);	/* For CN63XXp1 errata */
 	ptp_clock.s.evcnt_en = 0;
@@ -879,271 +1048,6 @@ static int __cvmx_qlm_measure_clock(int qlm)
 	count = 1000000000 - count;
 	/* Return the rate */
 	return count * cvmx_clock_get_rate(CVMX_CLOCK_CORE) / (stop_cycle - start_cycle);
-}
-
-static int __cvmx_qlm_is_ref_clock(int qlm, int reference_mhz)
-{
-	int ref_clock = __cvmx_qlm_measure_clock(qlm);
-	int mhz = ref_clock / 1000000;
-	int range = reference_mhz / 10;
-	return ((mhz >= reference_mhz - range) && (mhz <= reference_mhz + range));
-}
-
-static int __cvmx_qlm_get_qlm_spd(int qlm, int speed)
-{
-	int qlm_spd = 0xf;
-
-	if (OCTEON_IS_MODEL(OCTEON_CN3XXX) || OCTEON_IS_MODEL(OCTEON_CN5XXX))
-		return -1;
-
-	if (__cvmx_qlm_is_ref_clock(qlm, 100)) {
-		if (speed == 1250)
-			qlm_spd = 0x3;
-		else if (speed == 2500)
-			qlm_spd = 0x2;
-		else if (speed == 5000)
-			qlm_spd = 0x0;
-		else {
-			//cvmx_dprintf("Invalide speed(%d) for QLM(%d)\n", speed, qlm);
-			qlm_spd = 0xf;
-		}
-	} else if (__cvmx_qlm_is_ref_clock(qlm, 125)) {
-		if (speed == 1250)
-			qlm_spd = 0xa;
-		else if (speed == 2500)
-			qlm_spd = 0x9;
-		else if (speed == 3125)
-			qlm_spd = 0x8;
-		else if (speed == 5000)
-			qlm_spd = 0x6;
-		else if (speed == 6250)
-			qlm_spd = 0x5;
-		else {
-			//cvmx_dprintf("Invalide speed(%d) for QLM(%d)\n", speed, qlm);
-			qlm_spd = 0xf;
-		}
-	} else if (__cvmx_qlm_is_ref_clock(qlm, 156)) {
-		if (speed == 1250)
-			qlm_spd = 0x4;
-		else if (speed == 2500)
-			qlm_spd = 0x7;
-		else if (speed == 3125)
-			qlm_spd = 0xe;
-		else if (speed == 3750)
-			qlm_spd = 0xd;
-		else if (speed == 5000)
-			qlm_spd = 0xb;
-		else if (speed == 6250)
-			qlm_spd = 0xc;
-		else {
-			//cvmx_dprintf("Invalide speed(%d) for QLM(%d)\n", speed, qlm);
-			qlm_spd = 0xf;
-		}
-	}
-	return qlm_spd;
-}
-
-static void __cvmx_qlm_set_qlm_pcie_mode(int pcie_port, int root_complex)
-{
-	int rc = root_complex ? 1 : 0;
-	int ep = root_complex ? 0 : 1;
-	cvmx_ciu_soft_prst1_t soft_prst1;
-	cvmx_ciu_soft_prst_t soft_prst;
-	cvmx_mio_rst_ctlx_t rst_ctl;
-
-	if (pcie_port) {
-		soft_prst1.u64 = cvmx_read_csr(CVMX_CIU_SOFT_PRST1);
-		soft_prst1.s.soft_prst = 1;
-		cvmx_write_csr(CVMX_CIU_SOFT_PRST1, soft_prst1.u64);
-	} else {
-		soft_prst.u64 = cvmx_read_csr(CVMX_CIU_SOFT_PRST);
-		soft_prst.s.soft_prst = 1;
-		cvmx_write_csr(CVMX_CIU_SOFT_PRST, soft_prst.u64);
-	}
-
-	rst_ctl.u64 = cvmx_read_csr(CVMX_MIO_RST_CTLX(pcie_port));
-
-	rst_ctl.s.prst_link = rc;
-	rst_ctl.s.rst_link = ep;
-	rst_ctl.s.prtmode = rc;
-	rst_ctl.s.rst_drv = rc;
-	rst_ctl.s.rst_rcv = 0;
-	rst_ctl.s.rst_chip = ep;
-	cvmx_write_csr(CVMX_MIO_RST_CTLX(pcie_port), rst_ctl.u64);
-
-	if (root_complex == 0) {
-		if (pcie_port) {
-			soft_prst1.u64 = cvmx_read_csr(CVMX_CIU_SOFT_PRST1);
-			soft_prst1.s.soft_prst = 0;
-			cvmx_write_csr(CVMX_CIU_SOFT_PRST1, soft_prst1.u64);
-		} else {
-			soft_prst.u64 = cvmx_read_csr(CVMX_CIU_SOFT_PRST);
-			soft_prst.s.soft_prst = 0;
-			cvmx_write_csr(CVMX_CIU_SOFT_PRST, soft_prst.u64);
-		}
-	}
-}
-
-/**
- * Configure qlm speed and mode. MIO_QLMX_CFG[speed,mode] are not set
- * for CN61XX.
- *
- * @param qlm     The QLM to configure
- * @param speed   The speed the QLM needs to be configured in Mhz.
- * @param mode    The QLM to be configured as SGMII/XAUI/PCIe.
- *                  QLM 0: 0 = PCIe0 1X4, 1 = Reserved, 2 = SGMII1, 3 = XAUI1
- *                  QLM 1: 0 = PCIe1 1x2, 1 = PCIe(0/1) 2x1, 2 - 3 = Reserved
- *                  QLM 2: 0 - 1 = Reserved, 2 = SGMII0, 3 = XAUI0
- * @param rc      Only used for PCIe, rc = 1 for root complex mode, 0 for EP mode.
- * @param pcie2x1 Only used when QLM1 is in PCIE2x1 mode. The QLM_SPD has different
- *                value on how PEMx needs to be configured:
- *                   0x0 - both PEM0 & PEM1 are in gen1 mode.
- *                   0x1 - PEM0 in gen2 and PEM1 in gen1 mode.
- *                   0x2 - PEM0 in gen1 and PEM1 in gen2 mode.
- *                   0x3 - both PEM0 & PEM1 are in gen2 mode.
- *               SPEED value is ignored in this mode. QLM_SPD is set based on
- *               pcie2x1 value in this mode.
- *
- * @return       Return 0 on success or -1.
- */
-int cvmx_qlm_configure_qlm(int qlm, int speed, int mode, int rc, int pcie2x1)
-{
-	cvmx_mio_qlmx_cfg_t qlm_cfg;
-
-	/* The QLM speed varies for SGMII/XAUI and PCIe mode. And depends on
-	   reference clock. */
-	if (!OCTEON_IS_MODEL(OCTEON_CN61XX))
-		return -1;
-
-	if (qlm < 3)
-		qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(qlm));
-	else {
-		cvmx_dprintf("WARNING: Invalid QLM(%d) passed\n", qlm);
-		return -1;
-	}
-
-	switch (qlm) {
-		/* SGMII/XAUI mode */
-	case 2:
-		{
-			if (mode < 2) {
-				//cvmx_dprintf("Invalide mode(%d) for QLM(%d)\n", mode, qlm);
-				qlm_cfg.s.qlm_spd = 0xf;
-				break;
-			}
-			qlm_cfg.s.qlm_spd = __cvmx_qlm_get_qlm_spd(qlm, speed);
-			qlm_cfg.s.qlm_cfg = mode;
-			break;
-		}
-	case 1:
-		{
-			if (mode == 1) {	/* 2x1 mode */
-				cvmx_mio_qlmx_cfg_t qlm0;
-
-				/* When QLM0 is configured as PCIe(QLM_CFG=0x0) and enabled
-				   (QLM_SPD != 0xf), QLM1 cannot be configured as PCIe 2x1 mode
-				   (QLM_CFG=0x1) and enabled (QLM_SPD != 0xf). */
-				qlm0.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(0));
-				if (qlm0.s.qlm_spd != 0xf && qlm0.s.qlm_cfg == 0) {
-					cvmx_dprintf("Invalid mode(%d) for QLM(%d) as QLM1 is PCIe mode\n", mode, qlm);
-					qlm_cfg.s.qlm_spd = 0xf;
-					break;
-				}
-
-				/* Set QLM_SPD based on reference clock and mode */
-				if (__cvmx_qlm_is_ref_clock(qlm, 100)) {
-					if (pcie2x1 == 0x3)
-						qlm_cfg.s.qlm_spd = 0x0;
-					else if (pcie2x1 == 0x1)
-						qlm_cfg.s.qlm_spd = 0x2;
-					else if (pcie2x1 == 0x2)
-						qlm_cfg.s.qlm_spd = 0x1;
-					else if (pcie2x1 == 0x0)
-						qlm_cfg.s.qlm_spd = 0x3;
-					else
-						qlm_cfg.s.qlm_spd = 0xf;
-				} else if (__cvmx_qlm_is_ref_clock(qlm, 125)) {
-					if (pcie2x1 == 0x3)
-						qlm_cfg.s.qlm_spd = 0x4;
-					else if (pcie2x1 == 0x1)
-						qlm_cfg.s.qlm_spd = 0x6;
-					else if (pcie2x1 == 0x2)
-						qlm_cfg.s.qlm_spd = 0x9;
-					else if (pcie2x1 == 0x0)
-						qlm_cfg.s.qlm_spd = 0x7;
-					else
-						qlm_cfg.s.qlm_spd = 0xf;
-				}
-				qlm_cfg.s.qlm_cfg = mode;
-				cvmx_write_csr(CVMX_MIO_QLMX_CFG(qlm), qlm_cfg.u64);
-
-				/* Set PCIe mode bits */
-				__cvmx_qlm_set_qlm_pcie_mode(0, rc);
-				__cvmx_qlm_set_qlm_pcie_mode(1, rc);
-				return 0;
-			} else if (mode > 1) {
-				cvmx_dprintf("Invalid mode(%d) for QLM(%d).\n", mode, qlm);
-				qlm_cfg.s.qlm_spd = 0xf;
-				break;
-			}
-
-			/* Set speed and mode for PCIe 1x2 mode. */
-			if (__cvmx_qlm_is_ref_clock(qlm, 100)) {
-				if (speed == 5000)
-					qlm_cfg.s.qlm_spd = 0x1;
-				else if (speed == 2500)
-					qlm_cfg.s.qlm_spd = 0x2;
-				else
-					qlm_cfg.s.qlm_spd = 0xf;
-			} else if (__cvmx_qlm_is_ref_clock(qlm, 125)) {
-				if (speed == 5000)
-					qlm_cfg.s.qlm_spd = 0x4;
-				else if (speed == 2500)
-					qlm_cfg.s.qlm_spd = 0x6;
-				else
-					qlm_cfg.s.qlm_spd = 0xf;
-			} else
-				qlm_cfg.s.qlm_spd = 0xf;
-
-			qlm_cfg.s.qlm_cfg = mode;
-			cvmx_write_csr(CVMX_MIO_QLMX_CFG(qlm), qlm_cfg.u64);
-
-			/* Set PCIe mode bits */
-			__cvmx_qlm_set_qlm_pcie_mode(1, rc);
-			return 0;
-		}
-	case 0:
-		{
-			/* QLM_CFG = 0x1 - Reserved */
-			if (mode == 1) {
-				//cvmx_dprintf("Invalid mode(%d) for QLM(%d)\n", mode, qlm);
-				qlm_cfg.s.qlm_spd = 0xf;
-				break;
-			}
-			/* QLM_CFG = 0x0 - PCIe 1x4(PEM0) */
-			if (mode == 0 && speed != 5000 && speed != 2500) {
-				//cvmx_dprintf("Invalid speed(%d) for QLM(%d) for PCIe mode.\n", speed, qlm);
-				qlm_cfg.s.qlm_spd = 0xf;
-				break;
-			}
-
-			/* Set speed and mode */
-			qlm_cfg.s.qlm_spd = __cvmx_qlm_get_qlm_spd(qlm, speed);
-			qlm_cfg.s.qlm_cfg = mode;
-			cvmx_write_csr(CVMX_MIO_QLMX_CFG(qlm), qlm_cfg.u64);
-
-			/* Set PCIe mode bits */
-			if (mode == 0)
-				__cvmx_qlm_set_qlm_pcie_mode(0, rc);
-
-			return 0;
-		}
-	default:
-		cvmx_dprintf("WARNING: Invalid QLM(%d) passed\n", qlm);
-		qlm_cfg.s.qlm_spd = 0xf;
-	}
-	cvmx_write_csr(CVMX_MIO_QLMX_CFG(qlm), qlm_cfg.u64);
-	return 0;
 }
 
 void cvmx_qlm_display_registers(int qlm)

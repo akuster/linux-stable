@@ -18,6 +18,14 @@
 #define CVMX_GR_TAG_PCAM(x,y,z) \
 	cvmx_get_gr_tag('c','v','m','_','p','c','a','m','_',(x+'0'),(y+'0'),(z+'0'),'.','.','.','.')
 
+#define CVMX_GR_TAG_CIU3_IDT(_n) \
+	cvmx_get_gr_tag('c','v','m','_','c','i','u','3','_', ((_n) + '0'),'_','i','d','t','.','.')
+
+
+/* Allocation of the 512 SW INTSTs (in the  12 bit SW INTSN space) */
+#define CVMX_GR_TAG_CIU3_SWINTSN(_n) \
+	cvmx_get_gr_tag('c','v','m','_','c','i','u','3','_', ((_n) + '0'),'_','s','w','i','s','n')
+
 
 #define TAG_INIT_PART(A,B,C,D,E,F,G,H) ( \
 	(((uint64_t)(A) & 0xff) << 56) | (((uint64_t)(B) & 0xff) << 48) | (((uint64_t)(C) & 0xff) << 40)  | (((uint64_t)(D) & 0xff) << 32) | \
@@ -83,10 +91,10 @@ int cvmx_allocate_global_resource_range(struct global_resource_tag tag,
  * @param allocated_elements returns indexs of the allocated entries.
  * @return returns 0 on success and -1 on failure.
  */
-int cvmx_allocate_global_resource_range_non_contiguos(struct global_resource_tag tag,
-						      uint64_t owner,
-						      int nelements,
-						      int allocated_elements[]);
+int cvmx_resource_alloc_many(struct global_resource_tag tag,
+			     uint64_t owner,
+			     int nelements,
+			     int allocated_elements[]);
 /*
  * @INTERNAL
  * Reserve nelements starting from base in the global resource range with the
@@ -157,10 +165,6 @@ void  cvmx_show_global_resource_range(struct global_resource_tag tag);
  */
 void cvmx_global_resources_show(void);
 
-int cvmx_allocate_global_resource_range_non_contiguous(struct global_resource_tag tag,
-						      uint64_t owner,
-						      int nelements,
-						      int allocated_elements[]);
 
 #endif
 

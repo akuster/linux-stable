@@ -139,16 +139,16 @@ union cvmx_osm_ase_rate_limit_ctrl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
 	uint64_t rwc_rate_limit               : 1;  /**< To support ASE running at SCLK/2, OSM can rate-limit responses sent back to ASE. Each
-                                                         request is assigned to either phase 0 or phase 1. When set, OSM will not send back-to-back
-                                                         responses for requests on the RWC ports with the same phase. Instead a idle cycle will be
+                                                         request is assigned to either phase 0 or phase 1. When set, OSM does not send back-to-back
+                                                         responses for requests on the RWC ports with the same phase. Instead, a idle cycle is
                                                          inserted between the responses. This enable applies to RWC ports. */
 	uint64_t bwc_rate_limit               : 1;  /**< To support ASE running at SCLK/2, OSM can rate-limit responses sent back to ASE. Each
-                                                         request is assigned to either phase 0 or phase 1. When set, OSM will not send back-to-back
-                                                         responses for requests on the BWC port with the same phase. Instead a idle cycle will be
+                                                         request is assigned to either phase 0 or phase 1. When set, OSM does not send back-to-back
+                                                         responses for requests on the BWC port with the same phase. Instead a idle cycle is
                                                          inserted between the responses. */
 	uint64_t twc_rate_limit               : 1;  /**< To support ASE running at SCLK/2, OSM can rate-limit responses sent back to ASE. Each
-                                                         request is assigned to either phase 0 or phase 1. When set, OSM will not send back-to-back
-                                                         responses for requests on the TWC port with the same phase. Instead a idle cycle will be
+                                                         request is assigned to either phase 0 or phase 1. When set, OSM does not send back-to-back
+                                                         responses for requests on the TWC port with the same phase. Instead a idle cycle is
                                                          inserted between the responses. */
 #else
 	uint64_t twc_rate_limit               : 1;
@@ -169,24 +169,20 @@ union cvmx_osm_bankx_ctrl {
 	struct cvmx_osm_bankx_ctrl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
-	uint64_t bank_assign                  : 3;  /**< See OSM_BANK_ASSIGN_E enumeration for encoding.
-                                                         Port assignment for each memory bank. Memory structure is
-                                                         64k words x 246 data bits (plus ECC). This is further
-                                                         divided into 64 banks each containing 1k words x 246 data bits.
-                                                         A bank can only support one access per cycle, this is implemented
-                                                         by assigning each bank to a specific requester. Most requesters can
-                                                         only make one request per cycle so that mostly solves the problem.
-                                                         RWC is the only requester that can make multiple requests per cycle
-                                                         and will need to implement its own bank-aware scheduler to prevent
-                                                         bank conflicts. Bank assignment can be reconfigured dynamically, but
-                                                         memory accesses to a bank must be quiesced before that bank can be
-                                                         reassigned to another requester. A host request can access any bank,
-                                                         arbitration logic will prevent bank conflicts for host requests.
+	uint64_t bank_assign                  : 3;  /**< Port assignment for each memory bank. Memory structure is 64k words * 246 data bits (plus
+                                                         ECC). This is further divided into 64 banks each containing 1k words * 246 data bits. A
+                                                         bank can only support one access per cycle, this is implemented by assigning each bank to
+                                                         a specific requester. Most requesters can only make one request per cycle so that mostly
+                                                         solves the problem. RWC is the only requester that can make multiple requests per cycle
+                                                         and will need to implement its own bank-aware scheduler to prevent bank conflicts. Bank
+                                                         assignment can be reconfigured dynamically, but memory accesses to a bank must be quiesced
+                                                         before that bank can be reassigned to another requester. A host request can access any
+                                                         bank; arbitration logic will prevent bank conflicts for host requests.
                                                          Addresses: bit<15:10> = bank, bit<9:0> = offset.
-                                                         Bank 0 corresponds to memory address 0x0000-0x03ff.
-                                                         Bank 1 corresponds to memory address 0x0400-0x07ff.
-                                                         Bank 63 corresponds to memory address 0xfc00-0xffff.
-                                                         See OSM_BANK_ASSIGN_E enumeration for encoding. */
+                                                         Bank 0 corresponds to memory address 0x0000-0x03FF.
+                                                         Bank 1 corresponds to memory address 0x0400-0x07FF.
+                                                         Bank 63 corresponds to memory address 0xFC00-0xFFFF.
+                                                         See OSM_BANK_ASSIGN_E for encoding. */
 #else
 	uint64_t bank_assign                  : 3;
 	uint64_t reserved_3_63                : 61;
@@ -199,7 +195,7 @@ typedef union cvmx_osm_bankx_ctrl cvmx_osm_bankx_ctrl_t;
 /**
  * cvmx_osm_ecc_ctrl
  *
- * ECC Control register.
+ * ECC control register.
  *
  */
 union cvmx_osm_ecc_ctrl {
@@ -226,18 +222,17 @@ typedef union cvmx_osm_ecc_ctrl cvmx_osm_ecc_ctrl_t;
 /**
  * cvmx_osm_int_info_addr
  *
- * Address error interrupt info.
  * This register can be used to debug address errors (illegal bank). Fields are captured when
- * there are no outstanding address errors indicated in OSM_INT_STAT and a new address
- * error arrives. Prioritization for multiple events occurring at the same time is indicated by
- * the OSM_ADDR_ERR_SOURCE_E enumeration; highest encoded value has highest priority.
+ * there are no outstanding address errors indicated in OSM_INT_STAT and a new address error
+ * arrives. Prioritization for multiple events occurring at the same time is indicated by the
+ * OSM_ADDR_ERR_SOURCE_E enumeration; highest encoded value has highest priority.
  */
 union cvmx_osm_int_info_addr {
 	uint64_t u64;
 	struct cvmx_osm_int_info_addr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_35_63               : 29;
-	uint64_t addr_err_source              : 3;  /**< Source of address error, see OSM_OSM_ADDR_ERR_SOURCE_E enumeration. */
+	uint64_t addr_err_source              : 3;  /**< Source of address error; see OSM_ADDR_ERR_SOURCE_E */
 	uint64_t reserved_16_31               : 16;
 	uint64_t addr_err_address             : 16; /**< RAM address of the address error. */
 #else
@@ -254,19 +249,18 @@ typedef union cvmx_osm_int_info_addr cvmx_osm_int_info_addr_t;
 /**
  * cvmx_osm_int_info_ecc
  *
- * ECC error interrupt info.
  * This register can be used to debug ECC failures. Fields are captured when there are no
- * outstanding ECC errors indicated in OSM_INT_STAT and a new ECC error arrives.
- * Prioritization for multiple events occurring at the same time is indicated by the
- * OSM_ECC_ERR_SOURCE_E enumeration; highest encoded value has highest priority. For current bank
- * assignment, see OSM_BANK(0..63)_CTRL.
+ * outstanding ECC errors indicated in OSM_INT_STAT and a new ECC error arrives. Prioritization
+ * for multiple events occurring at the same time is indicated by the OSM_ECC_ERR_SOURCE_E
+ * enumeration; highest encoded value has highest priority. For current bank assignment, see
+ * OSM_BANK(0..63)_CTRL.
  */
 union cvmx_osm_int_info_ecc {
 	uint64_t u64;
 	struct cvmx_osm_int_info_ecc_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_37_63               : 27;
-	uint64_t ecc_err_source               : 5;  /**< Source of ECC error, see OSM_OSM_ECC_ERR_SOURCE_E enumeration. */
+	uint64_t ecc_err_source               : 5;  /**< Source of ECC error; see OSM_ECC_ERR_SOURCE_E. */
 	uint64_t reserved_16_31               : 16;
 	uint64_t ecc_err_address              : 16; /**< RAM address of the ECC error. */
 #else
@@ -283,13 +277,10 @@ typedef union cvmx_osm_int_info_ecc cvmx_osm_int_info_ecc_t;
 /**
  * cvmx_osm_int_stat
  *
- * Interrupt Status.
- * DBEs are detected. SBE's are corrected. For debugging output for ECC DBE/SBE's, see
- * OSM_INT_INFO_ECC.
- * Address Errors happen when a requester attempts to access a bank that was not assigned to it.
- * For example, Bank 0 is assigned to DFA and HNA attempts to access it. For debugging output for
- * Address Errors, see OSM_INT_INFO_ADDR. For current bank assignment, see
- * OSM_BANK(0..63)_CTRL.
+ * For debugging output for ECC DBE/SBEs, see OSM_INT_INFO_ECC. Address errors happen when a
+ * requester attempts to access a bank that was not assigned to it. For example, Bank 0 is
+ * assigned to HFA, and HNA attempts to access it. For debugging output for address errors, see
+ * OSM_INT_INFO_ADDR. For current bank assignment, see OSM_BANK(0..63)_CTRL.
  */
 union cvmx_osm_int_stat {
 	uint64_t u64;
@@ -302,7 +293,7 @@ union cvmx_osm_int_stat {
 	uint64_t bwc_addr_err                 : 1;  /**< BWC port illegal bank address error. */
 	uint64_t twc_addr_err                 : 1;  /**< TWC port illegal bank address error. */
 	uint64_t hna_addr_err                 : 1;  /**< HNA port illegal bank address error. */
-	uint64_t dfa_addr_err                 : 1;  /**< DFA port illegal bank address error. */
+	uint64_t dfa_addr_err                 : 1;  /**< HFA port illegal bank address error. */
 	uint64_t host_sbe                     : 1;  /**< Host port single-bit error. */
 	uint64_t host_dbe                     : 1;  /**< Host port double-bit error. */
 	uint64_t rwc3_sbe                     : 1;  /**< ASE RWC3 port single-bit error. */
@@ -317,8 +308,8 @@ union cvmx_osm_int_stat {
 	uint64_t twc_dbe                      : 1;  /**< ASE TWC port double-bit error. */
 	uint64_t hna_sbe                      : 1;  /**< HNA port single-bit error. */
 	uint64_t hna_dbe                      : 1;  /**< HNA port double-bit error. */
-	uint64_t dfa_sbe                      : 1;  /**< DFA port single-bit error. */
-	uint64_t dfa_dbe                      : 1;  /**< DFA port double-bit error. */
+	uint64_t dfa_sbe                      : 1;  /**< HFA port single-bit error. */
+	uint64_t dfa_dbe                      : 1;  /**< HFA port double-bit error. */
 #else
 	uint64_t dfa_dbe                      : 1;
 	uint64_t dfa_sbe                      : 1;
@@ -353,20 +344,18 @@ typedef union cvmx_osm_int_stat cvmx_osm_int_stat_t;
 /**
  * cvmx_osm_mem#_bist_status
  *
- * Built In Self Test Status Register.
- * Results from BIST runs of OSM's memories.
- * OSM_MEM is instantiated 8 times, each instance of OSM_MEM has its own BIST_STATUS.
- * Each OSM_MEM contains 32 BIST memory instances, so there are 32 status bits
- * per register.
+ * Results from BIST runs of OSM's memories. OSM_MEM is instantiated 8 times, each instance of
+ * OSM_MEM has its own BIST_STATUS. Each OSM_MEM contains 32 BIST memory instances, so there are
+ * 32 status bits per register.
  */
 union cvmx_osm_memx_bist_status {
 	uint64_t u64;
 	struct cvmx_osm_memx_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t bist_status                  : 32; /**< BIST Status of BIST Memory Instance 31..0 in bits 31..0 respectively.
+	uint64_t bist_status                  : 32; /**< BIST status of BIST memory instance 31..0 in bits 31..0 respectively.
                                                          INTERNAL: Each BIST Memory Instance (1 BIST engine + multiple physical memories) contains
-                                                         2 physical memories, srf1024x32m8 and srf1024x33m3. */
+                                                         2 physical memories. */
 #else
 	uint64_t bist_status                  : 32;
 	uint64_t reserved_32_63               : 32;

@@ -2035,7 +2035,7 @@ union cvmx_bgxx_cmrx_int {
 	uint64_t reserved_3_63                : 61;
 	uint64_t pko_nxc                      : 1;  /**< TX channel out-of-range from PKO interface */
 	uint64_t overflw                      : 1;  /**< RX overflow. */
-	uint64_t pause_drp                    : 1;  /**< RX PAUSE packet was dropped due to full RXB FIFO. */
+	uint64_t pause_drp                    : 1;  /**< RX PAUSE packet was dropped due to full RXB FIFO or during per lmac reset. */
 #else
 	uint64_t pause_drp                    : 1;
 	uint64_t overflw                      : 1;
@@ -2111,11 +2111,11 @@ union cvmx_bgxx_cmrx_rx_bp_drop {
 	struct cvmx_bgxx_cmrx_rx_bp_drop_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_7_63                : 57;
-	uint64_t mark                         : 7;  /**< Number of eight-byte cycles to reserve in the RX FIFO. When the FIFO exceeds this count,
-                                                         packets are dropped and not buffered. MARK should typically be programmed to
-                                                         BGX*_CMR*_RX_LMACS[LMACS] + 1. Failure to program correctly can lead to system
-                                                         instability.
-                                                         MARK should be set considering FIFO partitioning established by BGX_CMR_RX_LMACS[LMACS]. */
+	uint64_t mark                         : 7;  /**< Number of eight-byte cycles to reserve in the RX FIFO. When When the number of free
+                                                         entries in the RX FIFO is less than or equal to MARK, incoming packet data is
+                                                         dropped. Mark additionally indicates the number of entries to reserve in the RX FIFO for
+                                                         closing partially received packets. MARK should typically be programmed to its reset
+                                                         value; failure to program correctly can lead to system instability. */
 #else
 	uint64_t mark                         : 7;
 	uint64_t reserved_7_63                : 57;
@@ -2285,7 +2285,7 @@ union cvmx_bgxx_cmrx_rx_pause_drop_time {
 	struct cvmx_bgxx_cmrx_rx_pause_drop_time_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t pause_time                   : 16; /**< Time extracted from the dropped PAUSE packet dropped due to RXB FIFO full */
+	uint64_t pause_time                   : 16; /**< Time extracted from the dropped PAUSE packet dropped due to RXB FIFO full or during per lmac reset */
 #else
 	uint64_t pause_time                   : 16;
 	uint64_t reserved_16_63               : 48;
@@ -3100,11 +3100,10 @@ union cvmx_bgxx_cmr_chan_msk_or {
 	uint64_t u64;
 	struct cvmx_bgxx_cmr_chan_msk_or_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t msk_or                       : 64; /**< Assert physical BP when the BP channel vector
-                                                         Assert physical backpressure when the backpressure channel vector combined with MSK_OR
+	uint64_t msk_or                       : 64; /**< Assert physical backpressure when the backpressure channel vector combined with MSK_OR
                                                          indicates backpressure as follows:
-                                                         phys_bp_msk_or = (CHAN_VECTOR<x:y> & MSK_AND<x:y>) != 0
-                                                         phys_bp = phys_bp_msk_or
+                                                         phys_bp_msk_or = (CHAN_VECTOR<x:y> & MSK_OR<x:y>) & MSK_OR<x:y>
+                                                         phys_bp = phys_bp_msk_or || phys_bp_msk_and
                                                          In single LMAC configurations, x = 63, y = 0
                                                          In multi-LMAC configurations, x/y are set as follows:
                                                          LMAC interface 0, x = 15, y = 0
@@ -3281,13 +3280,13 @@ union cvmx_bgxx_cmr_nxc_adr {
 	uint64_t u64;
 	struct cvmx_bgxx_cmr_nxc_adr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_14_63               : 50;
-	uint64_t lmac_id                      : 2;  /**< Logged LMAC ID associated with NXC exceptions */
+	uint64_t reserved_16_63               : 48;
+	uint64_t lmac_id                      : 4;  /**< Logged LMAC ID associated with NXC exceptions */
 	uint64_t channel                      : 12; /**< Logged channel for NXC exceptions */
 #else
 	uint64_t channel                      : 12;
-	uint64_t lmac_id                      : 2;
-	uint64_t reserved_14_63               : 50;
+	uint64_t lmac_id                      : 4;
+	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
 	struct cvmx_bgxx_cmr_nxc_adr_s        cn78xx;
@@ -3601,8 +3600,8 @@ union cvmx_bgxx_gmp_gmi_rxx_frm_ctl {
                                                          PKI_CL(0..3)_PKIND(0..63)_CFG[HG_EN] should be 0.
                                                          PKI_FRM_LEN_CHK(0..1)[MAXLEN] should be increased by 8.
                                                          PKI_FRM_LEN_CHK(0..1)[MINLEN] should be increased by 8.
-                                                         PIP_TAG_INC(0..63)[EN] should be adjusted.
-                                                         PIP_PRT_CFGB(0..63)[ALT_SKP_EN] should be 0. */
+                                                         PKI_TAG_INC(0..63)_MASK should be adjusted.
+                                                         This supported in uCode in O78 >>> PIP_PRT_CFGB(0..63)[ALT_SKP_EN] should be 0. */
 	uint64_t reserved_11_11               : 1;
 	uint64_t null_dis                     : 1;  /**< When set, do not modify the MOD bits on NULL ticks due to partial packets. */
 	uint64_t pre_align                    : 1;  /**< When set, PREAMBLE parser aligns the SFD byte regardless of the number of previous
@@ -4163,8 +4162,8 @@ union cvmx_bgxx_gmp_gmi_txx_thresh {
 	uint64_t u64;
 	struct cvmx_bgxx_gmp_gmi_txx_thresh_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_9_63                : 55;
-	uint64_t cnt                          : 9;  /**< Number of 128-bit words to accumulate in the TX FIFO before sending on the packet
+	uint64_t reserved_11_63               : 53;
+	uint64_t cnt                          : 11; /**< Number of 128-bit words to accumulate in the TX FIFO before sending on the packet
                                                          interface. This field should be large enough to prevent underflow on the packet interface
                                                          and must never be set to 0x0.
                                                          10G/40G Mode, CNT = 0x100. In all modes, this register cannot exceed the TX FIFO depth as
@@ -4173,8 +4172,8 @@ union cvmx_bgxx_gmp_gmi_txx_thresh {
                                                          BGX*_CMR*_TX_LMACS = 2:     CNT maximum = 0x3FF
                                                          BGX*_CMR*_TX_LMACS = 3,4:  CNT maximum = 0x1FF */
 #else
-	uint64_t cnt                          : 9;
-	uint64_t reserved_9_63                : 55;
+	uint64_t cnt                          : 11;
+	uint64_t reserved_11_63               : 53;
 #endif
 	} s;
 	struct cvmx_bgxx_gmp_gmi_txx_thresh_s cn78xx;
@@ -4923,10 +4922,10 @@ union cvmx_bgxx_smux_cbfc_ctl {
 	uint64_t bck_en                       : 1;  /**< Forward PFC/CBFC PAUSE information to the backpressure block. */
 	uint64_t drp_en                       : 1;  /**< Drop-control enable. When set, drop PFC/CBFC PAUSE frames. */
 	uint64_t tx_en                        : 1;  /**< Transmit enable. When set, allow for PFC/CBFC PAUSE packets. Must be clear in HiGig2 mode
-                                                         i.e. when BGX(0..5)_SMU(0..3)_TX_CTL[HG_EN] = 1 and BGX(0..5)_SMU(0..3)_RX_UDD_SKP[SKIP] =
+                                                         i.e. when BGX(0..5)_SMU(0..3)_TX_CTL[HG_EN] = 1 and BGX(0..5)_SMU(0..3)_RX_UDD_SKP[LEN] =
                                                          16. */
 	uint64_t rx_en                        : 1;  /**< Receive enable. When set, allow for PFC/CBFC PAUSE packets. Must be clear in HiGig2 mode
-                                                         i.e. when BGX(0..5)_SMU(0..3)_TX_CTL[HG_EN] = 1 and BGX(0..5)_SMU(0..3)_RX_UDD_SKP[SKIP] =
+                                                         i.e. when BGX(0..5)_SMU(0..3)_TX_CTL[HG_EN] = 1 and BGX(0..5)_SMU(0..3)_RX_UDD_SKP[LEN] =
                                                          16. */
 #else
 	uint64_t rx_en                        : 1;
@@ -5187,8 +5186,8 @@ union cvmx_bgxx_smux_rx_frm_ctl {
                                                          PKI_CL(0..3)_PKIND(0..63)_CFG[HG_EN] should be 0
                                                          PKI_FRM_LEN_CHK(0..1)[MAXLEN] should be increased by 8
                                                          PKI_FRM_LEN_CHK(0..1)[MINLEN] should be increased by 8
-                                                         PIP_TAG_INC(0..63)[EN] should be adjusted
-                                                         PIP_PRT_CFGB(0..63)[ALT_SKP_EN] should be 0. */
+                                                         PKI_TAG_INC(0..63)_MASK should be adjusted
+                                                         This supported in uCode in O78 >>> PIP_PRT_CFGB(0..63)[ALT_SKP_EN] should be 0. */
 	uint64_t reserved_6_11                : 6;
 	uint64_t ctl_smac                     : 1;  /**< Control PAUSE frames can match station SMAC. */
 	uint64_t ctl_mcst                     : 1;  /**< Control PAUSE frames can match globally assign multicast address. */
@@ -5408,17 +5407,17 @@ union cvmx_bgxx_smux_tx_ctl {
                                                          for normal operation. */
 	uint64_t hg_pause_hgi                 : 2;  /**< HGI field for hardware-generated HiGig PAUSE packets. */
 	uint64_t hg_en                        : 1;  /**< Enable HiGig mode.
-                                                         When this field is set and BGX(0..5)_SMU(0..3)_RX_UDD_SKP[SKIP] = 12, the interface is in
+                                                         When this field is set and BGX(0..5)_SMU(0..3)_RX_UDD_SKP[LEN] = 12, the interface is in
                                                          HiGig/HiGig+ mode and the following must be set:
                                                          BGX(0..5)_SMU(0..3)_RX_FRM_CTL[PRE_CHK] = 0
                                                          BGX(0..5)_SMU(0..3)_RX_UDD_SKP[FCSSEL] = 0
-                                                         BGX(0..5)_SMU(0..3)_RX_UDD_SKP[SKIP] = 12
+                                                         BGX(0..5)_SMU(0..3)_RX_UDD_SKP[LEN] = 12
                                                          BGX(0..5)_SMU(0..3)_TX_APPEND[PREAMBLE] = 0
-                                                         When this field is set and BGX(0..5)_SMU(0..3)_RX_UDD_SKP[SKIP] = 16, the interface is in
+                                                         When this field is set and BGX(0..5)_SMU(0..3)_RX_UDD_SKP[LEN] = 16, the interface is in
                                                          HiGig2 mode and the following must be set:
                                                          BGX(0..5)_SMU(0..3)_RX_FRM_CTL[PRE_CHK] = 0
                                                          BGX(0..5)_SMU(0..3)_RX_UDD_SKP[FCSSEL] = 0
-                                                         BGX(0..5)_SMU(0..3)_RX_UDD_SKP[SKIP] = 16
+                                                         BGX(0..5)_SMU(0..3)_RX_UDD_SKP[LEN] = 16
                                                          BGX(0..5)_SMU(0..3)_TX_APPEND[PREAMBLE] = 0
                                                          BGX(0..5)_SMU(0..3)_SMUX_CBFC_CTL[RX_EN] = 0
                                                          BGX(0..5)_SMU(0..3)_CBFC_CTL[TX_EN] = 0 */

@@ -146,6 +146,7 @@ static inline uint64_t cvmx_clock_get_rate(cvmx_clock_t clock)
 }
 #else
 extern uint64_t cvmx_clock_get_rate(cvmx_clock_t clock);
+extern uint64_t cvmx_clock_get_rate_node(int node, cvmx_clock_t clock);
 #endif
 
 #ifdef	__cplusplus

@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 82360 $<hr>
+ * <hr>$Revision: 87128 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -1202,7 +1202,7 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 	/* Allow config retries for 250ms. Count is based off the 5Ghz SERDES
 	   clock */
 	pemx_ctl_status.u64 = cvmx_read_csr(CVMX_PEMX_CTL_STATUS(pcie_port));
-	pemx_ctl_status.s.cfg_rtry = 250 * 5000000 / 0x10000;
+	pemx_ctl_status.cn63xx.cfg_rtry = 250 * 5000000 / 0x10000;
 	cvmx_write_csr(CVMX_PEMX_CTL_STATUS(pcie_port), pemx_ctl_status.u64);
 
 	/* Display the link status */

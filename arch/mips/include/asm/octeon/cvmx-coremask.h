@@ -60,7 +60,7 @@
  * provide future compatibility if more cores are added to future processors
  * or more nodes are supported.
  *
- * <hr>$Revision: 83933 $<hr>
+ * <hr>$Revision: 87283 $<hr>
  *
  */
 
@@ -371,8 +371,16 @@ static inline uint32_t cvmx_coremask_get32(const cvmx_coremask_t *pcm)
 static inline int cvmx_coremask_cmp(const cvmx_coremask_t *pcm1,
 				    const cvmx_coremask_t *pcm2)
 {
-	return memcmp((void *)pcm1->coremask_bitmap,
-	    (void *)pcm2->coremask_bitmap, CVMX_MAX_USED_CORES_BMP / 8);
+	int i;
+	/* Start from highest node for arithemtically correct result */
+	for ( i = CVMX_COREMASK_USED_BMPSZ-1; i >= 0 ; i-- )
+		if( pcm1->coremask_bitmap[i] != pcm2->coremask_bitmap[i] )
+			return (
+				pcm1->coremask_bitmap[i] -
+				pcm2->coremask_bitmap[i] 
+				);
+
+	return 0;
 }
 
 /*
@@ -607,6 +615,7 @@ cvmx_coremask_is_core_first_core(const cvmx_coremask_t *pcm,
 	return (__builtin_ffs(pcm->coremask_bitmap[n]) == core + 1);
 }
 
+#if	0	//Removed in favor of cvmx_is_init_core()
 /**
  * Test to see if current core is first core in coremask.
  *
@@ -621,7 +630,7 @@ cvmx_coremask_is_first_core(const cvmx_coremask_t *pcm)
 	return cvmx_coremask_is_core_first_core(pcm,
 						cvmx_get_core_num());
 }
-
+#endif
 /**
  * Returns the number of 1 bits set in a coremask
  *
