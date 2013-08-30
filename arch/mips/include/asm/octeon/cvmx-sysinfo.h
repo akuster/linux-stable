@@ -42,7 +42,7 @@
  *
  * This module provides system/board information obtained by the bootloader.
  *
- * <hr>$Revision: 87314 $<hr>
+ * <hr>$Revision: 87487 $<hr>
  *
  */
 
@@ -51,6 +51,7 @@
 
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 #include "cvmx-app-init.h"
+#include "cvmx-access.h"
 #endif
 #include "cvmx-coremask.h"
 
