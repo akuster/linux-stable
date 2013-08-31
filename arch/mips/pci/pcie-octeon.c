@@ -86,7 +86,7 @@ static	void set_cfg_read_retry(u32 retry_cnt)
 {
 	union cvmx_pemx_ctl_status pemx_ctl;
 	pemx_ctl.u64 = cvmx_read_csr(CVMX_PEMX_CTL_STATUS(1));
-	pemx_ctl.s.cfg_rtry = retry_cnt;
+	pemx_ctl.cn63xx.cfg_rtry = retry_cnt;
 	cvmx_write_csr(CVMX_PEMX_CTL_STATUS(1), pemx_ctl.u64);
 }
 
@@ -97,8 +97,8 @@ static u32 disable_cfg_read_retry(void)
 
 	union cvmx_pemx_ctl_status pemx_ctl;
 	pemx_ctl.u64 = cvmx_read_csr(CVMX_PEMX_CTL_STATUS(1));
-	retry_cnt =  pemx_ctl.s.cfg_rtry;
-	pemx_ctl.s.cfg_rtry = 0;
+	retry_cnt =  pemx_ctl.cn63xx.cfg_rtry;
+	pemx_ctl.cn63xx.cfg_rtry = 0;
 	cvmx_write_csr(CVMX_PEMX_CTL_STATUS(1), pemx_ctl.u64);
 	return retry_cnt;
 }
