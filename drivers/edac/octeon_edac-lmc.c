@@ -234,6 +234,8 @@ static int octeon_lmc_edac_probe(struct platform_device *pdev)
 	layers[0].size = 1;
 	layers[0].is_virt_csrow = false;
 
+	edac_op_state = EDAC_OPSTATE_POLL;
+
 	if (OCTEON_IS_OCTEON1PLUS()) {
 		union cvmx_lmcx_mem_cfg0 cfg0;
 
