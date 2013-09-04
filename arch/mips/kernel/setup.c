@@ -614,10 +614,6 @@ static void __init request_crashkernel(struct resource *res)
 			(unsigned long)(crashk_res.start  >> 20));
 }
 #else /* !defined(CONFIG_KEXEC)		*/
-static void __init mips_parse_crashkernel(void)
-{
-}
-
 static void __init request_crashkernel(struct resource *res)
 {
 }
