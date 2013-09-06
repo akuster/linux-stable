@@ -90,14 +90,24 @@
 struct  boot_init_vector {
 	/* First stage address - in ram instead of flash */
 	uint64_t code_addr;
+#ifdef __BIG_ENDIAN_BITFIELD
 	/* Setup code for application, NOT application entry point */
 	uint32_t app_start_func_addr;
 	/* k0 is used for global data - needs to be passed to other cores */
 	uint32_t k0_val;
+#else
+	uint32_t k0_val;
+	uint32_t app_start_func_addr;
+#endif	/* LITTLE_ENDIAN */
 	/* Address of boot info block structure */
 	uint64_t boot_info_addr;
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t flags;		/* flags */
 	uint32_t pad;
+#else
+	uint32_t pad;
+	uint32_t flags;		/* flags */
+#endif	/* LITTLE_ENDIAN */
 };
 typedef struct  boot_init_vector boot_init_vector_t;
 

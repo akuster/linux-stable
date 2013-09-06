@@ -191,7 +191,7 @@ static void octeon_hotplug_global_init(void *arg)
 	cvmx_app_hotplug_global_t *hgp = arg;
 	memset(hgp, 0, CVMX_APP_HOTPLUG_INFO_REGION_SIZE);
 
-	hgp->version = CVMX_HOTPLUG_MAGIC_VERSION;
+	hgp->magic_version = CVMX_HOTPLUG_MAGIC_VERSION;
 
 	/* Get legacy LABI data structure for initial parameters */
 	labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
@@ -280,6 +280,12 @@ static void octeon_smp_setup(void)
 	if (!hgp) {
 		pr_err("Failed to allocate memory for Hotplug memory block\n");
 		octeon_hotplug_entry_addr = 0;
+		return;
+	}
+
+	/* Validate magic number */
+	if (hgp->magic_version != CVMX_HOTPLUG_MAGIC_VERSION) {
+		pr_err("Cavium Hotplug: data record invalid\n");
 		return;
 	}
 
