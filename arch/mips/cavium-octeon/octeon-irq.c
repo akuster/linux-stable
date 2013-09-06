@@ -2426,13 +2426,13 @@ asmlinkage void plat_irq_dispatch(void)
 		cop0_cause &= cop0_status;
 		cop0_cause &= ST0_IM;
 
-		if (unlikely(cop0_cause & STATUSF_IP2))
+		if (cop0_cause & STATUSF_IP2)
 			octeon_irq_ip2();
-		else if (unlikely(cop0_cause & STATUSF_IP3))
+		else if (cop0_cause & STATUSF_IP3)
 			octeon_irq_ip3();
-		else if (unlikely(cop0_cause & STATUSF_IP4))
+		else if (cop0_cause & STATUSF_IP4)
 			octeon_irq_ip4();
-		else if (likely(cop0_cause))
+		else if (cop0_cause)
 			do_IRQ(fls(cop0_cause) - 9 + MIPS_CPU_IRQ_BASE);
 		else
 			break;
