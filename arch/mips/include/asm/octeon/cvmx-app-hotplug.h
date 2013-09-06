@@ -92,37 +92,65 @@ typedef struct cvmx_app_hotplug_callbacks {
 	void (*unplug_core_callback) (void *ptr);
 } cvmx_app_hotplug_callbacks_t;
 
-/* The size of this struct should be a fixed size of 1024 bytes.
-   Additional members should be added towards the end of the
-   strcuture by adjusting the size of padding */
+/*
+ * The size of this struct should be a fixed size of 1024 bytes.
+ * and is endianness-agnostic, it may seem wasteful but all flags
+ * occupy a 64-bit field.
+ *
+ * <coremask> represents all core currently running the application
+ * <hotplug_activated_coremask> represents which cores have registered
+ * to accept hotplug mailbox interrupts
+ * <hplugged_cores> represents which cores are being added to an application.
+ * <unplug_cores> represents the core being removed from an application.
+ * <shutdown_cores> is set to all cores in <coremask> when the application
+ * is being shut down.
+ *
+ * All callback pointers are in the application virtual address space.
+ *
+ * <coremask> indicates all rores running the application.
+ * <hotplug_activated_coremask> indicates which cores have called
+ * cvmx_app_hotplug_activate() and are thus ready to receive events.
+ * <hplugged_cores> lists cores being added to an app dynamically.
+ * <shutdown_cores> lists all application cores when it is being shut down.
+ * <unplug_cores> lists the cores being removed from an application.
+ *
+ * <app_shutdown> indicates if the application will call cvmx_core_shutdown()
+ * or the call needs to be made on its behalf by the hotplug library.
+ * <cvmx_app_boot_record_ptr> is a physical address of the primary
+ * boot record for an application.
+ */
 typedef struct cvmx_app_hotplug_info {
-	char app_name[CVMX_APP_HOTPLUG_MAX_APPNAME_LEN];
 	struct cvmx_coremask coremask;
 	struct cvmx_coremask hotplug_activated_coremask;
 	struct cvmx_coremask hplugged_cores;
 	struct cvmx_coremask shutdown_cores;
 	struct cvmx_coremask unplug_cores;
-	int32_t valid;
-	int32_t volatile shutdown_done;
 	uint64_t shutdown_callback;
 	uint64_t unplug_callback;
 	uint64_t cores_added_callback;
 	uint64_t cores_removed_callback;
-	uint64_t hotplug_start;
 	uint64_t data;
-	uint32_t app_shutdown;
-	uint32_t padding[17];
+	uint64_t app_shutdown;
+	uint64_t shutdown_done;
+	uint64_t cvmx_app_boot_record_ptr;
+	char app_name[CVMX_APP_HOTPLUG_MAX_APPNAME_LEN];
+	uint64_t unused[7];
+	uint64_t valid_magic;
 } cvmx_app_hotplug_info_t;
 
 struct cvmx_app_hotplug_global {
-	struct cvmx_coremask avail_coremask;
 	cvmx_app_hotplug_info_t hotplug_info_array[CVMX_APP_HOTPLUG_MAX_APPS];
-	uint32_t version;
+	struct cvmx_coremask avail_coremask;
 	cvmx_spinlock_t hotplug_global_lock;
-	int app_under_boot;
-	int app_under_shutdown;
+	uint64_t app_under_boot;
+	uint64_t app_under_shutdown;
+	uint64_t reserved[8];
+	uint64_t magic_version;
 };
 typedef struct cvmx_app_hotplug_global cvmx_app_hotplug_global_t;
+
+#define	CVMX_HOTPLUG_MAGIC_VERSION	0xb10ce1abe1000001ULL
+#define	CVMX_HOTPLUG_MAGIC_VALID	0xf1a90001f1a90001ULL
 
 int is_core_being_hot_plugged(void);
 int is_app_under_boot_or_shutdown(void);
