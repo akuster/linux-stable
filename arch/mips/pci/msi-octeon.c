@@ -436,7 +436,7 @@ static irqreturn_t __octeon_msi_do_interrupt(int index, u64 msi_bits)
 
 		irq = octeon_irq_msi_to_irq(bit + 64 * index);
 
-		do_IRQ(irq);
+		generic_handle_irq(irq);
 		return IRQ_HANDLED;
 	}
 	return IRQ_NONE;
