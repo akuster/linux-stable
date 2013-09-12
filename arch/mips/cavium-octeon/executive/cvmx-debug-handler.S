@@ -144,7 +144,7 @@ __cvmx_debug_handler_stage2:
 	// Use reserved space in kseg0 to save off some temp regs
         mfc0    k0, $15, 1  // read exception base reg.
         andi    k0, 0xff    // mask off core ID
-        sll     k0, 12      // multiply by 4096 (512 dwords) DEBUG_NUMREGS
+        sll     k0, 4      // multiply by 16 (2 dwords) DEBUG_NUMREGS
 
         addiu   k0,  REG_SAVE_BASE_DIV_8
         addiu   k0,  REG_SAVE_BASE_DIV_8
@@ -162,8 +162,8 @@ __cvmx_debug_handler_stage2:
 
 	// save off k1 and at ($1) off to the bootloader reg save area
 	// at is used by dla
-	sd      $1, 8(k0)	// save at for temp usage
-	sd      k1, 216(k0)	// save k1 for temp usage
+	sd      $1, 0(k0)	// save at for temp usage
+	sd      k1, 8(k0)	// save k1 for temp usage
 
 
 	// Detect debug-mode exception.
@@ -204,8 +204,8 @@ __cvmx_debug_handler_stage2:
 	nop
 
 	// Restore k1 and at from the bootloader reg save area
-	ld      $1, 8(k0)	// save at for temp usage
-	ld      k1, 216(k0)	// save k1 for temp usage
+	ld      $1, 0(k0)	// save at for temp usage
+	ld      k1, 8(k0)	// save k1 for temp usage
 
 	dmfc0	k0, COP0_DEPC
 	// Skip the faulting instruction.
@@ -218,7 +218,7 @@ noexc:
 	loadaddr (k1, __cvmx_debug_save_regs_area, 8)
 
 	// Restore at
-	ld      $1, 8(k0)	// restore at for temp usage
+	ld      $1, 0(k0)	// restore at for temp usage
 
 	.irp	n, REGS0
 	sd	$\n, 0(k1)
@@ -226,7 +226,7 @@ noexc:
 	.endr
 
 	move	$25, k1
-	ld      k1, 216(k0)	// restore k1 for temp usage
+	ld      k1, 8(k0)	// restore k1 for temp usage
 	move	k0, $25
 
 	// Store out k0, we can use $25 here because we just saved it
@@ -239,6 +239,11 @@ noexc:
 	addiu	k0, 8
 	.endr
 	
+	dla k1, __cvmx_debug_has_wide_mult
+	lw k1, 0(k1)
+	blez k1, cvmx_mpy_save_finish
+	nop
+
 	dla k1, __cvmx_debug_is_octeon3
 	lw k1, 0(k1)
 	blez k1, not_oct3_save
@@ -291,6 +296,7 @@ not_oct3_save:
 	sd $2, 32(k1)
 	sd $3, 40(k1)
 cvmx_mpy_save_finish:
+
 	//Save fp registers in OCTEON3
 	dmfc0 k0, COP0_CONFIG1
 	bbit0 k0,0, fpu_nonexist
@@ -367,6 +373,11 @@ fpu_nonexist:
 	dmtc0 k1, COP0_STATUS
 	.set pop
 fpu_nonexist_restore:
+
+	dla k1, __cvmx_debug_has_wide_mult
+	lw k1, 0(k1)
+	blez k1, cvmx_mpy_restore_finish
+	nop
 
 	dla k1, __cvmx_debug_is_octeon3
 	lw k1, 0(k1)

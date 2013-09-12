@@ -143,8 +143,10 @@ char *__cvmx_debug_stack_top_all[CVMX_MAX_CORES];
 #define cvmx_interrupt_in_isr 0
 
 #endif
-/* This variable is used in assembly to determine if the target is Octeon3 or not */
+/* This variable is used in the assembly to determine if the target is Octeon3 or not. */
 uint32_t __cvmx_debug_is_octeon3;
+/* This variable is used in the assembly to determine if the core has wide multiply or not. */
+uint32_t __cvmx_debug_has_wide_mult;
 
 static size_t cvmx_debug_strlen(const char *str)
 {
@@ -319,13 +321,20 @@ void cvmx_debug_init(void)
 	if (!cvmx_debug_enabled())
 		return;
 
-	/*Set this flag so that it can be checked in assembly while saving wide multiply registers*/
-	__cvmx_debug_is_octeon3=OCTEON_IS_OCTEON3();
+	/* Set this flag so that it can be checked in assembly while saving wide multiply registers. */
+	__cvmx_debug_is_octeon3 = OCTEON_IS_OCTEON3();
+	{
+		uint64_t t;
+		CVMX_MF_CVM_CTL(t);
+		/* Wide mult is enabled when CvmCtl[NOMUL] is cleared. */
+		__cvmx_debug_has_wide_mult = !(t & (1ull << 27));
+	}
 
 	cvmx_debug_init_globals();
 
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-	// Put a barrier until all cores have got to this point.
+	/* Put a barrier until all cores have got to this point.
+	   Except the linux kernel as it is only called once.  */
 	cvmx_coremask_barrier_sync(pcm);
 #endif
 	cvmx_debug_globals_check_version();
@@ -335,7 +344,7 @@ void cvmx_debug_init(void)
 
 	core = cvmx_get_core_num();
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
-	/*  Install the debugger handler on the cores. */
+	/*  Install the debugger handler on all of the cores. */
 	{
 		int core1 = 0;
 		cvmx_coremask_for_each_core(core1, pcm) {
@@ -353,21 +362,23 @@ void cvmx_debug_init(void)
 		cvmx_spinlock_lock(lock);
 		state = cvmx_debug_get_state();
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+		/* The Linux kernel only calls this once for the init core,
+		   setup the known cores to be all of the cores that Linux knows about. */
 		{
-		uint64_t coremask = cvmx_coremask_get64(pcm);
-		state.known_cores |= coremask;
-		state.core_finished &= ~coremask;
+			uint64_t coremask = cvmx_coremask_get64(pcm);
+			state.known_cores |= coremask;
+			state.core_finished &= ~coremask;
 		}
 #else
-		state.known_cores |= (1u << core);
-		state.core_finished &= ~(1u << core);
+		state.known_cores |= (1ull << core);
+		state.core_finished &= ~(1ull << core);
 #endif
 		cvmx_debug_update_state(state);
 		cvmx_spinlock_unlock(lock);
 	}
 
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-	// Put a barrier until all cores have got to this point.
+	/* Put a barrier until all cores have got to this point. */
 	cvmx_coremask_barrier_sync(pcm);
 
 	if (cvmx_is_init_core())
@@ -384,8 +395,8 @@ void cvmx_debug_init(void)
 		cvmx_debug_printf("Known cores at init: 0x%llx\n", (long long)state.known_cores);
 		cvmx_debug_update_state(state);
 
-		/* Initialize __cvmx_debug_stack_top_all. */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+		/* Initialize __cvmx_debug_stack_top_all for Linux kernel, all cores share the same address space. */
 		{
 			int i;
 			for (i = 0; i < CVMX_MAX_CORES; i++)
@@ -487,7 +498,7 @@ static int cvmx_debug_putpacket_hexint(char *buf, uint64_t value)
 
 static int cvmx_debug_active_core(cvmx_debug_state_t state, unsigned core)
 {
-	return state.active_cores & (1u << core);
+	return state.active_cores & (1ull << core);
 }
 
 static volatile cvmx_debug_core_context_t *cvmx_debug_core_context(void)
@@ -500,7 +511,7 @@ static volatile uint64_t *cvmx_debug_regnum_to_context_ref(int regnum, volatile 
 	/* Must be kept in sync with mips_octeon_reg_names in gdb/mips-tdep.c. */
 	if (regnum < 32)
 		return &context->regs[regnum];
-/* Return fp registers in OCTEON3 */
+	/* Return fp registers for Octeon 3*/
 	if(37 < regnum && regnum < 70)
 		return &context->fp_regs[regnum-38];
 
@@ -531,23 +542,21 @@ static int cvmx_debug_probe_load(unsigned char *ptr, unsigned char *result)
 	volatile unsigned char *p = ptr;
 	int ok;
 	unsigned char tem;
+	__cvmx_debug_mode_exception_ignore = 1;
+	__cvmx_debug_mode_exception_occured = 0;
+	/* Force a byte load so that it will not be in a delay slot */
+	asm volatile (".set push	\n\t"
+		      ".set noreorder	\n\t"
+		      "nop		\n\t"
+		      "lbu %0, %1	\n\t"
+		      "nop		\n\t"
+		      ".set pop"
+		      : "=r" (tem) : "m"(*p));
+	ok = __cvmx_debug_mode_exception_occured == 0;
+	__cvmx_debug_mode_exception_ignore = 0;
+	__cvmx_debug_mode_exception_occured = 0;
+	*result = tem;
 
-	{
-		__cvmx_debug_mode_exception_ignore = 1;
-		__cvmx_debug_mode_exception_occured = 0;
-		/* We don't handle debug-mode exceptions in delay slots.  Avoid them.  */
-		asm volatile (".set push	\n\t"
-			      ".set noreorder	\n\t"
-			      "nop		\n\t"
-			      "lbu %0, %1	\n\t"
-			      "nop		\n\t"
-			      ".set pop"
-			      : "=r" (tem) : "m"(*p));
-		ok = __cvmx_debug_mode_exception_occured == 0;
-		__cvmx_debug_mode_exception_ignore = 0;
-		__cvmx_debug_mode_exception_occured = 0;
-		*result = tem;
-	}
 	return ok;
 }
 
@@ -558,7 +567,7 @@ static int cvmx_debug_probe_store(unsigned char *ptr)
 
 	__cvmx_debug_mode_exception_ignore = 1;
 	__cvmx_debug_mode_exception_occured = 0;
-	/* We don't handle debug-mode exceptions in delay slots.  Avoid them.  */
+	/* Force a byte store so that it will not be in a delay slot */
 	asm volatile (".set push	\n\t"
 		      ".set noreorder	\n\t"
 		      "nop		\n\t"
@@ -663,7 +672,7 @@ static cvmx_debug_command_t cvmx_debug_process_packet(const char *packet)
 			/* Only cores in the exception handler may become the focus.
 			   If a core not in the exception handler got focus the
 			   debugger would hang since nobody would talk to it.  */
-			else if (state.handler_cores & (1u << core)) {
+			else if (state.handler_cores & (1ull << core)) {
 				/* Focus change reply must be sent before the focus
 				   changes. Otherwise the new focus core will eat our ACK
 				   from the debugger.  */
@@ -709,9 +718,9 @@ static cvmx_debug_command_t cvmx_debug_process_packet(const char *packet)
 				state.active_cores = state.known_cores;
 
 			/* The focus core must be in the active_cores mask */
-			if ((state.active_cores & (1u << state.focus_core)) == 0) {
+			if ((state.active_cores & (1ull << state.focus_core)) == 0) {
 				cvmx_debug_putpacket_noformat("!Focus core was added to the masked.");
-				state.active_cores |= 1u << state.focus_core;
+				state.active_cores |= 1ull << state.focus_core;
 			}
 
 			cvmx_debug_update_state(state);
@@ -1063,7 +1072,7 @@ static int cvmx_debug_stop_core(cvmx_debug_state_t state, unsigned core, cvmx_de
 		cvmx_debug_printf("Core #%d not in active cores, continuing.\n", core);
 		return 0;
 	}
-	if ((state.core_finished & (1u << core)) && proxy)
+	if ((state.core_finished & (1ull << core)) && proxy)
 		return 0;
 	return 1;
 }
@@ -1088,7 +1097,7 @@ static void cvmx_debug_set_focus_core(cvmx_debug_state_t * state, int core)
 static void cvmx_debug_may_elect_as_focus_core(cvmx_debug_state_t * state, int core, cvmx_debug_register_t * debug_reg)
 {
 	/* If another core has already elected itself as the focus core, we're late.  */
-	if (state->handler_cores & (1u << state->focus_core))
+	if (state->handler_cores & (1ull << state->focus_core))
 		return;
 
 	/* If we hit a breakpoint, elect ourselves.  */
@@ -1098,7 +1107,7 @@ static void cvmx_debug_may_elect_as_focus_core(cvmx_debug_state_t * state, int c
 	/* It is possible the focus core has completed processing and exited the
 	   program. When this happens the focus core will not be in
 	   known_cores. If this is the case we need to elect a new focus. */
-	if ((state->known_cores & (1u << state->focus_core)) == 0)
+	if ((state->known_cores & (1ull << state->focus_core)) == 0)
 		cvmx_debug_set_focus_core(state, core);
 }
 
@@ -1234,10 +1243,10 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 		cvmx_spinlock_lock(&cvmx_debug_globals->lock);
 		state = cvmx_debug_get_state();
 
-		state.handler_cores |= (1u << core);
+		state.handler_cores |= (1ull << core);
 		cvmx_debug_may_elect_as_focus_core(&state, core, debug_reg);
 
-/* Push all updates before exiting the critical section */
+		/* Push all updates before exiting the critical section */
 		state.focus_switch = 1;
 		cvmx_debug_update_state(state);
 		cvmx_spinlock_unlock(&cvmx_debug_globals->lock);
@@ -1256,7 +1265,7 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 
 			/* If the focus has changed and the old focus has exited, then send a signal
 			   that we should stop if step_all is off.  */
-			if (oldfocus != state.focus_core && ((1u << oldfocus) & state.core_finished)
+			if (oldfocus != state.focus_core && ((1ull << oldfocus) & state.core_finished)
 			    && !state.step_all)
 				cvmx_debug_send_stop_reason(debug_reg, context);
 
@@ -1274,7 +1283,7 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 			}
 		} else {
 			volatile int i;
-			/* Do a small sleep just so there is some time to process a focus change. */
+			/* Do a small sleep (around 2000 cycles) just so there is some time to process a focus change. */
 			for (i = 0; i < 240; i++)
 				asm volatile (".set push	\n\t"
 					      ".set noreorder	\n\t"
@@ -1292,7 +1301,7 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 		   we are changing the communications. */
 		if (command == COMMAND_NOP && cvmx_debug_globals->comm_changed) {
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-			cvmx_coremask_t cm;
+			cvmx_coremask_t cm = CVMX_COREMASK_EMPTY;
 
 			/* FIXME: Debugger is limited at 64 cores */
 			cvmx_coremask_set64(&cm, state.handler_cores);
@@ -1310,7 +1319,7 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 	{
 		cvmx_spinlock_lock(&cvmx_debug_globals->lock);
 		state = cvmx_debug_get_state();
-		state.handler_cores ^= (1u << core);
+		state.handler_cores ^= (1ull << core);
 		cvmx_debug_update_state(state);
 		cvmx_spinlock_unlock(&cvmx_debug_globals->lock);
 	}
@@ -1553,7 +1562,7 @@ void __cvmx_debug_handler_stage3(uint64_t lo, uint64_t hi)
 void cvmx_debug_trigger_exception(void)
 {
 	/* Set CVMX_CIU_DINT to enter debug exception handler.  */
-	cvmx_write_csr(CVMX_CIU_DINT, 1u << cvmx_get_core_num());
+	cvmx_write_csr(CVMX_CIU_DINT, 1ull << cvmx_get_core_num());
 	/* Perform an immediate read after every write to an RSL register to force
 	   the write to complete. It doesn't matter what RSL read we do, so we
 	   choose CVMX_MIO_BOOT_BIST_STAT because it is fast and harmless */
@@ -1570,6 +1579,8 @@ void cvmx_debug_finish(void)
 	unsigned coreid = cvmx_get_core_num();
 	cvmx_debug_state_t state;
 
+	cvmx_coremask_t cm = CVMX_COREMASK_EMPTY;
+
 	if (!cvmx_debug_globals)
 		return;
 	cvmx_debug_printf("Debug _exit reached!, core %d, cvmx_debug_globals = %p\n", coreid, cvmx_debug_globals);
@@ -1581,18 +1592,19 @@ void cvmx_debug_finish(void)
 
 	cvmx_spinlock_lock(&cvmx_debug_globals->lock);
 	state = cvmx_debug_get_state();
-	state.known_cores ^= (1u << coreid);
-	state.core_finished |= (1u << coreid);
+	state.known_cores ^= (1ull << coreid);
+	state.core_finished |= (1ull << coreid);
 	cvmx_debug_update_state(state);
 
 	/* Tell the user the core has finished. */
 	if (state.ever_been_in_debug)
 		cvmx_debug_putcorepacket("finished.", coreid);
 
+	/* FIXME: Debugger is limited at 64 cores */
+	cvmx_coremask_set64(&cm, state.core_finished);
+
 	/* Notify the debugger if all cores have completed the program */
-#if 0
-	/* FIXME: coremask is not done correctly for core_finished. */
-	if (cvmx_coremask_is_subset(cvmx_debug_core_mask(), (&state)->core_finished)) {
+	if (cvmx_coremask_cmp(cvmx_debug_core_mask(), &cm) == 0) {
 		cvmx_debug_printf("All cores done!\n");
 		if (state.ever_been_in_debug)
 			cvmx_debug_putpacket_noformat("D0");
@@ -1603,8 +1615,7 @@ void cvmx_debug_finish(void)
 		   should always find a core */
 		unsigned newcore;
 		for (newcore = 0; newcore < CVMX_MAX_CORES; newcore++) {
-			if (cvmx_coremask_is_core_set(&state.known_cores,
-						      newcore)) {
+			if (state.known_cores & (1ull << newcore)) {
 				cvmx_debug_printf("Routing uart interrupts to Core #%u.\n", newcore);
 				cvmx_debug_set_focus_core(&state, newcore);
 				cvmx_debug_update_state(state);
@@ -1612,7 +1623,6 @@ void cvmx_debug_finish(void)
 			}
 		}
 	}
-#endif
 	cvmx_spinlock_unlock(&cvmx_debug_globals->lock);
 
 	/* If we ever been in the debug, report to it that we have exited the core. */

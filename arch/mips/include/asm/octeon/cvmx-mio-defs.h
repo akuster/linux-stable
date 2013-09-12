@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -6098,8 +6098,8 @@ typedef union cvmx_mio_pll_setting cvmx_mio_pll_setting_t;
 /**
  * cvmx_mio_ptp_ckout_hi_incr
  *
- * This register contains the high bytes of the PTP clock out increment. MIO_PTP Registers for
- * address.
+ * This register contains the high bytes of the PTP clock out increment.
+ *
  */
 union cvmx_mio_ptp_ckout_hi_incr {
 	uint64_t u64;
@@ -6124,7 +6124,7 @@ typedef union cvmx_mio_ptp_ckout_hi_incr cvmx_mio_ptp_ckout_hi_incr_t;
 /**
  * cvmx_mio_ptp_ckout_lo_incr
  *
- * This register contains the low bytes of the PTP clock out increment. MIO_PTP Registers for address.
+ * This register contains the low bytes of the PTP clock out increment.
  *
  */
 union cvmx_mio_ptp_ckout_lo_incr {
@@ -6152,7 +6152,7 @@ typedef union cvmx_mio_ptp_ckout_lo_incr cvmx_mio_ptp_ckout_lo_incr_t;
  *
  * This register contains the high bytes of the PTP clock out. Writes to MIO_PTP_CKOUT_THRESH_HI
  * also clear MIO_PTP_CKOUT_THRESH_LO; to update all 96 bits, write MIO_PTP_CKOUT_THRESH_HI
- * followed by MIO_PTP_CKOUT_THRESH_LO. MIO_PTP Registers for address.
+ * followed by MIO_PTP_CKOUT_THRESH_LO.
  */
 union cvmx_mio_ptp_ckout_thresh_hi {
 	uint64_t u64;
@@ -6175,7 +6175,7 @@ typedef union cvmx_mio_ptp_ckout_thresh_hi cvmx_mio_ptp_ckout_thresh_hi_t;
 /**
  * cvmx_mio_ptp_ckout_thresh_lo
  *
- * This register contains the low bytes of the PTP clock out. MIO_PTP Registers for address.
+ * This register contains the low bytes of the PTP clock out.
  *
  */
 union cvmx_mio_ptp_ckout_thresh_lo {
@@ -6201,7 +6201,7 @@ typedef union cvmx_mio_ptp_ckout_thresh_lo cvmx_mio_ptp_ckout_thresh_lo_t;
 /**
  * cvmx_mio_ptp_clock_cfg
  *
- * This register configures the timestamp architecture. MIO_PTP Registers for address
+ * This register configures the timestamp architecture. See MIO_PTP Registers for address
  *
  */
 union cvmx_mio_ptp_clock_cfg {
@@ -6539,7 +6539,7 @@ typedef union cvmx_mio_ptp_clock_cfg cvmx_mio_ptp_clock_cfg_t;
 /**
  * cvmx_mio_ptp_clock_comp
  *
- * This register provides the compensation value the PTP clock. MIO_PTP Registers for address.
+ * This register provides the compensation value the PTP clock.
  *
  */
 union cvmx_mio_ptp_clock_comp {
@@ -6569,8 +6569,7 @@ typedef union cvmx_mio_ptp_clock_comp cvmx_mio_ptp_clock_comp_t;
  * cvmx_mio_ptp_clock_hi
  *
  * This register provides bits<95:32> of the PTP clock. Writes to MIO_PTP_CLOCK_HI also clear
- * MIO_PTP_CLOCK_LO. To update all 96 bits, write MIO_PTP_CLOCK_HI followed by
- * MIO_PTP_CLOCK_LOMIO_PTP Registers for address.
+ * MIO_PTP_CLOCK_LO. To update all 96 bits, write MIO_PTP_CLOCK_HI followed by MIO_PTP_CLOCK_LO.
  */
 union cvmx_mio_ptp_clock_hi {
 	uint64_t u64;
@@ -6596,7 +6595,7 @@ typedef union cvmx_mio_ptp_clock_hi cvmx_mio_ptp_clock_hi_t;
 /**
  * cvmx_mio_ptp_clock_lo
  *
- * This register provides bits<31:0> of the PTP clock. MIO_PTP Registers for address.
+ * This register provides bits<31:0> of the PTP clock.
  *
  */
 union cvmx_mio_ptp_clock_lo {
@@ -6625,7 +6624,7 @@ typedef union cvmx_mio_ptp_clock_lo cvmx_mio_ptp_clock_lo_t;
 /**
  * cvmx_mio_ptp_dpll_err_int
  *
- * This register contains the Digital PLL error event interrupt. MIO_PTP Registers for address.
+ * This register contains the Digital PLL error event interrupt.
  *
  */
 union cvmx_mio_ptp_dpll_err_int {
@@ -6648,7 +6647,7 @@ typedef union cvmx_mio_ptp_dpll_err_int cvmx_mio_ptp_dpll_err_int_t;
 /**
  * cvmx_mio_ptp_dpll_err_thresh
  *
- * This register configures the Digital PLL error interrupt. MIO_PTP Registers for address.
+ * This register configures the Digital PLL error interrupt.
  *
  */
 union cvmx_mio_ptp_dpll_err_thresh {
@@ -6669,8 +6668,8 @@ typedef union cvmx_mio_ptp_dpll_err_thresh cvmx_mio_ptp_dpll_err_thresh_t;
 /**
  * cvmx_mio_ptp_dpll_incr
  *
- * This register contains the Digital PLL increment. Zero disables the digital PLL. MIO_PTP
- * Registers for address.
+ * This register contains the Digital PLL increment. Zero disables the digital PLL.
+ *
  */
 union cvmx_mio_ptp_dpll_incr {
 	uint64_t u64;
@@ -6690,7 +6689,7 @@ typedef union cvmx_mio_ptp_dpll_incr cvmx_mio_ptp_dpll_incr_t;
 /**
  * cvmx_mio_ptp_evt_cnt
  *
- * This register contains the PTP event counter. MIO_PTP Registers for address.
+ * This register contains the PTP event counter.
  *
  */
 union cvmx_mio_ptp_evt_cnt {
@@ -6717,7 +6716,7 @@ typedef union cvmx_mio_ptp_evt_cnt cvmx_mio_ptp_evt_cnt_t;
 /**
  * cvmx_mio_ptp_evt_int
  *
- * This register contains the PTP event interrupt. MIO_PTP Registers for address.
+ * This register contains the PTP event interrupt.
  *
  */
 union cvmx_mio_ptp_evt_int {
@@ -6765,7 +6764,7 @@ typedef union cvmx_mio_ptp_phy_1pps_in cvmx_mio_ptp_phy_1pps_in_t;
 /**
  * cvmx_mio_ptp_pps_hi_incr
  *
- * This register contains the high bytes of the PTP PPS increment. MIO_PTP Registers for address.
+ * This register contains the high bytes of the PTP PPS increment.
  *
  */
 union cvmx_mio_ptp_pps_hi_incr {
@@ -6791,7 +6790,7 @@ typedef union cvmx_mio_ptp_pps_hi_incr cvmx_mio_ptp_pps_hi_incr_t;
 /**
  * cvmx_mio_ptp_pps_lo_incr
  *
- * This register contains the low bytes of the PTP PPS increment. MIO_PTP Registers for address.
+ * This register contains the low bytes of the PTP PPS increment.
  *
  */
 union cvmx_mio_ptp_pps_lo_incr {
@@ -6819,7 +6818,7 @@ typedef union cvmx_mio_ptp_pps_lo_incr cvmx_mio_ptp_pps_lo_incr_t;
  *
  * This register contains the high bytes of the PTP PPS. Writes to MIO_PTP_PPS_THRESH_HI also
  * clear MIO_PTP_PPS_THRESH_LO; to update all 96 bits write MIO_PTP_PPS_THRESH_HI followed by
- * MIO_PTP_PPS_THRESH_LO. MIO_PTP Registers for address.
+ * MIO_PTP_PPS_THRESH_LO.
  */
 union cvmx_mio_ptp_pps_thresh_hi {
 	uint64_t u64;
@@ -6842,7 +6841,7 @@ typedef union cvmx_mio_ptp_pps_thresh_hi cvmx_mio_ptp_pps_thresh_hi_t;
 /**
  * cvmx_mio_ptp_pps_thresh_lo
  *
- * This register contains the low bytes of the PTP PPS. MIO_PTP Registers for address.
+ * This register contains the low bytes of the PTP PPS.
  *
  */
 union cvmx_mio_ptp_pps_thresh_lo {
@@ -6869,7 +6868,7 @@ typedef union cvmx_mio_ptp_pps_thresh_lo cvmx_mio_ptp_pps_thresh_lo_t;
  * cvmx_mio_ptp_timestamp
  *
  * This register contains the timestamp latched on MIO_PTP_CLOCK_CFG[TSTMP_EDGE] edge of
- * MIO_PTP_CLOCK_CFG[TSTMP_IN]. MIO_PTP Registers for address.
+ * MIO_PTP_CLOCK_CFG[TSTMP_IN].
  */
 union cvmx_mio_ptp_timestamp {
 	uint64_t u64;

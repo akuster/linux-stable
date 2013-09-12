@@ -42,7 +42,6 @@
  *
  * Interface to debug exception handler
  *
- * <hr>$Revision:  $<hr>
  */
 
 #ifndef __CVMX_DEBUG_H__
@@ -55,7 +54,7 @@
 #define CVMX_DEBUG_MAX_RESPONSE_SIZE 1024 + 5
 
 #define CVMX_DEBUG_GLOBALS_BLOCK_NAME "cvmx-debug-globals"
-#define CVMX_DEBUG_GLOBALS_VERSION 5
+#define CVMX_DEBUG_GLOBALS_VERSION 6
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
@@ -252,7 +251,7 @@ typedef enum {
 			/**< The focus core changed */
 } cvmx_debug_command_t;
 
-/* Every field in this struct has to be uint32_t. */
+/* Every field in this struct has to be uint64_t. */
 typedef struct {
 	uint64_t known_cores;
 	uint64_t step_isr;
@@ -282,8 +281,8 @@ typedef struct cvmx_debug_globals_s {
 	uint64_t comm_type;	/* cvmx_debug_comm_type_t */
 	volatile uint64_t comm_changed;	/* cvmx_debug_comm_type_t+1 when someone wants to change it. */
 	volatile uint64_t init_complete;
-	uint32_t tlb_entries;
-	uint32_t state[sizeof(cvmx_debug_state_t) / sizeof(uint32_t)];
+	uint64_t tlb_entries;
+	uint64_t state[sizeof(cvmx_debug_state_t) / sizeof(uint64_t)];
 	cvmx_spinlock_t lock;
 
 	volatile cvmx_debug_core_context_t contextes[CVMX_MAX_CORES];

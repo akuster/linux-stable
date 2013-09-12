@@ -109,11 +109,16 @@ typedef enum {
  *	First IPD port number assigned to this interface.
  * @param last_ipd_port
  *	Last IPD port number assigned to this interface.
+ * @param ipd_port_adj
+ *	Different octeon chips require different ipd ports for the 
+ *	same interface port/mode configuration. This value is used
+ *	to account for that difference.
  */
 struct ipd_port_map {
 	port_map_if_type_t	type;
 	int			first_ipd_port;
 	int			last_ipd_port;
+	int			ipd_port_adj;
 };
 
 /**
@@ -121,15 +126,15 @@ struct ipd_port_map {
  * Interface number to ipd port map for the octeon 68xx.
  */
 static const struct ipd_port_map ipd_port_map_68xx[CVMX_HELPER_MAX_IFACE] = {
-	{GMII,	0x800,	0x8ff},		/* Interface 0 */
-	{GMII,	0x900,	0x9ff},		/* Interface 1 */
-	{GMII,	0xa00,	0xaff},		/* Interface 2 */
-	{GMII,	0xb00,	0xbff},		/* Interface 3 */
-	{GMII,	0xc00,	0xcff},		/* Interface 4 */
-	{ILK,	0x400,	0x4ff},		/* Interface 5 */
-	{ILK,	0x500,	0x5ff},		/* Interface 6 */
-	{NPI,	0x100,	0x120},		/* Interface 7 */
-	{LB,	0x000,	0x008},		/* Interface 8 */
+	{GMII,	0x800,	0x8ff,	0x40},		/* Interface 0 */
+	{GMII,	0x900,	0x9ff,	0x40},		/* Interface 1 */
+	{GMII,	0xa00,	0xaff,	0x40},		/* Interface 2 */
+	{GMII,	0xb00,	0xbff,	0x40},		/* Interface 3 */
+	{GMII,	0xc00,	0xcff,	0x40},		/* Interface 4 */
+	{ILK,	0x400,	0x4ff,	0x00},		/* Interface 5 */
+	{ILK,	0x500,	0x5ff,	0x00},		/* Interface 6 */
+	{NPI,	0x100,	0x120,	0x00},		/* Interface 7 */
+	{LB,	0x000,	0x008,	0x00},		/* Interface 8 */
 };
 
 /**
@@ -137,16 +142,16 @@ static const struct ipd_port_map ipd_port_map_68xx[CVMX_HELPER_MAX_IFACE] = {
  * Interface number to ipd port map for the octeon 78xx.
  */
 static const struct ipd_port_map ipd_port_map_78xx[CVMX_HELPER_MAX_IFACE] = {
-	{GMII,	0x800,	0x8ff},		/* Interface 0 */
-	{GMII,	0x900,	0x9ff},		/* Interface 1 */
-	{GMII,	0xa00,	0xaff},		/* Interface 2 */
-	{GMII,	0xb00,	0xbff},		/* Interface 3 */
-	{GMII,	0xc00,	0xcff},		/* Interface 4 */
-	{GMII,	0xd00,	0xdff},		/* Interface 5 */
-	{ILK,	0x400,	0x4ff},		/* Interface 6 */
-	{ILK,	0x500,	0x5ff},		/* Interface 7 */
-	{NPI,	0x100,	0x120},		/* Interface 8 */
-	{LB,	0x000,	0x008},		/* Interface 9 */
+	{GMII,	0x800,	0x8ff,	0x00},		/* Interface 0 */
+	{GMII,	0x900,	0x9ff,	0x00},		/* Interface 1 */
+	{GMII,	0xa00,	0xaff,	0x00},		/* Interface 2 */
+	{GMII,	0xb00,	0xbff,	0x00},		/* Interface 3 */
+	{GMII,	0xc00,	0xcff,	0x00},		/* Interface 4 */
+	{GMII,	0xd00,	0xdff,	0x00},		/* Interface 5 */
+	{ILK,	0x400,	0x4ff,	0x00},		/* Interface 6 */
+	{ILK,	0x500,	0x5ff,	0x00},		/* Interface 7 */
+	{NPI,	0x100,	0x120,	0x00},		/* Interface 8 */
+	{LB,	0x000,	0x008,	0x00},		/* Interface 9 */
 };
 
 struct cvmx_iface {
@@ -698,8 +703,10 @@ int cvmx_helper_get_ipd_port(int interface, int port)
 			cvmx_helper_interface_mode_t mode =
 				cvmx_helper_interface_get_mode(interface);
 			if (mode == CVMX_HELPER_INTERFACE_MODE_XAUI ||
-			    mode == CVMX_HELPER_INTERFACE_MODE_RXAUI)
-				return ipd_port + 0x40;
+			    mode == CVMX_HELPER_INTERFACE_MODE_RXAUI) {
+				ipd_port += port_map[interface].ipd_port_adj;
+				return ipd_port;
+			}
 			else
 				return ipd_port + (port * 16);
 		} else if (port_map[interface].type == ILK)

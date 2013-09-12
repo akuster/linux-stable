@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -535,7 +535,10 @@ union cvmx_lapx_gen_int {
 	uint64_t u64;
 	struct cvmx_lapx_gen_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_18_63               : 46;
+	uint64_t reserved_19_63               : 45;
+	uint64_t xid_bad                      : 1;  /**< A response packet's transaction ID was targeted to an LAB not in PROCESSING state. Not
+                                                         reported if packet also has CRC or MISMATCH errors. Typically indicates TCAM or
+                                                         configuration error. Throws LAP_INTSN_E::LAP(0..1)_GEN_XID_BAD. */
 	uint64_t nbr_dbe                      : 1;  /**< An ECC uncorrectable error has occurred in the NBR RAM. Throws
                                                          LAP_INTSN_E::LAP(0..1)_GEN_NBR_DBE. */
 	uint64_t nbr_sbe                      : 1;  /**< An ECC correctable error has occurred in the NBR RAM. Throws
@@ -587,7 +590,8 @@ union cvmx_lapx_gen_int {
 	uint64_t edat_dbe                     : 1;
 	uint64_t nbr_sbe                      : 1;
 	uint64_t nbr_dbe                      : 1;
-	uint64_t reserved_18_63               : 46;
+	uint64_t xid_bad                      : 1;
+	uint64_t reserved_19_63               : 45;
 #endif
 	} s;
 	struct cvmx_lapx_gen_int_s            cn78xx;

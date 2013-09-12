@@ -43,7 +43,7 @@
  * Functions for NPI initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 87074 $<hr>
+ * <hr>$Revision: 88039 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -81,7 +81,6 @@ int __cvmx_helper_npi_probe(int interface)
 		   OCTEON_IS_MODEL(OCTEON_CN50XX) ||
 		   OCTEON_IS_MODEL(OCTEON_CN30XX))) {
 		/* The packet engines didn't exist before cn56xx pass 2 */
-		if (__cvmx_pko_queue_static_config.non_pknd.pko_queues_per_port_pci > 0)
 			return 4;
 	}
 	return 0;

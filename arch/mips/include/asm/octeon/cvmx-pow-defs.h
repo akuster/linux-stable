@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -710,30 +710,23 @@ typedef union cvmx_pow_ds_pc cvmx_pow_ds_pc_t;
  *
  * Contains the single and double error bits and the corresponding interrupt enables for the ECC-
  * protected POW index memory.  Also contains the syndrome value in the event of an ECC error.
- * Also contains the remote pointer error bit and interrupt enable.  RPE is set when the POW
- * detected
- * corruption on one or more of the input queue lists in L2/DRAM (POW's local copy of the tail
- * pointer
+ * Also contains the remote pointer error bit and interrupt enable.  RPE is set when the POW detected
+ * corruption on one or more of the input queue lists in L2/DRAM (POW's local copy of the tail pointer
  * for the L2/DRAM input queue did not match the last entry on the the list).   This is caused by
- * L2/DRAM corruption, and is generally a fatal error because it likely caused POW to load bad
- * work
+ * L2/DRAM corruption, and is generally a fatal error because it likely caused POW to load bad work
  * queue entries.
  * This register also contains the illegal operation error bits and the corresponding interrupt
  * enables as follows:
- * <0> Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP from PP in NULL_NULL state
- * <1> Received SWTAG/SWTAG_DESCH/DESCH/UPD_WQP from PP in NULL state
- * <2> Received SWTAG/SWTAG_FULL/SWTAG_DESCH/GET_WORK from PP with pending tag switch to ORDERED
- * or ATOMIC
- * <3> Received SWTAG/SWTAG_FULL/SWTAG_DESCH from PP with tag specified as NULL_NULL
- * <4> Received SWTAG_FULL/SWTAG_DESCH from PP with tag specified as NULL
- * <5> Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP/GET_WORK/NULL_RD from PP with GET_WORK
- * pending
- * <6> Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP/GET_WORK/NULL_RD from PP with NULL_RD
- * pending
- * <7> Received CLR_NSCHED from PP with SWTAG_DESCH/DESCH/CLR_NSCHED pending
- * <8> Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP/GET_WORK/NULL_RD from PP with
- * CLR_NSCHED pending
- * <9> Received illegal opcode
+ *  <0> Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP from PP in NULL_NULL state
+ *  <1> Received SWTAG/SWTAG_DESCH/DESCH/UPD_WQP from PP in NULL state
+ *  <2> Received SWTAG/SWTAG_FULL/SWTAG_DESCH/GET_WORK from PP with pending tag switch to ORDERED or ATOMIC
+ *  <3> Received SWTAG/SWTAG_FULL/SWTAG_DESCH from PP with tag specified as NULL_NULL
+ *  <4> Received SWTAG_FULL/SWTAG_DESCH from PP with tag specified as NULL
+ *  <5> Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP/GET_WORK/NULL_RD from PP with GET_WORK pending
+ *  <6> Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP/GET_WORK/NULL_RD from PP with NULL_RD pending
+ *  <7> Received CLR_NSCHED from PP with SWTAG_DESCH/DESCH/CLR_NSCHED pending
+ *  <8> Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP/GET_WORK/NULL_RD from PP with CLR_NSCHED pending
+ *  <9> Received illegal opcode
  * <10> Received ADD_WORK with tag specified as NULL_NULL
  * <11> Received DBG load from PP with DBG load pending
  * <12> Received CSR load from PP with CSR load pending
@@ -890,8 +883,7 @@ typedef union cvmx_pow_iq_com_cnt cvmx_pow_iq_com_cnt_t;
 /**
  * cvmx_pow_iq_int
  *
- * "Contains the bits (1 per QOS level) that can trigger the input queue interrupt.  An IQ_INT
- * bit
+ * "Contains the bits (1 per QOS level) that can trigger the input queue interrupt.  An IQ_INT bit
  * will be set if POW_IQ_CNT#QOS# changes and the resulting value is equal to POW_IQ_THR#QOS#."
  */
 union cvmx_pow_iq_int {
@@ -1051,33 +1043,26 @@ typedef union cvmx_pow_nos_cnt cvmx_pow_nos_cnt_t;
  * cvmx_pow_nw_tim
  *
  * Sets the minimum period for a new work request timeout.  Period is specified in n-1 notation
- * where the increment value is 1024 clock cycles.  Thus, a value of 0x0 in this register
- * translates
- * to 1024 cycles, 0x1 translates to 2048 cycles, 0x2 translates to 3072 cycles, etc...  Note:
- * the
- * maximum period for a new work request timeout is 2 times the minimum period.  Note: the new
- * work
+ * where the increment value is 1024 clock cycles.  Thus, a value of 0x0 in this register translates
+ * to 1024 cycles, 0x1 translates to 2048 cycles, 0x2 translates to 3072 cycles, etc...  Note: the
+ * maximum period for a new work request timeout is 2 times the minimum period.  Note: the new work
  * request timeout counter is reset when this register is written.
  * There are two new work request timeout cases:
  * - WAIT bit clear.  The new work request can timeout if the timer expires before the pre-fetch
- * engine has reached the end of all work queues.  This can occur if the executable work queue
- * entry is deep in the queue and the pre-fetch engine is subject to many resets (i.e. high
- * switch,
- * de-schedule, or new work load from other PP's).  Thus, it is possible for a PP to receive a
- * work
- * response with the NO_WORK bit set even though there was at least one executable entry in the
- * work queues.  The other (and typical) scenario for receiving a NO_WORK response with the WAIT
- * bit clear is that the pre-fetch engine has reached the end of all work queues without finding
- * executable work.
+ *   engine has reached the end of all work queues.  This can occur if the executable work queue
+ *   entry is deep in the queue and the pre-fetch engine is subject to many resets (i.e. high switch,
+ *   de-schedule, or new work load from other PP's).  Thus, it is possible for a PP to receive a work
+ *   response with the NO_WORK bit set even though there was at least one executable entry in the
+ *   work queues.  The other (and typical) scenario for receiving a NO_WORK response with the WAIT
+ *   bit clear is that the pre-fetch engine has reached the end of all work queues without finding
+ *   executable work.
  * - WAIT bit set.  The new work request can timeout if the timer expires before the pre-fetch
- * engine has found executable work.  In this case, the only scenario where the PP will receive a
- * work response with the NO_WORK bit set is if the timer expires.  Note: it is still possible
- * for
- * a PP to receive a NO_WORK response even though there was at least one executable entry in the
- * work queues.
+ *   engine has found executable work.  In this case, the only scenario where the PP will receive a
+ *   work response with the NO_WORK bit set is if the timer expires.  Note: it is still possible for
+ *   a PP to receive a NO_WORK response even though there was at least one executable entry in the
+ *   work queues.
  * In either case, it's important to note that switches and de-schedules are higher priority
- * operations that can cause the pre-fetch engine to reset.  Thus in a system with many switches
- * or
+ * operations that can cause the pre-fetch engine to reset.  Thus in a system with many switches or
  * de-schedules occuring, it's possible for the new work timer to expire (resulting in NO_WORK
  * responses) before the pre-fetch engine is able to get very deep into the work queues.
  */
@@ -1151,14 +1136,11 @@ typedef union cvmx_pow_pf_rst_msk cvmx_pow_pf_rst_msk_t;
  *
  * Selects which group(s) a PP belongs to.  A '1' in any bit position sets the PP's membership in
  * the corresponding group.  A value of 0x0 will prevent the PP from receiving new work.  Note:
- * disabled or non-existent PP's should have this field set to 0xffff (the reset value) in order
- * to
+ * disabled or non-existent PP's should have this field set to 0xffff (the reset value) in order to
  * maximize POW performance.
- * Also contains the QOS level priorities for each PP.  0x0 is highest priority, and 0x7 the
- * lowest.
+ * Also contains the QOS level priorities for each PP.  0x0 is highest priority, and 0x7 the lowest.
  * Setting the priority to 0xf will prevent that PP from receiving work from that QOS level.
- * Priority values 0x8 through 0xe are reserved and should not be used.  For a given PP,
- * priorities
+ * Priority values 0x8 through 0xe are reserved and should not be used.  For a given PP, priorities
  * should begin at 0x0 and remain contiguous throughout the range.
  */
 union cvmx_pow_pp_grp_mskx {
@@ -1219,17 +1201,12 @@ typedef union cvmx_pow_pp_grp_mskx cvmx_pow_pp_grp_mskx_t;
 /**
  * cvmx_pow_qos_rnd#
  *
- * Contains the round definitions for issuing new work.  Each round consists of 8 bits with each
- * bit
+ * Contains the round definitions for issuing new work.  Each round consists of 8 bits with each bit
  * corresponding to a QOS level.  There are 4 rounds contained in each register for a total of 32
- * rounds.  The issue logic traverses through the rounds sequentially (lowest round to highest
- * round)
- * in an attempt to find new work for each PP.  Within each round, the issue logic traverses
- * through
- * the QOS levels sequentially (highest QOS to lowest QOS) skipping over each QOS level with a
- * clear
- * bit in the round mask.  Note: setting a QOS level to all zeroes in all issue round registers
- * will
+ * rounds.  The issue logic traverses through the rounds sequentially (lowest round to highest round)
+ * in an attempt to find new work for each PP.  Within each round, the issue logic traverses through
+ * the QOS levels sequentially (highest QOS to lowest QOS) skipping over each QOS level with a clear
+ * bit in the round mask.  Note: setting a QOS level to all zeroes in all issue round registers will
  * prevent work from being issued from that QOS level.
  */
 union cvmx_pow_qos_rndx {
@@ -1272,13 +1249,10 @@ typedef union cvmx_pow_qos_rndx cvmx_pow_qos_rndx_t;
 /**
  * cvmx_pow_qos_thr#
  *
- * Contains the thresholds for allocating POW internal storage buffers.  If the number of
- * remaining
- * free buffers drops below the minimum threshold (MIN_THR) or the number of allocated buffers
- * for
+ * Contains the thresholds for allocating POW internal storage buffers.  If the number of remaining
+ * free buffers drops below the minimum threshold (MIN_THR) or the number of allocated buffers for
  * this QOS level rises above the maximum threshold (MAX_THR), future incoming work queue entries
- * will be buffered externally rather than internally.  This register also contains a read-only
- * count
+ * will be buffered externally rather than internally.  This register also contains a read-only count
  * of the current number of free buffers (FREE_CNT), the number of internal buffers currently
  * allocated to this QOS level (BUF_CNT), and the total number of buffers on the de-schedule list
  * (DES_CNT) (which is not the same as the total number of de-scheduled buffers).
@@ -1537,8 +1511,7 @@ typedef union cvmx_pow_wa_pcx cvmx_pow_wa_pcx_t;
  * cvmx_pow_wq_int
  *
  * Contains the bits (1 per group) that set work queue interrupts and are used to clear these
- * interrupts.  Also contains the input queue interrupt temporary disable bits (1 per group).
- * For
+ * interrupts.  Also contains the input queue interrupt temporary disable bits (1 per group). For
  * more information regarding this register, see the interrupt section.
  */
 union cvmx_pow_wq_int {
@@ -1768,8 +1741,7 @@ typedef union cvmx_pow_wq_int_cntx cvmx_pow_wq_int_cntx_t;
 /**
  * cvmx_pow_wq_int_pc
  *
- * Contains the threshold value for the work queue interrupt periodic counter and also a read-
- * only
+ * Contains the threshold value for the work queue interrupt periodic counter and also a read-only
  * copy of the periodic counter.  For more information regarding this register, see the interrupt
  * section.
  */
@@ -1816,8 +1788,7 @@ typedef union cvmx_pow_wq_int_pc cvmx_pow_wq_int_pc_t;
  * Contains the thresholds for enabling and setting work queue interrupts.  For more information
  * regarding this register, see the interrupt section.
  * Note: Up to 4 of the POW's internal storage buffers can be allocated for hardware use and are
- * therefore not available for incoming work queue entries.  Additionally, any PP that is not in
- * the
+ * therefore not available for incoming work queue entries.  Additionally, any PP that is not in the
  * NULL_NULL state consumes a buffer.  Thus in a 4 PP system, it is not advisable to set either
  * IQ_THR or DS_THR to greater than 512 - 4 - 4 = 504.  Doing so may prevent the interrupt from
  * ever triggering.

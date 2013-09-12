@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -486,7 +486,10 @@ union cvmx_rst_pp_power {
 	struct cvmx_rst_pp_power_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t gate                         : 48; /**< When set, corresponding core has voltage removed to save power. */
+	uint64_t gate                         : 48; /**< Powerdown Enable.  When both a bit and the corresponding CIU3_PP_RST bit are set, the core
+                                                         has voltage removed to save power.
+                                                         In typical operation these bits are setup during initialization and PP resets are
+                                                         controlled through CIU3_PP_RST. */
 #else
 	uint64_t gate                         : 48;
 	uint64_t reserved_48_63               : 16;

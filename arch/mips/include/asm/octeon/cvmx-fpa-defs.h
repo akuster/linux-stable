@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -1573,8 +1573,8 @@ union cvmx_fpa_gen_cfg {
                                                          0x1 = 32 pools, 640 FPF entries per pool.
                                                          0x2 = 16 pools, 1280 FPF entries per pool.
                                                          0x3 = Reserved */
-	uint64_t avg_en                       : 1;  /**< QoS Averaging enable. When set, compute average buffer levels. When clear, do not compute
-                                                         averages and save a few mW of power. */
+	uint64_t avg_en                       : 1;  /**< QoS averaging enable. When set, compute average buffer levels, and [LVL_DLY] must be non-
+                                                         zero. When clear, do not compute averages and save a few mW of power. */
 	uint64_t reserved_0_0                 : 1;
 #else
 	uint64_t reserved_0_0                 : 1;

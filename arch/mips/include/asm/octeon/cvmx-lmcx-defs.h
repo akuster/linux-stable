@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -3514,33 +3514,13 @@ union cvmx_lmcx_config {
 	uint64_t mode32b                      : 1;  /**< Always reads as 1 for 70xx devices, only 32b mode is supported. */
 	uint64_t scrz                         : 1;  /**< Hide LMC(0..0)_SCRAMBLE_CFG0 and LMC(0..0)_SCRAMBLE_CFG1 when set. */
 	uint64_t early_unload_d1_r1           : 1;  /**< When set, unload the PHY silo one cycle early for Rank 3 reads.
-                                                         The recommended EARLY_UNLOAD_D1_R1 value can be calculated after the final
-                                                         LMC*_RLEVEL_RANK3[BYTE*] values are selected (as part of read-leveling initialization).
-                                                         Then, determine the largest read-leveling setting for rank 3 (i.e. calculate
-                                                         maxset=MAX(LMC*_RLEVEL_RANK3[BYTEi]) across all i), then set EARLY_UNLOAD_D1_R1 when the
-                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D1_R1 = (maxset<1:0>
-                                                         !=3)). */
+                                                         The recommended EARLY_UNLOAD_D1_R1 value is 0. */
 	uint64_t early_unload_d1_r0           : 1;  /**< When set, unload the PHY silo one cycle early for Rank 2 reads.
-                                                         The recommended EARLY_UNLOAD_D1_RO value can be calculated after the final
-                                                         LMC*_RLEVEL_RANK2[BYTE*] values are selected (as part of read-leveling initialization).
-                                                         Then, determine the largest read-leveling setting for rank 2 (i.e. calculate
-                                                         maxset=MAX(LMC*_RLEVEL_RANK2[BYTEi]) across all i), then set EARLY_UNLOAD_D1_RO when the
-                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D1_RO = (maxset<1:0>
-                                                         !=3)). */
+                                                         The recommended EARLY_UNLOAD_D1_RO value is 0. */
 	uint64_t early_unload_d0_r1           : 1;  /**< When set, unload the PHY silo one cycle early for Rank 1 reads.
-                                                         The recommended EARLY_UNLOAD_D0_R1 value can be calculated after the final
-                                                         LMC*_RLEVEL_RANK1[BYTE*] values are selected (as part of read-leveling initialization).
-                                                         Then, determine the largest read-leveling setting for rank 1 (i.e. calculate
-                                                         maxset=MAX(LMC*_RLEVEL_RANK1[BYTEi]) across all i), then set EARLY_UNLOAD_D0_R1 when the
-                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D0_R1 = (maxset<1:0>
-                                                         !=3)). */
+                                                         The recommended EARLY_UNLOAD_D0_R1 value is 0. */
 	uint64_t early_unload_d0_r0           : 1;  /**< When set, unload the PHY silo one cycle early for Rank 0 reads.
-                                                         The recommended EARLY_UNLOAD_D0_R0 value can be calculated after the final
-                                                         LMC*_RLEVEL_RANK0[BYTE*] values are selected (as part of read-leveling initialization).
-                                                         Then, determine the largest read-leveling setting for rank 0 (i.e. calculate
-                                                         maxset=MAX(LMC*_RLEVEL_RANK0[BYTEi]) across all i), then set EARLY_UNLOAD_D0_R0 when the
-                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D0_R0 = (maxset<1:0>
-                                                         !=3)). */
+                                                         The recommended EARLY_UNLOAD_D0_R0 value is 0. */
 	uint64_t init_status                  : 4;  /**< Indicates status of initialization. INIT_STATUS[n] = 1 implies rank n has been
                                                          initialized.
                                                          Software must set necessary RANKMASK bits before executing the initialization sequence
@@ -3556,6 +3536,9 @@ union cvmx_lmcx_config {
                                                          DDR#_A<8> is swapped with DDR#_A<7>;
                                                          DDR#_A<6> is swapped with DDR#_A<5>;
                                                          DDR#_A<4> is swapped with DDR#_A<3>.
+                                                         For 70xx, MIRRMASK<3:2> MBZ.
+                                                         When RANK_ENA = 0, MIRRMASK<1> MBZ."
+                                                         INTERNAL:
                                                          In DDR4, a mirrored read/write operation has the following differences:
                                                          DDR#_BG<1> is swapped with DDR#_BG<0>;
                                                          DDR#_BA<1> is swapped with DDR#_BA<0>;
@@ -3567,11 +3550,11 @@ union cvmx_lmcx_config {
                                                          When RANK_ENA = 0, MIRRMASK<1> MBZ." */
 	uint64_t rankmask                     : 4;  /**< Mask to select rank to be leveled/initialized. To write-level/read-level/initialize rank
                                                          i, set RANKMASK< i>
-                                                         RANK_ENA = 1 RANK_ENA = 0
-                                                         RANKMASK<0> = DIMM0_CS0 DIMM0_CS0
-                                                         RANKMASK<1> = DIMM0_CS1 MBZ
-                                                         RANKMASK<2> = DIMM1_CS0 DIMM1_CS0
-                                                         RANKMASK<3> = DIMM1_CS1 MBZ
+                                                                       RANK_ENA = 1 RANK_ENA = 0
+                                                         RANKMASK<0> = DIMM0_CS0    DIMM0_CS0
+                                                         RANKMASK<1> = DIMM0_CS1    MBZ
+                                                         RANKMASK<2> = MBZ          MBZ
+                                                         RANKMASK<3> = MBZ          MBZ
                                                          For read/write leveling, each rank has to be leveled separately, so RANKMASK should only
                                                          have one bit set. RANKMASK is not used during self-refresh entry/exit and precharge power-
                                                          down entry/exit instruction sequences. For 70xx, RANKMASK<3:2> MBZ.  When RANK_ENA = 0,
@@ -3638,24 +3621,24 @@ union cvmx_lmcx_config {
                                                          Encoding used to determine which memory address bit position represents the low order DDR
                                                          ROW address. The processor's memory address<34:7> needs to be translated to DRAM addresses
                                                          (bnk,row,col,rank and DIMM) and that is a function of the following:
-                                                         Datapath width (64)
+                                                         Datapath width (32)
                                                          \# banks (8)
                                                          \# column bits of the memory part--specified indirectly by this register.
                                                          \# row bits of the memory part--specified indirectly by PBANK_LSB
                                                          \# ranks in a DIMM--specified by RANK_ENA
                                                          \# DIMMs in the system by the register below (PBANK_LSB).
-                                                         Col Address starts from mem_addr[3] for 64b (8Bytes) DQ width. ROW_LSB is mem_adr[15] for
-                                                         64b mode. Therefore, the ROW_LSB parameter should be set to 001 (64b).
+                                                         Col Address starts from mem_addr[2] for 32b (4Bytes) DQ width. ROW_LSB is mem_adr[14] for
+                                                         32b mode. Therefore, the ROW_LSB parameter should be set to 000 (32b).
                                                          Decoding for row_lsb:
                                                          Mem address  Mem address
-                                                         Value bit that is LSB Value bit that is LSB
+                                                         Value and corresponding bit that is LSB:
                                                          000 <14>. 100 <18>.
                                                          001 <15>. 101 <19>.
                                                          010 <16>. 110 <20>.
                                                          011 <17>. 111 Reserved.
                                                          For example, for a DIMM made of Samsung's K4B1G0846C-F7 1GB (16M * 8 bit * 8 bank) DDR3
-                                                         parts, the column address width = 10, so with 10b of col, 3b of bus, 3b of bank, ROW_LSB =
-                                                         16. So, row = mem_adr<29:16>.
+                                                         parts, the column address width = 10, so with 10b of col, 2b of bus, 3b of bank, ROW_LSB =
+                                                         15. So, row = mem_adr<28:15>, and ROW_LSB parameter should be set to 001.
                                                          Refer to Cache-block Read Transaction Example." */
 	uint64_t ecc_ena                      : 1;  /**< ECC enable. When set, enables the 8b ECC check/correct logic. Should be 1 when used with
                                                          DIMMs with ECC; 0, otherwise.
@@ -6301,7 +6284,15 @@ union cvmx_lmcx_ext_config {
 	uint64_t u64;
 	struct cvmx_lmcx_ext_config_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_21_63               : 43;
+	uint64_t reserved_29_63               : 35;
+	uint64_t cal_ena                      : 1;  /**< Set to cause LMC to operate in CAL mode.  DRAM mode registers must first be
+                                                         programmed into CAL mode, then set CAL_ENABLE. */
+	uint64_t reserved_27_27               : 1;
+	uint64_t par_include_a17              : 1;  /**< If set, include A17 in parity calculations in DDR4 mode. */
+	uint64_t par_include_bg1              : 1;  /**< If set, include BG1 in parity calculations in DDR4 mode. */
+	uint64_t gen_par                      : 1;  /**< Enable parity generation in the DRAM commands, must be set prior to enabling
+                                                         parity in register or DRAM devices */
+	uint64_t reserved_21_23               : 3;
 	uint64_t vrefint_seq_deskew           : 1;  /**< Personality bit to change the operation of what is normally the internal
                                                          vref training sequence into the deskew training sequence. */
 	uint64_t read_ena_bprch               : 1;  /**< Enable pad receiver one cycle longer than normal during read operations. */
@@ -6334,10 +6325,53 @@ union cvmx_lmcx_ext_config {
 	uint64_t read_ena_fprch               : 1;
 	uint64_t read_ena_bprch               : 1;
 	uint64_t vrefint_seq_deskew           : 1;
-	uint64_t reserved_21_63               : 43;
+	uint64_t reserved_21_23               : 3;
+	uint64_t gen_par                      : 1;
+	uint64_t par_include_bg1              : 1;
+	uint64_t par_include_a17              : 1;
+	uint64_t reserved_27_27               : 1;
+	uint64_t cal_ena                      : 1;
+	uint64_t reserved_29_63               : 35;
 #endif
 	} s;
-	struct cvmx_lmcx_ext_config_s         cn70xx;
+	struct cvmx_lmcx_ext_config_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_21_63               : 43;
+	uint64_t vrefint_seq_deskew           : 1;  /**< Personality bit to change the operation of what is normally the internal
+                                                         vref training sequence into the deskew training sequence. */
+	uint64_t read_ena_bprch               : 1;  /**< Enable pad receiver one cycle longer than normal during read operations. */
+	uint64_t read_ena_fprch               : 1;  /**< Enable pad receiver starting one cycle earlier than normal during read operations. */
+	uint64_t slot_ctl_reset_force         : 1;  /**< Write 1 to reset the slot-control override for all slot-control registers. After writing a
+                                                         1 to this bit, slot-control registers will update with changes made to other timing-
+                                                         control registers. This is a one-shot operation; it automatically returns to 0 after a
+                                                         write to 1. */
+	uint64_t ref_int_lsbs                 : 9;  /**< These are the 9 LSBs for the refresh interval value, default to 0, but can be set to
+                                                         a non-zero value to get a more precise refresh interval. */
+	uint64_t drive_ena_bprch              : 1;  /**< Drive DQx for one cycle longer than normal during write operations. */
+	uint64_t drive_ena_fprch              : 1;  /**< Drive DQX starting one cycle earlier than normal during write operations. */
+	uint64_t dlcram_flip_synd             : 2;  /**< Reserved. INTERNAL: DLC RAM flip syndrome control bits. */
+	uint64_t dlcram_cor_dis               : 1;  /**< Reserved. INTERNAL: DLC RAM correction disable control. */
+	uint64_t dlc_nxm_rd                   : 1;  /**< When set, enable NXM events for DLC reads.  Default is disabled, but
+                                                         could be useful for debug of DLC/DFA accesses. */
+	uint64_t l2c_nxm_rd                   : 1;  /**< When set, enable NXM events for L2C read operations. INTERNAL: Default is disabled as L2C
+                                                         NXM read operations are possible and expected during normal operation. */
+	uint64_t l2c_nxm_wr                   : 1;  /**< When set, enable NXM events for L2C write operations. */
+#else
+	uint64_t l2c_nxm_wr                   : 1;
+	uint64_t l2c_nxm_rd                   : 1;
+	uint64_t dlc_nxm_rd                   : 1;
+	uint64_t dlcram_cor_dis               : 1;
+	uint64_t dlcram_flip_synd             : 2;
+	uint64_t drive_ena_fprch              : 1;
+	uint64_t drive_ena_bprch              : 1;
+	uint64_t ref_int_lsbs                 : 9;
+	uint64_t slot_ctl_reset_force         : 1;
+	uint64_t read_ena_fprch               : 1;
+	uint64_t read_ena_bprch               : 1;
+	uint64_t vrefint_seq_deskew           : 1;
+	uint64_t reserved_21_63               : 43;
+#endif
+	} cn70xx;
 	struct cvmx_lmcx_ext_config_s         cn78xx;
 };
 typedef union cvmx_lmcx_ext_config cvmx_lmcx_ext_config_t;

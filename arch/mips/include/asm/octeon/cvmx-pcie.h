@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 73845 $<hr>
+ * <hr>$Revision: 88161 $<hr>
  */
 
 #ifndef __CVMX_PCIE_H__
@@ -53,6 +53,15 @@
 extern "C" {
 /* *INDENT-ON* */
 #endif
+
+#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+#include <asm/octeon/cvmx.h>
+#else
+#include <cvmx.h>
+#endif
+
+#define CVMX_PCIE_MAX_PORTS	3
+#define CVMX_PCIE_PORTS		(OCTEON_IS_OCTEON3() ? CVMX_PCIE_MAX_PORTS : 2)
 
 /*
  * The physical memory base mapped by BAR1.  256MB at the end of the
