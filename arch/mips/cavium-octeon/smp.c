@@ -22,9 +22,9 @@
 #include <asm/octeon/cvmx-app-hotplug.h>
 #include <asm/octeon/cvmx-spinlock.h>
 
-volatile unsigned long octeon_processor_boot = 0xff;
-volatile unsigned long octeon_processor_sp;
-volatile unsigned long octeon_processor_gp;
+unsigned long octeon_processor_boot = 0xff;
+__cpuinitdata unsigned long octeon_processor_sp;
+__cpuinitdata unsigned long octeon_processor_gp;
 
 #ifdef CONFIG_HOTPLUG_CPU
 static uint32_t octeon_hotplug_entry_addr;
@@ -177,10 +177,6 @@ static void octeon_smp_hotplug_setup(void)
 
 #ifdef CONFIG_HOTPLUG_CPU
 
-#ifndef	CVMX_HOTPLUG_MAGIC_VERSION
-#define CVMX_HOTPLUG_MAGIC_VERSION      0x1abe1000UL
-#endif
-
 /*
  * Initialize the content of struct * cvmx_app_hotplug_global
  * if it is allocated, atomically.
@@ -286,6 +282,7 @@ static void octeon_smp_setup(void)
 	/* Validate magic number */
 	if (hgp->magic_version != CVMX_HOTPLUG_MAGIC_VERSION) {
 		pr_err("Cavium Hotplug: data record invalid\n");
+		octeon_hotplug_entry_addr = 0;
 		return;
 	}
 
@@ -304,7 +301,7 @@ static void octeon_smp_setup(void)
  * Firmware CPU startup hook
  *
  */
-static void octeon_boot_secondary(int cpu, struct task_struct *idle)
+static void __cpuinit octeon_boot_secondary(int cpu, struct task_struct *idle)
 {
 	int count;
 
@@ -313,7 +310,13 @@ static void octeon_boot_secondary(int cpu, struct task_struct *idle)
 
 	octeon_processor_sp = __KSTK_TOS(idle);
 	octeon_processor_gp = (unsigned long)(task_thread_info(idle));
+	/* This barrier is needed to guarangee the following is done last */
+	mb();
+
+	/* Indicate which core is being brought up out of pan */
 	octeon_processor_boot = cpu_logical_map(cpu);
+
+	/* Push the last update out before polling */
 	mb();
 
 	count = 10000;
@@ -321,6 +324,7 @@ static void octeon_boot_secondary(int cpu, struct task_struct *idle)
 		/* Waiting for processor to get the SP and GP */
 		udelay(1);
 		count--;
+		mb();
 	}
 	if (count == 0)
 		pr_err("Secondary boot timeout\n");
@@ -510,16 +514,33 @@ static void octeon_cpu_die(unsigned int cpu)
 void play_dead(void)
 {
 	int cpu = cpu_number_map(cvmx_get_core_num());
+	register unsigned long v;
+	v = ~0ULL;
 
 	idle_task_exit();
-	octeon_processor_boot = 0xff;
+	octeon_processor_boot = v;
 	per_cpu(cpu_state, cpu) = CPU_DEAD;
 
 	wmb(); /* nudge writeback */
 
-	while (1)	/* core will be reset here */
-		;
+#ifdef	CONFIG_CPU_LITTLE_ENDIAN
+	/* Switch CPU core back to Big Endian mode */
+	CVMX_MF_CVM_CTL(v);
+	v &= ~2;
+	CVMX_MT_CVM_CTL(v);
+	mb();
+#endif	/*CONFIG_CPU_LITTLE_ENDIAN*/
+
+	while (1) {	/* core will be reset here */
+		asm volatile ("nop\n wait\n nop\n");
+	}
 }
+
+#ifdef	CONFIG_CPU_LITTLE_ENDIAN
+# ifdef __BIG_ENDIAN_BITFIELD
+#   error "Endian Configuration Mismatch"
+# endif
+#endif
 
 static int octeon_update_boot_vector(unsigned int cpu)
 {
@@ -543,14 +564,18 @@ static int octeon_update_boot_vector(unsigned int cpu)
 		return -EINVAL;
 	}
 
-	cvmx_spinlock_lock(&hgp->hotplug_global_lock);
 	/*
 	 * A core being brought up must be present either in the boot
 	 * core_mask or in the hotplug available coremask
 	 */
 	if (boot_core_mask & (1 << coreid)) {
 		boot_core_mask &= ~(1 << coreid);
-	} else if (!cvmx_coremask_is_core_set(&hgp->avail_coremask, coreid)) {
+		/* CPU in boot core mask needs no further handling */
+		return 0;
+	}
+
+	cvmx_spinlock_lock(&hgp->hotplug_global_lock);
+	if (!cvmx_coremask_is_core_set(&hgp->avail_coremask, coreid)) {
 		cvmx_spinlock_unlock(&hgp->hotplug_global_lock);
 		pr_warn("Cavium Hotplog: cpu %u core %u is not available\n",
 			cpu, coreid);
@@ -579,7 +604,7 @@ static int octeon_cpu_callback(struct notifier_block *nfb,
 	unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned long)hcpu;
-	int ret;
+	int ret = 0;
 
 	switch (action) {
 	case CPU_UP_PREPARE_FROZEN:
