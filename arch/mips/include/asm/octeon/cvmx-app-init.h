@@ -41,7 +41,7 @@
  * @file
  * Header file for simple executive application initialization.  This defines
  * part of the ABI between the bootloader and the application.
- * <hr>$Revision: 86527 $<hr>
+ * <hr>$Revision: 88074 $<hr>
  *
  */
 
@@ -272,6 +272,7 @@ enum cvmx_board_types_enum {
 	CVMX_BOARD_TYPE_CNF71XX_REF = 53,
 	CVMX_BOARD_TYPE_MOONSHOT = 54,
 	CVMX_BOARD_TYPE_EVB7000_SFF = 55,
+	CVMX_BOARD_TYPE_EVB7000 = 56,
 	CVMX_BOARD_TYPE_MAX,
 	/* NOTE:  256-257 are being used by a customer. */
 
@@ -395,6 +396,7 @@ static inline const char *cvmx_board_type_to_string(enum cvmx_board_types_enum t
 		    ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_CNF71XX_REF)
 		    ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_MOONSHOT)
 		    ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_EVB7000_SFF)
+		    ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_EVB7000)
 		    ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_MAX)
 
 		    /* Customer boards listed here */

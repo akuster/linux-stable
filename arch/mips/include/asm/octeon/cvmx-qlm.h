@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 87408 $<hr>
+ * <hr>$Revision: 87866 $<hr>
  */
 
 #ifndef __CVMX_QLM_H__
@@ -169,6 +169,7 @@ enum cvmx_qlm_mode {
 	CVMX_QLM_MODE_PCIE,	/* gen2 / gen1 */
 	CVMX_QLM_MODE_PCIE_1X2,	/* 1x2 gen2 / gen1 */
 	CVMX_QLM_MODE_PCIE_2X1,	/* 2x1 gen2 / gen1 */
+	CVMX_QLM_MODE_PCIE_1X1,	/* 1x1 gen2 / gen1 */
 	CVMX_QLM_MODE_SRIO_1X4,	/* 1x4 short / long */
 	CVMX_QLM_MODE_SRIO_2X2,	/* 2x2 short / long */
 	CVMX_QLM_MODE_SRIO_4X1,	/* 4x1 short / long */
@@ -183,6 +184,7 @@ enum cvmx_qlm_mode {
 	CVMX_QLM_MODE_DISABLED_QSGMII,
 	CVMX_QLM_MODE_QSGMII_SGMII,
 	CVMX_QLM_MODE_RXAUI_1X2,
+	CVMX_QLM_MODE_SATA_2X1,
 };
 
 enum cvmx_gmx_inf_mode {
@@ -190,6 +192,27 @@ enum cvmx_gmx_inf_mode {
 	CVMX_GMX_INF_MODE_SGMII = 1,     /* Other interface can be SGMII or QSGMII */
 	CVMX_GMX_INF_MODE_QSGMII = 2,    /* Other interface can be SGMII or QSGMII */
 	CVMX_GMX_INF_MODE_RXAUI = 3,     /* Only interface 0, interface 1 must be DISABLED */
+};
+
+/**
+ * These apply to DLM1 and DLM2 if its not in SATA mode
+ * Manual refers to lanes as follows:
+ *  DML 0 lane 0 == GSER0 lane 0
+ *  DML 0 lane 1 == GSER0 lane 1
+ *  DML 1 lane 2 == GSER1 lane 0
+ *  DML 1 lane 3 == GSER1 lane 1
+ *  DML 2 lane 4 == GSER2 lane 0
+ *  DML 2 lane 5 == GSER2 lane 1
+ */
+enum cvmx_pemx_cfg_mode {
+	CVMX_PEM_MD_GEN2_2LANE = 0,	/* Valid for PEM0(DLM1), PEM1(DLM2) */
+	CVMX_PEM_MD_GEN2_1LANE = 1,	/* Valid for PEM0(DLM1.0), PEM1(DLM1.1,DLM2.0), PEM2(DLM2.1) */
+	CVMX_PEM_MD_GEN2_4LANE = 2,	/* Valid for PEM0(DLM1-2) */
+	/* Reserved */
+	CVMX_PEM_MD_GEN1_2LANE = 4,	/* Valid for PEM0(DLM1), PEM1(DLM2) */
+	CVMX_PEM_MD_GEN1_1LANE = 5,	/* Valid for PEM0(DLM1.0), PEM1(DLM1.1,DLM2.0), PEM2(DLM2.1) */
+	CVMX_PEM_MD_GEN1_4LANE = 6,	/* Valid for PEM0(DLM1-2) */
+	/* Reserved */
 };
 
 /*

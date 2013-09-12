@@ -60,7 +60,7 @@
  * provide future compatibility if more cores are added to future processors
  * or more nodes are supported.
  *
- * <hr>$Revision: 87283 $<hr>
+ * <hr>$Revision: 87873 $<hr>
  *
  */
 
@@ -615,22 +615,16 @@ cvmx_coremask_is_core_first_core(const cvmx_coremask_t *pcm,
 	return (__builtin_ffs(pcm->coremask_bitmap[n]) == core + 1);
 }
 
-#if	0	//Removed in favor of cvmx_is_init_core()
-/**
- * Test to see if current core is first core in coremask.
- *
- * @param[in]  pcm  pointer to the coremask to test against
- *
- * @return  1 if current core is first core in the coremask, 0 otherwise
- *
+/*
+ * NOTE:
+ * cvmx_coremask_is_first_core() was retired due to improper usage.
+ * For inquiring about the current core being the initializing
+ * core for an application, use cvmx_is_init_core().
+ * For simply inquring if the current core is numerically
+ * lowest in a given mask, use :
+ * 	cvmx_coremask_is_core_first_core( pcm, dvmx_get_core_num())
  */
-static inline int
-cvmx_coremask_is_first_core(const cvmx_coremask_t *pcm)
-{
-	return cvmx_coremask_is_core_first_core(pcm,
-						cvmx_get_core_num());
-}
-#endif
+
 /**
  * Returns the number of 1 bits set in a coremask
  *

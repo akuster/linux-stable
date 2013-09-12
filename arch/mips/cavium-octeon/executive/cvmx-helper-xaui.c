@@ -43,7 +43,7 @@
  * Functions for XAUI initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 87025 $<hr>
+ * <hr>$Revision: 88172 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -547,7 +547,7 @@ int __cvmx_helper_bgx_xaui_probe(int interface)
 	if (cvmx_qlm_get_mode(qlm) != CVMX_QLM_MODE_XAUI)
 		return 0;
 
-	return __cvmx_helper_sgmii_enumerate(interface);
+	return __cvmx_helper_xaui_enumerate(interface);
 }
 
 /**

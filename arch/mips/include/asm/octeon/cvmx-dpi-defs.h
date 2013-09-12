@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -284,6 +284,17 @@ static inline uint64_t CVMX_DPI_DMA_PPX_CNT(unsigned long offset)
 	}
 	return CVMX_ADD_IO_SEG(0x0001DF0000000B00ull) + (offset) * 8;
 }
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_DPI_DMA_PP_INT CVMX_DPI_DMA_PP_INT_FUNC()
+static inline uint64_t CVMX_DPI_DMA_PP_INT_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_DPI_DMA_PP_INT not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001DF0000000038ull);
+}
+#else
+#define CVMX_DPI_DMA_PP_INT (CVMX_ADD_IO_SEG(0x0001DF0000000038ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_DPI_ECC_CTL CVMX_DPI_ECC_CTL_FUNC()
@@ -1556,6 +1567,24 @@ union cvmx_dpi_dma_ppx_cnt {
 	struct cvmx_dpi_dma_ppx_cnt_s         cnf71xx;
 };
 typedef union cvmx_dpi_dma_ppx_cnt cvmx_dpi_dma_ppx_cnt_t;
+
+/**
+ * cvmx_dpi_dma_pp_int
+ */
+union cvmx_dpi_dma_pp_int {
+	uint64_t u64;
+	struct cvmx_dpi_dma_pp_int_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t complete                     : 48; /**< DPI DMA per-core instruction completion interrupt.  See DPI_DMA_PP(0..47)_CNT. */
+#else
+	uint64_t complete                     : 48;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_dpi_dma_pp_int_s          cn78xx;
+};
+typedef union cvmx_dpi_dma_pp_int cvmx_dpi_dma_pp_int_t;
 
 /**
  * cvmx_dpi_ecc_ctl

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -315,6 +315,17 @@ static inline uint64_t CVMX_CIU3_PP_RST_FUNC(void)
 }
 #else
 #define CVMX_CIU3_PP_RST (CVMX_ADD_IO_SEG(0x0001010000000100ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_CIU3_PP_RST_PENDING CVMX_CIU3_PP_RST_PENDING_FUNC()
+static inline uint64_t CVMX_CIU3_PP_RST_PENDING_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_CIU3_PP_RST_PENDING not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001010000000108ull);
+}
+#else
+#define CVMX_CIU3_PP_RST_PENDING (CVMX_ADD_IO_SEG(0x0001010000000108ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_CIU3_SISCX(unsigned long offset)
@@ -923,8 +934,9 @@ typedef union cvmx_ciu3_pp_pokex cvmx_ciu3_pp_pokex_t;
  * cvmx_ciu3_pp_rst
  *
  * This register contains the reset control for each core. A 1 holds a core in reset, 0 release
- * from reset. It resets to all ones when REMOTE_BOOT is enabled, all ones excluding bit 0 clear
- * otherwise.
+ * from reset. It resets to all ones when REMOTE_BOOT is enabled or all ones excluding bit 0 when
+ * REMOTE_BOOT is disabled. Writes to this register should occur only if the CIU3_PP_RST_PENDING
+ * register is cleared.
  */
 union cvmx_ciu3_pp_rst {
 	uint64_t u64;
@@ -943,6 +955,30 @@ union cvmx_ciu3_pp_rst {
 	struct cvmx_ciu3_pp_rst_s             cn78xx;
 };
 typedef union cvmx_ciu3_pp_rst cvmx_ciu3_pp_rst_t;
+
+/**
+ * cvmx_ciu3_pp_rst_pending
+ *
+ * This register contains the reset status for each core.
+ *
+ */
+union cvmx_ciu3_pp_rst_pending {
+	uint64_t u64;
+	struct cvmx_ciu3_pp_rst_pending_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t pend                         : 48; /**< Set if corresponding core is waiting to change its reset state. Normally a reset change
+                                                         occurs immediately but if RST_PP_POWER[GATE] bit is set and the core is released from
+                                                         reset a delay of 64K core clocks between each core reset will apply to satisfy power
+                                                         management. */
+#else
+	uint64_t pend                         : 48;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_ciu3_pp_rst_pending_s     cn78xx;
+};
+typedef union cvmx_ciu3_pp_rst_pending cvmx_ciu3_pp_rst_pending_t;
 
 /**
  * cvmx_ciu3_sisc#

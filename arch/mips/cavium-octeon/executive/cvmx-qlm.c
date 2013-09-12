@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 87438 $<hr>
+ * <hr>$Revision: 88225 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -55,6 +55,7 @@
 #include <asm/octeon/cvmx-sriox-defs.h>
 #include <asm/octeon/cvmx-sriomaintx-defs.h>
 #include <asm/octeon/cvmx-pciercx-defs.h>
+#include <asm/octeon/cvmx-pemx-defs.h>
 #else
 #include "cvmx.h"
 #include "cvmx-bootmem.h"
@@ -772,6 +773,64 @@ static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn70xx(int qlm)
 				return CVMX_QLM_MODE_DISABLED;
 			}
 		}
+	case 1:  /* Sata / pem0 */
+		{
+			union cvmx_gserx_sata_cfg sata_cfg;
+			union cvmx_pemx_cfg pem0_cfg;
+
+			sata_cfg.u64 = cvmx_read_csr(CVMX_GSERX_SATA_CFG(0));
+			pem0_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(0));
+
+			switch(pem0_cfg.cn70xx.md) {
+			case CVMX_PEM_MD_GEN2_2LANE:
+			case CVMX_PEM_MD_GEN1_2LANE:
+				return CVMX_QLM_MODE_PCIE_1X2;
+			case CVMX_PEM_MD_GEN2_1LANE:
+			case CVMX_PEM_MD_GEN1_1LANE:
+				if (sata_cfg.s.sata_en)
+					/* Both PEM0 and PEM1 */
+					return CVMX_QLM_MODE_PCIE_2X1;
+				else
+					/* Only PEM0 */
+					return CVMX_QLM_MODE_PCIE_1X1;
+			case CVMX_PEM_MD_GEN2_4LANE:
+			case CVMX_PEM_MD_GEN1_4LANE:
+				return CVMX_QLM_MODE_PCIE;
+			default:
+				return CVMX_QLM_MODE_DISABLED;
+			}
+		}
+	case 2:
+		{
+			union cvmx_gserx_sata_cfg sata_cfg;
+			union cvmx_pemx_cfg pem0_cfg, pem1_cfg, pem2_cfg;
+
+			sata_cfg.u64 = cvmx_read_csr(CVMX_GSERX_SATA_CFG(0));
+			pem0_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(0));
+			pem1_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(1));
+			pem2_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(2));
+
+			if (sata_cfg.s.sata_en)
+				return CVMX_QLM_MODE_SATA_2X1;
+			if (pem0_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_4LANE
+			    || pem0_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_4LANE)
+				return CVMX_QLM_MODE_PCIE;
+			if (pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_2LANE
+			    || pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_2LANE)
+				return CVMX_QLM_MODE_PCIE_1X2;
+			if (pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_1LANE
+			    || pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE) {
+				if (pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_1LANE
+				    || pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE)
+					return CVMX_QLM_MODE_PCIE_2X1;
+				else
+					return CVMX_QLM_MODE_PCIE_1X1;
+			}
+			if (pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_1LANE
+			    || pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE)
+				return CVMX_QLM_MODE_PCIE_2X1;
+			return CVMX_QLM_MODE_DISABLED;
+		}
 	default:
 		return CVMX_QLM_MODE_DISABLED;
 	}
@@ -813,7 +872,7 @@ enum cvmx_qlm_mode cvmx_qlm_get_dlm_mode(int qlm, int interface)
 			return CVMX_QLM_MODE_DISABLED;
 		}
 	default:
-		return CVMX_QLM_MODE_DISABLED;
+		return qlm_mode;
 	}
 }
 

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -474,7 +474,7 @@ static inline uint64_t CVMX_OCX_RLKX_ENABLES(unsigned long offset)
 static inline uint64_t CVMX_OCX_RLKX_FIFOX_CNT(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 12)) && ((block_id <= 2))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 13)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCX_RLKX_FIFOX_CNT(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180011018100ull) + (((offset) & 15) + ((block_id) & 3) * 0x400ull) * 8;
 }
@@ -518,7 +518,7 @@ static inline uint64_t CVMX_OCX_TLKX_ECC_CTL(unsigned long offset)
 static inline uint64_t CVMX_OCX_TLKX_FIFOX_CNT(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 12)) && ((block_id <= 2))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 13)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCX_TLKX_FIFOX_CNT(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180011010100ull) + (((offset) & 15) + ((block_id) & 3) * 0x400ull) * 8;
 }
@@ -540,7 +540,7 @@ static inline uint64_t CVMX_OCX_TLKX_LNK_DATA(unsigned long offset)
 static inline uint64_t CVMX_OCX_TLKX_LNK_VCX_CNT(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 12)) && ((block_id <= 2))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 13)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCX_TLKX_LNK_VCX_CNT(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180011010200ull) + (((offset) & 15) + ((block_id) & 3) * 0x400ull) * 8;
 }
@@ -562,7 +562,7 @@ static inline uint64_t CVMX_OCX_TLKX_MCD_CTL(unsigned long offset)
 static inline uint64_t CVMX_OCX_TLKX_RTN_VCX_CNT(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 12)) && ((block_id <= 2))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 13)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCX_TLKX_RTN_VCX_CNT(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180011010300ull) + (((offset) & 15) + ((block_id) & 3) * 0x400ull) * 8;
 }
@@ -683,7 +683,7 @@ static inline uint64_t CVMX_OCX_TLKX_STAT_VCX_CMD(unsigned long offset, unsigned
 static inline uint64_t CVMX_OCX_TLKX_STAT_VCX_CON(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 12)) && ((block_id <= 2))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 13)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCX_TLKX_STAT_VCX_CON(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180011010580ull) + (((offset) & 15) + ((block_id) & 3) * 0x400ull) * 8;
 }
@@ -694,7 +694,7 @@ static inline uint64_t CVMX_OCX_TLKX_STAT_VCX_CON(unsigned long offset, unsigned
 static inline uint64_t CVMX_OCX_TLKX_STAT_VCX_PKT(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 12)) && ((block_id <= 2))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 13)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCX_TLKX_STAT_VCX_PKT(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180011010500ull) + (((offset) & 15) + ((block_id) & 3) * 0x400ull) * 8;
 }
@@ -825,7 +825,7 @@ union cvmx_ocx_com_linkx_ctl {
                                                          software wishes to manage deassertion of DROP. */
 	uint64_t drop                         : 1;  /**< Drop all requests on given link. Typically set by hardware when link has failed or been
                                                          reinitialized. Cleared by software once pending link traffic is removed. (See
-                                                         OCX_TLK[0..2]_FIFO[0..12]_CNT.) */
+                                                         OCX_TLK[0..2]_FIFO[0..13]_CNT.) */
 	uint64_t up                           : 1;  /**< Link is operating normally. */
 	uint64_t valid                        : 1;  /**< Link has valid lanes and is exchanging information. */
 	uint64_t id                           : 2;  /**< This ID is used to sort traffic by link. If more than one link has the same value, the
@@ -926,14 +926,21 @@ union cvmx_ocx_com_node {
 	uint64_t fixed_pin                    : 1;  /**< The current value of the OCI_FIXED_ID pin. */
 	uint64_t fixed                        : 1;  /**< ID Valid associated with the chip. This register is used by the link initialization
                                                          software to help assign IDs and is transmitted over OCI. The FIXED field set during a cold
-                                                         reset to the value of the OCI_FIXED_ID pin. The value should also be readable in the
-                                                         OCX_LNE(0..23)_CFG[RX_META_DAT] on the corresponding link of the partner. */
+                                                         reset to the value of the OCI_FIXED_ID pin. The value is also be readable in the
+                                                         OCX_LNE(0..23)_STS_MSG[TX_META_DAT[2]] for each lane.  The FIXED pin of the link partner
+                                                         can
+                                                         be examined by locally reading the OCX_LNE(0..23)_STS_MSG[RX_META_DAT[2]] on each valid
+                                                         lane
+                                                         or remotely reading the OCX_COM_NODE[FIXED] on the link partner. */
 	uint64_t id                           : 2;  /**< Node ID associated with the chip. This register is used by the rest of the chip to
                                                          determine what traffic is transmitted over OCI. The value should not match the
                                                          OCX_COM_LINK(0..2)_CTL[ID] of any active link. The ID field is set during a cold reset to
-                                                         the value of the OCI_NODE_ID pins. The value should be readable in the
-                                                         OCX_LNE(0..23)_CFG[RX_META_DAT] on the corresponding link of the partner. It can be
-                                                         changed as long as no traffic is being transferred. */
+                                                         the value of the OCI_NODE_ID pins. The value is also be readable in the
+                                                         OCX_LNE(0..23)_STS_MSG[TX_META_DAT[1:0]] for each lane.  The FIXED pin of the link partner
+                                                         can
+                                                         be examined by locally reading the OCX_LNE(0..23)_STS_MSG[RX_META_DAT[1:0]] on each valid
+                                                         lane
+                                                         or remotely reading the OCX_COM_NODE[ID] on the link partner. */
 #else
 	uint64_t id                           : 2;
 	uint64_t fixed                        : 1;
@@ -1827,7 +1834,8 @@ union cvmx_ocx_rlkx_fifox_cnt {
 	struct cvmx_ocx_rlkx_fifox_cnt_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t count                        : 16; /**< RX FIFO count of 64-bit words to send to core. */
+	uint64_t count                        : 16; /**< RX FIFO count of 64-bit words to send to core.  VC13 traffic is used immediately so
+                                                         the FIFO count is always 0. (see OCX_RLK(0..2)_LNK_DATA) */
 #else
 	uint64_t count                        : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1953,7 +1961,7 @@ union cvmx_ocx_tlkx_lnk_vcx_cnt {
 	struct cvmx_ocx_tlkx_lnk_vcx_cnt_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t count                        : 16; /**< Link VC credits available for use. */
+	uint64_t count                        : 16; /**< Link VC credits available for use.  VC13 always reads 1 since credits are not required. */
 #else
 	uint64_t count                        : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1965,6 +1973,13 @@ typedef union cvmx_ocx_tlkx_lnk_vcx_cnt cvmx_ocx_tlkx_lnk_vcx_cnt_t;
 
 /**
  * cvmx_ocx_tlk#_mcd_ctl
+ *
+ * This register controls which MCD bits are transported via the link. For proper operation
+ * only one link must be enabled in both directions between each pair of link partners.
+ * Internal:  If N chips are connected over OCX, N-1 links should have MCD enabled.
+ * A single "central" chip should connect all MCD buses and have a single MCD enabled link
+ * to each of the other chips.  No MCD enabled links should connect between chips that don't
+ * include the "central" chip.
  */
 union cvmx_ocx_tlkx_mcd_ctl {
 	uint64_t u64;
@@ -1989,7 +2004,7 @@ union cvmx_ocx_tlkx_rtn_vcx_cnt {
 	struct cvmx_ocx_tlkx_rtn_vcx_cnt_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t count                        : 16; /**< Link VC credits to return. */
+	uint64_t count                        : 16; /**< Link VC credits to return.  VC13 always reads 0 since credits are never returned. */
 #else
 	uint64_t count                        : 16;
 	uint64_t reserved_16_63               : 48;
@@ -2152,8 +2167,9 @@ union cvmx_ocx_tlkx_stat_vcx_cmd {
 	uint64_t u64;
 	struct cvmx_ocx_tlkx_stat_vcx_cmd_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t count                        : 64; /**< Number of blocks received with an error over the OCI link while
-                                                         OCX_TLK(a)_STAT_CTL[ENABLE] has been set. */
+	uint64_t count                        : 64; /**< Number of commands on this VC that have been transfered over the OCI link while
+                                                         OCX_TLK(a)_STAT_CTL[ENABLE] has been set.  For VCs 6 thru 13 the number of commands is
+                                                         equal to the number of packets. */
 #else
 	uint64_t count                        : 64;
 #endif
@@ -2170,7 +2186,8 @@ union cvmx_ocx_tlkx_stat_vcx_con {
 	struct cvmx_ocx_tlkx_stat_vcx_con_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t count                        : 64; /**< Number of conflicts on this VC while OCX_TLK(a)_STAT_CTL[ENABLE] has been set. A conflict
-                                                         is indicated when a VC has one or more packets to send and no link credits are available. */
+                                                         is indicated when a VC has one or more packets to send and no link credits are available.
+                                                         VC13 does not require credits so no conflicts are ever indicated (ie. reads 0). */
 #else
 	uint64_t count                        : 64;
 #endif

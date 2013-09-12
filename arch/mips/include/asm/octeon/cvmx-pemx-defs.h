@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -345,6 +345,17 @@ static inline uint64_t CVMX_PEMX_CTL_STATUS(unsigned long block_id)
 }
 #else
 #define CVMX_PEMX_CTL_STATUS(block_id) (CVMX_ADD_IO_SEG(0x00011800C0000000ull) + ((block_id) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PEMX_CTL_STATUS2(unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
+		cvmx_warn("CVMX_PEMX_CTL_STATUS2(%lu) is invalid on this chip\n", block_id);
+	return CVMX_ADD_IO_SEG(0x00011800C0000008ull) + ((block_id) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_PEMX_CTL_STATUS2(block_id) (CVMX_ADD_IO_SEG(0x00011800C0000008ull) + ((block_id) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PEMX_DBG_INFO(unsigned long block_id)
@@ -1415,7 +1426,36 @@ union cvmx_pemx_ctl_status {
 	uint64_t u64;
 	struct cvmx_pemx_ctl_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_7_63                : 57;
+	uint64_t reserved_51_63               : 13;
+	uint64_t inv_dpar                     : 1;  /**< Invert the generated parity to be written into the
+                                                         the most significant Data Queue Buffer ram block
+                                                         to force a parity error when it is later read. */
+	uint64_t inv_hpar                     : 1;  /**< Invert the generated parity to be written into the
+                                                         most significant Header Queue Buffer ram block
+                                                         to force a parity error when it is later read. */
+	uint64_t inv_rpar                     : 1;  /**< Invert the generated parity to be written into the
+                                                         most significant Retry Buffer ram block to force
+                                                         a parity error when it is later read. */
+	uint64_t auto_sd                      : 1;  /**< Link Hardware Autonomous Speed Disable. */
+	uint64_t dnum                         : 5;  /**< Primary bus device number. */
+	uint64_t pbus                         : 8;  /**< Primary bus number. */
+	uint64_t reserved_32_33               : 2;
+	uint64_t cfg_rtry                     : 16; /**< The time x 0x10000 in core clocks to wait for a
+                                                         CPL to a CFG RD that does not carry a Retry Status.
+                                                         Until such time that the timeout occurs and Retry
+                                                         Status is received for a CFG RD, the Read CFG Read
+                                                         will be resent. A value of 0 disables retries and
+                                                         treats a CPL Retry as a CPL UR.
+                                                         When enabled only one CFG RD may be issued until
+                                                         either successful completion or CPL UR. */
+	uint64_t reserved_12_15               : 4;
+	uint64_t pm_xtoff                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
+                                                         to the PCIe core pm_xmt_turnoff port. RC mode. */
+	uint64_t pm_xpme                      : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
+                                                         to the PCIe core pm_xmt_pme port. EP mode. */
+	uint64_t ob_p_cmd                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
+                                                         to the PCIe core outband_pwrup_cmd port. EP mode. */
+	uint64_t reserved_7_8                 : 2;
 	uint64_t nf_ecrc                      : 1;  /**< Do not forward peer-to-peer ECRC TLPs. */
 	uint64_t dly_one                      : 1;  /**< When set the output client state machines will
                                                          wait one cycle before starting a new TLP out. */
@@ -1436,7 +1476,20 @@ union cvmx_pemx_ctl_status {
 	uint64_t lnk_enb                      : 1;
 	uint64_t dly_one                      : 1;
 	uint64_t nf_ecrc                      : 1;
-	uint64_t reserved_7_63                : 57;
+	uint64_t reserved_7_8                 : 2;
+	uint64_t ob_p_cmd                     : 1;
+	uint64_t pm_xpme                      : 1;
+	uint64_t pm_xtoff                     : 1;
+	uint64_t reserved_12_15               : 4;
+	uint64_t cfg_rtry                     : 16;
+	uint64_t reserved_32_33               : 2;
+	uint64_t pbus                         : 8;
+	uint64_t dnum                         : 5;
+	uint64_t auto_sd                      : 1;
+	uint64_t inv_rpar                     : 1;
+	uint64_t inv_hpar                     : 1;
+	uint64_t inv_dpar                     : 1;
+	uint64_t reserved_51_63               : 13;
 #endif
 	} s;
 	struct cvmx_pemx_ctl_status_cn61xx {
@@ -1500,88 +1553,23 @@ union cvmx_pemx_ctl_status {
 	struct cvmx_pemx_ctl_status_cn61xx    cn66xx;
 	struct cvmx_pemx_ctl_status_cn61xx    cn68xx;
 	struct cvmx_pemx_ctl_status_cn61xx    cn68xxp1;
-	struct cvmx_pemx_ctl_status_cn70xx {
+	struct cvmx_pemx_ctl_status_s         cn70xx;
+	struct cvmx_pemx_ctl_status_s         cn78xx;
+	struct cvmx_pemx_ctl_status_cn61xx    cnf71xx;
+};
+typedef union cvmx_pemx_ctl_status cvmx_pemx_ctl_status_t;
+
+/**
+ * cvmx_pem#_ctl_status2
+ *
+ * Additional general control and status of the PEM.
+ *
+ */
+union cvmx_pemx_ctl_status2 {
+	uint64_t u64;
+	struct cvmx_pemx_ctl_status2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_51_63               : 13;
-	uint64_t inv_dpar                     : 1;  /**< Invert the generated parity to be written into the
-                                                         the most significant Data Queue Buffer ram block
-                                                         to force a parity error when it is later read. */
-	uint64_t inv_hpar                     : 1;  /**< Invert the generated parity to be written into the
-                                                         most significant Header Queue Buffer ram block
-                                                         to force a parity error when it is later read. */
-	uint64_t inv_rpar                     : 1;  /**< Invert the generated parity to be written into the
-                                                         tmost significant Retry Buffer ram block to force
-                                                         a parity error when it is later read. */
-	uint64_t auto_sd                      : 1;  /**< Link Hardware Autonomous Speed Disable. */
-	uint64_t dnum                         : 5;  /**< Primary bus device number. */
-	uint64_t pbus                         : 8;  /**< Primary bus number. */
-	uint64_t reserved_32_33               : 2;
-	uint64_t cfg_rtry                     : 16; /**< The time x 0x10000 in core clocks to wait for a
-                                                         CPL to a CFG RD that does not carry a Retry Status.
-                                                         Until such time that the timeout occurs and Retry
-                                                         Status is received for a CFG RD, the Read CFG Read
-                                                         will be resent. A value of 0 disables retries and
-                                                         treats a CPL Retry as a CPL UR.
-                                                         When enabled only one CFG RD may be issued until
-                                                         either successful completion or CPL UR. */
-	uint64_t reserved_12_15               : 4;
-	uint64_t pm_xtoff                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
-                                                         to the PCIe core pm_xmt_turnoff port. RC mode. */
-	uint64_t pm_xpme                      : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
-                                                         to the PCIe core pm_xmt_pme port. EP mode. */
-	uint64_t ob_p_cmd                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
-                                                         to the PCIe core outband_pwrup_cmd port. EP mode. */
-	uint64_t reserved_7_8                 : 2;
-	uint64_t nf_ecrc                      : 1;  /**< Do not forward peer-to-peer ECRC TLPs. */
-	uint64_t dly_one                      : 1;  /**< When set the output client state machines will
-                                                         wait one cycle before starting a new TLP out. */
-	uint64_t lnk_enb                      : 1;  /**< When set '1' the link is enabled when '0' the
-                                                         link is disabled. This bit only is active when in
-                                                         RC mode. */
-	uint64_t ro_ctlp                      : 1;  /**< When set '1' C-TLPs that have the RO bit set will
-                                                         not wait for P-TLPs that normaly would be sent
-                                                         first. */
-	uint64_t fast_lm                      : 1;  /**< When '1' forces fast link mode. */
-	uint64_t inv_ecrc                     : 1;  /**< When '1' causes the LSB of the ECRC to be inverted. */
-	uint64_t inv_lcrc                     : 1;  /**< When '1' causes the LSB of the LCRC to be inverted. */
-#else
-	uint64_t inv_lcrc                     : 1;
-	uint64_t inv_ecrc                     : 1;
-	uint64_t fast_lm                      : 1;
-	uint64_t ro_ctlp                      : 1;
-	uint64_t lnk_enb                      : 1;
-	uint64_t dly_one                      : 1;
-	uint64_t nf_ecrc                      : 1;
-	uint64_t reserved_7_8                 : 2;
-	uint64_t ob_p_cmd                     : 1;
-	uint64_t pm_xpme                      : 1;
-	uint64_t pm_xtoff                     : 1;
-	uint64_t reserved_12_15               : 4;
-	uint64_t cfg_rtry                     : 16;
-	uint64_t reserved_32_33               : 2;
-	uint64_t pbus                         : 8;
-	uint64_t dnum                         : 5;
-	uint64_t auto_sd                      : 1;
-	uint64_t inv_rpar                     : 1;
-	uint64_t inv_hpar                     : 1;
-	uint64_t inv_dpar                     : 1;
-	uint64_t reserved_51_63               : 13;
-#endif
-	} cn70xx;
-	struct cvmx_pemx_ctl_status_cn78xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t inv_dpar                     : 1;  /**< Invert the generated parity to be written into the
-                                                         the most significant Data Queue Buffer ram block
-                                                         to force a parity error when it is later read. */
-	uint64_t inv_hpar                     : 1;  /**< Invert the generated parity to be written into the
-                                                         most significant Header Queue Buffer ram block
-                                                         to force a parity error when it is later read. */
-	uint64_t inv_rpar                     : 1;  /**< Invert the generated parity to be written into the
-                                                         most significant Retry Buffer ram block to force
-                                                         a parity error when it is later read. */
-	uint64_t auto_sd                      : 1;  /**< Link Hardware Autonomous Speed Disable. */
-	uint64_t dnum                         : 5;  /**< Primary bus device number. */
-	uint64_t pbus                         : 8;  /**< Primary bus number. */
+	uint64_t reserved_16_63               : 48;
 	uint64_t no_fwd_prg                   : 16; /**< The time x 0x10000 in core clocks to wait for the
                                                          TLP FIFOs to be able to unload an entry. If there is
                                                          no forward progress, such that the timeout occurs,
@@ -1589,61 +1577,17 @@ union cvmx_pemx_ctl_status {
                                                          (if enabled) will be asserted. Any more TLPs received
                                                          will be dropped on the floor and the credits
                                                          associated with those TLPs will be returned, as well.
+                                                         Note that 0xFFFF is a reserved value that will put
+                                                         the PEM in the 'forward progress stopped' state immediately.
                                                          This state will hold until a mac reset is received. */
-	uint64_t cfg_rtry                     : 16; /**< The time x 0x10000 in core clocks to wait for a
-                                                         CPL to a CFG RD that does not carry a Retry Status.
-                                                         Until such time that the timeout occurs and Retry
-                                                         Status is received for a CFG RD, the Read CFG Read
-                                                         will be resent. A value of 0 disables retries and
-                                                         treats a CPL Retry as a CPL UR.
-                                                         When enabled only one CFG RD may be issued until
-                                                         either successful completion or CPL UR. */
-	uint64_t reserved_11_14               : 4;
-	uint64_t pm_xtoff                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
-                                                         to the PCIe core pm_xmt_turnoff port. RC mode. */
-	uint64_t pm_xpme                      : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
-                                                         to the PCIe core pm_xmt_pme port. EP mode. */
-	uint64_t ob_p_cmd                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
-                                                         to the PCIe core outband_pwrup_cmd port. EP mode. */
-	uint64_t reserved_7_7                 : 1;
-	uint64_t nf_ecrc                      : 1;  /**< Do not forward peer-to-peer ECRC TLPs. */
-	uint64_t dly_one                      : 1;  /**< When set the output client state machines will
-                                                         wait one cycle before starting a new TLP out. */
-	uint64_t lnk_enb                      : 1;  /**< When set '1' the link is enabled when '0' the
-                                                         link is disabled. This bit only is active when in
-                                                         RC mode. */
-	uint64_t ro_ctlp                      : 1;  /**< When set '1' C-TLPs that have the RO bit set will
-                                                         not wait for P-TLPs that normaly would be sent
-                                                         first. */
-	uint64_t fast_lm                      : 1;  /**< When '1' forces fast link mode. */
-	uint64_t inv_ecrc                     : 1;  /**< When '1' causes the LSB of the ECRC to be inverted. */
-	uint64_t inv_lcrc                     : 1;  /**< When '1' causes the LSB of the LCRC to be inverted. */
 #else
-	uint64_t inv_lcrc                     : 1;
-	uint64_t inv_ecrc                     : 1;
-	uint64_t fast_lm                      : 1;
-	uint64_t ro_ctlp                      : 1;
-	uint64_t lnk_enb                      : 1;
-	uint64_t dly_one                      : 1;
-	uint64_t nf_ecrc                      : 1;
-	uint64_t reserved_7_7                 : 1;
-	uint64_t ob_p_cmd                     : 1;
-	uint64_t pm_xpme                      : 1;
-	uint64_t pm_xtoff                     : 1;
-	uint64_t reserved_11_14               : 4;
-	uint64_t cfg_rtry                     : 16;
 	uint64_t no_fwd_prg                   : 16;
-	uint64_t pbus                         : 8;
-	uint64_t dnum                         : 5;
-	uint64_t auto_sd                      : 1;
-	uint64_t inv_rpar                     : 1;
-	uint64_t inv_hpar                     : 1;
-	uint64_t inv_dpar                     : 1;
+	uint64_t reserved_16_63               : 48;
 #endif
-	} cn78xx;
-	struct cvmx_pemx_ctl_status_cn61xx    cnf71xx;
+	} s;
+	struct cvmx_pemx_ctl_status2_s        cn78xx;
 };
-typedef union cvmx_pemx_ctl_status cvmx_pemx_ctl_status_t;
+typedef union cvmx_pemx_ctl_status2 cvmx_pemx_ctl_status2_t;
 
 /**
  * cvmx_pem#_dbg_info

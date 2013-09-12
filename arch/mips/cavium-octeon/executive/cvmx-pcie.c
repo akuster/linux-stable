@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2011  Cavium, Inc. <support@cavium.com>.  All rights
+ * Copyright (c) 2003-2013  Cavium, Inc. <support@cavium.com>.  All rights
  * reserved.
  *
  *
@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 87128 $<hr>
+ * <hr>$Revision: 88224 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -58,6 +58,7 @@
 #include <asm/octeon/cvmx-pemx-defs.h>
 #include <asm/octeon/cvmx-pexp-defs.h>
 #include <asm/octeon/cvmx-pescx-defs.h>
+#include <asm/octeon/cvmx-rst-defs.h>
 #include <asm/octeon/cvmx-sli-defs.h>
 #include <asm/octeon/cvmx-sriox-defs.h>
 #include <asm/octeon/cvmx-helper-jtag.h>
@@ -85,6 +86,7 @@
 #include "cvmx-helper-errata.h"
 #include "cvmx-qlm.h"
 #include "cvmx-bootmem.h"
+#include "cvmx-rst-defs.h"
 #include "octeon_mem_map.h"
 #ifdef __U_BOOT__
 # include <libfdt.h>
@@ -473,6 +475,11 @@ static int __cvmx_pcie_rc_initialize_gen1(int pcie_port)
 	cvmx_pciercx_cfg032_t pciercx_cfg032;
 	cvmx_npei_bar1_indexx_t bar1_index;
 
+	if (pcie_port >= CVMX_PCIE_PORTS) {
+		//cvmx_dprintf("Invalid PCIe%d port\n", pcie_port);
+		return -1;
+	}
+
 retry:
 	/* Make sure we aren't trying to setup a target mode interface in host mode */
 	npei_ctl_status.u64 = cvmx_read_csr(CVMX_PEXP_NPEI_CTL_STATUS);
@@ -856,16 +863,21 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 	cvmx_sli_mem_access_ctl_t sli_mem_access_ctl;
 	cvmx_sli_mem_access_subidx_t mem_access_subid;
 	cvmx_pemx_bar1_indexx_t bar1_index;
-	uint64_t ciu_soft_prst_reg;
+	uint64_t ciu_soft_prst_reg, rst_ctl_reg;
 	int ep_mode;
 	int qlm = pcie_port;
 	int connected_pcie_reset = -1;
+	enum cvmx_qlm_mode mode = CVMX_QLM_MODE_DISABLED;
+
+	if (pcie_port >= CVMX_PCIE_PORTS) {
+		//cvmx_dprintf("Invalid PCIe%d port\n", pcie_port);
+		return -1;
+	}
 
 	/* Make sure this interface is PCIe */
 	if (octeon_has_feature(OCTEON_FEATURE_PCIE)) {
 		/* Requires reading the MIO_QLMX_CFG register to figure
 		   out the port type. */
-		enum cvmx_qlm_mode mode;
 		if (OCTEON_IS_MODEL(OCTEON_CN68XX))
 			qlm = 3 - (pcie_port * 2);
 		else if (OCTEON_IS_MODEL(OCTEON_CN61XX)) {
@@ -878,6 +890,8 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 		   2 PCIe ports in x1 */
 		else if (OCTEON_IS_MODEL(OCTEON_CNF71XX))
 			qlm = 1;
+		else if (OCTEON_IS_MODEL(OCTEON_CN70XX))
+			qlm = (pcie_port == 0) ? 1 : 2;
 		mode = cvmx_qlm_get_mode(qlm);
 		if (mode == CVMX_QLM_MODE_SRIO_1X4 ||
 		    mode == CVMX_QLM_MODE_SRIO_2X2 ||
@@ -896,7 +910,8 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 			return -1;
 		} else if (mode != CVMX_QLM_MODE_PCIE &&
 			   mode != CVMX_QLM_MODE_PCIE_1X2 &&
-			   mode != CVMX_QLM_MODE_PCIE_2X1) {
+			   mode != CVMX_QLM_MODE_PCIE_2X1 &&
+			   mode != CVMX_QLM_MODE_PCIE_1X1) {
 			cvmx_dprintf("PCIe: Port %d is unknown, skipping.\n", pcie_port);
 			return -1;
 		}
@@ -921,7 +936,16 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 #endif
 
 	/* Make sure we aren't trying to setup a target mode interface in host mode */
-	mio_rst_ctl.u64 = cvmx_read_csr(CVMX_MIO_RST_CTLX(pcie_port));
+	if (OCTEON_IS_OCTEON3()) {
+		ciu_soft_prst_reg = CVMX_RST_SOFT_PRSTX(pcie_port);
+		rst_ctl_reg = CVMX_RST_CTLX(pcie_port);
+	} else {
+		ciu_soft_prst_reg = (pcie_port) ?
+				 CVMX_CIU_SOFT_PRST1 : CVMX_CIU_SOFT_PRST;
+		rst_ctl_reg = CVMX_MIO_RST_CTLX(pcie_port);
+	}
+
+	mio_rst_ctl.u64 = cvmx_read_csr(rst_ctl_reg);
 	ep_mode = ((OCTEON_IS_MODEL(OCTEON_CN61XX) ||
 		    OCTEON_IS_MODEL(OCTEON_CNF71XX)) ?
 		(mio_rst_ctl.s.prtmode != 1) : (!mio_rst_ctl.s.host_mode));
@@ -964,9 +988,6 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 		}
 	}
 
-	ciu_soft_prst_reg = (pcie_port) ?
-				 CVMX_CIU_SOFT_PRST1 : CVMX_CIU_SOFT_PRST;
-
 	/* On some boards, notably the SFF6100 board, the PCIe reset lines
 	 * are miswired in PCIe 2x1 mode.  In 2x1 mode, the PRST line of
 	 * QLM0 should go to PCIe PEM 0 and the PRST line of QLM1 should
@@ -978,10 +999,10 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 	static void *fdt_addr = 0;
 
-	if (fdt_addr == 0)
+	if (fdt_addr == 0 && mode == CVMX_QLM_MODE_PCIE_2X1)
 		fdt_addr = __cvmx_phys_addr_to_ptr(cvmx_sysinfo_get()->fdt_addr,
 						   OCTEON_FDT_MAX_SIZE);
-	if (fdt_addr) {
+	if (fdt_addr && mode == CVMX_QLM_MODE_PCIE_2X1) {
 		uint32_t *prop;
 		int offset;
 
@@ -995,7 +1016,7 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 		}
 	}
 #else
-	{
+	if (mode == CVMX_QLM_MODE_PCIE_2X1) {
 		struct device_node *node = of_find_node_by_path("/soc@0");
 		if (node) {
 			if (of_property_read_u32(node,
@@ -1059,6 +1080,17 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 		break;
 	case -1:
 	default:
+		if (OCTEON_IS_OCTEON3()) {
+			union cvmx_pemx_on pemx_on;
+			pemx_on.u64 = cvmx_read_csr(CVMX_PEMX_ON(pcie_port));
+			if (pemx_on.s.pemoor == 0) {
+				/* Reset PCIe PIPE out of reset */
+				pemx_on.s.pemon = 1;
+				cvmx_write_csr(CVMX_PEMX_ON(pcie_port), pemx_on.u64);
+				/* Wait until pcie resets the pipe */
+				cvmx_wait_usec(2000);
+			}
+		}
 		/* Bring the PCIe out of reset */
 		ciu_soft_prst.u64 = cvmx_read_csr(ciu_soft_prst_reg);
 		/* After a chip reset the PCIe will also be in reset. If it
@@ -1083,7 +1115,7 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 	/* Check and make sure PCIe came out of reset. If it doesn't the board
 	   probably hasn't wired the clocks up and the interface should be
 	   skipped */
-	if (CVMX_WAIT_FOR_FIELD64(CVMX_MIO_RST_CTLX(pcie_port), cvmx_mio_rst_ctlx_t, rst_done, ==, 1, 10000)) {
+	if (CVMX_WAIT_FOR_FIELD64(rst_ctl_reg, cvmx_mio_rst_ctlx_t, rst_done, ==, 1, 10000)) {
 		cvmx_dprintf("PCIe: Port %d stuck in reset, skipping.\n", pcie_port);
 		return -1;
 	}
@@ -1486,7 +1518,13 @@ int cvmx_pcie_ep_initialize(int pcie_port)
 	} else {
 		cvmx_mio_rst_ctlx_t mio_rst_ctl;
 		int ep_mode;
-		mio_rst_ctl.u64 = cvmx_read_csr(CVMX_MIO_RST_CTLX(pcie_port));
+		uint64_t mio_rst_reg;
+
+		if (OCTEON_IS_OCTEON3())
+			mio_rst_reg = CVMX_RST_CTLX(pcie_port);
+		else
+			mio_rst_reg = CVMX_MIO_RST_CTLX(pcie_port);
+		mio_rst_ctl.u64 = cvmx_read_csr(mio_rst_reg);
 		ep_mode = (OCTEON_IS_MODEL(OCTEON_CN61XX) ? (mio_rst_ctl.s.prtmode != 0) : mio_rst_ctl.s.host_mode);
 		if (ep_mode)
 			return -1;

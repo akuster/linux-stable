@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -1700,7 +1700,7 @@ union cvmx_ila_txx_rmatch {
 	struct cvmx_ila_txx_rmatch_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
-	uint64_t grnlrty                      : 2;  /**< Granularity of a token, where 1 token equal (1<<GRNLRTY) bytes. */
+	uint64_t grnlrty                      : 2;  /**< Reserved. */
 	uint64_t brst_limit                   : 16; /**< Size of token bucket, also the maximum quantity of data that can be burst across the
                                                          interface before invoking rate-limiting logic. */
 	uint64_t time_limit                   : 16; /**< Number of cycles per time interval. Must be >= 4. */
