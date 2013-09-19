@@ -623,6 +623,8 @@ int __init octeon_msi_initialize(void)
 	struct irq_chip *msi;
 	u64 msi_map_reg;
 
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return 0;
 #if 0
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX) && !OCTEON_IS_MODEL(OCTEON_CN68XX_PASS1_X))
 		return octeon_msi_68XX_init();
