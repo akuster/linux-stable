@@ -138,9 +138,11 @@ static void __init octeon_wdt_build_stage1(void)
 	int i;
 	int len;
 	u32 *p = nmi_stage1_insns;
+#ifdef CONFIG_SMP
 	struct uasm_label *l = labels;
 	struct uasm_reloc *r = relocs;
 	bool is_ciu2 = OCTEON_IS_MODEL(OCTEON_CN68XX);
+#endif
 
 	/*
 	 * For the next few instructions running the debugger may
@@ -161,7 +163,12 @@ static void __init octeon_wdt_build_stage1(void)
 	uasm_i_ori(&p, K0, K0, ST0_UX | ST0_SX | ST0_KX);
 	uasm_i_mtc0(&p, K0, C0_STATUS);
 
-#ifdef CONFIG_HOTPLUG_CPU
+#ifdef CONFIG_SMP
+	/*
+	 * If octeon_bootloader_entry_addr is set, we can transfer
+	 * control to the bootloader if it is not a watchdog related
+	 * NMI.
+	 */
 	if (octeon_bootloader_entry_addr) {
 		uasm_il_bbit0(&p, &r, K0, ilog2(ST0_NMI),
 			      label_enter_bootloader);
@@ -219,7 +226,7 @@ static void __init octeon_wdt_build_stage1(void)
 	uasm_i_jr(&p, K0);
 	uasm_i_dmfc0(&p, K0, C0_DESAVE);
 
-#ifdef CONFIG_HOTPLUG_CPU
+#ifdef CONFIG_SMP
 	if (octeon_bootloader_entry_addr) {
 		uasm_build_label(&l, p, label_enter_bootloader);
 		/* Jump to the bootloader and restore K0 */
