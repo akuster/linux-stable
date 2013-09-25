@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 88224 $<hr>
+ * <hr>$Revision: 88618 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -801,6 +801,19 @@ static int __cvmx_pcie_rc_initialize_link_gen2(int pcie_port)
 	cvmx_pciercx_cfg032_t pciercx_cfg032;
 	cvmx_pciercx_cfg448_t pciercx_cfg448;
 
+	/* For CN7XXX we must turn the PEM on */
+	if (OCTEON_IS_OCTEON3()) {
+		cvmx_pemx_on_t pemx_on;
+
+		pemx_on.u64 = cvmx_read_csr(CVMX_PEMX_ON(pcie_port));
+		pemx_on.s.pemon = 1;
+		cvmx_write_csr(CVMX_PEMX_ON(pcie_port), pemx_on.u64);
+		if (CVMX_WAIT_FOR_FIELD64(CVMX_PEMX_ON(pcie_port), cvmx_pemx_on_t, pemoor, ==, 1, 100000)) {
+			cvmx_dprintf("PCIe: Port %d PEM not on, skipping\n", pcie_port);
+			return -1;
+		}
+	}
+
 	/* Bring up the link */
 	pem_ctl_status.u64 = cvmx_read_csr(CVMX_PEMX_CTL_STATUS(pcie_port));
 	pem_ctl_status.s.lnk_enb = 1;
@@ -1080,17 +1093,6 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 		break;
 	case -1:
 	default:
-		if (OCTEON_IS_OCTEON3()) {
-			union cvmx_pemx_on pemx_on;
-			pemx_on.u64 = cvmx_read_csr(CVMX_PEMX_ON(pcie_port));
-			if (pemx_on.s.pemoor == 0) {
-				/* Reset PCIe PIPE out of reset */
-				pemx_on.s.pemon = 1;
-				cvmx_write_csr(CVMX_PEMX_ON(pcie_port), pemx_on.u64);
-				/* Wait until pcie resets the pipe */
-				cvmx_wait_usec(2000);
-			}
-		}
 		/* Bring the PCIe out of reset */
 		ciu_soft_prst.u64 = cvmx_read_csr(ciu_soft_prst_reg);
 		/* After a chip reset the PCIe will also be in reset. If it
