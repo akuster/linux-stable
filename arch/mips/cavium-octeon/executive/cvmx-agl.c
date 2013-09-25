@@ -211,5 +211,18 @@ int cvmx_agl_link_set(int port, cvmx_helper_link_info_t link_info, int mode)
 	agl_gmx_prtx.s.en = 1;
 	cvmx_write_csr(CVMX_AGL_GMX_PRTX_CFG(port), agl_gmx_prtx.u64);
 
+	if (OCTEON_IS_OCTEON3()) {
+		union cvmx_agl_prtx_ctl agl_prtx_ctl;
+		/* Enable the interface, set clkrst */
+		agl_prtx_ctl.u64 = cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
+		agl_prtx_ctl.s.clkrst = 1;
+		cvmx_write_csr(CVMX_AGL_PRTX_CTL(port), agl_prtx_ctl.u64);
+		cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
+		agl_prtx_ctl.s.enable = 1;
+		cvmx_write_csr(CVMX_AGL_PRTX_CTL(port), agl_prtx_ctl.u64);
+		/* Read the value back to force the previous write */
+		cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
+	}
+
 	return 0;
 }

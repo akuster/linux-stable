@@ -136,10 +136,16 @@ int __cvmx_helper_agl_probe(int interface)
 	agl_prtx_ctl.s.clkrst = 0;
 	agl_prtx_ctl.s.dllrst = 0;
 	agl_prtx_ctl.s.clktx_byp = 0;
+
+
+	if (OCTEON_IS_OCTEON3()) {
+		agl_prtx_ctl.s.refclk_sel = 0;
+		agl_prtx_ctl.s.clkrx_set = 0x0;
+		agl_prtx_ctl.s.clkrx_byp = 1;
+	}
 	cvmx_write_csr(CVMX_AGL_PRTX_CTL(port), agl_prtx_ctl.u64);
 	/* Force write out before wait */
 	cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
-
 	/*
 	 * Wait for the DLL to lock. External 125 MHz reference clock must be
 	 * stable at this point.
@@ -153,12 +159,14 @@ int __cvmx_helper_agl_probe(int interface)
 	/* Force write out before wait */
 	cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
 
-	/* Enable the interface */
-	agl_prtx_ctl.u64 = cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
-	agl_prtx_ctl.s.enable = 1;
-	cvmx_write_csr(CVMX_AGL_PRTX_CTL(port), agl_prtx_ctl.u64);
-	/* Read the value back to force the previous write */
-	agl_prtx_ctl.u64 = cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
+	if (!OCTEON_IS_OCTEON3()) {
+		/* Enable the interface */
+		agl_prtx_ctl.u64 = cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
+		agl_prtx_ctl.s.enable = 1;
+		cvmx_write_csr(CVMX_AGL_PRTX_CTL(port), agl_prtx_ctl.u64);
+		/* Read the value back to force the previous write */
+		agl_prtx_ctl.u64 = cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
+	}
 
 	/* Enable the compensation controller */
 	agl_prtx_ctl.u64 = cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
