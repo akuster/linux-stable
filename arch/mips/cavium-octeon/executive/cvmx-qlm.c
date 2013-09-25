@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 88225 $<hr>
+ * <hr>$Revision: 88712 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -56,11 +56,21 @@
 #include <asm/octeon/cvmx-sriomaintx-defs.h>
 #include <asm/octeon/cvmx-pciercx-defs.h>
 #include <asm/octeon/cvmx-pemx-defs.h>
+#elif defined(CVMX_BUILD_FOR_UBOOT)
+#include <common.h>
+#include <asm/arch/cvmx.h>
+#include <asm/arch/cvmx-bootmem.h>
+#include <asm/arch/cvmx-helper-jtag.h>
+#include <asm/arch/cvmx-qlm.h>
 #else
 #include "cvmx.h"
 #include "cvmx-bootmem.h"
 #include "cvmx-helper-jtag.h"
 #include "cvmx-qlm.h"
+#endif
+
+#ifdef CVMX_BUILD_FOR_UBOOT
+DECLARE_GLOBAL_DATA_PTR;
 #endif
 
 /**
@@ -235,6 +245,9 @@ void cvmx_qlm_init(void)
 	int qlm_jtag_size = CVMX_QLM_JTAG_UINT32 * 8 * 4;
 	static uint64_t qlm_base = 0;
 	const cvmx_bootmem_named_block_desc_t *desc;
+
+	if (OCTEON_IS_OCTEON3())
+		return;
 
 #ifndef CVMX_BUILD_FOR_LINUX_HOST
 	/* Skip actual JTAG accesses on simulator */
@@ -695,33 +708,17 @@ int cvmx_qlm_get_gbaud_mhz(int qlm)
 			return 0;	/* Disabled */
 		}
 	} else if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
-		cvmx_gserx_dlmx_mpll_status_t mpll_status;
-		cvmx_gserx_dlmx_ref_clkdiv2_t ref_clkdiv2;
 		cvmx_gserx_dlmx_mpll_multiplier_t mpll_multiplier;
 		uint64_t meas_refclock;
-		uint64_t mhz;
+		uint64_t freq;
 
-		/* Return zero if the PLL hasn't locked */
-		mpll_status.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_MPLL_STATUS(qlm, 0));
-#ifdef CVMX_BUILD_FOR_LINUX_HOST
-		if (mpll_status.s.mpll_status == 0)
-			return 0;
-#else
-		if ((cvmx_sysinfo_get()->board_type != CVMX_BOARD_TYPE_SIM)
-	    	    && (mpll_status.s.mpll_status == 0))
-			return 0;
-#endif
-		meas_refclock = cvmx_qlm_measure_clock(qlm);
-		mhz = meas_refclock / 1000000;
 		/* Measure the reference clock */
-		/* Divide it by two if the DLM is configure that way */
-		ref_clkdiv2.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_REF_CLKDIV2(qlm, 0));
-		if (ref_clkdiv2.s.ref_clkdiv2)
-			mhz /= 2;
+		meas_refclock = cvmx_qlm_measure_clock(qlm);
 		/* Multiply to get the final frequency */
 		mpll_multiplier.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_MPLL_MULTIPLIER(qlm, 0));
-		mhz *= mpll_multiplier.s.mpll_multiplier;
-		return mhz;
+		freq = meas_refclock * mpll_multiplier.s.mpll_multiplier;
+		freq = (freq + 500000) / 1000000;
+		return freq;
 	}
 	return 0;
 }
@@ -732,7 +729,7 @@ static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn70xx(int qlm)
 	if (cvmx_sysinfo_get()->board_type != CVMX_BOARD_TYPE_SIM) {
 		union cvmx_gserx_dlmx_phy_reset phy_reset;
 
-		phy_reset.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_PHY_RESET(0, qlm));
+		phy_reset.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_PHY_RESET(qlm, 0));
 		if (phy_reset.s.phy_reset)
 			return CVMX_QLM_MODE_DISABLED;
 
@@ -1019,7 +1016,7 @@ static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn78xx(int qlm)
 	 * Until gser configuration is in place, we hard code the
 	 * qlm mode here. This means that for the time being, this
 	 * function and __cvmx_get_mode_cn78xx() have to be in sync
-	 * since they are both hard coded. Note that register 
+	 * since they are both hard coded. Note that register
 	 * CVMX_MIO_QLMX_CFG is not yet modeled by the simulator.
 	 */
 	switch(qlm) {
@@ -1069,7 +1066,10 @@ int cvmx_qlm_measure_clock(int qlm)
 
 	/* Force the reference to 156.25Mhz when running in simulation.
 	   This supports the most speeds */
-#ifndef CVMX_BUILD_FOR_LINUX_HOST
+#ifdef CVMX_BUILD_FOR_UBOOT
+	if (gd->board_type == CVMX_BOARD_TYPE_SIM)
+		return 156250000;
+#elif !defined(CVMX_BUILD_FOR_LINUX_HOST)
 	if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM)
 		return 156250000;
 #endif
