@@ -4144,8 +4144,6 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "IOB_INT_SUM[P_EOP]"},
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 4, 0, "IOB_INT_SUM[NP_DAT]"},
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 5, 0, "IOB_INT_SUM[P_DAT]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 6, 0, "IOB_INT_SUM[INB_MAT]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 7, 0, "IOB_INT_SUM[OUTB_MAT]"},
 							{0}},
 						NULL /*cvmx_error_childbit*/
 					},
