@@ -103,6 +103,7 @@ static inline unsigned int cvmx_get_node_num(void)
 #include "cvmx-led-defs.h"
 #include "cvmx-mio-defs.h"
 #include "cvmx-pow-defs.h"
+#include "cvmx-rst-defs.h"
 #include "cvmx-rnm-defs.h"
 
 #include "cvmx-app-init.h"
