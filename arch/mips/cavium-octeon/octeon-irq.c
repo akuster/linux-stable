@@ -2995,14 +2995,14 @@ static int __init octeon_irq_init_cib(struct device_node *ciu_node,
 		pr_err("ERROR: Couldn't acquire reg(0) %s\n.", ciu_node->name);
 		return -EINVAL;
 	}
-	host_data->raw_reg = of_translate_address(ciu_node, addr);
+	host_data->raw_reg = (u64)phys_to_virt(of_translate_address(ciu_node, addr));
 
 	addr = of_get_address(ciu_node, 1, NULL, NULL);
 	if (!addr) {
 		pr_err("ERROR: Couldn't acquire reg(1) %s\n.", ciu_node->name);
 		return -EINVAL;
 	}
-	host_data->en_reg = of_translate_address(ciu_node, addr);
+	host_data->en_reg = (u64)phys_to_virt(of_translate_address(ciu_node, addr));
 
 	r = of_property_read_u32(ciu_node, "cavium,max_bits", &val);
 	if (r) {
