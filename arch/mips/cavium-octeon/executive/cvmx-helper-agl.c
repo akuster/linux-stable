@@ -233,7 +233,9 @@ int __cvmx_helper_agl_enable(int interface)
  */
 cvmx_helper_link_info_t __cvmx_helper_agl_link_get(int ipd_port)
 {
-	return cvmx_agl_link_get(ipd_port);
+	int interface = cvmx_helper_get_interface_num(ipd_port);
+	int port = cvmx_helper_agl_get_port(interface);
+	return cvmx_agl_link_get(port);
 }
 
 /**
@@ -251,5 +253,7 @@ cvmx_helper_link_info_t __cvmx_helper_agl_link_get(int ipd_port)
  */
 int __cvmx_helper_agl_link_set(int ipd_port, cvmx_helper_link_info_t link_info)
 {
-	return cvmx_agl_link_set(ipd_port, link_info, 1);	
+	int interface = cvmx_helper_get_interface_num(ipd_port);
+	int port = cvmx_helper_agl_get_port(interface);
+	return cvmx_agl_link_set(port, link_info, 1);
 }
