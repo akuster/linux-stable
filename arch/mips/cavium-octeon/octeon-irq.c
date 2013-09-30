@@ -2584,7 +2584,7 @@ static void octeon_irq_cib_enable(struct irq_data *data)
 
 	raw_spin_lock_irqsave(&host_data->lock, flags);
 	en = cvmx_read_csr(host_data->en_reg);
-	en |= 1ull < cd->bit;
+	en |= 1ull << cd->bit;
 	cvmx_write_csr(host_data->en_reg, en);
 	raw_spin_unlock_irqrestore(&host_data->lock, flags);
 }
@@ -2598,13 +2598,13 @@ static void octeon_irq_cib_disable(struct irq_data *data)
 
 	raw_spin_lock_irqsave(&host_data->lock, flags);
 	en = cvmx_read_csr(host_data->en_reg);
-	en &= ~(1ull < cd->bit);
+	en &= ~(1ull << cd->bit);
 	cvmx_write_csr(host_data->en_reg, en);
 	raw_spin_unlock_irqrestore(&host_data->lock, flags);
 }
 
 static struct irq_chip octeon_irq_chip_cib = {
-	.name = "CIU3",
+	.name = "CIB",
 	.irq_enable = octeon_irq_cib_enable,
 	.irq_disable = octeon_irq_cib_disable,
 	.irq_mask = octeon_irq_cib_disable,
