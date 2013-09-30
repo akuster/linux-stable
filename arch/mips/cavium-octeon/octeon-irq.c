@@ -41,6 +41,10 @@ struct octeon_irq_ciu3_domain_data {
 	u64 ciu3_addr;
 };
 
+struct octeon_irq_ciu_domain_data {
+	int num_sum;  /* number of sum registers (2 or 3). */
+};
+
 /* Register offsets from ciu3_addr */
 #define CIU3_CONST		0x220
 #define CIU3_IDT_CTL(_idt)	((_idt) * 8 + 0x110000)
@@ -522,7 +526,6 @@ static void octeon_irq_ciu_disable_all_sum2(struct irq_data *data)
 
 	for_each_online_cpu(cpu) {
 		int coreid = octeon_coreid_for_cpu(cpu);
-
 		cvmx_write_csr(CVMX_CIU_EN2_PPX_IP4_W1C(coreid), mask);
 	}
 }
@@ -875,7 +878,6 @@ static int octeon_irq_ciu_set_affinity_sum2(struct irq_data *data,
 
 	for_each_online_cpu(cpu) {
 		int index = octeon_coreid_for_cpu(cpu);
-
 		if (cpumask_test_cpu(cpu, dest) && enable_one) {
 			enable_one = false;
 			cvmx_write_csr(CVMX_CIU_EN2_PPX_IP4_W1S(index), mask);
@@ -1310,7 +1312,6 @@ static void octeon_irq_ip4_ciu(void)
 	if (likely(ciu_sum)) {
 		int bit = fls64(ciu_sum) - 1;
 		int irq = octeon_irq_ciu_to_irq[2][bit];
-
 		if (likely(irq))
 			do_IRQ(irq);
 		else
@@ -1468,12 +1469,11 @@ static int __init octeon_irq_init_ciu(
 	}
 	octeon_irq_ciu_chip = chip;
 	octeon_irq_ciu_chip_edge = chip_edge;
-	octeon_irq_ip4 = octeon_irq_ip4_mask;
 
 	/* Mips internal */
 	octeon_irq_init_core();
 
-	ciu_domain = irq_domain_add_tree(ciu_node, &octeon_irq_domain_ciu_ops, NULL);
+	ciu_domain = irq_domain_add_tree(ciu_node, &octeon_irq_domain_ciu_ops, dd);
 	irq_set_default_host(ciu_domain);
 
 	/* CIU_0 */
