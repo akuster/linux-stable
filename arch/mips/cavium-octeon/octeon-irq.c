@@ -2716,9 +2716,9 @@ static int __init octeon_irq_init_cib(struct device_node *ciu_node,
 	}
 	host_data->en_reg = (u64)phys_to_virt(of_translate_address(ciu_node, addr));
 
-	r = of_property_read_u32(ciu_node, "cavium,max_bits", &val);
+	r = of_property_read_u32(ciu_node, "cavium,max-bits", &val);
 	if (r) {
-		pr_err("ERROR: Couldn't read cavium,max_bits from %s\n.", ciu_node->name);
+		pr_err("ERROR: Couldn't read cavium,max-bits from %s\n.", ciu_node->name);
 		return r;
 	}
 	host_data->max_bits = val;
