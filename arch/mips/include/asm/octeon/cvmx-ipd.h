@@ -42,7 +42,7 @@
  *
  * Interface to the hardware Input Packet Data unit.
  *
- * <hr>$Revision: 79509 $<hr>
+ * <hr>$Revision: 88229 $<hr>
  */
 
 #ifndef __CVMX_IPD_H__
@@ -214,6 +214,9 @@ void cvmx_ipd_enable(void);
 void cvmx_ipd_disable(void);
 
 void __cvmx_ipd_free_ptr(void);
+
+void cvmx_ipd_set_packet_pool_buffer_count(uint64_t buffer_count);
+void cvmx_ipd_set_wqe_pool_buffer_count(uint64_t buffer_count);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

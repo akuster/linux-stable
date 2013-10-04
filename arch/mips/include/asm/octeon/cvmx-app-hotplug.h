@@ -86,8 +86,8 @@ extern "C" {
 */
 typedef struct cvmx_app_hotplug_callbacks {
 	void (*hotplug_start) (void *ptr);
-	void (*cores_added_callback) (uint32_t, void *ptr);
-	void (*cores_removed_callback) (uint32_t, void *ptr);
+	void (*cores_added_callback) (cvmx_coremask_t *, void *ptr);
+	void (*cores_removed_callback) (cvmx_coremask_t *, void *ptr);
 	void (*shutdown_callback) (void *ptr);
 	void (*unplug_core_callback) (void *ptr);
 } cvmx_app_hotplug_callbacks_t;
@@ -154,7 +154,7 @@ typedef struct cvmx_app_hotplug_global cvmx_app_hotplug_global_t;
 
 int is_core_being_hot_plugged(void);
 int is_app_under_boot_or_shutdown(void);
-void set_app_unber_boot(int val);
+void set_app_under_boot(int val);
 void set_app_under_shutdown(int val);
 int cvmx_app_hotplug_shutdown_request(const struct cvmx_coremask *, int);
 int cvmx_app_hotplug_unplug_cores(int index, const struct cvmx_coremask *pcm,

@@ -1269,12 +1269,13 @@ union cvmx_pcieepvfx_cfg031 {
                                                          The default value is the value you specify during hardware
                                                          configuration (x1, x4, x8, or x16) */
 	uint32_t mls                          : 4;  /**< "Maximum Link Speed
-                                                         The reset value of this field is controled by a value sent from
-                                                         the input pin qlm#_cfg[1].
-                                                         qlm#_cfg[1]   RST_VALUE   NOTE
-                                                         ?             0001b       2.5 GHz supported
-                                                         ?             0010b       5.0 GHz and 2.5 GHz supported
-                                                         ?             0100b       8.0 Ghz, 5.0 GHz and 2.5 GHz supported
+                                                         The reset value of this field is controlled by the value read from
+                                                         the PEM csr PEM(0..3)_CFG.MD.
+                                                         PEM(0..2)_CFG.MD  RST_VALUE   NOTE
+                                                         00                0001b       2.5 GHz supported
+                                                         01                0010b       5.0 GHz and 2.5 GHz supported
+                                                         10                0011b       8.0 Ghz, 5.0 GHz and 2.5 GHz supported
+                                                         11                0011b       8.0 Ghz, 5.0 GHz and 2.5 GHz supported (RC Mode)
                                                          This field is writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 #else
@@ -1499,14 +1500,15 @@ union cvmx_pcieepvfx_cfg039 {
                                                          Bit definitions are:
                                                          Bit 1 2.5 GT/s
                                                          Bit 2 5.0 GT/s
-                                                         Bit 3 8.0 GT/s (Not Supported)
+                                                         Bit 3 8.0 GT/s
                                                          Bits 7:4 reserved
-                                                         The reset value of this field is controled by a value sent from
-                                                         the lsb of the MIO_QLM#_SPD register
-                                                         qlm#_spd[0]   RST_VALUE   NOTE
-                                                         ?             0001b       2.5 GHz supported
-                                                         ?             0011b       5.0 GHz and 2.5 GHz supported
-                                                         ?             0111b       8.0 GHz, 5.0 GHz and 2.5 GHz supported" */
+                                                         The reset value of this field is controlled by a value read from
+                                                         the PEM csr PEM(0..3)_CFG.MD.
+                                                         PEM(0..3)_CFG.MD   RST_VALUE   NOTE
+                                                         00                 0001b       2.5 GHz supported
+                                                         01                 0011b       5.0 GHz and 2.5 GHz supported
+                                                         10                 0111b       8.0 GHz, 5.0 GHz and 2.5 GHz supported
+                                                         11                 0111b       8.0 Ghz, 5.0 GHz and 2.5 GHz supported (RC Mode)" */
 	uint32_t reserved_0_0                 : 1;
 #else
 	uint32_t reserved_0_0                 : 1;
@@ -1590,15 +1592,22 @@ union cvmx_pcieepvfx_cfg040 {
                                                          the upstream component in its training sequences:
                                                          - 0001: 2.5Gb/s Target Link Speed
                                                          - 0010: 5Gb/s Target Link Speed
-                                                         - 0100: 8Gb/s Target Link Speed
+                                                         - 0100: 8Gb/s Target Link Speed (Not Supported)
                                                          All other encodings are reserved.
+                                                         If a value is written to this field that does not correspond to
+                                                         a speed included in the Supported Link Speeds field, the
+                                                         result is undefined.
+                                                         For both Upstream and Downstream ports, this field is
+                                                         used to set the target compliance mode speed when
+                                                         software is using the Enter Compliance bit to force a link
                                                          into compliance mode.
-                                                         The reset value of this field is controled by a value sent from
-                                                         the lsb of the MIO_QLM#_SPD register
-                                                         qlm#_spd[0]   RST_VALUE   NOTE
-                                                         ?             0001b       2.5 GHz supported
-                                                         ?             0010b       5.0 GHz and 2.5 GHz supported
-                                                         ?             0100b       8.0 GHz, 5.0 GHz and 2.5 GHz supported" */
+                                                         The reset value of this field is controlled by the value read from
+                                                         the PEM csr PEM(0..3)_CFG.MD.
+                                                         PEM(0..2)_CFG.MD  RST_VALUE   NOTE
+                                                         00                0001b       2.5 GHz supported
+                                                         01                0010b       5.0 GHz and 2.5 GHz supported
+                                                         10                0011b       8.0 GHz, 5.0 GHz and 2.5 GHz supported
+                                                         11                0011b       8.0 Ghz, 5.0 GHz and 2.5 GHz supported (RC Mode)" */
 #else
 	uint32_t tls                          : 4;
 	uint32_t ec                           : 1;
@@ -2127,7 +2136,8 @@ union cvmx_pcieepvfx_cfg452 {
                                                          the PCIe core can negotiate a smaller link width, so all
                                                          of x8, x4, x2, and x1 are supported when LME=0xF,
                                                          for example.) */
-	uint32_t reserved_8_15                : 8;
+	uint32_t reserved_12_15               : 4;
+	uint32_t link_rate                    : 4;  /**< Reserved. */
 	uint32_t flm                          : 1;  /**< Fast Link Mode
                                                          Sets all internal timers to fast mode for simulation purposes.
                                                          If during an eeprom load, the first word loaded is 0xffffffff,
@@ -2161,7 +2171,8 @@ union cvmx_pcieepvfx_cfg452 {
 	uint32_t dllle                        : 1;
 	uint32_t reserved_6_6                 : 1;
 	uint32_t flm                          : 1;
-	uint32_t reserved_8_15                : 8;
+	uint32_t link_rate                    : 4;
+	uint32_t reserved_12_15               : 4;
 	uint32_t lme                          : 6;
 	uint32_t reserved_22_31               : 10;
 #endif

@@ -497,11 +497,8 @@ int free_global_resources(void)
 	int i, entry_cnt;
 	uint64_t resource_entry_addr, phys_addr, size;
 
-	if (!__cvmx_global_resources_addr) {
-		if (dbg)
-			cvmx_dprintf("%s: __cvmx_global_resources_addr is null\n", __FUNCTION__);
-		return 0;
-	}
+	if (__cvmx_global_resources_addr == 0)
+		__cvmx_global_resources_init();
 
 	__cvmx_global_resource_lock();
 
@@ -524,6 +521,8 @@ int free_global_resources(void)
 	rc = cvmx_bootmem_free_named(CVMX_GLOBAL_RESOURCES_DATA_NAME);
 	if (dbg)
 		cvmx_dprintf("freed global resources named block rc=%d \n",rc);
+
+	__cvmx_global_resources_addr = 0;
 
 	return 0;
 }

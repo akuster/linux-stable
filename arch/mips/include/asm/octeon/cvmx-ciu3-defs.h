@@ -218,17 +218,6 @@ static inline uint64_t CVMX_CIU3_INTR_SLOWDOWN_FUNC(void)
 #define CVMX_CIU3_INTR_SLOWDOWN (CVMX_ADD_IO_SEG(0x0001010000000240ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_CIU3_INT_DBG_SEL CVMX_CIU3_INT_DBG_SEL_FUNC()
-static inline uint64_t CVMX_CIU3_INT_DBG_SEL_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_CIU3_INT_DBG_SEL not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001010000000200ull);
-}
-#else
-#define CVMX_CIU3_INT_DBG_SEL (CVMX_ADD_IO_SEG(0x0001010000000200ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_CIU3_ISCMEM_BASE CVMX_CIU3_ISCMEM_BASE_FUNC()
 static inline uint64_t CVMX_CIU3_ISCMEM_BASE_FUNC(void)
 {
@@ -368,11 +357,22 @@ union cvmx_ciu3_bist {
 	uint64_t u64;
 	struct cvmx_ciu3_bist_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_7_63                : 57;
-	uint64_t bist                         : 7;  /**< BIST results. Hardware sets a bit for each memory that fails BIST. */
+	uint64_t reserved_11_63               : 53;
+	uint64_t bist                         : 11; /**< BIST results. Hardware sets a bit for each memory that fails BIST. INTERNAL:
+                                                         <10>= ncbo_crd_fif_mem0.
+                                                         <9> = ciu_nbt_sso_req_ram.
+                                                         <8> = ciu_nbt_rsp_ram.
+                                                         <7> = ciu_sso_output_fifo_mem.
+                                                         <6> = ciu_isc_ram2.
+                                                         <5> = ciu_isc_ram1.
+                                                         <4> = ciu_isc_ram0.
+                                                         <3> = ciu_sist_ram.
+                                                         <2> = ciu_idt_ram.
+                                                         <1> = csr req_mem.
+                                                         <0> = ciu3_wdg_ctl_mem. */
 #else
-	uint64_t bist                         : 7;
-	uint64_t reserved_7_63                : 57;
+	uint64_t bist                         : 11;
+	uint64_t reserved_11_63               : 53;
 #endif
 	} s;
 	struct cvmx_ciu3_bist_s               cn78xx;
@@ -627,37 +627,6 @@ union cvmx_ciu3_idtx_ppx {
 typedef union cvmx_ciu3_idtx_ppx cvmx_ciu3_idtx_ppx_t;
 
 /**
- * cvmx_ciu3_int_dbg_sel
- */
-union cvmx_ciu3_int_dbg_sel {
-	uint64_t u64;
-	struct cvmx_ciu3_int_dbg_sel_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_19_63               : 45;
-	uint64_t sel                          : 3;  /**< Selects if all or the specific interrupt is presented on the debug port.
-                                                         0x0 = erst_n
-                                                         0x1 = start_bist
-                                                         0x2 = toggle at coprocessor clock/2 frequency
-                                                         0x3 = All core interrupt bits are ORed together
-                                                         0x4 = Only the selected virtual core/IRQ is selected */
-	uint64_t reserved_10_15               : 6;
-	uint64_t irq                          : 2;  /**< Which IRQ to select: 0x0=IRQ2, 0x1=IRQ3, 0x2=IRQ4. */
-	uint64_t reserved_6_7                 : 2;
-	uint64_t pp                           : 6;  /**< Which core to select. */
-#else
-	uint64_t pp                           : 6;
-	uint64_t reserved_6_7                 : 2;
-	uint64_t irq                          : 2;
-	uint64_t reserved_10_15               : 6;
-	uint64_t sel                          : 3;
-	uint64_t reserved_19_63               : 45;
-#endif
-	} s;
-	struct cvmx_ciu3_int_dbg_sel_s        cn78xx;
-};
-typedef union cvmx_ciu3_int_dbg_sel cvmx_ciu3_int_dbg_sel_t;
-
-/**
  * cvmx_ciu3_intr_ram_ecc_ctl
  */
 union cvmx_ciu3_intr_ram_ecc_ctl {
@@ -749,12 +718,12 @@ union cvmx_ciu3_intr_slowdown {
 	uint64_t ctl                          : 3;  /**< Slow down CIU interrupt walker processing time. IRQ2/3/4 for all cores are sent to the
                                                          core (MRC) in a serial bus to reduce global routing. There is no backpressure mechanism
                                                          designed for this scheme. It will only be a problem when SCLK is faster; this Control will
-                                                         process 1 interrupt in 2^CTL SCLK cycles. With different a setting, clock rate ratio can
+                                                         process 1 interrupt in 4*2^CTL SCLK cycles. With different a setting, clock rate ratio can
                                                          handle:
                                                          SLOWDOWN sclk_freq/aclk_freq ratio
-                                                         0 3
-                                                         1 6
-                                                         n 3*2n */
+                                                         0 4
+                                                         1 8
+                                                         n 4*2^n */
 #else
 	uint64_t ctl                          : 3;
 	uint64_t reserved_3_63                : 61;

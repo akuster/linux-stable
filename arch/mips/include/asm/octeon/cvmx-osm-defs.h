@@ -138,18 +138,21 @@ union cvmx_osm_ase_rate_limit_ctrl {
 	struct cvmx_osm_ase_rate_limit_ctrl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
-	uint64_t rwc_rate_limit               : 1;  /**< To support ASE running at SCLK/2, OSM can rate-limit responses sent back to ASE. Each
-                                                         request is assigned to either phase 0 or phase 1. When set, OSM does not send back-to-back
+	uint64_t rwc_rate_limit               : 1;  /**< Reserved. INTERNAL: Must be enabled when ASE is running at SCLK/2. If ASE is running at
+                                                         SCLK/1, this should be disabled for best performance. Mechanism: Each request is assigned
+                                                         to either phase 0 or phase 1. When feature is enabled, OSM does not send back-to-back
                                                          responses for requests on the RWC ports with the same phase. Instead, a idle cycle is
                                                          inserted between the responses. This enable applies to RWC ports. */
-	uint64_t bwc_rate_limit               : 1;  /**< To support ASE running at SCLK/2, OSM can rate-limit responses sent back to ASE. Each
-                                                         request is assigned to either phase 0 or phase 1. When set, OSM does not send back-to-back
-                                                         responses for requests on the BWC port with the same phase. Instead a idle cycle is
-                                                         inserted between the responses. */
-	uint64_t twc_rate_limit               : 1;  /**< To support ASE running at SCLK/2, OSM can rate-limit responses sent back to ASE. Each
-                                                         request is assigned to either phase 0 or phase 1. When set, OSM does not send back-to-back
-                                                         responses for requests on the TWC port with the same phase. Instead a idle cycle is
-                                                         inserted between the responses. */
+	uint64_t bwc_rate_limit               : 1;  /**< Reserved. INTERNAL: Must be enabled when ASE is running at SCLK/2. If ASE is running at
+                                                         SCLK/1, this should be disabled for best performance. Mechanism: Each request is assigned
+                                                         to either phase 0 or phase 1. When feature is enabled, OSM does not send back-to-back
+                                                         responses for requests on the RWC ports with the same phase. Instead, a idle cycle is
+                                                         inserted between the responses. This enable applies to BWC ports. */
+	uint64_t twc_rate_limit               : 1;  /**< Reserved. INTERNAL: Must be enabled when ASE is running at SCLK/2. If ASE is running at
+                                                         SCLK/1, this should be disabled for best performance. Mechanism: Each request is assigned
+                                                         to either phase 0 or phase 1. When feature is enabled, OSM does not send back-to-back
+                                                         responses for requests on the RWC ports with the same phase. Instead, a idle cycle is
+                                                         inserted between the responses. This enable applies to TWC ports. */
 #else
 	uint64_t twc_rate_limit               : 1;
 	uint64_t bwc_rate_limit               : 1;

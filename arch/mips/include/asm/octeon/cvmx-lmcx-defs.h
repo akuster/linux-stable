@@ -600,6 +600,17 @@ static inline uint64_t CVMX_LMCX_DUAL_MEMCFG(unsigned long block_id)
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_ECC_PARITY_TEST(unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
+		cvmx_warn("CVMX_LMCX_ECC_PARITY_TEST(%lu) is invalid on this chip\n", block_id);
+	return CVMX_ADD_IO_SEG(0x0001180088000108ull) + ((block_id) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_ECC_PARITY_TEST(block_id) (CVMX_ADD_IO_SEG(0x0001180088000108ull) + ((block_id) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_LMCX_ECC_SYND(unsigned long block_id)
 {
 	switch(cvmx_get_octeon_family()) {
@@ -1938,7 +1949,19 @@ union cvmx_lmcx_char_mask4 {
 	uint64_t u64;
 	struct cvmx_lmcx_char_mask4_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_45_63               : 19;
+	uint64_t ref_pin_on_mask              : 9;  /**< INTERNAL: This mask is applied to the REF_PIN_ON signals that go to
+                                                         the PHY, so that each byte lane can selectively turn off or on the signals
+                                                         once the master signals is enabled.  Using the symbol R, the mask looks
+                                                         like this:
+                                                         RRRRRRRRR
+                                                         876543210 */
+	uint64_t dac_on_mask                  : 9;  /**< INTERNAL: This mask is applied to the DAC_ON signals that go to
+                                                         the PHY, so that each byte lane can selectively turn off or on the signals
+                                                         once the master signals are enabled.  Using the symbols D  for DAC_ON,
+                                                         the mask looks like this:
+                                                         DDDDDDDDD
+                                                         876543210 */
+	uint64_t reserved_45_45               : 1;
 	uint64_t dbi_mask                     : 9;  /**< Mask for DBI/DQS<1>. */
 	uint64_t par_mask                     : 1;  /**< Mask for PAR. */
 	uint64_t act_n_mask                   : 1;  /**< Mask for ACT_N. */
@@ -1970,7 +1993,9 @@ union cvmx_lmcx_char_mask4 {
 	uint64_t act_n_mask                   : 1;
 	uint64_t par_mask                     : 1;
 	uint64_t dbi_mask                     : 9;
-	uint64_t reserved_45_63               : 19;
+	uint64_t reserved_45_45               : 1;
+	uint64_t dac_on_mask                  : 9;
+	uint64_t ref_pin_on_mask              : 9;
 #endif
 	} s;
 	struct cvmx_lmcx_char_mask4_cn61xx {
@@ -2007,7 +2032,43 @@ union cvmx_lmcx_char_mask4 {
 	struct cvmx_lmcx_char_mask4_cn61xx    cn66xx;
 	struct cvmx_lmcx_char_mask4_cn61xx    cn68xx;
 	struct cvmx_lmcx_char_mask4_cn61xx    cn68xxp1;
-	struct cvmx_lmcx_char_mask4_s         cn70xx;
+	struct cvmx_lmcx_char_mask4_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_45_63               : 19;
+	uint64_t dbi_mask                     : 9;  /**< Mask for DBI/DQS<1>. */
+	uint64_t par_mask                     : 1;  /**< Mask for PAR. */
+	uint64_t act_n_mask                   : 1;  /**< Mask for ACT_N. */
+	uint64_t a17_mask                     : 1;  /**< Mask for A17. */
+	uint64_t reset_n_mask                 : 1;  /**< Mask for RESET_L. */
+	uint64_t a_mask                       : 16; /**< Mask for A<15:0>. */
+	uint64_t ba_mask                      : 3;  /**< Mask for BA<2:0>. */
+	uint64_t we_n_mask                    : 1;  /**< Mask for WE_N. */
+	uint64_t cas_n_mask                   : 1;  /**< Mask for CAS_N. */
+	uint64_t ras_n_mask                   : 1;  /**< Mask for RAS_N. */
+	uint64_t odt1_mask                    : 2;  /**< Mask for ODT1. */
+	uint64_t odt0_mask                    : 2;  /**< Mask for ODT0. */
+	uint64_t cs1_n_mask                   : 2;  /**< Mask for CS1_N. */
+	uint64_t cs0_n_mask                   : 2;  /**< Mask for CS0_N. */
+	uint64_t cke_mask                     : 2;  /**< Mask for CKE*. */
+#else
+	uint64_t cke_mask                     : 2;
+	uint64_t cs0_n_mask                   : 2;
+	uint64_t cs1_n_mask                   : 2;
+	uint64_t odt0_mask                    : 2;
+	uint64_t odt1_mask                    : 2;
+	uint64_t ras_n_mask                   : 1;
+	uint64_t cas_n_mask                   : 1;
+	uint64_t we_n_mask                    : 1;
+	uint64_t ba_mask                      : 3;
+	uint64_t a_mask                       : 16;
+	uint64_t reset_n_mask                 : 1;
+	uint64_t a17_mask                     : 1;
+	uint64_t act_n_mask                   : 1;
+	uint64_t par_mask                     : 1;
+	uint64_t dbi_mask                     : 9;
+	uint64_t reserved_45_63               : 19;
+#endif
+	} cn70xx;
 	struct cvmx_lmcx_char_mask4_s         cn78xx;
 	struct cvmx_lmcx_char_mask4_cn61xx    cnf71xx;
 };
@@ -5362,7 +5423,8 @@ union cvmx_lmcx_ddr_pll_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_ddr_pll_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_31_63               : 33;
+	uint64_t reserved_32_63               : 32;
+	uint64_t dclk_invert                  : 1;  /**< Invert dclk that feeds LMC/DDR at the south side of the chip. */
 	uint64_t phy_dcok                     : 1;  /**< Set to power up PHY logic after setting LMC(0..3)_DDR_PLL_CTL[DDR4_MODE]. */
 	uint64_t ddr4_mode                    : 1;  /**< DDR4 mode select: 1 = DDR4, 0 = DDR3. */
 	uint64_t pll_fbslip                   : 1;  /**< PLL FBSLIP indication. */
@@ -5387,7 +5449,8 @@ union cvmx_lmcx_ddr_pll_ctl {
 	uint64_t pll_fbslip                   : 1;
 	uint64_t ddr4_mode                    : 1;
 	uint64_t phy_dcok                     : 1;
-	uint64_t reserved_31_63               : 33;
+	uint64_t dclk_invert                  : 1;
+	uint64_t reserved_32_63               : 32;
 #endif
 	} s;
 	struct cvmx_lmcx_ddr_pll_ctl_cn61xx {
@@ -5510,7 +5573,63 @@ union cvmx_lmcx_ddr_pll_ctl {
 	uint64_t reserved_31_63               : 33;
 #endif
 	} cn70xx;
-	struct cvmx_lmcx_ddr_pll_ctl_cn70xx   cn78xx;
+	struct cvmx_lmcx_ddr_pll_ctl_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t dclk_invert                  : 1;  /**< Invert dclk that feeds LMC/DDR at the south side of the chip. */
+	uint64_t phy_dcok                     : 1;  /**< Set to power up PHY logic after setting LMC(0..3)_DDR_PLL_CTL[DDR4_MODE]. */
+	uint64_t ddr4_mode                    : 1;  /**< DDR4 mode select: 1 = DDR4, 0 = DDR3. */
+	uint64_t pll_fbslip                   : 1;  /**< PLL FBSLIP indication. */
+	uint64_t pll_lock                     : 1;  /**< PLL LOCK indication. */
+	uint64_t pll_rfslip                   : 1;  /**< PLL RFSLIP indication. */
+	uint64_t clkr                         : 2;  /**< PLL post-divider control. */
+	uint64_t jtg_test_mode                : 1;  /**< Reserved; must be zero. INTERNAL: JTAG test mode. Clock alignment between DCLK & REFCLK as
+                                                         well as FCLK & REFCLK can only be performed after the ddr_pll_divider_reset is deasserted.
+                                                         SW need to wait at least 10 reference clock cycles after deasserting pll_divider_reset
+                                                         before asserting LMC(0..3)_DDR_PLL_CTL[JTG_TEST_MODE]. During alignment (which can take up
+                                                         to 160 microseconds) DCLK and FCLK can exhibit some high-frequency pulses. Therefore, all
+                                                         bring up activities in that clock domain need to be delayed (when the chip operates in
+                                                         jtg_test_mode) by about 160 microseconds to ensure that lock is achieved. */
+	uint64_t ddr_div_reset                : 1;  /**< DDR postscalar divider reset. */
+	uint64_t ddr_ps_en                    : 4;  /**< DDR postscalar divide ratio. Determines the LMC CK speed.
+                                                         0x0 = divide LMC PLL by TBD.
+                                                         0x1 = divide LMC PLL by TBD.
+                                                         0x2 = divide LMC PLL by TBD.
+                                                         0x3 = divide LMC PLL by TBD.
+                                                         0x4 = divide LMC PLL by TBD.
+                                                         0x5 = divide LMC PLL by TBD.
+                                                         0x6 = divide LMC PLL by TBD.
+                                                         0x7 = divide LMC PLL by TBD.
+                                                         0x8 = divide LMC PLL by TBD.
+                                                         0x9 = divide LMC PLL by TBD.
+                                                         0xA = divide LMC PLL by TBD.
+                                                         0xB = divide LMC PLL by TBD.
+                                                         0xC = divide LMC PLL by TBD.
+                                                         0xD = divide LMC PLL by TBD.
+                                                         0xE = divide LMC PLL by TBD.
+                                                         0xF = divide LMC PLL by TBD.
+                                                         DDR_PS_EN is not used when DDR_DIV_RESET = 1 */
+	uint64_t reserved_8_17                : 10;
+	uint64_t reset_n                      : 1;  /**< PLL reset */
+	uint64_t clkf                         : 7;  /**< Multiply reference by CLKF. 32 <= CLKF <= 64. LMC PLL frequency = 50 * CLKF. min = 1.6
+                                                         GHz, max = 3.2 GHz. */
+#else
+	uint64_t clkf                         : 7;
+	uint64_t reset_n                      : 1;
+	uint64_t reserved_8_17                : 10;
+	uint64_t ddr_ps_en                    : 4;
+	uint64_t ddr_div_reset                : 1;
+	uint64_t jtg_test_mode                : 1;
+	uint64_t clkr                         : 2;
+	uint64_t pll_rfslip                   : 1;
+	uint64_t pll_lock                     : 1;
+	uint64_t pll_fbslip                   : 1;
+	uint64_t ddr4_mode                    : 1;
+	uint64_t phy_dcok                     : 1;
+	uint64_t dclk_invert                  : 1;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} cn78xx;
 	struct cvmx_lmcx_ddr_pll_ctl_cn61xx   cnf71xx;
 };
 typedef union cvmx_lmcx_ddr_pll_ctl cvmx_lmcx_ddr_pll_ctl_t;
@@ -6213,6 +6332,42 @@ union cvmx_lmcx_dual_memcfg {
 typedef union cvmx_lmcx_dual_memcfg cvmx_lmcx_dual_memcfg_t;
 
 /**
+ * cvmx_lmc#_ecc_parity_test
+ *
+ * This register has bits to control the ECC and CA Parity errors creation during test modes.
+ * ECC error is generated by enabling the CA_PARITY_CORRUPT_ENA bit of this register and
+ * selecting any ECC_CORRUPT_IDX index of the dataword from the cacheline to be
+ * corrupted. User can select which bit of the 128-bits dataword to corrupt by asserting
+ * any of the CHAR_MASK0 and CHAR_MASK2 bits. (CHAR_MASK0 and CHAR_MASK2 corresponds to the
+ * lower and upper 64-bit signal that can corrupt any individual bit of the data).
+ *
+ * CA Parity error is generated by enabling CA_PARITY_CORRUPT_ENA bit of this register and
+ * selecting the DDR command that the parity is to be corrupted with through CA_PARITY_SEL.
+ */
+union cvmx_lmcx_ecc_parity_test {
+	uint64_t u64;
+	struct cvmx_lmcx_ecc_parity_test_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_12_63               : 52;
+	uint64_t ecc_corrupt_ena              : 1;  /**< enables the ECC data corruption. */
+	uint64_t ecc_corrupt_idx              : 3;  /**< selects the cacheline index that the dataword is to be corrupted with */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t ca_parity_corrupt_ena        : 1;  /**< enables the CA Parity bit corruption. */
+	uint64_t ca_parity_sel                : 5;  /**< selects the type of DDR command to corrupt the parity bit. */
+#else
+	uint64_t ca_parity_sel                : 5;
+	uint64_t ca_parity_corrupt_ena        : 1;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t ecc_corrupt_idx              : 3;
+	uint64_t ecc_corrupt_ena              : 1;
+	uint64_t reserved_12_63               : 52;
+#endif
+	} s;
+	struct cvmx_lmcx_ecc_parity_test_s    cn78xx;
+};
+typedef union cvmx_lmcx_ecc_parity_test cvmx_lmcx_ecc_parity_test_t;
+
+/**
  * cvmx_lmc#_ecc_synd
  *
  * LMC_ECC_SYND = MRD ECC Syndromes
@@ -6284,7 +6439,32 @@ union cvmx_lmcx_ext_config {
 	uint64_t u64;
 	struct cvmx_lmcx_ext_config_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_29_63               : 35;
+	uint64_t reserved_46_63               : 18;
+	uint64_t error_alert_n_sample         : 1;  /**< Read to get a sample of the DRAM error_alert_n pin. */
+	uint64_t ea_int_polarity              : 1;  /**< Set to invert error_alert_n interrupt polarity.  When clear, interrupt will be signaled
+                                                         on the rising edge of error_alert_n.  When set, interrupt will be signeld on the falling
+                                                         edge of error_alert_n. */
+	uint64_t reserved_43_43               : 1;
+	uint64_t par_addr_mask                : 3;  /**< Mask applied to parity for address bits 14, 13, and 12.  Clear to exclude these
+                                                         address bits from the parity calculation, necessary if the DRAM device does not
+                                                         have these pins. */
+	uint64_t reserved_38_39               : 2;
+	uint64_t mrs_cmd_override             : 1;  /**< Set to override behavior of MRS and RCS DRAM operations. */
+	uint64_t mrs_cmd_select               : 1;  /**< When LMC(0..3)_EXT_CONFIG[MRS_CMD_OVERRIDE] is set, use this bit to select which
+                                                         style of operation for MRS and RCW commands.  If clear, select operation where
+                                                         signals other than CS are active before and after the CS_N active cycle.  When set,
+                                                         select operation where the other command signals (RAS_N,CAS_N,WE_n,ADDR,etc) all are
+                                                         active only during the cycle where the CS_N is also active. */
+	uint64_t reserved_33_35               : 3;
+	uint64_t invert_data                  : 1;  /**< Set this bit to cause all data to be inverted before writing or reading to/from
+                                                         DRAM - this effectively uses the scramble logic to instead invert all the data,
+                                                         so this bit must not be set if data scrambling is enabled.  May be useful if
+                                                         data inversion will result in lower power. */
+	uint64_t reserved_30_31               : 2;
+	uint64_t cmd_rti                      : 1;  /**< Set this bit to change the behavior of the LMC to return to a completely
+                                                         idle command (no CS active, no command pins active, and address/ba/bg all low)
+                                                         on the interface after an active command, rather than only forcing the CS
+                                                         inactive between commands. */
 	uint64_t cal_ena                      : 1;  /**< Set to cause LMC to operate in CAL mode.  DRAM mode registers must first be
                                                          programmed into CAL mode, then set CAL_ENABLE. */
 	uint64_t reserved_27_27               : 1;
@@ -6331,7 +6511,18 @@ union cvmx_lmcx_ext_config {
 	uint64_t par_include_a17              : 1;
 	uint64_t reserved_27_27               : 1;
 	uint64_t cal_ena                      : 1;
-	uint64_t reserved_29_63               : 35;
+	uint64_t cmd_rti                      : 1;
+	uint64_t reserved_30_31               : 2;
+	uint64_t invert_data                  : 1;
+	uint64_t reserved_33_35               : 3;
+	uint64_t mrs_cmd_select               : 1;
+	uint64_t mrs_cmd_override             : 1;
+	uint64_t reserved_38_39               : 2;
+	uint64_t par_addr_mask                : 3;
+	uint64_t reserved_43_43               : 1;
+	uint64_t ea_int_polarity              : 1;
+	uint64_t error_alert_n_sample         : 1;
+	uint64_t reserved_46_63               : 18;
 #endif
 	} s;
 	struct cvmx_lmcx_ext_config_cn70xx {
@@ -7788,7 +7979,9 @@ union cvmx_lmcx_mr_mpr_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_mr_mpr_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_53_63               : 11;
+	uint64_t reserved_57_63               : 7;
+	uint64_t mr_wr_bg1                    : 1;  /**< BG1 part of address select for MRS in DDR4 mode. */
+	uint64_t reserved_53_55               : 3;
 	uint64_t mr_wr_use_default_value      : 1;  /**< When set, write the value to the MR that is computed from the value set in various CSR
                                                          fields that would be used during initialization, rather that using the value in the
                                                          LMC(0..3)_MR_MPR_CTL[MR_WR_ADDR] CSR field.  Useful to re-write the same value or
@@ -7827,7 +8020,9 @@ union cvmx_lmcx_mr_mpr_ctl {
 	uint64_t mpr_byte_select              : 4;
 	uint64_t mpr_whole_byte_enable        : 1;
 	uint64_t mr_wr_use_default_value      : 1;
-	uint64_t reserved_53_63               : 11;
+	uint64_t reserved_53_55               : 3;
+	uint64_t mr_wr_bg1                    : 1;
+	uint64_t reserved_57_63               : 7;
 #endif
 	} s;
 	struct cvmx_lmcx_mr_mpr_ctl_cn70xx {
@@ -8122,10 +8317,10 @@ union cvmx_lmcx_phy_ctl {
 	uint64_t dsk_dbg_rd_start             : 1;  /**< Reserved. INTERNAL: Write 1 to start deskew data read operation, will automatically clear
                                                          to 0. Write to 1 will also clear the complete bit. */
 	uint64_t dsk_dbg_clk_scaler           : 2;  /**< Reserved. INTERNAL: Adjust clock toggle rate for reading deskew debug information:
-                                                         0 = Deskew read clock toggles every 1 DCLK
-                                                         1 = Deskew read clock toggles every 2 DCLKs
-                                                         2 = Deskew read clock toggles every 3 DCLKs
-                                                         3 = Deskew read clock toggles every 4 DCLKs */
+                                                         0 = Deskew read clock toggles every 4 DCLK
+                                                         1 = Deskew read clock toggles every 8 DCLKs
+                                                         2 = Deskew read clock toggles every 12 DCLKs
+                                                         3 = Deskew read clock toggles every 16 DCLKs */
 	uint64_t dsk_dbg_offset               : 2;  /**< Reserved. INTERNAL: Offset to change delay of deskew debug data return time to LMC from
                                                          DDR PHY. */
 	uint64_t dsk_dbg_num_bits_sel         : 1;  /**< Reserved. INTERNAL: Deskew debug, select number of bits per byte lane.

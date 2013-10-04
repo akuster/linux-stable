@@ -42,7 +42,7 @@
  *
  * Interface to the hardware Free Pool Allocator.
  *
- * <hr>$Revision: 86473 $<hr>
+ * <hr>$Revision: 89163 $<hr>
  *
  */
 
@@ -274,19 +274,21 @@ static inline void cvmx_fpa_enable(void)
 {
 	cvmx_fpa_ctl_status_t status;
 
-	status.u64 = cvmx_read_csr(CVMX_FPA_CTL_STATUS);
-	if (status.s.enb) {
-		/*
-		 * CN68XXP1 should not reset the FPA (doing so may break the
-		 * SSO, so we may end up enabling it more than once.  Just
-		 * return and don't spew messages.
-		 */
-		return;
-	}
+	if(!OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		status.u64 = cvmx_read_csr(CVMX_FPA_CTL_STATUS);
+		if (status.s.enb) {
+			/*
+		 	* CN68XXP1 should not reset the FPA (doing so may break the
+		 	* SSO, so we may end up enabling it more than once.  Just
+		 	* return and don't spew messages.
+		 	*/
+			return;
+		}
 
-	status.u64 = 0;
-	status.s.enb = 1;
-	cvmx_write_csr(CVMX_FPA_CTL_STATUS, status.u64);
+		status.u64 = 0;
+		status.s.enb = 1;
+		cvmx_write_csr(CVMX_FPA_CTL_STATUS, status.u64);
+	}
 }
 
 /**
@@ -477,7 +479,7 @@ static inline void cvmx_fpa_setup_aura_qos(int node, int aura, bool ena_red,
  * @param aura  - aura to get the block from
  * @return pointer to the block or NULL on failure
  */
-static inline void *cvmx_fpa_alloc_aura(int node, int aura, uint64_t num_cache_lines)
+static inline void *cvmx_fpa_alloc_aura(int node, int aura)
 {
 	uint64_t address;
 	cvmx_fpa_load_data_t load_addr;
@@ -490,9 +492,9 @@ static inline void *cvmx_fpa_alloc_aura(int node, int aura, uint64_t num_cache_l
 	load_addr.cn78xx.aura = aura;   /* Aura number */
 
 	address = cvmx_read_csr((CVMX_ADD_SEG(CVMX_MIPS_SPACE_XKPHYS, load_addr.u64)));
+	if (!address)
+		return NULL;
 	return cvmx_phys_to_ptr(address);
-
-
 }
 
 /**
@@ -581,6 +583,11 @@ extern uint64_t cvmx_fpa_get_block_size(uint64_t pool);
 int cvmx_fpa_global_initialize(void);
 
 /**
+ * Initialize global configuration for FPA block for specified node.
+ */
+int cvmx_fpa_global_init_node(int node);
+
+/**
  * Allocate or reserve  the specified fpa pool.
  *
  * @param pool	  FPA pool to allocate/reserve. If -1 it
@@ -645,6 +652,7 @@ int cvmx_fpa_aura_init(int node, int aura, char *name, int mem_node,
 		int buffers_cnt, int ptr_dis);
 int cvmx_fpa_config_red_params(int node, int qos_avg_en, int red_lvl_dly, int avg_dly);
 
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 /**
  * This will map auras specified in the auras_index[] array to specified
  * FPA pool_index.
@@ -663,6 +671,7 @@ static inline int cvmx_fpa_assign_aura(int node, int aura, int pool_index)
 	auras[0] = aura;
 	return cvmx_fpa_assign_auras(node, auras, 1, pool_index);
 }
+#endif
 
 int cvmx_fpa_allocate_auras(int node, int auras_allocated[], int count);
 int cvmx_fpa_free_auras(int node, int *pools_allocated, int count);

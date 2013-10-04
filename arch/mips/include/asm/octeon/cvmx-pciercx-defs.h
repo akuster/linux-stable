@@ -6714,9 +6714,7 @@ union cvmx_pciercx_cfg067 {
 	uint32_t reserved_26_31               : 6;
 	uint32_t tpbes                        : 1;  /**< Unsupported TLP Prefix Blocked Error Severity */
 	uint32_t uatombs                      : 1;  /**< Unsupported AtomicOp Egress Blocked Severity */
-	uint32_t reserved_23_23               : 1;
-	uint32_t ucies                        : 1;  /**< Uncorrectable Internal Error Severity */
-	uint32_t reserved_21_21               : 1;
+	uint32_t reserved_21_23               : 3;
 	uint32_t ures                         : 1;  /**< Unsupported Request Error Severity */
 	uint32_t ecrces                       : 1;  /**< ECRC Error Severity */
 	uint32_t mtlps                        : 1;  /**< Malformed TLP Severity */
@@ -6744,9 +6742,7 @@ union cvmx_pciercx_cfg067 {
 	uint32_t mtlps                        : 1;
 	uint32_t ecrces                       : 1;
 	uint32_t ures                         : 1;
-	uint32_t reserved_21_21               : 1;
-	uint32_t ucies                        : 1;
-	uint32_t reserved_23_23               : 1;
+	uint32_t reserved_21_23               : 3;
 	uint32_t uatombs                      : 1;
 	uint32_t tpbes                        : 1;
 	uint32_t reserved_26_31               : 6;
@@ -6876,7 +6872,7 @@ union cvmx_pciercx_cfg067 {
 	uint32_t reserved_26_31               : 6;
 	uint32_t tpbes                        : 1;  /**< Unsupported TLP Prefix Blocked Error Severity */
 	uint32_t uatombs                      : 1;  /**< Unsupported AtomicOp Egress Blocked Severity */
-	uint32_t reserved_21_23               : 3;
+	uint32_t unsuperr                     : 3;  /**< Reserved. */
 	uint32_t ures                         : 1;  /**< Unsupported Request Error Severity */
 	uint32_t ecrces                       : 1;  /**< ECRC Error Severity */
 	uint32_t mtlps                        : 1;  /**< Malformed TLP Severity */
@@ -6904,7 +6900,7 @@ union cvmx_pciercx_cfg067 {
 	uint32_t mtlps                        : 1;
 	uint32_t ecrces                       : 1;
 	uint32_t ures                         : 1;
-	uint32_t reserved_21_23               : 3;
+	uint32_t unsuperr                     : 3;
 	uint32_t uatombs                      : 1;
 	uint32_t tpbes                        : 1;
 	uint32_t reserved_26_31               : 6;
@@ -7442,41 +7438,45 @@ union cvmx_pciercx_cfg089 {
 	struct cvmx_pciercx_cfg089_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_31_31               : 1;
-	uint32_t l1drph                       : 3;  /**< "Lane 1 Upstream Component Receiver Preset Hint
+	uint32_t l1urph                       : 3;  /**< "Lane 1 Upstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l1dtp                        : 4;  /**< "Lane 1 Upstream Component Transmitter Preset
+	uint32_t l1utp                        : 4;  /**< "Lane 1 Upstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_23_23               : 1;
-	uint32_t l1urph                       : 3;  /**< "Lane 1 Downstream Component Receiver Preset Hint
+	uint32_t l1drph                       : 3;  /**< "Lane 1 Downstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t reserved_15_19               : 5;
-	uint32_t l0drph                       : 3;  /**< "Lane 0 Upstream Component Receiver Preset Hint
+	uint32_t l1ddtp                       : 4;  /**< "Lane 1 Downstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l0dtp                        : 4;  /**< "Lane 0 Upstream Component Transmitter Preset
+	uint32_t reserved_15_15               : 1;
+	uint32_t l0urph                       : 3;  /**< "Lane 0 Upstream Component Receiver Preset Hint
+                                                         Writable through PEM#_CFG_WR.
+                                                         However, the application must not change this field." */
+	uint32_t l0utp                        : 4;  /**< "Lane 0 Upstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_7_7                 : 1;
-	uint32_t l0urph                       : 3;  /**< "Lane 0 Downstream Component Receiver Preset Hint
+	uint32_t l0drph                       : 3;  /**< "Lane 0 Downstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l0utp                        : 4;  /**< "Lane 0 Downstream Component Transmitter Preset
+	uint32_t l0dtp                        : 4;  /**< "Lane 0 Downstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 #else
-	uint32_t l0utp                        : 4;
-	uint32_t l0urph                       : 3;
-	uint32_t reserved_7_7                 : 1;
 	uint32_t l0dtp                        : 4;
 	uint32_t l0drph                       : 3;
-	uint32_t reserved_15_19               : 5;
-	uint32_t l1urph                       : 3;
-	uint32_t reserved_23_23               : 1;
-	uint32_t l1dtp                        : 4;
+	uint32_t reserved_7_7                 : 1;
+	uint32_t l0utp                        : 4;
+	uint32_t l0urph                       : 3;
+	uint32_t reserved_15_15               : 1;
+	uint32_t l1ddtp                       : 4;
 	uint32_t l1drph                       : 3;
+	uint32_t reserved_23_23               : 1;
+	uint32_t l1utp                        : 4;
+	uint32_t l1urph                       : 3;
 	uint32_t reserved_31_31               : 1;
 #endif
 	} s;
@@ -7496,45 +7496,45 @@ union cvmx_pciercx_cfg090 {
 	struct cvmx_pciercx_cfg090_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_31_31               : 1;
-	uint32_t l3drph                       : 3;  /**< "Lane 3 Upstream Component Receiver Preset Hint
+	uint32_t l3urph                       : 3;  /**< "Lane 3 Upstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l3dtp                        : 4;  /**< "Lane 3 Upstream Component Transmitter Preset
+	uint32_t l3utp                        : 4;  /**< "Lane 3 Upstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_23_23               : 1;
-	uint32_t l3urph                       : 3;  /**< "Lane 3 Downstream Component Receiver Preset Hint
+	uint32_t l3drph                       : 3;  /**< "Lane 3 Downstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l3utp                        : 4;  /**< "Lane 3 Downstream Component Transmitter Preset
+	uint32_t l3dtp                        : 4;  /**< "Lane 3 Downstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_15_15               : 1;
-	uint32_t l2drph                       : 3;  /**< "Lane 2 Upstream Component Receiver Preset Hint
+	uint32_t l2urph                       : 3;  /**< "Lane 2 Upstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l2dtp                        : 4;  /**< "Lane 2 Upstream Component Transmitter Preset
+	uint32_t l2utp                        : 4;  /**< "Lane 2 Upstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_7_7                 : 1;
-	uint32_t l2urph                       : 3;  /**< "Lane 2 Downstream Component Receiver Preset Hint
+	uint32_t l2drph                       : 3;  /**< "Lane 2 Downstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l2utp                        : 4;  /**< "Lane 2 Downstream Component Transmitter Preset
+	uint32_t l2dtp                        : 4;  /**< "Lane 2 Downstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 #else
-	uint32_t l2utp                        : 4;
-	uint32_t l2urph                       : 3;
-	uint32_t reserved_7_7                 : 1;
 	uint32_t l2dtp                        : 4;
 	uint32_t l2drph                       : 3;
+	uint32_t reserved_7_7                 : 1;
+	uint32_t l2utp                        : 4;
+	uint32_t l2urph                       : 3;
 	uint32_t reserved_15_15               : 1;
-	uint32_t l3utp                        : 4;
-	uint32_t l3urph                       : 3;
-	uint32_t reserved_23_23               : 1;
 	uint32_t l3dtp                        : 4;
 	uint32_t l3drph                       : 3;
+	uint32_t reserved_23_23               : 1;
+	uint32_t l3utp                        : 4;
+	uint32_t l3urph                       : 3;
 	uint32_t reserved_31_31               : 1;
 #endif
 	} s;
@@ -7554,45 +7554,45 @@ union cvmx_pciercx_cfg091 {
 	struct cvmx_pciercx_cfg091_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_31_31               : 1;
-	uint32_t l5drph                       : 3;  /**< "Lane 5 Upstream Component Receiver Preset Hint
+	uint32_t l5urph                       : 3;  /**< "Lane 5 Upstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l5dtp                        : 4;  /**< "Lane 5 Upstream Component Transmitter Preset
+	uint32_t l5utp                        : 4;  /**< "Lane 5 Upstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_23_23               : 1;
-	uint32_t l5urph                       : 3;  /**< "Lane 5 Downstream Component Receiver Preset Hint
+	uint32_t l5drph                       : 3;  /**< "Lane 5 Downstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l5utp                        : 4;  /**< "Lane 5 Downstream Component Transmitter Preset
+	uint32_t l5dtp                        : 4;  /**< "Lane 5 Downstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_15_15               : 1;
-	uint32_t l4drph                       : 3;  /**< "Lane 4 Upstream Component Receiver Preset Hint
+	uint32_t l4urph                       : 3;  /**< "Lane 4 Upstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l4dtp                        : 4;  /**< "Lane 4 Upstream Component Transmitter Preset
+	uint32_t l4utp                        : 4;  /**< "Lane 4 Upstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_7_7                 : 1;
-	uint32_t l4urph                       : 3;  /**< "Lane 4 Downstream Component Receiver Preset Hint
+	uint32_t l4drph                       : 3;  /**< "Lane 4 Downstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l4utp                        : 4;  /**< "Lane 4 Downstream Component Transmitter Preset
+	uint32_t l4dtp                        : 4;  /**< "Lane 4 Downstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 #else
-	uint32_t l4utp                        : 4;
-	uint32_t l4urph                       : 3;
-	uint32_t reserved_7_7                 : 1;
 	uint32_t l4dtp                        : 4;
 	uint32_t l4drph                       : 3;
+	uint32_t reserved_7_7                 : 1;
+	uint32_t l4utp                        : 4;
+	uint32_t l4urph                       : 3;
 	uint32_t reserved_15_15               : 1;
-	uint32_t l5utp                        : 4;
-	uint32_t l5urph                       : 3;
-	uint32_t reserved_23_23               : 1;
 	uint32_t l5dtp                        : 4;
 	uint32_t l5drph                       : 3;
+	uint32_t reserved_23_23               : 1;
+	uint32_t l5utp                        : 4;
+	uint32_t l5urph                       : 3;
 	uint32_t reserved_31_31               : 1;
 #endif
 	} s;
@@ -7612,45 +7612,45 @@ union cvmx_pciercx_cfg092 {
 	struct cvmx_pciercx_cfg092_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_31_31               : 1;
-	uint32_t l7drph                       : 3;  /**< "Lane 7 Upstream Component Receiver Preset Hint
+	uint32_t l7urph                       : 3;  /**< "Lane 7 Upstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l7dtp                        : 4;  /**< "Lane 7 Upstream Component Transmitter Preset
+	uint32_t l7utp                        : 4;  /**< "Lane 7 Upstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_23_23               : 1;
-	uint32_t l7urph                       : 3;  /**< "Lane 7 Downstream Component Receiver Preset Hint
+	uint32_t l7drph                       : 3;  /**< "Lane 7 Downstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l7utp                        : 4;  /**< "Lane 7 Downstream Component Transmitter Preset
+	uint32_t l7dtp                        : 4;  /**< "Lane 7 Downstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_15_15               : 1;
-	uint32_t l6drph                       : 3;  /**< "Lane 6 Upstream Component Receiver Preset Hint
+	uint32_t l6urph                       : 3;  /**< "Lane 6 Upstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l6dtp                        : 4;  /**< "Lane 6 Upstream Component Transmitter Preset
+	uint32_t l6utp                        : 4;  /**< "Lane 6 Upstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 	uint32_t reserved_7_7                 : 1;
-	uint32_t l6urph                       : 3;  /**< "Lane 6 Downstream Component Receiver Preset Hint
+	uint32_t l6drph                       : 3;  /**< "Lane 6 Downstream Component Receiver Preset Hint
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
-	uint32_t l6utp                        : 4;  /**< "Lane 6 Downstream Component Transmitter Preset
+	uint32_t l6dtp                        : 4;  /**< "Lane 6 Downstream Component Transmitter Preset
                                                          Writable through PEM#_CFG_WR.
                                                          However, the application must not change this field." */
 #else
-	uint32_t l6utp                        : 4;
-	uint32_t l6urph                       : 3;
-	uint32_t reserved_7_7                 : 1;
 	uint32_t l6dtp                        : 4;
 	uint32_t l6drph                       : 3;
+	uint32_t reserved_7_7                 : 1;
+	uint32_t l6utp                        : 4;
+	uint32_t l6urph                       : 3;
 	uint32_t reserved_15_15               : 1;
-	uint32_t l7utp                        : 4;
-	uint32_t l7urph                       : 3;
-	uint32_t reserved_23_23               : 1;
 	uint32_t l7dtp                        : 4;
 	uint32_t l7drph                       : 3;
+	uint32_t reserved_23_23               : 1;
+	uint32_t l7utp                        : 4;
+	uint32_t l7urph                       : 3;
 	uint32_t reserved_31_31               : 1;
 #endif
 	} s;
@@ -8072,6 +8072,75 @@ union cvmx_pciercx_cfg452 {
                                                           in the PCIe core that COULD be used. As per the PCIe specs,
                                                           the PCIe core can negotiate a smaller link width, so
                                                           x1 is also supported when LME=0x3, for example.) */
+	uint32_t reserved_12_15               : 4;
+	uint32_t link_rate                    : 4;  /**< Reserved. */
+	uint32_t flm                          : 1;  /**< Fast Link Mode
+                                                         Sets all internal timers to fast mode for simulation purposes. */
+	uint32_t reserved_6_6                 : 1;
+	uint32_t dllle                        : 1;  /**< DLL Link Enable
+                                                         Enables Link initialization. If DLL Link Enable = 0, the PCI
+                                                         Express bus does not transmit InitFC DLLPs and does not
+                                                         establish a Link. */
+	uint32_t reserved_4_4                 : 1;
+	uint32_t ra                           : 1;  /**< Reset Assert
+                                                         Triggers a recovery and forces the LTSSM to the Hot Reset
+                                                         state (downstream port only). */
+	uint32_t le                           : 1;  /**< Loopback Enable
+                                                         Initiate loopback mode as a master. On a 0->1 transition,
+                                                         the PCIe core sends TS ordered sets with the loopback bit set
+                                                         to cause the link partner to enter into loopback mode as a
+                                                         slave. Normal transmission is not possible when LE=1. To exit
+                                                         loopback mode, take the link through a reset sequence. */
+	uint32_t sd                           : 1;  /**< Scramble Disable
+                                                         Turns off data scrambling. */
+	uint32_t omr                          : 1;  /**< Other Message Request
+                                                         When software writes a `1' to this bit, the PCI Express bus
+                                                         transmits the Message contained in the Other Message register. */
+#else
+	uint32_t omr                          : 1;
+	uint32_t sd                           : 1;
+	uint32_t le                           : 1;
+	uint32_t ra                           : 1;
+	uint32_t reserved_4_4                 : 1;
+	uint32_t dllle                        : 1;
+	uint32_t reserved_6_6                 : 1;
+	uint32_t flm                          : 1;
+	uint32_t link_rate                    : 4;
+	uint32_t reserved_12_15               : 4;
+	uint32_t lme                          : 6;
+	uint32_t reserved_22_24               : 3;
+	uint32_t eccrc                        : 1;
+	uint32_t reserved_26_31               : 6;
+#endif
+	} s;
+	struct cvmx_pciercx_cfg452_cn52xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t reserved_26_31               : 6;
+	uint32_t eccrc                        : 1;  /**< Enable Corrupted CRC
+                                                         Causes corrupt LCRC for TLPs when set,
+                                                         using the pattern contained in the Other Message register.
+                                                         This is a test feature, not to be used in normal operation. */
+	uint32_t reserved_22_24               : 3;
+	uint32_t lme                          : 6;  /**< Link Mode Enable
+                                                         o 000001: x1
+                                                         o 000011: x2
+                                                         o 000111: x4
+                                                         o 001111: x8 (not supported)
+                                                         o 011111: x16 (not supported)
+                                                         o 111111: x32 (not supported)
+                                                         This field indicates the MAXIMUM number of lanes supported
+                                                         by the PCIe port. It is normally set to 0x7 or 0x3 depending
+                                                         on the value of the QLM_CFG bits (0x7 when QLM_CFG == 0x3
+                                                         otherwise 0x3). The value can be set less than 0x7 or 0x3
+                                                         to limit the number of lanes the PCIe will attempt to use.
+                                                         The programming of this field needs to be done by SW BEFORE
+                                                         enabling the link. See also MLW.
+                                                         (Note: The value of this field does NOT indicate the number
+                                                          of lanes in use by the PCIe. LME sets the max number of lanes
+                                                          in the PCIe core that COULD be used. As per the PCIe specs,
+                                                          the PCIe core can negotiate a smaller link width, so all
+                                                          of x4, x2, and x1 are supported when LME=0x7,
+                                                          for example.) */
 	uint32_t reserved_8_15                : 8;
 	uint32_t flm                          : 1;  /**< Fast Link Mode
                                                          Sets all internal timers to fast mode for simulation purposes. */
@@ -8110,11 +8179,10 @@ union cvmx_pciercx_cfg452 {
 	uint32_t eccrc                        : 1;
 	uint32_t reserved_26_31               : 6;
 #endif
-	} s;
-	struct cvmx_pciercx_cfg452_s          cn52xx;
-	struct cvmx_pciercx_cfg452_s          cn52xxp1;
-	struct cvmx_pciercx_cfg452_s          cn56xx;
-	struct cvmx_pciercx_cfg452_s          cn56xxp1;
+	} cn52xx;
+	struct cvmx_pciercx_cfg452_cn52xx     cn52xxp1;
+	struct cvmx_pciercx_cfg452_cn52xx     cn56xx;
+	struct cvmx_pciercx_cfg452_cn52xx     cn56xxp1;
 	struct cvmx_pciercx_cfg452_cn61xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_22_31               : 10;
@@ -8173,13 +8241,72 @@ union cvmx_pciercx_cfg452 {
 	uint32_t reserved_22_31               : 10;
 #endif
 	} cn61xx;
-	struct cvmx_pciercx_cfg452_s          cn63xx;
-	struct cvmx_pciercx_cfg452_s          cn63xxp1;
+	struct cvmx_pciercx_cfg452_cn52xx     cn63xx;
+	struct cvmx_pciercx_cfg452_cn52xx     cn63xxp1;
 	struct cvmx_pciercx_cfg452_cn61xx     cn66xx;
 	struct cvmx_pciercx_cfg452_cn61xx     cn68xx;
 	struct cvmx_pciercx_cfg452_cn61xx     cn68xxp1;
-	struct cvmx_pciercx_cfg452_cn61xx     cn70xx;
-	struct cvmx_pciercx_cfg452_cn61xx     cn78xx;
+	struct cvmx_pciercx_cfg452_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t reserved_22_31               : 10;
+	uint32_t lme                          : 6;  /**< Link Mode Enable
+                                                         o 000001: x1
+                                                         o 000011: x2
+                                                         o 000111: x4
+                                                         o 001111: x8  (not supported)
+                                                         o 011111: x16 (not supported)
+                                                         o 111111: x32 (not supported)
+                                                         This field indicates the MAXIMUM number of lanes supported
+                                                         by the PCIe port. The value can be set less than 0x7
+                                                         to limit the number of lanes the PCIe will attempt to use.
+                                                         The programming of this field needs to be done by SW BEFORE
+                                                         enabling the link. See also MLW.
+                                                         (Note: The value of this field does NOT indicate the number
+                                                         of lanes in use by the PCIe. LME sets the max number of lanes
+                                                         in the PCIe core that COULD be used. As per the PCIe specs,
+                                                         the PCIe core can negotiate a smaller link width, so all
+                                                         of x4, x2, and x1 are supported when LME=0x7,
+                                                         for example.) */
+	uint32_t reserved_12_15               : 4;
+	uint32_t link_rate                    : 4;  /**< Reserved. */
+	uint32_t flm                          : 1;  /**< Fast Link Mode
+                                                         Sets all internal timers to fast mode for simulation purposes. */
+	uint32_t reserved_6_6                 : 1;
+	uint32_t dllle                        : 1;  /**< DLL Link Enable
+                                                         Enables Link initialization. If DLL Link Enable = 0, the PCI
+                                                         Express bus does not transmit InitFC DLLPs and does not
+                                                         establish a Link. */
+	uint32_t reserved_4_4                 : 1;
+	uint32_t ra                           : 1;  /**< Reset Assert
+                                                         Triggers a recovery and forces the LTSSM to the Hot Reset
+                                                         state (downstream port only). */
+	uint32_t le                           : 1;  /**< Loopback Enable
+                                                         Initiate loopback mode as a master. On a 0->1 transition,
+                                                         the PCIe core sends TS ordered sets with the loopback bit set
+                                                         to cause the link partner to enter into loopback mode as a
+                                                         slave. Normal transmission is not possible when LE=1. To exit
+                                                         loopback mode, take the link through a reset sequence. */
+	uint32_t sd                           : 1;  /**< Scramble Disable
+                                                         Turns off data scrambling. */
+	uint32_t omr                          : 1;  /**< Other Message Request
+                                                         When software writes a `1' to this bit, the PCI Express bus
+                                                         transmits the Message contained in the Other Message register. */
+#else
+	uint32_t omr                          : 1;
+	uint32_t sd                           : 1;
+	uint32_t le                           : 1;
+	uint32_t ra                           : 1;
+	uint32_t reserved_4_4                 : 1;
+	uint32_t dllle                        : 1;
+	uint32_t reserved_6_6                 : 1;
+	uint32_t flm                          : 1;
+	uint32_t link_rate                    : 4;
+	uint32_t reserved_12_15               : 4;
+	uint32_t lme                          : 6;
+	uint32_t reserved_22_31               : 10;
+#endif
+	} cn70xx;
+	struct cvmx_pciercx_cfg452_cn70xx     cn78xx;
 	struct cvmx_pciercx_cfg452_cn61xx     cnf71xx;
 };
 typedef union cvmx_pciercx_cfg452 cvmx_pciercx_cfg452_t;
@@ -9384,9 +9511,9 @@ union cvmx_pciercx_cfg558 {
 	struct cvmx_pciercx_cfg558_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t ple                          : 1;  /**< Pipe Loopback Enable */
-	uint32_t reserved_0_30                : 31;
+	uint32_t rxstatus                     : 31; /**< Reserved. */
 #else
-	uint32_t reserved_0_30                : 31;
+	uint32_t rxstatus                     : 31;
 	uint32_t ple                          : 1;
 #endif
 	} s;

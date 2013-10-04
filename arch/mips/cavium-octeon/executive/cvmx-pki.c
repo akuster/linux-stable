@@ -61,6 +61,7 @@
 #include "cvmx-pki-cluster.h"
 #endif
 
+
 CVMX_SHARED struct cvmx_pki_config pki_config[CVMX_MAX_NODES];
 CVMX_SHARED struct cvmx_pki_profiles pki_profiles[CVMX_MAX_NODES];
 
@@ -111,6 +112,7 @@ EXPORT_SYMBOL(cvmx_pki_disable);
 int cvmx_pki_setup_clusters(int node)
 {
 	int i;
+
 	for(i=0; i< cvmx_pki_cluster_code_length; i++)
 		cvmx_write_csr_node(node, CVMX_PKI_IMEMX(i),cvmx_pki_cluster_code_default[i]);
 
@@ -180,6 +182,7 @@ int cvmx_pki_write_frame_len(int node, int id, int maxframesize, int minframesiz
  * @param initial_style       Which initial style to assign to this pkind. Style also go as one of
  *                            the inputs to match in the pcam table. If no match is found this initial
  *                            style will be the final style.
+ * @param l2_parsing_mask     vinita_to_do
  */
 int cvmx_pki_write_pkind(int node, int pkind, int cluster_group,
 				     int initial_parse_mode, int initial_style )
@@ -243,17 +246,16 @@ void cvmx_pki_write_style(int node, uint64_t style, uint64_t cluster_mask,
 			//style_cfg_reg.s.lenerr_eqpad = style_cfg.l2_lenchk_mode;
 			//style_cfg_reg.s.maxerr_en = style_cfg.en_maxframe_errchk;
 			//style_cfg_reg.s.minerr_en = style_cfg.en_minframe_errchk;
-			//style_cfg_reg.s.fcs_chk = style_cfg.en_FCS_chk;
-			//style_cfg_reg.s.strip_FCS = style_cfg.strip_l2_FCS;
+			//style_cfg_reg.s.fcs_chk = style_cfg.en_fcs_check;
+			style_cfg_reg.s.fcs_strip = style_cfg.en_strip_l2_fcs;
 			//style_cfg_reg.s.minmax_sel = style_cfg.max_min_frame_sel;
 			style_cfg_reg.s.qpg_base = style_cfg.qpg_base_offset;
-			style_cfg_reg.s.qpg_dis_padd = style_cfg.qpg_calc_port_addr;
-			style_cfg_reg.s.qpg_dis_aura = style_cfg.qpg_calc_aura;
-			style_cfg_reg.s.qpg_dis_grp = style_cfg.qpg_calc_group;
+			style_cfg_reg.s.qpg_dis_padd = style_cfg.en_qpg_calc_port_addr;
+			style_cfg_reg.s.qpg_dis_aura = style_cfg.en_qpg_calc_aura;
+			style_cfg_reg.s.qpg_dis_grp = style_cfg.en_qpg_calc_group;
 			cvmx_write_csr_node(node, CVMX_PKI_CLX_STYLEX_CFG(style, cluster),style_cfg_reg.u64);
 
 			style_alg_reg.u64 = cvmx_read_csr_node(node, CVMX_PKI_CLX_STYLEX_ALG(style, cluster));
-
 			style_alg_reg.s.qpg_qos = style_cfg.qpg_qos;
 			style_alg_reg.s.tag_vni = style_cfg.tag_fields.tag_vni;
 			style_alg_reg.s.tag_gtp = style_cfg.tag_fields.tag_gtp;
@@ -265,6 +267,7 @@ void cvmx_pki_write_style(int node, uint64_t style, uint64_t cluster_mask,
 			style_alg_reg.s.tag_mpls0 = style_cfg.tag_fields.mpls_label;
 			style_alg_reg.s.tag_prt = style_cfg.tag_fields.input_port;
 			style_alg_reg.s.tt = style_cfg.tag_type;
+
 			cvmx_write_csr_node(node, CVMX_PKI_CLX_STYLEX_ALG(style, cluster), style_alg_reg.u64);
 
 			style_cfg2_reg.u64 = cvmx_read_csr_node(node, CVMX_PKI_CLX_STYLEX_CFG2(style, cluster));
@@ -549,7 +552,7 @@ int cvmx_pki_find_pool(int node, char *name)
 
 	if((index = cvmx_pki_pool_profile_exist(node,name)) == -1)
 		return -1;
-	return pki_profiles[node].pool_profile_list.pool_profile[index].pool_cfg.pool_num;
+	return pki_profiles[node].pool_profile_list.pool_profile[index].pool_num;
 }
 
 /**
@@ -676,8 +679,8 @@ int cvmx_pki_get_pool_buffer_size(int node,int pool)
 
 	while(index--)
 	{
-		if(pki_profiles[node].pool_profile_list.pool_profile[index].pool_cfg.pool_num == pool) {
-			return pki_profiles[node].pool_profile_list.pool_profile[index].pool_cfg.buffer_size;
+		if(pki_profiles[node].pool_profile_list.pool_profile[index].pool_num == pool) {
+			return pki_profiles[node].pool_profile_list.pool_profile[index].buffer_size;
 		}
 	}
 	return -1;
@@ -777,42 +780,47 @@ int cvmx_pki_find_style(int node, char *name)
  * 			-cluster_group (-1 if needs to be allocated)
  * 			-num_cluster   (number of cluster in the cluster group)
  * 			-parsing_mask  (parsing mask for the cluster group)
- * @return 		0 on SUCCESS
+ * @return 		cluster group number on SUCCESS
                         -1 on failure
  */
 int cvmx_pki_set_cluster_config(int node, struct cvmx_pki_cluster_profile cl_profile)
 {
 	int index;
 	int cluster_group;
-	uint64_t cluster_mask;
+	uint64_t cluster_mask=0;
 
 	if(node >= CVMX_MAX_NODES) {
 		cvmx_dprintf("Invalid node number %d",node);
 		return -1;
 	}
-	if(cvmx_pki_cluster_profile_exist(node,cl_profile.name) >= 0) {
-		cvmx_dprintf("ERROR:cluster profile already exist with name %s",cl_profile.name);
-		return -1;
-	}
-	if((cluster_group = cvmx_pki_alloc_cluster_group(node, cl_profile.cluster_group,
-	    cl_profile.num_clusters, cl_profile.parsing_mask, &cluster_mask)) == -1) {
-		cvmx_dprintf("ERROR:allocating cluster_group\n");
-		return -1;
-	}
-	cl_profile.cluster_group = cluster_group;
-	//spinlock it
-	index = pki_profiles[node].cl_profile_list.index;
+	if((index = cvmx_pki_cluster_profile_exist(node,cl_profile.name)) >= 0) {
+		cvmx_dprintf("Warning: Modifing cluster profile with name %s\n",cl_profile.name);
+		cluster_group=0; //vinita_to_do
 
-	if(index >= CVMX_PKI_MAX_CLUSTER_PROFILES) {
-		cvmx_dprintf("ERROR: Max cluster profiles %d reached\n", index);
-		return -1;
 	}
-	pki_profiles[node].cl_profile_list.index++;
-	//spinlock free
-
-	pki_profiles[node].cl_profile_list.cl_profile[index] = cl_profile;
-	pki_config[node].cluster_cfg[cluster_group].cluster_mask = cluster_mask;
-	return 0;
+	else {
+		if((cluster_group = cvmx_pki_alloc_cluster_group(node, cl_profile.cluster_group)) == -1) {
+			cvmx_dprintf("ERROR:allocating cluster_group %d\n",cl_profile.cluster_group);
+			return -1;
+		}
+		if(cvmx_pki_alloc_clusters(node, cl_profile.num_clusters, &cluster_mask)) {
+			cvmx_dprintf("ERROR:allocating clusters %d\n",cl_profile.num_clusters);
+			return -1;
+		}
+		cl_profile.cluster_group = cluster_group;
+		//spinlock it
+		index = pki_profiles[node].cl_profile_list.index;
+		if(index >= CVMX_PKI_MAX_CLUSTER_PROFILES) {
+			cvmx_dprintf("ERROR: Max cluster profiles %d reached\n", index);
+			return -1;
+		}
+		pki_profiles[node].cl_profile_list.index++;
+		pki_profiles[node].cl_profile_list.cl_profile[index] = cl_profile;
+		pki_config[node].cluster_cfg[cluster_group].cluster_mask = cluster_mask;
+		pki_config[node].cluster_cfg[cluster_group].users++;
+		//spinlock free
+	}
+	return cluster_group;
 }
 
 /**
@@ -823,7 +831,7 @@ int cvmx_pki_set_cluster_config(int node, struct cvmx_pki_cluster_profile cl_pro
  * @param pool_numb     pool number (-1 if need to be allocated)
  * @param buffer_size	size of buffers in specified pool
  * @param num_buffers	numberof buffers in specified pool
- * @return 		0 on SUCCESS
+ * @return 		pool number on SUCCESS
                         -1 on failure
  */
 int cvmx_pki_set_pool_config(int node, char* pool_name, int pool_num,
@@ -837,30 +845,33 @@ int cvmx_pki_set_pool_config(int node, char* pool_name, int pool_num,
 		return -1;
 	}
 	if(cvmx_pki_pool_profile_exist(node, pool_name) >= 0) {
-		cvmx_dprintf("ERROR:pool profile already exist with name %s",pool_name);
-		return -1;
+		cvmx_dprintf("Warning: Modifing pool profile with name %s\n",pool_name);
+		pool_num = cvmx_pki_find_pool(node, pool_name);
 	}
-	if(cvmx_fpa_allocate_fpa_pools(node,&pool_num,1) == -1) {
-		cvmx_dprintf("ERROR:allocating pool for pool_config\n");
-		return -1;
+	else {
+		if(cvmx_fpa_allocate_fpa_pools(node,&pool_num,1) == -1) {
+			cvmx_dprintf("ERROR:allocating pool for pool_config\n");
+			return -1;
+		}
+		//spinlock it
+		index = pki_profiles[node].pool_profile_list.index;
+		if(index >= CVMX_PKI_MAX_POOL_PROFILES) {
+			cvmx_dprintf("ERROR: Max pool profile %d reached\n", (int)index);
+			return -1;
+		}
+		pki_profiles[node].pool_profile_list.index++;
+		//spinlock free
+		pool_profile = &pki_profiles[node].pool_profile_list.pool_profile[index];
+		strcpy(pool_profile->pool_name, pool_name);
+		pool_profile->pool_num = pool_num;
+		pool_profile->buffer_size = buffer_size;
+		pool_profile->buffer_count = num_buffers;
+		pki_config[node].pool_cfg[pool_num].users++;
 	}
+	pki_config[node].pool_cfg[pool_num].buffer_size = buffer_size;
+	pki_config[node].pool_cfg[pool_num].buffer_count = num_buffers;
 
-	//spinlock it
-	index = pki_profiles[node].pool_profile_list.index;
-	if(index >= CVMX_PKI_MAX_POOL_PROFILES) {
-		cvmx_dprintf("ERROR: Max pool profile %d reached\n", (int)index);
-		return -1;
-
-	}
-	pki_profiles[node].pool_profile_list.index++;
-	//spinlock free
-
-	pool_profile = &pki_profiles[node].pool_profile_list.pool_profile[index];
-	strcpy(pool_profile->pool_name, pool_name);
-	pool_profile->pool_cfg.pool_num = pool_num;
-	pool_profile->pool_cfg.buffer_size = buffer_size;
-	pool_profile->pool_cfg.buffer_count = num_buffers;
-	return 0;
+	return pool_num;
 }
 
 /**
@@ -871,13 +882,13 @@ int cvmx_pki_set_pool_config(int node, char* pool_name, int pool_num,
  * @param aura_num      aura number (-1 if need to be allocated)
  * @param pool  	pool to which aura is mapped
  * @param num_buffers	number of buffers to allocate to aura.
- * @return 		0 on SUCCESS
+ * @return 		aura number on SUCCESS
                         -1 on failure
  */
 int cvmx_pki_set_aura_config(int node, char* aura_name, int aura_num, int pool,
-			      int num_buffers)
+			     int num_buffers)
 {
-	uint64_t index;
+	int64_t index;
 	struct cvmx_pki_aura_profile* aura_profile;
 
 	if(node >= CVMX_MAX_NODES) {
@@ -885,30 +896,35 @@ int cvmx_pki_set_aura_config(int node, char* aura_name, int aura_num, int pool,
 		return -1;
 	}
 	if(cvmx_pki_aura_profile_exist(node,aura_name) >= 0) {
-		cvmx_dprintf("ERROR:aura profile already exist with name %s",aura_name);
-		return -1;
+		cvmx_dprintf("Warning: Modifing aura profile with name %s\n",aura_name);
+		aura_num = cvmx_pki_find_aura(node, aura_name);
 	}
-	if((aura_num = cvmx_fpa_allocate_auras(node,&aura_num,1)) == -1) {
-		cvmx_dprintf("ERROR:allocating aura for aura_config\n");
-		return -1;
-	}
-	//spinlock it
-	index = pki_profiles[node].aura_profile_list.index;
-	if(index >= CVMX_PKI_MAX_AURA_PROFILES) {
-		cvmx_dprintf("ERROR: Max aura profile %d reached\n", (int)index);
-		return -1;
+	else {
+		if((aura_num = cvmx_fpa_allocate_auras(node,&aura_num,1)) == -1) {
+			cvmx_dprintf("ERROR:allocating aura for aura_config\n");
+			return -1;
+		}
+		//spinlock it
+		index = pki_profiles[node].aura_profile_list.index;
+		if(index >= CVMX_PKI_MAX_AURA_PROFILES) {
+			cvmx_dprintf("ERROR: Max aura profile %d reached\n", (int)index);
+			return -1;
 
+		}
+		pki_profiles[node].aura_profile_list.index++;
+		//spinlock free
+		aura_profile = &pki_profiles[node].aura_profile_list.aura_profile[index];
+		strcpy(aura_profile->aura_name, aura_name);
+		aura_profile->aura_num = aura_num;
+		aura_profile->pool_num = pool;
+		aura_profile->buffer_count = num_buffers;
+		pki_config[node].aura_cfg[aura_num].users++;
 	}
-	pki_profiles[node].aura_profile_list.index++;
-	//spinlock free
-
-	aura_profile = &pki_profiles[node].aura_profile_list.aura_profile[index];
-	strcpy(aura_profile->aura_name, aura_name);
-	aura_profile->aura_num = aura_num;
-	aura_profile->pool_num = pool;
-	aura_profile->buffer_count = num_buffers;
-	return 0;
+	pki_config[node].aura_cfg[aura_num].pool_num = pool;
+	pki_config[node].pool_cfg[aura_num].buffer_count = num_buffers;
+	return aura_num;
 }
+
 
 /**
  * This function stores the group configuration in data structure
@@ -920,36 +936,34 @@ int cvmx_pki_set_aura_config(int node, char* aura_name, int aura_num, int pool,
  */
 int cvmx_pki_set_sso_group_config(int node, struct cvmx_pki_sso_grp_profile grp_profile)
 {
-	uint64_t index;
+	int64_t index;
 
 	if(node >= CVMX_MAX_NODES) {
 		cvmx_dprintf("Invalid node number %d",node);
 		return -1;
 	}
-	if(cvmx_pki_group_profile_exist(node, grp_profile.grp_name) >= 0) {
-		cvmx_dprintf("ERROR:group profile already exist with name %s",grp_profile.grp_name);
-		return -1;
+	if((index = cvmx_pki_group_profile_exist(node, grp_profile.grp_name)) >= 0) {
+		cvmx_dprintf("Warning: Modifing sso_grp profile with name %s\n",grp_profile.grp_name);
 	}
-#if 0 //vinita_to_do uncomment when group_alloc is ready
-	if((group = cvmx_pki_allocate_group(node,group)) == -1) {
-		cvmx_dprintf("ERROR:allocating group for group_config\n");
-		return -1;
+	else {
+		#if 0 //vinita_to_do uncomment when group_alloc is ready
+		if((group = cvmx_pki_allocate_group(node,group)) == -1) {
+			cvmx_dprintf("ERROR:allocating group for group_config\n");
+			return -1;
+		}
+		#endif
+
+		//spinlock it
+		index = pki_profiles[node].sso_grp_profile_list.index;
+		if(index >= CVMX_PKI_NUM_SSO_GROUP) {
+			cvmx_dprintf("ERROR: Max group profile %d reached\n", (int)index);
+			return -1;
+		}
+		pki_profiles[node].sso_grp_profile_list.index++;
+		//spinlock free
 	}
-#endif
-
-	//spinlock it
-	index = pki_profiles[node].sso_grp_profile_list.index;
-	if(index >= CVMX_PKI_MAX_SSO_GROUP_PROFILES) {
-		cvmx_dprintf("ERROR: Max group profile %d reached\n", (int)index);
-		return -1;
-
-	}
-	pki_profiles[node].sso_grp_profile_list.index++;
-	//spinlock free
-
 	pki_profiles[node].sso_grp_profile_list.grp_profile[index] = grp_profile;
 	return 0;
-
 }
 
 /**
@@ -960,7 +974,7 @@ int cvmx_pki_set_sso_group_config(int node, struct cvmx_pki_sso_grp_profile grp_
  * @param base_offset	offset in QPG table (-1 if needs to be allocated)
  * @param num_entries	total number of indexes needs to be allocated from
  *                      base_offset.
- * @return 		0 on SUCCESS
+ * @return 		base_offset index on SUCCESS
                         -1 on failure
  */
 int cvmx_pki_set_qpg_profile(int node, char* name, int base_offset, int num_entries)
@@ -972,38 +986,38 @@ int cvmx_pki_set_qpg_profile(int node, char* name, int base_offset, int num_entr
 		cvmx_dprintf("Invalid node number %d",node);
 		return -1;
 	}
-	if(cvmx_pki_qpg_profile_exist(node,name) >= 0) {
-		cvmx_dprintf("ERROR:qpg profile already exist with name %s",name);
-		return -1;
+	if((index = cvmx_pki_qpg_profile_exist(node,name)) >= 0) {
+		//cvmx_dprintf("Warning: Modifing qpg profile with name %s\n",name);
+		qpg_profile = &pki_profiles[node].qpg_profile_list.qpg_profile[index];
 	}
-	if((base_offset = cvmx_pki_alloc_qpg_entry(node,base_offset,num_entries)) == -1) {
-		cvmx_dprintf("ERROR:allocating entry for qpg_table\n");
-		return -1;
+	else {
+		if((base_offset = cvmx_pki_alloc_qpg_entry(node,base_offset,num_entries)) == -1) {
+			cvmx_dprintf("ERROR:allocating entry for qpg_table\n");
+			return -1;
+		}
+		//spinlock it
+		index = pki_profiles[node].qpg_profile_list.index;
+		if(index >= CVMX_PKI_MAX_QPG_PROFILES) {
+			cvmx_dprintf("ERROR: Max qpg profile %d reached\n", (int)index);
+			return -1;
+		}
+		pki_profiles[node].qpg_profile_list.index++;
+		//spinlock free
+		qpg_profile = &pki_profiles[node].qpg_profile_list.qpg_profile[index];
+		strcpy(qpg_profile->qpg_name, name);
+		qpg_profile->base_offset = base_offset;
 	}
-
-	//spinlock it
-	index = pki_profiles[node].qpg_profile_list.index;
-	if(index >= CVMX_PKI_MAX_QPG_PROFILES) {
-		cvmx_dprintf("ERROR: Max qpg profile %d reached\n", (int)index);
-		return -1;
-
-	}
-	pki_profiles[node].qpg_profile_list.index++;
-	//spinlock free
-
-	qpg_profile = &pki_profiles[node].qpg_profile_list.qpg_profile[index];
-	strcpy(qpg_profile->qpg_name, name);
-	qpg_profile->base_offset = base_offset;
 	qpg_profile->num_entries = num_entries;
-	return 0;
+	return base_offset;
 }
 
 /**
- * This function stores the group configuration in data structure
+ * This function stores the qpg configuration in data structure
  * which is then used to program the hardware.
  * @param node  	node number
- * @param aura_name  	name associated with this config
- * @param group		SSO group number (-1 if needs to be allocated)
+ * @param name  	name of qpg profile associated with this config
+ * @param entry_start   starting entry to configure with given parameters.
+ * @param entry_end     ending entry to configure with given parameters.
  * @return 		0 on SUCCESS
                         -1 on failure
  */
@@ -1028,11 +1042,12 @@ int cvmx_pki_set_qpg_config(int node, char* name, int entry_start,
 	}
 	num_entry = pki_profiles[node].qpg_profile_list.qpg_profile[index].num_entries;
 	if(entry_start > num_entry || entry_end > num_entry) {
-		cvmx_dprintf("ERROR: start_entry %llu or end_entry %llu is > %llu for qpg_profile %s",
+		cvmx_dprintf("ERROR: start_entry %llu or end_entry %llu is > %llu for qpg_profile %s\n",
 			     (unsigned long long)entry_start,(unsigned long long)entry_end,(unsigned long long)num_entry,name);
 	}
 	while(entry_start <= entry_end) {
 		pki_config[node].qpg_cfg[base_offset + entry_start] = qpg_config;
+		pki_config[node].qpg_cfg[base_offset + entry_start].users++;
 		entry_start++;
 	}
 	return 0;
@@ -1046,43 +1061,46 @@ int cvmx_pki_set_qpg_config(int node, char* name, int entry_start,
  * @param style_num	style number (-1 if needs to be allocated)
  * @param style_cfg	pointer to struct which has parameters related
  *                      to style config
- * @return 		0 on SUCCESS
+ * @return 		style number on SUCCESS
                         -1 on failure
  */
 int cvmx_pki_set_style_config(int node, char* style_name, int style_num,
-			       struct cvmx_pki_style_config* style_cfg)
+			      struct cvmx_pki_style_config* style_cfg)
 {
-	uint64_t index;
+	int index;
 	struct cvmx_pki_style_profile* style_profile;
 
 	if(node >= CVMX_MAX_NODES) {
 		cvmx_dprintf("Invalid node number %d",node);
 		return -1;
 	}
-	if(cvmx_pki_style_profile_exist(node,style_name) > 0) {
-		cvmx_dprintf("ERROR: style profile already exist with name %s",style_name);
-		return -1;
+	if((index = cvmx_pki_style_profile_exist(node,style_name)) >= 0) {
+		style_num = cvmx_pki_find_style(node, style_name);
+		cvmx_dprintf("Warning: Modifing style profile with name %s\n",style_name);
 	}
-	if((style_num = cvmx_pki_alloc_style(node,style_num)) == -1) {
-		cvmx_dprintf("ERROR:allocating style for style_config\n");
-		return -1;
+	else {
+		if((style_num = cvmx_pki_alloc_style(node,style_num)) == -1) {
+			cvmx_dprintf("ERROR:allocating style for style_config\n");
+			return -1;
+		}
+		//spinlock it
+		index = pki_profiles[node].style_profile_list.index;
+		if(index >= CVMX_PKI_MAX_STYLE_PROFILES) {
+			cvmx_dprintf("ERROR: Max style profile %d reached\n", (int)index);
+			return -1;
+
+		}
+		pki_profiles[node].style_profile_list.index++;
+		//spinlock free
+		style_profile = &pki_profiles[node].style_profile_list.style_profile[index];
+		strcpy(style_profile->name, style_name);
+		style_profile->style_num = style_num;
+		pki_config[node].style_cfg[style_num].users++;
 	}
-
-	//spinlock it
-	index = pki_profiles[node].style_profile_list.index;
-	if(index >= CVMX_PKI_MAX_STYLE_PROFILES) {
-		cvmx_dprintf("ERROR: Max style profile %d reached\n", (int)index);
+	if(style_num >= CVMX_PKI_NUM_FINAL_STYLES)
 		return -1;
-
-	}
-	pki_profiles[node].style_profile_list.index++;
-	//spinlock free
-
-	style_profile = &pki_profiles[node].style_profile_list.style_profile[index];
-	strcpy(style_profile->name, style_name);
-	style_profile->style_num = style_num;
 	memcpy(&pki_config[node].style_cfg[style_num], style_cfg, sizeof(struct cvmx_pki_style_config));
-	return index;
+	return style_num;
 }
 
 /**
@@ -1094,10 +1112,10 @@ int cvmx_pki_set_style_config(int node, char* style_name, int style_num,
  * @return 		0 on SUCCESS
                         -1 on failure
  */
-int cvmx_pki_set_pkind_style(int node, int pkind, int style)
+int cvmx_pki_set_port_style_cfg(uint64_t node, uint64_t interface, uint64_t port, uint64_t style)
 {
-	pki_config[node].pkind_cfg[pkind].initial_style = style;
-	pki_config[node].style_cfg[style].cluster_mask = pki_config[node].pkind_cfg[pkind].cluster_mask;
+	pki_config[node].port_cfg[interface][port].initial_style = style;
+	pki_config[node].style_cfg[style].cluster_mask = pki_config[node].port_cfg[interface][port].cluster_mask;
 	return 0;
 }
 
@@ -1110,9 +1128,10 @@ int cvmx_pki_set_pkind_style(int node, int pkind, int style)
  * @return 		0 on SUCCESS
                         -1 on failure
  */
-void cvmx_pki_set_pkind_initial_parse_mode(int node, int pkind, int parse_mode)
+void cvmx_pki_set_port_parse_mode_cfg(uint64_t node, uint64_t interface,
+					  uint64_t port, enum cvmx_pki_pkind_parse_mode parse_mode)
 {
-	pki_config[node].pkind_cfg[pkind].parsing_mode=parse_mode;
+	pki_config[node].port_cfg[interface][port].parsing_mode = parse_mode;
 }
 
 /**
@@ -1124,11 +1143,11 @@ void cvmx_pki_set_pkind_initial_parse_mode(int node, int pkind, int parse_mode)
  * @return 		0 on SUCCESS
                         -1 on failure
  */
-void cvmx_pki_set_pkind_cluster_config(int node, int pkind,
+void cvmx_pki_set_port_cluster_config(int node, uint64_t interface, uint64_t port,
 					   int cl_grp, uint64_t cl_mask)
 {
-	pki_config[node].pkind_cfg[pkind].cluster_grp = cl_grp;
-	pki_config[node].pkind_cfg[pkind].cluster_mask = cl_mask;
+	pki_config[node].port_cfg[interface][port].cluster_grp = cl_grp;
+	pki_config[node].port_cfg[interface][port].cluster_mask = cl_mask;
 
 }
 
@@ -1288,4 +1307,115 @@ void cvmx_pki_show_pkind_attributes(int node, int pkind)
 		cvmx_dprintf("qpg index %d: 0x%llx\n", (index+style_cfg.s.qpg_base),
 			     (unsigned long long)cvmx_read_csr_node(node, CVMX_PKI_QPG_TBLX(style_cfg.s.qpg_base+index)));
 	}
+}
+
+void cvmx_pki_set_default_pool_config(int node, int64_t pool,
+				      int64_t buffer_size, int64_t buffer_count)
+{
+	pki_profiles[node].pool_profile_list.pool_profile[0].pool_num = pool;
+	pki_profiles[node].pool_profile_list.pool_profile[0].buffer_size = buffer_size;
+	pki_profiles[node].pool_profile_list.pool_profile[0].buffer_count = buffer_count;
+}
+
+void cvmx_pki_set_default_aura_config(int node, int64_t aura,
+				      int64_t pool, uint64_t buffer_count)
+{
+	pki_profiles[node].aura_profile_list.aura_profile[0].aura_num = aura;
+	pki_profiles[node].aura_profile_list.aura_profile[0].pool_num = pool;
+	pki_profiles[node].aura_profile_list.aura_profile[0].buffer_count = buffer_count;
+}
+
+void cvmx_pki_set_default_pool_buffer_count(int node, uint64_t buffer_count)
+{
+	pki_profiles[node].pool_profile_list.pool_profile[0].buffer_count = buffer_count;
+	pki_profiles[node].aura_profile_list.aura_profile[0].buffer_count = buffer_count;
+}
+
+void cvmx_pki_get_style_config(int node, int style, struct cvmx_pki_style_config* style_cfg)
+{
+	*style_cfg = pki_config[node].style_cfg[style];
+}
+
+void cvmx_pki_initialize_data_structures(int node)
+{
+	int intf, index;
+	int style, style_no_fcs;
+	struct cvmx_pki_style_config style_cfg;
+	struct cvmx_pki_cluster_profile cl_profile;
+	struct cvmx_pki_qpg_config qpg_cfg;
+
+	if(OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+	memset(&style_cfg, 0 , sizeof(style_cfg));
+	memset(&cl_profile, 0, sizeof(cl_profile));
+	memset(&qpg_cfg, 0, sizeof(qpg_cfg));
+
+	/*initialize cluster group 0 to use all cluster engines*/
+	strcpy(cl_profile.name,"default_clg");
+	cl_profile.num_clusters = 4;
+	cl_profile.cluster_group = 0;
+	cvmx_pki_set_cluster_config(node, cl_profile);
+
+	/*initialize first entry in qpg table*/
+	cvmx_pki_set_qpg_profile(node, "default_qpg", 0, 1);
+	qpg_cfg.port_add = 0;
+	qpg_cfg.aura = 0;
+	qpg_cfg.group_ok = 0;
+	qpg_cfg.group_bad = 0;
+	cvmx_pki_set_qpg_config(node, "default_qpg",0,0, qpg_cfg);
+
+	/*initialize pool 0*/
+	cvmx_pki_set_pool_config(node, "default_pool", 0, 2048, 1000);
+
+	/*initialize aura*/
+	cvmx_pki_set_aura_config(node, "default_aura",0, 0, 1000);
+
+	/*initialize style */
+	style_cfg.en_pkt_le_mode = CVMX_PKI_DISABLE;
+	style_cfg.en_l2_lenchk = CVMX_PKI_ENABLE;
+	style_cfg.l2_lenchk_mode = PKI_L2_LENCHK_EQUAL_ONLY;
+	style_cfg.cluster_mask = 0xf;
+	style_cfg.en_maxframe_errchk = CVMX_PKI_ENABLE;
+	style_cfg.en_minframe_errchk = CVMX_PKI_ENABLE;
+	style_cfg.max_min_frame_sel = 0;
+	style_cfg.en_strip_l2_fcs = CVMX_PKI_ENABLE;
+	style_cfg.en_fcs_check = CVMX_PKI_DISABLE;
+	style_cfg.wqe_header_size = 5;
+	style_cfg.wqe_start_offset = 0;
+	style_cfg.first_mbuf_skip = 40;
+	style_cfg.later_mbuf_skip = 0;
+	style_cfg.mbuff_size = 2048;
+	style_cfg.cache_mode = CVMX_PKI_OPC_MODE_STT;
+	style_cfg.en_data_wqe_buf_diff = CVMX_PKI_DISABLE;
+	style_cfg.wqe_vlan_vlptr = CVMX_PKI_USE_FIRST_VLAN;
+	style_cfg.qpg_base_offset = 0;
+	style_cfg.en_qpg_calc_port_addr = ~(CVMX_PKI_ENABLE) ;
+	style_cfg.en_qpg_calc_aura = ~(CVMX_PKI_ENABLE);
+	style_cfg.en_qpg_calc_group = ~(CVMX_PKI_ENABLE);
+	style_cfg.qpg_qos = CVMX_PKI_QPG_QOS_NONE;
+	style_cfg.qpg_port_msb = 0;
+	style_cfg.qpg_port_shift = 0;
+	style_cfg.tag_type = CVMX_SSO_TAG_TYPE_ORDERED;
+	style_cfg.tag_fields.input_port = 1;
+
+	style = cvmx_pki_set_style_config(node, "default_style", CVMX_PKI_FIND_AVAL_ENTRY, &style_cfg);
+	if(style < 0) {
+		cvmx_dprintf("ERROR: failed to set style config\n");
+		return;
+	}
+
+	/*initialixe style for no fcs strip ports*/
+	style_cfg.en_strip_l2_fcs = CVMX_PKI_DISABLE;
+	style_no_fcs = cvmx_pki_set_style_config(node, "no_fcs_strip", CVMX_PKI_FIND_AVAL_ENTRY, &style_cfg);
+
+	/*initialize pki ports to use cluster group 0 and styles*/
+	for(intf=0; intf < CVMX_HELPER_MAX_IFACE; intf++) {
+		for(index=0; index < CVMX_HELPER_CFG_MAX_PORT_PER_IFACE; index++) {
+			cvmx_pki_set_port_parse_mode_cfg(node, intf, index, CVMX_PKI_PARSE_LA_TO_LG);
+			cvmx_pki_set_port_cluster_config(node, intf, index, 0, CVMX_PKI_CLUSTER_ALL);
+			cvmx_pki_set_port_style_cfg(node, intf, index, style);
+		}
+	}
+	}
+
+	//vinita_to_do, init loop and npi interfaces to attach style no_fcs_strip
 }

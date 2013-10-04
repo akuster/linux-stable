@@ -1434,7 +1434,7 @@ union cvmx_pemx_ctl_status {
                                                          most significant Header Queue Buffer ram block
                                                          to force a parity error when it is later read. */
 	uint64_t inv_rpar                     : 1;  /**< Invert the generated parity to be written into the
-                                                         most significant Retry Buffer ram block to force
+                                                         tmost significant Retry Buffer ram block to force
                                                          a parity error when it is later read. */
 	uint64_t auto_sd                      : 1;  /**< Link Hardware Autonomous Speed Disable. */
 	uint64_t dnum                         : 5;  /**< Primary bus device number. */
@@ -1554,7 +1554,68 @@ union cvmx_pemx_ctl_status {
 	struct cvmx_pemx_ctl_status_cn61xx    cn68xx;
 	struct cvmx_pemx_ctl_status_cn61xx    cn68xxp1;
 	struct cvmx_pemx_ctl_status_s         cn70xx;
-	struct cvmx_pemx_ctl_status_s         cn78xx;
+	struct cvmx_pemx_ctl_status_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_51_63               : 13;
+	uint64_t inv_dpar                     : 1;  /**< Invert the generated parity to be written into the
+                                                         the most significant Data Queue Buffer ram block
+                                                         to force a parity error when it is later read. */
+	uint64_t reserved_48_49               : 2;
+	uint64_t auto_sd                      : 1;  /**< Link Hardware Autonomous Speed Disable. */
+	uint64_t dnum                         : 5;  /**< Primary bus device number. */
+	uint64_t pbus                         : 8;  /**< Primary bus number. */
+	uint64_t reserved_32_33               : 2;
+	uint64_t cfg_rtry                     : 16; /**< The time x 0x10000 in core clocks to wait for a
+                                                         CPL to a CFG RD that does not carry a Retry Status.
+                                                         Until such time that the timeout occurs and Retry
+                                                         Status is received for a CFG RD, the Read CFG Read
+                                                         will be resent. A value of 0 disables retries and
+                                                         treats a CPL Retry as a CPL UR.
+                                                         When enabled only one CFG RD may be issued until
+                                                         either successful completion or CPL UR. */
+	uint64_t reserved_12_15               : 4;
+	uint64_t pm_xtoff                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
+                                                         to the PCIe core pm_xmt_turnoff port. RC mode. */
+	uint64_t pm_xpme                      : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
+                                                         to the PCIe core pm_xmt_pme port. EP mode. */
+	uint64_t ob_p_cmd                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
+                                                         to the PCIe core outband_pwrup_cmd port. EP mode. */
+	uint64_t reserved_7_8                 : 2;
+	uint64_t nf_ecrc                      : 1;  /**< Do not forward peer-to-peer ECRC TLPs. */
+	uint64_t dly_one                      : 1;  /**< When set the output client state machines will
+                                                         wait one cycle before starting a new TLP out. */
+	uint64_t lnk_enb                      : 1;  /**< When set '1' the link is enabled when '0' the
+                                                         link is disabled. This bit only is active when in
+                                                         RC mode. */
+	uint64_t ro_ctlp                      : 1;  /**< When set '1' C-TLPs that have the RO bit set will
+                                                         not wait for P-TLPs that normaly would be sent
+                                                         first. */
+	uint64_t fast_lm                      : 1;  /**< When '1' forces fast link mode. */
+	uint64_t inv_ecrc                     : 1;  /**< When '1' causes the LSB of the ECRC to be inverted. */
+	uint64_t inv_lcrc                     : 1;  /**< When '1' causes the LSB of the LCRC to be inverted. */
+#else
+	uint64_t inv_lcrc                     : 1;
+	uint64_t inv_ecrc                     : 1;
+	uint64_t fast_lm                      : 1;
+	uint64_t ro_ctlp                      : 1;
+	uint64_t lnk_enb                      : 1;
+	uint64_t dly_one                      : 1;
+	uint64_t nf_ecrc                      : 1;
+	uint64_t reserved_7_8                 : 2;
+	uint64_t ob_p_cmd                     : 1;
+	uint64_t pm_xpme                      : 1;
+	uint64_t pm_xtoff                     : 1;
+	uint64_t reserved_12_15               : 4;
+	uint64_t cfg_rtry                     : 16;
+	uint64_t reserved_32_33               : 2;
+	uint64_t pbus                         : 8;
+	uint64_t dnum                         : 5;
+	uint64_t auto_sd                      : 1;
+	uint64_t reserved_48_49               : 2;
+	uint64_t inv_dpar                     : 1;
+	uint64_t reserved_51_63               : 13;
+#endif
+	} cn78xx;
 	struct cvmx_pemx_ctl_status_cn61xx    cnf71xx;
 };
 typedef union cvmx_pemx_ctl_status cvmx_pemx_ctl_status_t;
@@ -1599,8 +1660,13 @@ union cvmx_pemx_dbg_info {
 	uint64_t u64;
 	struct cvmx_pemx_dbg_info_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_53_63               : 11;
-	uint64_t lofp                         : 1;  /**< Lack of Forward Progress at TLP FIFOs timeout occured. */
+	uint64_t reserved_58_63               : 6;
+	uint64_t qhdr_b1_dbe                  : 1;  /**< Detected a Core Header Queue Bank1 double bit error */
+	uint64_t qhdr_b1_sbe                  : 1;  /**< Detected a Core Header Queue Bank1 single bit error */
+	uint64_t qhdr_b0_dbe                  : 1;  /**< Detected a Core Header Queue Bank0 double bit error */
+	uint64_t qhdr_b0_sbe                  : 1;  /**< Detected a Core Header Queue Bank0 single bit error */
+	uint64_t rtry_dbe                     : 1;  /**< Detected a Core Retry RAM double bit error */
+	uint64_t rtry_sbe                     : 1;  /**< Detected a Core Retry RAM single bit error */
 	uint64_t reserved_50_51               : 2;
 	uint64_t c_d1_dbe                     : 1;  /**< Detected a TLP CPL Fifo data1 double bit error */
 	uint64_t c_d1_sbe                     : 1;  /**< Detected a TLP CPL Fifo data1 single bit error */
@@ -1609,7 +1675,7 @@ union cvmx_pemx_dbg_info {
 	uint64_t reserved_34_45               : 12;
 	uint64_t datq_pe                      : 1;  /**< Detected a Data Queue RAM parity error */
 	uint64_t hdrq_pe                      : 1;  /**< Detected a Header Queue RAM parity error */
-	uint64_t rtry_pe                      : 1;  /**< Detected a Retry RAM parity error */
+	uint64_t reserved_31_31               : 1;
 	uint64_t ecrc_e                       : 1;  /**< Received a ECRC error.
                                                          radm_ecrc_err */
 	uint64_t rawwpp                       : 1;  /**< Received a write with poisoned payload
@@ -1717,7 +1783,7 @@ union cvmx_pemx_dbg_info {
 	uint64_t racpp                        : 1;
 	uint64_t rawwpp                       : 1;
 	uint64_t ecrc_e                       : 1;
-	uint64_t rtry_pe                      : 1;
+	uint64_t reserved_31_31               : 1;
 	uint64_t hdrq_pe                      : 1;
 	uint64_t datq_pe                      : 1;
 	uint64_t reserved_34_45               : 12;
@@ -1726,8 +1792,13 @@ union cvmx_pemx_dbg_info {
 	uint64_t c_d1_sbe                     : 1;
 	uint64_t c_d1_dbe                     : 1;
 	uint64_t reserved_50_51               : 2;
-	uint64_t lofp                         : 1;
-	uint64_t reserved_53_63               : 11;
+	uint64_t rtry_sbe                     : 1;
+	uint64_t rtry_dbe                     : 1;
+	uint64_t qhdr_b0_sbe                  : 1;
+	uint64_t qhdr_b0_dbe                  : 1;
+	uint64_t qhdr_b1_sbe                  : 1;
+	uint64_t qhdr_b1_dbe                  : 1;
+	uint64_t reserved_58_63               : 6;
 #endif
 	} s;
 	struct cvmx_pemx_dbg_info_cn61xx {
@@ -1996,8 +2067,13 @@ union cvmx_pemx_dbg_info {
 	} cn70xx;
 	struct cvmx_pemx_dbg_info_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_53_63               : 11;
-	uint64_t lofp                         : 1;  /**< Lack of Forward Progress at TLP FIFOs timeout occured. */
+	uint64_t reserved_58_63               : 6;
+	uint64_t qhdr_b1_dbe                  : 1;  /**< Detected a Core Header Queue Bank1 double bit error */
+	uint64_t qhdr_b1_sbe                  : 1;  /**< Detected a Core Header Queue Bank1 single bit error */
+	uint64_t qhdr_b0_dbe                  : 1;  /**< Detected a Core Header Queue Bank0 double bit error */
+	uint64_t qhdr_b0_sbe                  : 1;  /**< Detected a Core Header Queue Bank0 single bit error */
+	uint64_t rtry_dbe                     : 1;  /**< Detected a Core Retry RAM double bit error */
+	uint64_t rtry_sbe                     : 1;  /**< Detected a Core Retry RAM single bit error */
 	uint64_t c_c_dbe                      : 1;  /**< Detected a TLP CPL Fifo ctrl double bit error */
 	uint64_t c_c_sbe                      : 1;  /**< Detected a TLP CPL Fifo ctrl single bit error */
 	uint64_t c_d1_dbe                     : 1;  /**< Detected a TLP CPL Fifo data1 double bit error */
@@ -2017,8 +2093,8 @@ union cvmx_pemx_dbg_info {
 	uint64_t p_d0_dbe                     : 1;  /**< Detected a TLP Posted Fifo data0 double bit error */
 	uint64_t p_d0_sbe                     : 1;  /**< Detected a TLP Posted Fifo data0 single bit error */
 	uint64_t datq_pe                      : 1;  /**< Detected a Data Queue RAM parity error */
-	uint64_t hdrq_pe                      : 1;  /**< Detected a Header Queue RAM parity error */
-	uint64_t rtry_pe                      : 1;  /**< Detected a Retry RAM parity error */
+	uint64_t reserved_32_32               : 1;
+	uint64_t lofp                         : 1;  /**< Lack of Forward Progress at TLP FIFOs timeout occured. */
 	uint64_t ecrc_e                       : 1;  /**< Received a ECRC error.
                                                          radm_ecrc_err */
 	uint64_t rawwpp                       : 1;  /**< Received a write with poisoned payload
@@ -2129,8 +2205,8 @@ union cvmx_pemx_dbg_info {
 	uint64_t racpp                        : 1;
 	uint64_t rawwpp                       : 1;
 	uint64_t ecrc_e                       : 1;
-	uint64_t rtry_pe                      : 1;
-	uint64_t hdrq_pe                      : 1;
+	uint64_t lofp                         : 1;
+	uint64_t reserved_32_32               : 1;
 	uint64_t datq_pe                      : 1;
 	uint64_t p_d0_sbe                     : 1;
 	uint64_t p_d0_dbe                     : 1;
@@ -2150,8 +2226,13 @@ union cvmx_pemx_dbg_info {
 	uint64_t c_d1_dbe                     : 1;
 	uint64_t c_c_sbe                      : 1;
 	uint64_t c_c_dbe                      : 1;
-	uint64_t lofp                         : 1;
-	uint64_t reserved_53_63               : 11;
+	uint64_t rtry_sbe                     : 1;
+	uint64_t rtry_dbe                     : 1;
+	uint64_t qhdr_b0_sbe                  : 1;
+	uint64_t qhdr_b0_dbe                  : 1;
+	uint64_t qhdr_b1_sbe                  : 1;
+	uint64_t qhdr_b1_dbe                  : 1;
+	uint64_t reserved_58_63               : 6;
 #endif
 	} cn78xx;
 	struct cvmx_pemx_dbg_info_cn61xx      cnf71xx;
@@ -2168,16 +2249,27 @@ union cvmx_pemx_dbg_info_en {
 	uint64_t u64;
 	struct cvmx_pemx_dbg_info_en_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_53_63               : 11;
-	uint64_t lofp_en                      : 1;  /**< Allows PEM_DBG_INFO[52] to generate an interrupt. */
-	uint64_t tpcdbe2                      : 1;  /**< Allows PEM_DBG_INFO[51] to generate an interrupt. */
-	uint64_t reserved_49_50               : 2;
-	uint64_t tpcsbe2                      : 1;  /**< Allows PEM_DBG_INFO[48] to generate an interrupt. */
-	uint64_t reserved_35_47               : 13;
+	uint64_t reserved_58_63               : 6;
+	uint64_t qhdrb1dbe                    : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t qhdrb1sbe                    : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t qhdrb0dbe                    : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t qhdrb0sbe                    : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t rtrydbe                      : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t rtrysbe                      : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t tcfdbe2                      : 1;  /**< Allows PEM_DBG_INFO[51] to generate an interrupt. */
+	uint64_t tcfsbe2                      : 1;  /**< Allows PEM_DBG_INFO[50] to generate an interrupt. */
+	uint64_t tcfdbe1                      : 1;  /**< Allows PEM_DBG_INFO[49] to generate an interrupt. */
+	uint64_t tcfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[48] to generate an interrupt. */
+	uint64_t tcfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[47] to generate an interrupt. */
+	uint64_t tcfsbe0                      : 1;  /**< Allows PEM_DBG_INFO[46] to generate an interrupt. */
+	uint64_t reserved_38_45               : 8;
+	uint64_t tpfdbe1                      : 1;  /**< Allows PEM_DBG_INFO[37] to generate an interrupt. */
+	uint64_t tpfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[36] to generate an interrupt. */
+	uint64_t tpfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[35] to generate an interrupt. */
 	uint64_t tpfsbe0                      : 1;  /**< Allows PEM_DBG_INFO[34] to generate an interrupt. */
 	uint64_t datq_pe                      : 1;  /**< Allows PEM_DBG_INFO[33] to generate an interrupt. */
 	uint64_t hdrq_pe                      : 1;  /**< Allows PEM_DBG_INFO[32] to generate an interrupt. */
-	uint64_t rtry_pe                      : 1;  /**< Allows PEM_DBG_INFO[31] to generate an interrupt. */
+	uint64_t reserved_31_31               : 1;
 	uint64_t ecrc_e                       : 1;  /**< Allows PEM_DBG_INFO[30] to generate an interrupt. */
 	uint64_t rawwpp                       : 1;  /**< Allows PEM_DBG_INFO[29] to generate an interrupt. */
 	uint64_t racpp                        : 1;  /**< Allows PEM_DBG_INFO[28] to generate an interrupt. */
@@ -2241,16 +2333,27 @@ union cvmx_pemx_dbg_info_en {
 	uint64_t racpp                        : 1;
 	uint64_t rawwpp                       : 1;
 	uint64_t ecrc_e                       : 1;
-	uint64_t rtry_pe                      : 1;
+	uint64_t reserved_31_31               : 1;
 	uint64_t hdrq_pe                      : 1;
 	uint64_t datq_pe                      : 1;
 	uint64_t tpfsbe0                      : 1;
-	uint64_t reserved_35_47               : 13;
-	uint64_t tpcsbe2                      : 1;
-	uint64_t reserved_49_50               : 2;
-	uint64_t tpcdbe2                      : 1;
-	uint64_t lofp_en                      : 1;
-	uint64_t reserved_53_63               : 11;
+	uint64_t tpfdbe0                      : 1;
+	uint64_t tpfsbe1                      : 1;
+	uint64_t tpfdbe1                      : 1;
+	uint64_t reserved_38_45               : 8;
+	uint64_t tcfsbe0                      : 1;
+	uint64_t tcfdbe0                      : 1;
+	uint64_t tcfsbe1                      : 1;
+	uint64_t tcfdbe1                      : 1;
+	uint64_t tcfsbe2                      : 1;
+	uint64_t tcfdbe2                      : 1;
+	uint64_t rtrysbe                      : 1;
+	uint64_t rtrydbe                      : 1;
+	uint64_t qhdrb0sbe                    : 1;
+	uint64_t qhdrb0dbe                    : 1;
+	uint64_t qhdrb1sbe                    : 1;
+	uint64_t qhdrb1dbe                    : 1;
+	uint64_t reserved_58_63               : 6;
 #endif
 	} s;
 	struct cvmx_pemx_dbg_info_en_cn61xx {
@@ -2428,29 +2531,34 @@ union cvmx_pemx_dbg_info_en {
 	} cn70xx;
 	struct cvmx_pemx_dbg_info_en_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_53_63               : 11;
-	uint64_t lofp_en                      : 1;  /**< Allows PEM_DBG_INFO[52] to generate an interrupt. */
-	uint64_t tpcdbe2                      : 1;  /**< Allows PEM_DBG_INFO[51] to generate an interrupt. */
-	uint64_t tpcdbe1                      : 1;  /**< Allows PEM_DBG_INFO[50] to generate an interrupt. */
-	uint64_t tpcdbe0                      : 1;  /**< Allows PEM_DBG_INFO[49] to generate an interrupt. */
-	uint64_t tpcsbe2                      : 1;  /**< Allows PEM_DBG_INFO[48] to generate an interrupt. */
-	uint64_t tpcsbe1                      : 1;  /**< Allows PEM_DBG_INFO[47] to generate an interrupt. */
-	uint64_t tpcsbe0                      : 1;  /**< Allows PEM_DBG_INFO[46] to generate an interrupt. */
+	uint64_t reserved_58_63               : 6;
+	uint64_t qhdrb1dbe                    : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t qhdrb1sbe                    : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t qhdrb0dbe                    : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t qhdrb0sbe                    : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t rtrydbe                      : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t rtrysbe                      : 1;  /**< Allows PEM_DBG_INFO[5] to generate an interrupt. */
+	uint64_t tcfdbe2                      : 1;  /**< Allows PEM_DBG_INFO[51] to generate an interrupt. */
+	uint64_t tcfsbe2                      : 1;  /**< Allows PEM_DBG_INFO[50] to generate an interrupt. */
+	uint64_t tcfdbe1                      : 1;  /**< Allows PEM_DBG_INFO[49] to generate an interrupt. */
+	uint64_t tcfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[48] to generate an interrupt. */
+	uint64_t tcfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[47] to generate an interrupt. */
+	uint64_t tcfsbe0                      : 1;  /**< Allows PEM_DBG_INFO[46] to generate an interrupt. */
 	uint64_t tnfdbe2                      : 1;  /**< Allows PEM_DBG_INFO[45] to generate an interrupt. */
-	uint64_t tnfdbe1                      : 1;  /**< Allows PEM_DBG_INFO[44] to generate an interrupt. */
-	uint64_t tnfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[43] to generate an interrupt. */
-	uint64_t tnfsbe2                      : 1;  /**< Allows PEM_DBG_INFO[42] to generate an interrupt. */
-	uint64_t tnfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[41] to generate an interrupt. */
+	uint64_t tnfsbe2                      : 1;  /**< Allows PEM_DBG_INFO[44] to generate an interrupt. */
+	uint64_t tnfdbe1                      : 1;  /**< Allows PEM_DBG_INFO[43] to generate an interrupt. */
+	uint64_t tnfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[42] to generate an interrupt. */
+	uint64_t tnfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[41] to generate an interrupt. */
 	uint64_t tnfsbe0                      : 1;  /**< Allows PEM_DBG_INFO[40] to generate an interrupt. */
 	uint64_t tpfdbe2                      : 1;  /**< Allows PEM_DBG_INFO[39] to generate an interrupt. */
-	uint64_t tpfdbe1                      : 1;  /**< Allows PEM_DBG_INFO[38] to generate an interrupt. */
-	uint64_t tpfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[37] to generate an interrupt. */
-	uint64_t tpfsbe2                      : 1;  /**< Allows PEM_DBG_INFO[36] to generate an interrupt. */
-	uint64_t tpfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[35] to generate an interrupt. */
+	uint64_t tpfsbe2                      : 1;  /**< Allows PEM_DBG_INFO[38] to generate an interrupt. */
+	uint64_t tpfdbe1                      : 1;  /**< Allows PEM_DBG_INFO[37] to generate an interrupt. */
+	uint64_t tpfsbe1                      : 1;  /**< Allows PEM_DBG_INFO[36] to generate an interrupt. */
+	uint64_t tpfdbe0                      : 1;  /**< Allows PEM_DBG_INFO[35] to generate an interrupt. */
 	uint64_t tpfsbe0                      : 1;  /**< Allows PEM_DBG_INFO[34] to generate an interrupt. */
 	uint64_t datq_pe                      : 1;  /**< Allows PEM_DBG_INFO[33] to generate an interrupt. */
-	uint64_t hdrq_pe                      : 1;  /**< Allows PEM_DBG_INFO[32] to generate an interrupt. */
-	uint64_t rtry_pe                      : 1;  /**< Allows PEM_DBG_INFO[31] to generate an interrupt. */
+	uint64_t reserved_32_32               : 1;
+	uint64_t lofp_en                      : 1;  /**< Allows PEM_DBG_INFO[31] to generate an interrupt. */
 	uint64_t ecrc_e                       : 1;  /**< Allows PEM_DBG_INFO[30] to generate an interrupt. */
 	uint64_t rawwpp                       : 1;  /**< Allows PEM_DBG_INFO[29] to generate an interrupt. */
 	uint64_t racpp                        : 1;  /**< Allows PEM_DBG_INFO[28] to generate an interrupt. */
@@ -2514,29 +2622,34 @@ union cvmx_pemx_dbg_info_en {
 	uint64_t racpp                        : 1;
 	uint64_t rawwpp                       : 1;
 	uint64_t ecrc_e                       : 1;
-	uint64_t rtry_pe                      : 1;
-	uint64_t hdrq_pe                      : 1;
+	uint64_t lofp_en                      : 1;
+	uint64_t reserved_32_32               : 1;
 	uint64_t datq_pe                      : 1;
 	uint64_t tpfsbe0                      : 1;
-	uint64_t tpfsbe1                      : 1;
-	uint64_t tpfsbe2                      : 1;
 	uint64_t tpfdbe0                      : 1;
+	uint64_t tpfsbe1                      : 1;
 	uint64_t tpfdbe1                      : 1;
+	uint64_t tpfsbe2                      : 1;
 	uint64_t tpfdbe2                      : 1;
 	uint64_t tnfsbe0                      : 1;
-	uint64_t tnfsbe1                      : 1;
-	uint64_t tnfsbe2                      : 1;
 	uint64_t tnfdbe0                      : 1;
+	uint64_t tnfsbe1                      : 1;
 	uint64_t tnfdbe1                      : 1;
+	uint64_t tnfsbe2                      : 1;
 	uint64_t tnfdbe2                      : 1;
-	uint64_t tpcsbe0                      : 1;
-	uint64_t tpcsbe1                      : 1;
-	uint64_t tpcsbe2                      : 1;
-	uint64_t tpcdbe0                      : 1;
-	uint64_t tpcdbe1                      : 1;
-	uint64_t tpcdbe2                      : 1;
-	uint64_t lofp_en                      : 1;
-	uint64_t reserved_53_63               : 11;
+	uint64_t tcfsbe0                      : 1;
+	uint64_t tcfdbe0                      : 1;
+	uint64_t tcfsbe1                      : 1;
+	uint64_t tcfdbe1                      : 1;
+	uint64_t tcfsbe2                      : 1;
+	uint64_t tcfdbe2                      : 1;
+	uint64_t rtrysbe                      : 1;
+	uint64_t rtrydbe                      : 1;
+	uint64_t qhdrb0sbe                    : 1;
+	uint64_t qhdrb0dbe                    : 1;
+	uint64_t qhdrb1sbe                    : 1;
+	uint64_t qhdrb1dbe                    : 1;
+	uint64_t reserved_58_63               : 6;
 #endif
 	} cn78xx;
 	struct cvmx_pemx_dbg_info_en_cn61xx   cnf71xx;
@@ -2602,7 +2715,11 @@ union cvmx_pemx_ecc_ena {
 	uint64_t u64;
 	struct cvmx_pemx_ecc_ena_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_9_63                : 55;
+	uint64_t reserved_35_63               : 29;
+	uint64_t qhdr_b1_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank1 RAM */
+	uint64_t qhdr_b0_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank0 RAM */
+	uint64_t rtry_ena                     : 1;  /**< ECC enable for Core's RETRY RAM */
+	uint64_t reserved_9_31                : 23;
 	uint64_t c_c_ena                      : 1;  /**< ECC enable for TLP CPL ctl Fifo */
 	uint64_t c_d1_ena                     : 1;  /**< ECC enable for TLP CPL data1 Fifo */
 	uint64_t c_d0_ena                     : 1;  /**< ECC enable for TLP CPL data0 Fifo */
@@ -2612,7 +2729,11 @@ union cvmx_pemx_ecc_ena {
 	uint64_t c_d0_ena                     : 1;
 	uint64_t c_d1_ena                     : 1;
 	uint64_t c_c_ena                      : 1;
-	uint64_t reserved_9_63                : 55;
+	uint64_t reserved_9_31                : 23;
+	uint64_t rtry_ena                     : 1;
+	uint64_t qhdr_b0_ena                  : 1;
+	uint64_t qhdr_b1_ena                  : 1;
+	uint64_t reserved_35_63               : 29;
 #endif
 	} s;
 	struct cvmx_pemx_ecc_ena_cn70xx {
@@ -2636,7 +2757,11 @@ union cvmx_pemx_ecc_ena {
 	} cn70xx;
 	struct cvmx_pemx_ecc_ena_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_9_63                : 55;
+	uint64_t reserved_35_63               : 29;
+	uint64_t qhdr_b1_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank1 RAM */
+	uint64_t qhdr_b0_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank0 RAM */
+	uint64_t rtry_ena                     : 1;  /**< ECC enable for Core's RETRY RAM */
+	uint64_t reserved_9_31                : 23;
 	uint64_t c_c_ena                      : 1;  /**< ECC enable for TLP CPL ctl Fifo */
 	uint64_t c_d1_ena                     : 1;  /**< ECC enable for TLP CPL data1 Fifo */
 	uint64_t c_d0_ena                     : 1;  /**< ECC enable for TLP CPL data0 Fifo */
@@ -2656,7 +2781,11 @@ union cvmx_pemx_ecc_ena {
 	uint64_t c_d0_ena                     : 1;
 	uint64_t c_d1_ena                     : 1;
 	uint64_t c_c_ena                      : 1;
-	uint64_t reserved_9_63                : 55;
+	uint64_t reserved_9_31                : 23;
+	uint64_t rtry_ena                     : 1;
+	uint64_t qhdr_b0_ena                  : 1;
+	uint64_t qhdr_b1_ena                  : 1;
+	uint64_t reserved_35_63               : 29;
 #endif
 	} cn78xx;
 };
@@ -2672,7 +2801,11 @@ union cvmx_pemx_ecc_synd_ctrl {
 	uint64_t u64;
 	struct cvmx_pemx_ecc_synd_ctrl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_18_63               : 46;
+	uint64_t reserved_38_63               : 26;
+	uint64_t qhdr_b1_syn                  : 2;  /**< Syndrome Flip bits for Core's Q HDR Bank1 RAM */
+	uint64_t qhdr_b0_syn                  : 2;  /**< Syndrome Flip bits for Core's Q HDR Bank0 RAM */
+	uint64_t rtry_syn                     : 2;  /**< Syndrome Flip bits for Core's RETRY RAM */
+	uint64_t reserved_18_31               : 14;
 	uint64_t c_c_syn                      : 2;  /**< Syndrome Flip bits for TLP CPL ctl Fifo */
 	uint64_t c_d1_syn                     : 2;  /**< Syndrome Flip bits for TLP CPL data1 Fifo */
 	uint64_t c_d0_syn                     : 2;  /**< Syndrome Flip bits for TLP CPL data0 Fifo */
@@ -2682,7 +2815,11 @@ union cvmx_pemx_ecc_synd_ctrl {
 	uint64_t c_d0_syn                     : 2;
 	uint64_t c_d1_syn                     : 2;
 	uint64_t c_c_syn                      : 2;
-	uint64_t reserved_18_63               : 46;
+	uint64_t reserved_18_31               : 14;
+	uint64_t rtry_syn                     : 2;
+	uint64_t qhdr_b0_syn                  : 2;
+	uint64_t qhdr_b1_syn                  : 2;
+	uint64_t reserved_38_63               : 26;
 #endif
 	} s;
 	struct cvmx_pemx_ecc_synd_ctrl_cn70xx {
@@ -2706,7 +2843,11 @@ union cvmx_pemx_ecc_synd_ctrl {
 	} cn70xx;
 	struct cvmx_pemx_ecc_synd_ctrl_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_18_63               : 46;
+	uint64_t reserved_38_63               : 26;
+	uint64_t qhdr_b1_syn                  : 2;  /**< Syndrome Flip bits for Core's Q HDR Bank1 RAM */
+	uint64_t qhdr_b0_syn                  : 2;  /**< Syndrome Flip bits for Core's Q HDR Bank0 RAM */
+	uint64_t rtry_syn                     : 2;  /**< Syndrome Flip bits for Core's RETRY RAM */
+	uint64_t reserved_18_31               : 14;
 	uint64_t c_c_syn                      : 2;  /**< Syndrome Flip bits for TLP CPL ctl Fifo */
 	uint64_t c_d1_syn                     : 2;  /**< Syndrome Flip bits for TLP CPL data1 Fifo */
 	uint64_t c_d0_syn                     : 2;  /**< Syndrome Flip bits for TLP CPL data0 Fifo */
@@ -2726,7 +2867,11 @@ union cvmx_pemx_ecc_synd_ctrl {
 	uint64_t c_d0_syn                     : 2;
 	uint64_t c_d1_syn                     : 2;
 	uint64_t c_c_syn                      : 2;
-	uint64_t reserved_18_63               : 46;
+	uint64_t reserved_18_31               : 14;
+	uint64_t rtry_syn                     : 2;
+	uint64_t qhdr_b0_syn                  : 2;
+	uint64_t qhdr_b1_syn                  : 2;
+	uint64_t reserved_38_63               : 26;
 #endif
 	} cn78xx;
 };

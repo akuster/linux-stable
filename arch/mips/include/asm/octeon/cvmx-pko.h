@@ -66,7 +66,7 @@
  * - PKO 3 word commands are now supported. Use
  *   cvmx_pko_send_packet_finish3().
  *
- * <hr>$Revision: 82360 $<hr>
+ * <hr>$Revision: 88232 $<hr>
  */
 
 #ifndef __CVMX_PKO_H__
@@ -81,8 +81,6 @@
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-cfg.h>
 #else
-#ifndef CVMX_DONT_INCLUDE_CONFIG
-#endif
 #include "cvmx-fau.h"
 #include "cvmx-fpa.h"
 #include "cvmx-pow.h"
@@ -755,6 +753,7 @@ static inline cvmx_pko_return_value_t cvmx_pko_send_packet_finish3_pkoid(uint64_
 	}
 }
 
+void cvmx_pko_set_cmd_queue_pool_buffer_count(uint64_t buffer_count);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

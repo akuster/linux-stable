@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 88618 $<hr>
+ * <hr>$Revision: 89072 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -644,9 +644,14 @@ retry:
 	/* Disable the peer to peer forwarding register. This must be setup
 	   by the OS after it enumerates the bus and assigns addresses to the
 	   PCIe busses */
-	for (i = 0; i < 4; i++) {
-		cvmx_write_csr(CVMX_PESCX_P2P_BARX_START(i, pcie_port), -1);
-		cvmx_write_csr(CVMX_PESCX_P2P_BARX_END(i, pcie_port), -1);
+	if (OCTEON_IS_MODEL(OCTEON_CN63XX) ||
+	    OCTEON_IS_MODEL(OCTEON_CN66XX) ||
+	    OCTEON_IS_MODEL(OCTEON_CN68XX) ||
+	    OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		for (i = 0; i < 4; i++) {
+			cvmx_write_csr(CVMX_PESCX_P2P_BARX_START(i, pcie_port), -1);
+			cvmx_write_csr(CVMX_PESCX_P2P_BARX_END(i, pcie_port), -1);
+		}
 	}
 
 	/* Set Octeon's BAR0 to decode 0-16KB. It overlaps with Bar2 */
@@ -1187,8 +1192,8 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 		   by the OS after it enumerates the bus and assigns addresses to the
 		   PCIe busses */
 		for (i = 0; i < 4; i++) {
-			cvmx_write_csr(CVMX_PEMX_P2P_BARX_START(i, pcie_port), -1);
-			cvmx_write_csr(CVMX_PEMX_P2P_BARX_END(i, pcie_port), -1);
+			cvmx_write_csr(CVMX_PEMX_P2P_BARX_START(pcie_port, i), -1);
+			cvmx_write_csr(CVMX_PEMX_P2P_BARX_END(pcie_port, i), -1);
 		}
 	}
 
