@@ -174,7 +174,7 @@ static void cvmx_debug_memcpy_align(void *dest, const void *src, int size)
 	long long *dest1 = (long long *)dest;
 	const long long *src1 = (const long long *)src;
 	int i;
-	if (size == 40) {
+	if (size == 80) {
 		long long a0, a1, a2, a3, a4;
 		a0 = src1[0];
 		a1 = src1[1];
@@ -186,6 +186,16 @@ static void cvmx_debug_memcpy_align(void *dest, const void *src, int size)
 		dest1[2] = a2;
 		dest1[3] = a3;
 		dest1[4] = a4;
+		a0 = src1[4 + 0];
+		a1 = src1[4 + 1];
+		a2 = src1[4 + 2];
+		a3 = src1[4 + 3];
+		a4 = src1[4 + 4];
+		dest1[4 + 0] = a0;
+		dest1[4 + 1] = a1;
+		dest1[4 + 2] = a2;
+		dest1[4 + 3] = a3;
+		dest1[4 + 4] = a4;
 		return;
 	}
 	for (i = 0; i < size; i += 8) {
@@ -205,16 +215,14 @@ static inline cvmx_coremask_t *cvmx_debug_core_mask(void)
 #endif
 }
 
-static inline void cvmx_debug_update_state(cvmx_debug_state_t state)
+static inline void cvmx_debug_update_state(cvmx_debug_state_t *state)
 {
-	cvmx_debug_memcpy_align(cvmx_debug_globals->state, &state, sizeof(cvmx_debug_state_t));
+	cvmx_debug_memcpy_align(cvmx_debug_globals->state, state, sizeof(cvmx_debug_state_t));
 }
 
-static inline cvmx_debug_state_t cvmx_debug_get_state(void)
+static inline void cvmx_debug_get_state(cvmx_debug_state_t *state)
 {
-	cvmx_debug_state_t state;
-	cvmx_debug_memcpy_align(&state, cvmx_debug_globals->state, sizeof(cvmx_debug_state_t));
-	return state;
+	cvmx_debug_memcpy_align(state, cvmx_debug_globals->state, sizeof(cvmx_debug_state_t));
 }
 
 static void cvmx_debug_printf(char *format, ...) __attribute__ ((format(__printf__, 1, 2)));
@@ -230,9 +238,9 @@ static void cvmx_debug_printf(char *format, ...)
 	va_end(ap);
 }
 
-static inline int __cvmx_debug_in_focus(cvmx_debug_state_t state, unsigned core)
+static inline int __cvmx_debug_in_focus(cvmx_debug_state_t *state, unsigned core)
 {
-	return state.focus_core == core;
+	return state->focus_core == core;
 }
 
 static void cvmx_debug_install_handler(unsigned core)
@@ -360,7 +368,7 @@ void cvmx_debug_init(void)
 
 	{
 		cvmx_spinlock_lock(lock);
-		state = cvmx_debug_get_state();
+		cvmx_debug_get_state(&state);
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 		/* The Linux kernel only calls this once for the init core,
 		   setup the known cores to be all of the cores that Linux knows about. */
@@ -373,7 +381,7 @@ void cvmx_debug_init(void)
 		state.known_cores |= (1ull << core);
 		state.core_finished &= ~(1ull << core);
 #endif
-		cvmx_debug_update_state(state);
+		cvmx_debug_update_state(&state);
 		cvmx_spinlock_unlock(lock);
 	}
 
@@ -385,7 +393,7 @@ void cvmx_debug_init(void)
 #endif
 	{
 		cvmx_debug_printf("cvmx_debug_init core: %d\n", core);
-		state = cvmx_debug_get_state();
+		cvmx_debug_get_state(&state);
 		state.focus_core = core;
 		state.active_cores = state.known_cores;
 		state.focus_switch = 1;
@@ -393,7 +401,7 @@ void cvmx_debug_init(void)
 		/* COMMAND_NOP might not be 0. */
 		state.command = COMMAND_NOP;
 		cvmx_debug_printf("Known cores at init: 0x%llx\n", (long long)state.known_cores);
-		cvmx_debug_update_state(state);
+		cvmx_debug_update_state(&state);
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 		/* Initialize __cvmx_debug_stack_top_all for Linux kernel, all cores share the same address space. */
@@ -496,9 +504,9 @@ static int cvmx_debug_putpacket_hexint(char *buf, uint64_t value)
 	return cvmx_debug_putpacket_noformat(packet);
 }
 
-static int cvmx_debug_active_core(cvmx_debug_state_t state, unsigned core)
+static int cvmx_debug_active_core(cvmx_debug_state_t *state, unsigned core)
 {
-	return state.active_cores & (1ull << core);
+	return state->active_cores & (1ull << core);
 }
 
 static volatile cvmx_debug_core_context_t *cvmx_debug_core_context(void)
@@ -651,7 +659,8 @@ static cvmx_debug_command_t cvmx_debug_process_packet(const char *packet)
 {
 	const char *buf = packet;
 	cvmx_debug_command_t result = COMMAND_NOP;
-	cvmx_debug_state_t state = cvmx_debug_get_state();
+	cvmx_debug_state_t state;
+        cvmx_debug_get_state(&state);
 
 	/* A one letter command code represents what to do.  */
 	switch (*buf++) {
@@ -679,7 +688,7 @@ static cvmx_debug_command_t cvmx_debug_process_packet(const char *packet)
 				cvmx_debug_putpacket_hexint("F", core);
 				cvmx_debug_comms[cvmx_debug_globals->comm_type]->change_core(state.focus_core, core);
 				state.focus_core = core;
-				cvmx_debug_update_state(state);
+				cvmx_debug_update_state(&state);
 				break;
 			} else
 				cvmx_debug_putpacket_noformat("!Core is not in the exception handler. Focus not changed.");
@@ -696,7 +705,7 @@ static cvmx_debug_command_t cvmx_debug_process_packet(const char *packet)
 				state.step_isr = 1;	/* Step in ISR */
 			else
 				state.step_isr = 0;	/* Step over ISR */
-			cvmx_debug_update_state(state);
+			cvmx_debug_update_state(&state);
 		}
 		/* Fall through. The reply to the set step-isr command is the
 		   same as the get step-isr command */
@@ -723,7 +732,7 @@ static cvmx_debug_command_t cvmx_debug_process_packet(const char *packet)
 				state.active_cores |= 1ull << state.focus_core;
 			}
 
-			cvmx_debug_update_state(state);
+			cvmx_debug_update_state(&state);
 		}
 		/* Fall through. The reply to the set active cores command is the
 		   same as the get active cores command */
@@ -738,7 +747,7 @@ static cvmx_debug_command_t cvmx_debug_process_packet(const char *packet)
 				state.step_all = 1;	/* A step or continue will start all cores */
 			else
 				state.step_all = 0;	/* A step or continue only affects the focus core */
-			cvmx_debug_update_state(state);
+			cvmx_debug_update_state(&state);
 		}
 		/* Fall through. The reply to the set step-all command is the
 		   same as the get step-all command */
@@ -1065,14 +1074,14 @@ static cvmx_debug_command_t cvmx_debug_process_next_packet(int needs_proxy, vola
    that when the cores in active core mask are done executing the program, the
    focus will not be transfered to this core.  */
 
-static int cvmx_debug_stop_core(cvmx_debug_state_t state, unsigned core, cvmx_debug_register_t * debug_reg, int proxy)
+static int cvmx_debug_stop_core(cvmx_debug_state_t *state, unsigned core, cvmx_debug_register_t * debug_reg, int proxy)
 {
 	if (!cvmx_debug_active_core(state, core) && !debug_reg->s.dbp && !debug_reg->s.dss && (debug_reg->s.dint != 1)) {
 		debug_reg->s.sst = 0;
 		cvmx_debug_printf("Core #%d not in active cores, continuing.\n", core);
 		return 0;
 	}
-	if ((state.core_finished & (1ull << core)) && proxy)
+	if ((state->core_finished & (1ull << core)) && proxy)
 		return 0;
 	return 1;
 }
@@ -1141,18 +1150,18 @@ static void cvmx_debug_sync_up_cores(void)
 	/* NOTE this reads directly from the state array for speed reasons
 	   and we don't change the array. */
 	do {
-asm("": : :	"memory");
+		asm("": : :"memory");
 	} while (cvmx_debug_globals->state[offsetof(cvmx_debug_state_t, step_all) / sizeof(uint64_t)]
 		 && cvmx_debug_globals->state[offsetof(cvmx_debug_state_t, handler_cores) / sizeof(uint64_t)] != 0);
 }
 
 /* Delay the focus core a little if it is likely another core needs to steal
    focus. Once we enter the main loop focus can't be stolen */
-static void cvmx_debug_delay_focus_core(cvmx_debug_state_t state, unsigned core, cvmx_debug_register_t * debug_reg)
+static void cvmx_debug_delay_focus_core(cvmx_debug_state_t *state, unsigned core, cvmx_debug_register_t * debug_reg)
 {
 	volatile int i;
 	/* Don't delay for single stepping or a breakpoint was hit.  */
-	if (debug_reg->s.dss || debug_reg->s.dbp || core != state.focus_core)
+	if (debug_reg->s.dss || debug_reg->s.dbp || core != state->focus_core)
 		return;
 
 	for (i = 0; i < 4800; i++) {
@@ -1171,19 +1180,19 @@ static void cvmx_debug_delay_focus_core(cvmx_debug_state_t state, unsigned core,
    && it was not the last focus-core,
    && last focus-core happens to be inside an ISR, blocking focus-switch
    then burn some cycles, to avoid unnecessary focus toggles. */
-static void cvmx_debug_delay_isr_core(unsigned core, uint32_t depc, int single_stepped_exc_only, cvmx_debug_state_t state)
+static void cvmx_debug_delay_isr_core(unsigned core, uint32_t depc, int single_stepped_exc_only, cvmx_debug_state_t *state)
 {
 	volatile uint64_t i;
-	if (!single_stepped_exc_only || state.step_isr || core == state.focus_core || state.focus_switch)
+	if (!single_stepped_exc_only || state->step_isr || core == state->focus_core || state->focus_switch)
 		return;
 
 	cvmx_debug_printf("Core #%u spinning for focus at 0x%x\n", core, (unsigned int)depc);
 
 	for (i = ISR_DELAY_COUNTER; i > 0; i--) {
-		state = cvmx_debug_get_state();
+		cvmx_debug_get_state(state);
 		/* Spin giving the focus core time to service ISR */
 		/* But cut short the loop, if we can.  Shrink down i, only once. */
-		if (i > 600000 && state.focus_switch)
+		if (i > 600000 && state->focus_switch)
 			i = 500000;
 	}
 
@@ -1192,9 +1201,11 @@ static void cvmx_debug_delay_isr_core(unsigned core, uint32_t depc, int single_s
 static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvmx_debug_core_context_t * context, int needs_proxy)
 {
 	unsigned core = cvmx_get_core_num();
-	cvmx_debug_state_t state = cvmx_debug_get_state();
+	cvmx_debug_state_t state;
 	cvmx_debug_command_t command = COMMAND_NOP;
 	int single_stepped_exc_only = cvmx_debug_single_step_exc(debug_reg);
+
+	cvmx_debug_get_state(&state);
 
 	/* All cores should respect the focus core if it has to
 	   stop focus switching while servicing an interrupt.
@@ -1206,7 +1217,7 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 	   the debugger exception stub fully. */
 	if (!state.step_isr && (cvmx_interrupt_in_isr || (context->cop0.status & 0x2ULL)) && single_stepped_exc_only) {
 		cvmx_spinlock_lock(&cvmx_debug_globals->lock);
-		state = cvmx_debug_get_state();
+		cvmx_debug_get_state(&state);
 		/* If this is the focus core, switch off focus switching
 		   till ISR_DELAY_COUNTER. This will let focus core
 		   keep the focus until the ISR is completed. */
@@ -1222,7 +1233,7 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 					  (unsigned long long)context->cop0.depc);
 			state.focus_switch = 1;
 		}
-		cvmx_debug_update_state(state);
+		cvmx_debug_update_state(&state);
 		cvmx_spinlock_unlock(&cvmx_debug_globals->lock);
 		cvmx_debug_printf("Core #%u resumed skipping isr.\n", core);
 		return 0;
@@ -1230,9 +1241,9 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 
 	/* Delay the focus core a little if it is likely another core needs to
 	   steal focus. Once we enter the main loop focus can't be stolen */
-	cvmx_debug_delay_focus_core(state, core, debug_reg);
+	cvmx_debug_delay_focus_core(&state, core, debug_reg);
 
-	cvmx_debug_delay_isr_core(core, context->cop0.depc, single_stepped_exc_only, state);
+	cvmx_debug_delay_isr_core(core, context->cop0.depc, single_stepped_exc_only, &state);
 
 	/* The following section of code does two critical things. First, it
 	   populates the handler_cores bitmask of all cores in the exception
@@ -1241,24 +1252,24 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 	{
 		cvmx_debug_printf("Core #%d stopped\n", core);
 		cvmx_spinlock_lock(&cvmx_debug_globals->lock);
-		state = cvmx_debug_get_state();
+		cvmx_debug_get_state(&state);
 
 		state.handler_cores |= (1ull << core);
 		cvmx_debug_may_elect_as_focus_core(&state, core, debug_reg);
 
 		/* Push all updates before exiting the critical section */
 		state.focus_switch = 1;
-		cvmx_debug_update_state(state);
+		cvmx_debug_update_state(&state);
 		cvmx_spinlock_unlock(&cvmx_debug_globals->lock);
 	}
-	if (__cvmx_debug_in_focus(state, core))
+	if (__cvmx_debug_in_focus(&state, core))
 		cvmx_debug_send_stop_reason(debug_reg, context);
 
 	do {
 		unsigned oldfocus = state.focus_core;
-		state = cvmx_debug_get_state();
+		cvmx_debug_get_state(&state);
 		/* Note the focus core can change in this loop. */
-		if (__cvmx_debug_in_focus(state, core)) {
+		if (__cvmx_debug_in_focus(&state, core)) {
 			if (context->remote_controlled == COMMAND_NOT_FOCUS && !needs_proxy)
 				context->remote_controlled = COMMAND_NOP;
 			CVMX_SYNCW;
@@ -1270,7 +1281,9 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 				cvmx_debug_send_stop_reason(debug_reg, context);
 
 			command = cvmx_debug_process_next_packet(needs_proxy, context);
-			state = cvmx_debug_get_state();
+
+			cvmx_spinlock_lock(&cvmx_debug_globals->lock);
+			cvmx_debug_get_state(&state);
 			if (command == COMMAND_NOT_FOCUS && state.focus_core != core) {
 				cvmx_debug_printf("change focus recieved to %d.\n", (int)state.focus_core);
 				command = COMMAND_NOP;
@@ -1279,8 +1292,9 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 			   step-all.  */
 			if (command != COMMAND_NOP && state.step_all) {
 				state.command = command;
-				cvmx_debug_update_state(state);
+				cvmx_debug_update_state(&state);
 			}
+			cvmx_spinlock_unlock(&cvmx_debug_globals->lock);
 		} else {
 			volatile int i;
 			/* Do a small sleep (around 2000 cycles) just so there is some time to process a focus change. */
@@ -1318,19 +1332,19 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 
 	{
 		cvmx_spinlock_lock(&cvmx_debug_globals->lock);
-		state = cvmx_debug_get_state();
+		cvmx_debug_get_state(&state);
 		state.handler_cores ^= (1ull << core);
-		cvmx_debug_update_state(state);
+		cvmx_debug_update_state(&state);
 		cvmx_spinlock_unlock(&cvmx_debug_globals->lock);
 	}
 
 	cvmx_debug_sync_up_cores();
 	/* Now that all cores are out, reset the command.  */
-	if (__cvmx_debug_in_focus(state, core)) {
+	if (__cvmx_debug_in_focus(&state, core)) {
 		cvmx_spinlock_lock(&cvmx_debug_globals->lock);
-		state = cvmx_debug_get_state();
+		cvmx_debug_get_state(&state);
 		state.command = COMMAND_NOP;
-		cvmx_debug_update_state(state);
+		cvmx_debug_update_state(&state);
 		cvmx_spinlock_unlock(&cvmx_debug_globals->lock);
 	}
 	return 0;
@@ -1496,9 +1510,9 @@ void __cvmx_debug_handler_stage3(uint64_t lo, uint64_t hi)
 	{
 		cvmx_debug_state_t state;
 		cvmx_spinlock_lock(&cvmx_debug_globals->lock);
-		state = cvmx_debug_get_state();
+		cvmx_debug_get_state(&state);
 		state.ever_been_in_debug = 1;
-		cvmx_debug_update_state(state);
+		cvmx_debug_update_state(&state);
 		cvmx_spinlock_unlock(&cvmx_debug_globals->lock);
 	}
 	cvmx_debug_print_cause(context);
@@ -1533,12 +1547,12 @@ void __cvmx_debug_handler_stage3(uint64_t lo, uint64_t hi)
 			cvmx_debug_state_t state;
 			unsigned core = cvmx_get_core_num();
 
-			state = cvmx_debug_get_state();
+			cvmx_debug_get_state(&state);
 			debug_reg.u64 = context->cop0.debug;
 			/* All cores stop on any exception.  See if we want nothing from this and
 			   it should resume.  This needs to be done for non proxy based debugging
 			   so that some non active-cores can control the other cores.  */
-			if (!cvmx_debug_stop_core(state, core, &debug_reg, needs_proxy)) {
+			if (!cvmx_debug_stop_core(&state, core, &debug_reg, needs_proxy)) {
 				context->cop0.debug = debug_reg.u64;
 				break;
 			}
@@ -1591,10 +1605,10 @@ void cvmx_debug_finish(void)
 #endif
 
 	cvmx_spinlock_lock(&cvmx_debug_globals->lock);
-	state = cvmx_debug_get_state();
+	cvmx_debug_get_state(&state);
 	state.known_cores ^= (1ull << coreid);
 	state.core_finished |= (1ull << coreid);
-	cvmx_debug_update_state(state);
+	cvmx_debug_update_state(&state);
 
 	/* Tell the user the core has finished. */
 	if (state.ever_been_in_debug)
@@ -1618,7 +1632,7 @@ void cvmx_debug_finish(void)
 			if (state.known_cores & (1ull << newcore)) {
 				cvmx_debug_printf("Routing uart interrupts to Core #%u.\n", newcore);
 				cvmx_debug_set_focus_core(&state, newcore);
-				cvmx_debug_update_state(state);
+				cvmx_debug_update_state(&state);
 				break;
 			}
 		}

@@ -79,11 +79,10 @@ static CVMX_SHARED cvmx_spinlock_t cvmx_debug_uart_lock;
 /**
  * Interrupt handler for debugger Control-C interrupts.
  *
- * @param irq_number IRQ interrupt number
+ * @param uart_number UART generating the IRQ
  * @param registers  CPU registers at the time of the interrupt
- * @param user_arg   Unused user argument
  */
-void cvmx_debug_uart_process_debug_interrupt(int irq_number, uint64_t registers[32], void *user_arg)
+void cvmx_debug_uart_process_debug_interrupt(int uart_number, uint64_t registers[32])
 {
 	cvmx_uart_lsr_t lsrval;
 

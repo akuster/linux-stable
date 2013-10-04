@@ -43,7 +43,7 @@
  * Implementation of the Level 2 Cache (L2C) control,
  * measurement, and debugging facilities.
  *
- * <hr>$Revision: 85169 $<hr>
+ * <hr>$Revision: 88572 $<hr>
  *
  */
 
@@ -383,15 +383,15 @@ int cvmx_l2c_lock_line(uint64_t addr)
 			/* make sure CVMX_L2C_TADX_TAG is updated */
 			CVMX_SYNC;
 			l2c_tadx_tag.u64 = cvmx_read_csr(CVMX_L2C_TADX_TAG(tad));
-			if (OCTEON_IS_OCTEON2() && l2c_tadx_tag.s.valid &&
+			if (OCTEON_IS_OCTEON2() && l2c_tadx_tag.cn61xx.valid &&
 			    l2c_tadx_tag.cn61xx.tag == tag)
 				break;
 			else if (OCTEON_IS_MODEL(OCTEON_CN70XX)
 				 && l2c_tadx_tag.cn70xx.valid
 				 && l2c_tadx_tag.cn70xx.tag == tag)
 				break;
-			else if (l2c_tadx_tag.s.valid &&
-			    l2c_tadx_tag.cn78xx.tag == tag)
+			else if (l2c_tadx_tag.cn78xx.ts == 0
+				 && l2c_tadx_tag.cn78xx.tag == tag)
 			        break;
 
 			/* cvmx_dprintf("caddr=%lx tad=%d tagu64=%lx valid=%x tag=%x \n", caddr,
@@ -808,15 +808,22 @@ union cvmx_l2c_tag cvmx_l2c_get_tag_v2(uint32_t association, uint32_t index, uin
 		CVMX_SYNC;	/* make sure CVMX_L2C_TADX_TAG is updated */
 		l2c_tadx_tag.u64 = cvmx_read_csr(CVMX_L2C_TADX_TAG(tad));
 
-		tag.s.V = l2c_tadx_tag.s.valid;
-		tag.s.D = l2c_tadx_tag.s.dirty;
-		tag.s.L = l2c_tadx_tag.s.lock;
-		tag.s.U = l2c_tadx_tag.cn61xx.use;
-		tag.s.addr = (OCTEON_IS_MODEL(OCTEON_CN70XX) 
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+			if (l2c_tadx_tag.cn78xx.ts == 0)
+				tag.s.V = 1;
+			tag.s.D = l2c_tadx_tag.cn78xx.sblkdty; /* FIXME */
+			tag.s.L = l2c_tadx_tag.cn78xx.lock;
+			tag.s.U = l2c_tadx_tag.cn78xx.used;
+			tag.s.addr = l2c_tadx_tag.cn78xx.tag;
+		} else {
+			tag.s.V = l2c_tadx_tag.cn61xx.valid;
+			tag.s.D = l2c_tadx_tag.cn61xx.dirty;
+			tag.s.L = l2c_tadx_tag.cn61xx.lock;
+			tag.s.U = l2c_tadx_tag.cn61xx.use;
+			tag.s.addr = (OCTEON_IS_MODEL(OCTEON_CN70XX) 
 				? l2c_tadx_tag.cn70xx.tag
-				: (OCTEON_IS_MODEL(OCTEON_CN78XX)
-				   ? l2c_tadx_tag.cn78xx.tag
-				   : l2c_tadx_tag.cn61xx.tag));
+				   : l2c_tadx_tag.cn61xx.tag);
+		}
 	} else {
 		union __cvmx_l2c_tag tmp_tag;
 		/* __read_l2_tag is intended for internal use only */
@@ -894,15 +901,22 @@ union cvmx_l2c_tag cvmx_l2c_get_tag(uint32_t association, uint32_t index)
 		CVMX_SYNC;	/* make sure CVMX_L2C_TADX_TAG is updated */
 		l2c_tadx_tag.u64 = cvmx_read_csr(CVMX_L2C_TADX_TAG(0));
 
-		tag.s.V = l2c_tadx_tag.s.valid;
-		tag.s.D = l2c_tadx_tag.s.dirty;
-		tag.s.L = l2c_tadx_tag.s.lock;
-		tag.s.U = l2c_tadx_tag.cn61xx.use;
-		tag.s.addr = (OCTEON_IS_MODEL(OCTEON_CN70XX) 
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+			if (l2c_tadx_tag.cn78xx.ts == 0)
+				tag.s.V = 1;
+			tag.s.D = l2c_tadx_tag.cn78xx.sblkdty; /* FIXME */
+			tag.s.L = l2c_tadx_tag.cn78xx.lock;
+			tag.s.U = l2c_tadx_tag.cn78xx.used;
+			tag.s.addr = l2c_tadx_tag.cn78xx.tag;
+		} else {
+			tag.s.V = l2c_tadx_tag.cn61xx.valid;
+			tag.s.D = l2c_tadx_tag.cn61xx.dirty;
+			tag.s.L = l2c_tadx_tag.cn61xx.lock;
+			tag.s.U = l2c_tadx_tag.cn61xx.use;
+			tag.s.addr = (OCTEON_IS_MODEL(OCTEON_CN70XX) 
 				? l2c_tadx_tag.cn70xx.tag
-				: (OCTEON_IS_MODEL(OCTEON_CN78XX)
-				   ? l2c_tadx_tag.cn78xx.tag
-				   : l2c_tadx_tag.cn61xx.tag));
+				   : l2c_tadx_tag.cn61xx.tag);
+		}
 	} else {
 		union __cvmx_l2c_tag tmp_tag;
 		/* __read_l2_tag is intended for internal use only */
@@ -1078,9 +1092,27 @@ int cvmx_l2c_get_num_assoc(void)
 	else if (OCTEON_IS_MODEL(OCTEON_CN31XX)
 		|| OCTEON_IS_MODEL(OCTEON_CN30XX))
 		l2_assoc = 4;
-	else if (OCTEON_IS_MODEL(OCTEON_CN70XX))
-		return 4;
-	else {
+	else if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
+		union cvmx_mio_fus_dat3 mio_fus_dat3;
+
+		mio_fus_dat3.u64 = cvmx_read_csr(CVMX_MIO_FUS_DAT3);
+
+		switch (mio_fus_dat3.s.l2c_crip) {
+		case 3:  /* 1/4 size */
+			l2_assoc = 1;
+			break; 
+		case 2:  /* 1/2 size */
+			l2_assoc = 2;
+			break; 
+		case 1:  /* 3/4 size */
+			l2_assoc = 3;
+			break; 
+		default: /* Full size */
+			l2_assoc = 4;
+			break;
+		}
+		return l2_assoc;
+	} else {
 		cvmx_dprintf("Unsupported OCTEON Model in %s\n", __func__);
 		l2_assoc = 8;
 	}

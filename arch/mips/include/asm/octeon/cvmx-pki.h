@@ -50,8 +50,12 @@
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-pki-defs.h>
 #include <asm/octeon/cvmx-fpa.h>
+#include <asm/octeon/cvmx-helper-util.h>
+#include <asm/octeon/cvmx-helper-cfg.h>
 #else
 #include "cvmx-fpa.h"
+#include "cvmx-helper-util.h"
+#include "cvmx-helper-cfg.h"
 #endif
 
 #ifdef	__cplusplus
@@ -77,6 +81,7 @@ extern "C" {
 #define CVMX_PKI_NUM_FRAME_SIZE_ID	(2)
 #define CVMX_PKI_NUM_CHANNELS		(4096)
 #define CVMX_PKI_NUM_BPID		(1024)
+#define CVMX_PKI_NUM_SSO_GROUP		(256)
 #define CVMX_PKI_MAX_FRAME_SIZE		(65535)
 #define CVMX_PKI_FIND_AVAL_ENTRY        (-1)
 #define CVMX_PKI_MAX_CLUSTER_PROFILES   (4)
@@ -84,7 +89,7 @@ extern "C" {
 #define CVMX_PKI_MAX_NAME		(16)
 #define CVMX_PKI_MAX_POOL_PROFILES	(64) //modify it later
 #define CVMX_PKI_MAX_AURA_PROFILES	(256) //modify it later
-#define CVMX_PKI_MAX_SSO_GROUP_PROFILES	(256)
+
 
 #ifdef CVMX_SUPPORT_SEPARATE_CLUSTER_CONFIG
 #define CVMX_PKI_TOTAL_PCAM_ENTRY	((CVMX_PKI_NUM_CLUSTERS) * (CVMX_PKI_NUM_PCAM_BANK) *\
@@ -122,16 +127,33 @@ struct cvmx_pki_cluster_list
 	struct cvmx_pki_cluster_profile cl_profile[CVMX_PKI_MAX_CLUSTER_PROFILES];
 };
 
+struct cvmx_pki_fpa_pool_config
+{
+	int users;
+	int pool_num;
+	uint64_t buffer_size;
+	uint64_t buffer_count;
+};
+
 struct cvmx_pki_pool_profile
 {
 	char pool_name[CVMX_PKI_MAX_NAME];
-	cvmx_fpa_pool_config_t	pool_cfg;
+	int64_t pool_num;
+	uint64_t buffer_size;
+	uint64_t buffer_count;
 };
 
 struct cvmx_pki_pool_list
 {
 	int index;
 	struct cvmx_pki_pool_profile pool_profile[CVMX_PKI_MAX_POOL_PROFILES];
+};
+
+struct cvmx_pki_aura_config
+{
+	int users;
+	int pool_num;
+	int buffer_count;
 };
 
 struct cvmx_pki_aura_profile
@@ -148,6 +170,16 @@ struct cvmx_pki_aura_list
 	struct cvmx_pki_aura_profile aura_profile[CVMX_PKI_MAX_AURA_PROFILES];
 };
 
+struct cvmx_pki_sso_grp_config
+{
+	int users;
+	int priority;
+	int weight;
+	int affinity;
+	uint64_t core_affinity_mask;
+	uint64_t core_affinity_mask_set;
+};
+
 struct cvmx_pki_sso_grp_profile
 {
 	char grp_name[CVMX_PKI_MAX_NAME];
@@ -158,10 +190,11 @@ struct cvmx_pki_sso_grp_profile
 	uint64_t core_affinity_mask;
 	uint64_t core_affinity_mask_set;
 };
+
 struct cvmx_pki_sso_grp_list
 {
 	int index;
-	struct cvmx_pki_sso_grp_profile grp_profile[CVMX_PKI_MAX_SSO_GROUP_PROFILES];
+	struct cvmx_pki_sso_grp_profile grp_profile[CVMX_PKI_NUM_SSO_GROUP];
 };
 
 struct cvmx_pki_qpg_profile
@@ -204,6 +237,7 @@ struct cvmx_pki_global_config
 
 struct cvmx_pki_qpg_config
 {
+	int  users;
 	int  port_add;
 	int  aura;
 	int  group_ok;
@@ -233,14 +267,15 @@ enum cvmx_pki_parse_mode_chg {
 	CVMX_PKI_PARSE_SKIP_ALL = 0x7f,
 };
 
-struct cvmx_pki_pkind_config
+struct cvmx_pki_port_config
 {
 	int				users;
 	enum cvmx_pki_pkind_parse_mode	parsing_mode;
 	uint64_t 			cluster_mask;
-	uint64_t 			l2_parsing_mask;
+	uint64_t 			l2_parsing_mask;//vinita_to_do
 	int	 			initial_style;
 	int				cluster_grp;
+	int 				num_clusters;
 };
 
 struct cvmx_pki_tag_fields
@@ -301,32 +336,43 @@ enum cvmx_pki_qpg_qos {
 	CVMX_PKI_QPG_QOS_MPLS,
 	CVMX_PKI_QPG_QOS_DSA_SRC,
 	CVMX_PKI_QPG_QOS_DIFFSERV,
-	CVMX_PKI_QPG_QOS_HIGIG
+	CVMX_PKI_QPG_QOS_HIGIG,
+};
+
+enum cvmx_pki_en_dis {
+	CVMX_PKI_DISABLE = 0,
+	CVMX_PKI_ENABLE = 1,
+};
+
+enum cvmx_pki_wqe_vlan {
+	CVMX_PKI_USE_FIRST_VLAN = 0,
+	CVMX_PKI_USE_SECOND_VLAN
 };
 
 struct cvmx_pki_style_config
 {
 	int				users;
-	bool				en_l2_lenchk;
+	enum cvmx_pki_en_dis 		en_pkt_le_mode;
+	enum cvmx_pki_en_dis		en_l2_lenchk;
 	uint64_t			cluster_mask;
 	enum cvmx_pki_l2_len_mode	l2_lenchk_mode;
-	bool 				en_maxframe_errchk;
-	bool 				en_minframe_errchk;
+	enum cvmx_pki_en_dis		en_maxframe_errchk;
+	enum cvmx_pki_en_dis		en_minframe_errchk;
 	int	 			max_min_frame_sel;
-	bool 				strip_l2_fcs;
-	bool 				en_fcs_check;
+	enum cvmx_pki_en_dis		en_strip_l2_fcs;
+	enum cvmx_pki_en_dis		en_fcs_check;
 	int	 			wqe_header_size;
 	int 				wqe_start_offset;
 	int 				first_mbuf_skip;
 	int	 			later_mbuf_skip;
 	int				mbuff_size;
 	enum cvmx_pki_cache_mode 	cache_mode;
-	bool 				data_wqe_buf_diff;
-	int				wqe_vlan;
+	enum cvmx_pki_en_dis 		en_data_wqe_buf_diff;
+	enum cvmx_pki_wqe_vlan		wqe_vlan_vlptr;
 	int				qpg_base_offset;
-	bool 				qpg_calc_port_addr;
-	bool 				qpg_calc_aura;
-	bool 				qpg_calc_group;
+	enum cvmx_pki_en_dis 		en_qpg_calc_port_addr;
+	enum cvmx_pki_en_dis 		en_qpg_calc_aura;
+	enum cvmx_pki_en_dis 		en_qpg_calc_group;
 	enum cvmx_pki_qpg_qos		qpg_qos;
 	int				qpg_port_msb;
 	int				qpg_port_shift;
@@ -464,11 +510,12 @@ struct cvmx_pki_config
 {
 	struct cvmx_pki_global_config		global_cfg;
 	struct cvmx_pki_clustergrp_config	cluster_cfg[CVMX_PKI_NUM_CLUSTER_GROUP];
-	struct cvmx_pki_pkind_config		pkind_cfg[CVMX_PKI_NUM_PKIND];
+	struct cvmx_pki_port_config		port_cfg[CVMX_HELPER_MAX_IFACE][CVMX_HELPER_CFG_MAX_PORT_PER_IFACE];
 	struct cvmx_pki_style_config		style_cfg[CVMX_PKI_NUM_FINAL_STYLES];
 	struct cvmx_pki_qpg_config		qpg_cfg[CVMX_PKI_NUM_QPG_ENTRY];
-	//struct cvmx_fpa_pool_config_t		pool_cfg[CVMX_FPA_NUM_POOLS_78XX];
-	//struct cvmx_pki_aura_config		aura_cfg[CVMX_FPA_AURA_NUM];//fpa should have aura config defined but it does not
+	struct cvmx_pki_fpa_pool_config		pool_cfg[CVMX_FPA_NUM_POOLS_78XX];
+	struct cvmx_pki_aura_config		aura_cfg[CVMX_FPA_AURA_NUM];
+	struct cvmx_pki_sso_grp_config		sso_grp_cfg[CVMX_PKI_NUM_SSO_GROUP];
 };
 
 /** Mapping of profile names to their respective config number*/
@@ -932,7 +979,7 @@ int cvmx_pki_set_style_config(int node, char* style_name, int style_num,
  * @return 		0 on SUCCESS
                         -1 on failure
  */
-int cvmx_pki_set_pkind_style(int node, int pkind, int style_name);
+int cvmx_pki_set_port_style_cfg(uint64_t node, uint64_t interface, uint64_t port, uint64_t style);
 
 /**
  * This function stores the pkind initial parse mode in data structure
@@ -943,7 +990,8 @@ int cvmx_pki_set_pkind_style(int node, int pkind, int style_name);
  * @return 		0 on SUCCESS
                         -1 on failure
  */
-void cvmx_pki_set_pkind_initial_parse_mode(int node, int pkind, int parse_mode);
+void cvmx_pki_set_port_parse_mode_cfg(uint64_t node, uint64_t interface,
+					  uint64_t port, enum cvmx_pki_pkind_parse_mode parse_mode);
 
 /**
  * This function stores the pkind cluster configuration in data structure
@@ -954,7 +1002,7 @@ void cvmx_pki_set_pkind_initial_parse_mode(int node, int pkind, int parse_mode);
  * @return 		0 on SUCCESS
                         -1 on failure
  */
-void cvmx_pki_set_pkind_cluster_config(int node, int pkind,
+void cvmx_pki_set_port_cluster_config(int node, uint64_t interface, uint64_t port,
 				       int cl_grp, uint64_t cl_mask);
 
 /**
@@ -970,6 +1018,14 @@ void cvmx_pki_set_pkind_cluster_config(int node, int pkind,
 int cvmx_pki_set_pcam_entry(int node, int pcam_index, uint64_t cl_mask,
 			    struct cvmx_pki_pcam_input input,
 			    struct cvmx_pki_pcam_action action);
+
+void cvmx_pki_set_default_pool_buffer_count(int node, uint64_t buffer_Count);
+void cvmx_pki_set_default_pool_config(int node, int64_t pool,
+				      int64_t buffer_size, int64_t buffer_count);
+void cvmx_pki_set_default_aura_config(int node, int64_t aura,
+				      int64_t pool, uint64_t buffer_count);
+void cvmx_pki_initialize_data_structures(int node);
+void cvmx_pki_get_style_config(int node, int style, struct cvmx_pki_style_config* style_cfg);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

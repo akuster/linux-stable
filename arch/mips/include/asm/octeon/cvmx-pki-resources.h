@@ -72,13 +72,20 @@ int cvmx_pki_alloc_style(int node, int style);
  * @param node	 	node to allocate cluster group from.
    @param cl_grp	cluster group to allocate/reserve, if -1 ,
                         allocate any available cluster group.
- * @param num_clusters	number of clusters that will be attached to
-			the cluster group.
- * @param parsing_mask  mask of parsing that will be enabled on the cluster gro.
  * @return 	 	cluster group number or -1 on failure
  */
-int cvmx_pki_alloc_cluster_group(int node, int cl_grp, int num_clusters,
-				 uint64_t parsing_mask, uint64_t *cluster_mask);
+int cvmx_pki_alloc_cluster_group(int node, int cl_grp);
+
+/**
+ * This function allocates/reserves a cluster from per node
+   cluster resources.
+ * @param node	 	node to allocate cluster group from.
+   @param cluster_mask	mask of clusters  to allocate/reserve, if -1 ,
+                        allocate any available clusters.
+ * @param num_clusters	number of clusters that will be allocated
+ */
+int cvmx_pki_alloc_clusters(int node, int num_clusters, uint64_t *cluster_mask);
+
 
 /**
  * This function allocates/reserves a pcam entry from node
@@ -102,6 +109,43 @@ int cvmx_pki_pcam_alloc_entry(int node, int index, int bank, uint64_t cluster_ma
  * @return 	 	qpg table base offset number on success, -1 on failure.
  */
 int cvmx_pki_alloc_qpg_entry(int node, int base_offset, int count );
+
+/**
+ * This function frees a style from pool of global styles per node.
+ * @param node	 node to free style from.
+ * @param style	 style to free
+ * @return 	 0 on success, -1 on failure.
+ */
+int cvmx_pki_free_style(int node, int style);
+
+
+/**
+ * This function frees a cluster group from per node
+   cluster group resources.
+ * @param node	 	node to free cluster group from.
+   @param cl_grp	cluster group to free
+ * @return 	 	0 on success or -1 on failure
+ */
+int cvmx_pki_free_cluster_group(int node, int cl_grp);
+
+/**
+ * This function frees  clusters  from per node
+   clusters resources.
+ * @param node	 	node to free clusters from.
+ * @param cluster_mask  mask of clusters need freeing
+ * @return 	 	0 on success or -1 on failure
+ */
+int cvmx_pki_free_clusters(int node, uint64_t cluster_mask);
+
+/**
+ * This function frees a pcam entry from node
+ * @param node	 	node to allocate pcam entry from.
+   @param index  	index of pacm entry (0-191) needs to be freed.
+ * @param bank		pcam bank where to free pcam entry from
+ * @param cluster_mask  mask of clusters from which pcam entry is freed.
+ * @return 	 	0 on success OR -1 on failure
+ */
+int cvmx_pki_pcam_free_entry(int node, int index, int bank, uint64_t cluster_mask);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

@@ -81,10 +81,11 @@
 
 CVMX_SHARED struct cvmx_cfg_port_param cvmx_cfg_port[CVMX_HELPER_MAX_IFACE][CVMX_HELPER_CFG_MAX_PORT_PER_IFACE] =
 	{[0 ... CVMX_HELPER_MAX_IFACE - 1] = {[0 ... CVMX_HELPER_CFG_MAX_PORT_PER_IFACE - 1] =
-					      { CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE,
-						CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE,
-						CVMX_HELPER_CFG_INVALID_VALUE, 0,
-						0}}};
+				      	      { CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE,
+				                CVMX_HELPER_CFG_INVALID_VALUE, CVMX_HELPER_CFG_INVALID_VALUE,
+	                                        CVMX_HELPER_CFG_INVALID_VALUE, 0,
+	                                        0}}};
+
 /*
  * Indexed by the pko_port number
  */
@@ -527,19 +528,21 @@ void cvmx_helper_cfg_store_short_packets_in_wqe()
 {
 	int interface, port;
 
-	for (interface = 0; interface < cvmx_helper_get_number_of_interfaces(); interface++) {
-		int num_ports = cvmx_helper_ports_on_interface(interface);
-		/* Enable storing short packets only in the WQE */
-		for (port = 0; port < num_ports; port++) {
-			cvmx_pip_port_cfg_t port_cfg;
-			int pknd = port;
-			if (octeon_has_feature(OCTEON_FEATURE_PKND))
-				pknd = cvmx_helper_get_pknd(interface, port);
-			else
-				pknd = cvmx_helper_get_ipd_port(interface, port);
-			port_cfg.u64 = cvmx_read_csr(CVMX_PIP_PRT_CFGX(pknd));
-			port_cfg.s.dyn_rs = 1;
-			cvmx_write_csr(CVMX_PIP_PRT_CFGX(pknd), port_cfg.u64);
+	if(!OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		for (interface = 0; interface < cvmx_helper_get_number_of_interfaces(); interface++) {
+			int num_ports = cvmx_helper_ports_on_interface(interface);
+			/* Enable storing short packets only in the WQE */
+			for (port = 0; port < num_ports; port++) {
+				cvmx_pip_port_cfg_t port_cfg;
+				int pknd = port;
+				if (octeon_has_feature(OCTEON_FEATURE_PKND))
+					pknd = cvmx_helper_get_pknd(interface, port);
+				else
+					pknd = cvmx_helper_get_ipd_port(interface, port);
+				port_cfg.u64 = cvmx_read_csr(CVMX_PIP_PRT_CFGX(pknd));
+				port_cfg.s.dyn_rs = 1;
+				cvmx_write_csr(CVMX_PIP_PRT_CFGX(pknd), port_cfg.u64);
+			}
 		}
 	}
 }

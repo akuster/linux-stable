@@ -63,6 +63,7 @@
 #include <asm/octeon/cvmx-fpa.h>
 #include <asm/octeon/cvmx-pip.h>
 #include <asm/octeon/cvmx-pko.h>
+#include <asm/octeon/cvmx-pko3.h>
 #include <asm/octeon/cvmx-ipd.h>
 #include <asm/octeon/cvmx-qlm.h>
 #include <asm/octeon/cvmx-spi.h>
@@ -71,6 +72,8 @@
 #include <asm/octeon/cvmx-helper-board.h>
 #include <asm/octeon/cvmx-helper-errata.h>
 #include <asm/octeon/cvmx-helper-cfg.h>
+#include <asm/octeon/cvmx-helper-pki.h>
+#include <asm/octeon/cvmx-pki.h>
 #else
 #include "cvmx.h"
 #include "cvmx-sysinfo.h"
@@ -82,6 +85,7 @@
 #include "cvmx-fpa.h"
 #include "cvmx-pip.h"
 #include "cvmx-pko.h"
+#include "cvmx-pko3.h"
 #include "cvmx-ipd.h"
 #include "cvmx-qlm.h"
 #include "cvmx-spi.h"
@@ -89,6 +93,8 @@
 #include "cvmx-helper-board.h"
 #include "cvmx-helper-errata.h"
 #include "cvmx-helper-cfg.h"
+#include "cvmx-helper-pki.h"
+#include "cvmx-pki.h"
 #endif
 
 
@@ -489,7 +495,7 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_cn70xx(int interface)
 		prtx_ctl.u64 = cvmx_read_csr(CVMX_AGL_PRTX_CTL(0));
 		if (prtx_ctl.s.mode == 0)
 			iface_ops[interface] = &iface_ops_agl;
-		else 
+		else
 			iface_ops[interface] = &iface_ops_dis;
 	}
 	else
@@ -506,7 +512,7 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_cn78xx(int interface)
 {
 	/*
 	 * Until gser configuration is in place, we hard code the interface
-	 * mode here. This means that for the time being, this function and 
+	 * mode here. This means that for the time being, this function and
 	 * cvmx_qlm_get_mode() have to be in sync since they are both hard
 	 * coded.
 	 */
@@ -674,7 +680,7 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_octeon2(int interface)
 			 */
 			iface_ops[interface] = &iface_ops_dis;
 		else {
-			sriox_status_reg.u64 = 
+			sriox_status_reg.u64 =
 				cvmx_read_csr(CVMX_SRIOX_STATUS_REG(interface - 4));
 			if (sriox_status_reg.s.srio)
 				iface_ops[interface] = &iface_ops_srio;
@@ -1130,6 +1136,10 @@ static int cvmx_helper_fcs_op(int interface, int nports, int has_fcs)
 
 	if (!octeon_has_feature(OCTEON_FEATURE_PKND))
 		return 0;
+	if(OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		cvmx_helper_pki_set_fcs_op(0,interface,nports,has_fcs);
+		return 0;
+	}
 
 	port_bit = 0;
 	for (index = 0; index < nports; index++)
@@ -1299,6 +1309,7 @@ static int __cvmx_helper_interface_setup_ipd(int interface)
 
 	mode = cvmx_helper_interface_get_mode(interface);
 
+	if(!OCTEON_IS_MODEL(OCTEON_CN78XX))
 	if (mode == CVMX_HELPER_INTERFACE_MODE_LOOP)
 		__cvmx_helper_loop_enable(interface);
 
@@ -1311,7 +1322,10 @@ static int __cvmx_helper_interface_setup_ipd(int interface)
 	while (num_ports--) {
 		if (!cvmx_helper_is_port_valid(interface, num_ports))
 			continue;
-		__cvmx_helper_port_setup_ipd(ipd_port);
+		if(OCTEON_IS_MODEL(OCTEON_CN78XX))
+			__cvmx_helper_port_setup_pki(0, ipd_port);
+		else
+			__cvmx_helper_port_setup_ipd(ipd_port);
 		ipd_port += delta;
 	}
 
@@ -1852,8 +1866,14 @@ int cvmx_helper_ipd_and_packet_input_enable(void)
 	int interface;
 	int num_ports;
 
-	/* Enable IPD */
-	cvmx_ipd_enable();
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		cvmx_pki_parse_enable(0,0);
+		/* Enable PKI */
+		cvmx_pki_enable(0);
+	}
+	else
+		/* Enable IPD */
+		cvmx_ipd_enable();
 
 	/*
 	 * Time to enable hardware ports packet input and output. Note
@@ -1868,7 +1888,11 @@ int cvmx_helper_ipd_and_packet_input_enable(void)
 	}
 
 	/* Finally enable PKO now that the entire path is up and running */
-	cvmx_pko_enable();
+	/* enable pko */
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		cvmx_pko_enable_78xx(0);
+	else
+		cvmx_pko_enable();
 
 	if ((OCTEON_IS_MODEL(OCTEON_CN31XX_PASS1) ||
 	     OCTEON_IS_MODEL(OCTEON_CN30XX_PASS1)) &&
@@ -1880,24 +1904,29 @@ EXPORT_SYMBOL(cvmx_helper_ipd_and_packet_input_enable);
 
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 
-int cvmx_initialize_sso_78xx(void)
+int cvmx_helper_initialize_sso_78xx(int node, int wqe_entries)
 {
-#define SSO_POOL_NUM 1
-#define SSO_AURA_NUM 1
-
+	int pool = -1;
 	int grp;
 	/* Setup an FPA pool to store the SSO queues */
 	const int MAX_SSO_ENTRIES = 4096;
 	int num_blocks = 256 + 48 + ((MAX_SSO_ENTRIES+25)/26);
-	int node = 0;
-	const int aura = SSO_AURA_NUM;
+	int aura = -1;
 	cvmx_sso_xaq_aura_t aura_reg;
 	cvmx_sso_nw_tim_t nw_tim;
 	cvmx_sso_aw_cfg_t aw_cfg;
 
-	cvmx_fpa_pool_stack_init(node, SSO_POOL_NUM, "SSO Pool", 0,
+	if(cvmx_fpa_allocate_fpa_pools(node,&pool,1) == -1) {
+		cvmx_dprintf("ERROR:allocating pool for sso_init\n");
+		return -1;
+	}
+	if(cvmx_fpa_allocate_auras(node,&aura,1) == -1) {
+		cvmx_dprintf("ERROR:allocating aura fo sso_init\n");
+		return -1;
+	}
+	cvmx_fpa_pool_stack_init(node, pool, "SSO Pool", 0,
 			MAX_SSO_ENTRIES, FPA_NATURAL_ALIGNMENT, 4096);
-	cvmx_fpa_assign_aura(node, SSO_AURA_NUM, SSO_POOL_NUM);
+	cvmx_fpa_assign_aura(node, aura, pool);
 	cvmx_fpa_aura_init(node, aura, "SSO Aura", 0, num_blocks, 0);
 
 	/* Initialize the 256 group/qos queues */
@@ -1908,7 +1937,7 @@ int cvmx_initialize_sso_78xx(void)
 		cvmx_sso_xaqx_tail_next_t tail;
 		cvmx_sso_grpx_pref_t pref;
 		uint64_t addr;
-		void *buffer = cvmx_fpa_alloc_aura(node, SSO_AURA_NUM, 0);
+		void *buffer = cvmx_fpa_alloc_aura(node, aura);
 
 		if (buffer == NULL)
 		{
@@ -1933,7 +1962,7 @@ int cvmx_initialize_sso_78xx(void)
 	}
 	/* Set the aura number */
 	aura_reg.u64 = 0;
-	aura_reg.s.laura = SSO_AURA_NUM;
+	aura_reg.s.laura = aura;
 	aura_reg.s.node = node;
 	cvmx_write_csr_node(node, CVMX_SSO_XAQ_AURA, aura_reg.u64);
 
@@ -1950,7 +1979,6 @@ int cvmx_initialize_sso_78xx(void)
 }
 
 #define __CVMX_SSO_RWQ_SIZE 256
-
 int cvmx_helper_initialize_sso(int wqe_entries)
 {
 	int cvm_oct_sso_number_rwq_bufs;
@@ -2020,6 +2048,15 @@ int cvmx_helper_initialize_sso(int wqe_entries)
 	cvmx_write_csr(CVMX_SSO_CFG, sso_cfg.u64);
 
 	return 0;
+}
+
+int cvmx_helper_initialize_sso_node(int node, int wqe_entries)
+{
+
+	if(OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return(cvmx_helper_initialize_sso_78xx(node, wqe_entries));
+	else
+		return(cvmx_helper_initialize_sso(wqe_entries));
 }
 
 int cvmx_helper_uninitialize_sso(void)
@@ -2168,23 +2205,42 @@ int cvmx_helper_initialize_packet_io_global(void)
 
 	__cvmx_helper_init_port_valid();
 
+#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		cvmx_pki_initialize_data_structures(0);
+#endif
+
 	for (interface = 0; interface < num_interfaces; interface++)
 		result |= cvmx_helper_interface_probe(interface);
 
-	cvmx_pko_initialize_global();
+	if(OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		__cvmx_helper_init_port_config_data();
+		cvmx_pko_initialize_global_78xx(0);
+	}
+	else
+		cvmx_pko_initialize_global();
+
 	for (interface = 0; interface < num_interfaces; interface++) {
-		if (cvmx_helper_ports_on_interface(interface) > 0)
+		if (cvmx_helper_ports_on_interface(interface) > 0) {
 			cvmx_dprintf("Interface %d has %d ports (%s)\n",
 				     interface,
 				     cvmx_helper_ports_on_interface(interface),
 				     cvmx_helper_interface_mode_to_string(cvmx_helper_interface_get_mode(interface)));
+		}
 		result |= __cvmx_helper_interface_setup_ipd(interface);
-		if (!OCTEON_IS_MODEL(OCTEON_CN68XX))
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+			cvmx_pko_setup_interface_78xx(0, interface);
+		else if (!OCTEON_IS_MODEL(OCTEON_CN68XX) )
 			result |= __cvmx_helper_interface_setup_pko(interface);
 	}
 
-	result |= __cvmx_helper_global_setup_ipd();
-	result |= __cvmx_helper_global_setup_pko();
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		result |= __cvmx_helper_global_setup_pki(0);
+	else
+		result |= __cvmx_helper_global_setup_ipd();
+
+	if(!OCTEON_IS_MODEL(OCTEON_CN78XX))
+		result |= __cvmx_helper_global_setup_pko();
 
 	/* Enable any flow control and backpressure */
 	result |= __cvmx_helper_global_setup_backpressure();
@@ -2322,6 +2378,7 @@ int cvmx_helper_shutdown_packet_io_global(void)
     uint64_t packet_pool_size = cvmx_fpa_get_packet_pool_block_size();
     int wqe_pool = (int)cvmx_fpa_get_wqe_pool();
 
+    if(!OCTEON_IS_MODEL(OCTEON_CN78XX)) { //vinita_to_do implement for 78xx
 	/* Step 1: Disable all backpressure */
 	for (interface = 0; interface < num_interfaces; interface++) {
 		cvmx_helper_interface_mode_t mode = cvmx_helper_interface_get_mode(interface);
@@ -2698,11 +2755,29 @@ step3:
 
 	/* Step 12: Release interface structures */
 	__cvmx_helper_shutdown_interfaces();
+    }
 
-	return result;
+    return result;
 }
 
 EXPORT_SYMBOL(cvmx_helper_shutdown_packet_io_global);
+
+int cvmx_helper_shutdown_fpa_pools(int node)
+{
+	int result = 0;
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+	uint64_t pool;
+
+	if(!OCTEON_IS_MODEL(OCTEON_CN78XX)) { //vinita_to_do implement for 78xx
+		for (pool=0; pool < CVMX_FPA_NUM_POOLS; pool++)
+		{
+			if (cvmx_fpa_get_block_size(pool) > 0)
+				result |= cvmx_fpa_shutdown_pool(pool);
+		}
+	}
+#endif
+	return result;
+}
 
 /**
  * Does core local shutdown of packet io
@@ -2863,3 +2938,37 @@ int cvmx_helper_configure_loopback(int ipd_port, int enable_internal,
 	return result;
 }
 
+void cvmx_helper_setup_simulator_io_buffer_counts(int node, int num_packet_buffers,
+					    int pko_buffers)
+{
+	if(OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		cvmx_pki_set_default_pool_buffer_count(node, num_packet_buffers);
+
+	}
+	else {
+		cvmx_ipd_set_packet_pool_buffer_count(num_packet_buffers);
+		cvmx_ipd_set_wqe_pool_buffer_count(num_packet_buffers);
+		cvmx_pko_set_cmd_queue_pool_buffer_count(pko_buffers);
+	}
+}
+
+void cvmx_helper_set_wqe_no_ptr_mode(bool mode)
+{
+	if(!OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		cvmx_ipd_ctl_status_t ipd_ctl_status;
+		ipd_ctl_status.u64 = cvmx_read_csr(CVMX_IPD_CTL_STATUS);
+		ipd_ctl_status.s.no_wptr = mode;
+		cvmx_write_csr(CVMX_IPD_CTL_STATUS, ipd_ctl_status.u64);
+	}
+}
+
+void cvmx_helper_set_pkt_wqe_le_mode(bool mode)
+{
+	if(!OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		cvmx_ipd_ctl_status_t ipd_ctl_status;
+		ipd_ctl_status.u64 = cvmx_read_csr(CVMX_IPD_CTL_STATUS);
+		ipd_ctl_status.s.pkt_lend = mode;
+		ipd_ctl_status.s.wqe_lend = mode;
+		cvmx_write_csr(CVMX_IPD_CTL_STATUS, ipd_ctl_status.u64);
+	}
+}

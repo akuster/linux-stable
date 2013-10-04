@@ -58,6 +58,7 @@
 #include <asm/octeon/cvmx-clock.h>
 #include <asm/octeon/cvmx-helper-errata.h>
 #include <asm/octeon/cvmx-helper-cfg.h>
+#include <asm/octeon/cvmx-pki.h>
 #else
 #include "cvmx.h"
 #include "cvmx-sysinfo.h"
@@ -68,6 +69,7 @@
 #include "cvmx-fpa.h"
 #include "cvmx-wqe.h"
 #include "cvmx-ipd.h"
+#include "cvmx-pki.h"
 #include "cvmx-helper-errata.h"
 #include "cvmx-helper-cfg.h"
 #endif
@@ -97,14 +99,31 @@ void cvmx_ipd_get_config(cvmx_ipd_config_t *ipd_config)
 	*ipd_config = cvmx_ipd_cfg;
 }
 
+void cvmx_ipd_set_packet_pool_buffer_count(uint64_t buffer_count)
+{
+	cvmx_ipd_cfg.packet_pool.buffer_count = buffer_count;
+}
+
 void cvmx_ipd_set_packet_pool_config(int64_t pool, uint64_t buffer_size,
 				        uint64_t buffer_count)
 {
-	cvmx_ipd_cfg.packet_pool.pool_num = pool;
-	cvmx_ipd_cfg.packet_pool.buffer_size = buffer_size;
-	cvmx_ipd_cfg.packet_pool.buffer_count = buffer_count;
+	if(OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		int64_t aura = pool;
+		cvmx_pki_set_default_pool_config(0, pool, buffer_size, buffer_count);
+		cvmx_pki_set_default_aura_config(0, aura, pool, buffer_count);
+	}
+	else {
+		cvmx_ipd_cfg.packet_pool.pool_num = pool;
+		cvmx_ipd_cfg.packet_pool.buffer_size = buffer_size;
+		cvmx_ipd_cfg.packet_pool.buffer_count = buffer_count;
+	}
 }
 EXPORT_SYMBOL(cvmx_ipd_set_packet_pool_config);
+
+void cvmx_ipd_set_wqe_pool_buffer_count(uint64_t buffer_count)
+{
+	cvmx_ipd_cfg.wqe_pool.buffer_count = buffer_count;
+}
 
 void cvmx_ipd_set_wqe_pool_config(int64_t pool, uint64_t buffer_size,
 				       uint64_t buffer_count)
