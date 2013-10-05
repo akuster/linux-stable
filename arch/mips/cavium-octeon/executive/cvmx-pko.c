@@ -41,7 +41,7 @@
  *
  * Support library for the hardware Packet Output unit.
  *
- * <hr>$Revision: 88629 $<hr>
+ * <hr>$Revision: 84412 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <linux/export.h>
@@ -90,11 +90,6 @@ void cvmx_pko_set_cmd_que_pool_config(int64_t pool, uint64_t buffer_size,
 	pko_fpa_config.buffer_count = buffer_count;
 }
 EXPORT_SYMBOL(cvmx_pko_set_cmd_que_pool_config);
-
-void cvmx_pko_set_cmd_queue_pool_buffer_count(uint64_t buffer_count)
-{
-	pko_fpa_config.buffer_count = buffer_count;
-}
 
 void cvmx_pko_get_cmd_que_pool_config(cvmx_fpa_pool_config_t *pko_pool)
 {
@@ -205,9 +200,7 @@ int cvmx_pko_get_num_queues_pkoid(int pko_port)
 
 int cvmx_pko_get_num_queues(int port)
 {
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		return 1;
-	} else if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 		return __cvmx_helper_cfg_pko_queue_num(cvmx_helper_cfg_ipd2pko_port_base(port));
 	} else {
 		if (port < 48)
@@ -721,7 +714,6 @@ void cvmx_pko_shutdown(void)
 	}
 
 	__cvmx_pko_reset();
-	cvmx_pko_queue_free_all();
 }
 
 /**

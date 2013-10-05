@@ -306,28 +306,6 @@ static inline uint64_t CVMX_PKO_DQX_WM_CTL_W1C(unsigned long offset)
 #define CVMX_PKO_DQX_WM_CTL_W1C(offset) (CVMX_ADD_IO_SEG(0x0001540000000048ull) + ((offset) & 1023) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_DQ_DEBUG CVMX_PKO_DQ_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_DQ_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_DQ_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000300128ull);
-}
-#else
-#define CVMX_PKO_DQ_DEBUG (CVMX_ADD_IO_SEG(0x0001540000300128ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_DRAIN_IRQ CVMX_PKO_DRAIN_IRQ_FUNC()
-static inline uint64_t CVMX_PKO_DRAIN_IRQ_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_DRAIN_IRQ not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000000140ull);
-}
-#else
-#define CVMX_PKO_DRAIN_IRQ (CVMX_ADD_IO_SEG(0x0001540000000140ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_ENABLE CVMX_PKO_ENABLE_FUNC()
 static inline uint64_t CVMX_PKO_ENABLE_FUNC(void)
 {
@@ -348,28 +326,6 @@ static inline uint64_t CVMX_PKO_FORMATX_CTL(unsigned long offset)
 }
 #else
 #define CVMX_PKO_FORMATX_CTL(offset) (CVMX_ADD_IO_SEG(0x0001540000900800ull) + ((offset) & 127) * 8)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_L1_SQA_DEBUG CVMX_PKO_L1_SQA_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_L1_SQA_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_L1_SQA_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000080128ull);
-}
-#else
-#define CVMX_PKO_L1_SQA_DEBUG (CVMX_ADD_IO_SEG(0x0001540000080128ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_L1_SQB_DEBUG CVMX_PKO_L1_SQB_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_L1_SQB_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_L1_SQB_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000080130ull);
-}
-#else
-#define CVMX_PKO_L1_SQB_DEBUG (CVMX_ADD_IO_SEG(0x0001540000080130ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_L1_SQX_CIR(unsigned long offset)
@@ -581,28 +537,6 @@ static inline uint64_t CVMX_PKO_L1_SQX_YELLOW_PACKETS(unsigned long offset)
 #define CVMX_PKO_L1_SQX_YELLOW_PACKETS(offset) (CVMX_ADD_IO_SEG(0x0001540000000090ull) + ((offset) & 31) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_L2_SQA_DEBUG CVMX_PKO_L2_SQA_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_L2_SQA_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_L2_SQA_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000100128ull);
-}
-#else
-#define CVMX_PKO_L2_SQA_DEBUG (CVMX_ADD_IO_SEG(0x0001540000100128ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_L2_SQB_DEBUG CVMX_PKO_L2_SQB_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_L2_SQB_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_L2_SQB_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000100130ull);
-}
-#else
-#define CVMX_PKO_L2_SQB_DEBUG (CVMX_ADD_IO_SEG(0x0001540000100130ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_L2_SQX_CIR(unsigned long offset)
 {
 	if (!(
@@ -757,28 +691,6 @@ static inline uint64_t CVMX_PKO_L3_L2_SQX_CHANNEL(unsigned long offset)
 #define CVMX_PKO_L3_L2_SQX_CHANNEL(offset) (CVMX_ADD_IO_SEG(0x0001540000080038ull) + ((offset) & 511) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_L3_SQA_DEBUG CVMX_PKO_L3_SQA_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_L3_SQA_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_L3_SQA_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000180128ull);
-}
-#else
-#define CVMX_PKO_L3_SQA_DEBUG (CVMX_ADD_IO_SEG(0x0001540000180128ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_L3_SQB_DEBUG CVMX_PKO_L3_SQB_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_L3_SQB_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_L3_SQB_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000180130ull);
-}
-#else
-#define CVMX_PKO_L3_SQB_DEBUG (CVMX_ADD_IO_SEG(0x0001540000180130ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_L3_SQX_CIR(unsigned long offset)
 {
 	if (!(
@@ -922,28 +834,6 @@ static inline uint64_t CVMX_PKO_L3_SQX_YELLOW(unsigned long offset)
 #define CVMX_PKO_L3_SQX_YELLOW(offset) (CVMX_ADD_IO_SEG(0x0001540000180060ull) + ((offset) & 511) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_L4_SQA_DEBUG CVMX_PKO_L4_SQA_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_L4_SQA_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_L4_SQA_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000200128ull);
-}
-#else
-#define CVMX_PKO_L4_SQA_DEBUG (CVMX_ADD_IO_SEG(0x0001540000200128ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_L4_SQB_DEBUG CVMX_PKO_L4_SQB_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_L4_SQB_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_L4_SQB_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000200130ull);
-}
-#else
-#define CVMX_PKO_L4_SQB_DEBUG (CVMX_ADD_IO_SEG(0x0001540000200130ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_L4_SQX_CIR(unsigned long offset)
 {
 	if (!(
@@ -1085,28 +975,6 @@ static inline uint64_t CVMX_PKO_L4_SQX_YELLOW(unsigned long offset)
 }
 #else
 #define CVMX_PKO_L4_SQX_YELLOW(offset) (CVMX_ADD_IO_SEG(0x0001540000200060ull) + ((offset) & 1023) * 512)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_L5_SQA_DEBUG CVMX_PKO_L5_SQA_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_L5_SQA_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_L5_SQA_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000280128ull);
-}
-#else
-#define CVMX_PKO_L5_SQA_DEBUG (CVMX_ADD_IO_SEG(0x0001540000280128ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_L5_SQB_DEBUG CVMX_PKO_L5_SQB_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_L5_SQB_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_L5_SQB_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000280130ull);
-}
-#else
-#define CVMX_PKO_L5_SQB_DEBUG (CVMX_ADD_IO_SEG(0x0001540000280130ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_L5_SQX_CIR(unsigned long offset)
@@ -1261,6 +1129,17 @@ static inline uint64_t CVMX_PKO_LUTX(unsigned long offset)
 }
 #else
 #define CVMX_PKO_LUTX(offset) (CVMX_ADD_IO_SEG(0x0001540000B00000ull) + ((offset) & 1023) * 8)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_LUT_BIST_DONE CVMX_PKO_LUT_BIST_DONE_FUNC()
+static inline uint64_t CVMX_PKO_LUT_BIST_DONE_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_LUT_BIST_DONE not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000B02020ull);
+}
+#else
+#define CVMX_PKO_LUT_BIST_DONE (CVMX_ADD_IO_SEG(0x0001540000B02020ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_LUT_BIST_STATUS CVMX_PKO_LUT_BIST_STATUS_FUNC()
@@ -1664,17 +1543,6 @@ static inline uint64_t CVMX_PKO_PDM_CFG_FUNC(void)
 #define CVMX_PKO_PDM_CFG (CVMX_ADD_IO_SEG(0x0001540000800000ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PDM_CFG_DBG CVMX_PKO_PDM_CFG_DBG_FUNC()
-static inline uint64_t CVMX_PKO_PDM_CFG_DBG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PDM_CFG_DBG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000800FF8ull);
-}
-#else
-#define CVMX_PKO_PDM_CFG_DBG (CVMX_ADD_IO_SEG(0x0001540000800FF8ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_PDM_DQX_MINPAD(unsigned long offset)
 {
 	if (!(
@@ -1719,17 +1587,6 @@ static inline uint64_t CVMX_PKO_PDM_ECC_CTL0_FUNC(void)
 #define CVMX_PKO_PDM_ECC_CTL0 (CVMX_ADD_IO_SEG(0x00015400008FFFD0ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PDM_ECC_CTL1 CVMX_PKO_PDM_ECC_CTL1_FUNC()
-static inline uint64_t CVMX_PKO_PDM_ECC_CTL1_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PDM_ECC_CTL1 not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00015400008FFFD8ull);
-}
-#else
-#define CVMX_PKO_PDM_ECC_CTL1 (CVMX_ADD_IO_SEG(0x00015400008FFFD8ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PDM_ECC_DBE_STS0 CVMX_PKO_PDM_ECC_DBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ECC_DBE_STS0_FUNC(void)
 {
@@ -1746,10 +1603,10 @@ static inline uint64_t CVMX_PKO_PDM_ECC_DBE_STS_CMB0_FUNC(void)
 {
 	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_PKO_PDM_ECC_DBE_STS_CMB0 not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00015400008FFFE0ull);
+	return CVMX_ADD_IO_SEG(0x00015400008FFFD8ull);
 }
 #else
-#define CVMX_PKO_PDM_ECC_DBE_STS_CMB0 (CVMX_ADD_IO_SEG(0x00015400008FFFE0ull))
+#define CVMX_PKO_PDM_ECC_DBE_STS_CMB0 (CVMX_ADD_IO_SEG(0x00015400008FFFD8ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PDM_ECC_SBE_STS0 CVMX_PKO_PDM_ECC_SBE_STS0_FUNC()
@@ -1851,6 +1708,17 @@ static inline uint64_t CVMX_PKO_PDM_MWPBUF_DBG_FUNC(void)
 #define CVMX_PKO_PDM_MWPBUF_DBG (CVMX_ADD_IO_SEG(0x00015400008000A0ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_SENDPKT_LMTXX_ERR CVMX_PKO_PDM_SENDPKT_LMTXX_ERR_FUNC()
+static inline uint64_t CVMX_PKO_PDM_SENDPKT_LMTXX_ERR_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PDM_SENDPKT_LMTXX_ERR not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00015400008000F8ull);
+}
+#else
+#define CVMX_PKO_PDM_SENDPKT_LMTXX_ERR (CVMX_ADD_IO_SEG(0x00015400008000F8ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PDM_STS CVMX_PKO_PDM_STS_FUNC()
 static inline uint64_t CVMX_PKO_PDM_STS_FUNC(void)
 {
@@ -1860,6 +1728,17 @@ static inline uint64_t CVMX_PKO_PDM_STS_FUNC(void)
 }
 #else
 #define CVMX_PKO_PDM_STS (CVMX_ADD_IO_SEG(0x0001540000800008ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_BIST_DONE CVMX_PKO_PEB_BIST_DONE_FUNC()
+static inline uint64_t CVMX_PKO_PEB_BIST_DONE_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PEB_BIST_DONE not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900D08ull);
+}
+#else
+#define CVMX_PKO_PEB_BIST_DONE (CVMX_ADD_IO_SEG(0x0001540000900D08ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PEB_BIST_STATUS CVMX_PKO_PEB_BIST_STATUS_FUNC()
@@ -2060,72 +1939,6 @@ static inline uint64_t CVMX_PKO_PEB_TRUNC_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_TRUNC_ERR_INFO (CVMX_ADD_IO_SEG(0x0001540000900C30ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PQA_DEBUG CVMX_PKO_PQA_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_PQA_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PQA_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000000128ull);
-}
-#else
-#define CVMX_PKO_PQA_DEBUG (CVMX_ADD_IO_SEG(0x0001540000000128ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PQB_DEBUG CVMX_PKO_PQB_DEBUG_FUNC()
-static inline uint64_t CVMX_PKO_PQB_DEBUG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PQB_DEBUG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000000130ull);
-}
-#else
-#define CVMX_PKO_PQB_DEBUG (CVMX_ADD_IO_SEG(0x0001540000000130ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PQ_DEBUG_GREEN CVMX_PKO_PQ_DEBUG_GREEN_FUNC()
-static inline uint64_t CVMX_PKO_PQ_DEBUG_GREEN_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PQ_DEBUG_GREEN not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000000058ull);
-}
-#else
-#define CVMX_PKO_PQ_DEBUG_GREEN (CVMX_ADD_IO_SEG(0x0001540000000058ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PQ_DEBUG_LINKS CVMX_PKO_PQ_DEBUG_LINKS_FUNC()
-static inline uint64_t CVMX_PKO_PQ_DEBUG_LINKS_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PQ_DEBUG_LINKS not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000000068ull);
-}
-#else
-#define CVMX_PKO_PQ_DEBUG_LINKS (CVMX_ADD_IO_SEG(0x0001540000000068ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PQ_DEBUG_YELLOW CVMX_PKO_PQ_DEBUG_YELLOW_FUNC()
-static inline uint64_t CVMX_PKO_PQ_DEBUG_YELLOW_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PQ_DEBUG_YELLOW not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000000060ull);
-}
-#else
-#define CVMX_PKO_PQ_DEBUG_YELLOW (CVMX_ADD_IO_SEG(0x0001540000000060ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PSE_DQ_BIST_STATUS CVMX_PKO_PSE_DQ_BIST_STATUS_FUNC()
-static inline uint64_t CVMX_PKO_PSE_DQ_BIST_STATUS_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PSE_DQ_BIST_STATUS not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000300138ull);
-}
-#else
-#define CVMX_PKO_PSE_DQ_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001540000300138ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PSE_DQ_ECC_CTL0 CVMX_PKO_PSE_DQ_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_DQ_ECC_CTL0_FUNC(void)
 {
@@ -2179,17 +1992,6 @@ static inline uint64_t CVMX_PKO_PSE_DQ_ECC_SBE_STS_CMB0_FUNC(void)
 }
 #else
 #define CVMX_PKO_PSE_DQ_ECC_SBE_STS_CMB0 (CVMX_ADD_IO_SEG(0x0001540000300110ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PSE_PQ_BIST_STATUS CVMX_PKO_PSE_PQ_BIST_STATUS_FUNC()
-static inline uint64_t CVMX_PKO_PSE_PQ_BIST_STATUS_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PSE_PQ_BIST_STATUS not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000000138ull);
-}
-#else
-#define CVMX_PKO_PSE_PQ_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001540000000138ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PSE_PQ_ECC_CTL0 CVMX_PKO_PSE_PQ_ECC_CTL0_FUNC()
@@ -2247,17 +2049,6 @@ static inline uint64_t CVMX_PKO_PSE_PQ_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_PQ_ECC_SBE_STS_CMB0 (CVMX_ADD_IO_SEG(0x0001540000000110ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PSE_SQ1_BIST_STATUS CVMX_PKO_PSE_SQ1_BIST_STATUS_FUNC()
-static inline uint64_t CVMX_PKO_PSE_SQ1_BIST_STATUS_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PSE_SQ1_BIST_STATUS not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000080138ull);
-}
-#else
-#define CVMX_PKO_PSE_SQ1_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001540000080138ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PSE_SQ1_ECC_CTL0 CVMX_PKO_PSE_SQ1_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_CTL0_FUNC(void)
 {
@@ -2311,17 +2102,6 @@ static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_SBE_STS_CMB0_FUNC(void)
 }
 #else
 #define CVMX_PKO_PSE_SQ1_ECC_SBE_STS_CMB0 (CVMX_ADD_IO_SEG(0x0001540000080110ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PSE_SQ2_BIST_STATUS CVMX_PKO_PSE_SQ2_BIST_STATUS_FUNC()
-static inline uint64_t CVMX_PKO_PSE_SQ2_BIST_STATUS_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PSE_SQ2_BIST_STATUS not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000100138ull);
-}
-#else
-#define CVMX_PKO_PSE_SQ2_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001540000100138ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PSE_SQ2_ECC_CTL0 CVMX_PKO_PSE_SQ2_ECC_CTL0_FUNC()
@@ -2379,17 +2159,6 @@ static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_SQ2_ECC_SBE_STS_CMB0 (CVMX_ADD_IO_SEG(0x0001540000100110ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PSE_SQ3_BIST_STATUS CVMX_PKO_PSE_SQ3_BIST_STATUS_FUNC()
-static inline uint64_t CVMX_PKO_PSE_SQ3_BIST_STATUS_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PSE_SQ3_BIST_STATUS not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000180138ull);
-}
-#else
-#define CVMX_PKO_PSE_SQ3_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001540000180138ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PSE_SQ3_ECC_CTL0 CVMX_PKO_PSE_SQ3_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_CTL0_FUNC(void)
 {
@@ -2445,17 +2214,6 @@ static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_SQ3_ECC_SBE_STS_CMB0 (CVMX_ADD_IO_SEG(0x0001540000180110ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PSE_SQ4_BIST_STATUS CVMX_PKO_PSE_SQ4_BIST_STATUS_FUNC()
-static inline uint64_t CVMX_PKO_PSE_SQ4_BIST_STATUS_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PSE_SQ4_BIST_STATUS not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000200138ull);
-}
-#else
-#define CVMX_PKO_PSE_SQ4_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001540000200138ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PSE_SQ4_ECC_CTL0 CVMX_PKO_PSE_SQ4_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ4_ECC_CTL0_FUNC(void)
 {
@@ -2509,17 +2267,6 @@ static inline uint64_t CVMX_PKO_PSE_SQ4_ECC_SBE_STS_CMB0_FUNC(void)
 }
 #else
 #define CVMX_PKO_PSE_SQ4_ECC_SBE_STS_CMB0 (CVMX_ADD_IO_SEG(0x0001540000200110ull))
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_PSE_SQ5_BIST_STATUS CVMX_PKO_PSE_SQ5_BIST_STATUS_FUNC()
-static inline uint64_t CVMX_PKO_PSE_SQ5_BIST_STATUS_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_PSE_SQ5_BIST_STATUS not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001540000280138ull);
-}
-#else
-#define CVMX_PKO_PSE_SQ5_BIST_STATUS (CVMX_ADD_IO_SEG(0x0001540000280138ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PSE_SQ5_ECC_CTL0 CVMX_PKO_PSE_SQ5_ECC_CTL0_FUNC()
@@ -3449,43 +3196,6 @@ union cvmx_pko_dqx_wm_ctl_w1c {
 typedef union cvmx_pko_dqx_wm_ctl_w1c cvmx_pko_dqx_wm_ctl_w1c_t;
 
 /**
- * cvmx_pko_dq_debug
- */
-union cvmx_pko_dq_debug {
-	uint64_t u64;
-	struct cvmx_pko_dq_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_dq_debug_s            cn78xx;
-};
-typedef union cvmx_pko_dq_debug cvmx_pko_dq_debug_t;
-
-/**
- * cvmx_pko_drain_irq
- */
-union cvmx_pko_drain_irq {
-	uint64_t u64;
-	struct cvmx_pko_drain_irq_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
-	uint64_t intr                         : 1;  /**< Interrupt. The interrupt bit is asserted and an interrupt message to the CIU is generated
-                                                         when the DRAIN command reaches the PQ level. Subsequent interrupt messages are only
-                                                         generated
-                                                         after this bit has been cleared by writing 1. Throws PKO_INTSN_E::PKO_PSE_PQ_DRAIN. */
-#else
-	uint64_t intr                         : 1;
-	uint64_t reserved_1_63                : 63;
-#endif
-	} s;
-	struct cvmx_pko_drain_irq_s           cn78xx;
-};
-typedef union cvmx_pko_drain_irq cvmx_pko_drain_irq_t;
-
-/**
  * cvmx_pko_enable
  */
 union cvmx_pko_enable {
@@ -3608,20 +3318,18 @@ union cvmx_pko_l1_sqx_green {
 	struct cvmx_pko_l1_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t rr_active                    : 1;  /**< Round-robin Red Active.  Indicates that the round-robin input is mapped to RED. */
-	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. For internal use only. */
-	uint64_t reserved_19_19               : 1;
 	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+                                                         scheduling queue are active. For internal use only. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 9;
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t head                         : 9;
-	uint64_t reserved_19_19               : 1;
-	uint64_t active_vec                   : 20;
-	uint64_t rr_active                    : 1;
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
@@ -3790,15 +3498,20 @@ union cvmx_pko_l1_sqx_red {
 	uint64_t u64;
 	struct cvmx_pko_l1_sqx_red_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_19_63               : 45;
+	uint64_t reserved_41_63               : 23;
 	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+                                                         scheduling queue are active. For internal use only. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 9;
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t head                         : 9;
-	uint64_t reserved_19_63               : 45;
+	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
 	struct cvmx_pko_l1_sqx_red_s          cn78xx;
@@ -3979,15 +3692,20 @@ union cvmx_pko_l1_sqx_yellow {
 	uint64_t u64;
 	struct cvmx_pko_l1_sqx_yellow_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_19_63               : 45;
+	uint64_t reserved_41_63               : 23;
 	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+                                                         scheduling queue are active. For internal use only. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 9;
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t head                         : 9;
-	uint64_t reserved_19_63               : 45;
+	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
 	struct cvmx_pko_l1_sqx_yellow_s       cn78xx;
@@ -4031,38 +3749,6 @@ union cvmx_pko_l1_sqx_yellow_packets {
 typedef union cvmx_pko_l1_sqx_yellow_packets cvmx_pko_l1_sqx_yellow_packets_t;
 
 /**
- * cvmx_pko_l1_sqa_debug
- */
-union cvmx_pko_l1_sqa_debug {
-	uint64_t u64;
-	struct cvmx_pko_l1_sqa_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_l1_sqa_debug_s        cn78xx;
-};
-typedef union cvmx_pko_l1_sqa_debug cvmx_pko_l1_sqa_debug_t;
-
-/**
- * cvmx_pko_l1_sqb_debug
- */
-union cvmx_pko_l1_sqb_debug {
-	uint64_t u64;
-	struct cvmx_pko_l1_sqb_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_l1_sqb_debug_s        cn78xx;
-};
-typedef union cvmx_pko_l1_sqb_debug cvmx_pko_l1_sqb_debug_t;
-
-/**
  * cvmx_pko_l2_sq#_cir
  */
 union cvmx_pko_l2_sqx_cir {
@@ -4103,20 +3789,18 @@ union cvmx_pko_l2_sqx_green {
 	struct cvmx_pko_l2_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t rr_active                    : 1;  /**< Round-robin Red Active.  Indicates that the round-robin input is mapped to RED. */
-	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. For internal use only. */
-	uint64_t reserved_19_19               : 1;
 	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+                                                         scheduling queue are active. For internal use only. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 9;
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t head                         : 9;
-	uint64_t reserved_19_19               : 1;
-	uint64_t active_vec                   : 20;
-	uint64_t rr_active                    : 1;
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
@@ -4232,15 +3916,20 @@ union cvmx_pko_l2_sqx_red {
 	uint64_t u64;
 	struct cvmx_pko_l2_sqx_red_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_19_63               : 45;
+	uint64_t reserved_41_63               : 23;
 	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+                                                         scheduling queue are active. For internal use only. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 9;
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t head                         : 9;
-	uint64_t reserved_19_63               : 45;
+	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
 	struct cvmx_pko_l2_sqx_red_s          cn78xx;
@@ -4428,52 +4117,25 @@ union cvmx_pko_l2_sqx_yellow {
 	uint64_t u64;
 	struct cvmx_pko_l2_sqx_yellow_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_19_63               : 45;
+	uint64_t reserved_41_63               : 23;
 	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t tail                         : 9;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+                                                         scheduling queue are active. For internal use only. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 9;
-	uint64_t reserved_9_9                 : 1;
+	uint64_t reserved_25_31               : 7;
 	uint64_t head                         : 9;
-	uint64_t reserved_19_63               : 45;
+	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
 	struct cvmx_pko_l2_sqx_yellow_s       cn78xx;
 };
 typedef union cvmx_pko_l2_sqx_yellow cvmx_pko_l2_sqx_yellow_t;
-
-/**
- * cvmx_pko_l2_sqa_debug
- */
-union cvmx_pko_l2_sqa_debug {
-	uint64_t u64;
-	struct cvmx_pko_l2_sqa_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_l2_sqa_debug_s        cn78xx;
-};
-typedef union cvmx_pko_l2_sqa_debug cvmx_pko_l2_sqa_debug_t;
-
-/**
- * cvmx_pko_l2_sqb_debug
- */
-union cvmx_pko_l2_sqb_debug {
-	uint64_t u64;
-	struct cvmx_pko_l2_sqb_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_l2_sqb_debug_s        cn78xx;
-};
-typedef union cvmx_pko_l2_sqb_debug cvmx_pko_l2_sqb_debug_t;
 
 /**
  * cvmx_pko_l3_l2_sq#_channel
@@ -4553,18 +4215,19 @@ union cvmx_pko_l3_sqx_green {
 	uint64_t u64;
 	struct cvmx_pko_l3_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_41_63               : 23;
-	uint64_t rr_active                    : 1;  /**< Round-robin Red Active.  Indicates that the round-robin input is mapped to RED. */
-	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. For internal use only. */
-	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_42_63               : 22;
+	uint64_t head                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[HEAD]. */
+	uint64_t reserved_26_31               : 6;
+	uint64_t tail                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[TAIL]. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< See PKO_L1_SQ(0..31)_GREEN[ACTIVE]. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 10;
+	uint64_t reserved_26_31               : 6;
 	uint64_t head                         : 10;
-	uint64_t active_vec                   : 20;
-	uint64_t rr_active                    : 1;
-	uint64_t reserved_41_63               : 23;
+	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
 	struct cvmx_pko_l3_sqx_green_s        cn78xx;
@@ -4679,13 +4342,19 @@ union cvmx_pko_l3_sqx_red {
 	uint64_t u64;
 	struct cvmx_pko_l3_sqx_red_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_20_63               : 44;
-	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_42_63               : 22;
+	uint64_t head                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[HEAD]. */
+	uint64_t reserved_26_31               : 6;
+	uint64_t tail                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[TAIL]. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< See PKO_L1_SQ(0..31)_GREEN[ACTIVE]. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 10;
+	uint64_t reserved_26_31               : 6;
 	uint64_t head                         : 10;
-	uint64_t reserved_20_63               : 44;
+	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
 	struct cvmx_pko_l3_sqx_red_s          cn78xx;
@@ -4862,50 +4531,24 @@ union cvmx_pko_l3_sqx_yellow {
 	uint64_t u64;
 	struct cvmx_pko_l3_sqx_yellow_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_20_63               : 44;
-	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_42_63               : 22;
+	uint64_t head                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[HEAD]. */
+	uint64_t reserved_26_31               : 6;
+	uint64_t tail                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[TAIL]. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< See PKO_L1_SQ(0..31)_GREEN[ACTIVE]. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 10;
+	uint64_t reserved_26_31               : 6;
 	uint64_t head                         : 10;
-	uint64_t reserved_20_63               : 44;
+	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
 	struct cvmx_pko_l3_sqx_yellow_s       cn78xx;
 };
 typedef union cvmx_pko_l3_sqx_yellow cvmx_pko_l3_sqx_yellow_t;
-
-/**
- * cvmx_pko_l3_sqa_debug
- */
-union cvmx_pko_l3_sqa_debug {
-	uint64_t u64;
-	struct cvmx_pko_l3_sqa_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_l3_sqa_debug_s        cn78xx;
-};
-typedef union cvmx_pko_l3_sqa_debug cvmx_pko_l3_sqa_debug_t;
-
-/**
- * cvmx_pko_l3_sqb_debug
- */
-union cvmx_pko_l3_sqb_debug {
-	uint64_t u64;
-	struct cvmx_pko_l3_sqb_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_l3_sqb_debug_s        cn78xx;
-};
-typedef union cvmx_pko_l3_sqb_debug cvmx_pko_l3_sqb_debug_t;
 
 /**
  * cvmx_pko_l4_sq#_cir
@@ -4947,18 +4590,19 @@ union cvmx_pko_l4_sqx_green {
 	uint64_t u64;
 	struct cvmx_pko_l4_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_41_63               : 23;
-	uint64_t rr_active                    : 1;  /**< Round-robin Red Active.  Indicates that the round-robin input is mapped to RED. */
-	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. For internal use only. */
-	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_42_63               : 22;
+	uint64_t head                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[HEAD]. */
+	uint64_t reserved_26_31               : 6;
+	uint64_t tail                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[TAIL]. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< See PKO_L1_SQ(0..31)_GREEN[ACTIVE]. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 10;
+	uint64_t reserved_26_31               : 6;
 	uint64_t head                         : 10;
-	uint64_t active_vec                   : 20;
-	uint64_t rr_active                    : 1;
-	uint64_t reserved_41_63               : 23;
+	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_green_s        cn78xx;
@@ -5073,13 +4717,19 @@ union cvmx_pko_l4_sqx_red {
 	uint64_t u64;
 	struct cvmx_pko_l4_sqx_red_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_20_63               : 44;
-	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_42_63               : 22;
+	uint64_t head                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[HEAD]. */
+	uint64_t reserved_26_31               : 6;
+	uint64_t tail                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[TAIL]. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< See PKO_L1_SQ(0..31)_GREEN[ACTIVE]. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 10;
+	uint64_t reserved_26_31               : 6;
 	uint64_t head                         : 10;
-	uint64_t reserved_20_63               : 44;
+	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_red_s          cn78xx;
@@ -5256,50 +4906,24 @@ union cvmx_pko_l4_sqx_yellow {
 	uint64_t u64;
 	struct cvmx_pko_l4_sqx_yellow_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_20_63               : 44;
-	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_42_63               : 22;
+	uint64_t head                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[HEAD]. */
+	uint64_t reserved_26_31               : 6;
+	uint64_t tail                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[TAIL]. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< See PKO_L1_SQ(0..31)_GREEN[ACTIVE]. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 10;
+	uint64_t reserved_26_31               : 6;
 	uint64_t head                         : 10;
-	uint64_t reserved_20_63               : 44;
+	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_yellow_s       cn78xx;
 };
 typedef union cvmx_pko_l4_sqx_yellow cvmx_pko_l4_sqx_yellow_t;
-
-/**
- * cvmx_pko_l4_sqa_debug
- */
-union cvmx_pko_l4_sqa_debug {
-	uint64_t u64;
-	struct cvmx_pko_l4_sqa_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_l4_sqa_debug_s        cn78xx;
-};
-typedef union cvmx_pko_l4_sqa_debug cvmx_pko_l4_sqa_debug_t;
-
-/**
- * cvmx_pko_l4_sqb_debug
- */
-union cvmx_pko_l4_sqb_debug {
-	uint64_t u64;
-	struct cvmx_pko_l4_sqb_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_l4_sqb_debug_s        cn78xx;
-};
-typedef union cvmx_pko_l4_sqb_debug cvmx_pko_l4_sqb_debug_t;
 
 /**
  * cvmx_pko_l5_sq#_cir
@@ -5341,18 +4965,19 @@ union cvmx_pko_l5_sqx_green {
 	uint64_t u64;
 	struct cvmx_pko_l5_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_41_63               : 23;
-	uint64_t rr_active                    : 1;  /**< Round-robin Red Active.  Indicates that the round-robin input is mapped to RED. */
-	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
-                                                         scheduling queue are active. For internal use only. */
-	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_42_63               : 22;
+	uint64_t head                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[HEAD]. */
+	uint64_t reserved_26_31               : 6;
+	uint64_t tail                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[TAIL]. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< See PKO_L1_SQ(0..31)_GREEN[ACTIVE]. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 10;
+	uint64_t reserved_26_31               : 6;
 	uint64_t head                         : 10;
-	uint64_t active_vec                   : 20;
-	uint64_t rr_active                    : 1;
-	uint64_t reserved_41_63               : 23;
+	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_green_s        cn78xx;
@@ -5467,13 +5092,19 @@ union cvmx_pko_l5_sqx_red {
 	uint64_t u64;
 	struct cvmx_pko_l5_sqx_red_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_20_63               : 44;
-	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_42_63               : 22;
+	uint64_t head                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[HEAD]. */
+	uint64_t reserved_26_31               : 6;
+	uint64_t tail                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[TAIL]. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< See PKO_L1_SQ(0..31)_GREEN[ACTIVE]. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 10;
+	uint64_t reserved_26_31               : 6;
 	uint64_t head                         : 10;
-	uint64_t reserved_20_63               : 44;
+	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_red_s          cn78xx;
@@ -5650,50 +5281,24 @@ union cvmx_pko_l5_sqx_yellow {
 	uint64_t u64;
 	struct cvmx_pko_l5_sqx_yellow_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_20_63               : 44;
-	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
-	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+	uint64_t reserved_42_63               : 22;
+	uint64_t head                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[HEAD]. */
+	uint64_t reserved_26_31               : 6;
+	uint64_t tail                         : 10; /**< See PKO_L1_SQ(0..31)_GREEN[TAIL]. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t active_vec                   : 10; /**< See PKO_L1_SQ(0..31)_GREEN[ACTIVE]. */
 #else
+	uint64_t active_vec                   : 10;
+	uint64_t reserved_10_15               : 6;
 	uint64_t tail                         : 10;
+	uint64_t reserved_26_31               : 6;
 	uint64_t head                         : 10;
-	uint64_t reserved_20_63               : 44;
+	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_yellow_s       cn78xx;
 };
 typedef union cvmx_pko_l5_sqx_yellow cvmx_pko_l5_sqx_yellow_t;
-
-/**
- * cvmx_pko_l5_sqa_debug
- */
-union cvmx_pko_l5_sqa_debug {
-	uint64_t u64;
-	struct cvmx_pko_l5_sqa_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_l5_sqa_debug_s        cn78xx;
-};
-typedef union cvmx_pko_l5_sqa_debug cvmx_pko_l5_sqa_debug_t;
-
-/**
- * cvmx_pko_l5_sqb_debug
- */
-union cvmx_pko_l5_sqb_debug {
-	uint64_t u64;
-	struct cvmx_pko_l5_sqb_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_l5_sqb_debug_s        cn78xx;
-};
-typedef union cvmx_pko_l5_sqb_debug cvmx_pko_l5_sqb_debug_t;
 
 /**
  * cvmx_pko_lut#
@@ -5718,6 +5323,24 @@ union cvmx_pko_lutx {
 	struct cvmx_pko_lutx_s                cn78xx;
 };
 typedef union cvmx_pko_lutx cvmx_pko_lutx_t;
+
+/**
+ * cvmx_pko_lut_bist_done
+ */
+union cvmx_pko_lut_bist_done {
+	uint64_t u64;
+	struct cvmx_pko_lut_bist_done_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_1_63                : 63;
+	uint64_t bist_done                    : 1;  /**< C2Q LUT BIST done. */
+#else
+	uint64_t bist_done                    : 1;
+	uint64_t reserved_1_63                : 63;
+#endif
+	} s;
+	struct cvmx_pko_lut_bist_done_s       cn78xx;
+};
+typedef union cvmx_pko_lut_bist_done cvmx_pko_lut_bist_done_t;
 
 /**
  * cvmx_pko_lut_bist_status
@@ -5764,9 +5387,7 @@ union cvmx_pko_lut_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_lut_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t c2q_lut_ram_dbe              : 1;  /**< Double-bit error for C2Q_LUT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.pko_c2q_lut.pko_c2q_lut_ram_i */
+	uint64_t c2q_lut_ram_dbe              : 1;  /**< Double-bit error for C2Q_LUT_RAM. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -5784,12 +5405,7 @@ union cvmx_pko_lut_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_lut_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t lut_dbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_LUT_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_LUT_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_LUT_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.pko_c2q_lut.pko_c2q_lut_ram_i */
+	uint64_t lut_dbe_cmb0                 : 1;  /**< Double-bit error for C2Q_LUT_RAM. Throws PKO_INTSN_E::PKO_LUT_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -5807,9 +5423,7 @@ union cvmx_pko_lut_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_lut_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t c2q_lut_ram_sbe              : 1;  /**< Single-bit error for C2Q_LUT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.pko_c2q_lut.pko_c2q_lut_ram_i */
+	uint64_t c2q_lut_ram_sbe              : 1;  /**< Single-bit error for C2Q_LUT_RAM. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -5827,12 +5441,7 @@ union cvmx_pko_lut_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_lut_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t lut_sbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_LUT_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_LUT_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_LUT_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.pko_c2q_lut.pko_c2q_lut_ram_i */
+	uint64_t lut_sbe_cmb0                 : 1;  /**< Single-bit error for C2Q_LUT_RAM. Throws PKO_INTSN_E::PKO_LUT_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -5858,8 +5467,7 @@ union cvmx_pko_macx_cfg {
 	uint64_t fifo_num                     : 5;  /**< The PEB TX FIFO number assigned to the given MAC. A value of 0x1F means unassigned. Unused
                                                          MACs must be assigned a FIFO_NUM = 0x1F. For each active MAC, a unique FIFO_NUM must be
                                                          assigned. Legal values depend on the values in PKO_PTGF(0..7)_CFG[SIZE]. Assigning the
-                                                         same FIFO_NUM to more than a single active MAC will have unpredictable results.  FIFOs
-                                                         0x1E and 0x1D are invalid and will cause unpredictable results if used. */
+                                                         same FIFO_NUM to more than a single active MAC will have unpredictable results. */
 #else
 	uint64_t fifo_num                     : 5;
 	uint64_t skid_max_cnt                 : 2;
@@ -8017,21 +7625,11 @@ union cvmx_pko_ncb_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_ncb_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ncbi_l2_out_ram_dbe          : 1;  /**< Double-bit error for NCBI_L2_OUT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.l2_out_fifo */
-	uint64_t ncbi_pp_out_ram_dbe          : 1;  /**< Double-bit error for NCBI_PP_OUT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.pp_out_fifo */
-	uint64_t ncbo_pdm_cmd_dat_ram_dbe     : 1;  /**< Double-bit error for NCBO_PDM_CMD_DAT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.ncb__pdm_cmnd_data_fifo */
-	uint64_t ncbi_l2_pdm_pref_ram_dbe     : 1;  /**< Double-bit error for NCBI_L2_PDM_PREF_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_l2_pipe.pdm_prefbuf_fifo */
-	uint64_t ncbo_pp_fif_ram_dbe          : 1;  /**< Double-bit error for NCBO_PP_FIF_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo */
+	uint64_t ncbi_l2_out_ram_dbe          : 1;  /**< Double-bit error for NCBI_L2_OUT_RAM. */
+	uint64_t ncbi_pp_out_ram_dbe          : 1;  /**< Double-bit error for NCBI_PP_OUT_RAM. */
+	uint64_t ncbo_pdm_cmd_dat_ram_dbe     : 1;  /**< Double-bit error for NCBO_PDM_CMD_DAT_RAM. */
+	uint64_t ncbi_l2_pdm_pref_ram_dbe     : 1;  /**< Double-bit error for NCBI_L2_PDM_PREF_RAM. */
+	uint64_t ncbo_pp_fif_ram_dbe          : 1;  /**< Double-bit error for NCBO_PP_FIF_RAM. */
 	uint64_t reserved_0_58                : 59;
 #else
 	uint64_t reserved_0_58                : 59;
@@ -8053,16 +7651,7 @@ union cvmx_pko_ncb_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_ncb_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ncb_dbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_NCB_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_NCB_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_NCB_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.l2_out_fifo
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.pp_out_fifo
-                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.ncb__pdm_cmnd_data_fifo
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_l2_pipe.pdm_prefbuf_fifo
-                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo */
+	uint64_t ncb_dbe_cmb0                 : 1;  /**< Double-bit error for NCBI_L2_OUT_RAM. Throws PKO_INTSN_E::PKO_NCB_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -8080,21 +7669,11 @@ union cvmx_pko_ncb_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_ncb_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ncbi_l2_out_ram_sbe          : 1;  /**< Single-bit error for NCBI_L2_OUT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.l2_out_fifo */
-	uint64_t ncbi_pp_out_ram_sbe          : 1;  /**< Single-bit error for NCBI_PP_OUT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.pp_out_fifo */
-	uint64_t ncbo_pdm_cmd_dat_ram_sbe     : 1;  /**< Single-bit error for NCBO_PDM_CMD_DAT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.ncb__pdm_cmnd_data_fifo */
-	uint64_t ncbi_l2_pdm_pref_ram_sbe     : 1;  /**< Single-bit error for NCBI_L2_PDM_PREF_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_l2_pipe.pdm_prefbuf_fifo */
-	uint64_t ncbo_pp_fif_ram_sbe          : 1;  /**< Single-bit error for NCBO_PP_FIF_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo */
+	uint64_t ncbi_l2_out_ram_sbe          : 1;  /**< Single-bit error for NCBI_L2_OUT_RAM. */
+	uint64_t ncbi_pp_out_ram_sbe          : 1;  /**< Single-bit error for NCBI_PP_OUT_RAM. */
+	uint64_t ncbo_pdm_cmd_dat_ram_sbe     : 1;  /**< Single-bit error for NCBO_PDM_CMD_DAT_RAM. */
+	uint64_t ncbi_l2_pdm_pref_ram_sbe     : 1;  /**< Single-bit error for NCBI_L2_PDM_PREF_RAM. */
+	uint64_t ncbo_pp_fif_ram_sbe          : 1;  /**< Single-bit error for NCBO_PP_FIF_RAM. */
 	uint64_t reserved_0_58                : 59;
 #else
 	uint64_t reserved_0_58                : 59;
@@ -8116,16 +7695,7 @@ union cvmx_pko_ncb_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_ncb_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ncb_sbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_NCB_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_NCB_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_NCB_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.l2_out_fifo
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.pp_out_fifo
-                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.ncb__pdm_cmnd_data_fifo
-                                                         pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_l2_pipe.pdm_prefbuf_fifo
-                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo */
+	uint64_t ncb_sbe_cmb0                 : 1;  /**< Single-bit error for NCBI_L2_OUT_RAM. Throws PKO_INTSN_E::PKO_NCB_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -8227,27 +7797,15 @@ union cvmx_pko_pdm_bist_status {
 	uint64_t dwp_lo_ram_bist_status       : 1;  /**< BIST status for DWP_LO_RAM. */
 	uint64_t mwp_hi_ram_bist_status       : 1;  /**< BIST status for MWP_HI_RAM. */
 	uint64_t mwp_lo_ram_bist_status       : 1;  /**< BIST status for MWP_LO_RAM. */
-	uint64_t fillb_m_rsp_ram_hi_bist_status : 1;/**< BIST status for FILLB_M_RSP_RAM_HI. */
-	uint64_t fillb_m_rsp_ram_lo_bist_status : 1;/**< BIST status for FILLB_M_RSP_RAM_LO. */
-	uint64_t fillb_d_rsp_ram_hi_bist_status : 1;/**< BIST status for FILLB_D_RSP_RAM_HI. */
-	uint64_t fillb_d_rsp_ram_lo_bist_status : 1;/**< BIST status for FILLB_D_RSP_RAM_LO. */
-	uint64_t fillb_d_rsp_dat_fifo_bist_status : 1;/**< BIST status for FILLB_FLSHB_M_DAT_RAM. */
-	uint64_t fillb_m_rsp_dat_fifo_bist_status : 1;/**< BIST status for FILLB_M_DAT_FIFO. */
-	uint64_t flshb_m_dat_ram_bist_status  : 1;  /**< BIST status for FLSHB_M_DAT_RAM. */
-	uint64_t flshb_d_dat_ram_bist_status  : 1;  /**< BIST status for FLSHB_M_DAT_RAM. */
+	uint64_t fillb_m_dat_ram_bist_status  : 1;  /**< BIST status for FILLB_M_DAT_RAM. */
+	uint64_t fillb_d_dat_ram_bist_status  : 1;  /**< BIST status for FILLB_D_DAT_RAM. */
 	uint64_t minpad_ram_bist_status       : 1;  /**< BIST status for MINPAD_RAM. */
-	uint64_t reserved_0_37                : 38;
+	uint64_t reserved_0_43                : 44;
 #else
-	uint64_t reserved_0_37                : 38;
+	uint64_t reserved_0_43                : 44;
 	uint64_t minpad_ram_bist_status       : 1;
-	uint64_t flshb_d_dat_ram_bist_status  : 1;
-	uint64_t flshb_m_dat_ram_bist_status  : 1;
-	uint64_t fillb_m_rsp_dat_fifo_bist_status : 1;
-	uint64_t fillb_d_rsp_dat_fifo_bist_status : 1;
-	uint64_t fillb_d_rsp_ram_lo_bist_status : 1;
-	uint64_t fillb_d_rsp_ram_hi_bist_status : 1;
-	uint64_t fillb_m_rsp_ram_lo_bist_status : 1;
-	uint64_t fillb_m_rsp_ram_hi_bist_status : 1;
+	uint64_t fillb_d_dat_ram_bist_status  : 1;
+	uint64_t fillb_m_dat_ram_bist_status  : 1;
 	uint64_t mwp_lo_ram_bist_status       : 1;
 	uint64_t mwp_hi_ram_bist_status       : 1;
 	uint64_t dwp_lo_ram_bist_status       : 1;
@@ -8303,27 +7861,6 @@ union cvmx_pko_pdm_cfg {
 	struct cvmx_pko_pdm_cfg_s             cn78xx;
 };
 typedef union cvmx_pko_pdm_cfg cvmx_pko_pdm_cfg_t;
-
-/**
- * cvmx_pko_pdm_cfg_dbg
- */
-union cvmx_pko_pdm_cfg_dbg {
-	uint64_t u64;
-	struct cvmx_pko_pdm_cfg_dbg_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_32_63               : 32;
-	uint64_t cp_stall_thrshld             : 32; /**< Program this register to the 32-bit number of cycles to test for the PDM(CP) stalled on
-                                                         inputs going into the ISR's. PKO_PDM_STS[CP_STALL_THRSHLD_HIT] indicates the threshold has
-                                                         been hit. INTERNAL: Do not list field in HRM. For lab debug only; will likely disapear in
-                                                         pass 2. */
-#else
-	uint64_t cp_stall_thrshld             : 32;
-	uint64_t reserved_32_63               : 32;
-#endif
-	} s;
-	struct cvmx_pko_pdm_cfg_dbg_s         cn78xx;
-};
-typedef union cvmx_pko_pdm_cfg_dbg cvmx_pko_pdm_cfg_dbg_t;
 
 /**
  * cvmx_pko_pdm_dq#_minpad
@@ -8445,25 +7982,21 @@ union cvmx_pko_pdm_ecc_ctl0 {
 	uint64_t mwp_hi_ram_cdis              : 1;  /**< MWP_HI_RAM ECC correction disable. */
 	uint64_t mwp_lo_ram_flip              : 2;  /**< MWP_LO_RAM flip syndrome bits on write. */
 	uint64_t mwp_lo_ram_cdis              : 1;  /**< MWP_LO_RAM ECC correction disable. */
-	uint64_t fillb_m_rsp_ram_hi_flip      : 2;  /**< FILLB_M_RSP_RAM_HI flip syndrome bits on write. */
-	uint64_t fillb_m_rsp_ram_hi_cdis      : 1;  /**< FILLB_M_RSP_RAM_HI ECC correction disable. */
-	uint64_t fillb_m_rsp_ram_lo_flip      : 2;  /**< FILLB_M_RSP_RAM_LO flip syndrome bits on write. */
-	uint64_t fillb_m_rsp_ram_lo_cdis      : 1;  /**< FILLB_M_RSP_RAM_LO ECC correction disable. */
-	uint64_t fillb_d_rsp_ram_hi_flip      : 2;  /**< FILLB_D_RSP_RAM_LO flip syndrome bits on write. */
-	uint64_t fillb_d_rsp_ram_hi_cdis      : 1;  /**< FILLB_D_RSP_RAM_HI ECC correction disable. */
-	uint64_t fillb_d_rsp_ram_lo_flip      : 2;  /**< FILLB_D_DAT_RAM_LO flip syndrome bits on write. */
-	uint64_t fillb_d_rsp_ram_lo_cdis      : 1;  /**< FILLB_D_RSP_RAM_LO ECC correction disable. */
-	uint64_t reserved_0_0                 : 1;
+	uint64_t fillb_m_dat_ram_flip         : 2;  /**< FILLB_M_DAT_RAM flip syndrome bits on write. */
+	uint64_t fillb_m_dat_ram_cdis         : 1;  /**< FILLB_M_DAT_RAM ECC correction disable. */
+	uint64_t fillb_d_dat_ram_flip         : 2;  /**< FILLB_D_DAT_RAM flip syndrome bits on write. */
+	uint64_t fillb_d_dat_ram_cdis         : 1;  /**< FILLB_D_DAT_RAM ECC correction disable. */
+	uint64_t minpad_ram_flip              : 2;  /**< MINPAD_RAM flip syndrome bits on write. */
+	uint64_t minpad_ram_cdis              : 1;  /**< MINPAD_RAM ECC correction disable. */
+	uint64_t reserved_0_3                 : 4;
 #else
-	uint64_t reserved_0_0                 : 1;
-	uint64_t fillb_d_rsp_ram_lo_cdis      : 1;
-	uint64_t fillb_d_rsp_ram_lo_flip      : 2;
-	uint64_t fillb_d_rsp_ram_hi_cdis      : 1;
-	uint64_t fillb_d_rsp_ram_hi_flip      : 2;
-	uint64_t fillb_m_rsp_ram_lo_cdis      : 1;
-	uint64_t fillb_m_rsp_ram_lo_flip      : 2;
-	uint64_t fillb_m_rsp_ram_hi_cdis      : 1;
-	uint64_t fillb_m_rsp_ram_hi_flip      : 2;
+	uint64_t reserved_0_3                 : 4;
+	uint64_t minpad_ram_cdis              : 1;
+	uint64_t minpad_ram_flip              : 2;
+	uint64_t fillb_d_dat_ram_cdis         : 1;
+	uint64_t fillb_d_dat_ram_flip         : 2;
+	uint64_t fillb_m_dat_ram_cdis         : 1;
+	uint64_t fillb_m_dat_ram_flip         : 2;
 	uint64_t mwp_lo_ram_cdis              : 1;
 	uint64_t mwp_lo_ram_flip              : 2;
 	uint64_t mwp_hi_ram_cdis              : 1;
@@ -8505,106 +8038,38 @@ union cvmx_pko_pdm_ecc_ctl0 {
 typedef union cvmx_pko_pdm_ecc_ctl0 cvmx_pko_pdm_ecc_ctl0_t;
 
 /**
- * cvmx_pko_pdm_ecc_ctl1
- */
-union cvmx_pko_pdm_ecc_ctl1 {
-	uint64_t u64;
-	struct cvmx_pko_pdm_ecc_ctl1_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_3_63                : 61;
-	uint64_t minpad_ram_flip              : 2;  /**< MINPAD_RAM flip syndrome bits on write. */
-	uint64_t minpad_ram_cdis              : 1;  /**< MINPAD_RAM ECC correction disable. */
-#else
-	uint64_t minpad_ram_cdis              : 1;
-	uint64_t minpad_ram_flip              : 2;
-	uint64_t reserved_3_63                : 61;
-#endif
-	} s;
-	struct cvmx_pko_pdm_ecc_ctl1_s        cn78xx;
-};
-typedef union cvmx_pko_pdm_ecc_ctl1 cvmx_pko_pdm_ecc_ctl1_t;
-
-/**
  * cvmx_pko_pdm_ecc_dbe_sts0
  */
 union cvmx_pko_pdm_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pdm_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t flshb_cache_lo_ram_dbe       : 1;  /**< Double-bit error for FLSHB_CACHE_LO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.flshb.flshb_cache_lo */
-	uint64_t flshb_cache_hi_ram_dbe       : 1;  /**< Double-bit error for FLSHB_CACHE_HI_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.flshb.flshb_cache_hi */
-	uint64_t isrm_ca_iinst_ram_dbe        : 1;  /**< Double-bit error for ISRM_CA_IINST_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.mp_isr.cred_accum.iinst_in_fif */
-	uint64_t isrm_ca_cm_ram_dbe           : 1;  /**< Double-bit error for ISRM_CA_CM_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.mp_isr.cred_accum.cred_accum_ctrlr_and_mem.cred_accum_spr */
-	uint64_t isrm_st_ram2_dbe             : 1;  /**< Double-bit error for ISRM_ST_RAM2.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem2 */
-	uint64_t isrm_st_ram1_dbe             : 1;  /**< Double-bit error for ISRM_ST_RAM1.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem1 */
-	uint64_t isrm_st_ram0_dbe             : 1;  /**< Double-bit error for ISRM_ST_RAM0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem0 */
-	uint64_t isrd_st_ram3_dbe             : 1;  /**< Double-bit error for ISRD_ST_RAM3.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem3 */
-	uint64_t isrd_st_ram2_dbe             : 1;  /**< Double-bit error for ISRD_ST_RAM2.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem2 */
-	uint64_t isrd_st_ram1_dbe             : 1;  /**< Double-bit error for ISRD_ST_RAM1.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem1 */
-	uint64_t isrd_st_ram0_dbe             : 1;  /**< Double-bit error for ISRD_ST_RAM0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem0 */
-	uint64_t drp_hi_ram_dbe               : 1;  /**< Double-bit error for DRP_HI_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.drpbuf.ram_128k_pbuf_1 */
-	uint64_t drp_lo_ram_dbe               : 1;  /**< Double-bit error for DRP_LO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.drpbuf.ram_128k_pbuf_2 */
-	uint64_t dwp_hi_ram_dbe               : 1;  /**< Double-bit error for DWP_HI_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.dwpbuf.ram_128k_pbuf_high */
-	uint64_t dwp_lo_ram_dbe               : 1;  /**< Double-bit error for DWP_LO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.dwpbuf.ram_128k_pbuf_low */
-	uint64_t mwp_hi_ram_dbe               : 1;  /**< Double-bit error for MWP_HI_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_128k_pbuf_high */
-	uint64_t mwp_lo_ram_dbe               : 1;  /**< Double-bit error for MWP_LO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_128k_pbuf_low */
-	uint64_t fillb_m_rsp_ram_hi_dbe       : 1;  /**< Double-bit error for FILLB_M_DAT_RAM_HI.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.fillb.m_rsp_ram_hi */
-	uint64_t fillb_m_rsp_ram_lo_dbe       : 1;  /**< Double-bit error for FILLB_D_DAT_RAM_LO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.fillb.m_rsp_ram_lo */
-	uint64_t fillb_d_rsp_ram_hi_dbe       : 1;  /**< Double-bit error for FILLB_D_DAT_RAM_HI.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.fillb.d_rsp_ram_hi */
-	uint64_t fillb_d_rsp_ram_lo_dbe       : 1;  /**< Double-bit error for FILLB_D_DAT_RAM_LO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.fillb.d_rsp_ram_lo */
-	uint64_t minpad_ram_dbe               : 1;  /**< Double-bit error for MINPAD_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.cp.minpad_ram */
-	uint64_t reserved_0_41                : 42;
+	uint64_t flshb_cache_lo_ram_dbe       : 1;  /**< Double-bit error for FLSHB_CACHE_LO_RAM. */
+	uint64_t flshb_cache_hi_ram_dbe       : 1;  /**< Double-bit error for FLSHB_CACHE_HI_RAM. */
+	uint64_t isrm_ca_iinst_ram_dbe        : 1;  /**< Double-bit error for ISRM_CA_IINST_RAM. */
+	uint64_t isrm_ca_cm_ram_dbe           : 1;  /**< Double-bit error for ISRM_CA_CM_RAM. */
+	uint64_t isrm_st_ram2_dbe             : 1;  /**< Double-bit error for ISRM_ST_RAM2. */
+	uint64_t isrm_st_ram1_dbe             : 1;  /**< Double-bit error for ISRM_ST_RAM1. */
+	uint64_t isrm_st_ram0_dbe             : 1;  /**< Double-bit error for ISRM_ST_RAM0. */
+	uint64_t isrd_st_ram3_dbe             : 1;  /**< Double-bit error for ISRD_ST_RAM3. */
+	uint64_t isrd_st_ram2_dbe             : 1;  /**< Double-bit error for ISRD_ST_RAM2. */
+	uint64_t isrd_st_ram1_dbe             : 1;  /**< Double-bit error for ISRD_ST_RAM1. */
+	uint64_t isrd_st_ram0_dbe             : 1;  /**< Double-bit error for ISRD_ST_RAM0. */
+	uint64_t drp_hi_ram_dbe               : 1;  /**< Double-bit error for DRP_HI_RAM. */
+	uint64_t drp_lo_ram_dbe               : 1;  /**< Double-bit error for DRP_LO_RAM. */
+	uint64_t dwp_hi_ram_dbe               : 1;  /**< Double-bit error for DWP_HI_RAM. */
+	uint64_t dwp_lo_ram_dbe               : 1;  /**< Double-bit error for DWP_LO_RAM. */
+	uint64_t mwp_hi_ram_dbe               : 1;  /**< Double-bit error for MWP_HI_RAM. */
+	uint64_t mwp_lo_ram_dbe               : 1;  /**< Double-bit error for MWP_LO_RAM. */
+	uint64_t fillb_m_dat_ram_dbe          : 1;  /**< Double-bit error for FILLB_M_DAT_RAM. */
+	uint64_t fillb_d_dat_ram_dbe          : 1;  /**< Double-bit error for FILLB_D_DAT_RAM. */
+	uint64_t minpad_ram_dbe               : 1;  /**< Double-bit error for MINPAD_RAM. */
+	uint64_t reserved_0_43                : 44;
 #else
-	uint64_t reserved_0_41                : 42;
+	uint64_t reserved_0_43                : 44;
 	uint64_t minpad_ram_dbe               : 1;
-	uint64_t fillb_d_rsp_ram_lo_dbe       : 1;
-	uint64_t fillb_d_rsp_ram_hi_dbe       : 1;
-	uint64_t fillb_m_rsp_ram_lo_dbe       : 1;
-	uint64_t fillb_m_rsp_ram_hi_dbe       : 1;
+	uint64_t fillb_d_dat_ram_dbe          : 1;
+	uint64_t fillb_m_dat_ram_dbe          : 1;
 	uint64_t mwp_lo_ram_dbe               : 1;
 	uint64_t mwp_hi_ram_dbe               : 1;
 	uint64_t dwp_lo_ram_dbe               : 1;
@@ -8635,33 +8100,7 @@ union cvmx_pko_pdm_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pdm_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pdm_dbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_PDM_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PDM_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PDM_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.flshb.flshb_cache_hi
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.flshb.flshb_cache_lo
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.mp_isr.cred_accum.iinst_in_fif
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.mp_isr.cred_accum.cred_accum_ctrlr_and_mem.cred_
-                                                         accum_spr
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem0
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem1
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem2
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem0
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem1
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem2
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem3
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.drpbuf.ram_128k_pbuf_1
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.drpbuf.ram_128k_pbuf_2
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.dwpbuf.ram_128k_pbuf_low
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.dwpbuf.ram_128k_pbuf_high
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_128k_pbuf_low
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_128k_pbuf_high
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.fillb.d_rsp_ram_hi
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.fillb.d_rsp_ram_lo
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.fillb.m_rsp_dat_fifo
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.cp.minpad_ram */
+	uint64_t pdm_dbe_cmb0                 : 1;  /**< Double-bit error for FLSHB_CACHE_LO_RAM. Throws PKO_INTSN_E::PKO_PDM_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -8679,80 +8118,32 @@ union cvmx_pko_pdm_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pdm_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t flshb_cache_lo_ram_sbe       : 1;  /**< Single-bit error for FLSHB_CACHE_LO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.flshb.flshb_cache_lo */
-	uint64_t flshb_cache_hi_ram_sbe       : 1;  /**< Single-bit error for FLSHB_CACHE_HI_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.flshb.flshb_cache_hi */
-	uint64_t isrm_ca_iinst_ram_sbe        : 1;  /**< Single-bit error for ISRM_CA_IINST_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.mp_isr.cred_accum.iinst_in_fif */
-	uint64_t isrm_ca_cm_ram_sbe           : 1;  /**< Single-bit error for ISRM_CA_CM_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.mp_isr.cred_accum.cred_accum_ctrlr_and_mem.cred_accum_spr */
-	uint64_t isrm_st_ram2_sbe             : 1;  /**< Single-bit error for ISRM_ST_RAM2.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem2 */
-	uint64_t isrm_st_ram1_sbe             : 1;  /**< Single-bit error for ISRM_ST_RAM1.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem1 */
-	uint64_t isrm_st_ram0_sbe             : 1;  /**< Single-bit error for ISRM_ST_RAM0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem0 */
-	uint64_t isrd_st_ram3_sbe             : 1;  /**< Single-bit error for ISRD_ST_RAM3.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem3 */
-	uint64_t isrd_st_ram2_sbe             : 1;  /**< Single-bit error for ISRD_ST_RAM2.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem2 */
-	uint64_t isrd_st_ram1_sbe             : 1;  /**< Single-bit error for ISRD_ST_RAM1.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem1 */
-	uint64_t isrd_st_ram0_sbe             : 1;  /**< Single-bit error for ISRD_ST_RAM0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem0 */
-	uint64_t drp_hi_ram_sbe               : 1;  /**< Single-bit error for DRP_HI_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.drpbuf.ram_128k_pbuf_1 */
-	uint64_t drp_lo_ram_sbe               : 1;  /**< Single-bit error for DRP_LO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.drpbuf.ram_128k_pbuf_2 */
-	uint64_t dwp_hi_ram_sbe               : 1;  /**< Single-bit error for DWP_HI_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.dwpbuf.ram_128k_pbuf_high */
-	uint64_t dwp_lo_ram_sbe               : 1;  /**< Single-bit error for DWP_LO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.dwpbuf.ram_128k_pbuf_low */
-	uint64_t mwp_hi_ram_sbe               : 1;  /**< Single-bit error for MWP_HI_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_128k_pbuf_high */
-	uint64_t mwp_lo_ram_sbe               : 1;  /**< Single-bit error for MWP_LO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_128k_pbuf_low */
-	uint64_t fillb_m_rsp_ram_hi_sbe       : 1;  /**< Single-bit error for FILLB_M_RSP_RAM_HI.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.fillb.m_rsp_ram_hi */
-	uint64_t fillb_m_rsp_ram_lo_sbe       : 1;  /**< Single-bit error for FILLB_M_RSP_RAM_LO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.fillb.m_rsp_ram_lo */
-	uint64_t fillb_d_rsp_ram_hi_sbe       : 1;  /**< Single-bit error for FILLB_D_RSP_RAM_HI.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.fillb.d_rsp_ram_hi */
-	uint64_t fillb_d_rsp_ram_lo_sbe       : 1;  /**< Single-bit error for FILLB_D_RSP_RAM_LO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.fillb.d_rsp_ram_lo */
-	uint64_t minpad_ram_sbe               : 1;  /**< Single-bit error for MINPAD_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr1.pko_pnr1_pdm.cp.minpad_ram */
-	uint64_t reserved_0_41                : 42;
+	uint64_t flshb_cache_lo_ram_sbe       : 1;  /**< Single-bit error for FLSHB_CACHE_LO_RAM. */
+	uint64_t flshb_cache_hi_ram_sbe       : 1;  /**< Single-bit error for FLSHB_CACHE_HI_RAM. */
+	uint64_t isrm_ca_iinst_ram_sbe        : 1;  /**< Single-bit error for ISRM_CA_IINST_RAM. */
+	uint64_t isrm_ca_cm_ram_sbe           : 1;  /**< Single-bit error for ISRM_CA_CM_RAM. */
+	uint64_t isrm_st_ram2_sbe             : 1;  /**< Single-bit error for ISRM_ST_RAM2. */
+	uint64_t isrm_st_ram1_sbe             : 1;  /**< Single-bit error for ISRM_ST_RAM1. */
+	uint64_t isrm_st_ram0_sbe             : 1;  /**< Single-bit error for ISRM_ST_RAM0. */
+	uint64_t isrd_st_ram3_sbe             : 1;  /**< Single-bit error for ISRD_ST_RAM3. */
+	uint64_t isrd_st_ram2_sbe             : 1;  /**< Single-bit error for ISRD_ST_RAM2. */
+	uint64_t isrd_st_ram1_sbe             : 1;  /**< Single-bit error for ISRD_ST_RAM1. */
+	uint64_t isrd_st_ram0_sbe             : 1;  /**< Single-bit error for ISRD_ST_RAM0. */
+	uint64_t drp_hi_ram_sbe               : 1;  /**< Single-bit error for DRP_HI_RAM. */
+	uint64_t drp_lo_ram_sbe               : 1;  /**< Single-bit error for DRP_LO_RAM. */
+	uint64_t dwp_hi_ram_sbe               : 1;  /**< Single-bit error for DWP_HI_RAM. */
+	uint64_t dwp_lo_ram_sbe               : 1;  /**< Single-bit error for DWP_LO_RAM. */
+	uint64_t mwp_hi_ram_sbe               : 1;  /**< Single-bit error for MWP_HI_RAM. */
+	uint64_t mwp_lo_ram_sbe               : 1;  /**< Single-bit error for MWP_LO_RAM. */
+	uint64_t fillb_m_dat_ram_sbe          : 1;  /**< Single-bit error for FILLB_M_DAT_RAM. */
+	uint64_t fillb_d_dat_ram_sbe          : 1;  /**< Single-bit error for FILLB_D_DAT_RAM. */
+	uint64_t minpad_ram_sbe               : 1;  /**< Single-bit error for MINPAD_RAM. */
+	uint64_t reserved_0_43                : 44;
 #else
-	uint64_t reserved_0_41                : 42;
+	uint64_t reserved_0_43                : 44;
 	uint64_t minpad_ram_sbe               : 1;
-	uint64_t fillb_d_rsp_ram_lo_sbe       : 1;
-	uint64_t fillb_d_rsp_ram_hi_sbe       : 1;
-	uint64_t fillb_m_rsp_ram_lo_sbe       : 1;
-	uint64_t fillb_m_rsp_ram_hi_sbe       : 1;
+	uint64_t fillb_d_dat_ram_sbe          : 1;
+	uint64_t fillb_m_dat_ram_sbe          : 1;
 	uint64_t mwp_lo_ram_sbe               : 1;
 	uint64_t mwp_hi_ram_sbe               : 1;
 	uint64_t dwp_lo_ram_sbe               : 1;
@@ -8783,33 +8174,7 @@ union cvmx_pko_pdm_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pdm_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pdm_sbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_PDM_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PDM_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PDM_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.flshb.flshb_cache_hi
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.flshb.flshb_cache_lo
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.mp_isr.cred_accum.iinst_in_fif
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.mp_isr.cred_accum.cred_accum_ctrlr_and_mem.cred_
-                                                         accum_spr
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem0
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem1
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.mp_isr.st_mem2
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem0
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem1
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem2
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.isr.d_isr.st_mem3
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.drpbuf.ram_128k_pbuf_1
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.drpbuf.ram_128k_pbuf_2
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.dwpbuf.ram_128k_pbuf_low
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.dwpbuf.ram_128k_pbuf_high
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_128k_pbuf_low
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_128k_pbuf_high
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.fillb.d_rsp_ram_hi
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.fillb.d_rsp_ram_lo
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.fillb.m_rsp_dat_fifo
-                                                         fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.cp.minpad_ram */
+	uint64_t pdm_sbe_cmb0                 : 1;  /**< Single-bit error for FLSHB_CACHE_LO_RAM. Throws PKO_INTSN_E::PKO_PDM_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -9073,106 +8438,139 @@ union cvmx_pko_pdm_mwpbuf_dbg {
 typedef union cvmx_pko_pdm_mwpbuf_dbg cvmx_pko_pdm_mwpbuf_dbg_t;
 
 /**
+ * cvmx_pko_pdm_sendpkt_lmtxx_err
+ */
+union cvmx_pko_pdm_sendpkt_lmtxx_err {
+	uint64_t u64;
+	struct cvmx_pko_pdm_sendpkt_lmtxx_err_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_4_63                : 60;
+	uint64_t lmtst_err_cond               : 2;  /**< Error condition for PKO_PDM_STS[SENDPKT_LMTST_ERR].
+                                                         if( ERR_COND == 2'b10 ) PKO_DQSTATUS_E::DQNOFPABUF
+                                                         else if( ERR_COND == 2'b01 ) PKO_DQSTATUS_E::DQNOTCREATED */
+	uint64_t lmtdma_err_cond              : 2;  /**< Error condition for PKO_PDM_STS[SENDPKT_LMTDMA_ERR].
+                                                         if( ERR_COND == 2'b10 ) PKO_DQSTATUS_E::DQNOFPABUF
+                                                         else if( ERR_COND == 2'b01 ) PKO_DQSTATUS_E::DQNOTCREATED */
+#else
+	uint64_t lmtdma_err_cond              : 2;
+	uint64_t lmtst_err_cond               : 2;
+	uint64_t reserved_4_63                : 60;
+#endif
+	} s;
+	struct cvmx_pko_pdm_sendpkt_lmtxx_err_s cn78xx;
+};
+typedef union cvmx_pko_pdm_sendpkt_lmtxx_err cvmx_pko_pdm_sendpkt_lmtxx_err_t;
+
+/**
  * cvmx_pko_pdm_sts
  */
 union cvmx_pko_pdm_sts {
 	uint64_t u64;
 	struct cvmx_pko_pdm_sts_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_38_63               : 26;
-	uint64_t cp_stalled_thrshld_hit       : 1;  /**< This register will be set to 1 if the PDM stalls the inputs for more than
-                                                         PKO_PDM_CFG_DBG[CP_STALL_THRSHLD]. INTERNAL: Do not list field in HRM. For lab debug only;
-                                                         will likely disapear in pass 2. */
-	uint64_t reserved_35_36               : 2;
-	uint64_t mwpbuf_data_val_err          : 1;  /**< Recieved signal that MWPBUF had data valid error. Throws
+	uint64_t reserved_9_63                : 55;
+	uint64_t mwpbuf_data_val_err          : 1;  /**< recieved signal that MWPBUF had data valid error. Throws
                                                          PKO_INTSN_E::PKO_MWPBUF_DATA_VAL_ERR. */
-	uint64_t drpbuf_data_val_err          : 1;  /**< Recieved signal that DRPBUF had data valid error. Throws
+	uint64_t drpbuf_data_val_err          : 1;  /**< recieved signal that DRPBUF had data valid error. Throws
                                                          PKO_INTSN_E::PKO_DRPBUF_DATA_VAL_ERR. */
-	uint64_t dwpbuf_data_val_err          : 1;  /**< Recieved signal that DWPBUF had data valid error. Throws
+	uint64_t dwpbuf_data_val_err          : 1;  /**< recieved signal that DWPBUF had data valid error. Throws
                                                          PKO_INTSN_E::PKO_DWPBUF_DATA_VAL_ERR. */
-	uint64_t reserved_30_31               : 2;
-	uint64_t qcmd_iobx_err_sts            : 4;  /**< When PKO_PDM_STS[QCMD_IOBX_ERR] is set, the queue command response's status field
-                                                         for the response causing the error. Note that if multiple errors occur only the first
-                                                         error status will be captured here until PKO_PDM_STS[QCMD_IOBX_ERR] is cleared.
-                                                         Enumerated by PKO_DQSTATUS_E. */
-	uint64_t qcmd_iobx_err                : 1;  /**< Queue command IOBDMA/IOBLD error status occured in PKO/PDM. PKO_PDM_STS[QCMD_IOBX_ERR_STS]
-                                                         contains the status code.
-                                                         Note that this bit and interrupt will not go off for the FPA being out of
-                                                         pointers (PKO_FPA_NO_PTRS is bit 4 in this CSR).
-                                                         Throws PKO_INTSN_E::PKO_QCMD_IOBX_ERR. */
-	uint64_t sendpkt_lmtdma_err_sts       : 4;  /**< This is the status field of the command response on the LMTDMA failure indicated by
-                                                         PKO_PDM_STS[SENDPKT_LMTDMA_ERR] bits being asserted.
-                                                         Note that if multiple errors occur only the first error status will be captured here until
-                                                         PKO_PDM_STS[SENDPKT_LMTDMA_ERR] is cleared.
-                                                         Enumerated by PKO_DQSTATUS_E. */
-	uint64_t sendpkt_lmtdma_err           : 1;  /**< Send-packet of type LMTDMA error status occured in PKO/PDM.
-                                                         PKO_PDM_STS[SENDPKT_LMTDMA_ERR_STS] contains the status code.
-                                                         Note that this bit and interrupt will not go off for the FPA being out of
-                                                         pointers (PKO_FPA_NO_PTRS is bit 4 in this CSR).
-                                                         Throws PKO_INTSN_E::PKO_SENDPKT_LMTDMA_ERR. */
-	uint64_t sendpkt_lmtst_err_sts        : 4;  /**< This is the status field of the command response on the LMTST failure indicated by
-                                                         PKO_PDM_STS[SENDPKT_LMTST_ERR] bits being asserted.
-                                                         Note that if multiple errors occur only the first error status will be captured here until
-                                                         PKO_PDM_STS[SENDPKT_LMTST_ERR] is cleared.
-                                                         Enumerated by PKO_DQSTATUS_E. */
-	uint64_t sendpkt_lmtst_err            : 1;  /**< Send-packet of type LMTST error status occured in PKO/PDM.
-                                                         PKO_PDM_STS[SENDPKT_LMTST_ERR_STS] contains the status code.
-                                                         Note that this bit and interrupt will not go off for the FPA being out of
-                                                         pointers (PKO_FPA_NO_PTRS is bit 4 in this CSR).
-                                                         Throws PKO_INTSN_E::PKO_SENDPKT_LMTST_ERR. */
-	uint64_t fpa_no_ptrs                  : 1;  /**< FPA signalled PKO that FPA can not allocate pointers. This is a fatal error.
-                                                         Throws PKO_INTSN_E::PKO_FPA_NO_PTRS. */
-	uint64_t reserved_12_13               : 2;
-	uint64_t cp_sendpkt_err_no_drp_code   : 2;  /**< This field stores the error code for illegally constructed send-packets that did not drop.
-                                                         Note that if multiple errors occur only the first error code will be captured here until
-                                                         PKO_PDM_STS[CP_SENDPKT_ERR_NO_DRP] is cleared.
-                                                         Codes:
-                                                           2'b00: NO ERROR CODE
-                                                           2'b01: SEND_JUMP not at end of descriptor. */
-	uint64_t cp_sendpkt_err_no_drp        : 1;  /**< PKO/PDM/CP did not drop a send-packet, but it violates rules below.
-                                                         1) SEND_JUMP not at end of descriptor.
-                                                         The error code is captured in PKO_PDM_STS[CP_SENDPKT_ERR_NO_DRP_CODE].
-                                                         Throws PKO_INTSN_E::PKO_CP_SENDPKT_ERR_NO_DRP. */
-	uint64_t reserved_7_8                 : 2;
-	uint64_t cp_sendpkt_err_drop_code     : 3;  /**< This field stores the error code for illegally constructed send-packet drops.
-                                                         Note that if multiple errors occur only the first error code will be captured here until
-                                                         PKO_PDM_STS[CP_SENDPKT_ERR_DROP] is cleared.
-                                                         PKO_CPSENDDROP_E enumerates the codes and conditions. */
-	uint64_t cp_sendpkt_err_drop          : 1;  /**< Dropped a send-packet in PDM/CP due to rule violation.
-                                                         The error code is captured in PKO_PDM_STS[CP_SENDPKT_ERR_DROP_CODE].
-                                                         Throws PKO_INTSN_E::PKO_CP_SENDPKT_ERR_DROP. */
-	uint64_t reserved_1_2                 : 2;
-	uint64_t desc_crc_err                 : 1;  /**< CRC error occurred in a descriptor. (State may have been corrupted).
-                                                         INTERNAL: Note that this is a pass 2 feature.
-                                                         Throws PKO_INTSN_E::PKO_DESC_CRC_ERR. */
+	uint64_t sendpkt_lmtdma_err           : 1;  /**< recieved signal that FPA cannot allocate pointer. Throws
+                                                         PKO_INTSN_E::PKO_SENDPKT_LMTDMA_ERR. */
+	uint64_t sendpkt_lmtst_err            : 1;  /**< recieved signal that FPA cannot allocate pointer. Throws
+                                                         PKO_INTSN_E::PKO_SENDPKT_LMTST_ERR. */
+	uint64_t fpa_no_ptrs                  : 1;  /**< recieved signal that FPA cannot allocate pointer. Throws PKO_INTSN_E::PKO_FPA_NO_PTRS. */
+	uint64_t cp_sendpkt_err_no_drp        : 1;  /**< We did not drop a send-packet, but it appears to violate rules. (1. send jump not at end
+                                                         of descriptor). Throws PKO_INTSN_E::PKO_CP_SENDPKT_ERR_NO_DRP. */
+	uint64_t cp_pkt_drp                   : 1;  /**< Dropped a packet in PDM/CP due to rule violation. Throws PKO_INTSN_E::PKO_CP_ERR_PKT_DROP. */
+	uint64_t desc_crc_err                 : 1;  /**< CRC error occurred in a descriptor. (State may have been corrupted). Throws
+                                                         PKO_INTSN_E::PKO_DESC_CRC_ERR. */
 #else
 	uint64_t desc_crc_err                 : 1;
-	uint64_t reserved_1_2                 : 2;
-	uint64_t cp_sendpkt_err_drop          : 1;
-	uint64_t cp_sendpkt_err_drop_code     : 3;
-	uint64_t reserved_7_8                 : 2;
+	uint64_t cp_pkt_drp                   : 1;
 	uint64_t cp_sendpkt_err_no_drp        : 1;
-	uint64_t cp_sendpkt_err_no_drp_code   : 2;
-	uint64_t reserved_12_13               : 2;
 	uint64_t fpa_no_ptrs                  : 1;
 	uint64_t sendpkt_lmtst_err            : 1;
-	uint64_t sendpkt_lmtst_err_sts        : 4;
 	uint64_t sendpkt_lmtdma_err           : 1;
-	uint64_t sendpkt_lmtdma_err_sts       : 4;
-	uint64_t qcmd_iobx_err                : 1;
-	uint64_t qcmd_iobx_err_sts            : 4;
-	uint64_t reserved_30_31               : 2;
 	uint64_t dwpbuf_data_val_err          : 1;
 	uint64_t drpbuf_data_val_err          : 1;
 	uint64_t mwpbuf_data_val_err          : 1;
-	uint64_t reserved_35_36               : 2;
-	uint64_t cp_stalled_thrshld_hit       : 1;
-	uint64_t reserved_38_63               : 26;
+	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
 	struct cvmx_pko_pdm_sts_s             cn78xx;
 };
 typedef union cvmx_pko_pdm_sts cvmx_pko_pdm_sts_t;
+
+/**
+ * cvmx_pko_peb_bist_done
+ */
+union cvmx_pko_peb_bist_done {
+	uint64_t u64;
+	struct cvmx_pko_peb_bist_done_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_26_63               : 38;
+	uint64_t add_work_fifo                : 1;  /**< ADD_WORK_FIFO RAM BIST done. */
+	uint64_t pdm_pse_buf_ram              : 1;  /**< PDM_PSE_BUF RAM BIST done. */
+	uint64_t iobp0_fifo_ram               : 1;  /**< IOBP0_FIFO RAM BIST done. */
+	uint64_t iobp1_fifo_ram               : 1;  /**< IOBP1_FIFO RAM BIST done. */
+	uint64_t state_mem0                   : 1;  /**< STATE_MEM0 RAM BIST done. */
+	uint64_t state_mem1                   : 1;  /**< STATE_MEM1 RAM BIST done. */
+	uint64_t state_mem2                   : 1;  /**< STATE_MEM2 RAM BIST done. */
+	uint64_t state_mem3                   : 1;  /**< STATE_MEM3 RAM BIST done. */
+	uint64_t iobp1_uid_fifo_ram           : 1;  /**< IOBP1_UID_FIFO RAM BIST done. */
+	uint64_t nxt_link_ptr_ram             : 1;  /**< NXT_LINK_PTR RAM BIST done. */
+	uint64_t pd_bank0_ram                 : 1;  /**< PD_BANK0 RAM BIST done. */
+	uint64_t pd_bank1_ram                 : 1;  /**< PD_BANK1 RAM BIST done. */
+	uint64_t pd_bank2_ram                 : 1;  /**< PD_BANK2 RAM BIST done. */
+	uint64_t pd_bank3_ram                 : 1;  /**< PD_BANK3 RAM BIST done. */
+	uint64_t pd_var_bank_ram              : 1;  /**< PD_VAR_BANK RAM BIST done. */
+	uint64_t pdm_resp_buf_ram             : 1;  /**< PDM_RESP_BUF RAM BIST done. */
+	uint64_t tx_fifo_pkt_ram              : 1;  /**< TX_FIFO_PKT RAM BIST done. */
+	uint64_t tx_fifo_hdr_ram              : 1;  /**< TX_FIFO_HDR RAM BIST done. */
+	uint64_t tx_fifo_crc_ram              : 1;  /**< TX_FIFO_CRC RAM BIST done. */
+	uint64_t ts_addwork_ram               : 1;  /**< TS_ADDWORK RAM BIST done. */
+	uint64_t send_mem_ts_fifo             : 1;  /**< SEND_MEM_TS_FIFO RAM BIST done. */
+	uint64_t send_mem_stdn_fifo           : 1;  /**< SEND_MEM_STDN_FIFO RAM BIST done. */
+	uint64_t send_mem_fifo                : 1;  /**< SEND_MEM_FIFO RAM BIST done. */
+	uint64_t pkt_mrk_ram                  : 1;  /**< PKT_MRK RAM BIST done. */
+	uint64_t peb_st_inf_ram               : 1;  /**< PEB_ST_INF RAM BIST done. */
+	uint64_t peb_sm_jmp_ram               : 1;  /**< PEB_SM_JMP RAM BIST done.
+                                                         1 = BIST complete.
+                                                         0 = BIST in progress. */
+#else
+	uint64_t peb_sm_jmp_ram               : 1;
+	uint64_t peb_st_inf_ram               : 1;
+	uint64_t pkt_mrk_ram                  : 1;
+	uint64_t send_mem_fifo                : 1;
+	uint64_t send_mem_stdn_fifo           : 1;
+	uint64_t send_mem_ts_fifo             : 1;
+	uint64_t ts_addwork_ram               : 1;
+	uint64_t tx_fifo_crc_ram              : 1;
+	uint64_t tx_fifo_hdr_ram              : 1;
+	uint64_t tx_fifo_pkt_ram              : 1;
+	uint64_t pdm_resp_buf_ram             : 1;
+	uint64_t pd_var_bank_ram              : 1;
+	uint64_t pd_bank3_ram                 : 1;
+	uint64_t pd_bank2_ram                 : 1;
+	uint64_t pd_bank1_ram                 : 1;
+	uint64_t pd_bank0_ram                 : 1;
+	uint64_t nxt_link_ptr_ram             : 1;
+	uint64_t iobp1_uid_fifo_ram           : 1;
+	uint64_t state_mem3                   : 1;
+	uint64_t state_mem2                   : 1;
+	uint64_t state_mem1                   : 1;
+	uint64_t state_mem0                   : 1;
+	uint64_t iobp1_fifo_ram               : 1;
+	uint64_t iobp0_fifo_ram               : 1;
+	uint64_t pdm_pse_buf_ram              : 1;
+	uint64_t add_work_fifo                : 1;
+	uint64_t reserved_26_63               : 38;
+#endif
+	} s;
+	struct cvmx_pko_peb_bist_done_s       cn78xx;
+};
+typedef union cvmx_pko_peb_bist_done cvmx_pko_peb_bist_done_t;
 
 /**
  * cvmx_pko_peb_bist_status
@@ -9369,72 +8767,28 @@ union cvmx_pko_peb_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_peb_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t iobp1_uid_fifo_ram_dbe       : 1;  /**< Double-bit error for IOBP1_UID_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i */
-	uint64_t iobp0_fifo_ram_dbe           : 1;  /**< Double-bit error for IOBP0_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_iobp0_fifo_i */
-	uint64_t iobp1_fifo_ram_dbe           : 1;  /**< Double-bit error for IOBP1_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_fifo_i */
-	uint64_t pdm_resp_buf_ram_dbe         : 1;  /**< Double-bit error for PDM_RESP_BUF_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pdm_resp_buf_i */
-	uint64_t pdm_pse_buf_ram_dbe          : 1;  /**< Double-bit error for PDM_PSE_BUF_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pse_buf_i */
-	uint64_t peb_sm_jmp_ram_dbe           : 1;  /**< Double-bit error for PEB_SM_JMP_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_sm_jmp_uid_mem_i */
-	uint64_t peb_st_inf_ram_dbe           : 1;  /**< Double-bit error for PEB_ST_INF_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_state_info_mem_i */
-	uint64_t pd_bank3_ram_dbe             : 1;  /**< Double-bit error for PD_BANK3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank3_i */
-	uint64_t pd_bank2_ram_dbe             : 1;  /**< Double-bit error for PD_BANK2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank2_i */
-	uint64_t pd_bank1_ram_dbe             : 1;  /**< Double-bit error for PD_BANK1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank1_i */
-	uint64_t pd_bank0_ram_dbe             : 1;  /**< Double-bit error for PD_BANK0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank0_i */
-	uint64_t pd_var_bank_ram_dbe          : 1;  /**< Double-bit error for PD_VAR_BANK_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_var_mem_bank_i */
-	uint64_t tx_fifo_crc_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_CRC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_crc_i */
-	uint64_t tx_fifo_hdr_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_HDR_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_hdr_i */
-	uint64_t tx_fifo_pkt_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_PKT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_pkt_i */
-	uint64_t add_work_fifo_dbe            : 1;  /**< Double-bit error for ADD_WORK_FIFO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_add_work_fifo_i */
-	uint64_t send_mem_fifo_dbe            : 1;  /**< Double-bit error for SEND_MEM_FIFO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_fifo_i */
-	uint64_t send_mem_stdn_fifo_dbe       : 1;  /**< Double-bit error for SEND_MEM_STDN_FIFO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_stdn_fifo_i */
-	uint64_t send_mem_ts_fifo_dbe         : 1;  /**< Double-bit error for SEND_MEM_TS_FIFO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_ts_fifo_i */
-	uint64_t nxt_link_ptr_ram_dbe         : 1;  /**< Double-bit error for NXT_LINK_PTR_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_nxt_link_ptr_mem_i */
-	uint64_t pkt_mrk_ram_dbe              : 1;  /**< Double-bit error for PKT_MRK_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pkt_mrk_mem_i */
-	uint64_t ts_addwork_ram_dbe           : 1;  /**< Double-bit error for TS_ADDWORK_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_ts_addwork_mem_i */
+	uint64_t iobp1_uid_fifo_ram_dbe       : 1;  /**< Double-bit error for IOBP1_UID_FIFO_RAM. */
+	uint64_t iobp0_fifo_ram_dbe           : 1;  /**< Double-bit error for IOBP0_FIFO_RAM. */
+	uint64_t iobp1_fifo_ram_dbe           : 1;  /**< Double-bit error for IOBP1_FIFO_RAM. */
+	uint64_t pdm_resp_buf_ram_dbe         : 1;  /**< Double-bit error for PDM_RESP_BUF_RAM. */
+	uint64_t pdm_pse_buf_ram_dbe          : 1;  /**< Double-bit error for PDM_PSE_BUF_RAM. */
+	uint64_t peb_sm_jmp_ram_dbe           : 1;  /**< Double-bit error for PEB_SM_JMP_RAM. */
+	uint64_t peb_st_inf_ram_dbe           : 1;  /**< Double-bit error for PEB_ST_INF_RAM. */
+	uint64_t pd_bank3_ram_dbe             : 1;  /**< Double-bit error for PD_BANK3_RAM. */
+	uint64_t pd_bank2_ram_dbe             : 1;  /**< Double-bit error for PD_BANK2_RAM. */
+	uint64_t pd_bank1_ram_dbe             : 1;  /**< Double-bit error for PD_BANK1_RAM. */
+	uint64_t pd_bank0_ram_dbe             : 1;  /**< Double-bit error for PD_BANK0_RAM. */
+	uint64_t pd_var_bank_ram_dbe          : 1;  /**< Double-bit error for PD_VAR_BANK_RAM. */
+	uint64_t tx_fifo_crc_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_CRC_RAM. */
+	uint64_t tx_fifo_hdr_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_HDR_RAM. */
+	uint64_t tx_fifo_pkt_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_PKT_RAM. */
+	uint64_t add_work_fifo_dbe            : 1;  /**< Double-bit error for ADD_WORK_FIFO. */
+	uint64_t send_mem_fifo_dbe            : 1;  /**< Double-bit error for SEND_MEM_FIFO. */
+	uint64_t send_mem_stdn_fifo_dbe       : 1;  /**< Double-bit error for SEND_MEM_STDN_FIFO. */
+	uint64_t send_mem_ts_fifo_dbe         : 1;  /**< Double-bit error for SEND_MEM_TS_FIFO. */
+	uint64_t nxt_link_ptr_ram_dbe         : 1;  /**< Double-bit error for NXT_LINK_PTR_RAM. */
+	uint64_t pkt_mrk_ram_dbe              : 1;  /**< Double-bit error for PKT_MRK_RAM. */
+	uint64_t ts_addwork_ram_dbe           : 1;  /**< Double-bit error for TS_ADDWORK_RAM. */
 	uint64_t reserved_0_41                : 42;
 #else
 	uint64_t reserved_0_41                : 42;
@@ -9473,33 +8827,7 @@ union cvmx_pko_peb_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_peb_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t peb_dbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_PEB_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PEB_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PEB_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_iobp0_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pdm_resp_buf_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pse_buf_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_sm_jmp_uid_mem_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_state_info_mem_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank3_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank0_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank1_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank2_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_var_mem_bank_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_crc_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_hdr_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_pkt_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_add_work_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_stdn_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_ts_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_nxt_link_ptr_mem_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pkt_mrk_mem_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_ts_addwork_mem_i */
+	uint64_t peb_dbe_cmb0                 : 1;  /**< Double-bit error for IOBP1_UID_FIFO_RAM. Throws PKO_INTSN_E::PKO_PEB_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -9517,72 +8845,28 @@ union cvmx_pko_peb_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_peb_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t iobp1_uid_fifo_ram_sbe       : 1;  /**< Single-bit error for IOBP1_UID_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i */
-	uint64_t iobp0_fifo_ram_sbe           : 1;  /**< Single-bit error for IOBP0_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_iobp0_fifo_i */
-	uint64_t iobp1_fifo_ram_sbe           : 1;  /**< Single-bit error for IOBP1_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_fifo_i */
-	uint64_t pdm_resp_buf_ram_sbe         : 1;  /**< Single-bit error for PDM_RESP_BUF_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pdm_resp_buf_i */
-	uint64_t pdm_pse_buf_ram_sbe          : 1;  /**< Single-bit error for PDM_PSE_BUF_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pse_buf_i */
-	uint64_t peb_sm_jmp_ram_sbe           : 1;  /**< Single-bit error for PEB_SM_JMP_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_sm_jmp_uid_mem_i */
-	uint64_t peb_st_inf_ram_sbe           : 1;  /**< Single-bit error for PEB_ST_INF_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_state_info_mem_i */
-	uint64_t pd_bank3_ram_sbe             : 1;  /**< Single-bit error for PD_BANK3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank3_i */
-	uint64_t pd_bank2_ram_sbe             : 1;  /**< Single-bit error for PD_BANK2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank2_i */
-	uint64_t pd_bank1_ram_sbe             : 1;  /**< Single-bit error for PD_BANK1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank1_i */
-	uint64_t pd_bank0_ram_sbe             : 1;  /**< Single-bit error for PD_BANK1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank0_i */
-	uint64_t pd_var_bank_ram_sbe          : 1;  /**< Single-bit error for PD_VAR_BANK_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_var_mem_bank_i */
-	uint64_t tx_fifo_crc_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_CRC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_crc_i */
-	uint64_t tx_fifo_hdr_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_HDR_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_hdr_i */
-	uint64_t tx_fifo_pkt_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_PKT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_pkt_i */
-	uint64_t add_work_fifo_sbe            : 1;  /**< Single-bit error for ADD_WORK_FIFO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_add_work_fifo_i */
-	uint64_t send_mem_fifo_sbe            : 1;  /**< Single-bit error for SEND_MEM_FIFO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_fifo_i */
-	uint64_t send_mem_stdn_fifo_sbe       : 1;  /**< Single-bit error for SEND_MEM_STDN_FIFO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_stdn_fifo_i */
-	uint64_t send_mem_ts_fifo_sbe         : 1;  /**< Single-bit error for SEND_MEM_TS_FIFO.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_ts_fifo_i */
-	uint64_t nxt_link_ptr_ram_sbe         : 1;  /**< Single-bit error for NXT_LINK_PTR_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_nxt_link_ptr_mem_i */
-	uint64_t pkt_mrk_ram_sbe              : 1;  /**< Single-bit error for PKT_MRK_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pkt_mrk_mem_i */
-	uint64_t ts_addwork_ram_sbe           : 1;  /**< Single-bit error for TS_ADDWORK_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_ts_addwork_mem_i */
+	uint64_t iobp1_uid_fifo_ram_sbe       : 1;  /**< Single-bit error for IOBP1_UID_FIFO_RAM. */
+	uint64_t iobp0_fifo_ram_sbe           : 1;  /**< Single-bit error for IOBP0_FIFO_RAM. */
+	uint64_t iobp1_fifo_ram_sbe           : 1;  /**< Single-bit error for IOBP1_FIFO_RAM. */
+	uint64_t pdm_resp_buf_ram_sbe         : 1;  /**< Single-bit error for PDM_RESP_BUF_RAM. */
+	uint64_t pdm_pse_buf_ram_sbe          : 1;  /**< Single-bit error for PDM_PSE_BUF_RAM. */
+	uint64_t peb_sm_jmp_ram_sbe           : 1;  /**< Single-bit error for PEB_SM_JMP_RAM. */
+	uint64_t peb_st_inf_ram_sbe           : 1;  /**< Single-bit error for PEB_ST_INF_RAM. */
+	uint64_t pd_bank3_ram_sbe             : 1;  /**< Single-bit error for PD_BANK3_RAM. */
+	uint64_t pd_bank2_ram_sbe             : 1;  /**< Single-bit error for PD_BANK2_RAM. */
+	uint64_t pd_bank1_ram_sbe             : 1;  /**< Single-bit error for PD_BANK1_RAM. */
+	uint64_t pd_bank0_ram_sbe             : 1;  /**< Single-bit error for PD_BANK0_RAM. */
+	uint64_t pd_var_bank_ram_sbe          : 1;  /**< Single-bit error for PD_VAR_BANK_RAM. */
+	uint64_t tx_fifo_crc_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_CRC_RAM. */
+	uint64_t tx_fifo_hdr_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_HDR_RAM. */
+	uint64_t tx_fifo_pkt_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_PKT_RAM. */
+	uint64_t add_work_fifo_sbe            : 1;  /**< Single-bit error for ADD_WORK_FIFO. */
+	uint64_t send_mem_fifo_sbe            : 1;  /**< Single-bit error for SEND_MEM_FIFO. */
+	uint64_t send_mem_stdn_fifo_sbe       : 1;  /**< Single-bit error for SEND_MEM_STDN_FIFO. */
+	uint64_t send_mem_ts_fifo_sbe         : 1;  /**< Single-bit error for SEND_MEM_TS_FIFO. */
+	uint64_t nxt_link_ptr_ram_sbe         : 1;  /**< Single-bit error for NXT_LINK_PTR_RAM. */
+	uint64_t pkt_mrk_ram_sbe              : 1;  /**< Single-bit error for PKT_MRK_RAM. */
+	uint64_t ts_addwork_ram_sbe           : 1;  /**< Single-bit error for TS_ADDWORK_RAM. */
 	uint64_t reserved_0_41                : 42;
 #else
 	uint64_t reserved_0_41                : 42;
@@ -9621,33 +8905,7 @@ union cvmx_pko_peb_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_peb_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t peb_sbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_PEB_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PEB_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PEB_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_iobp0_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pdm_resp_buf_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pse_buf_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_sm_jmp_uid_mem_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_state_info_mem_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank3_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank0_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank1_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank2_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_var_mem_bank_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_crc_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_hdr_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_pkt_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_add_work_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_stdn_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_ts_fifo_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_nxt_link_ptr_mem_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pkt_mrk_mem_i
-                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_ts_addwork_mem_i */
+	uint64_t peb_sbe_cmb0                 : 1;  /**< Single-bit error for IOBP1_UID_FIFO_RAM. Throws PKO_INTSN_E::PKO_PEB_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -9922,126 +9180,6 @@ union cvmx_pko_peb_trunc_err_info {
 typedef union cvmx_pko_peb_trunc_err_info cvmx_pko_peb_trunc_err_info_t;
 
 /**
- * cvmx_pko_pq_debug_green
- */
-union cvmx_pko_pq_debug_green {
-	uint64_t u64;
-	struct cvmx_pko_pq_debug_green_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t g_valid                      : 32; /**< g_valid vector. */
-	uint64_t cred_ok_n                    : 32; /**< cred_ok_n vector. */
-#else
-	uint64_t cred_ok_n                    : 32;
-	uint64_t g_valid                      : 32;
-#endif
-	} s;
-	struct cvmx_pko_pq_debug_green_s      cn78xx;
-};
-typedef union cvmx_pko_pq_debug_green cvmx_pko_pq_debug_green_t;
-
-/**
- * cvmx_pko_pq_debug_links
- */
-union cvmx_pko_pq_debug_links {
-	uint64_t u64;
-	struct cvmx_pko_pq_debug_links_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t links_ready                  : 32; /**< links_ready vector. */
-	uint64_t peb_lnk_rdy_ir               : 32; /**< peb_lnk_rdy_ir vector. */
-#else
-	uint64_t peb_lnk_rdy_ir               : 32;
-	uint64_t links_ready                  : 32;
-#endif
-	} s;
-	struct cvmx_pko_pq_debug_links_s      cn78xx;
-};
-typedef union cvmx_pko_pq_debug_links cvmx_pko_pq_debug_links_t;
-
-/**
- * cvmx_pko_pq_debug_yellow
- */
-union cvmx_pko_pq_debug_yellow {
-	uint64_t u64;
-	struct cvmx_pko_pq_debug_yellow_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t y_valid                      : 32; /**< y_valid vector. */
-	uint64_t link_vv                      : 32; /**< link_vv vector. */
-#else
-	uint64_t link_vv                      : 32;
-	uint64_t y_valid                      : 32;
-#endif
-	} s;
-	struct cvmx_pko_pq_debug_yellow_s     cn78xx;
-};
-typedef union cvmx_pko_pq_debug_yellow cvmx_pko_pq_debug_yellow_t;
-
-/**
- * cvmx_pko_pqa_debug
- */
-union cvmx_pko_pqa_debug {
-	uint64_t u64;
-	struct cvmx_pko_pqa_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_pqa_debug_s           cn78xx;
-};
-typedef union cvmx_pko_pqa_debug cvmx_pko_pqa_debug_t;
-
-/**
- * cvmx_pko_pqb_debug
- */
-union cvmx_pko_pqb_debug {
-	uint64_t u64;
-	struct cvmx_pko_pqb_debug_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dbg_vec                      : 64; /**< Debug Vector. */
-#else
-	uint64_t dbg_vec                      : 64;
-#endif
-	} s;
-	struct cvmx_pko_pqb_debug_s           cn78xx;
-};
-typedef union cvmx_pko_pqb_debug cvmx_pko_pqb_debug_t;
-
-/**
- * cvmx_pko_pse_dq_bist_status
- */
-union cvmx_pko_pse_dq_bist_status {
-	uint64_t u64;
-	struct cvmx_pko_pse_dq_bist_status_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_9_63                : 55;
-	uint64_t wt_sram                      : 1;  /**< Work Table */
-	uint64_t rt7_sram                     : 1;  /**< Result Table 7 - DQ FIFO[1023:896] */
-	uint64_t rt6_sram                     : 1;  /**< Result Table 6 - DQ FIFO[895:768] */
-	uint64_t rt5_sram                     : 1;  /**< Result Table 5 - DQ FIFO[767:640] */
-	uint64_t rt4_sram                     : 1;  /**< Result Table 4 - DQ FIFO[639:512] */
-	uint64_t rt3_sram                     : 1;  /**< Result Table 3 - DQ FIFO[511:384] */
-	uint64_t rt2_sram                     : 1;  /**< Result Table 2 - DQ FIFO[383:256] */
-	uint64_t rt1_sram                     : 1;  /**< Result Table 1 - DQ FIFO[255:128] */
-	uint64_t rt0_sram                     : 1;  /**< Result Table 0 - DQ FIFO[127:0] */
-#else
-	uint64_t rt0_sram                     : 1;
-	uint64_t rt1_sram                     : 1;
-	uint64_t rt2_sram                     : 1;
-	uint64_t rt3_sram                     : 1;
-	uint64_t rt4_sram                     : 1;
-	uint64_t rt5_sram                     : 1;
-	uint64_t rt6_sram                     : 1;
-	uint64_t rt7_sram                     : 1;
-	uint64_t wt_sram                      : 1;
-	uint64_t reserved_9_63                : 55;
-#endif
-	} s;
-	struct cvmx_pko_pse_dq_bist_status_s  cn78xx;
-};
-typedef union cvmx_pko_pse_dq_bist_status cvmx_pko_pse_dq_bist_status_t;
-
-/**
  * cvmx_pko_pse_dq_ecc_ctl0
  */
 union cvmx_pko_pse_dq_ecc_ctl0 {
@@ -10100,33 +9238,15 @@ union cvmx_pko_pse_dq_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_dq_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dq_wt_ram_dbe                : 1;  /**< Double-bit error for DQ_WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.wt_sram */
-	uint64_t dq_rt7_dbe                   : 1;  /**< Double-bit error for DQ_RT7_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt7 */
-	uint64_t dq_rt6_dbe                   : 1;  /**< Double-bit error for DQ_RT6_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt6 */
-	uint64_t dq_rt5_dbe                   : 1;  /**< Double-bit error for DQ_RT5_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt5 */
-	uint64_t dq_rt4_dbe                   : 1;  /**< Double-bit error for DQ_RT4_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt4 */
-	uint64_t dq_rt3_dbe                   : 1;  /**< Double-bit error for DQ_RT3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt3 */
-	uint64_t dq_rt2_dbe                   : 1;  /**< Double-bit error for DQ_RT2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt2 */
-	uint64_t dq_rt1_dbe                   : 1;  /**< Double-bit error for DQ_RT1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt1 */
-	uint64_t dq_rt0_dbe                   : 1;  /**< Double-bit error for DQ_RT0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt0 */
+	uint64_t dq_wt_ram_dbe                : 1;  /**< Double-bit error for DQ_WT_RAM. */
+	uint64_t dq_rt7_dbe                   : 1;  /**< Double-bit error for DQ_RT7. */
+	uint64_t dq_rt6_dbe                   : 1;  /**< Double-bit error for DQ_RT6. */
+	uint64_t dq_rt5_dbe                   : 1;  /**< Double-bit error for DQ_RT5. */
+	uint64_t dq_rt4_dbe                   : 1;  /**< Double-bit error for DQ_RT4. */
+	uint64_t dq_rt3_dbe                   : 1;  /**< Double-bit error for DQ_RT3. */
+	uint64_t dq_rt2_dbe                   : 1;  /**< Double-bit error for DQ_RT2. */
+	uint64_t dq_rt1_dbe                   : 1;  /**< Double-bit error for DQ_RT1. */
+	uint64_t dq_rt0_dbe                   : 1;  /**< Double-bit error for DQ_RT0. */
 	uint64_t reserved_0_54                : 55;
 #else
 	uint64_t reserved_0_54                : 55;
@@ -10152,20 +9272,7 @@ union cvmx_pko_pse_dq_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_dq_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_dq_dbe_cmb0              : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_DQ_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_DQ_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_DQ_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.wt_sram
-                                                         pko_pnr2.pko_pse.pse_dq.rt0
-                                                         pko_pnr2.pko_pse.pse_dq.rt1
-                                                         pko_pnr2.pko_pse.pse_dq.rt2
-                                                         pko_pnr2.pko_pse.pse_dq.rt3
-                                                         pko_pnr2.pko_pse.pse_dq.rt4
-                                                         pko_pnr2.pko_pse.pse_dq.rt5
-                                                         pko_pnr2.pko_pse.pse_dq.rt6
-                                                         pko_pnr2.pko_pse.pse_dq.rt7 */
+	uint64_t pse_dq_dbe_cmb0              : 1;  /**< Double-bit error for DQ_WT_RAM. Throws PKO_INTSN_E::PKO_PSE_DQ_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -10183,33 +9290,15 @@ union cvmx_pko_pse_dq_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_dq_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dq_wt_ram_sbe                : 1;  /**< Single-bit error for DQ_WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.wt_sram */
-	uint64_t dq_rt7_sbe                   : 1;  /**< Single-bit error for DQ_RT7_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt7 */
-	uint64_t dq_rt6_sbe                   : 1;  /**< Single-bit error for DQ_RT6_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt6 */
-	uint64_t dq_rt5_sbe                   : 1;  /**< Single-bit error for DQ_RT5_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt5 */
-	uint64_t dq_rt4_sbe                   : 1;  /**< Single-bit error for DQ_RT4_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt4 */
-	uint64_t dq_rt3_sbe                   : 1;  /**< Single-bit error for DQ_RT3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt3 */
-	uint64_t dq_rt2_sbe                   : 1;  /**< Single-bit error for DQ_RT2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt2 */
-	uint64_t dq_rt1_sbe                   : 1;  /**< Single-bit error for DQ_RT1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt1 */
-	uint64_t dq_rt0_sbe                   : 1;  /**< Single-bit error for DQ_RT0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.rt0 */
+	uint64_t dq_wt_ram_sbe                : 1;  /**< Single-bit error for DQ_WT_RAM. */
+	uint64_t dq_rt7_sbe                   : 1;  /**< Single-bit error for DQ_RT7. */
+	uint64_t dq_rt6_sbe                   : 1;  /**< Single-bit error for DQ_RT6. */
+	uint64_t dq_rt5_sbe                   : 1;  /**< Single-bit error for DQ_RT5. */
+	uint64_t dq_rt4_sbe                   : 1;  /**< Single-bit error for DQ_RT4. */
+	uint64_t dq_rt3_sbe                   : 1;  /**< Single-bit error for DQ_RT3. */
+	uint64_t dq_rt2_sbe                   : 1;  /**< Single-bit error for DQ_RT2. */
+	uint64_t dq_rt1_sbe                   : 1;  /**< Single-bit error for DQ_RT1. */
+	uint64_t dq_rt0_sbe                   : 1;  /**< Single-bit error for DQ_RT0. */
 	uint64_t reserved_0_54                : 55;
 #else
 	uint64_t reserved_0_54                : 55;
@@ -10235,20 +9324,7 @@ union cvmx_pko_pse_dq_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_dq_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_dq_sbe_cmb0              : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_DQ_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_DQ_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_DQ_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_dq.wt_sram
-                                                         pko_pnr2.pko_pse.pse_dq.rt0
-                                                         pko_pnr2.pko_pse.pse_dq.rt1
-                                                         pko_pnr2.pko_pse.pse_dq.rt2
-                                                         pko_pnr2.pko_pse.pse_dq.rt3
-                                                         pko_pnr2.pko_pse.pse_dq.rt4
-                                                         pko_pnr2.pko_pse.pse_dq.rt5
-                                                         pko_pnr2.pko_pse.pse_dq.rt6
-                                                         pko_pnr2.pko_pse.pse_dq.rt7 */
+	uint64_t pse_dq_sbe_cmb0              : 1;  /**< Single-bit error for DQ_WT_RAM. Throws PKO_INTSN_E::PKO_PSE_DQ_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -10258,52 +9334,6 @@ union cvmx_pko_pse_dq_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_dq_ecc_sbe_sts_cmb0_s cn78xx;
 };
 typedef union cvmx_pko_pse_dq_ecc_sbe_sts_cmb0 cvmx_pko_pse_dq_ecc_sbe_sts_cmb0_t;
-
-/**
- * cvmx_pko_pse_pq_bist_status
- */
-union cvmx_pko_pse_pq_bist_status {
-	uint64_t u64;
-	struct cvmx_pko_pse_pq_bist_status_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_15_63               : 49;
-	uint64_t tp_sram                      : 1;  /**< Topology Parent - pko_pse_pq_srf32x5e */
-	uint64_t irq_fifo_sram                : 1;  /**< Interrupt Message FIFO - pko_pse_pq_srf1024x10e */
-	uint64_t wmd_sram                     : 1;  /**< Dynamic Watermark State - pko_pse_wmd_srf1024x49e */
-	uint64_t wms_sram                     : 1;  /**< Static Watermark Configuration - pko_pse_wms_srf1024x50e */
-	uint64_t cxd_sram                     : 1;  /**< Dynamic Channel State - pko_pse_cxd_srf32x31e */
-	uint64_t dqd_sram                     : 1;  /**< DQ Dropped Stats - pko_pse_stats_srf1024x88 */
-	uint64_t dqs_sram                     : 1;  /**< DQ Sent Stats - pko_pse_stats_srf1024x88 */
-	uint64_t pqd_sram                     : 1;  /**< PQ Dropped Stats - pko_pse_stats_srf32x88 */
-	uint64_t pqr_sram                     : 1;  /**< PQ Read Stats - pko_pse_stats_srf32x88 */
-	uint64_t pqy_sram                     : 1;  /**< PQ Yellow Stats - pko_pse_stats_srf32x88 */
-	uint64_t pqg_sram                     : 1;  /**< PQ Green Stats - pko_pse_stats_srf32x88 */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State - pko_pse_std_srf32x105e */
-	uint64_t st_sram                      : 1;  /**< Static Shaping Configuration - pko_pse_sts_srf32x74e */
-	uint64_t reserved_1_1                 : 1;
-	uint64_t cxs_sram                     : 1;  /**< Static Channel Credit Configuration - pko_pse_cx0_srf32x6e */
-#else
-	uint64_t cxs_sram                     : 1;
-	uint64_t reserved_1_1                 : 1;
-	uint64_t st_sram                      : 1;
-	uint64_t std_sram                     : 1;
-	uint64_t pqg_sram                     : 1;
-	uint64_t pqy_sram                     : 1;
-	uint64_t pqr_sram                     : 1;
-	uint64_t pqd_sram                     : 1;
-	uint64_t dqs_sram                     : 1;
-	uint64_t dqd_sram                     : 1;
-	uint64_t cxd_sram                     : 1;
-	uint64_t wms_sram                     : 1;
-	uint64_t wmd_sram                     : 1;
-	uint64_t irq_fifo_sram                : 1;
-	uint64_t tp_sram                      : 1;
-	uint64_t reserved_15_63               : 49;
-#endif
-	} s;
-	struct cvmx_pko_pse_pq_bist_status_s  cn78xx;
-};
-typedef union cvmx_pko_pse_pq_bist_status cvmx_pko_pse_pq_bist_status_t;
 
 /**
  * cvmx_pko_pse_pq_ecc_ctl0
@@ -10360,30 +9390,14 @@ union cvmx_pko_pse_pq_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_pq_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pq_cxs_ram_dbe               : 1;  /**< Double-bit error for PQ_CXS_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxs_sram */
-	uint64_t pq_cxd_ram_dbe               : 1;  /**< Double-bit error for PQ_CXD_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxd_sram */
-	uint64_t irq_fifo_sram_dbe            : 1;  /**< Double-bit error for IRQ_FIFO_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.irq_fifo_sram */
-	uint64_t tp_sram_dbe                  : 1;  /**< Double-bit error for TP_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.tp_sram */
-	uint64_t pq_std_ram_dbe               : 1;  /**< Double-bit error for PQ_STD_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.std_sram */
-	uint64_t pq_st_ram_dbe                : 1;  /**< Double-bit error for PQ_ST_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.st_sram */
-	uint64_t pq_wmd_ram_dbe               : 1;  /**< Double-bit error for PQ_WMD_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wmd_sram */
-	uint64_t pq_wms_ram_dbe               : 1;  /**< Double-bit error for PQ_WMS_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wms_sram */
+	uint64_t pq_cxs_ram_dbe               : 1;  /**< Double-bit error for PQ_CXS_RAM. */
+	uint64_t pq_cxd_ram_dbe               : 1;  /**< Double-bit error for PQ_CXD_RAM. */
+	uint64_t irq_fifo_sram_dbe            : 1;  /**< Double-bit error for IRQ_FIFO_SRAM. */
+	uint64_t tp_sram_dbe                  : 1;  /**< Double-bit error for TP_SRAM. */
+	uint64_t pq_std_ram_dbe               : 1;  /**< Double-bit error for PQ_STD_RAM. */
+	uint64_t pq_st_ram_dbe                : 1;  /**< Double-bit error for PQ_ST_RAM. */
+	uint64_t pq_wmd_ram_dbe               : 1;  /**< Double-bit error for PQ_WMD_RAM. */
+	uint64_t pq_wms_ram_dbe               : 1;  /**< Double-bit error for PQ_WMS_RAM. */
 	uint64_t reserved_0_55                : 56;
 #else
 	uint64_t reserved_0_55                : 56;
@@ -10408,19 +9422,7 @@ union cvmx_pko_pse_pq_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_pq_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_pq_dbe_cmb0              : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_PQ_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_PQ_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_PQ_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxs_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.irq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.tp_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.std_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.st_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wmd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wms_sram */
+	uint64_t pse_pq_dbe_cmb0              : 1;  /**< Double-bit error for PQ_CXS_RAM. Throws PKO_INTSN_E::PKO_PSE_PQ_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -10438,30 +9440,14 @@ union cvmx_pko_pse_pq_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_pq_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pq_cxs_ram_sbe               : 1;  /**< Single-bit error for PQ_CXS_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxs_sram */
-	uint64_t pq_cxd_ram_sbe               : 1;  /**< Single-bit error for PQ_CXD_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxd_sram */
-	uint64_t irq_fifo_sram_sbe            : 1;  /**< Single-bit error for IRQ_FIFO_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.irq_fifo_sram */
-	uint64_t tp_sram_sbe                  : 1;  /**< Single-bit error for TP_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.tp_sram */
-	uint64_t pq_std_ram_sbe               : 1;  /**< Single-bit error for PQ_STD_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.std_sram */
-	uint64_t pq_st_ram_sbe                : 1;  /**< Single-bit error for PQ_ST_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.st_sram */
-	uint64_t pq_wmd_ram_sbe               : 1;  /**< Single-bit error for PQ_WMD_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wmd_sram */
-	uint64_t pq_wms_ram_sbe               : 1;  /**< Single-bit error for PQ_WMS_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wms_sram */
+	uint64_t pq_cxs_ram_sbe               : 1;  /**< Single-bit error for PQ_CXS_RAM. */
+	uint64_t pq_cxd_ram_sbe               : 1;  /**< Single-bit error for PQ_CXD_RAM. */
+	uint64_t irq_fifo_sram_sbe            : 1;  /**< Single-bit error for IRQ_FIFO_SRAM. */
+	uint64_t tp_sram_sbe                  : 1;  /**< Single-bit error for TP_SRAM. */
+	uint64_t pq_std_ram_sbe               : 1;  /**< Single-bit error for PQ_STD_RAM. */
+	uint64_t pq_st_ram_sbe                : 1;  /**< Single-bit error for PQ_ST_RAM. */
+	uint64_t pq_wmd_ram_sbe               : 1;  /**< Single-bit error for PQ_WMD_RAM. */
+	uint64_t pq_wms_ram_sbe               : 1;  /**< Single-bit error for PQ_WMS_RAM. */
 	uint64_t reserved_0_55                : 56;
 #else
 	uint64_t reserved_0_55                : 56;
@@ -10486,19 +9472,7 @@ union cvmx_pko_pse_pq_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_pq_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_pq_sbe_cmb0              : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_PQ_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_PQ_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_PQ_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxs_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.irq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.tp_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.std_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.st_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wmd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wms_sram */
+	uint64_t pse_pq_sbe_cmb0              : 1;  /**< Single-bit error for PQ_CXS_RAM. Throws PKO_INTSN_E::PKO_PSE_PQ_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -10508,64 +9482,6 @@ union cvmx_pko_pse_pq_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_pq_ecc_sbe_sts_cmb0_s cn78xx;
 };
 typedef union cvmx_pko_pse_pq_ecc_sbe_sts_cmb0 cvmx_pko_pse_pq_ecc_sbe_sts_cmb0_t;
-
-/**
- * cvmx_pko_pse_sq1_bist_status
- */
-union cvmx_pko_pse_sq1_bist_status {
-	uint64_t u64;
-	struct cvmx_pko_pse_sq1_bist_status_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_29_63               : 35;
-	uint64_t sc_sram                      : 1;  /**< SQ[5:1] Scheduling Configuration */
-	uint64_t pc_sram                      : 1;  /**< SQ[1] physical channel - pko_pse_pc_srf32x12e */
-	uint64_t xon_sram                     : 1;  /**< XON SRAM */
-	uint64_t cc_sram                      : 1;  /**< SQ[1] Channel Credit OK State Array */
-	uint64_t vc1_sram                     : 1;  /**< SQ[1] virtual channel - pko_pse_sq1_vc_srf256x9e */
-	uint64_t vc0_sram                     : 1;  /**< SQ[1] virtual channel - pko_pse_sq1_vc_srf256x9e */
-	uint64_t reserved_21_22               : 2;
-	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t xo_sram                      : 1;  /**< XOFF SRAM */
-	uint64_t rt_sram                      : 1;  /**< Result Table */
-	uint64_t reserved_9_16                : 8;
-	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 1 command FIFO SRAM */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State */
-	uint64_t sts_sram                     : 1;  /**< Static Shaping Configuration */
-	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 0 command FIFO SRAM */
-	uint64_t cxd_sram                     : 1;  /**< SQ[1] Dynamic Channel Credit State */
-	uint64_t cxs_sram                     : 1;  /**< SQ[1] Static Channel Credit Configuration */
-	uint64_t nt_sram                      : 1;  /**< SQ[5:1] "Next" Pointer Table */
-	uint64_t pt_sram                      : 1;  /**< SQ[5:1] "Previous" Pointer Table */
-	uint64_t wt_sram                      : 1;  /**< SQ[5:1] Work Table */
-#else
-	uint64_t wt_sram                      : 1;
-	uint64_t pt_sram                      : 1;
-	uint64_t nt_sram                      : 1;
-	uint64_t cxs_sram                     : 1;
-	uint64_t cxd_sram                     : 1;
-	uint64_t tw0_cmd_fifo                 : 1;
-	uint64_t sts_sram                     : 1;
-	uint64_t std_sram                     : 1;
-	uint64_t tw1_cmd_fifo                 : 1;
-	uint64_t reserved_9_16                : 8;
-	uint64_t rt_sram                      : 1;
-	uint64_t xo_sram                      : 1;
-	uint64_t tp0_sram                     : 1;
-	uint64_t tp1_sram                     : 1;
-	uint64_t reserved_21_22               : 2;
-	uint64_t vc0_sram                     : 1;
-	uint64_t vc1_sram                     : 1;
-	uint64_t cc_sram                      : 1;
-	uint64_t xon_sram                     : 1;
-	uint64_t pc_sram                      : 1;
-	uint64_t sc_sram                      : 1;
-	uint64_t reserved_29_63               : 35;
-#endif
-	} s;
-	struct cvmx_pko_pse_sq1_bist_status_s cn78xx;
-};
-typedef union cvmx_pko_pse_sq1_bist_status cvmx_pko_pse_sq1_bist_status_t;
 
 /**
  * cvmx_pko_pse_sq1_ecc_ctl0
@@ -10662,60 +9578,24 @@ union cvmx_pko_pse_sq1_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq1_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t cxs_ram_dbe                  : 1;  /**< Double-bit error for CXS_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxs_sram */
-	uint64_t cxd_ram_dbe                  : 1;  /**< Double-bit error for CXD_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxd_sram */
-	uint64_t vc1_sram_dbe                 : 1;  /**< Double-bit error for VC1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc1_sram */
-	uint64_t vc0_sram_dbe                 : 1;  /**< Double-bit error for VC0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc0_sram */
-	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.nt_sram */
-	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.pt_sram */
-	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.rt_sram */
-	uint64_t pc_ram_dbe                   : 1;  /**< Double-bit error for PC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pc_sram */
-	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_0.sq_fifo_sram */
-	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_1.sq_fifo_sram */
-	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp0_sram */
-	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp1_sram */
-	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts1_sram */
-	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts0_sram */
-	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std1_sram */
-	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std0_sram */
-	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.wt_sram */
-	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sc_sram */
+	uint64_t cxs_ram_dbe                  : 1;  /**< Double-bit error for CXS_RAM. */
+	uint64_t cxd_ram_dbe                  : 1;  /**< Double-bit error for CXD_RAM. */
+	uint64_t vc1_sram_dbe                 : 1;  /**< Double-bit error for VC1_SRAM. */
+	uint64_t vc0_sram_dbe                 : 1;  /**< Double-bit error for VC0_SRAM. */
+	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM. */
+	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM. */
+	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. */
+	uint64_t pc_ram_dbe                   : 1;  /**< Double-bit error for PC_RAM. */
+	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM. */
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM. */
+	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM. */
+	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM. */
+	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM. */
+	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM. */
+	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM. */
+	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM. */
+	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. */
+	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. */
 	uint64_t reserved_0_45                : 46;
 #else
 	uint64_t reserved_0_45                : 46;
@@ -10750,29 +9630,7 @@ union cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_sq1_dbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ1_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ1_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_SQ1_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxs_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pc_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sc_sram */
+	uint64_t pse_sq1_dbe_cmb0             : 1;  /**< Double-bit error for CXS_RAM. Throws PKO_INTSN_E::PKO_PSE_SQ1_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -10790,60 +9648,24 @@ union cvmx_pko_pse_sq1_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq1_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t cxs_ram_sbe                  : 1;  /**< Single-bit error for CXS_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxs_sram */
-	uint64_t cxd_ram_sbe                  : 1;  /**< Single-bit error for CXD_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxd_sram */
-	uint64_t vc1_sram_sbe                 : 1;  /**< Single-bit error for VC1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc0_sram */
-	uint64_t vc0_sram_sbe                 : 1;  /**< Single-bit error for VC0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc1_sram */
-	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.nt_sram */
-	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.pt_sram */
-	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.rt_sram */
-	uint64_t pc_ram_sbe                   : 1;  /**< Single-bit error for PC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pc_sram */
-	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_0.sq_fifo_sram */
-	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_1.sq_fifo_sram */
-	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp0_sram */
-	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp1_sram */
-	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts0_sram */
-	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts1_sram */
-	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std0_sram */
-	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std1_sram */
-	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.wt_sram */
-	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sc_sram */
+	uint64_t cxs_ram_sbe                  : 1;  /**< Single-bit error for CXS_RAM. */
+	uint64_t cxd_ram_sbe                  : 1;  /**< Single-bit error for CXD_RAM. */
+	uint64_t vc1_sram_sbe                 : 1;  /**< Single-bit error for VC1_SRAM. */
+	uint64_t vc0_sram_sbe                 : 1;  /**< Single-bit error for VC0_SRAM. */
+	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM. */
+	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM. */
+	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. */
+	uint64_t pc_ram_sbe                   : 1;  /**< Single-bit error for PC_RAM. */
+	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM. */
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM. */
+	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM. */
+	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM. */
+	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM. */
+	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM. */
+	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM. */
+	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM. */
+	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. */
+	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. */
 	uint64_t reserved_0_45                : 46;
 #else
 	uint64_t reserved_0_45                : 46;
@@ -10878,29 +9700,7 @@ union cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_sq1_sbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ1_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ1_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_SQ1_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxs_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pc_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sc_sram */
+	uint64_t pse_sq1_sbe_cmb0             : 1;  /**< Single-bit error for CXS_RAM. Throws PKO_INTSN_E::PKO_PSE_SQ1_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -10910,52 +9710,6 @@ union cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0_s cn78xx;
 };
 typedef union cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0_t;
-
-/**
- * cvmx_pko_pse_sq2_bist_status
- */
-union cvmx_pko_pse_sq2_bist_status {
-	uint64_t u64;
-	struct cvmx_pko_pse_sq2_bist_status_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_29_63               : 35;
-	uint64_t sc_sram                      : 1;  /**< Scheduling Configuration */
-	uint64_t reserved_21_27               : 7;
-	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t reserved_18_18               : 1;
-	uint64_t rt_sram                      : 1;  /**< Result Table */
-	uint64_t reserved_9_16                : 8;
-	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 1 command FIFO SRAM */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State */
-	uint64_t sts_sram                     : 1;  /**< Static Shaping Configuration */
-	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 0 command FIFO SRAM */
-	uint64_t reserved_3_4                 : 2;
-	uint64_t nt_sram                      : 1;  /**< Next Pointer Table */
-	uint64_t pt_sram                      : 1;  /**< Previous Pointer Table */
-	uint64_t wt_sram                      : 1;  /**< Work Table */
-#else
-	uint64_t wt_sram                      : 1;
-	uint64_t pt_sram                      : 1;
-	uint64_t nt_sram                      : 1;
-	uint64_t reserved_3_4                 : 2;
-	uint64_t tw0_cmd_fifo                 : 1;
-	uint64_t sts_sram                     : 1;
-	uint64_t std_sram                     : 1;
-	uint64_t tw1_cmd_fifo                 : 1;
-	uint64_t reserved_9_16                : 8;
-	uint64_t rt_sram                      : 1;
-	uint64_t reserved_18_18               : 1;
-	uint64_t tp0_sram                     : 1;
-	uint64_t tp1_sram                     : 1;
-	uint64_t reserved_21_27               : 7;
-	uint64_t sc_sram                      : 1;
-	uint64_t reserved_29_63               : 35;
-#endif
-	} s;
-	struct cvmx_pko_pse_sq2_bist_status_s cn78xx;
-};
-typedef union cvmx_pko_pse_sq2_bist_status cvmx_pko_pse_sq2_bist_status_t;
 
 /**
  * cvmx_pko_pse_sq2_ecc_ctl0
@@ -11032,45 +9786,19 @@ union cvmx_pko_pse_sq2_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq2_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.nt_sram */
-	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pt_sram */
-	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.rt_sram */
-	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_1.sq_fifo_sram */
-	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_0.sq_fifo_sram */
-	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp1_sram */
-	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp0_sram */
-	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts1_sram */
-	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts0_sram */
-	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std1_sram */
-	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std0_sram */
-	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.wt_sram */
-	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sc_sram */
+	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM. */
+	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM. */
+	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. */
+	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM. */
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM. */
+	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM. */
+	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM. */
+	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM. */
+	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM. */
+	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM. */
+	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM. */
+	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. */
+	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. */
 	uint64_t reserved_0_50                : 51;
 #else
 	uint64_t reserved_0_50                : 51;
@@ -11100,24 +9828,7 @@ union cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_sq2_dbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ2_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ2_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_SQ2_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sc_sram */
+	uint64_t pse_sq2_dbe_cmb0             : 1;  /**< Double-bit error for SQ_PT_RAM. Throws PKO_INTSN_E::PKO_PSE_SQ2_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -11135,45 +9846,19 @@ union cvmx_pko_pse_sq2_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq2_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.nt_sram */
-	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pt_sram */
-	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.rt_sram */
-	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_1.sq_fifo_sram */
-	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_0.sq_fifo_sram */
-	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp1_sram */
-	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp0_sram */
-	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts1_sram */
-	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts0_sram */
-	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std1_sram */
-	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std0_sram */
-	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.wt_sram */
-	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sc_sram */
+	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM. */
+	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM. */
+	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. */
+	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM. */
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM. */
+	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM. */
+	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM. */
+	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM. */
+	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM. */
+	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM. */
+	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM. */
+	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. */
+	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. */
 	uint64_t reserved_0_50                : 51;
 #else
 	uint64_t reserved_0_50                : 51;
@@ -11203,24 +9888,7 @@ union cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_sq2_sbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ2_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ2_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_SQ2_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sc_sram */
+	uint64_t pse_sq2_sbe_cmb0             : 1;  /**< Single-bit error for SQ_PT_RAM. Throws PKO_INTSN_E::PKO_PSE_SQ2_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -11230,64 +9898,6 @@ union cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0_s cn78xx;
 };
 typedef union cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0_t;
-
-/**
- * cvmx_pko_pse_sq3_bist_status
- */
-union cvmx_pko_pse_sq3_bist_status {
-	uint64_t u64;
-	struct cvmx_pko_pse_sq3_bist_status_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_29_63               : 35;
-	uint64_t sc_sram                      : 1;  /**< Scheduling Configuration */
-	uint64_t reserved_23_27               : 5;
-	uint64_t tp3_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp2_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t reserved_18_18               : 1;
-	uint64_t rt_sram                      : 1;  /**< Result Table */
-	uint64_t reserved_15_16               : 2;
-	uint64_t tw3_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 3 command FIFO SRAM */
-	uint64_t reserved_12_13               : 2;
-	uint64_t tw2_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 2 command FIFO SRAM */
-	uint64_t reserved_9_10                : 2;
-	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 1 command FIFO SRAM */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State */
-	uint64_t sts_sram                     : 1;  /**< Static Shaping Configuration */
-	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 0 command FIFO SRAM */
-	uint64_t reserved_3_4                 : 2;
-	uint64_t nt_sram                      : 1;  /**< Next Pointer Table */
-	uint64_t pt_sram                      : 1;  /**< Previous Pointer Table */
-	uint64_t wt_sram                      : 1;  /**< Work Table */
-#else
-	uint64_t wt_sram                      : 1;
-	uint64_t pt_sram                      : 1;
-	uint64_t nt_sram                      : 1;
-	uint64_t reserved_3_4                 : 2;
-	uint64_t tw0_cmd_fifo                 : 1;
-	uint64_t sts_sram                     : 1;
-	uint64_t std_sram                     : 1;
-	uint64_t tw1_cmd_fifo                 : 1;
-	uint64_t reserved_9_10                : 2;
-	uint64_t tw2_cmd_fifo                 : 1;
-	uint64_t reserved_12_13               : 2;
-	uint64_t tw3_cmd_fifo                 : 1;
-	uint64_t reserved_15_16               : 2;
-	uint64_t rt_sram                      : 1;
-	uint64_t reserved_18_18               : 1;
-	uint64_t tp0_sram                     : 1;
-	uint64_t tp1_sram                     : 1;
-	uint64_t tp2_sram                     : 1;
-	uint64_t tp3_sram                     : 1;
-	uint64_t reserved_23_27               : 5;
-	uint64_t sc_sram                      : 1;
-	uint64_t reserved_29_63               : 35;
-#endif
-	} s;
-	struct cvmx_pko_pse_sq3_bist_status_s cn78xx;
-};
-typedef union cvmx_pko_pse_sq3_bist_status cvmx_pko_pse_sq3_bist_status_t;
 
 /**
  * cvmx_pko_pse_sq3_ecc_ctl0
@@ -11396,69 +10006,27 @@ union cvmx_pko_pse_sq3_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq3_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.nt_sram */
-	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.pt_sram */
-	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.rt_sram */
-	uint64_t tw3_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW3_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_3.sq_fifo_sram */
-	uint64_t tw2_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW2_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_2.sq_fifo_sram */
-	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_1.sq_fifo_sram */
-	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_0.sq_fifo_sram */
-	uint64_t tp3_sram_dbe                 : 1;  /**< Double-bit error for TP3_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp3_sram */
-	uint64_t tp2_sram_dbe                 : 1;  /**< Double-bit error for TP2_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp2_sram */
-	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp1_sram */
-	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp0_sram */
-	uint64_t sts3_ram_dbe                 : 1;  /**< Double-bit error for STS3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts3_sram */
-	uint64_t sts2_ram_dbe                 : 1;  /**< Double-bit error for STS2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts2_sram */
-	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts1_sram */
-	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts0_sram */
-	uint64_t std3_ram_dbe                 : 1;  /**< Double-bit error for STD3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std3_sram */
-	uint64_t std2_ram_dbe                 : 1;  /**< Double-bit error for STD2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std2_sram */
-	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std1_sram */
-	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std0_sram */
-	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.wt_sram */
-	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sc_sram */
+	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM. */
+	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM. */
+	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. */
+	uint64_t tw3_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW3_CMD_FIFO_RAM. */
+	uint64_t tw2_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW2_CMD_FIFO_RAM. */
+	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM. */
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM. */
+	uint64_t tp3_sram_dbe                 : 1;  /**< Double-bit error for TP3_SRAM. */
+	uint64_t tp2_sram_dbe                 : 1;  /**< Double-bit error for TP2_SRAM. */
+	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM. */
+	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM. */
+	uint64_t sts3_ram_dbe                 : 1;  /**< Double-bit error for STS3_RAM. */
+	uint64_t sts2_ram_dbe                 : 1;  /**< Double-bit error for STS2_RAM. */
+	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM. */
+	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM. */
+	uint64_t std3_ram_dbe                 : 1;  /**< Double-bit error for STD3_RAM. */
+	uint64_t std2_ram_dbe                 : 1;  /**< Double-bit error for STD2_RAM. */
+	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM. */
+	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM. */
+	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. */
+	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. */
 	uint64_t reserved_0_42                : 43;
 #else
 	uint64_t reserved_0_42                : 43;
@@ -11496,32 +10064,7 @@ union cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_sq3_dbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ3_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ3_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_SQ3_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_2.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_3.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sc_sram */
+	uint64_t pse_sq3_dbe_cmb0             : 1;  /**< Double-bit error for SQ_PT_RAM. Throws PKO_INTSN_E::PKO_PSE_SQ3_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -11539,69 +10082,27 @@ union cvmx_pko_pse_sq3_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq3_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.nt_sram */
-	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.pt_sram */
-	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.rt_sram */
-	uint64_t tw3_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW3_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_3.sq_fifo_sram */
-	uint64_t tw2_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW2_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_2.sq_fifo_sram */
-	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_1.sq_fifo_sram */
-	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_0.sq_fifo_sram */
-	uint64_t tp3_sram_sbe                 : 1;  /**< Single-bit error for TP3_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp3_sram */
-	uint64_t tp2_sram_sbe                 : 1;  /**< Single-bit error for TP2_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp2_sram */
-	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp1_sram */
-	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp0_sram */
-	uint64_t sts3_ram_sbe                 : 1;  /**< Single-bit error for STS3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts3_sram */
-	uint64_t sts2_ram_sbe                 : 1;  /**< Single-bit error for STS2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts2_sram */
-	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts1_sram */
-	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts0_sram */
-	uint64_t std3_ram_sbe                 : 1;  /**< Single-bit error for STD3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std3_sram */
-	uint64_t std2_ram_sbe                 : 1;  /**< Single-bit error for STD2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std2_sram */
-	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std1_sram */
-	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std0_sram */
-	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.wt_sram */
-	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sc_sram */
+	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM. */
+	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM. */
+	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. */
+	uint64_t tw3_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW3_CMD_FIFO_RAM. */
+	uint64_t tw2_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW2_CMD_FIFO_RAM. */
+	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM. */
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM. */
+	uint64_t tp3_sram_sbe                 : 1;  /**< Single-bit error for TP3_SRAM. */
+	uint64_t tp2_sram_sbe                 : 1;  /**< Single-bit error for TP2_SRAM. */
+	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM. */
+	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM. */
+	uint64_t sts3_ram_sbe                 : 1;  /**< Single-bit error for STS3_RAM. */
+	uint64_t sts2_ram_sbe                 : 1;  /**< Single-bit error for STS2_RAM. */
+	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM. */
+	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM. */
+	uint64_t std3_ram_sbe                 : 1;  /**< Single-bit error for STD3_RAM. */
+	uint64_t std2_ram_sbe                 : 1;  /**< Single-bit error for STD2_RAM. */
+	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM. */
+	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM. */
+	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. */
+	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. */
 	uint64_t reserved_0_42                : 43;
 #else
 	uint64_t reserved_0_42                : 43;
@@ -11639,32 +10140,7 @@ union cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_sq3_sbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ3_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ3_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_SQ3_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_2.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_3.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sc_sram */
+	uint64_t pse_sq3_sbe_cmb0             : 1;  /**< Single-bit error for SQ_PT_RAM. Throws PKO_INTSN_E::PKO_PSE_SQ3_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -11674,64 +10150,6 @@ union cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0_s cn78xx;
 };
 typedef union cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0_t;
-
-/**
- * cvmx_pko_pse_sq4_bist_status
- */
-union cvmx_pko_pse_sq4_bist_status {
-	uint64_t u64;
-	struct cvmx_pko_pse_sq4_bist_status_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_29_63               : 35;
-	uint64_t sc_sram                      : 1;  /**< Scheduling Configuration */
-	uint64_t reserved_23_27               : 5;
-	uint64_t tp3_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp2_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t reserved_18_18               : 1;
-	uint64_t rt_sram                      : 1;  /**< Result Table */
-	uint64_t reserved_15_16               : 2;
-	uint64_t tw3_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 3 command FIFO SRAM */
-	uint64_t reserved_12_13               : 2;
-	uint64_t tw2_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 2 command FIFO SRAM */
-	uint64_t reserved_9_10                : 2;
-	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 1 command FIFO SRAM */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State */
-	uint64_t sts_sram                     : 1;  /**< Static Shaping Configuration */
-	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 0 command FIFO SRAM */
-	uint64_t reserved_3_4                 : 2;
-	uint64_t nt_sram                      : 1;  /**< Next Pointer Table */
-	uint64_t pt_sram                      : 1;  /**< Previous Pointer Table */
-	uint64_t wt_sram                      : 1;  /**< Work Table */
-#else
-	uint64_t wt_sram                      : 1;
-	uint64_t pt_sram                      : 1;
-	uint64_t nt_sram                      : 1;
-	uint64_t reserved_3_4                 : 2;
-	uint64_t tw0_cmd_fifo                 : 1;
-	uint64_t sts_sram                     : 1;
-	uint64_t std_sram                     : 1;
-	uint64_t tw1_cmd_fifo                 : 1;
-	uint64_t reserved_9_10                : 2;
-	uint64_t tw2_cmd_fifo                 : 1;
-	uint64_t reserved_12_13               : 2;
-	uint64_t tw3_cmd_fifo                 : 1;
-	uint64_t reserved_15_16               : 2;
-	uint64_t rt_sram                      : 1;
-	uint64_t reserved_18_18               : 1;
-	uint64_t tp0_sram                     : 1;
-	uint64_t tp1_sram                     : 1;
-	uint64_t tp2_sram                     : 1;
-	uint64_t tp3_sram                     : 1;
-	uint64_t reserved_23_27               : 5;
-	uint64_t sc_sram                      : 1;
-	uint64_t reserved_29_63               : 35;
-#endif
-	} s;
-	struct cvmx_pko_pse_sq4_bist_status_s cn78xx;
-};
-typedef union cvmx_pko_pse_sq4_bist_status cvmx_pko_pse_sq4_bist_status_t;
 
 /**
  * cvmx_pko_pse_sq4_ecc_ctl0
@@ -11840,69 +10258,27 @@ union cvmx_pko_pse_sq4_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq4_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.pt_sram */
-	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.nt_sram */
-	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.rt_sram */
-	uint64_t tw3_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW3_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_3.sq_fifo_sram */
-	uint64_t tw2_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW2_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_2.sq_fifo_sram */
-	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_1.sq_fifo_sram */
-	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_0.sq_fifo_sram */
-	uint64_t tp3_sram_dbe                 : 1;  /**< Double-bit error for TP3_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp3_sram */
-	uint64_t tp2_sram_dbe                 : 1;  /**< Double-bit error for TP2_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp2_sram */
-	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp1_sram */
-	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp0_sram */
-	uint64_t sts3_ram_dbe                 : 1;  /**< Double-bit error for STS3_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts3_sram */
-	uint64_t sts2_ram_dbe                 : 1;  /**< Double-bit error for STS2_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts2_sram */
-	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts1_sram */
-	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts0_sram */
-	uint64_t std3_ram_dbe                 : 1;  /**< Double-bit error for STD3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std3_sram */
-	uint64_t std2_ram_dbe                 : 1;  /**< Double-bit error for STD2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std2_sram */
-	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std1_sram */
-	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std0_sram */
-	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.wt_sram */
-	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sc_sram */
+	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM. */
+	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM. */
+	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. */
+	uint64_t tw3_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW3_CMD_FIFO_RAM. */
+	uint64_t tw2_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW2_CMD_FIFO_RAM. */
+	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM. */
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM. */
+	uint64_t tp3_sram_dbe                 : 1;  /**< Double-bit error for TP3_SRAM. */
+	uint64_t tp2_sram_dbe                 : 1;  /**< Double-bit error for TP2_SRAM. */
+	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM. */
+	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM. */
+	uint64_t sts3_ram_dbe                 : 1;  /**< Double-bit error for STS3_RAM. */
+	uint64_t sts2_ram_dbe                 : 1;  /**< Double-bit error for STS2_RAM. */
+	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM. */
+	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM. */
+	uint64_t std3_ram_dbe                 : 1;  /**< Double-bit error for STD3_RAM. */
+	uint64_t std2_ram_dbe                 : 1;  /**< Double-bit error for STD2_RAM. */
+	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM. */
+	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM. */
+	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. */
+	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. */
 	uint64_t reserved_0_42                : 43;
 #else
 	uint64_t reserved_0_42                : 43;
@@ -11940,32 +10316,7 @@ union cvmx_pko_pse_sq4_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq4_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_sq4_dbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ4_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ4_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_SQ4_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_2.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_3.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sc_sram */
+	uint64_t pse_sq4_dbe_cmb0             : 1;  /**< Double-bit error for SQ_PT_RAM. Throws PKO_INTSN_E::PKO_PSE_SQ4_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -11983,69 +10334,27 @@ union cvmx_pko_pse_sq4_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq4_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.nt_sram */
-	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.pt_sram */
-	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.rt_sram */
-	uint64_t tw3_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW3_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_3.sq_fifo_sram */
-	uint64_t tw2_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW2_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_2.sq_fifo_sram */
-	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_1.sq_fifo_sram */
-	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_0.sq_fifo_sram */
-	uint64_t tp3_sram_sbe                 : 1;  /**< Single-bit error for TP3_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp3_sram */
-	uint64_t tp2_sram_sbe                 : 1;  /**< Single-bit error for TP2_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp2_sram */
-	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp1_sram */
-	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp0_sram */
-	uint64_t sts3_ram_sbe                 : 1;  /**< Single-bit error for STS3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts3_sram */
-	uint64_t sts2_ram_sbe                 : 1;  /**< Single-bit error for STS2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts2_sram */
-	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts1_sram */
-	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts0_sram */
-	uint64_t std3_ram_sbe                 : 1;  /**< Single-bit error for STD3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std3_sram */
-	uint64_t std2_ram_sbe                 : 1;  /**< Single-bit error for STD2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std2_sram */
-	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std1_sram */
-	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std0_sram */
-	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.wt_sram */
-	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sc_sram */
+	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM. */
+	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM. */
+	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. */
+	uint64_t tw3_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW3_CMD_FIFO_RAM. */
+	uint64_t tw2_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW2_CMD_FIFO_RAM. */
+	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM. */
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM. */
+	uint64_t tp3_sram_sbe                 : 1;  /**< Single-bit error for TP3_SRAM. */
+	uint64_t tp2_sram_sbe                 : 1;  /**< Single-bit error for TP2_SRAM. */
+	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM. */
+	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM. */
+	uint64_t sts3_ram_sbe                 : 1;  /**< Single-bit error for STS3_RAM. */
+	uint64_t sts2_ram_sbe                 : 1;  /**< Single-bit error for STS2_RAM. */
+	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM. */
+	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM. */
+	uint64_t std3_ram_sbe                 : 1;  /**< Single-bit error for STD3_RAM. */
+	uint64_t std2_ram_sbe                 : 1;  /**< Single-bit error for STD2_RAM. */
+	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM. */
+	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM. */
+	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. */
+	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. */
 	uint64_t reserved_0_42                : 43;
 #else
 	uint64_t reserved_0_42                : 43;
@@ -12083,32 +10392,7 @@ union cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_sq4_sbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ4_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ4_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_SQ4_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_2.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tw_3.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tp3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.std3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sts3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.sc_sram */
+	uint64_t pse_sq4_sbe_cmb0             : 1;  /**< Single-bit error for SQ_PT_RAM. Throws PKO_INTSN_E::PKO_PSE_SQ4_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -12118,64 +10402,6 @@ union cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0_s cn78xx;
 };
 typedef union cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0_t;
-
-/**
- * cvmx_pko_pse_sq5_bist_status
- */
-union cvmx_pko_pse_sq5_bist_status {
-	uint64_t u64;
-	struct cvmx_pko_pse_sq5_bist_status_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_29_63               : 35;
-	uint64_t sc_sram                      : 1;  /**< Scheduling Configuration */
-	uint64_t reserved_23_27               : 5;
-	uint64_t tp3_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp2_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t reserved_18_18               : 1;
-	uint64_t rt_sram                      : 1;  /**< Result Table */
-	uint64_t reserved_15_16               : 2;
-	uint64_t tw3_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 3 command FIFO SRAM */
-	uint64_t reserved_12_13               : 2;
-	uint64_t tw2_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 2 command FIFO SRAM */
-	uint64_t reserved_9_10                : 2;
-	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 1 command FIFO SRAM */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State */
-	uint64_t sts_sram                     : 1;  /**< Static Shaping Configuration */
-	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 0 command FIFO SRAM */
-	uint64_t reserved_3_4                 : 2;
-	uint64_t nt_sram                      : 1;  /**< Next Pointer Table */
-	uint64_t pt_sram                      : 1;  /**< Previous Pointer Table */
-	uint64_t wt_sram                      : 1;  /**< Work Table */
-#else
-	uint64_t wt_sram                      : 1;
-	uint64_t pt_sram                      : 1;
-	uint64_t nt_sram                      : 1;
-	uint64_t reserved_3_4                 : 2;
-	uint64_t tw0_cmd_fifo                 : 1;
-	uint64_t sts_sram                     : 1;
-	uint64_t std_sram                     : 1;
-	uint64_t tw1_cmd_fifo                 : 1;
-	uint64_t reserved_9_10                : 2;
-	uint64_t tw2_cmd_fifo                 : 1;
-	uint64_t reserved_12_13               : 2;
-	uint64_t tw3_cmd_fifo                 : 1;
-	uint64_t reserved_15_16               : 2;
-	uint64_t rt_sram                      : 1;
-	uint64_t reserved_18_18               : 1;
-	uint64_t tp0_sram                     : 1;
-	uint64_t tp1_sram                     : 1;
-	uint64_t tp2_sram                     : 1;
-	uint64_t tp3_sram                     : 1;
-	uint64_t reserved_23_27               : 5;
-	uint64_t sc_sram                      : 1;
-	uint64_t reserved_29_63               : 35;
-#endif
-	} s;
-	struct cvmx_pko_pse_sq5_bist_status_s cn78xx;
-};
-typedef union cvmx_pko_pse_sq5_bist_status cvmx_pko_pse_sq5_bist_status_t;
 
 /**
  * cvmx_pko_pse_sq5_ecc_ctl0
@@ -12284,69 +10510,27 @@ union cvmx_pko_pse_sq5_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq5_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.pt_sram */
-	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.nt_sram */
-	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.rt_sram */
-	uint64_t tw3_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW3_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_3.sq_fifo_sram */
-	uint64_t tw2_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW2_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_2.sq_fifo_sram */
-	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_1.sq_fifo_sram */
-	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_0.sq_fifo_sram */
-	uint64_t tp3_sram_dbe                 : 1;  /**< Double-bit error for TP3_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp3_sram */
-	uint64_t tp2_sram_dbe                 : 1;  /**< Double-bit error for TP2_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp2_sram */
-	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp1_sram */
-	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp0_sram */
-	uint64_t sts3_ram_dbe                 : 1;  /**< Double-bit error for STS3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts3_sram */
-	uint64_t sts2_ram_dbe                 : 1;  /**< Double-bit error for STS2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts2_sram */
-	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts1_sram */
-	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts0_sram */
-	uint64_t std3_ram_dbe                 : 1;  /**< Double-bit error for STD3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std3_sram */
-	uint64_t std2_ram_dbe                 : 1;  /**< Double-bit error for STD2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std2_sram */
-	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std1_sram */
-	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std0_sram */
-	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.wt_sram */
-	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sc_sram */
+	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM. */
+	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM. */
+	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. */
+	uint64_t tw3_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW3_CMD_FIFO_RAM. */
+	uint64_t tw2_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW2_CMD_FIFO_RAM. */
+	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM. */
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM. */
+	uint64_t tp3_sram_dbe                 : 1;  /**< Double-bit error for TP3_SRAM. */
+	uint64_t tp2_sram_dbe                 : 1;  /**< Double-bit error for TP2_SRAM. */
+	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM. */
+	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM. */
+	uint64_t sts3_ram_dbe                 : 1;  /**< Double-bit error for STS3_RAM. */
+	uint64_t sts2_ram_dbe                 : 1;  /**< Double-bit error for STS2_RAM. */
+	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM. */
+	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM. */
+	uint64_t std3_ram_dbe                 : 1;  /**< Double-bit error for STD3_RAM. */
+	uint64_t std2_ram_dbe                 : 1;  /**< Double-bit error for STD2_RAM. */
+	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM. */
+	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM. */
+	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. */
+	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. */
 	uint64_t reserved_0_42                : 43;
 #else
 	uint64_t reserved_0_42                : 43;
@@ -12384,32 +10568,7 @@ union cvmx_pko_pse_sq5_ecc_dbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq5_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_sq5_dbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ5_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ5_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_SQ5_DBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_2.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_3.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sc_sram */
+	uint64_t pse_sq5_dbe_cmb0             : 1;  /**< Double-bit error for SQ_PT_RAM. Throws PKO_INTSN_E::PKO_PSE_SQ5_DBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -12427,69 +10586,27 @@ union cvmx_pko_pse_sq5_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq5_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.pt_sram */
-	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.nt_sram */
-	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.rt_sram */
-	uint64_t tw3_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW3_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_3.sq_fifo_sram */
-	uint64_t tw2_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW2_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_2.sq_fifo_sram */
-	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_1.sq_fifo_sram */
-	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_0.sq_fifo_sram */
-	uint64_t tp3_sram_sbe                 : 1;  /**< Single-bit error for TP3_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp3_sram */
-	uint64_t tp2_sram_sbe                 : 1;  /**< Single-bit error for TP2_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp2_sram */
-	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp1_sram */
-	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp0_sram */
-	uint64_t sts3_ram_sbe                 : 1;  /**< Single-bit error for STS3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts3_sram */
-	uint64_t sts2_ram_sbe                 : 1;  /**< Single-bit error for STS2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts2_sram */
-	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts1_sram */
-	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts0_sram */
-	uint64_t std3_ram_sbe                 : 1;  /**< Single-bit error for STD3_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std3_sram */
-	uint64_t std2_ram_sbe                 : 1;  /**< Single-bit error for STD2_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std2_sram */
-	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std1_sram */
-	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std0_sram */
-	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.wt_sram */
-	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sc_sram */
+	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM. */
+	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM. */
+	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. */
+	uint64_t tw3_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW3_CMD_FIFO_RAM. */
+	uint64_t tw2_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW2_CMD_FIFO_RAM. */
+	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM. */
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM. */
+	uint64_t tp3_sram_sbe                 : 1;  /**< Single-bit error for TP3_SRAM. */
+	uint64_t tp2_sram_sbe                 : 1;  /**< Single-bit error for TP2_SRAM. */
+	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM. */
+	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM. */
+	uint64_t sts3_ram_sbe                 : 1;  /**< Single-bit error for STS3_RAM. */
+	uint64_t sts2_ram_sbe                 : 1;  /**< Single-bit error for STS2_RAM. */
+	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM. */
+	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM. */
+	uint64_t std3_ram_sbe                 : 1;  /**< Single-bit error for STD3_RAM. */
+	uint64_t std2_ram_sbe                 : 1;  /**< Single-bit error for STD2_RAM. */
+	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM. */
+	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM. */
+	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. */
+	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. */
 	uint64_t reserved_0_42                : 43;
 #else
 	uint64_t reserved_0_42                : 43;
@@ -12527,32 +10644,7 @@ union cvmx_pko_pse_sq5_ecc_sbe_sts_cmb0 {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq5_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t pse_sq5_sbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ5_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ5_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
-                                                         Throws PKO_INTSN_E::PKO_PSE_SQ5_SBE_CMB0.
-                                                         INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_2.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tw_3.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq4.tp3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.std3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sts3_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sc_sram */
+	uint64_t pse_sq5_sbe_cmb0             : 1;  /**< Single-bit error for SQ_PT_RAM. Throws PKO_INTSN_E::PKO_PSE_SQ5_SBE_CMB0. */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
@@ -12570,19 +10662,16 @@ union cvmx_pko_ptfx_status {
 	uint64_t u64;
 	struct cvmx_pko_ptfx_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_20_63               : 44;
-	uint64_t total_in_flight_cnt          : 8;  /**< This field returns the total number of packets currently in-flight within PEB.  Useful
-                                                         both for reconfiguration (able to disable a FIFO when it is empty) and debugging */
-	uint64_t in_flight_cnt                : 7;  /**< This field returns the number of packets currently in-flight within PEB for this link.
-                                                         Useful both for reconfiguration (able to disable a FIFO when it is empty) and debugging */
+	uint64_t reserved_11_63               : 53;
+	uint64_t in_flight_cnt                : 6;  /**< This field returns the number of packets currently in-flight within PEB.  Useful both
+                                                         for reconfiguration (able to disable a FIFO when it is empty) and debugging */
 	uint64_t mac_num                      : 5;  /**< The MAC assigned to the given PKO TX FIFO. A value of 0x1F means unassigned. These
                                                          registers values are derived automatically by the hardware from the
                                                          PKO_MAC(0..27)_CFG[FIFO_NUM] settings. */
 #else
 	uint64_t mac_num                      : 5;
-	uint64_t in_flight_cnt                : 7;
-	uint64_t total_in_flight_cnt          : 8;
-	uint64_t reserved_20_63               : 44;
+	uint64_t in_flight_cnt                : 6;
+	uint64_t reserved_11_63               : 53;
 #endif
 	} s;
 	struct cvmx_pko_ptfx_status_s         cn78xx;
@@ -12621,22 +10710,7 @@ union cvmx_pko_ptgfx_cfg {
 	uint64_t u64;
 	struct cvmx_pko_ptgfx_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_7_63                : 57;
-	uint64_t reset                        : 1;  /**< This bit will reset the address pointers for the FIFOs in this group.  This should
-                                                         only be performed when a PTGF is empty and the SIZE field is to be being changed. */
-	uint64_t rate                         : 3;  /**< Each PTGF can support up to 100Gbs. The total aggregate rate across all FIFOs
-                                                         (including the NULL) should NEVER exceed 250Gbs.
-                                                         This field represents the rate for each active FIFO in PEB, thus the calculation
-                                                         for throughput is a function of the SIZE field below and if the FIFO is assigned
-                                                         to a MAC in PKO_MACx_CFG.
-                                                         RATE: Throughput
-                                                         ----------------
-                                                         - 000:    6.25Gbs
-                                                         - 001:   12.5 Gbs
-                                                         - 010:   25   Gbs
-                                                         - 011:   50   Gbs
-                                                         - 100:  100   Gbs
-                                                         Note: 101-111 are illegal RATE values and should not be used. */
+	uint64_t reserved_3_63                : 61;
 	uint64_t size                         : 3;  /**< "The PKO supports up to 29 independent TX FIFOs where 0-27 are physical and 28 is
                                                          virtual. The FIFOs are grouped into 8 sets of four contiguously numbered queues
                                                          where each FIFO has a base storage amount of 2.5K bytes of buffering.
@@ -12658,26 +10732,17 @@ union cvmx_pko_ptgfx_cfg {
                                                          001 :     5.0k    0.0k    2.5k    2.5k
                                                          010 :     2.5k    2.5k    5.0k    0.0k
                                                          011 :     5.0k    0.0k    5.0k    0.0k
-                                                         100 :    10.0k    0.0k    0.0k    0.0k
-                                                         Note: 101-111 are illegal SIZE values and should not be used.
+                                                         1xx :    10.0k    0.0k    0.0k    0.0k
                                                          Note that when a FIFO is set to a size of 0K bytes that FIFO_NUM is no longer legal and
                                                          cannot be assigned to an active MAC. For example, for the set of FIFOs 8-11, if the
                                                          PKO_PTGF(2)_CFG.SIZE = 3'b100 then FIFO_NUMs 9, 10 and 11 are no longer valid. Only
                                                          FIFO_NUM = 8 is available from this set for assignment to a MAC because all of the
                                                          10 Kbytes of buffering was configured to FIFO#8.
                                                          FIFO_NUM = 28 is a virtual FIFO and is used exclusively to indicate the NULL FIFO. Packets
-                                                         targeting the NULL FIFO are dropped by the PKO and their buffers returned to the FPA. The
-                                                         SIZE field for PKO_PTGF(7) should always be set to zero"
-                                                         Modifications to this field require two writes.  The first write must assert
-                                                         PKO_PTGFx_CFG[RESET]
-                                                         to reset the address pointers for the FIFOS in this group.  The second write clears the
-                                                         RESET
-                                                         bit as well as configures the new SIZE values." */
+                                                         targeting the NULL FIFO are dropped by the PKO and their buffers returned to the FPA." */
 #else
 	uint64_t size                         : 3;
-	uint64_t rate                         : 3;
-	uint64_t reset                        : 1;
-	uint64_t reserved_7_63                : 57;
+	uint64_t reserved_3_63                : 61;
 #endif
 	} s;
 	struct cvmx_pko_ptgfx_cfg_s           cn78xx;
@@ -14329,8 +12394,7 @@ union cvmx_pko_status {
 	uint64_t pdm_rdy                      : 1;  /**< PKO PDM block ready for configuration. */
 	uint64_t peb_rdy                      : 1;  /**< PKO PEB block ready for configuration. */
 	uint64_t csi_rdy                      : 1;  /**< PKO CSI block ready for configuration. */
-	uint64_t reserved_5_15                : 11;
-	uint64_t ncb_bist_status              : 1;  /**< PKO NCB block BIST status. 0 = BIST passed; 1 = BIST failed. */
+	uint64_t reserved_4_15                : 12;
 	uint64_t c2qlut_bist_status           : 1;  /**< PKO C2QLUT block BIST status. 0 = BIST passed;
                                                          1 = BIST failed. */
 	uint64_t pdm_bist_status              : 1;  /**< PKO PDM block BIST status. 0 = BIST passed; 1 = BIST failed. */
@@ -14341,8 +12405,7 @@ union cvmx_pko_status {
 	uint64_t peb_bist_status              : 1;
 	uint64_t pdm_bist_status              : 1;
 	uint64_t c2qlut_bist_status           : 1;
-	uint64_t ncb_bist_status              : 1;
-	uint64_t reserved_5_15                : 11;
+	uint64_t reserved_4_15                : 12;
 	uint64_t csi_rdy                      : 1;
 	uint64_t peb_rdy                      : 1;
 	uint64_t pdm_rdy                      : 1;

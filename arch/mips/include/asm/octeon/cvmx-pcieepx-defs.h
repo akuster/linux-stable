@@ -9499,8 +9499,7 @@ union cvmx_pcieepx_cfg452 {
                                                           of lanes in use by the PCIe. LME sets the max number of lanes
                                                           in the PCIe core that COULD be used. As per the PCIe specs,
                                                           the PCIe core can negotiate a smaller link width) */
-	uint32_t reserved_12_15               : 4;
-	uint32_t link_rate                    : 4;  /**< Reserved. */
+	uint32_t reserved_8_15                : 8;
 	uint32_t flm                          : 1;  /**< Fast Link Mode
                                                          Sets all internal timers to fast mode for simulation purposes.
                                                          If during an eeprom load, the first word loaded is 0xffffffff,
@@ -9534,87 +9533,17 @@ union cvmx_pcieepx_cfg452 {
 	uint32_t dllle                        : 1;
 	uint32_t reserved_6_6                 : 1;
 	uint32_t flm                          : 1;
-	uint32_t link_rate                    : 4;
-	uint32_t reserved_12_15               : 4;
+	uint32_t reserved_8_15                : 8;
 	uint32_t lme                          : 6;
 	uint32_t reserved_22_24               : 3;
 	uint32_t eccrc                        : 1;
 	uint32_t reserved_26_31               : 6;
 #endif
 	} s;
-	struct cvmx_pcieepx_cfg452_cn52xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t reserved_26_31               : 6;
-	uint32_t eccrc                        : 1;  /**< Enable Corrupted CRC
-                                                         Causes corrupt LCRC for TLPs when set,
-                                                         using the pattern contained in the Other Message register.
-                                                         This is a test feature, not to be used in normal operation. */
-	uint32_t reserved_22_24               : 3;
-	uint32_t lme                          : 6;  /**< Link Mode Enable
-                                                         o 000001: x1
-                                                         o 000011: x2
-                                                         o 000111: x4
-                                                         o 001111: x8  (not supported)
-                                                         o 011111: x16 (not supported)
-                                                         o 111111: x32 (not supported)
-                                                         This field indicates the MAXIMUM number of lanes supported
-                                                         by the PCIe port. It is set to 0x7 or 0x3 depending
-                                                         on the value of the QLM_CFG bits (0x7 when QLM_CFG == 0x3
-                                                         otherwise 0x3). The value can be set less than 0x7 or 0x3
-                                                         to limit the number of lanes the PCIe will attempt to use.
-                                                         If the value of 0x7 or 0x3 set by the HW is not desired,
-                                                         this field can be programmed to a smaller value (i.e. EEPROM)
-                                                         See also MLW.
-                                                         (Note: The value of this field does NOT indicate the number
-                                                          of lanes in use by the PCIe. LME sets the max number of lanes
-                                                          in the PCIe core that COULD be used. As per the PCIe specs,
-                                                          the PCIe core can negotiate a smaller link width, so all
-                                                          of x4, x2, and x1 are supported when LME=0x7,
-                                                          for example.) */
-	uint32_t reserved_8_15                : 8;
-	uint32_t flm                          : 1;  /**< Fast Link Mode
-                                                         Sets all internal timers to fast mode for simulation purposes.
-                                                         If during an eeprom load, the first word loaded is 0xffffffff,
-                                                         then the EEPROM load will be terminated and this bit will be set. */
-	uint32_t reserved_6_6                 : 1;
-	uint32_t dllle                        : 1;  /**< DLL Link Enable
-                                                         Enables Link initialization. If DLL Link Enable = 0, the PCI
-                                                         Express bus does not transmit InitFC DLLPs and does not
-                                                         establish a Link. */
-	uint32_t reserved_4_4                 : 1;
-	uint32_t ra                           : 1;  /**< Reset Assert
-                                                         Triggers a recovery and forces the LTSSM to the Hot Reset
-                                                         state (downstream port only). */
-	uint32_t le                           : 1;  /**< Loopback Enable
-                                                         Initiate loopback mode as a master. On a 0->1 transition,
-                                                         the PCIe core sends TS ordered sets with the loopback bit set
-                                                         to cause the link partner to enter into loopback mode as a
-                                                         slave. Normal transmission is not possible when LE=1. To exit
-                                                         loopback mode, take the link through a reset sequence. */
-	uint32_t sd                           : 1;  /**< Scramble Disable
-                                                         Turns off data scrambling. */
-	uint32_t omr                          : 1;  /**< Other Message Request
-                                                         When software writes a `1' to this bit, the PCI Express bus
-                                                         transmits the Message contained in the Other Message register. */
-#else
-	uint32_t omr                          : 1;
-	uint32_t sd                           : 1;
-	uint32_t le                           : 1;
-	uint32_t ra                           : 1;
-	uint32_t reserved_4_4                 : 1;
-	uint32_t dllle                        : 1;
-	uint32_t reserved_6_6                 : 1;
-	uint32_t flm                          : 1;
-	uint32_t reserved_8_15                : 8;
-	uint32_t lme                          : 6;
-	uint32_t reserved_22_24               : 3;
-	uint32_t eccrc                        : 1;
-	uint32_t reserved_26_31               : 6;
-#endif
-	} cn52xx;
-	struct cvmx_pcieepx_cfg452_cn52xx     cn52xxp1;
-	struct cvmx_pcieepx_cfg452_cn52xx     cn56xx;
-	struct cvmx_pcieepx_cfg452_cn52xx     cn56xxp1;
+	struct cvmx_pcieepx_cfg452_s          cn52xx;
+	struct cvmx_pcieepx_cfg452_s          cn52xxp1;
+	struct cvmx_pcieepx_cfg452_s          cn56xx;
+	struct cvmx_pcieepx_cfg452_s          cn56xxp1;
 	struct cvmx_pcieepx_cfg452_cn61xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_22_31               : 10;
@@ -9676,75 +9605,13 @@ union cvmx_pcieepx_cfg452 {
 	uint32_t reserved_22_31               : 10;
 #endif
 	} cn61xx;
-	struct cvmx_pcieepx_cfg452_cn52xx     cn63xx;
-	struct cvmx_pcieepx_cfg452_cn52xx     cn63xxp1;
+	struct cvmx_pcieepx_cfg452_s          cn63xx;
+	struct cvmx_pcieepx_cfg452_s          cn63xxp1;
 	struct cvmx_pcieepx_cfg452_cn61xx     cn66xx;
 	struct cvmx_pcieepx_cfg452_cn61xx     cn68xx;
 	struct cvmx_pcieepx_cfg452_cn61xx     cn68xxp1;
-	struct cvmx_pcieepx_cfg452_cn70xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t reserved_22_31               : 10;
-	uint32_t lme                          : 6;  /**< Link Mode Enable
-                                                         o 000001: x1
-                                                         o 000011: x2
-                                                         o 000111: x4
-                                                         o 001111: x8  (not supported)
-                                                         o 011111: x16 (not supported)
-                                                         o 111111: x32 (not supported)
-                                                         This field indicates the MAXIMUM number of lanes supported
-                                                         by the PCIe port. The value can be set less than 0x7
-                                                         to limit the number of lanes the PCIe will attempt to use.
-                                                         If the value of 0x7 set by the HW is not desired,
-                                                         this field can be programmed to a smaller value (i.e. EEPROM)
-                                                         See also MLW.
-                                                         (Note: The value of this field does NOT indicate the number
-                                                         of lanes in use by the PCIe. LME sets the max number of lanes
-                                                         in the PCIe core that COULD be used. As per the PCIe specs,
-                                                         the PCIe core can negotiate a smaller link width, so all
-                                                         of x4, x2, and x1 are supported when LME=0x7,
-                                                         for example.) */
-	uint32_t reserved_12_15               : 4;
-	uint32_t link_rate                    : 4;  /**< Reserved. */
-	uint32_t flm                          : 1;  /**< Fast Link Mode
-                                                         Sets all internal timers to fast mode for simulation purposes.
-                                                         If during an eeprom load, the first word loaded is 0xffffffff,
-                                                         then the EEPROM load will be terminated and this bit will be set. */
-	uint32_t reserved_6_6                 : 1;
-	uint32_t dllle                        : 1;  /**< DLL Link Enable
-                                                         Enables Link initialization. If DLL Link Enable = 0, the PCI
-                                                         Express bus does not transmit InitFC DLLPs and does not
-                                                         establish a Link. */
-	uint32_t reserved_4_4                 : 1;
-	uint32_t ra                           : 1;  /**< Reset Assert
-                                                         Triggers a recovery and forces the LTSSM to the Hot Reset
-                                                         state (downstream port only). */
-	uint32_t le                           : 1;  /**< Loopback Enable
-                                                         Initiate loopback mode as a master. On a 0->1 transition,
-                                                         the PCIe core sends TS ordered sets with the loopback bit set
-                                                         to cause the link partner to enter into loopback mode as a
-                                                         slave. Normal transmission is not possible when LE=1. To exit
-                                                         loopback mode, take the link through a reset sequence. */
-	uint32_t sd                           : 1;  /**< Scramble Disable
-                                                         Turns off data scrambling. */
-	uint32_t omr                          : 1;  /**< Other Message Request
-                                                         When software writes a `1' to this bit, the PCI Express bus
-                                                         transmits the Message contained in the Other Message register. */
-#else
-	uint32_t omr                          : 1;
-	uint32_t sd                           : 1;
-	uint32_t le                           : 1;
-	uint32_t ra                           : 1;
-	uint32_t reserved_4_4                 : 1;
-	uint32_t dllle                        : 1;
-	uint32_t reserved_6_6                 : 1;
-	uint32_t flm                          : 1;
-	uint32_t link_rate                    : 4;
-	uint32_t reserved_12_15               : 4;
-	uint32_t lme                          : 6;
-	uint32_t reserved_22_31               : 10;
-#endif
-	} cn70xx;
-	struct cvmx_pcieepx_cfg452_cn70xx     cn78xx;
+	struct cvmx_pcieepx_cfg452_cn61xx     cn70xx;
+	struct cvmx_pcieepx_cfg452_cn61xx     cn78xx;
 	struct cvmx_pcieepx_cfg452_cn61xx     cnf71xx;
 };
 typedef union cvmx_pcieepx_cfg452 cvmx_pcieepx_cfg452_t;
@@ -10950,9 +10817,9 @@ union cvmx_pcieepx_cfg558 {
 	struct cvmx_pcieepx_cfg558_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t ple                          : 1;  /**< Pipe Loopback Enable */
-	uint32_t rxstatus                     : 31; /**< Reserved. */
+	uint32_t reserved_0_30                : 31;
 #else
-	uint32_t rxstatus                     : 31;
+	uint32_t reserved_0_30                : 31;
 	uint32_t ple                          : 1;
 #endif
 	} s;

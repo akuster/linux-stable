@@ -284,12 +284,39 @@ static inline uint64_t CVMX_SLI_MAC_CREDIT_CNT2_FUNC(void)
 #define CVMX_SLI_MAC_NUMBER CVMX_SLI_MAC_NUMBER_FUNC()
 static inline uint64_t CVMX_SLI_MAC_NUMBER_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MAC_NUMBER not supported on this chip\n");
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003E00ull;
+			break;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000013E00ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MAC_NUMBER not supported on this chip\n");
 	return 0x0000000000003E00ull;
 }
 #else
-#define CVMX_SLI_MAC_NUMBER (0x0000000000003E00ull)
+#define CVMX_SLI_MAC_NUMBER CVMX_SLI_MAC_NUMBER_FUNC()
+static inline uint64_t CVMX_SLI_MAC_NUMBER_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003E00ull;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000013E00ull;
+	}
+	return 0x0000000000003E00ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MEM_ACCESS_CTL CVMX_SLI_MEM_ACCESS_CTL_FUNC()
@@ -1842,7 +1869,7 @@ union cvmx_sli_ctl_status {
 	struct cvmx_sli_ctl_status_cn61xx     cn66xx;
 	struct cvmx_sli_ctl_status_cn63xx     cn68xx;
 	struct cvmx_sli_ctl_status_cn63xx     cn68xxp1;
-	struct cvmx_sli_ctl_status_cn63xx     cn70xx;
+	struct cvmx_sli_ctl_status_cn61xx     cn70xx;
 	struct cvmx_sli_ctl_status_s          cn78xx;
 	struct cvmx_sli_ctl_status_cn61xx     cnf71xx;
 };
@@ -6986,6 +7013,7 @@ typedef union cvmx_sli_pkt_int cvmx_sli_pkt_int_t;
 /**
  * cvmx_sli_pkt_int_levels
  *
+ * 0x90F0 reserved SLI_PKT_PCIE_PORT2
  * SLI_PKT_INT_LEVELS = SLI's Packet Interrupt Levels
  * Output packet interrupt levels.
  */
@@ -7398,6 +7426,9 @@ typedef union cvmx_sli_pkt_pcie_port cvmx_sli_pkt_pcie_port_t;
 /**
  * cvmx_sli_pkt_port_in_rst
  *
+ * 91c0 reserved
+ * 91d0 reserved
+ * 91e0 reserved
  * SLI_PKT_PORT_IN_RST = SLI Packet Port In Reset
  * Vector bits related to ring-port for ones that are reset.
  */

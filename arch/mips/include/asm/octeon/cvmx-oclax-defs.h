@@ -568,9 +568,8 @@ union cvmx_oclax_fifo_limit {
 	struct cvmx_oclax_fifo_limit_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t overfull                     : 16; /**< Stop level. When OCLA(0..4)_FIFO_DEPTH > OVERFULL, stop capturing and set
-                                                         OCLA(0..4)_STATE_INT[OVERFULL]. This should be set to no more than
-                                                         OCLA(0..4)_CONST[DAT_SIZE] minus 26 when using DDR capture to insure that overflow can be
-                                                         detected. */
+                                                         OCLA(0..4)_STATE_INT[OVERFULL]. This should be set to just less than the FIFO size when
+                                                         using DDR capture to insure that overflow can be detected. */
 	uint64_t ddr                          : 16; /**< DDR level. When OCLA(0..4)_FIFO_DEPTH > DDR, FIFO entries will be removed, packed into a
                                                          cache line, and overflowed to DDR/L2. All-ones disables overflow to DDR/L2. If non-zero
                                                          must be at least 28. */
@@ -618,8 +617,7 @@ union cvmx_oclax_fifo_trig {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
 	uint64_t limit                        : 16; /**< Post-trigger number of entries to collect before stopping collection. If zero, collection
-                                                         will never stop, which may be desirable when overflowing to DDR/L2. Must be <
-                                                         OCLA(0..4)_CONST[DAT_SIZE] - 5. */
+                                                         will never stop, which may be desirable when overflowing to DDR/L2. */
 	uint64_t cnt                          : 16; /**< Number of entries collected since trigger. Cleared when OCLA(0..4)_STATE_INT[TRIG] clear. */
 #else
 	uint64_t cnt                          : 16;

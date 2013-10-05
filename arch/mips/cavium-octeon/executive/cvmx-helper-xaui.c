@@ -43,7 +43,7 @@
  * Functions for XAUI initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 88823 $<hr>
+ * <hr>$Revision: 88172 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -575,12 +575,16 @@ int __cvmx_helper_bgx_xaui_enable(int interface)
 	/* Configure the bgx mac */
 	bgx_init(interface, CVMX_HELPER_INTERFACE_MODE_XAUI);
 
-	/* Setup pkind */
+	/*
+	 * Must hardcode the port kind here until the pko initializion is
+	 * complete. This must be removed once the pko initialization is
+	 * working. TODO
+	 */
+	pknd = 50 + (num_ports * interface);
 	for (i = 0; i < num_ports; i++) {
-		pknd = cvmx_helper_get_pknd(interface, i);
 		bgx_cmr_rx_id_map.u64 = 0;
 		bgx_cmr_rx_id_map.s.rid = 2 + i;
-		bgx_cmr_rx_id_map.s.pknd = pknd;
+		bgx_cmr_rx_id_map.s.pknd = pknd + i;
 		cvmx_write_csr(CVMX_BGXX_CMRX_RX_ID_MAP(i, interface),
 			       bgx_cmr_rx_id_map.u64);
 	}

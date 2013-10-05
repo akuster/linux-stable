@@ -497,7 +497,7 @@ static inline uint64_t CVMX_MIO_FUS_DAT4_FUNC(void)
 #define CVMX_MIO_FUS_EMA CVMX_MIO_FUS_EMA_FUNC()
 static inline uint64_t CVMX_MIO_FUS_EMA_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN5XXX) || OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN5XXX) || OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
 		cvmx_warn("CVMX_MIO_FUS_EMA not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180000001550ull);
 }
@@ -4597,12 +4597,11 @@ union cvmx_mio_fus_dat3 {
 	uint64_t u64;
 	struct cvmx_mio_fus_dat3_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ema0                         : 6;  /**< Fuse information - EMA0. */
+	uint64_t reserved_58_63               : 6;
 	uint64_t pll_ctl                      : 10; /**< Fuse information - PLL control */
 	uint64_t dfa_info_dte                 : 3;  /**< Fuse information - DFA information (DTE) */
 	uint64_t dfa_info_clm                 : 4;  /**< Fuse information - DFA information (Cluster mask) */
-	uint64_t reserved_40_40               : 1;
-	uint64_t ema                          : 2;  /**< Fuse information - EMA */
+	uint64_t reserved_38_40               : 3;
 	uint64_t efus_lck_rsv                 : 1;  /**< Fuse information - efuse lockdown */
 	uint64_t efus_lck_man                 : 1;  /**< Fuse information - efuse lockdown */
 	uint64_t pll_half_dis                 : 1;  /**< Fuse information - RCLK PLL control */
@@ -4615,9 +4614,9 @@ union cvmx_mio_fus_dat3 {
 	uint64_t efus_ign                     : 1;  /**< Fuse information - efuse ignore */
 	uint64_t nozip                        : 1;  /**< Fuse information - ZIP disable */
 	uint64_t nodfa_dte                    : 1;  /**< Fuse information - DFA Disable (DTE) */
-	uint64_t reserved_0_23                : 24;
+	uint64_t icache                       : 24; /**< Fuse information - ICACHE Hard Repair Data */
 #else
-	uint64_t reserved_0_23                : 24;
+	uint64_t icache                       : 24;
 	uint64_t nodfa_dte                    : 1;
 	uint64_t nozip                        : 1;
 	uint64_t efus_ign                     : 1;
@@ -4629,12 +4628,11 @@ union cvmx_mio_fus_dat3 {
 	uint64_t pll_half_dis                 : 1;
 	uint64_t efus_lck_man                 : 1;
 	uint64_t efus_lck_rsv                 : 1;
-	uint64_t ema                          : 2;
-	uint64_t reserved_40_40               : 1;
+	uint64_t reserved_38_40               : 3;
 	uint64_t dfa_info_clm                 : 4;
 	uint64_t dfa_info_dte                 : 3;
 	uint64_t pll_ctl                      : 10;
-	uint64_t ema0                         : 6;
+	uint64_t reserved_58_63               : 6;
 #endif
 	} s;
 	struct cvmx_mio_fus_dat3_cn30xx {
@@ -4804,7 +4802,7 @@ union cvmx_mio_fus_dat3 {
 	struct cvmx_mio_fus_dat3_cn61xx       cn68xxp1;
 	struct cvmx_mio_fus_dat3_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ema0                         : 6;  /**< Fuse information - EMA0. */
+	uint64_t ema                          : 6;  /**< Fuse information - EMA. */
 	uint64_t pll_ctl                      : 10; /**< Fuse information - PLL control. */
 	uint64_t dfa_info_dte                 : 3;  /**< Fuse information - HFA information (HTE). */
 	uint64_t dfa_info_clm                 : 4;  /**< Fuse information - HFA information (cluster mask). */
@@ -4813,11 +4811,11 @@ union cvmx_mio_fus_dat3 {
 	uint64_t efus_lck_man                 : 1;  /**< Fuse information - efuse lockdown. */
 	uint64_t pll_half_dis                 : 1;  /**< Fuse information - Coprocessor-clock PLL control. */
 	uint64_t l2c_crip                     : 3;  /**< Fuse information - L2C cripple:
-                                                         0 -- full cache (4-way 512KB)
-                                                         1 -- 3/4 ways   (3-way 384KB)
-                                                         2 -- 1/2 ways   (2-way 256KB)
-                                                         3 -- 1/4 ways   (1-way 128KB)
-                                                         4-7 -- illegal */
+                                                         0x0 = 16-way, 2MB cache
+                                                         0x1 = 12-way, 1.5MB cache
+                                                         0x2 = 8-way, 1MB cache
+                                                         0x3 = 4-way, 512KB cache
+                                                         0x4-0x7 = reserved */
 	uint64_t reserved_31_31               : 1;
 	uint64_t zip_info                     : 2;  /**< Fuse information - Zip information */
 	uint64_t bar2_en                      : 1;  /**< Fuse information - BAR2 present (when blown `1') */
@@ -4825,11 +4823,9 @@ union cvmx_mio_fus_dat3 {
 	uint64_t efus_ign                     : 1;  /**< Fuse information - efuse ignore */
 	uint64_t nozip                        : 1;  /**< Fuse information - ZIP disable */
 	uint64_t nodfa_dte                    : 1;  /**< Fuse information - HFA disable (HTE) */
-	uint64_t ema1                         : 6;  /**< Fuse information - EMA1. */
-	uint64_t reserved_0_17                : 18;
+	uint64_t reserved_0_23                : 24;
 #else
-	uint64_t reserved_0_17                : 18;
-	uint64_t ema1                         : 6;
+	uint64_t reserved_0_23                : 24;
 	uint64_t nodfa_dte                    : 1;
 	uint64_t nozip                        : 1;
 	uint64_t efus_ign                     : 1;
@@ -4845,61 +4841,10 @@ union cvmx_mio_fus_dat3 {
 	uint64_t dfa_info_clm                 : 4;
 	uint64_t dfa_info_dte                 : 3;
 	uint64_t pll_ctl                      : 10;
-	uint64_t ema0                         : 6;
+	uint64_t ema                          : 6;
 #endif
 	} cn70xx;
-	struct cvmx_mio_fus_dat3_cn78xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ema0                         : 6;  /**< Fuse information - EMA0. */
-	uint64_t pll_ctl                      : 10; /**< Fuse information - PLL control. */
-	uint64_t dfa_info_dte                 : 3;  /**< Fuse information - HFA information (HTE). */
-	uint64_t dfa_info_clm                 : 4;  /**< Fuse information - HFA information (cluster mask). */
-	uint64_t reserved_38_40               : 3;
-	uint64_t efus_lck_rsv                 : 1;  /**< Fuse information - efuse lockdown. */
-	uint64_t efus_lck_man                 : 1;  /**< Fuse information - efuse lockdown. */
-	uint64_t pll_half_dis                 : 1;  /**< Fuse information - Coprocessor-clock PLL control. */
-	uint64_t l2c_crip                     : 3;  /**< Fuse information - L2C cripple:
-                                                         0x0 = Full cache (16-way, 16 MB)
-                                                         0x1 = 3/4 ways (12-way, 12 MB)
-                                                         0x2 = 1/2 ways (8-way, 8 MB)
-                                                         0x3 = 1/4 ways (4-way, 4MB)
-                                                         0x4-0x7 = Reserved */
-	uint64_t reserved_31_31               : 1;
-	uint64_t zip_info                     : 2;  /**< Fuse information - Zip information */
-	uint64_t bar2_en                      : 1;  /**< Fuse information - BAR2 present (when blown `1') */
-	uint64_t efus_lck                     : 1;  /**< Fuse information - efuse lockdown */
-	uint64_t efus_ign                     : 1;  /**< Fuse information - efuse ignore */
-	uint64_t nozip                        : 1;  /**< Fuse information - ZIP disable */
-	uint64_t nodfa_dte                    : 1;  /**< Fuse information - HFA disable (HTE) */
-	uint64_t ema1                         : 6;  /**< Fuse information - EMA1. */
-	uint64_t nohna_dte                    : 1;  /**< Fuse information - HNA disable (DTE). */
-	uint64_t hna_info_dte                 : 3;  /**< Fuse information - HNA information (DTE). */
-	uint64_t hna_info_clm                 : 4;  /**< Fuse information - HNA information (cluster mask). */
-	uint64_t reserved_0_9                 : 10;
-#else
-	uint64_t reserved_0_9                 : 10;
-	uint64_t hna_info_clm                 : 4;
-	uint64_t hna_info_dte                 : 3;
-	uint64_t nohna_dte                    : 1;
-	uint64_t ema1                         : 6;
-	uint64_t nodfa_dte                    : 1;
-	uint64_t nozip                        : 1;
-	uint64_t efus_ign                     : 1;
-	uint64_t efus_lck                     : 1;
-	uint64_t bar2_en                      : 1;
-	uint64_t zip_info                     : 2;
-	uint64_t reserved_31_31               : 1;
-	uint64_t l2c_crip                     : 3;
-	uint64_t pll_half_dis                 : 1;
-	uint64_t efus_lck_man                 : 1;
-	uint64_t efus_lck_rsv                 : 1;
-	uint64_t reserved_38_40               : 3;
-	uint64_t dfa_info_clm                 : 4;
-	uint64_t dfa_info_dte                 : 3;
-	uint64_t pll_ctl                      : 10;
-	uint64_t ema0                         : 6;
-#endif
-	} cn78xx;
+	struct cvmx_mio_fus_dat3_cn70xx       cn78xx;
 	struct cvmx_mio_fus_dat3_cn61xx       cnf71xx;
 };
 typedef union cvmx_mio_fus_dat3 cvmx_mio_fus_dat3_t;
@@ -4912,14 +4857,14 @@ union cvmx_mio_fus_dat4 {
 	struct cvmx_mio_fus_dat4_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_52_63               : 12;
-	uint64_t east_rclk_byp_select         : 1;  /**< Reserved. */
+	uint64_t east_rclk_byp_select         : 1;  /**< N/A */
 	uint64_t east_rclk_byp_setting        : 12; /**< Reserved. */
 	uint64_t cmb_rclk_byp_select          : 1;  /**< Reserved. */
 	uint64_t cmb_rclk_byp_setting         : 12; /**< Reserved. */
 	uint64_t pp_rclk_byp_select           : 1;  /**< Reserved. */
 	uint64_t pp_rclk_byp_setting          : 12; /**< Reserved. */
-	uint64_t tad_rclk_byp_select          : 1;  /**< Reserved. */
-	uint64_t tad_rclk_byp_setting         : 12; /**< Reserved. */
+	uint64_t tad_rclk_byp_select          : 1;  /**< N/A */
+	uint64_t tad_rclk_byp_setting         : 12; /**< N/A */
 #else
 	uint64_t tad_rclk_byp_setting         : 12;
 	uint64_t tad_rclk_byp_select          : 1;
@@ -4979,6 +4924,16 @@ union cvmx_mio_fus_ema {
 	struct cvmx_mio_fus_ema_s             cn66xx;
 	struct cvmx_mio_fus_ema_s             cn68xx;
 	struct cvmx_mio_fus_ema_s             cn68xxp1;
+	struct cvmx_mio_fus_ema_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_3_63                : 61;
+	uint64_t ema                          : 3;  /**< Reserved. */
+#else
+	uint64_t ema                          : 3;
+	uint64_t reserved_3_63                : 61;
+#endif
+	} cn70xx;
+	struct cvmx_mio_fus_ema_cn70xx        cn78xx;
 	struct cvmx_mio_fus_ema_s             cnf71xx;
 };
 typedef union cvmx_mio_fus_ema cvmx_mio_fus_ema_t;
