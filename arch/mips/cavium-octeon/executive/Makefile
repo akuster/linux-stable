@@ -20,9 +20,7 @@ obj-y += cvmx-pko.o cvmx-spi.o cvmx-cmd-queue.o cvmx-helper-cfg.o	\
 	cvmx-helper-board.o cvmx-helper.o cvmx-helper-xaui.o \
 	cvmx-helper-rgmii.o cvmx-helper-sgmii.o cvmx-helper-npi.o \
 	cvmx-helper-loop.o cvmx-helper-spi.o cvmx-helper-util.o	\
-	cvmx-pki-resources.o cvmx-gser.o cvmx-bgx.o cvmx-helper-pki.o \
-	cvmx-helper-pko3.o cvmx-pko3-queue.o cvmx-pko3-resources.o \
-	cvmx-pko3.o
+	cvmx-pki-resources.o cvmx-gser.o cvmx-bgx.o
 
 obj-y += cvmx-helper-errata.o cvmx-helper-jtag.o
 obj-y += cvmx-pcie.o
