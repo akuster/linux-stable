@@ -42,6 +42,7 @@
  *
  * File defining checks for different Octeon features.
  *
+ * <hr>$Revision: 30468 $<hr>
  */
 
 #ifndef __OCTEON_FEATURE_H__
@@ -152,8 +153,6 @@ typedef enum {
 				/**<  Octeon has node support */
 	OCTEON_FEATURE_CIU3,
 				/**<  Octeon has CIU3 */
-	OCTEON_FEATURE_FPA3,
-				/**<  Octeon has FPA first seen on 78XX */
 	OCTEON_FEATURE_CN78XX_WQE,
 				/**<  CN78XX has different fields in word0 - word2 */
 	OCTEON_FEATURE_SPI,
@@ -330,10 +329,6 @@ static inline int octeon_has_feature_OCTEON_FEATURE_CIU3(void)
 	return (OCTEON_IS_MODEL(OCTEON_CN78XX));
 }
 
-static inline int octeon_has_feature_OCTEON_FEATURE_FPA3(void)
-{
-	return (OCTEON_IS_MODEL(OCTEON_CN78XX));
-}
 
 static inline int octeon_has_feature_OCTEON_FEATURE_NAND(void)
 {

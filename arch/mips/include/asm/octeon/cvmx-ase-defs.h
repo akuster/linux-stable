@@ -857,8 +857,9 @@ union cvmx_ase_lip_config {
 	struct cvmx_ase_lip_config_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drop_xoff_en                 : 1;  /**< This feature should remain disabled.
-                                                         INTERNAL: Keep disabled, bug 18665. */
+	uint64_t drop_xoff_en                 : 1;  /**< If enabled, the LIP pays attention to the LAP's DROP_XOFF indication and may drop the
+                                                         indicated lookup request packets. If disabled, the LIP ignores DROP_XOFF and does not drop
+                                                         packets. */
 	uint64_t gen_xon_en                   : 1;  /**< If enabled, the LIP generates XON indication to the LAP when lookup requests are
                                                          backpressured. If disabled, the LIP does not assert XON. */
 	uint64_t reserved_1_1                 : 1;

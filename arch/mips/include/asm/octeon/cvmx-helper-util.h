@@ -42,7 +42,7 @@
  *
  * Small helper utilities.
  *
- * <hr>$Revision: 88229 $<hr>
+ * <hr>$Revision: 86308 $<hr>
  */
 
 #ifndef __CVMX_HELPER_UTIL_H__
@@ -50,7 +50,6 @@
 
 #include "cvmx.h"
 #include "cvmx-mio-defs.h"
-#include "cvmx-helper.h"
 
 
 typedef char cvmx_pknd_t;

@@ -88,7 +88,7 @@ static inline struct global_resource_tag get_fpa_resourse_tag(int node)
 		return cvmx_get_gr_tag('c','v','m','_','f','p','a','_','0','3','.','.','.','.','.','.');
 	default:
 		/* Add a panic?? */
-		return cvmx_get_gr_tag('i','n','v','a','l','i','d','.','.','.','.','.','.','.','.','.');
+		return cvmx_get_gr_tag('i','n','v','a','l','i','d','.','.','.','.','.','.','.','.','.'); 
 	}
 }
 
@@ -106,26 +106,25 @@ static inline struct global_resource_tag get_aura_resourse_tag(int node)
 		return cvmx_get_gr_tag('c','v','m','_','a','u','r','a','_','0','_','3','.','.','.','.');
 	default:
 		/* Add a panic?? */
-		return cvmx_get_gr_tag('i','n','v','a','l','i','d','.','.','.','.','.','.','.','.','.');
+		return cvmx_get_gr_tag('i','n','v','a','l','i','d','.','.','.','.','.','.','.','.','.'); 
 	}
 }
 
 
 /**
- * This will allocate/reserve count number of FPA pools on the specified node to the
+ * This will allocate count number of FPA pools on the specified node to the
  * calling application. These pools will be for exclusive use of the application
  * until they are freed.
  * @param pools_allocated is an array of length count allocated by the application
  * before invoking the cvmx_allocate_fpa_pool call. On return it will contain the
  * index numbers of the pools allocated.
- * If -1 it finds the empty pool to allocate otherwise it reserves the specified pool.
  * @return 0 on success and -1 on failure.
  */
 int cvmx_fpa_allocate_fpa_pools(int node, int pools_allocated[], int count)
 {
 	int num_pools = CVMX_FPA_NUM_POOLS;
 	uint64_t owner = 0;
-	int rv=0;
+	int rv;
 	struct global_resource_tag tag = get_fpa_resourse_tag(node);
 
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
@@ -137,16 +136,9 @@ int cvmx_fpa_allocate_fpa_pools(int node, int pools_allocated[], int count)
 			     " node=%d\n", node);
 		return -1;
 	}
-
-	if (pools_allocated[0] >= 0) {
-		while(count--)
-			rv = cvmx_reserve_global_resource_range(tag, owner, pools_allocated[count], 1);
-	}
-	else {
-		rv = cvmx_resource_alloc_many(tag, owner,
-						       count,
-						       pools_allocated);
-	}
+	rv = cvmx_resource_alloc_many(tag, owner,
+				      count,
+				      pools_allocated);
 	return rv;
 }
 
@@ -168,7 +160,7 @@ int cvmx_fpa_allocate_auras(int node, int auras_allocated[], int count)
 {
 	int num_aura = CVMX_FPA_AURA_NUM;
 	uint64_t owner = 0;
-	int rv=0;
+	int rv;
 	struct global_resource_tag tag = get_aura_resourse_tag(node);
 
 	if (!OCTEON_IS_MODEL(OCTEON_CN78XX)) {
@@ -181,14 +173,9 @@ int cvmx_fpa_allocate_auras(int node, int auras_allocated[], int count)
 			     " node=%d\n", node);
 		return -1;
 	}
-	if (auras_allocated[0] >= 0) {
-		while(count--)
-			rv = cvmx_reserve_global_resource_range(tag, owner, auras_allocated[count], 1);
-	}
-	else
-		rv = cvmx_resource_alloc_many(tag, owner,
-							       count,
-							       auras_allocated);
+	rv = cvmx_resource_alloc_many(tag, owner,
+				      count,
+				      auras_allocated);
 	return rv;
 
 }

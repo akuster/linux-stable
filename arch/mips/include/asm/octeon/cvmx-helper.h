@@ -42,7 +42,7 @@
  *
  * Helper functions for common, but complicated tasks.
  *
- * <hr>$Revision: 88573 $<hr>
+ * <hr>$Revision: 86434 $<hr>
  */
 
 #ifndef __CVMX_HELPER_H__
@@ -215,17 +215,6 @@ extern int cvmx_helper_ipd_and_packet_input_enable(void);
 extern int cvmx_helper_initialize_sso(int wqe_entries);
 
 /**
- * Initialize and allocate memory for the SSO on specified node.
- *
- * @param node	      node number
- * @param wqe_entries The maximum number of work queue entries to be
- * supported.
- *
- * @return Zero on success, non-zero on failure.
- */
-extern int cvmx_helper_initialize_sso_node(int node, int wqe_entries);
-
-/**
  * Undo the effect of cvmx_helper_initialize_sso().
  *
  * Warning: since cvmx_bootmem_alloc() memory cannot be freed, the
@@ -391,13 +380,6 @@ extern int cvmx_helper_configure_loopback(int ipd_port, int enable_internal, int
  *         -1 for uninitialized interface
  */
 int __cvmx_helper_early_ports_on_interface(int interface);
-
-void cvmx_helper_setup_simulator_io_buffer_counts(int node, int num_packet_buffers,
-		int pko_buffers);
-
-void cvmx_helper_set_wqe_no_ptr_mode(bool mode);
-void cvmx_helper_set_pkt_wqe_le_mode(bool mode);
-int cvmx_helper_shutdown_fpa_pools(int node);
 
 #ifdef  __cplusplus
 /* *INDENT-OFF* */

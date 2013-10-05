@@ -42,7 +42,7 @@
  *
  * Interface to the hardware Packet Input Processing unit.
  *
- * <hr>$Revision: 88229 $<hr>
+ * <hr>$Revision: 82059 $<hr>
  */
 
 #ifndef __CVMX_PIP_H__
@@ -229,7 +229,7 @@ typedef struct {
                                              The HW considers an IPv4 packet to be multicast
                                              when the most-significant nibble of the 32-bit
                                              destination address is 0xE (i.e it is a class D
-                                             address). The HW considers an IPv6 packet to be
+                                             address). The HW considers an IPv6 packet to be 
                                              multicast when the most-significant byte of the
                                              128-bit destination address is all 1's.
                                              Only applies when the parse mode for the packets
@@ -240,7 +240,7 @@ typedef struct {
                                              that were dropped due to RED.
                                              The HW considers an IPv4 packet to be broadcast
                                              when all bits are set in the MSB of the
-                                             destination address. IPv6 does not have the
+                                             destination address. IPv6 does not have the 
                                              concept of a broadcast packets.
                                              Only applies when the parse mode for the packet
                                              is SKIP-TO-L2 and the packet is IP or the parse
@@ -572,20 +572,18 @@ static inline void cvmx_pip_set_frame_check(int interface, uint32_t max_size)
 	   PIP_PRT_CFG[len_chk_sel] selects which set of
 	   MAXLEN/MINLEN to use. */
 	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
-		if(!OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-			cvmx_pip_prt_cfgx_t config;
-			int port;
-			int num_ports = cvmx_helper_ports_on_interface(interface);
-			for (port = 0; port < num_ports; port++) {
-				int pknd = cvmx_helper_get_pknd(interface, port);
-				int sel;
+		cvmx_pip_prt_cfgx_t config;
+		int port;
+		int num_ports = cvmx_helper_ports_on_interface(interface);
+		for (port = 0; port < num_ports; port++) {
+			int pknd = cvmx_helper_get_pknd(interface, port);
+			int sel;
 
-				config.u64 = cvmx_read_csr(CVMX_PIP_PRT_CFGX(pknd));
-				sel = config.s.len_chk_sel;
-				frm_len.u64 = cvmx_read_csr(CVMX_PIP_FRM_LEN_CHKX(sel));
-				frm_len.s.maxlen = max_size;
-				cvmx_write_csr(CVMX_PIP_FRM_LEN_CHKX(sel), frm_len.u64);
-			}
+			config.u64 = cvmx_read_csr(CVMX_PIP_PRT_CFGX(pknd));
+			sel = config.s.len_chk_sel;
+			frm_len.u64 = cvmx_read_csr(CVMX_PIP_FRM_LEN_CHKX(sel));
+			frm_len.s.maxlen = max_size;
+			cvmx_write_csr(CVMX_PIP_FRM_LEN_CHKX(sel), frm_len.u64);
 		}
 	}
 	/* Update for each interface */
@@ -608,7 +606,7 @@ static inline void cvmx_pip_set_frame_check(int interface, uint32_t max_size)
 /**
  * Initialize Bit Select Extractor config. Their are 8 bit positions and valids
  * to be used when using the corresponding extractor.
- *
+ * 
  * @param bit     Bit Select Extractor to use
  * @param pos     Which position to update
  * @param val     The value to update the position with
@@ -690,7 +688,7 @@ static inline void cvmx_pip_bsel_config(int bit, int offset, int skip)
 }
 
 /**
- * Get the entry for the Bit Select Extractor Table.
+ * Get the entry for the Bit Select Extractor Table. 
  * @param work   pointer to work queue entry
  * @return       Index of the Bit Select Extractor Table
  */

@@ -389,16 +389,16 @@ static int __cvmx_helper_ilk_init_port(int interface)
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 		if (pipe_base == 0)
 			pipe_base = __cvmx_pko_get_pipe(interface + CVMX_ILK_GBL_BASE(), 0);
-
+	
 		if (pipe_base == -1) {
 			pipe_base = 0;
 			return 0;
 		}
-
+	
 		res = cvmx_ilk_set_pipe(interface, pipe_base, cvmx_ilk_chans[interface]);
 		if (res < 0)
 			return 0;
-
+	
 		/* set up pipe to channel mapping */
 		i = pipe_base;
 		if (pch == NULL) {
@@ -411,7 +411,7 @@ static int __cvmx_helper_ilk_init_port(int interface)
 			if (pch == NULL)
 				return 0;
 		}
-
+	
 		memset(pch, 0, CVMX_ILK_MAX_CHANS * sizeof(cvmx_ilk_pipe_chan_t));
 		tmp = pch;
 		for (j = 0; j < cvmx_ilk_chans[interface]; j++) {
@@ -430,8 +430,15 @@ static int __cvmx_helper_ilk_init_port(int interface)
 	/* set up channel to pkind mapping */
 	if (pknd_base == 0)
 		pknd_base = cvmx_helper_get_pknd(interface + CVMX_ILK_GBL_BASE(), 0);
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		/*
+		 * Must initialize pknd_base here until the pko initializion is
+		 * complete. This must be removed once the pko initialization is
+		 * working. TODO
+		 */
+		pknd_base = 0;
 		pipe_base = pknd_base + cvmx_ilk_chans[interface];
+	}
 
 	i = pknd_base;
 	if (chpknd == NULL) {

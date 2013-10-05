@@ -196,7 +196,6 @@ int __cvmx_helper_agl_enable(int interface)
 	int port = cvmx_helper_agl_get_port(interface);
 	union cvmx_pko_mem_port_ptrs pko_mem_port_ptrs;
 	union cvmx_pko_reg_read_idx read_idx;
-	int do_link_set = 1;
 	int i;
 
 	/* Setup PKO for AGL interface. Back pressure is not supported. */
@@ -216,18 +215,7 @@ int __cvmx_helper_agl_enable(int interface)
 	}
 
 	cvmx_agl_enable(port);
-#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
-	/*
-	 * Linux kernel driver will call ....link_set with the
-	 * proper link state. In the simulator there is no
-	 * link state polling and hence it is set from
-	 * here.
-	 */
-	if (!(cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM))
-		do_link_set = 0;
-#endif
-	if (do_link_set)
-		cvmx_agl_link_set(port, cvmx_agl_link_get(port), 1);
+	cvmx_agl_link_set(port, cvmx_agl_link_get(port), 1);
 
 	return 0;
 }

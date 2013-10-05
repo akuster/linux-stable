@@ -91,15 +91,12 @@
  *	This type is used for npi interfaces.
  * @param LB
  *	This type is used for loopback interfaces.
- * @param INVALID_IF_TYPE
- *	This type indicates the interface hasn't been configured.
  */
 typedef enum {
 	GMII,
 	ILK,
 	NPI,
-	LB,
-	INVALID_IF_TYPE
+	LB
 } port_map_if_type_t;
 
 /**
@@ -113,7 +110,7 @@ typedef enum {
  * @param last_ipd_port
  *	Last IPD port number assigned to this interface.
  * @param ipd_port_adj
- *	Different octeon chips require different ipd ports for the
+ *	Different octeon chips require different ipd ports for the 
  *	same interface port/mode configuration. This value is used
  *	to account for that difference.
  */
@@ -388,8 +385,6 @@ int cvmx_helper_setup_red(int pass_thresh, int drop_thresh)
 	int interface;
 	int port;
 
-	//vinita_to_do modify for 78xx
-	if(!OCTEON_IS_MODEL(OCTEON_CN78XX)){
 	/*
 	 * Disable backpressure based on queued buffers. It needs SW support
 	 */
@@ -475,7 +470,6 @@ int cvmx_helper_setup_red(int pass_thresh, int drop_thresh)
 			red_port_enable2.s.prt_enb = 0xf0;
 			cvmx_write_csr(CVMX_IPD_RED_PORT_ENABLE2, red_port_enable2.u64);
 		}
-	}
 	}
 
 	return 0;
@@ -1019,48 +1013,19 @@ EXPORT_SYMBOL_GPL(cvmx_helper_get_interface_num);
 int cvmx_helper_get_interface_index_num(int ipd_port)
 {
 	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
-		const struct ipd_port_map	*port_map;
-		int				port;
-		port_map_if_type_t		type = INVALID_IF_TYPE;
-		int				i;
-		int				num_interfaces;
-
-		if (OCTEON_IS_MODEL(OCTEON_CN68XX))
-			port_map = ipd_port_map_68xx;
-		else if (OCTEON_IS_MODEL(OCTEON_CN78XX))
-			port_map = ipd_port_map_78xx;
+		if (ipd_port >= 0x800 && ipd_port < 0xd00) {
+			int port = ((ipd_port & 0xff) >> 6);
+			return port ? (port - 1) : ((ipd_port & 0xff) >> 4);
+		} else if (ipd_port >= 0x400 && ipd_port < 0x600)
+			return ipd_port & 0xff;
+		else if (ipd_port >= 0x100 && ipd_port < 0x120)
+			return ipd_port & 0xff;
+		else if (ipd_port < 8)
+			return ipd_port;
 		else
-			return -1;
-
-		num_interfaces = cvmx_helper_get_number_of_interfaces();
-
-		/* Get the interface type of the ipd port */
-		for (i = 0; i < num_interfaces; i++) {
-			if (ipd_port >= port_map[i].first_ipd_port &&
-			    ipd_port <= port_map[i].last_ipd_port) {
-				type = port_map[i].type;
-				break;
-			}
-		}
-
-		/* Convert the ipd port to the interface port */
-		switch (type) {
-		case GMII:
-			port = ((ipd_port & 0xff) >> 6);
- 			return port ? (port - 1) : ((ipd_port & 0xff) >> 4);
-			break;
-
-		case ILK:
-		case NPI:
-		case LB:
- 			return ipd_port & 0xff;
-			break;
-
-		default:
-			cvmx_dprintf("cvmx_helper_get_interface_index_num: "
-				     "Illegal IPD port number %d\n", ipd_port);
-			return -1;
-		}
+			cvmx_dprintf("cvmx_helper_get_interface_index_num: Illegal IPD port number %d\n",
+				     ipd_port);
+		return -1;
 	}
 	if (OCTEON_IS_MODEL(OCTEON_CN70XX))
 		return ipd_port & 3;

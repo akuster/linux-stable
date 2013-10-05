@@ -91,39 +91,35 @@ int cvmx_pki_alloc_style(int node, int style)
 }
 
 /**
- * This function frees a style from pool of global styles per node.
- * @param node	 node to free style from.
- * @param style	 style to free
- * @return 	 0 on success, -1 on failure.
- */
-int cvmx_pki_free_style(int node, int style)
-{
-	if (cvmx_free_global_resource_range_with_base(CVMX_GR_TAG_STYLE(node), style, 1) == -1) {
-		cvmx_dprintf("\nERROR Failed to release style %d", (int)style);
-		return -1;
-	}
-	return 0;
-}
-
-
-/**
  * This function allocates/reserves a cluster group from per node
    cluster group resources.
  * @param node	 	node to allocate cluster group from.
    @param cl_grp	cluster group to allocate/reserve, if -1 ,
                         allocate any available cluster group.
+ * @param num_clusters	number of clusters that will be attached to
+			the cluster group.
+ * @param parsing_mask  mask of parsing that will be enabled on the cluster group.
  * @return 	 	cluster group number or -1 on failure
  */
-int cvmx_pki_alloc_cluster_group(int node, int cl_grp)
+int cvmx_pki_alloc_cluster_group(int node, int cl_grp, int num_clusters,
+				 uint64_t parsing_mask, uint64_t *cluster_mask)
 {
+	int cluster = 0;
+
 	if(node >= CVMX_MAX_NODES) {
 		cvmx_dprintf("Invalid node number %d",node);
+		return -1;
+	}
+
+	if(cvmx_create_global_resource_range(CVMX_GR_TAG_CLUSTERS(node),CVMX_PKI_NUM_CLUSTERS)) {
+		cvmx_dprintf("Failed to create Clusters global resource\n");
 		return -1;
 	}
 	if(cvmx_create_global_resource_range(CVMX_GR_TAG_CLUSTER_GRP(node),CVMX_PKI_NUM_CLUSTER_GROUP)) {
 		cvmx_dprintf("Failed to create Cluster group global resource\n");
 		return -1;
 	}
+
 	if( cl_grp >=0 )
 		cl_grp = cvmx_reserve_global_resource_range(CVMX_GR_TAG_CLUSTER_GRP(node),0,cl_grp,1);
 
@@ -135,99 +131,63 @@ int cvmx_pki_alloc_cluster_group(int node, int cl_grp)
 			return -1;
 		}
 	}
-	return cl_grp;
-}
-
-/**
- * This function frees a cluster group from per node
-   cluster group resources.
- * @param node	 	node to free cluster group from.
-   @param cl_grp	cluster group to free
- * @return 	 	0 on success or -1 on failure
- */
-int cvmx_pki_free_cluster_group(int node, int cl_grp)
-{
-	if (cvmx_free_global_resource_range_with_base(CVMX_GR_TAG_CLUSTER_GRP(node), cl_grp, 1) == -1) {
-		cvmx_dprintf("\nERROR Failed to release cluster group %d", (int)cl_grp);
+	if(cl_grp >= CVMX_PKI_NUM_CLUSTER_GROUP) {
+		cvmx_dprintf("ERROR: Invalid cluster group %d got allocated\n",cl_grp);
 		return -1;
 	}
-	return 0;
+	if(cl_grp == -1) {
+		cvmx_dprintf("Warning: Failed to alloc cluster grp sharing the cluster grp\n");
+		//vinita cl_grp = cvmx_find_global_resource_range_owner(CVMX_GR_TAG_CLUSTER_GRP(node), num_clusters);
+		return -1; //vinita
+	}
+	else {
+		cluster = cvmx_allocate_global_resource_range(CVMX_GR_TAG_CLUSTERS(node),
+				cl_grp, num_clusters, 1);
+		if(cluster >= CVMX_PKI_NUM_CLUSTERS) {
+			cvmx_dprintf("ERROR: Invalid clusters %d got allocated\n", (int)cluster);
+			return -1;
+		}
+		if(cluster == -1) {
+			cvmx_dprintf("Warning: Failed to allocate clusters %d sharing the clusters \n", (int)num_clusters);
+			//vinita cl_grp = cvmx_find_global_resource_range_owner(CVMX_GR_TAG_CLUSTERS(node), num_clusters);
+			//to_do vinita cluster = cvmx_find_global_resource_owner_range(CVMX_GR_TAG_CLUSTERS(node), cl_grp);
+			return -1; //vinita
+		}
+	}
+	if(cl_grp == -1 || cluster == -1){
+			cvmx_dprintf("Failed to allocate Cluster group global resource\n");
+		return -1;
+	}
+	else {
+		*cluster_mask = cvmx_build_mask((uint64_t)((num_clusters-(uint64_t)cluster+1) << cluster));
+		return cl_grp;
+	}
 }
 
-/**
- * This function allocates/reserves a cluster from per node
-   cluster resources.
- * @param node	 	node to allocate cluster group from.
-   @param cluster_mask	mask of clusters  to allocate/reserve, if -1 ,
-                        allocate any available clusters.
- * @param num_clusters	number of clusters that will be allocated
- */
-int cvmx_pki_alloc_clusters(int node, int num_clusters, uint64_t *cluster_mask)
+int cvmx_pki_free_cluster_group(int node, int grp_index)
 {
-	int cluster = 0;
-	int clusters[CVMX_PKI_NUM_CLUSTERS];
-
 	if(node >= CVMX_MAX_NODES) {
 		cvmx_dprintf("Invalid node number %d",node);
 		return -1;
 	}
 
-	if(cvmx_create_global_resource_range(CVMX_GR_TAG_CLUSTERS(node),CVMX_PKI_NUM_CLUSTERS)) {
-		cvmx_dprintf("Failed to create Clusters global resource\n");
+	//spinlock it
+	if (--pki_config[node].cluster_cfg[grp_index].users) {
+		cvmx_dprintf("ERROR: cluster group %d is in use, can't free it\n", (int)grp_index);
 		return -1;
 	}
-	if(*cluster_mask > 0) {
-		while(cluster < CVMX_PKI_NUM_CLUSTERS) {
-			if(*cluster_mask & (0x01L << cluster)) {
-				if(cvmx_reserve_global_resource_range(CVMX_GR_TAG_CLUSTERS(node),0,cluster,1) == -1) {
-					cvmx_dprintf("ERROR: allocating cluster %d\n",cluster);
-					return -1;
-				}
-			}
-			cluster++;
-		}
+	if (grp_index >= CVMX_PKI_NUM_CLUSTER_GROUP) {
+		cvmx_dprintf("ERROR: Invalid cluster group %d in cvmx_pki_free_cluster_group\n", (int)grp_index);
+		return -1;
 	}
-	else {
-		if(cvmx_resource_alloc_many(CVMX_GR_TAG_CLUSTERS(node), 0,
-		   num_clusters,clusters) == -1) {
-			   cvmx_dprintf("ERROR: allocating clusters\n");
-			   return -1;
-		}
-		*cluster_mask = 0;
-		while(num_clusters--)
-		{
-			*cluster_mask |= (0x1ul << clusters[num_clusters]);
-		}
+	if (cvmx_free_global_resource_range_with_owner(CVMX_GR_TAG_CLUSTER_GRP(node), grp_index) == -1) {
+		cvmx_dprintf("ERROR Failed to release cluster group %d\n", (int)grp_index);
+		return -1;
 	}
+	//spinlock it
+	pki_config[node].cluster_cfg[grp_index].users--;
 	return 0;
 }
-
-/**
- * This function frees  clusters  from per node
-   clusters resources.
- * @param node	 	node to free clusters from.
- * @param cluster_mask  mask of clusters need freeing
- * @return 	 	0 on success or -1 on failure
- */
-int cvmx_pki_free_clusters(int node, uint64_t cluster_mask)
-{
-	int cluster=0;
-	if(cluster_mask > 0) {
-		while(cluster < CVMX_PKI_NUM_CLUSTERS) {
-			if(cluster_mask & (0x01L << cluster)) {
-				if(cvmx_free_global_resource_range_with_base(
-						CVMX_GR_TAG_CLUSTERS(node), cluster, 1) == -1) {
-					cvmx_dprintf("ERROR: freeing cluster %d\n",cluster);
-					return -1;
-				}
-			}
-			cluster++;
-		}
-	}
-	return 0;
-}
-
-
 
 /**
  * This function allocates/reserves a pcam entry from node
@@ -267,32 +227,6 @@ int cvmx_pki_pcam_alloc_entry(int node, int index, int bank, uint64_t cluster_ma
 	//all clusters will have same base index
 	return index;
 }
-
-/**
- * This function frees a pcam entry from node
- * @param node	 	node to allocate pcam entry from.
-   @param index  	index of pacm entry (0-191) needs to be freed.
- * @param bank		pcam bank where to free pcam entry from
- * @param cluster_mask  mask of clusters from which pcam entry is freed.
- * @return 	 	0 on success OR -1 on failure
- */
-int cvmx_pki_pcam_free_entry(int node, int index, int bank, uint64_t cluster_mask)
-{
-	uint64_t cluster=0;
-
-	while( cluster < CVMX_PKI_NUM_CLUSTERS) {
-		if(cluster_mask & (0x01L << cluster)) {
-			if(cvmx_free_global_resource_range_with_base (
-						CVMX_GR_TAG_PCAM(node,cluster,bank), index, 1) == -1) {
-				cvmx_dprintf("ERROR: freeing cluster %d\n",(int)cluster);
-				return -1;
-			}
-			cluster++;
-		}
-	}
-	return 0;
-}
-
 
 /**
  * This function allocates/reserves QPG table entries per node.

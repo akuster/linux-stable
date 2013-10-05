@@ -3289,7 +3289,7 @@ union cvmx_fpa_poolx_op_pc {
 	uint64_t u64;
 	struct cvmx_fpa_poolx_op_pc_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t count                        : 64; /**< Number of allocations or returns performed to this pool, including those that fail due to RED. */
+	uint64_t count                        : 64; /**< Number of allocations or returns performed to this poolFPA_POOL(0..63)_STACK_BASE. */
 #else
 	uint64_t count                        : 64;
 #endif
@@ -3718,9 +3718,7 @@ union cvmx_fpa_sft_rst {
 	uint64_t busy                         : 1;  /**< When 1, FPA is busy completing reset. No access except the reading of this bit should
                                                          occur to the FPA until this is clear. */
 	uint64_t reserved_1_62                : 62;
-	uint64_t rst                          : 1;  /**< Reset. When set to 1 by software, FPA gets a short reset pulse (three cycles in duration).
-                                                         Following a write to this register and prior to performing another FPA operation, software
-                                                         must write SSO_BIST_STATUS0 (or any register on the same IOI bus as FPA) and read it back. */
+	uint64_t rst                          : 1;  /**< Reset. When set to 1 by software, FPA gets a short reset pulse (three cycles in duration). */
 #else
 	uint64_t rst                          : 1;
 	uint64_t reserved_1_62                : 62;

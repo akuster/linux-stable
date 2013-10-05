@@ -350,7 +350,7 @@ static inline uint64_t CVMX_DPI_INFO_REG_FUNC(void)
 #define CVMX_DPI_INT_EN CVMX_DPI_INT_EN_FUNC()
 static inline uint64_t CVMX_DPI_INT_EN_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
 		cvmx_warn("CVMX_DPI_INT_EN not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001DF0000000010ull);
 }
@@ -599,17 +599,6 @@ union cvmx_dpi_bist_status {
 	uint64_t u64;
 	struct cvmx_dpi_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_51_63               : 13;
-	uint64_t bist                         : 51; /**< BIST Results.
-                                                         HW sets a bit in BIST for for memory that fails
-                                                         BIST. */
-#else
-	uint64_t bist                         : 51;
-	uint64_t reserved_51_63               : 13;
-#endif
-	} s;
-	struct cvmx_dpi_bist_status_cn61xx {
-#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_47_63               : 17;
 	uint64_t bist                         : 47; /**< BIST Results.
                                                          HW sets a bit in BIST for for memory that fails
@@ -618,7 +607,8 @@ union cvmx_dpi_bist_status {
 	uint64_t bist                         : 47;
 	uint64_t reserved_47_63               : 17;
 #endif
-	} cn61xx;
+	} s;
+	struct cvmx_dpi_bist_status_s         cn61xx;
 	struct cvmx_dpi_bist_status_cn63xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_45_63               : 19;
@@ -641,12 +631,12 @@ union cvmx_dpi_bist_status {
 	uint64_t reserved_37_63               : 27;
 #endif
 	} cn63xxp1;
-	struct cvmx_dpi_bist_status_cn61xx    cn66xx;
+	struct cvmx_dpi_bist_status_s         cn66xx;
 	struct cvmx_dpi_bist_status_cn63xx    cn68xx;
 	struct cvmx_dpi_bist_status_cn63xx    cn68xxp1;
-	struct cvmx_dpi_bist_status_cn61xx    cn70xx;
-	struct cvmx_dpi_bist_status_s         cn78xx;
-	struct cvmx_dpi_bist_status_cn61xx    cnf71xx;
+	struct cvmx_dpi_bist_status_s         cn70xx;
+	struct cvmx_dpi_bist_status_cn63xx    cn78xx;
+	struct cvmx_dpi_bist_status_s         cnf71xx;
 };
 typedef union cvmx_dpi_bist_status cvmx_dpi_bist_status_t;
 
@@ -1606,21 +1596,17 @@ union cvmx_dpi_ecc_ctl {
 	uint64_t u64;
 	struct cvmx_dpi_ecc_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_33_63               : 31;
-	uint64_t ram_cdis                     : 1;  /**< RDB RAM ECC correction disable. Each bit corresponds to a different RAM. */
-	uint64_t reserved_17_31               : 15;
-	uint64_t ram_flip1                    : 1;  /**< Flip syndrome bits on write. Flip syndrome bits <1> on writes to the corresponding RDB ram
+	uint64_t reserved_48_63               : 16;
+	uint64_t ram_cdis                     : 16; /**< RDB RAM ECC correction disable. Each bit corresponds to a different RAM. */
+	uint64_t ram_flip1                    : 16; /**< Flip syndrome bits on write. Flip syndrome bits <1> on writes to the corresponding RDB ram
                                                          to test single-bit or double-bit error handling. */
-	uint64_t reserved_1_15                : 15;
-	uint64_t ram_flip0                    : 1;  /**< Flip syndrome bits on write. Flip syndrome bits <0> on writes to the corresponding RDB ram
+	uint64_t ram_flip0                    : 16; /**< Flip syndrome bits on write. Flip syndrome bits <0> on writes to the corresponding RDB ram
                                                          to test single-bit or double-bit error handling. */
 #else
-	uint64_t ram_flip0                    : 1;
-	uint64_t reserved_1_15                : 15;
-	uint64_t ram_flip1                    : 1;
-	uint64_t reserved_17_31               : 15;
-	uint64_t ram_cdis                     : 1;
-	uint64_t reserved_33_63               : 31;
+	uint64_t ram_flip0                    : 16;
+	uint64_t ram_flip1                    : 16;
+	uint64_t ram_cdis                     : 16;
+	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
 	struct cvmx_dpi_ecc_ctl_s             cn78xx;
@@ -1637,17 +1623,17 @@ union cvmx_dpi_ecc_int {
 	uint64_t u64;
 	struct cvmx_dpi_ecc_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_47_63               : 17;
-	uint64_t ram_sbe                      : 15; /**< Set when a single-bit error is detected in the corresponding ram. Throws
-                                                         DPI_INTSN_E::DPI_ERR_RAM_SBE. */
-	uint64_t reserved_15_31               : 17;
-	uint64_t ram_dbe                      : 15; /**< Set when a double-bit error is detected in the corresponding ram. Throws
+	uint64_t reserved_63_63               : 1;
+	uint64_t ram_dbe                      : 31; /**< Set when a double-bit error is detected in the corresponding ram. Throws
                                                          DPI_INTSN_E::DPI_ERR_RAM_DBE. */
+	uint64_t reserved_31_31               : 1;
+	uint64_t ram_sbe                      : 31; /**< Set when a single-bit error is detected in the corresponding ram. Throws
+                                                         DPI_INTSN_E::DPI_ERR_RAM_SBE. */
 #else
-	uint64_t ram_dbe                      : 15;
-	uint64_t reserved_15_31               : 17;
-	uint64_t ram_sbe                      : 15;
-	uint64_t reserved_47_63               : 17;
+	uint64_t ram_sbe                      : 31;
+	uint64_t reserved_31_31               : 1;
+	uint64_t ram_dbe                      : 31;
+	uint64_t reserved_63_63               : 1;
 #endif
 	} s;
 	struct cvmx_dpi_ecc_int_s             cn78xx;
@@ -1873,6 +1859,7 @@ union cvmx_dpi_int_en {
 	struct cvmx_dpi_int_en_cn63xx         cn68xx;
 	struct cvmx_dpi_int_en_cn63xx         cn68xxp1;
 	struct cvmx_dpi_int_en_s              cn70xx;
+	struct cvmx_dpi_int_en_s              cn78xx;
 	struct cvmx_dpi_int_en_s              cnf71xx;
 };
 typedef union cvmx_dpi_int_en cvmx_dpi_int_en_t;

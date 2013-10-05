@@ -44,7 +44,7 @@
  * Helper functions to abstract board specific data about
  * network ports from the rest of the cvmx-helper files.
  *
- * <hr>$Revision: 88582 $<hr>
+ * <hr>$Revision: 86922 $<hr>
  */
 #ifndef __CVMX_HELPER_BOARD_H__
 #define __CVMX_HELPER_BOARD_H__
@@ -67,7 +67,6 @@ typedef enum {
 	MARVELL_GENERIC_PHY,
  	VITESSE_GENERIC_PHY,
 	CORTINA_PHY,
-	GENERIC_8023_C22_PHY,
  	INBAND_PHY,
 } cvmx_phy_type_t;
 

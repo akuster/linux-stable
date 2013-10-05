@@ -156,9 +156,10 @@ int __pip_eth_node(const void *fdt_addr, int aliases, int ipd_port)
 	if (dbg)
 		cvmx_dprintf("iface=%d ", iface);
 	if (iface < 0) {
-		if (dbg)
-			cvmx_dprintf("ERROR : pip intf %d not found in device tree\n",
+		cvmx_dprintf("ERROR : pip intf %d not found in device tree \n",
 			     interface_num);
+		if (dbg)
+			cvmx_dprintf("\n");
 		return -1;
 	}
 	snprintf(name_buffer, sizeof(name_buffer), "ethernet@%x", interface_index);
@@ -387,7 +388,6 @@ int __cvmx_helper_board_get_port_from_dt(void *fdt_addr, int ipd_port)
         case CVMX_HELPER_INTERFACE_MODE_SGMII:
 	case CVMX_HELPER_INTERFACE_MODE_QSGMII:
         case CVMX_HELPER_INTERFACE_MODE_RXAUI:
-        case CVMX_HELPER_INTERFACE_MODE_AGL:
 		aliases = 1;
 		break;
 	default:
@@ -430,7 +430,7 @@ int __cvmx_helper_board_get_port_from_dt(void *fdt_addr, int ipd_port)
 		cvmx_dprintf("%s: eth subnode offset %d from %s\n",
 			     __func__, eth, name_buffer);
 
-	if (eth < 0)
+	if (eth < 0) 
 		return -1;
 
 	if (fdt_getprop(fdt_addr, eth, "cavium,sgmii-mac-phy-mode", NULL))
@@ -535,31 +535,22 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 			     ipd_port, phy);
 		return -1;
 	}
-
-	phy_compatible_str = (const char *)fdt_getprop(fdt_addr, phy,
-						       "compatible", NULL);
+	phy_compatible_str = (const char *)fdt_getprop(fdt_addr, phy, "compatible", NULL);
 	if (!phy_compatible_str) {
-		cvmx_dprintf("ERROR: no compatible prop in phy\n");
+		cvmx_dprintf("ERROR : no compatible prop in phy\n");
 		return -1;
 	}
-	if (!memcmp("marvell", phy_compatible_str, strlen("marvell"))) {
+	if (memcmp("marvell", phy_compatible_str, strlen("marvell")) == 0) {
 		phy_info->phy_type = MARVELL_GENERIC_PHY;
-	} else if (!memcmp("broadcom", phy_compatible_str, strlen("broadcom"))) {
+	} else if (memcmp("broadcom", phy_compatible_str, strlen("broadcom")) == 0) {
 		phy_info->phy_type = BROADCOM_GENERIC_PHY;
-	} else if (!memcmp("vitesse", phy_compatible_str, strlen("vitesse"))) {
-		if (!fdt_node_check_compatible(fdt_addr, phy,
-					       "ethernet-phy-ieee802.3-c22"))
-			phy_info->phy_type = GENERIC_8023_C22_PHY;
-		else
-			phy_info->phy_type = VITESSE_GENERIC_PHY;
-	} else if (!memcmp("cortina", phy_compatible_str, strlen("cortina"))) {
+	} else if (memcmp("vitesse", phy_compatible_str, strlen("vitesse")) == 0) {
+		phy_info->phy_type = VITESSE_GENERIC_PHY;
+	} else if (memcmp("cortina", phy_compatible_str, strlen("cortina")) == 0) {
 		phy_info->phy_type = CORTINA_PHY;
 		host_mode_str = (const char *)fdt_getprop(fdt_addr, phy,
 							  "cortina,host-mode",
 							  NULL);
-	} else if (!fdt_node_check_compatible(fdt_addr, phy,
-					      "ethernet-phy-ieee802.3-c22")) {
-		phy_info->phy_type = GENERIC_8023_C22_PHY;
 	} else {
 		cvmx_dprintf("Unknown PHY compatibility\n");
 		phy_info->phy_type = -1;
@@ -1176,71 +1167,6 @@ static cvmx_helper_link_info_t __get_broadcom_phy_link_state(int phy_addr)
 	return result;
 }
 
-#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-/**
- * @INTERNAL
- * Get link state of generic gigabit PHY
- *
- * @param phy_addr - address of PHY
- *
- * @returns link status of the PHY
- */
-static cvmx_helper_link_info_t
-__cvmx_get_generic_8023_c22_phy_link_state(int phy_addr)
-{
-	cvmx_helper_link_info_t result;
-	int phy_basic_control;	/* Register 0x0 */
-	int phy_basic_status;	/* Register 0x1 */
-	int phy_anog_adv;	/* Register 0x4 */
-	int phy_link_part_avail;/* Register 0x5 */
-	int phy_control;	/* Register 0x9 */
-	int phy_status;		/* Register 0xA */
-
-	result.u64 = 0;
-
-	phy_basic_status = cvmx_mdio_read(phy_addr >> 8, phy_addr & 0xff, 1);
-	if (!(phy_basic_status & 0x4))	/* Check if link is up */
-		return result;			/* Link is down, return link down */
-
-	result.s.link_up = 1;
-	phy_basic_control = cvmx_mdio_read(phy_addr >> 8, phy_addr & 0xff, 0);
-	/* Check if autonegotiation is enabled and completed */
-	if ((phy_basic_control & (1 << 12)) && (phy_basic_status & (1 << 5))) {
-		phy_status = cvmx_mdio_read(phy_addr >> 8, phy_addr & 0xff, 0xA);
-		phy_control = cvmx_mdio_read(phy_addr >> 8, phy_addr & 0xff, 0x9);
-
-		phy_status &= phy_control << 2;
-		phy_link_part_avail = cvmx_mdio_read(phy_addr >> 8,
-						     phy_addr & 0xff, 0x5);
-		phy_anog_adv = cvmx_mdio_read(phy_addr >> 8,
-					      phy_addr & 0xff, 0x4);
-		phy_link_part_avail &= phy_anog_adv;
-
-		if (phy_status & 0xC00) {	/* Gigabit full or half */
-			result.s.speed = 1000;
-			result.s.full_duplex = !!(phy_status & 0x800);
-		} else if (phy_link_part_avail & 0x0180) { /* 100 full or half */
-			result.s.speed = 100;
-			result.s.full_duplex = !!(phy_link_part_avail & 0x100);
-		} else if (phy_link_part_avail & 0x0060) {
-			result.s.speed = 10;
-			result.s.full_duplex = !!(phy_link_part_avail & 0x0040);
-		}
-	} else {
-		/* Not autonegotiated */
-		result.s.full_duplex = !!(phy_basic_control & (1 << 8));
-
-		if (phy_basic_control & (1 << 6))
-			result.s.speed = 1000;
-		else if (phy_basic_control & (1 << 13))
-			result.s.speed = 100;
-		else
-			result.s.speed = 10;
-	}
-	return result;
-}
-#endif
-
 /**
  * @INTERNAL
  * Get link state using inband status
@@ -1461,9 +1387,6 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get_from_dt(int ipd_port)
 		break;
 	case CORTINA_PHY:
 		result = __cvmx_get_cortina_phy_link_state(phy_info.phy_addr);
-		break;
-	case GENERIC_8023_C22_PHY:
-		result = __cvmx_get_generic_8023_c22_phy_link_state(phy_info.phy_addr);
 		break;
 	case INBAND_PHY:
 	default:

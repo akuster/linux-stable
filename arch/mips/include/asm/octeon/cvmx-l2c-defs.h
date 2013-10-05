@@ -165,17 +165,6 @@ static inline uint64_t CVMX_L2C_CBCX_BIST_STATUS(unsigned long block_id)
 #define CVMX_L2C_CBCX_BIST_STATUS(block_id) (CVMX_ADD_IO_SEG(0x0001180080E007F8ull) + ((block_id) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_CBCX_DLL(unsigned long block_id)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_CBCX_DLL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080E00018ull) + ((block_id) & 3) * 0x40000ull;
-}
-#else
-#define CVMX_L2C_CBCX_DLL(block_id) (CVMX_ADD_IO_SEG(0x0001180080E00018ull) + ((block_id) & 3) * 0x40000ull)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_L2C_CBCX_INT(unsigned long block_id)
 {
 	if (!(
@@ -198,17 +187,6 @@ static inline uint64_t CVMX_L2C_CBCX_IOCERR(unsigned long block_id)
 }
 #else
 #define CVMX_L2C_CBCX_IOCERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080E007E8ull) + ((block_id) & 3) * 0x40000ull)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_CBCX_MIBERR(unsigned long block_id)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((block_id >= 2) && (block_id <= 3))))))
-		cvmx_warn("CVMX_L2C_CBCX_MIBERR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080E807E0ull) + ((block_id) & 3) * 0x40000ull - 262144*2;
-}
-#else
-#define CVMX_L2C_CBCX_MIBERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080E807E0ull) + ((block_id) & 3) * 0x40000ull - 262144*2)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_L2C_CBCX_RSDERR(unsigned long block_id)
@@ -935,13 +913,12 @@ static inline uint64_t CVMX_L2C_SPAR4_FUNC(void)
 static inline uint64_t CVMX_L2C_TADX_DLL(unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
 		cvmx_warn("CVMX_L2C_TADX_DLL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00018ull) + ((block_id) & 7) * 0x40000ull;
+	return CVMX_ADD_IO_SEG(0x0001180080A00018ull);
 }
 #else
-#define CVMX_L2C_TADX_DLL(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00018ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TADX_DLL(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00018ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_L2C_TADX_ECC0(unsigned long block_id)
@@ -2259,56 +2236,19 @@ union cvmx_l2c_cbcx_bist_status {
 	uint64_t u64;
 	struct cvmx_l2c_cbcx_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_39_63               : 25;
-	uint64_t mibfl                        : 5;  /**< BIST failure status for various MIB memories. ([XMD, IPM, IRM, MXD, MXN]) */
+	uint64_t reserved_34_63               : 30;
 	uint64_t ioccmdfl                     : 2;  /**< BIST failure status for IOCCMD0-1. */
 	uint64_t rsdfl                        : 32; /**< BIST failure status for RSDQW0-31. */
 #else
 	uint64_t rsdfl                        : 32;
 	uint64_t ioccmdfl                     : 2;
-	uint64_t mibfl                        : 5;
-	uint64_t reserved_39_63               : 25;
+	uint64_t reserved_34_63               : 30;
 #endif
 	} s;
-	struct cvmx_l2c_cbcx_bist_status_cn70xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_34_63               : 30;
-	uint64_t ioccmdfl                     : 2;  /**< BIST failure status for IOCCMD0-1. */
-	uint64_t rsdfl                        : 32; /**< BIST failure status for RSDQW0-31. */
-#else
-	uint64_t rsdfl                        : 32;
-	uint64_t ioccmdfl                     : 2;
-	uint64_t reserved_34_63               : 30;
-#endif
-	} cn70xx;
+	struct cvmx_l2c_cbcx_bist_status_s    cn70xx;
 	struct cvmx_l2c_cbcx_bist_status_s    cn78xx;
 };
 typedef union cvmx_l2c_cbcx_bist_status cvmx_l2c_cbcx_bist_status_t;
-
-/**
- * cvmx_l2c_cbc#_dll
- *
- * Register for DLL observability
- *
- */
-union cvmx_l2c_cbcx_dll {
-	uint64_t u64;
-	struct cvmx_l2c_cbcx_dll_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_16_63               : 48;
-	uint64_t dll_setting                  : 12; /**< DLL setting. */
-	uint64_t dll_state                    : 3;  /**< DLL state. */
-	uint64_t dll_lock                     : 1;  /**< DLL locked. */
-#else
-	uint64_t dll_lock                     : 1;
-	uint64_t dll_state                    : 3;
-	uint64_t dll_setting                  : 12;
-	uint64_t reserved_16_63               : 48;
-#endif
-	} s;
-	struct cvmx_l2c_cbcx_dll_s            cn78xx;
-};
-typedef union cvmx_l2c_cbcx_dll cvmx_l2c_cbcx_dll_t;
 
 /**
  * cvmx_l2c_cbc#_int
@@ -2320,9 +2260,7 @@ union cvmx_l2c_cbcx_int {
 	uint64_t u64;
 	struct cvmx_l2c_cbcx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_6_63                : 58;
-	uint64_t mibdbe                       : 1;  /**< MIB double-bit error occurred. See L2C_CBC(2..3)_MIBERR for logged information. */
-	uint64_t mibsbe                       : 1;  /**< MIB double-bit error occurred. See L2C_CBC(2..3)_MIBERR for logged information. */
+	uint64_t reserved_4_63                : 60;
 	uint64_t ioccmddbe                    : 1;  /**< IOCCMD double-bit error occurred. See L2C_CBC(0..3)_IOCERR for logged information. */
 	uint64_t ioccmdsbe                    : 1;  /**< IOCCMD single-bit error occurred. See L2C_CBC(0..3)_IOCERR for logged information. */
 	uint64_t rsddbe                       : 1;  /**< RSD double-bit error occurred. See L2C_CBC(0..3)_RSDERR for logged information. */
@@ -2332,26 +2270,10 @@ union cvmx_l2c_cbcx_int {
 	uint64_t rsddbe                       : 1;
 	uint64_t ioccmdsbe                    : 1;
 	uint64_t ioccmddbe                    : 1;
-	uint64_t mibsbe                       : 1;
-	uint64_t mibdbe                       : 1;
-	uint64_t reserved_6_63                : 58;
+	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
-	struct cvmx_l2c_cbcx_int_cn70xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_4_63                : 60;
-	uint64_t ioccmddbe                    : 1;  /**< IOCCMD double-bit error occurred. See L2C_CBC(0..3)_IOCERR for logged information. */
-	uint64_t ioccmdsbe                    : 1;  /**< IOCCMD single-bit error occurred. See L2C_CBC(0..3)_IOCERR for logged information. */
-	uint64_t rsddbe                       : 1;  /**< RSD double-bit error occurred. See L2C_CBC(0..3)_RSDERR for logged information. */
-	uint64_t rsdsbe                       : 1;  /**< RSD single-bit error occurred. See L2C_CBC(0..3)_RSDERR for logged information. */
-#else
-	uint64_t rsdsbe                       : 1;
-	uint64_t rsddbe                       : 1;
-	uint64_t ioccmdsbe                    : 1;
-	uint64_t ioccmddbe                    : 1;
-	uint64_t reserved_4_63                : 60;
-#endif
-	} cn70xx;
+	struct cvmx_l2c_cbcx_int_s            cn70xx;
 	struct cvmx_l2c_cbcx_int_s            cn78xx;
 };
 typedef union cvmx_l2c_cbcx_int cvmx_l2c_cbcx_int_t;
@@ -2389,45 +2311,6 @@ union cvmx_l2c_cbcx_iocerr {
 	struct cvmx_l2c_cbcx_iocerr_s         cn78xx;
 };
 typedef union cvmx_l2c_cbcx_iocerr cvmx_l2c_cbcx_iocerr_t;
-
-/**
- * cvmx_l2c_cbc#_miberr
- *
- * This register records error information for all CBC MIB errors.
- * An error locks the INDEX, and SYN fields and set the bit corresponding to the error received.
- * MIBDBE errors take priority and overwrite an earlier logged MIBSBE error. Only one of
- * MIBSBE/MIBDBE is set at any given time and serves to document which error the INDEX/SYN is
- * associated with.
- * The syndrome is recorded for DBE errors, though the utility of the value is not clear.
- */
-union cvmx_l2c_cbcx_miberr {
-	uint64_t u64;
-	struct cvmx_l2c_cbcx_miberr_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t mibdbe                       : 1;  /**< INDEX/SYN corresponds to a double-bit MIB ECC error. */
-	uint64_t mibsbe                       : 1;  /**< INDEX/SYN corresponds to a single-bit MIB ECC error. */
-	uint64_t reserved_40_61               : 22;
-	uint64_t syn                          : 8;  /**< Error syndrome. */
-	uint64_t reserved_3_31                : 29;
-	uint64_t memid                        : 2;  /**< Indicates the memory that had the error.
-                                                         0x0 = Error from MXB_VC_MRN, MXB_VC_MFN, MXB_VC_MPN VCs.
-                                                         0x1 = Error from MXB_VC_MRD, MXB_VC_MPD VCs.
-                                                         0x2 = Error from MXB_VC_IRM VC.
-                                                         0x3 = Error from MXB_VC_IPM VC. */
-	uint64_t mibnum                       : 1;  /**< Indicates the CBC that had the error. */
-#else
-	uint64_t mibnum                       : 1;
-	uint64_t memid                        : 2;
-	uint64_t reserved_3_31                : 29;
-	uint64_t syn                          : 8;
-	uint64_t reserved_40_61               : 22;
-	uint64_t mibsbe                       : 1;
-	uint64_t mibdbe                       : 1;
-#endif
-	} s;
-	struct cvmx_l2c_cbcx_miberr_s         cn78xx;
-};
-typedef union cvmx_l2c_cbcx_miberr cvmx_l2c_cbcx_miberr_t;
 
 /**
  * cvmx_l2c_cbc#_rsderr
@@ -3369,13 +3252,17 @@ union cvmx_l2c_ctl {
 	uint64_t xmc_arb_mode                 : 1;  /**< Arbitration mode for XMC QOS queues
                                                          == 0, fully determined through QOS
                                                          == 1, QOS0 highest priority, QOS1-3 use normal mode */
-	uint64_t reserved_2_13                : 12;
+	uint64_t reserved_6_13                : 8;
+	uint64_t vab_thresh                   : 4;  /**< VAB Threshold
+                                                         When the number of valid VABs exceeds this number the
+                                                         L2C increases the priority of all writes in the LMC. */
 	uint64_t disecc                       : 1;  /**< Tag and Data ECC Disable */
 	uint64_t disidxalias                  : 1;  /**< Index Alias Disable */
 #else
 	uint64_t disidxalias                  : 1;
 	uint64_t disecc                       : 1;
-	uint64_t reserved_2_13                : 12;
+	uint64_t vab_thresh                   : 4;
+	uint64_t reserved_6_13                : 8;
 	uint64_t xmc_arb_mode                 : 1;
 	uint64_t rsp_arb_mode                 : 1;
 	uint64_t maxlfb                       : 4;
@@ -3687,48 +3574,7 @@ union cvmx_l2c_ctl {
 	uint64_t reserved_32_63               : 32;
 #endif
 	} cn70xx;
-	struct cvmx_l2c_ctl_cn78xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_32_63               : 32;
-	uint64_t ocla_qos                     : 3;  /**< QOS level for the transactions from OCLA to L2C. */
-	uint64_t reserved_28_28               : 1;
-	uint64_t disstgl2i                    : 1;  /**< Disable STGL2Is from changing the tags. */
-	uint64_t reserved_25_26               : 2;
-	uint64_t discclk                      : 1;  /**< Disable conditional clocking in L2C PNR blocks. */
-	uint64_t reserved_16_23               : 8;
-	uint64_t rsp_arb_mode                 : 1;  /**< Arbitration mode for RSC/RSD bus. 0 = round-robin; 1 = static priority.
-                                                         1. IOR data
-                                                         2. STIN/FILLs
-                                                         3. STDN/SCDN/SCFL */
-	uint64_t xmc_arb_mode                 : 1;  /**< Arbitration mode for ADD bus QOS queues. 0 = fully determined through QOS, 1 = QOS0
-                                                         highest priority; QOS 1-7 use normal mode. */
-	uint64_t rdf_cnt                      : 8;  /**< Defines the sample point of the LMC response data in the DDR-clock/core-clock crossing.
-                                                         For optimal performance set to
-                                                         10 * (DDR-clock period/core-clock period) - 1.
-                                                         To disable set to 0. All other values are reserved. */
-	uint64_t reserved_3_5                 : 3;
-	uint64_t dissblkdty                   : 1;  /**< Disable bandwidth optimization between L2 and LMC and MOB which only transfers modified
-                                                         sub-blocks when possible. NOTE: in an OCI system all nodes must use the same setting of
-                                                         DISSBLKDTY or operation is undefined. FIXME: should reset to 0, once verif supports it. */
-	uint64_t disecc                       : 1;  /**< Tag and data ECC disable. */
-	uint64_t disidxalias                  : 1;  /**< Index alias disable. */
-#else
-	uint64_t disidxalias                  : 1;
-	uint64_t disecc                       : 1;
-	uint64_t dissblkdty                   : 1;
-	uint64_t reserved_3_5                 : 3;
-	uint64_t rdf_cnt                      : 8;
-	uint64_t xmc_arb_mode                 : 1;
-	uint64_t rsp_arb_mode                 : 1;
-	uint64_t reserved_16_23               : 8;
-	uint64_t discclk                      : 1;
-	uint64_t reserved_25_26               : 2;
-	uint64_t disstgl2i                    : 1;
-	uint64_t reserved_28_28               : 1;
-	uint64_t ocla_qos                     : 3;
-	uint64_t reserved_32_63               : 32;
-#endif
-	} cn78xx;
+	struct cvmx_l2c_ctl_cn70xx            cn78xx;
 	struct cvmx_l2c_ctl_cn61xx            cnf71xx;
 };
 typedef union cvmx_l2c_ctl cvmx_l2c_ctl_t;
@@ -4384,9 +4230,7 @@ union cvmx_l2c_ecc_ctl {
 	uint64_t u64;
 	struct cvmx_l2c_ecc_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_14_63               : 50;
-	uint64_t xmdmskflip                   : 2;  /**< Generate an ECC error in the XMD MSK. */
-	uint64_t mibflip                      : 2;  /**< Generate an ECC error in the MIB. See note above. */
+	uint64_t reserved_10_63               : 54;
 	uint64_t l2dflip                      : 2;  /**< Generate an ECC error in the L2D. See note above. */
 	uint64_t l2tflip                      : 2;  /**< Generate an ECC error in the L2T. */
 	uint64_t rdfflip                      : 2;  /**< Generate an ECC error in RDF memory. */
@@ -4398,28 +4242,10 @@ union cvmx_l2c_ecc_ctl {
 	uint64_t rdfflip                      : 2;
 	uint64_t l2tflip                      : 2;
 	uint64_t l2dflip                      : 2;
-	uint64_t mibflip                      : 2;
-	uint64_t xmdmskflip                   : 2;
-	uint64_t reserved_14_63               : 50;
+	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
-	struct cvmx_l2c_ecc_ctl_cn70xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_10_63               : 54;
-	uint64_t l2dflip                      : 2;  /**< Generate an ECC error in the L2D. See note above. */
-	uint64_t l2tflip                      : 2;  /**< Generate an ECC error in the L2T. */
-	uint64_t rdfflip                      : 2;  /**< Generate an ECC error in RDF memory. */
-	uint64_t xmdflip                      : 2;  /**< Generate an ECC error in all corresponding CBC XMD memories. */
-	uint64_t ioccmdflip                   : 2;  /**< Generate an ECC error in all corresponding IOCCMD memories. */
-#else
-	uint64_t ioccmdflip                   : 2;
-	uint64_t xmdflip                      : 2;
-	uint64_t rdfflip                      : 2;
-	uint64_t l2tflip                      : 2;
-	uint64_t l2dflip                      : 2;
-	uint64_t reserved_10_63               : 54;
-#endif
-	} cn70xx;
+	struct cvmx_l2c_ecc_ctl_s             cn70xx;
 	struct cvmx_l2c_ecc_ctl_s             cn78xx;
 };
 typedef union cvmx_l2c_ecc_ctl cvmx_l2c_ecc_ctl_t;
@@ -5950,18 +5776,7 @@ union cvmx_l2c_oci_ctl {
 	uint64_t u64;
 	struct cvmx_l2c_oci_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_7_63                : 57;
-	uint64_t cas_fdx                      : 1;  /**< When set, L2 STC/CAS operations performed at the home will immediately bring the block
-                                                         exclusive into the home. Default operation is to first request the block shared and only
-                                                         invalidate the remote if the compare succeeds. */
-	uint64_t rldd_psha                    : 1;  /**< When set, RLDD will be assumed to return a shared response (PSHA). Default operation will
-                                                         assume an exclusive response (PEMD). Note that an incorrect assumption only causes an
-                                                         extra tag write to be done upon receiving the response. */
-	uint64_t lock_local                   : 1;  /**< When set, L2 atomic operations (excluding CAS/STC) to remote addresses which miss at the
-                                                         requester will be performed locally on the requesting node. Default operation will instead
-                                                         send the atomic request to be performed on the home node. Note that CAS/STC operations
-                                                         which miss at the requester will always be performed at the home node regardless of this
-                                                         setting. */
+	uint64_t reserved_4_63                : 60;
 	uint64_t iofrcl                       : 1;  /**< When set, L2C services all I/O read and write operations on the local node, regardless of
                                                          the value of the node ID bits in the physical address. During normal operation this bit is
                                                          expected to be 0. */
@@ -5974,10 +5789,7 @@ union cvmx_l2c_oci_ctl {
 	uint64_t enaoci                       : 1;
 	uint64_t gksegnode                    : 2;
 	uint64_t iofrcl                       : 1;
-	uint64_t lock_local                   : 1;
-	uint64_t rldd_psha                    : 1;
-	uint64_t cas_fdx                      : 1;
-	uint64_t reserved_7_63                : 57;
+	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
 	struct cvmx_l2c_oci_ctl_s             cn78xx;
@@ -6888,7 +6700,7 @@ union cvmx_l2c_tadx_dll {
 	uint64_t reserved_16_63               : 48;
 	uint64_t dll_setting                  : 12; /**< DLL setting. */
 	uint64_t dll_state                    : 3;  /**< DLL state. */
-	uint64_t dll_lock                     : 1;  /**< DLL locked. */
+	uint64_t dll_lock                     : 1;  /**< ==1, DLL is locked. */
 #else
 	uint64_t dll_lock                     : 1;
 	uint64_t dll_state                    : 3;
@@ -6897,7 +6709,6 @@ union cvmx_l2c_tadx_dll {
 #endif
 	} s;
 	struct cvmx_l2c_tadx_dll_s            cn70xx;
-	struct cvmx_l2c_tadx_dll_s            cn78xx;
 };
 typedef union cvmx_l2c_tadx_dll cvmx_l2c_tadx_dll_t;
 
@@ -6996,34 +6807,6 @@ union cvmx_l2c_tadx_err {
 	uint64_t bigwr                        : 1;  /**< Logged information is for a BIGWR error. */
 	uint64_t holerd                       : 1;  /**< Logged information is for a HOLERD error. */
 	uint64_t holewr                       : 1;  /**< Logged information is for a HOLEWR error. */
-	uint64_t reserved_59_59               : 1;
-	uint64_t cmd                          : 8;  /**< XMC command of request causing error. FIXME, needs better description for OCI */
-	uint64_t source                       : 7;  /**< XMC 'source' of request causing error. If SOURCE<6>==0, SOURCE<5:0> = PPID else
-                                                         SOURCE<3:0> is BUSID of IOB which made the request. */
-	uint64_t node                         : 4;  /**< OCI Node of XMC request causing error. For BIG* errors NODE will always be the node
-                                                         logging the error (BIG* errors are logged at the home node). For HOLE* errors, NODE could
-                                                         be any OCI node in the system (HOLE* errors are logged at the requester node). */
-	uint64_t addr                         : 40; /**< XMC address causing the error. This field is the physical address after hole removal and
-                                                         index aliasing (if enabled). (The hole is between DR0 and DR1. Remove the hole by
-                                                         subtracting 256MB from all L2/DRAM physical addresses >= 512 MB.) */
-#else
-	uint64_t addr                         : 40;
-	uint64_t node                         : 4;
-	uint64_t source                       : 7;
-	uint64_t cmd                          : 8;
-	uint64_t reserved_59_59               : 1;
-	uint64_t holewr                       : 1;
-	uint64_t holerd                       : 1;
-	uint64_t bigwr                        : 1;
-	uint64_t bigrd                        : 1;
-#endif
-	} s;
-	struct cvmx_l2c_tadx_err_cn70xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t bigrd                        : 1;  /**< Logged information is for a BIGRD error. */
-	uint64_t bigwr                        : 1;  /**< Logged information is for a BIGWR error. */
-	uint64_t holerd                       : 1;  /**< Logged information is for a HOLERD error. */
-	uint64_t holewr                       : 1;  /**< Logged information is for a HOLEWR error. */
 	uint64_t reserved_58_59               : 2;
 	uint64_t cmd                          : 7;  /**< XMC command of request causing error. */
 	uint64_t source                       : 7;  /**< XMC 'source' of request causing error. If SOURCE<6>==0, SOURCE<5:0> = PPID else
@@ -7045,7 +6828,8 @@ union cvmx_l2c_tadx_err {
 	uint64_t bigwr                        : 1;
 	uint64_t bigrd                        : 1;
 #endif
-	} cn70xx;
+	} s;
+	struct cvmx_l2c_tadx_err_s            cn70xx;
 	struct cvmx_l2c_tadx_err_s            cn78xx;
 };
 typedef union cvmx_l2c_tadx_err cvmx_l2c_tadx_err_t;
@@ -7549,12 +7333,26 @@ union cvmx_l2c_tadx_tag {
 	uint64_t u64;
 	struct cvmx_l2c_tadx_tag_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sblkdty                      : 4;  /**< Sub-block dirty bits.  Ignored/loaded with 0 for RTG accesses. */
-	uint64_t reserved_1_59                : 59;
+	uint64_t sblkdty                      : 4;  /**< Sub-block dirty bits. INTERNAL: 70xx does not implement true sub-block dirty bits,
+                                                         therefore when L2C_TAD_TAG is written, it is set to all ones if DIRTY is 1, or all zeroes
+                                                         if DIRTY is zero. LTGL2I will always result in similar legal values being loaded. */
+	uint64_t reserved_57_59               : 3;
+	uint64_t businfo                      : 9;  /**< The bus information bits */
+	uint64_t reserved_47_47               : 1;
+	uint64_t ecc                          : 7;  /**< The tag ECC */
+	uint64_t reserved_3_39                : 37;
+	uint64_t valid                        : 1;  /**< The valid bit */
+	uint64_t dirty                        : 1;  /**< The dirty bit */
 	uint64_t lock                         : 1;  /**< The lock bit */
 #else
 	uint64_t lock                         : 1;
-	uint64_t reserved_1_59                : 59;
+	uint64_t dirty                        : 1;
+	uint64_t valid                        : 1;
+	uint64_t reserved_3_39                : 37;
+	uint64_t ecc                          : 7;
+	uint64_t reserved_47_47               : 1;
+	uint64_t businfo                      : 9;
+	uint64_t reserved_57_59               : 3;
 	uint64_t sblkdty                      : 4;
 #endif
 	} s;
@@ -7623,32 +7421,32 @@ union cvmx_l2c_tadx_tag {
 	} cn70xx;
 	struct cvmx_l2c_tadx_tag_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sblkdty                      : 4;  /**< Sub-block dirty bits.  Ignored/loaded with 0 for RTG accesses. */
-	uint64_t reserved_58_59               : 2;
-	uint64_t businfo                      : 9;  /**< The bus information bits.  Ignored/loaded with 0 for RTG accesses. */
-	uint64_t ecc                          : 7;  /**< The tag ECC. This field is undefined if L2C_CTL[DISECC] is not 1 when the LTGL2I reads the
-                                                         tags. */
-	uint64_t tag                          : 22; /**< The tag. TAG[39:20] is the corresponding bits from the L2C+LMC internal L2/DRAM byte
-                                                         address. TAG[41:40] is the OCI node of the address. The RTG must always have the
-                                                         TAG[41:40] == to
-                                                         the current node or operation is undefined. */
+	uint64_t sblkdty                      : 4;  /**< Sub-block dirty bits. INTERNAL: 70xx does not implement true sub-block dirty bits,
+                                                         therefore when L2C_TAD_TAG is written, it is set to all ones if DIRTY is 1, or all zeroes
+                                                         if DIRTY is zero. LTGL2I will always result in similar legal values being loaded. */
+	uint64_t reserved_57_59               : 3;
+	uint64_t businfo                      : 9;  /**< The bus information bits */
+	uint64_t reserved_47_47               : 1;
+	uint64_t ecc                          : 7;  /**< The tag ECC. This field is undefined if L2C_CTL[DISECC] is not 1 when the LTGL2I reads the tags. */
+	uint64_t tag                          : 20; /**< The tag. The tag is the corresponding bits from the L2C+LMC internal L2/DRAM byte address. */
 	uint64_t reserved_4_19                : 16;
 	uint64_t used                         : 1;  /**< The LRU use bit. If setting the LOCK bit, the USE bit should also be set or the operation
-                                                         is undefined.  Ignored/loaded with 0 for RTG accesses. */
-	uint64_t ts                           : 2;  /**< The TAG state. 0 - Invalid; 1 - Shared; 2 - Exclusive. Note that a local address will
-                                                         never have the value of 2 (Exclusive) as that state is encoded as Shared in the TAG and
-                                                         Invalid in the RTG. */
+                                                         is undefined. */
+	uint64_t valid                        : 1;  /**< The valid bit */
+	uint64_t dirty                        : 1;  /**< The dirty bit */
 	uint64_t lock                         : 1;  /**< The lock bit. If setting the LOCK bit, the USE bit should also be set or the operation is
-                                                         undefined.  Ignored/loaded with 0 for RTG accesses. */
+                                                         undefined. */
 #else
 	uint64_t lock                         : 1;
-	uint64_t ts                           : 2;
+	uint64_t dirty                        : 1;
+	uint64_t valid                        : 1;
 	uint64_t used                         : 1;
 	uint64_t reserved_4_19                : 16;
-	uint64_t tag                          : 22;
+	uint64_t tag                          : 20;
 	uint64_t ecc                          : 7;
+	uint64_t reserved_47_47               : 1;
 	uint64_t businfo                      : 9;
-	uint64_t reserved_58_59               : 2;
+	uint64_t reserved_57_59               : 3;
 	uint64_t sblkdty                      : 4;
 #endif
 	} cn78xx;

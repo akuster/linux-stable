@@ -42,7 +42,7 @@
  *
  * interface to the serial port UART hardware
  *
- * <hr>$Revision: 88249 $<hr>
+ * <hr>$Revision: 73845 $<hr>
  *
  */
 
@@ -61,7 +61,7 @@ extern "C" {
 
 /* CSR typedefs have been moved to cvmx-uart-defs.h */
 
-typedef void (*cvmx_uart_intr_handler_t) (int, uint64_t[]);
+typedef void (*cvmx_uart_intr_handler_t) (int, uint64_t[], void *);
 
 extern void cvmx_uart_enable_intr(int, cvmx_uart_intr_handler_t);
 extern int cvmx_uart_setup2(int, int, int);

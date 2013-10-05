@@ -2024,9 +2024,7 @@ union cvmx_sso_err0 {
 	uint64_t fff_sbe                      : 1;  /**< Single-bit error for  RAM. Throws SSO_INTSN_E::SSO_ERR0_FFF_SBE. */
 	uint64_t wes_dbe                      : 1;  /**< Double-bit error for WES RAM. Throws SSO_INTSN_E::SSO_ERR0_WES_DBE. */
 	uint64_t wes_sbe                      : 1;  /**< Single-bit error for WES RAM. Throws SSO_INTSN_E::SSO_ERR0_WES_SBE. */
-	uint64_t reserved_6_31                : 26;
-	uint64_t addwq_dropped                : 1;  /**< Add work dropped due to wrong command/DID requested. Throws
-                                                         SSO_INTSN_E::SSO_ERR0_ADD_WQDROPPED. */
+	uint64_t reserved_5_31                : 27;
 	uint64_t awempty                      : 1;  /**< Received add work with tag specified as EMPTY. Throws SSO_INTSN_E::SSO_ERR0_AWEMPTY. */
 	uint64_t grpdis                       : 1;  /**< Add work to disabled group. An ADDWQ was received and dropped to a group with
                                                          SSO_GRP(0..255)_IAQ_THR[RSVD_THR] = 0. Throws SSO_INTSN_E::SSO_ERR0_GRPDIS. */
@@ -2041,8 +2039,7 @@ union cvmx_sso_err0 {
 	uint64_t bfp                          : 1;
 	uint64_t grpdis                       : 1;
 	uint64_t awempty                      : 1;
-	uint64_t addwq_dropped                : 1;
-	uint64_t reserved_6_31                : 26;
+	uint64_t reserved_5_31                : 27;
 	uint64_t wes_sbe                      : 1;
 	uint64_t wes_dbe                      : 1;
 	uint64_t fff_sbe                      : 1;
@@ -2732,9 +2729,14 @@ union cvmx_sso_gwe_cfg {
 	uint64_t gwe_rfpgw_dis                : 1;  /**< Disable periodic restart of GWE for pending get_work */
 	uint64_t odu_prf_dis                  : 1;  /**< Disable ODU-initiated prefetches of WQEs into L2C
                                                          For diagnostic use only. */
-	uint64_t reserved_0_8                 : 9;
+	uint64_t odu_bmp_dis                  : 1;  /**< Disable ODU bumps.
+                                                         If SSO_PP_STRICT is true, could
+                                                         prevent forward progress under some circumstances.
+                                                         For diagnostic use only. */
+	uint64_t reserved_0_7                 : 8;
 #else
-	uint64_t reserved_0_8                 : 9;
+	uint64_t reserved_0_7                 : 8;
+	uint64_t odu_bmp_dis                  : 1;
 	uint64_t odu_prf_dis                  : 1;
 	uint64_t gwe_rfpgw_dis                : 1;
 	uint64_t odu_ffpgw_dis                : 1;
@@ -2797,15 +2799,13 @@ union cvmx_sso_gwe_cfg {
 	} cn68xxp1;
 	struct cvmx_sso_gwe_cfg_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_9_63                : 55;
-	uint64_t dis_wgt_credit               : 1;  /**< Disable group weight credits. When set, groups have infinite weight credit. */
+	uint64_t reserved_8_63                : 56;
 	uint64_t ws_retries                   : 8;  /**< Work slot retries. When a given work-slot performs this number of retries without
                                                          successfully finding work then NO_WORK will be returned. Zero disables the retry counter.
                                                          Values 1, 2, 3 are reserved. */
 #else
 	uint64_t ws_retries                   : 8;
-	uint64_t dis_wgt_credit               : 1;
-	uint64_t reserved_9_63                : 55;
+	uint64_t reserved_8_63                : 56;
 #endif
 	} cn78xx;
 };
@@ -4642,8 +4642,7 @@ union cvmx_sso_ws_cfg {
 	struct cvmx_sso_ws_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_56_63               : 8;
-	uint64_t ocla_bp                      : 8;  /**< Enable OCLA backpressure stalls. For diagnostic use only.
-                                                         INTERNAL:
+	uint64_t ocla_bp                      : 8;  /**< Enable OCLA backpressure stalls. For diagnostic use only. INTERNAL:
                                                          <55> NCBB input fifo stall (ncbo.)
                                                          <54> Work-slot response. (arbrsp.)
                                                          <53> Work-slot switching of descheduled work entries. (arbx.)
@@ -4652,17 +4651,13 @@ union cvmx_sso_ws_cfg {
                                                          <50> Work-slot CAM access. (arbc.)
                                                          <49> Work-slot RAM access. (arbr.)
                                                          <48> Work-slot pushes to AQ, CQ, DQ. (arbq.) */
-	uint64_t reserved_4_47                : 44;
-	uint64_t arbc_step_en                 : 1;  /**< Enable single-stepping WS CAM arbiter, twice per 16 clocks. For diagnostic use only. */
-	uint64_t ncbo_step_en                 : 1;  /**< Enable single-stepping commands from NCBO, once per 32 clocks. For diagnostic use only. */
+	uint64_t reserved_2_47                : 46;
 	uint64_t soc_ccam_dis                 : 1;  /**< Disable power saving SOC conditional CAM. */
 	uint64_t sso_cclk_dis                 : 1;  /**< Disable power saving SSO conditional clocking, */
 #else
 	uint64_t sso_cclk_dis                 : 1;
 	uint64_t soc_ccam_dis                 : 1;
-	uint64_t ncbo_step_en                 : 1;
-	uint64_t arbc_step_en                 : 1;
-	uint64_t reserved_4_47                : 44;
+	uint64_t reserved_2_47                : 46;
 	uint64_t ocla_bp                      : 8;
 	uint64_t reserved_56_63               : 8;
 #endif
