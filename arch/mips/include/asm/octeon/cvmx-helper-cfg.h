@@ -124,6 +124,8 @@ struct cvmx_cfg_port_param {
 	bool valid;			/** 1 = port valid, 0 = invalid */
 	bool sgmii_phy_mode;		/** 1 = port in PHY mode, 0 = MAC mode */
 	bool sgmii_1000x_mode;		/** 1 = 1000Base-X mode, 0 = SGMII mode */
+	bool agl_rx_clk_delay_bypass;	/** 1 = use rx clock delay bypass for AGL mode */
+	uint8_t agl_rx_clk_skew;	/** AGL rx clock skew setting (default 0) */
 };
 
 /*
@@ -458,6 +460,28 @@ extern void cvmx_helper_set_mac_phy_mode(int interface, int index, bool valid);
 extern bool cvmx_helper_get_1000x_mode(int interface, int index);
 extern void cvmx_helper_set_1000x_mode(int interface, int index, bool valid);
 
+/**
+ * @INTERNAL
+ * Return if an AGL port should bypass the RX clock delay
+ *
+ * @param interface the interface number
+ * @param index the port's index number
+ */
+extern bool cvmx_helper_get_agl_rx_clock_delay_bypass(int interface, int index);
+extern void cvmx_helper_set_agl_rx_clock_delay_bypass(int interface, int index,
+						      bool valid);
+
+/**
+ * @INTERNAL
+ * Return the AGL port rx clock skew, only used
+ * if agl_rx_clock_delay_bypass is set.
+ *
+ * @param interface the interface number
+ * @param index the port's index number
+ */
+extern uint8_t cvmx_helper_get_agl_rx_clock_skew(int interface, int index);
+extern void cvmx_helper_set_agl_rx_clock_skew(int interface, int index,
+					      uint8_t value);
 /*
  * Initializes cvmx with user specified config info.
  */
