@@ -100,7 +100,7 @@ int __cvmx_helper_agl_probe(int interface)
 {
 	int port = cvmx_helper_agl_get_port(interface);
 	union cvmx_agl_gmx_bist gmx_bist;
-	union cvmx_agl_gmx_prtx_cfg gmx_prtx_cfg;	
+	union cvmx_agl_gmx_prtx_cfg gmx_prtx_cfg;
 	union cvmx_agl_prtx_ctl agl_prtx_ctl;
 	uint64_t clock_scale;
 	int result;
@@ -120,7 +120,7 @@ int __cvmx_helper_agl_probe(int interface)
         gmx_prtx_cfg.s.en = 0;
 	cvmx_write_csr(CVMX_AGL_GMX_PRTX_CFG(port), gmx_prtx_cfg.u64);
 
-	/* Set the rgx_ref_clk MUX with AGL_PRTx_CTL[REFCLK_SEL]. Default value 
+	/* Set the rgx_ref_clk MUX with AGL_PRTx_CTL[REFCLK_SEL]. Default value
 	   is 0 (RGMII REFCLK). Recommended to use RGMII RXC(1) or sclk/4 (2)
 	   to save cost.
 	 */
@@ -138,10 +138,13 @@ int __cvmx_helper_agl_probe(int interface)
 	agl_prtx_ctl.s.clktx_byp = 0;
 
 
-	if (OCTEON_IS_OCTEON3()) {
+	if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
 		agl_prtx_ctl.s.refclk_sel = 0;
-		agl_prtx_ctl.s.clkrx_set = 0x0;
-		agl_prtx_ctl.s.clkrx_byp = 1;
+		agl_prtx_ctl.s.clkrx_set =
+			cvmx_helper_get_agl_rx_clock_skew(interface, port);
+		agl_prtx_ctl.s.clkrx_byp =
+			cvmx_helper_get_agl_rx_clock_delay_bypass(interface,
+								  port);
 	}
 	cvmx_write_csr(CVMX_AGL_PRTX_CTL(port), agl_prtx_ctl.u64);
 	/* Force write out before wait */
@@ -196,6 +199,7 @@ int __cvmx_helper_agl_enable(int interface)
 	int port = cvmx_helper_agl_get_port(interface);
 	union cvmx_pko_mem_port_ptrs pko_mem_port_ptrs;
 	union cvmx_pko_reg_read_idx read_idx;
+	int do_link_set = 1;
 	int i;
 
 	/* Setup PKO for AGL interface. Back pressure is not supported. */
@@ -215,7 +219,18 @@ int __cvmx_helper_agl_enable(int interface)
 	}
 
 	cvmx_agl_enable(port);
-	cvmx_agl_link_set(port, cvmx_agl_link_get(port), 1);
+#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+	/*
+	 * Linux kernel driver will call ....link_set with the
+	 * proper link state. In the simulator there is no
+	 * link state polling and hence it is set from
+	 * here.
+	 */
+	if (!(cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM))
+		do_link_set = 0;
+#endif
+	if (do_link_set)
+		cvmx_agl_link_set(port, cvmx_agl_link_get(port), 1);
 
 	return 0;
 }

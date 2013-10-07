@@ -43,7 +43,7 @@
  * Functions for SGMII initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 87025 $<hr>
+ * <hr>$Revision: 89030 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -626,6 +626,9 @@ cvmx_helper_link_info_t __cvmx_helper_sgmii_link_get(int ipd_port)
 		speed = cvmx_qlm_get_gbaud_mhz(qlm) * 8 / 10;
 	} else if (OCTEON_IS_MODEL(OCTEON_CNF71XX)) {
 		speed = cvmx_qlm_get_gbaud_mhz(0) * 8 / 10;
+	} else if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
+		speed = cvmx_qlm_get_gbaud_mhz(0) * 8 / 10;
+		speed >>= 2;
 	}
 
 	pcsx_mrx_control_reg.u64 = cvmx_read_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface));
@@ -798,16 +801,12 @@ int __cvmx_helper_bgx_sgmii_enable(int interface)
 	/* Configure the bgx mac */
 	bgx_init(interface, CVMX_HELPER_INTERFACE_MODE_SGMII);
 
-	/*
-	 * Must hardcode the port kind here until the pko initializion is
-	 * complete. This must be removed once the pko initialization is
-	 * working. TODO
-	 */
-	pknd = 10 + (num_ports * interface);
+	/* Setup pkind */
 	for (i = 0; i < num_ports; i++) {
+		pknd = cvmx_helper_get_pknd(interface, i);
 		bgx_cmr_rx_id_map.u64 = 0;
 		bgx_cmr_rx_id_map.s.rid = 2 + i;
-		bgx_cmr_rx_id_map.s.pknd = pknd + i;
+		bgx_cmr_rx_id_map.s.pknd = pknd;
 		cvmx_write_csr(CVMX_BGXX_CMRX_RX_ID_MAP(i, interface),
 			       bgx_cmr_rx_id_map.u64);
 	}

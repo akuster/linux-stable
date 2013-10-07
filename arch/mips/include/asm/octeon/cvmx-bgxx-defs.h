@@ -2031,9 +2031,10 @@ union cvmx_bgxx_cmrx_int {
 	struct cvmx_bgxx_cmrx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
-	uint64_t pko_nxc                      : 1;  /**< TX channel out-of-range from PKO interface */
+	uint64_t pko_nxc                      : 1;  /**< TX channel out-of-range from PKO interface. Assigned to the LMAC ID based on the lower 2
+                                                         bits of the offending channel */
 	uint64_t overflw                      : 1;  /**< RX overflow. */
-	uint64_t pause_drp                    : 1;  /**< RX PAUSE packet was dropped due to full RXB FIFO or during per lmac reset. */
+	uint64_t pause_drp                    : 1;  /**< RX PAUSE packet was dropped due to full RXB FIFO or during partner reset. */
 #else
 	uint64_t pause_drp                    : 1;
 	uint64_t overflw                      : 1;
@@ -2284,7 +2285,7 @@ union cvmx_bgxx_cmrx_rx_pause_drop_time {
 	struct cvmx_bgxx_cmrx_rx_pause_drop_time_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t pause_time                   : 16; /**< Time extracted from the dropped PAUSE packet dropped due to RXB FIFO full or during per lmac reset */
+	uint64_t pause_time                   : 16; /**< Time extracted from the dropped PAUSE packet dropped due to RXB FIFO full or during partner reset */
 #else
 	uint64_t pause_time                   : 16;
 	uint64_t reserved_16_63               : 48;
@@ -2346,7 +2347,9 @@ typedef union cvmx_bgxx_cmrx_rx_stat1 cvmx_bgxx_cmrx_rx_stat1_t;
  *
  * These registers provide a count of all packets received that were recognized as flow-control
  * or PAUSE packets. PAUSE packets with any kind of error are counted in BGX*_CMR*_RX_STAT8
- * (error stats register). Pause packets can be optionally dropped or forwarded based on
+ * (error stats register) and does not include those reported in BGX(0..5)_CMR(0..3)_RX_STAT6
+ * nor BGX(0..5)_CMR(0..3)_RX_STAT4.
+ * Pause packets can be optionally dropped or forwarded based on
  * BGX_SMU_RX_FRM_CTL[CTL_DRP]. This count increments regardless of whether the packet is
  * dropped. PAUSE packets are never counted in BGX*_CMR*_RX_STAT0.
  */
@@ -2393,7 +2396,8 @@ typedef union cvmx_bgxx_cmrx_rx_stat3 cvmx_bgxx_cmrx_rx_stat3_t;
  *
  * These registers provide a count of all packets received that were dropped by the DMAC filter.
  * Packets that match the DMAC are dropped and counted here regardless of whether they were ERR
- * packets. These packets are never counted in BGX*_CMR*_RX_STAT0. Eight-byte packets as the
+ * packets, but does not include those reported in BGX(0..5)_CMR(0..3)_RX_STAT6.
+ * These packets are never counted in BGX*_CMR*_RX_STAT0. Eight-byte packets as the
  * result of truncation or other means are not be dropped by CN78XX and will never appear in this
  * count.
  */
@@ -2486,6 +2490,19 @@ typedef union cvmx_bgxx_cmrx_rx_stat7 cvmx_bgxx_cmrx_rx_stat7_t;
  *
  * These registers provide a count of all packets received with some error that were not dropped
  * either due to the DMAC filter or lack of room in the receive FIFO.
+ * This does not include packets which were counted in
+ * BGX(0..5)_CMR(0..3)_RX_STAT2, BGX(0..5)_CMR(0..3)_RX_STAT4 nor
+ * BGX(0..5)_CMR(0..3)_RX_STAT6 nor BGX(0..5)_CMR(0..3)_RX_STAT8.
+ * Which statistics are updated on errors and drops are shown below:
+ * if dropped [
+ *   if !errored STAT8
+ *   if overflow STAT6
+ *   else if dmac drop STAT4
+ *   else if filter drop STAT2
+ * ] else [
+ *   if errored STAT2
+ *   else STAT8
+ * ]
  */
 union cvmx_bgxx_cmrx_rx_stat8 {
 	uint64_t u64;
@@ -3492,7 +3509,7 @@ typedef union cvmx_bgxx_gmp_gmi_prtx_cfg cvmx_bgxx_gmp_gmi_prtx_cfg_t;
  * cvmx_bgx#_gmp_gmi_rx#_decision
  *
  * Notes:
- * As each byte in a packet is received by GMX, the L2 byte count is compared
+ * As each byte in a packet is received by GMI, the L2 byte count is compared
  * against the BGX_GMP_GMI_RX_DECISION[CNT].  The L2 byte count is the number of bytes
  * from the beginning of the L2 header (DMAC).  In normal operation, the L2
  * header begins after the PREAMBLE+SFD (BGX_GMP_GMI_RX_FRM_CTL[PRE_CHK]=1) and any
@@ -3608,7 +3625,7 @@ union cvmx_bgxx_gmp_gmi_rxx_frm_ctl {
                                                          of the PREAMBLE. PRE_CHK must be set to enable this and all PREAMBLE features.
                                                          SGMII at 10/100Mbs only. */
 	uint64_t reserved_7_8                 : 2;
-	uint64_t pre_free                     : 1;  /**< When set, PREAMBLE checking is less strict. GMX will begin the frame at the first SFD.
+	uint64_t pre_free                     : 1;  /**< When set, PREAMBLE checking is less strict. GMI will begin the frame at the first SFD.
                                                          PRE_CHK must be set to enable this and all PREAMBLE features. SGMII/1000Base-X only. */
 	uint64_t ctl_smac                     : 1;  /**< Control PAUSE frames can match station SMAC. */
 	uint64_t ctl_mcst                     : 1;  /**< Control PAUSE frames can match globally assign multicast address. */
@@ -3625,7 +3642,7 @@ union cvmx_bgxx_gmp_gmi_rxx_frm_ctl {
                                                          against the MIN and MAX bounds. Furthermore, the bytes are skipped when locating the start
                                                          of the L2 header for DMAC and Control frame recognition. */
 	uint64_t pre_chk                      : 1;  /**< Check the preamble for correctness. This port is configured to send a valid 802.3 PREAMBLE
-                                                         to begin every frame. GMX checks that a valid PREAMBLE is received (based on PRE_FREE).
+                                                         to begin every frame. GMI checks that a valid PREAMBLE is received (based on PRE_FREE).
                                                          When a problem does occur within the PREAMBLE sequence, the frame is marked as bad and not
                                                          sent into the core. The BGX(0..5)_SMU(0..3)_RX_INT[PCTERR] interrupt is also raised.
                                                          When BGX(0..5)_SMU(0..3)_TX_CTL[HG_EN] is set, PRE_CHK must be 0. If PTP_MODE = 1 and
@@ -3687,7 +3704,7 @@ typedef union cvmx_bgxx_gmp_gmi_rxx_ifg cvmx_bgxx_gmp_gmi_rxx_ifg_t;
  * as either MINERR o r CAREXT errors.
  * (4) JABBER An RX Jabber error indicates that a packet was received which
  * is longer than the maximum allowed packet as defined by the
- * system.  GMX will truncate the packet at the JABBER count.
+ * system.  GMI will truncate the packet at the JABBER count.
  * Failure to do so could lead to system instabilty.
  * (5) NIBERR This error is illegal at 1000Mbs speeds
  * (BGX_GMP_GMI_RX_PRT_CFG[SPEED]==0) and will never assert.
@@ -3714,10 +3731,10 @@ typedef union cvmx_bgxx_gmp_gmi_rxx_ifg cvmx_bgxx_gmp_gmi_rxx_ifg_t;
  * (B) PCTERR checks that the frame begins with a valid PREAMBLE sequence.
  * Does not check the number of PREAMBLE cycles.
  * (C) OVRERR
- * OVRERR is an architectural assertion check internal to GMX to
+ * OVRERR is an architectural assertion check internal to GMI to
  * make sure no assumption was violated.  In a correctly operating
  * system, this interrupt can never fire.
- * GMX has an internal arbiter which selects which of 4 ports to
+ * GMI has an internal arbiter which selects which of 4 ports to
  * buffer in the main RX FIFO.  If we normally buffer 8 bytes,
  * then each port will typically push a tick every 8 cycles if
  * the packet interface is going as fast as possible.  If there
@@ -3748,7 +3765,7 @@ union cvmx_bgxx_gmp_gmi_rxx_int {
 	uint64_t fcserr                       : 1;  /**< FCS/CRC error. Frame was received with FCS/CRC error */
 	uint64_t jabber                       : 1;  /**< System-length error: frame was received with length > sys_length.
                                                          An RX Jabber error indicates that a packet was received which is longer than the maximum
-                                                         allowed packet as defined by the system. GMX truncates the packet at the JABBER count.
+                                                         allowed packet as defined by the system. GMI truncates the packet at the JABBER count.
                                                          Failure to do so could lead to system instability. */
 	uint64_t carext                       : 1;  /**< Carrier extend error
                                                          (SGMII/1000Base-X only) */
@@ -3786,7 +3803,7 @@ typedef union cvmx_bgxx_gmp_gmi_rxx_int cvmx_bgxx_gmp_gmi_rxx_int_t;
  * defined as...
  * max_sized_packet = BGX_GMP_GMI_RX_JABBER[CNT]+((BGX_GMP_GMI_RX_FRM_CTL[PRE_CHK] &
  * !BGX_GMP_GMI_RX_FRM_CTL[PRE_STRP])*8)
- * BGX_GMP_GMI_RX_JABBER = The max size packet after which GMX will truncate
+ * BGX_GMP_GMI_RX_JABBER = The max size packet after which GMI will truncate
  */
 union cvmx_bgxx_gmp_gmi_rxx_jabber {
 	uint64_t u64;
@@ -4560,8 +4577,8 @@ union cvmx_bgxx_gmp_pcs_miscx_ctl {
 	uint64_t reserved_13_63               : 51;
 	uint64_t sgmii                        : 1;  /**< SGMII mode. 1 = SGMII or 1000BASE-X mode selected, 0 = other mode selected. See
                                                          GSERx_LANE_MODE[LMODE]. */
-	uint64_t gmxeno                       : 1;  /**< GMX enable override. When set, forces GMX to appear disabled. The enable/disable status of
-                                                         GMX is checked only at SOP of every packet. */
+	uint64_t gmxeno                       : 1;  /**< GMI enable override. When set, forces GMI to appear disabled. The enable/disable status of
+                                                         GMI is checked only at SOP of every packet. */
 	uint64_t loopbck2                     : 1;  /**< Sets external loopback mode to return RX data back out via the TX data path. 0 = No
                                                          loopback, 1 = Loopback.
                                                          LOOPBCK1 and LOOPBCK2 modes may not be supported simultaneously. */
@@ -6153,7 +6170,9 @@ union cvmx_bgxx_spux_br_pmd_control {
 	uint64_t reserved_2_63                : 62;
 	uint64_t train_en                     : 1;  /**< BASE-R training enable */
 	uint64_t train_restart                : 1;  /**< BASE-R training restart. Writing a 1 to this bit restarts the training process if the
-                                                         TRAIN_EN bit in this register is also set. This is a self-clearing bit. */
+                                                         TRAIN_EN bit in this register is also set. This is a self-clearing bit. Software should
+                                                         wait a minimum of 1.7ms after BGX(0..5)_SPU(0..3)_INT[TRAINING_FAILURE] is set before
+                                                         restarting the training process. */
 #else
 	uint64_t train_restart                : 1;
 	uint64_t train_en                     : 1;

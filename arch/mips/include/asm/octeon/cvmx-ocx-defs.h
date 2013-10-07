@@ -53,6 +53,17 @@
 #define __CVMX_OCX_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_OCX_COM_BIST_STATUS CVMX_OCX_COM_BIST_STATUS_FUNC()
+static inline uint64_t CVMX_OCX_COM_BIST_STATUS_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_OCX_COM_BIST_STATUS not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011800110000F0ull);
+}
+#else
+#define CVMX_OCX_COM_BIST_STATUS (CVMX_ADD_IO_SEG(0x00011800110000F0ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_OCX_COM_DUAL_SORT CVMX_OCX_COM_DUAL_SORT_FUNC()
 static inline uint64_t CVMX_OCX_COM_DUAL_SORT_FUNC(void)
 {
@@ -128,6 +139,50 @@ static inline uint64_t CVMX_OCX_DLLX_STATUS(unsigned long offset)
 }
 #else
 #define CVMX_OCX_DLLX_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180011000080ull) + ((offset) & 1) * 8)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_OCX_FRCX_STAT0(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 5)))))
+		cvmx_warn("CVMX_OCX_FRCX_STAT0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118001100FA00ull) + ((offset) & 7) * 8;
+}
+#else
+#define CVMX_OCX_FRCX_STAT0(offset) (CVMX_ADD_IO_SEG(0x000118001100FA00ull) + ((offset) & 7) * 8)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_OCX_FRCX_STAT1(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 5)))))
+		cvmx_warn("CVMX_OCX_FRCX_STAT1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118001100FA80ull) + ((offset) & 7) * 8;
+}
+#else
+#define CVMX_OCX_FRCX_STAT1(offset) (CVMX_ADD_IO_SEG(0x000118001100FA80ull) + ((offset) & 7) * 8)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_OCX_FRCX_STAT2(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 5)))))
+		cvmx_warn("CVMX_OCX_FRCX_STAT2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118001100FB00ull) + ((offset) & 7) * 8;
+}
+#else
+#define CVMX_OCX_FRCX_STAT2(offset) (CVMX_ADD_IO_SEG(0x000118001100FB00ull) + ((offset) & 7) * 8)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_OCX_FRCX_STAT3(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 5)))))
+		cvmx_warn("CVMX_OCX_FRCX_STAT3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118001100FB80ull) + ((offset) & 7) * 8;
+}
+#else
+#define CVMX_OCX_FRCX_STAT3(offset) (CVMX_ADD_IO_SEG(0x000118001100FB80ull) + ((offset) & 7) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OCX_LNEX_BAD_CNT(unsigned long offset)
@@ -317,6 +372,28 @@ static inline uint64_t CVMX_OCX_LNEX_STAT12(unsigned long offset)
 #define CVMX_OCX_LNEX_STAT12(offset) (CVMX_ADD_IO_SEG(0x00011800110080A0ull) + ((offset) & 31) * 256)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_OCX_LNEX_STAT13(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 23)))))
+		cvmx_warn("CVMX_OCX_LNEX_STAT13(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800110080A8ull) + ((offset) & 31) * 256;
+}
+#else
+#define CVMX_OCX_LNEX_STAT13(offset) (CVMX_ADD_IO_SEG(0x00011800110080A8ull) + ((offset) & 31) * 256)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_OCX_LNEX_STAT14(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 23)))))
+		cvmx_warn("CVMX_OCX_LNEX_STAT14(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800110080B0ull) + ((offset) & 31) * 256;
+}
+#else
+#define CVMX_OCX_LNEX_STAT14(offset) (CVMX_ADD_IO_SEG(0x00011800110080B0ull) + ((offset) & 31) * 256)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OCX_LNEX_STATUS(unsigned long offset)
 {
 	if (!(
@@ -502,6 +579,17 @@ static inline uint64_t CVMX_OCX_RLKX_MCD_CTL(unsigned long offset)
 }
 #else
 #define CVMX_OCX_RLKX_MCD_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180011018020ull) + ((offset) & 3) * 8192)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_OCX_TLKX_BIST_STATUS(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCX_TLKX_BIST_STATUS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180011010008ull) + ((offset) & 3) * 8192;
+}
+#else
+#define CVMX_OCX_TLKX_BIST_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180011010008ull) + ((offset) & 3) * 8192)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OCX_TLKX_ECC_CTL(unsigned long offset)
@@ -747,6 +835,45 @@ static inline uint64_t CVMX_OCX_WIN_WR_DATA_FUNC(void)
 #endif
 
 /**
+ * cvmx_ocx_com_bist_status
+ *
+ * Contains Status from last Memory BIST for all RX FIFO Memories.  BIST status for TX FIFO
+ * Memories
+ * and REPLAY Memories are organized by link and are located in OCX_TLK(0..2)_BIST_STATUS.
+ */
+union cvmx_ocx_com_bist_status {
+	uint64_t u64;
+	struct cvmx_ocx_com_bist_status_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_36_63               : 28;
+	uint64_t status                       : 36; /**< 35:34 - Link 2 VC4/VC2      RX FIFOs
+                                                         - 33:32 - Link 2 VC10/VC8/VC6 RX FIFOs
+                                                         - 31:30 - Link 1 VC4/VC2      RX FIFOs
+                                                         - 29:28 - Link 1 VC10/VC8/VC6 RX FIFOs
+                                                         - 27:26 - Link 0 VC4/VC2      RX FIFOs
+                                                         - 25:24 - Link 0 VC10/VC8/VC6 RX FIFOs
+                                                         - 23:22 - Link 2 VC12         RX FIFOs
+                                                         - 21:20 - Link 2 VC1/VC0      RX FIFOs
+                                                         - 19:18 - Link 2 VC5/VC3      RX FIFOs
+                                                         - 17:16 - Link 2 VC11/VC9/VC7 RX FIFOs
+                                                         - 15:14 - Link 1 VC12         RX FIFOs
+                                                         - 13:12 - Link 1 VC1/VC0      RX FIFOs
+                                                         - 11:10 - Link 1 VC5/VC3      RX FIFOs
+                                                         - 9: 8 - Link 1 VC11/VC9/VC7 RX FIFOs
+                                                         - 7: 6 - Link 0 VC12         RX FIFOs
+                                                         - 5: 4 - Link 0 VC1/VC0      RX FIFOs
+                                                         - 3: 2 - Link 0 VC5/VC3      RX FIFOs
+                                                         - 1: 0 - Link 0 VC11/VC9/VC7 RX FIFOs */
+#else
+	uint64_t status                       : 36;
+	uint64_t reserved_36_63               : 28;
+#endif
+	} s;
+	struct cvmx_ocx_com_bist_status_s     cn78xx;
+};
+typedef union cvmx_ocx_com_bist_status cvmx_ocx_com_bist_status_t;
+
+/**
  * cvmx_ocx_com_dual_sort
  */
 union cvmx_ocx_com_dual_sort {
@@ -775,12 +902,20 @@ union cvmx_ocx_com_int {
 	struct cvmx_ocx_com_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_55_63               : 9;
-	uint64_t io_badid                     : 1;  /**< I/O request or response cannot be send because Node ID is invalid. Transaction has been dropped. */
-	uint64_t mem_badid                    : 1;  /**< Memory request or response cannot be send because Node ID is invalid. Transaction has been dropped. */
-	uint64_t copr_badid                   : 1;  /**< Scheduler add work or buffer pool return cannot be sent because Node ID is invalid.
-                                                         Transaction has been dropped. */
+	uint64_t io_badid                     : 1;  /**< I/O request or response cannot be sent because a link was not found with a packet Node ID
+                                                         matching the OCX_COM_LINK(0..2)_CTL[ID]
+                                                         with OCX_COM_LINK(0..2)_CTL[VALID] bit set. Transaction has been dropped. */
+	uint64_t mem_badid                    : 1;  /**< Memory request or response cannot be send because a link was not found with a packet Node
+                                                         ID matching the OCX_COM_LINK(0..2)_CTL[ID]
+                                                         with OCX_COM_LINK(0..2)_CTL[VALID] bit set. Transaction has been dropped. */
+	uint64_t copr_badid                   : 1;  /**< Scheduler add work or buffer pool return cannot be sent because a link was not found with
+                                                         a Node ID matching the
+                                                         OCX_COM_LINK(0..2)_CTL[ID] with OCX_COM_LINK(0..2)_CTL[VALID] bit set.  Transaction has
+                                                         been dropped. */
 	uint64_t win_req_badid                : 1;  /**< Window request specified in SLI_WIN_RD_ADDR, SLI_WIN_WR_ADDR, OCX_WIN_CMD or OCX_PP_CMD
-                                                         cannot be sent because Node ID is invalid. Transaction has been dropped. */
+                                                         cannot be sent because a link was not found with a request Node ID matching the
+                                                         OCX_COM_LINK(0..2)_CTL[ID]
+                                                         with OCX_COM_LINK(0..2)_CTL[VALID] bit set.  Transaction has been dropped. */
 	uint64_t win_req_tout                 : 1;  /**< Window or core request was dropped because it could not be send during the period
                                                          specified by OCX_WIN_TIMER. */
 	uint64_t win_req_xmit                 : 1;  /**< Window request specified in SLI_WIN_RD_ADDR, SLI_WIN_WR_ADDR, OCX_WIN_CMD or OCX_PP_CMD
@@ -827,7 +962,8 @@ union cvmx_ocx_com_linkx_ctl {
                                                          reinitialized. Cleared by software once pending link traffic is removed. (See
                                                          OCX_TLK[0..2]_FIFO[0..13]_CNT.) */
 	uint64_t up                           : 1;  /**< Link is operating normally. */
-	uint64_t valid                        : 1;  /**< Link has valid lanes and is exchanging information. */
+	uint64_t valid                        : 1;  /**< Link has valid lanes and is exchanging information.  This bit will never be set if
+                                                         OCX_LNK(0..2)_CFG[QLM_SELECT] is zero. */
 	uint64_t id                           : 2;  /**< This ID is used to sort traffic by link. If more than one link has the same value, the
                                                          OCX_COM_DUAL_SORT[SORT] field and traffic VC are used to choose a link. This field is only
                                                          reset during a cold reset to an arbitrary value to avoid conflicts with the
@@ -987,6 +1123,80 @@ union cvmx_ocx_dllx_status {
 	struct cvmx_ocx_dllx_status_s         cn78xx;
 };
 typedef union cvmx_ocx_dllx_status cvmx_ocx_dllx_status_t;
+
+/**
+ * cvmx_ocx_frc#_stat0
+ */
+union cvmx_ocx_frcx_stat0 {
+	uint64_t u64;
+	struct cvmx_ocx_frcx_stat0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_21_63               : 43;
+	uint64_t align_cnt                    : 21; /**< Indicates the number of alignment sequences received (i.e. those that do not violate the
+                                                         current alignment). */
+#else
+	uint64_t align_cnt                    : 21;
+	uint64_t reserved_21_63               : 43;
+#endif
+	} s;
+	struct cvmx_ocx_frcx_stat0_s          cn78xx;
+};
+typedef union cvmx_ocx_frcx_stat0 cvmx_ocx_frcx_stat0_t;
+
+/**
+ * cvmx_ocx_frc#_stat1
+ */
+union cvmx_ocx_frcx_stat1 {
+	uint64_t u64;
+	struct cvmx_ocx_frcx_stat1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_21_63               : 43;
+	uint64_t align_err_cnt                : 21; /**< Indicates the number of alignment sequences received in error (i.e. those that violate the
+                                                         current alignment). */
+#else
+	uint64_t align_err_cnt                : 21;
+	uint64_t reserved_21_63               : 43;
+#endif
+	} s;
+	struct cvmx_ocx_frcx_stat1_s          cn78xx;
+};
+typedef union cvmx_ocx_frcx_stat1 cvmx_ocx_frcx_stat1_t;
+
+/**
+ * cvmx_ocx_frc#_stat2
+ */
+union cvmx_ocx_frcx_stat2 {
+	uint64_t u64;
+	struct cvmx_ocx_frcx_stat2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_21_63               : 43;
+	uint64_t align_done                   : 21; /**< Indicates the number of attempt at alignment that succeeded. */
+#else
+	uint64_t align_done                   : 21;
+	uint64_t reserved_21_63               : 43;
+#endif
+	} s;
+	struct cvmx_ocx_frcx_stat2_s          cn78xx;
+};
+typedef union cvmx_ocx_frcx_stat2 cvmx_ocx_frcx_stat2_t;
+
+/**
+ * cvmx_ocx_frc#_stat3
+ */
+union cvmx_ocx_frcx_stat3 {
+	uint64_t u64;
+	struct cvmx_ocx_frcx_stat3_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_21_63               : 43;
+	uint64_t align_fail                   : 21; /**< Indicates the number of attempt at alignment that failed. */
+#else
+	uint64_t align_fail                   : 21;
+	uint64_t reserved_21_63               : 43;
+#endif
+	} s;
+	struct cvmx_ocx_frcx_stat3_s          cn78xx;
+};
+typedef union cvmx_ocx_frcx_stat3 cvmx_ocx_frcx_stat3_t;
 
 /**
  * cvmx_ocx_lne#_bad_cnt
@@ -1363,19 +1573,57 @@ union cvmx_ocx_lnex_stat12 {
 typedef union cvmx_ocx_lnex_stat12 cvmx_ocx_lnex_stat12_t;
 
 /**
+ * cvmx_ocx_lne#_stat13
+ */
+union cvmx_ocx_lnex_stat13 {
+	uint64_t u64;
+	struct cvmx_ocx_lnex_stat13_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t trn_bad_cnt                  : 16; /**< N/A */
+#else
+	uint64_t trn_bad_cnt                  : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_ocx_lnex_stat13_s         cn78xx;
+};
+typedef union cvmx_ocx_lnex_stat13 cvmx_ocx_lnex_stat13_t;
+
+/**
+ * cvmx_ocx_lne#_stat14
+ */
+union cvmx_ocx_lnex_stat14 {
+	uint64_t u64;
+	struct cvmx_ocx_lnex_stat14_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t trn_prbs_bad_cnt             : 16; /**< N/A */
+#else
+	uint64_t trn_prbs_bad_cnt             : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_ocx_lnex_stat14_s         cn78xx;
+};
+typedef union cvmx_ocx_lnex_stat14 cvmx_ocx_lnex_stat14_t;
+
+/**
  * cvmx_ocx_lne#_status
  */
 union cvmx_ocx_lnex_status {
 	uint64_t u64;
 	struct cvmx_ocx_lnex_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_2_63                : 62;
+	uint64_t reserved_3_63                : 61;
+	uint64_t rx_trn_val                   : 1;  /**< The control channel of a link training was recieved without any errors. */
 	uint64_t rx_scrm_sync                 : 1;  /**< RX scrambler synchronization status. One when synchronization achieved. */
 	uint64_t rx_bdry_sync                 : 1;  /**< RX word boundary sync status. One when synchronization achieved. */
 #else
 	uint64_t rx_bdry_sync                 : 1;
 	uint64_t rx_scrm_sync                 : 1;
-	uint64_t reserved_2_63                : 62;
+	uint64_t rx_trn_val                   : 1;
+	uint64_t reserved_3_63                : 61;
 #endif
 	} s;
 	struct cvmx_ocx_lnex_status_s         cn78xx;
@@ -1479,7 +1727,8 @@ union cvmx_ocx_lne_dbg {
 	uint64_t u64;
 	struct cvmx_ocx_lne_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_37_63               : 27;
+	uint64_t reserved_38_63               : 26;
+	uint64_t frc_stats_ena                : 1;  /**< Enable FRC statistic counters. */
 	uint64_t rx_dis_psh_skip              : 1;  /**< When RX_DIS_PSH_SKIP=0, skip words are de-stripped. When RX_DIS_PSH_SKIP=1, skip words are
                                                          discarded in the lane logic. If the lane is in internal loopback mode, RX_DIS_PSH_SKIP is
                                                          ignored and skip words are always discarded in the lane logic. */
@@ -1514,7 +1763,8 @@ union cvmx_ocx_lne_dbg {
 	uint64_t rx_dis_ukwn                  : 1;
 	uint64_t rx_mfrm_len                  : 2;
 	uint64_t rx_dis_psh_skip              : 1;
-	uint64_t reserved_37_63               : 27;
+	uint64_t frc_stats_ena                : 1;
+	uint64_t reserved_38_63               : 26;
 #endif
 	} s;
 	struct cvmx_ocx_lne_dbg_s             cn78xx;
@@ -1542,7 +1792,9 @@ union cvmx_ocx_lnkx_cfg {
                                                          LINK 0 may not select QLM4, QLM5.
                                                          LINK 1 may not select QLM0, QLM1, QLM4, QLM5.
                                                          LINK 2 may not select QLM0, QLM1.
-                                                         This field is initialized using the OCI_SPD pins during a cold reset.
+                                                         During a cold reset, this field is initialized to 0x3f when pi_oci_spd == 0xf.
+                                                         During a cold reset, this field is initialized to 0x0  when pi_oci_spd != 0xf.
+                                                         This field is not modified by hardware at any other time.
                                                          This field is not affected by soft or warm reset. */
 	uint64_t reserved_38_47               : 10;
 	uint64_t qlm_select                   : 6;  /**< QLM select mask, where each bit corresponds to a QLM. A link will transmit/receive data
@@ -1557,7 +1809,17 @@ union cvmx_ocx_lnkx_cfg {
                                                          QLM_SELECT<5> = LNE(23..23) = QLM5.
                                                          LINK 0 may not select QLM4, QLM5.
                                                          LINK 1 may not select QLM0, QLM1, QLM4, QLM5.
-                                                         LINK 2 may not select QLM0, QLM1. */
+                                                         LINK 2 may not select QLM0, QLM1.
+                                                         LINK 0 automatically selects QLM0 when QLM_MANUAL[0]=0
+                                                         LINK 0 automatically selects QLM1 when QLM_MANUAL[1]=0
+                                                         LINK 0 automatically selects QLM2 when QLM_MANUAL[2]=0 and OCX_QLM2_CFG.SER_LOCAL=0
+                                                         LINK 1 automatically selects QLM2 when QLM_MANUAL[2]=0 and OCX_QLM2_CFG.SER_LOCAL=1
+                                                         LINK 1 automatically selects QLM3 when QLM_MANUAL[3]=0 and OCX_QLM3_CFG.SER_LOCAL=1
+                                                         LINK 2 automatically selects QLM3 when QLM_MANUAL[3]=0 and OCX_QLM3_CFG.SER_LOCAL=0
+                                                         LINK 3 automatically selects QLM4 when QLM_MANUAL[4]=0
+                                                         LINK 3 automatically selects QLM5 when QLM_MANUAL[5]=0
+                                                         NOTE:  A link with QLM_SELECT = 000000 is invalid and will never exchange traffic with the
+                                                         link partner */
 	uint64_t reserved_10_31               : 22;
 	uint64_t lane_align_dis               : 1;  /**< Disable the RX lane alignment. */
 	uint64_t lane_rev                     : 1;  /**< RX lane reversal.   When enabled, lane de-striping is performed from the most significant
@@ -1674,7 +1936,9 @@ union cvmx_ocx_qlmx_cfg {
 	uint64_t u64;
 	struct cvmx_ocx_qlmx_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_26_63               : 38;
+	uint64_t reserved_42_63               : 22;
+	uint64_t ser_limit                    : 10; /**< Reduce latency by limiting the amount of data in flight for each SerDes. */
+	uint64_t reserved_26_31               : 6;
 	uint64_t timer_dis                    : 1;  /**< Disable bad lane timer. A timer counts core clocks (RCLKs) when any enabled lane is not
                                                          ready, i.e. not in the scrambler sync state. If this timer expires before all enabled
                                                          lanes can be made ready, then any lane which is not ready is disabled via
@@ -1682,7 +1946,7 @@ union cvmx_ocx_qlmx_cfg {
 	uint64_t trn_ena                      : 1;  /**< Link training enable. Link training is performed during auto link bring up. Initialized to
                                                          1 during cold reset when OCI_SPD<3:0> pins indicate speed > 6.25 GBAUD. Otherwise,
                                                          initialized to 0 during a cold reset. This field is not affected by soft or warm reset. */
-	uint64_t reserved_20_23               : 4;
+	uint64_t ser_lane_ready               : 4;  /**< SerDes lanes that are ready for bundling into the link. */
 	uint64_t ser_lane_bad                 : 4;  /**< SerDes lanes excluded from use. */
 	uint64_t reserved_7_15                : 9;
 	uint64_t ser_lane_rev                 : 1;  /**< SerDes lane reversal has been detected. */
@@ -1707,8 +1971,8 @@ union cvmx_ocx_qlmx_cfg {
                                                          QLM4/5 can only participate in LNK2; therefore
                                                          OCX_QLM4/5_CFG[SER_LOCAL] has no effect.
                                                          During a cold reset, initialized as follows:
-                                                         OCX_QLM2_CFG.SER_LOCAL = pi_qlm_local[0]
-                                                         OCX_QLM3_CFG.SER_LOCAL = pi_qlm_local[1] */
+                                                         OCX_QLM2_CFG.SER_LOCAL = pi_oci2_link1
+                                                         OCX_QLM3_CFG.SER_LOCAL = pi_oci3_link1 */
 #else
 	uint64_t ser_local                    : 1;
 	uint64_t reserved_1_2                 : 2;
@@ -1718,10 +1982,12 @@ union cvmx_ocx_qlmx_cfg {
 	uint64_t ser_lane_rev                 : 1;
 	uint64_t reserved_7_15                : 9;
 	uint64_t ser_lane_bad                 : 4;
-	uint64_t reserved_20_23               : 4;
+	uint64_t ser_lane_ready               : 4;
 	uint64_t trn_ena                      : 1;
 	uint64_t timer_dis                    : 1;
-	uint64_t reserved_26_63               : 38;
+	uint64_t reserved_26_31               : 6;
+	uint64_t ser_limit                    : 10;
+	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
 	struct cvmx_ocx_qlmx_cfg_s            cn78xx;
@@ -1804,7 +2070,10 @@ union cvmx_ocx_rlkx_enables {
 	struct cvmx_ocx_rlkx_enables_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
-	uint64_t mcd                          : 1;  /**< Master enable for all inbound MCD bits. This bit must be enabled by software. */
+	uint64_t mcd                          : 1;  /**< Master enable for all inbound MCD bits. This bit should always be enabled by software once
+                                                         any
+                                                         Authentik validation has occured and before any MCD traffic is generated.  MCD traffic is
+                                                         typically controlled by the OCX_TLK(0..2)_MCD_CTL register. */
 	uint64_t m_req                        : 1;  /**< Master enable for all inbound memory requests. This bit is typically set at reset but is
                                                          cleared when operating in Authentik mode and must be enabled by software. */
 	uint64_t io_req                       : 1;  /**< Master enable for all inbound I/O Requests. This bit is typically set at reset but is
@@ -1869,6 +2138,11 @@ typedef union cvmx_ocx_rlkx_lnk_data cvmx_ocx_rlkx_lnk_data_t;
 
 /**
  * cvmx_ocx_rlk#_mcd_ctl
+ *
+ * This debug register captures which new MCD bits have been received from the link partner.  The
+ * MCD bits are
+ * received when the both the OCX_RLK(0..2)_ENABLES[MCD] bit is set and the MCD was not
+ * previously transmitted.
  */
 union cvmx_ocx_rlkx_mcd_ctl {
 	uint64_t u64;
@@ -1885,6 +2159,29 @@ union cvmx_ocx_rlkx_mcd_ctl {
 	struct cvmx_ocx_rlkx_mcd_ctl_s        cn78xx;
 };
 typedef union cvmx_ocx_rlkx_mcd_ctl cvmx_ocx_rlkx_mcd_ctl_t;
+
+/**
+ * cvmx_ocx_tlk#_bist_status
+ *
+ * Contains Status from last Memory BIST for all TX FIFO Memories and REPLAY Memories in this
+ * link.
+ * RX FIFO Status can be found in OCX_COM_BIST_STATUS
+ */
+union cvmx_ocx_tlkx_bist_status {
+	uint64_t u64;
+	struct cvmx_ocx_tlkx_bist_status_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_15_63               : 49;
+	uint64_t status                       : 15; /**< "14:13 - REPLAY Memories BIST Status [1:0]
+                                                         - 12:0  - TX_FIFO[12:0] by Link VC#" */
+#else
+	uint64_t status                       : 15;
+	uint64_t reserved_15_63               : 49;
+#endif
+	} s;
+	struct cvmx_ocx_tlkx_bist_status_s    cn78xx;
+};
+typedef union cvmx_ocx_tlkx_bist_status cvmx_ocx_tlkx_bist_status_t;
 
 /**
  * cvmx_ocx_tlk#_ecc_ctl

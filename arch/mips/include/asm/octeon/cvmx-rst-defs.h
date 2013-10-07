@@ -190,7 +190,7 @@ union cvmx_rst_boot {
 	uint64_t jtcsrdis                     : 1;  /**< When set, internal CSR access via JTAG TAP controller is disabled This field resets to 1
                                                          in Authentik mode, else 0. */
 	uint64_t ejtagdis                     : 1;  /**< When set, external EJTAG access is disabled This field resets to 1 in Authentik mode, else 0. */
-	uint64_t romen                        : 1;  /**< When set, Authentik/eMMC boot ROM is visible in the boot bus address space.  This field
+	uint64_t romen                        : 1;  /**< When set, Authentik/eMMC boot ROM is visible in the boot bus address space. This field
                                                          resets to 1 in an Authentik part or when booting from eMMC. Else, resets to 0. */
 	uint64_t ckill_ppdis                  : 1;  /**< When set, cores other than 0 are disabled during a CHIPKILL.  Writes have no effect when
                                                          RST_BOOT[CHIPKILL]=1. */
@@ -478,7 +478,7 @@ typedef union cvmx_rst_power_dbg cvmx_rst_power_dbg_t;
 /**
  * cvmx_rst_pp_power
  *
- * These bits should only be changed when the corresponding core is in reset (CIU3_PP_RST).
+ * These bits should only be changed while the corresponding PP is in reset (see CIU3_PP_RST).
  *
  */
 union cvmx_rst_pp_power {
@@ -486,10 +486,10 @@ union cvmx_rst_pp_power {
 	struct cvmx_rst_pp_power_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t gate                         : 48; /**< Powerdown Enable.  When both a bit and the corresponding CIU3_PP_RST bit are set, the core
-                                                         has voltage removed to save power.
-                                                         In typical operation these bits are setup during initialization and PP resets are
-                                                         controlled through CIU3_PP_RST. */
+	uint64_t gate                         : 48; /**< Powerdown enable. When both a bit and the corresponding CIU3_PP_RST bit are set, the core
+                                                         has voltage removed to save power. In typical operation these bits are setup during
+                                                         initialization and PP resets are controlled through CIU3_PP_RST. These bits may only be
+                                                         changed when the corresponding core is in reset using CIU3_PP_RST. */
 #else
 	uint64_t gate                         : 48;
 	uint64_t reserved_48_63               : 16;
@@ -521,7 +521,7 @@ union cvmx_rst_soft_prstx {
                                                          If the RST_CTL*[HOST_MODE] = 0, SOFT_PRST resets to 0.
                                                          If the RST_CTL*[HOST_MODE] = 1, SOFT_PRST resets to 1.
                                                          When CN78XX is configured to drive PERST*_L (i.e.
-                                                         RST_CTL0/1[RST_DRV] = 1), this controls the output value on PERST*_L. */
+                                                         RST_CTL(0..3)[RST_DRV] = 1), this controls the output value on PERST*_L. */
 #else
 	uint64_t soft_prst                    : 1;
 	uint64_t reserved_1_63                : 63;
