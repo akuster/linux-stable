@@ -8,8 +8,6 @@
 #ifndef __ASM_MACH_CAVIUM_OCTEON_KERNEL_ENTRY_H
 #define __ASM_MACH_CAVIUM_OCTEON_KERNEL_ENTRY_H
 
-#include "asm/octeon/cvmx-asm.h"
-
 #define CP0_CVMCTL_REG $9, 7
 #define CP0_CVMMEMCTL_REG $11,7
 #define CP0_PRID_REG $15, 0
@@ -44,11 +42,12 @@ FEXPORT(octeon_hotplug_entry)
 	.set push
 	.set noreorder
 	/* Hotpplugged CPUs enter in Big-Endian mode, switch here to LE */
-	dmfc0   v0, COP0_CVMCTL
+	dmfc0   v0, CP0_CVMCTL
 	nop
 	ori     v0, v0, 2
 	nop
-	dmtc0   v0, COP0_CVMCTL	/* little-endian */
+	dmtc0   v0, CP0_CVMCTL	/* little-endian */
+	nop
 	synci	0($0)
 	.set pop
 #endif	/* CONFIG_CPU_LITTLE_ENDIAN */
