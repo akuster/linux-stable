@@ -2603,12 +2603,19 @@ static void octeon_irq_cib_disable(struct irq_data *data)
 	raw_spin_unlock_irqrestore(&host_data->lock, flags);
 }
 
+static int octeon_irq_cib_set_type(struct irq_data *data, unsigned int t)
+{
+	irqd_set_trigger_type(data, t);
+	return IRQ_SET_MASK_OK;
+}
+
 static struct irq_chip octeon_irq_chip_cib = {
 	.name = "CIB",
 	.irq_enable = octeon_irq_cib_enable,
 	.irq_disable = octeon_irq_cib_disable,
 	.irq_mask = octeon_irq_cib_disable,
 	.irq_unmask = octeon_irq_cib_enable,
+	.irq_set_type = octeon_irq_cib_set_type,
 };
 
 static int octeon_irq_cib_xlat(struct irq_domain *d,
@@ -2618,13 +2625,30 @@ static int octeon_irq_cib_xlat(struct irq_domain *d,
 				   unsigned long *out_hwirq,
 				   unsigned int *out_type)
 {
+	unsigned int type = 0;
+
+	if (intsize == 2)
+		type = intspec[1];
+
+	switch (type) {
+	case 0: /* unofficial value, but we might as well let it work. */
+	case 4: /* official value for level triggering. */
+		*out_type = IRQ_TYPE_LEVEL_HIGH;
+		break;
+	case 1: /* official value for edge triggering. */
+		*out_type = IRQ_TYPE_EDGE_RISING;
+		break;
+	default: /* Nothing else is acceptable. */
+		return -EINVAL;
+	}
+
 	*out_hwirq = intspec[0];
-	*out_type = 0;
+
 	return 0;
 }
 
 static int octeon_irq_cib_map(struct irq_domain *d,
-				  unsigned int virq, irq_hw_number_t hw)
+			      unsigned int virq, irq_hw_number_t hw)
 {
 	struct octeon_irq_cib_host_data *host_data = d->host_data;
 	struct octeon_irq_cib_chip_data *cd;
@@ -2667,17 +2691,20 @@ static irqreturn_t octeon_irq_cib_handler(int my_irq, void *data)
 
 	bits = en & raw;
 
-	/* Acknologe the bits we will be sending. */
-	cvmx_write_csr(host_data->raw_reg, bits);
-
 	for (i = 0; i < host_data->max_bits; i++) {
 		if ((bits & 1ull << i) == 0)
 			continue;
 		irq = irq_find_mapping(cib_domain, i);
-		if (!irq)
+		if (!irq) {
 			pr_err("ERROR: No mapping for cib %d\n", i);
-		else
-			generic_handle_irq(irq);
+		} else {
+			struct irq_desc *desc = irq_to_desc(irq);
+			struct irq_data *irq_data = irq_desc_get_irq_data(desc);
+			/* If edge, acknowledge the bit we will be sending. */
+			if (irqd_get_trigger_type(irq_data) & IRQ_TYPE_EDGE_BOTH)
+				cvmx_write_csr(host_data->raw_reg, 1ull << i);
+			generic_handle_irq_desc(irq, desc);
+		}
 	}
 
 	return IRQ_HANDLED;
