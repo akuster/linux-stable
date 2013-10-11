@@ -189,6 +189,8 @@ static void octeon_hotplug_global_init(void *arg)
 
 	hgp->magic_version = CVMX_HOTPLUG_MAGIC_VERSION;
 
+	cvmx_spinlock_init(&hgp->hotplug_global_lock);
+
 	/* Get legacy LABI data structure for initial parameters */
 	labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
 
@@ -438,29 +440,43 @@ int cvmx_coremask_bmp2str(const cvmx_coremask_t *pcm, char *hexstr)
 {
 	int core;
 	char *p;
-	unsigned int i, n;
+	unsigned int i;
+	unsigned int nibbles;
 	unsigned int num_cores = cvmx_octeon_num_cores();
 	static const char hextab[16] = {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		'a', 'b', 'c', 'd', 'e', 'f'};
 
-	p = hexstr;
-	n = 1 + (num_cores >> 2);
+	if (num_cores >= CVMX_MIPS_MAX_CORES)
+		return -1;
 
-	for (i = 0; i <= n; i++)
+	p = hexstr;
+
+	/* round-up num_cores to modulus 4 */
+	num_cores += 3;
+	num_cores &= ~3;
+
+	/* Calculate nibble count */
+	nibbles = num_cores >> 2;
+
+	/* Clear the buffer */
+	for (i = 0; i <= nibbles; i++)
 		p[i] = '\0';
 
+	/* Place core bits into nibbles, 4 bits per nibble */
 	for (core = num_cores - 1; core >= 0; core--) {
 		if (cvmx_coremask_is_core_set(pcm, core))
-			p[n - (core>>2)] |= 1 << (core & 3);
+			p[nibbles - (core>>2) - 1] |= 1 << (core & 3);
 	}
 
-	for (i = 0; i <= n; i++)
+	/* Convert each nibble into a hex char */
+	for (i = 0; i < nibbles; i++)
 		p[i] = hextab[p[i] & 0xf];
 
 	p[i] = '\0';
 
-	return n+1;
+	/* return the number if buffer bytes touched */
+	return nibbles+1;
 }
 
 static int octeon_cpu_disable(void)
