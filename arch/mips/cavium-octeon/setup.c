@@ -53,6 +53,7 @@
 static unsigned long long MAX_MEMORY = 512ull << 20;
 
 DEFINE_SEMAPHORE(octeon_bootbus_sem);
+EXPORT_SYMBOL(octeon_bootbus_sem);
 
 struct octeon_boot_descriptor *octeon_boot_desc_ptr;
 
