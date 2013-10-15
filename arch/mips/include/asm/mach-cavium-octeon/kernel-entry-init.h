@@ -42,11 +42,11 @@ FEXPORT(octeon_hotplug_entry)
 	.set push
 	.set noreorder
 	/* Hotpplugged CPUs enter in Big-Endian mode, switch here to LE */
-	dmfc0   v0, CP0_CVMCTL
+	dmfc0   v0, CP0_CVMCTL_REG
 	nop
 	ori     v0, v0, 2
 	nop
-	dmtc0   v0, CP0_CVMCTL	/* little-endian */
+	dmtc0   v0, CP0_CVMCTL_REG	/* little-endian */
 	nop
 	synci	0($0)
 	.set pop
