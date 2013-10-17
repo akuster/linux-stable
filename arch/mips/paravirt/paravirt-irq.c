@@ -13,7 +13,7 @@
 
 #include <asm/io.h>
 
-#define MBOX_BITS_PER_CPU 2
+#define MBOX_BITS_PER_CPU 3
 
 <<<<<<< HEAD
 static int cpunum_for_cpu(int cpu)
@@ -299,7 +299,7 @@ void irq_mbox_ipi(int cpu, unsigned int actions)
 	unsigned int cpuid = cpunum_for_cpu(cpu);
 	u32 mask;
 
-	WARN_ON(actions >= (1 << MBOX_BITS_PER_CPU));
+	WARN(actions >= (1 << MBOX_BITS_PER_CPU), "actions: %x\n", actions);
 
 	mask = actions << (cpuid * MBOX_BITS_PER_CPU);
 	__raw_writel(mask, mips_irq_chip + mips_irq_chip_reg_raw_w1s + sizeof(u32));
@@ -366,7 +366,7 @@ static void __init irq_pci_init(void)
 	for (i = 0; i < 4; i++)
 		irq_set_chip_and_handler(i + MIPS_IRQ_PCIA, &irq_chip_pci, handle_level_irq);
 
-	for (i = 0; i < 2; i++)
+	for (i = 0; i < MBOX_BITS_PER_CPU; i++)
 		irq_set_chip_and_handler(i + MIPS_IRQ_MBOX0, &irq_chip_mbox, handle_percpu_irq);
 
 
@@ -389,7 +389,7 @@ static void irq_pci_dispatch(void)
 
 	if (!en) {
 		en = __raw_readl(mips_irq_chip + mips_irq_chip_reg_src + (cpuid * mips_irq_cpu_stride) + sizeof(u32));
-		en = (en >> (2 * cpuid)) & 3;
+		en = (en >> (MBOX_BITS_PER_CPU * cpuid)) & ((1u << MBOX_BITS_PER_CPU) - 1);
 
 		if (!en)
 			spurious_interrupt();

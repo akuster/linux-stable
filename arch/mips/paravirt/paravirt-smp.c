@@ -135,6 +135,12 @@ static irqreturn_t paravirt_function_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+static irqreturn_t paravirt_icache_interrupt(int irq, void *dev_id)
+{
+	asm("synci	0($0)");  /* Only used for OCTEON */
+	return IRQ_HANDLED;
+}
+
 static void paravirt_prepare_cpus(unsigned int max_cpus)
 {
 	if (request_irq(MIPS_IRQ_MBOX0, paravirt_reched_interrupt,
@@ -146,6 +152,11 @@ static void paravirt_prepare_cpus(unsigned int max_cpus)
 			IRQF_PERCPU | IRQF_NO_THREAD, "SMP-Call",
 			paravirt_function_interrupt)) {
 		panic("Cannot request_irq for SMP-Call");
+	}
+	if (request_irq(MIPS_IRQ_MBOX2, paravirt_icache_interrupt,
+			IRQF_PERCPU | IRQF_NO_THREAD, "ICache Inv",
+			paravirt_icache_interrupt)) {
+		panic("Cannot request_irq for ICache Inv");
 	}
 }
 
