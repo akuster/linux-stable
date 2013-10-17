@@ -378,9 +378,9 @@ union cvmx_mixx_ctl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
 	uint64_t ts_thresh                    : 4;  /**< TimeStamp interrupt threshold. When the number of pending Timestamp interrupts
-                                                         (MIX0/1_TSCTL[TSCNT] is greater than
-                                                         MIX0/1_CTL[TS_THRESH], then a programmable TimeStamp interrupt is issued (see
-                                                         MIX0/1_INTR[TS], MIX0/1_INTENA[TSENA]).
+                                                         (MIX(0..1)_TSCTL[TSCNT] is greater than
+                                                         MIX(0..1)_CTL[TS_THRESH], then a programmable TimeStamp interrupt is issued (see
+                                                         MIX(0..1)_INTR[TS].
                                                          For CN78XX, since the implementation only supports four outstanding timestamp interrupts,
                                                          this field should only be programmed from [0..3]. */
 	uint64_t crc_strip                    : 1;  /**< Hardware CRC strip enable. When enabled, the last 4 bytes (CRC) of the ingress packet are
@@ -398,15 +398,15 @@ union cvmx_mixx_ctl {
                                                          reset.
                                                          During a soft reset, CSR accesses are not effected. However, the values of the fields are
                                                          affected by soft reset (except
-                                                         MIX0/1_CTL[RESET] itself).
+                                                         MIX(0..1)_CTL[RESET] itself).
                                                          After power-on, the MIX-BGX are held in reset until RESET is written to 0. Software must
-                                                         also perform a MIX0/1_CTL CSR read after this write to ensure the soft reset de-assertion
-                                                         has had sufficient time to propagate to all MIO-MIX internal logic before any subsequent
-                                                         MIX CSR accesses are issued.
+                                                         also perform a MIX(0..1)_CTL CSR read after this write to ensure the soft reset de-
+                                                         assertion has had sufficient time to propagate to all MIO-MIX internal logic before any
+                                                         subsequent MIX CSR accesses are issued.
                                                          The intended 'soft reset' sequence is:
                                                          Write EN = 0 (to prevent any NEW transactions from being started)
                                                          Wait for BUSY = 0 (to indicate that all in-flight transactions have completed)
-                                                         Write RESET = 1, followed by a MIX0/1_CTL register read and wait for the result.
+                                                         Write RESET = 1, followed by a MIX(0..1)_CTL register read and wait for the result.
                                                          Re-initialize the MIX just as would be done for a hard reset.
                                                          Once the MIX has been soft-reset, please refer to MIX Bring-up Sequence, MIX Bring-up
                                                          Sequence to complete the MIX re-initialization sequence.
@@ -730,9 +730,7 @@ union cvmx_mixx_irhwm {
                                                          enough so that packets are not dropped by CN78XX. */
 	uint64_t irhwm                        : 20; /**< I-Ring entry high-watermark threshold. Used to determine when the number of inbound
                                                          packets in system memory
-                                                         (MIX0/1_IRCNT[IRCNT]) exceeds this IRHWM threshold.
-                                                         The power-on value of the CIU_INTx_EN*[RGMII] interrupt enable bits is 0 and must be
-                                                         enabled to allow interrupts to be reported. */
+                                                         (MIX(0..1)_IRCNT[IRCNT]) exceeds this IRHWM threshold. */
 #else
 	uint64_t irhwm                        : 20;
 	uint64_t ibplwm                       : 20;
@@ -850,7 +848,7 @@ union cvmx_mixx_iring2 {
 	uint64_t itlptr                       : 20; /**< The inbound ring (I-Ring) tail pointer selects the I-Ring entry that the hardware will
                                                          process next. After the hardware completes receiving an inbound packet, it increments the
                                                          I-Ring tail pointer.
-                                                         The I-Ring tail pointer hardware increment is always modulo MIX0/1_IRING2[ISIZE].
+                                                         The I-Ring tail pointer hardware increment is always modulo MIX(0..1)_IRING2[ISIZE].
                                                          This field is read-only to software. */
 	uint64_t reserved_20_31               : 12;
 	uint64_t idbell                       : 20; /**< Represents the cumulative total of pending inbound ring (I-Ring) buffer entries. Each
@@ -861,7 +859,7 @@ union cvmx_mixx_iring2 {
                                                          inbound ring.' When the MIX hardware receives the doorbell ring, it advances the doorbell
                                                          count for the I-Ring.
                                                          Software must never cause the doorbell count for the I-Ring to exceed the size of
-                                                         MIX0/1_IRING1[ISIZE]. A read of the CSR indicates the current doorbell count. */
+                                                         MIX(0..1)_IRING1[ISIZE]. A read of the CSR indicates the current doorbell count. */
 #else
 	uint64_t idbell                       : 20;
 	uint64_t reserved_20_31               : 12;
@@ -895,71 +893,58 @@ union cvmx_mixx_isr {
 	struct cvmx_mixx_isr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
-	uint64_t ts                           : 1;  /**< Timestamp interrupt. Throws MIX_INTSN_E::MIX(0..1)_INT_TS. When the number of pending
-                                                         timestamp interrupts (MIX0/1_TSCTL[TSCNT]) is greater than the timestamp interrupt
-                                                         threshold (MIX0/1_CTL[TS_THRESH]) value, this interrupt bit is set.
-                                                         If both the global interrupt mask bits (CIU_INTx[RGMII]) and this local interrupt mask bit
-                                                         is set, than an interrupt is reported for an Outbound Ring with Timestamp event. (See
-                                                         MIX0/1_INTENA[TSENA]). */
+	uint64_t ts                           : 1;  /**< Timestamp interrupt. Throws MIX_INTSN_E:MIX(0..1)_INT_TS. This bit is set and the
+                                                         interrupt generated when the number of pending timestamp interrupts
+                                                         (MIX(0..1)_TSCTL[TSCNT]) is greater than the timestamp interrupt threshold
+                                                         (MIX(0..1)_CTL[TS_THRESH]) value. */
 	uint64_t orun                         : 1;  /**< O-ring packet count underflow detected. Throws MIX_INTSN_E::MIX(0..1)_INT_ORUN. If
-                                                         software writes a larger value than what is currently in the MIX0/1_ORCNT[ORCNT], then
+                                                         software writes a larger value than what is currently in the MIX(0..1)_ORCNT[ORCNT], then
                                                          hardware reports the underflow condition.
-                                                         The MIX0/1_ORCNT[IOCNT] will clamp to zero.
+                                                         The MIX(0..1)_ORCNT[IOCNT] will clamp to zero.
                                                          If an ORUN underflow condition is detected, the integrity of the MIX hardware state has
                                                          been compromised. To recover, Software must issue a software reset sequence. (See
-                                                         MIX0/1_CTL[RESET.] */
+                                                         MIX(0..1)_CTL[RESET.] */
 	uint64_t irun                         : 1;  /**< I-ring packet count underflow detected. Throws MIX_INTSN_E::MIX(0..1)_INT_IRUN. If
-                                                         software writes a larger value than what is currently in the MIX0/1_IRCNT[IRCNT], then
+                                                         software writes a larger value than what is currently in the MIX(0..1)_IRCNT[IRCNT], then
                                                          hardware reports the underflow condition.
-                                                         The MIX0/1_IRCNT[IRCNT] will clamp to zero.
+                                                         The MIX(0..1)_IRCNT[IRCNT] will clamp to zero.
                                                          If an IRUN underflow condition is detected, the integrity of the MIX hardware state has
                                                          been compromised. To recover, software must issue a software reset sequence. (See
-                                                         MIX0/1_CTL[RESET]). */
+                                                         MIX(0..1)_CTL[RESET]). */
 	uint64_t data_drp                     : 1;  /**< Data was dropped due to RX FIFO full. Throws MIX_INTSN_E::MIX(0..1)_INT_DATA_DRP. If this
-                                                         does occur, the DATA_DRP is set and the CIU_INTx_SUM0/4[RGMII] bit is set.
-                                                         If both the global interrupt mask bits (CIU_INTx[RGMII]) and the local interrupt mask
-                                                         bit(DATA_DRPENA) is set, than an interrupt is reported for this event. */
+                                                         event does occur, DATA_DRP is set and the interrupt is generated. */
 	uint64_t irthresh                     : 1;  /**< Inbound ring packet threshold exceeded. Throws MIX_INTSN_E::MIX(0..1)_INT_IRTHRESH. When
                                                          the pending number of inbound packets in system memory (IRCNT) has exceeded a programmable
-                                                         threshold (IRHWM), this bit is set. If this does occur, the IRTHRESH is set and the
-                                                         CIU_INTx_SUM0/4[RGMII] bit is set if ((MIX_ISR & MIX_INTENA) != 0)).
-                                                         If both the global interrupt mask bits (CIU_INTx[RGMII]) and the local interrupt mask bit
-                                                         (ITHENA) is set, than an interrupt is reported for this event. */
+                                                         threshold (IRHWM), this bit is set and the interrupt is generated. */
 	uint64_t orthresh                     : 1;  /**< Outbound ring packet threshold exceeded. Throws MIX_INTSN_E::MIX(0..1)_INT_ORTHRESH. When
                                                          the pending number of outbound packets in system memory (ORCNT) has exceeded a
-                                                         programmable threshold (ORHWM), this bit is set. If this does occur, the ORTHRESH is set
-                                                         and the CIU_INTx_SUM0/4[RGMII] bit is set if ((MIX_ISR & MIX_INTENA) != 0)).
-                                                         If both the global interrupt mask bits (CIU_INTx[RGMII]) and the local interrupt mask bit
-                                                         (OTHENA) is set, than an interrupt is reported for this event. */
+                                                         programmable threshold (ORHWM), this bit is set and the interrupt is generated. */
 	uint64_t idblovf                      : 1;  /**< "Inbound doorbell (IDBELL) overflow detected. Throws MIX_INTSN_E::MIX(0..1)_INT_IDBLOVF.
-                                                         If software attempts to write to the MIX0/1_IRING2[IDBELL] with a value greater than the
-                                                         remaining number of I-Ring buffer entries
-                                                         (MIX0/1_REMCNT[IREMCNT]), then the following occurs:
-                                                         The MIX0/1_IRING2[IDBELL] write is IGNORED
-                                                         The ODBLOVF is set and the CIU_INTx_SUM0/4[RGMII] bits are set if ((MIX0/1_ISR &
-                                                         MIX0/1_INTENA) != 0)).
-                                                         If both the global interrupt mask bits (CIU_INTx[RGMII]) and the local interrupt mask bit
-                                                         (IVFENA) is set, an interrupt is reported for this event.
+                                                         If software attempts to write to the MIX(0..1)_IRING2[IDBELL] with a value greater than
+                                                         the remaining number of I-Ring buffer entries
+                                                         (MIX(0..1)_REMCNT[IREMCNT]), then the following occurs:
+                                                         The MIX(0..1)_IRING2[IDBELL] write is IGNORED
+                                                         The ODBLOVF is set and an interrupt is generated.
                                                          Software should keep track of the \# of I-Ring entries in use (i.e. the cumulative number
                                                          of IDBELL write operations), and ensure that future IDBELL write operations don't exceed
-                                                         the size of the I-Ring Buffer (MIX0/1_IRING2[ISIZE]). Software must reclaim I-Ring entries
-                                                         by keeping track of the number of IRing entries, and writing to the MIX0/1_IRCNT[IRCNT].
-                                                         The MIX0/1_IRCNT[IRCNT] register represents the total number of packets (not IRing
+                                                         the size of the I-Ring Buffer (MIX(0..1)_IRING2[ISIZE]). Software must reclaim I-Ring
+                                                         entries by keeping track of the number of IRing entries, and writing to the
+                                                         MIX(0..1)_IRCNT[IRCNT].
+                                                         The MIX(0..1)_IRCNT[IRCNT] register represents the total number of packets (not IRing
                                                          entries) and software must further keep track of the number of I-Ring entries associated
                                                          with each packet as they are processed.
                                                          There is no recovery from an IDBLOVF Interrupt. If it occurs, it is an indication that
                                                          software has overwritten the I-Ring buffer, and the only recourse is a hardware reset." */
 	uint64_t odblovf                      : 1;  /**< Outbound doorbell (ODBELL) overflow detected. Throws MIX_INTSN_E::MIX(0..1)_INT_ODBLOVF.
-                                                         If software attempts to write to MIX0/1_ORING2[ODBELL] with a value greater than the
+                                                         If software attempts to write to MIX(0..1)_ORING2[ODBELL] with a value greater than the
                                                          remaining number of O-Ring buffer entries
-                                                         (MIX0/1_REMCNT[OREMCNT]), then the following occurs:
-                                                         The MIX0/1_ORING2[ODBELL] write operation is IGNORED
-                                                         ODBLOVF is set and the CIU_INTx_SUM0/4[RGMII] bits are set if ((MIX0/1_ISR &
-                                                         MIX0/1_INTENA) != 0)).
+                                                         (MIX(0..1)_REMCNT[OREMCNT]), then the following occurs:
+                                                         The MIX(0..1)_IRING2[ODBELL] write operation is IGNORED
+                                                         ODBLOVF is set and the interrupt is generated.
                                                          Software should keep track of the number of I-Ring entries in use (i.e. the cumulative
                                                          number of ODBELL write operations), and ensure that future ODBELL write operations don't
-                                                         exceed the size of the O-Ring buffer (MIX0/1_ORING2[OSIZE]). Software must reclaim O-Ring
-                                                         entries by writing to MIX0/1_ORCNT[ORCNT].
+                                                         exceed the size of the O-Ring buffer (MIX(0..1)_ORING2[OSIZE]). Software must reclaim
+                                                         O-Ring entries by writing to MIX(0..1)_ORCNT[ORCNT].
                                                          There is no recovery from an ODBLOVF Interrupt. If it occurs, it is an indication that
                                                          software has overwritten the O-Ring buffer, and the only recourse is a hardware reset. */
 #else
@@ -1106,8 +1091,8 @@ union cvmx_mixx_orcnt {
                                                          Reading ORCNT returns the current count.
                                                          Writing ORCNT decrements the count by the value written.
                                                          This register is used to generate interrupts to alert software of pending outbound MIX
-                                                         packets that have been removed from system memory. (See MIX0/1_ISR[ORTHRESH] description
-                                                         for more details.)
+                                                         packets that have been removed from system memory. (See MIX(0..1)_ISR[ORTHRESH]
+                                                         description for more details.)
                                                          For outbound packets, the number of O-Ring Packets is equal to the number of O-Ring
                                                          Entries. */
 #else
@@ -1141,10 +1126,8 @@ union cvmx_mixx_orhwm {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t orhwm                        : 20; /**< O-Ring entry high-watermark threshold. Used to determine when the number of outbound
-                                                         packets in system memory that can be reclaimed (MIX0/1_ORCNT[ORCNT]) exceeds this ORHWM
-                                                         threshold.
-                                                         The power-on value of the CIU_INTx_EN*[RGMII] interrupt enable bits is 0 and must be
-                                                         enabled to allow interrupts to be reported. */
+                                                         packets in system memory that can be reclaimed (MIX(0..1)_ORCNT[ORCNT]) exceeds this ORHWM
+                                                         threshold. */
 #else
 	uint64_t orhwm                        : 20;
 	uint64_t reserved_20_63               : 44;
@@ -1261,7 +1244,7 @@ union cvmx_mixx_oring2 {
 	uint64_t otlptr                       : 20; /**< The outbound ring tail pointer selects the O-Ring entry that the hardware will process
                                                          next. After the hardware completes sending an outbound packet, it increments the O-Ring
                                                          tail pointer.
-                                                         The O-Ring tail pointer hardware increment is always modulo MIX0/1_ORING2[OSIZE].
+                                                         The O-Ring tail pointer hardware increment is always modulo MIX(0..1)_ORING2[OSIZE].
                                                          This field is read-only to software. */
 	uint64_t reserved_20_31               : 12;
 	uint64_t odbell                       : 20; /**< Represents the cumulative total of pending outbound ring (O-Ring) buffer entries. Each
@@ -1272,7 +1255,7 @@ union cvmx_mixx_oring2 {
                                                          count of the newly inserted entries.' When the MIX hardware receives the doorbell ring, it
                                                          increments the current doorbell count by the CSR write value.
                                                          Software must never cause the doorbell count for the O-Ring to exceed the size of
-                                                         MIX0/1_ORING1[OSIZE]. A read of the CSR indicates the current doorbell count. */
+                                                         MIX(0..1)_ORING1[OSIZE]. A read of the CSR indicates the current doorbell count. */
 #else
 	uint64_t odbell                       : 20;
 	uint64_t reserved_20_31               : 12;
@@ -1307,19 +1290,19 @@ union cvmx_mixx_remcnt {
 	uint64_t reserved_52_63               : 12;
 	uint64_t iremcnt                      : 20; /**< Remaining I-Ring buffer count. Reflects the number of unused/remaining I-Ring entries that
                                                          hardware currently detects in the I-Ring buffer. Hardware uses this value to detect I-Ring
-                                                         doorbell overflows. (See MIX0/1_ISR[IDBLOVF].)
-                                                         When software writes the MIX0/1_IRING1[ISIZE], IREMCNT is loaded with the
-                                                         MIX0/1_IRING2[ISIZE] value. (Note: ISIZE should only be written at power-on, when it is
+                                                         doorbell overflows. (See MIX(0..1)_ISR[IDBLOVF].)
+                                                         When software writes the MIX(0..1)_IRING1[ISIZE], IREMCNT is loaded with the
+                                                         MIX(0..1)_IRING2[ISIZE] value. (Note: ISIZE should only be written at power-on, when it is
                                                          known that there are no I-Ring entries currently in use by hardware.) When software writes
                                                          to the IDBELL register, the IREMCNT is decremented by the CSR write value. When hardware
                                                          issues an I-Ring write request (onto the IOI), REMCNT is incremented by 1. */
 	uint64_t reserved_20_31               : 12;
 	uint64_t oremcnt                      : 20; /**< Remaining O-Ring buffer count. Reflects the number of unused/remaining O-Ring entries that
                                                          hardware currently detects in the O-Ring buffer. Hardware uses this value to detect O-Ring
-                                                         doorbell overflows. (See MIX0/1_ISR[ODBLOVF].)
-                                                         When software writes the MIX0/1_IRING1[OSIZE], OREMCNT is loaded with the
-                                                         MIX0/1_ORING2[OSIZE] value. (Note: [OSIZE] should only be written at power-on, when it is
-                                                         known that no O-Ring entries are currently in use by hardware.) When software writes to
+                                                         doorbell overflows. (See MIX(0..1)_ISR[ODBLOVF].)
+                                                         When software writes the MIX(0..1)_ORING1[OSIZE], OREMCNT is loaded with the
+                                                         MIX(0..1)_ORING2[OSIZE] value. (Note: [OSIZE] should only be written at power-on, when it
+                                                         is known that no O-Ring entries are currently in use by hardware.) When software writes to
                                                          the ODBELL register, OREMCNT is decremented by the CSR write value. When software writes
                                                          to OREMCNT, it is decremented by the CSR write value. */
 #else
@@ -1350,14 +1333,14 @@ typedef union cvmx_mixx_remcnt cvmx_mixx_remcnt_t;
  * to determine the number pending timestamp interrupts ([TSCNT]), the number outstanding
  * timestamp requests in flight ([TSTOT]), and the number of available timestamp entries (TSAVL)
  * in the timestamp FIFO.
- * Writing to this register advances the MIX0/1_TSTAMP FIFO head pointer by 1 and decrements the
- * [TSCNT, TSTOT] pending counts by 1. For example, if software reads [TSCNT] = 2 (two pending
- * timestamp interrupts), it would immediately issue this sequence:
- * a MIX0/1_TSTAMP[TSTAMP] read operation followed by MIX0/1_TSCTL write operation (i.e. it gets
- * the timestamp value, pops the timestamp FIFO, and decrements pending counts by 1).
- * a MIX0/1_TSTAMP[TSTAMP] read operation followed by MIX0/1_TSCTL write operation.
- * Note for Software: A MIX0/1_TSCTL write operation is ignored when
- * MIX0/1_TSCTL[TSCNT] = 0 (i.e., TimeStamp FIFO empty).
+ * Writing to this register advances the MIX(0..1)_TSTAMP FIFO head pointer by 1 and decrements
+ * the [TSCNT, TSTOT] pending counts by 1. For example, if software reads [TSCNT] = 2 (two
+ * pending timestamp interrupts), it would immediately issue this sequence:
+ * a MIX(0..1)_TSTAMP[TSTAMP] read operation followed by MIX(0..1)_TSCTL write operation (i.e. it
+ * gets the timestamp value, pops the timestamp FIFO, and decrements pending counts by 1).
+ * a MIX(0..1)_TSTAMP[TSTAMP] read operation followed by MIX(0..1)_TSCTL write operation.
+ * Note for Software: A MIX(0..1)_TSCTL write operation is ignored when
+ * MIX(0..1)_TSCTL[TSCNT] = 0 (i.e., TimeStamp FIFO empty).
  */
 union cvmx_mixx_tsctl {
 	uint64_t u64;
@@ -1407,26 +1390,25 @@ union cvmx_mixx_tstamp {
                                                          sent to the BGX. Later the BGX sends sample strobe(s) to capture a global 64-bit timestamp
                                                          value, followed by a 'commit' strobe which writes the last sampled value into the outbound
                                                          timestamp FIFO (max depth = 4) and increments
-                                                         MIX0/1_TSCTL[TSCNT] to indicate the total number of pending timestamp interrupts.
-                                                         If the number of pending timestamp interrupts (MIX0/1_TSCTL[TSCNT]) is greater than the
-                                                         MIX0/1_CTL[TS_THRESH] value, then a programmable interrupt is also triggered (see
-                                                         MIX0/1_ISR[TS] and
-                                                         MIX0/1_INTENA[TSENA]).
-                                                         Software then reads MIX0/1_TSTAMP[TSTAMP], and must then write MIX0/1_TSCTL, which will
-                                                         decrement MIX0/1_TSCTL[TSCNT] to indicate that a single timestamp interrupt has been
-                                                         serviced.
+                                                         MIX(0..1)_TSCTL[TSCNT] to indicate the total number of pending timestamp interrupts.
+                                                         If the number of pending timestamp interrupts (MIX(0..1)_TSCTL[TSCNT]) is greater than the
+                                                         MIX(0..1)_CTL[TS_THRESH] value, then a programmable interrupt is also triggered (see
+                                                         MIX(0..1)_ISR[TS].
+                                                         Software then reads MIX(0..1)_TSTAMP[TSTAMP], and must then write MIX(0..1)_TSCTL, which
+                                                         will decrement MIX(0..1)_TSCTL[TSCNT] to indicate that a single timestamp interrupt has
+                                                         been serviced.
                                                          The MIO-MIX hardware tracks up to MAX = 4 outstanding timestamped outbound packets at a
                                                          time. All subsequent O-RING entries with SOP-TSTAMP will be stalled until software can
                                                          service the 4 outstanding interrupts. Software can read
-                                                         MIX0/1_TSCTL to determine the number of pending timestamp interrupts (TSCNT), plus the
+                                                         MIX(0..1)_TSCTL to determine the number of pending timestamp interrupts (TSCNT), plus the
                                                          number of outstanding timestamp requests in flight (TSTOT), as well as the number of
                                                          available timestamp entries (TSAVL).
                                                          A MIX_TSTAMP read when
-                                                         MIX_TSCTL[TSCNT] = 0 will result in a return value of all zeroes. Software should only
-                                                         read this register when
-                                                         MIX0/1_ISR[TS] = 1 (or when MIX0/1_TSCTL[TSCNT] != 0) to retrieve the timestamp value
-                                                         recorded by hardware. If software reads the TSTAMP when hardware has not recorded a valid
-                                                         timestamp, then an all zeroes value is returned. */
+                                                         MIX(0..1)_TSCTL[TSCNT] = 0 will result in a return value of all zeroes. Software should
+                                                         only read this register when
+                                                         MIX(0..1)_ISR[TS] = 1 (or when MIX(0..1)_TSCTL[TSCNT] != 0) to retrieve the timestamp
+                                                         value recorded by hardware. If software reads the TSTAMP when hardware has not recorded a
+                                                         valid timestamp, then an all zeroes value is returned. */
 #else
 	uint64_t tstamp                       : 64;
 #endif

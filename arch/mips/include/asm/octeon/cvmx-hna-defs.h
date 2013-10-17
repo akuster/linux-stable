@@ -174,6 +174,105 @@ static inline uint64_t CVMX_HNA_HPU_EIR_FUNC(void)
 #define CVMX_HNA_HPU_EIR (CVMX_ADD_IO_SEG(0x0001180047000018ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_HNA_PFC0_CNT CVMX_HNA_PFC0_CNT_FUNC()
+static inline uint64_t CVMX_HNA_PFC0_CNT_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_HNA_PFC0_CNT not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180047000090ull);
+}
+#else
+#define CVMX_HNA_PFC0_CNT (CVMX_ADD_IO_SEG(0x0001180047000090ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_HNA_PFC0_CTL CVMX_HNA_PFC0_CTL_FUNC()
+static inline uint64_t CVMX_HNA_PFC0_CTL_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_HNA_PFC0_CTL not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180047000088ull);
+}
+#else
+#define CVMX_HNA_PFC0_CTL (CVMX_ADD_IO_SEG(0x0001180047000088ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_HNA_PFC1_CNT CVMX_HNA_PFC1_CNT_FUNC()
+static inline uint64_t CVMX_HNA_PFC1_CNT_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_HNA_PFC1_CNT not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011800470000A0ull);
+}
+#else
+#define CVMX_HNA_PFC1_CNT (CVMX_ADD_IO_SEG(0x00011800470000A0ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_HNA_PFC1_CTL CVMX_HNA_PFC1_CTL_FUNC()
+static inline uint64_t CVMX_HNA_PFC1_CTL_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_HNA_PFC1_CTL not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180047000098ull);
+}
+#else
+#define CVMX_HNA_PFC1_CTL (CVMX_ADD_IO_SEG(0x0001180047000098ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_HNA_PFC2_CNT CVMX_HNA_PFC2_CNT_FUNC()
+static inline uint64_t CVMX_HNA_PFC2_CNT_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_HNA_PFC2_CNT not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011800470000B0ull);
+}
+#else
+#define CVMX_HNA_PFC2_CNT (CVMX_ADD_IO_SEG(0x00011800470000B0ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_HNA_PFC2_CTL CVMX_HNA_PFC2_CTL_FUNC()
+static inline uint64_t CVMX_HNA_PFC2_CTL_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_HNA_PFC2_CTL not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011800470000A8ull);
+}
+#else
+#define CVMX_HNA_PFC2_CTL (CVMX_ADD_IO_SEG(0x00011800470000A8ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_HNA_PFC3_CNT CVMX_HNA_PFC3_CNT_FUNC()
+static inline uint64_t CVMX_HNA_PFC3_CNT_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_HNA_PFC3_CNT not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011800470000C0ull);
+}
+#else
+#define CVMX_HNA_PFC3_CNT (CVMX_ADD_IO_SEG(0x00011800470000C0ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_HNA_PFC3_CTL CVMX_HNA_PFC3_CTL_FUNC()
+static inline uint64_t CVMX_HNA_PFC3_CTL_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_HNA_PFC3_CTL not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011800470000B8ull);
+}
+#else
+#define CVMX_HNA_PFC3_CTL (CVMX_ADD_IO_SEG(0x00011800470000B8ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_HNA_PFC_GCTL CVMX_HNA_PFC_GCTL_FUNC()
+static inline uint64_t CVMX_HNA_PFC_GCTL_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_HNA_PFC_GCTL not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180047000080ull);
+}
+#else
+#define CVMX_HNA_PFC_GCTL (CVMX_ADD_IO_SEG(0x0001180047000080ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_HNA_SBD_DBG0 CVMX_HNA_SBD_DBG0_FUNC()
 static inline uint64_t CVMX_HNA_SBD_DBG0_FUNC(void)
 {
@@ -270,10 +369,10 @@ union cvmx_hna_bist1 {
 	struct cvmx_hna_bist1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_7_63                : 57;
-	uint64_t hnc1                         : 1;  /**< "SC#1 Bist Results for cumulative HNC1 RAMs
+	uint64_t hnc1                         : 1;  /**< "SC1 Bist Results for cumulative HNC1 RAMs
                                                          - 0: GOOD (or bist in progress/never run)
                                                          - 1: BAD" */
-	uint64_t hnc0                         : 1;  /**< "SC#0 Bist Results for cumulative HNC0 RAMs
+	uint64_t hnc0                         : 1;  /**< "SC0 Bist Results for cumulative HNC0 RAMs
                                                          - 0: GOOD (or bist in progress/never run)
                                                          - 1: BAD" */
 	uint64_t mrp1                         : 1;  /**< Bist Results for DSM-DLC:MRP1 RAM
@@ -303,7 +402,7 @@ typedef union cvmx_hna_bist1 cvmx_hna_bist1_t;
 /**
  * cvmx_hna_config
  *
- * Description: This register specifies the HNA HPU programmable controls.
+ * This register specifies the HNA HPU programmable controls.
  *
  */
 union cvmx_hna_config {
@@ -342,14 +441,14 @@ union cvmx_hna_config {
                                                          This field specifies the low watermark for the run stack. Valid Range: [0..15]
                                                          Once the run stack goes below the low water mark, HNA will fill entries from the
                                                          global run stack head to the local run stack tail.
-                                                         The granularity of this field is represented as \#of 128B cachelines.
+                                                         The granularity of this field is represented as number of 128B cachelines.
                                                          NOTE: This field can only be changed at initialization/power on time before
                                                          the HNA is fed instructions." */
 	uint64_t rnstk_hwm                    : 4;  /**< "RNSTK High Water Mark
                                                          This field specifies the hi watermark for the run stack. Valid Range: [0..15]
                                                          Once the local run stack level goes above the hi water mark, the HNA will spill
                                                          entries from the local run stack tail to the global run stack head (in DDR memory).
-                                                         The granularity of this field is represented as \#of 128B cachelines.
+                                                         The granularity of this field is represented as number of 128B cachelines.
                                                          NOTE: This field can only be changed at initialization/power on time before
                                                          the HNA is fed instructions." */
 	uint64_t reserved_9_11                : 3;
@@ -364,10 +463,10 @@ union cvmx_hna_config {
                                                          contain '1' will be disallowed during a write and will always
                                                          be read as '1'. */
 	uint64_t hpu_clcrip                   : 3;  /**< "HPU Cluster Cripple
-                                                         Encoding which represents \#of HPUs to cripple for each
+                                                         Encoding which represents number of HPUs to cripple for each
                                                          cluster. Typically HPU_CLCRIP=0 which enables all HPUs
                                                          within each cluster. However, when the HNA performance
-                                                         counters are used, SW may want to limit the \#of HPUs
+                                                         counters are used, SW may want to limit the number of HPUs
                                                          per cluster available, as there are only 4 parallel
                                                          performance counters.
                                                          HPU_CLCRIP | \#HPUs crippled(per cluster)
@@ -386,7 +485,7 @@ union cvmx_hna_config {
                                                          HPU#s [8:0] are available.
                                                          IMPNOTE: The encodings are done in such a way as to later
                                                          be used with fuses (for future revisions which will disable
-                                                         some \#of HPUs). Blowing a fuse has the effect that there will
+                                                         some number of HPUs). Blowing a fuse has the effect that there will
                                                          always be fewer HPUs available. [ie: we never want a customer
                                                          to blow additional fuses to get more HPUs].
                                                          SWNOTE: The MIO_FUS___HNA_NUMHPU_CRIPPLE[2:0] fuse bits will
@@ -427,7 +526,7 @@ typedef union cvmx_hna_config cvmx_hna_config_t;
 /**
  * cvmx_hna_control
  *
- * Description: This register specifies the HNA CTL/HNC programmable controls.
+ * This register specifies the HNA CTL/HNC programmable controls.
  *
  */
 union cvmx_hna_control {
@@ -553,7 +652,7 @@ union cvmx_hna_difctl {
                                                          When clear, the HW will issue regular load towards cache which will cause
                                                          the line to be written back before being replaced. */
 	uint64_t reserved_9_11                : 3;
-	uint64_t size                         : 9;  /**< "Represents the \# of 64B instructions contained
+	uint64_t size                         : 9;  /**< "Represents the number of 64B instructions contained
                                                          within each HNA instruction chunk. At Power-on,
                                                          SW will seed the SIZE register with a fixed
                                                          chunk-size. (Must be at least 3)
@@ -627,7 +726,7 @@ typedef union cvmx_hna_difrdptr cvmx_hna_difrdptr_t;
 /**
  * cvmx_hna_error
  *
- * Description: This register contains error status information.
+ * This register contains error status information.
  *
  */
 union cvmx_hna_error {
@@ -719,7 +818,7 @@ typedef union cvmx_hna_error cvmx_hna_error_t;
 /**
  * cvmx_hna_hpu_csr
  *
- * "Description: To read one of the HPU internal CSRs for debug (ie: HPU_STATUS, DBG_CURSTK,
+ * "To read one of the HPU internal CSRs for debug (ie: HPU_STATUS, DBG_CURSTK,
  * DBG_GENERAL),
  * first a CSR WRITE of the HNA_HPU_DBG is done to specify the HPU CSR#, cluster#=CLID and
  * HPU#=HPUID,
@@ -742,7 +841,7 @@ typedef union cvmx_hna_hpu_csr cvmx_hna_hpu_csr_t;
 /**
  * cvmx_hna_hpu_dbg
  *
- * "Description: This register specifies the HPU CSR#, cluster#=CLID and HPU#=HPUID used during a
+ * "This register specifies the HPU CSR#, cluster#=CLID and HPU#=HPUID used during a
  * a CSR READ of the HNA_HPU_CSR register."
  */
 union cvmx_hna_hpu_dbg {
@@ -770,7 +869,7 @@ typedef union cvmx_hna_hpu_dbg cvmx_hna_hpu_dbg_t;
 /**
  * cvmx_hna_hpu_eir
  *
- * "Description: Used by SW to force Parity or ECC errors on some internal HPU data structures.
+ * "Used by SW to force Parity or ECC errors on some internal HPU data structures.
  * A CSR WRITE of this register will force either a Parity or ECC error on the next access
  * at cluster#=CLID, HPU#=HPUID."
  */
@@ -811,12 +910,296 @@ union cvmx_hna_hpu_eir {
 typedef union cvmx_hna_hpu_eir cvmx_hna_hpu_eir_t;
 
 /**
+ * cvmx_hna_pfc0_cnt
+ */
+union cvmx_hna_pfc0_cnt {
+	uint64_t u64;
+	struct cvmx_hna_pfc0_cnt_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pfcnt                        : 64; /**< "HNA Performance Counter 0.
+                                                         When HNA_PFC_GCTL[CNT0ENA]=1, the event selected
+                                                         by HNA_PFC0_CTL[EVSEL] is counted.
+                                                         See also HNA_PFC_GCTL[CNT0WCLR] and HNA_PFC_GCTL
+                                                         [CNT0RCLR] for special clear count cases available
+                                                         for SW data collection." */
+#else
+	uint64_t pfcnt                        : 64;
+#endif
+	} s;
+	struct cvmx_hna_pfc0_cnt_s            cn78xx;
+};
+typedef union cvmx_hna_pfc0_cnt cvmx_hna_pfc0_cnt_t;
+
+/**
+ * cvmx_hna_pfc0_ctl
+ */
+union cvmx_hna_pfc0_ctl {
+	uint64_t u64;
+	struct cvmx_hna_pfc0_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t evsel                        : 6;  /**< Performance Counter#0 Event Selector (64 total) */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t clhpu                        : 4;  /**< "Performance Counter 0 Cluster HPU Selector.
+                                                         When HNA_PFC_GCTL[PMODE]=0 (per-cluster HPU), this field
+                                                         is used to select/monitor the cluster's HPU# for all events
+                                                         associated with Performance Counter#0." */
+	uint64_t clnum                        : 2;  /**< "Performance Counter 0 Cluster Selector.
+                                                         When HNA_PFC_GCTL[PMODE]=0 (per-cluster HPU), this field
+                                                         is used to select/monitor the cluster# for all events
+                                                         associated with Performance Counter#0." */
+#else
+	uint64_t clnum                        : 2;
+	uint64_t clhpu                        : 4;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t evsel                        : 6;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_hna_pfc0_ctl_s            cn78xx;
+};
+typedef union cvmx_hna_pfc0_ctl cvmx_hna_pfc0_ctl_t;
+
+/**
+ * cvmx_hna_pfc1_cnt
+ */
+union cvmx_hna_pfc1_cnt {
+	uint64_t u64;
+	struct cvmx_hna_pfc1_cnt_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pfcnt                        : 64; /**< "HNA Performance Counter 1.
+                                                         When HNA_PFC_GCTL[CNT1ENA]=1, the event selected
+                                                         by HNA_PFC1_CTL[EVSEL] is counted.
+                                                         See also HNA_PFC_GCTL[CNT1WCLR] and HNA_PFC_GCTL
+                                                         [CNT1RCLR] for special clear count cases available
+                                                         for SW data collection." */
+#else
+	uint64_t pfcnt                        : 64;
+#endif
+	} s;
+	struct cvmx_hna_pfc1_cnt_s            cn78xx;
+};
+typedef union cvmx_hna_pfc1_cnt cvmx_hna_pfc1_cnt_t;
+
+/**
+ * cvmx_hna_pfc1_ctl
+ */
+union cvmx_hna_pfc1_ctl {
+	uint64_t u64;
+	struct cvmx_hna_pfc1_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t evsel                        : 6;  /**< Performance Counter#1 Event Selector (64 total) */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t clhpu                        : 4;  /**< "Performance Counter 1 Cluster HPU Selector.
+                                                         When HNA_PFC_GCTL[PMODE]=0 (per-cluster HPU), this field
+                                                         is used to select/monitor the cluster's HPU# for all events
+                                                         associated with Performance Counter#1." */
+	uint64_t clnum                        : 2;  /**< "Performance Counter 1 Cluster Selector.
+                                                         When HNA_PFC_GCTL[PMODE]=0 (per-cluster HPU), this field
+                                                         is used to select/monitor the cluster# for all events
+                                                         associated with Performance Counter#1." */
+#else
+	uint64_t clnum                        : 2;
+	uint64_t clhpu                        : 4;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t evsel                        : 6;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_hna_pfc1_ctl_s            cn78xx;
+};
+typedef union cvmx_hna_pfc1_ctl cvmx_hna_pfc1_ctl_t;
+
+/**
+ * cvmx_hna_pfc2_cnt
+ */
+union cvmx_hna_pfc2_cnt {
+	uint64_t u64;
+	struct cvmx_hna_pfc2_cnt_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pfcnt                        : 64; /**< "HNA Performance Counter 2.
+                                                         When HNA_PFC_GCTL[CNT2ENA]=1, the event selected
+                                                         by HNA_PFC2_CTL[EVSEL] is counted.
+                                                         See also HNA_PFC_GCTL[CNT2WCLR] and HNA_PFC_GCTL
+                                                         [CNT2RCLR] for special clear count cases available
+                                                         for SW data collection." */
+#else
+	uint64_t pfcnt                        : 64;
+#endif
+	} s;
+	struct cvmx_hna_pfc2_cnt_s            cn78xx;
+};
+typedef union cvmx_hna_pfc2_cnt cvmx_hna_pfc2_cnt_t;
+
+/**
+ * cvmx_hna_pfc2_ctl
+ */
+union cvmx_hna_pfc2_ctl {
+	uint64_t u64;
+	struct cvmx_hna_pfc2_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t evsel                        : 6;  /**< Performance Counter#2 Event Selector (64 total) */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t clhpu                        : 4;  /**< "Performance Counter#2 Cluster HPU Selector.
+                                                         When HNA_PFC_GCTL[PMODE]=0 (per-cluster HPU), this field
+                                                         is used to select/monitor the cluster's HPU# for all events
+                                                         associated with Performance Counter#2." */
+	uint64_t clnum                        : 2;  /**< "Performance Counter#2 Cluster Selector.
+                                                         When HNA_PFC_GCTL[PMODE]=0 (per-cluster HPU), this field
+                                                         is used to select/monitor the cluster# for all events
+                                                         associated with Performance Counter#2." */
+#else
+	uint64_t clnum                        : 2;
+	uint64_t clhpu                        : 4;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t evsel                        : 6;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_hna_pfc2_ctl_s            cn78xx;
+};
+typedef union cvmx_hna_pfc2_ctl cvmx_hna_pfc2_ctl_t;
+
+/**
+ * cvmx_hna_pfc3_cnt
+ */
+union cvmx_hna_pfc3_cnt {
+	uint64_t u64;
+	struct cvmx_hna_pfc3_cnt_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pfcnt                        : 64; /**< "HNA Performance Counter 3.
+                                                         When HNA_PFC_GCTL[CNT3ENA]=1, the event selected
+                                                         by HNA_PFC3_CTL[EVSEL] is counted.
+                                                         See also HNA_PFC_GCTL[CNT3WCLR] and HNA_PFC_GCTL
+                                                         [CNT3RCLR] for special clear count cases available
+                                                         for SW data collection." */
+#else
+	uint64_t pfcnt                        : 64;
+#endif
+	} s;
+	struct cvmx_hna_pfc3_cnt_s            cn78xx;
+};
+typedef union cvmx_hna_pfc3_cnt cvmx_hna_pfc3_cnt_t;
+
+/**
+ * cvmx_hna_pfc3_ctl
+ */
+union cvmx_hna_pfc3_ctl {
+	uint64_t u64;
+	struct cvmx_hna_pfc3_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t evsel                        : 6;  /**< Performance Counter 3 Event Selector (64 total) */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t clhpu                        : 4;  /**< "Performance Counter 3 Cluster HPU Selector.
+                                                         When HNA_PFC_GCTL[PMODE]=0 (per-cluster HPU), this field
+                                                         is used to select/monitor the cluster's HPU# for all events
+                                                         associated with Performance Counter#3." */
+	uint64_t clnum                        : 2;  /**< "Performance Counter 3 Cluster Selector.
+                                                         When HNA_PFC_GCTL[PMODE]=0 (per-cluster HPU), this field
+                                                         is used to select/monitor the cluster# for all events
+                                                         associated with Performance Counter 3." */
+#else
+	uint64_t clnum                        : 2;
+	uint64_t clhpu                        : 4;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t evsel                        : 6;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_hna_pfc3_ctl_s            cn78xx;
+};
+typedef union cvmx_hna_pfc3_ctl cvmx_hna_pfc3_ctl_t;
+
+/**
+ * cvmx_hna_pfc_gctl
+ *
+ * Global control across all performance counters.
+ *
+ */
+union cvmx_hna_pfc_gctl {
+	uint64_t u64;
+	struct cvmx_hna_pfc_gctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_12_63               : 52;
+	uint64_t cnt3rclr                     : 1;  /**< "Performance Counter 3 Read Clear.
+                                                         If this bit is set, CSR reads to the HNA_PFC3_CNT
+                                                         will clear the count value. This allows SW to maintain
+                                                         'cumulative' counters to avoid HW wraparound." */
+	uint64_t cnt2rclr                     : 1;  /**< "Performance Counter 2 Read Clear.
+                                                         If this bit is set, CSR reads to the HNA_PFC2_CNT
+                                                         will clear the count value. This allows SW to maintain
+                                                         'cumulative' counters to avoid HW wraparound." */
+	uint64_t cnt1rclr                     : 1;  /**< "Performance Counter 1 Read Clear.
+                                                         If this bit is set, CSR reads to the HNA_PFC1_CNT
+                                                         will clear the count value. This allows SW to maintain
+                                                         'cumulative' counters to avoid HW wraparound." */
+	uint64_t cnt0rclr                     : 1;  /**< "Performance Counter 0 Read Clear.
+                                                         If this bit is set, CSR reads to the HNA_PFC0_CNT
+                                                         will clear the count value. This allows SW to maintain
+                                                         'cumulative' counters to avoid HW wraparound." */
+	uint64_t cnt3wclr                     : 1;  /**< "Performance Counter 3 Write Clear.
+                                                         If this bit is set, CSR writes to the HNA_PFC3_CNT
+                                                         will clear the count value.
+                                                         If this bit is clear, CSR writes to the HNA_PFC3_CNT
+                                                         will continue the count from the written value." */
+	uint64_t cnt2wclr                     : 1;  /**< "Performance Counter 2 Write Clear.
+                                                         If this bit is set, CSR writes to the HNA_PFC2_CNT
+                                                         will clear the count value.
+                                                         If this bit is clear, CSR writes to the HNA_PFC2_CNT
+                                                         will continue the count from the written value." */
+	uint64_t cnt1wclr                     : 1;  /**< "Performance Counter 1 Write Clear.
+                                                         If this bit is set, CSR writes to the HNA_PFC1_CNT
+                                                         will clear the count value.
+                                                         If this bit is clear, CSR writes to the HNA_PFC1_CNT
+                                                         will continue the count from the written value." */
+	uint64_t cnt0wclr                     : 1;  /**< "Performance Counter 0 Write Clear.
+                                                         If this bit is set, CSR writes to the HNA_PFC0_CNT
+                                                         will clear the count value.
+                                                         If this bit is clear, CSR writes to the HNA_PFC0_CNT
+                                                         will continue the count from the written value." */
+	uint64_t cnt3ena                      : 1;  /**< "Performance Counter 3 Enable.
+                                                         When this bit is set, the performance counter \#3
+                                                         is enabled." */
+	uint64_t cnt2ena                      : 1;  /**< "Performance Counter 2 Enable.
+                                                         When this bit is set, the performance counter \#2
+                                                         is enabled." */
+	uint64_t cnt1ena                      : 1;  /**< "Performance Counter 1 Enable.
+                                                         When this bit is set, the performance counter \#1
+                                                         is enabled." */
+	uint64_t cnt0ena                      : 1;  /**< "Performance Counter 0 Enable.
+                                                         When this bit is set, the performance counter \#0
+                                                         is enabled." */
+#else
+	uint64_t cnt0ena                      : 1;
+	uint64_t cnt1ena                      : 1;
+	uint64_t cnt2ena                      : 1;
+	uint64_t cnt3ena                      : 1;
+	uint64_t cnt0wclr                     : 1;
+	uint64_t cnt1wclr                     : 1;
+	uint64_t cnt2wclr                     : 1;
+	uint64_t cnt3wclr                     : 1;
+	uint64_t cnt0rclr                     : 1;
+	uint64_t cnt1rclr                     : 1;
+	uint64_t cnt2rclr                     : 1;
+	uint64_t cnt3rclr                     : 1;
+	uint64_t reserved_12_63               : 52;
+#endif
+	} s;
+	struct cvmx_hna_pfc_gctl_s            cn78xx;
+};
+typedef union cvmx_hna_pfc_gctl cvmx_hna_pfc_gctl_t;
+
+/**
  * cvmx_hna_sbd_dbg0
  *
- * Description: When the HNA_CONTROL[SBDLCK] bit is written '1', the contents of this register
+ * When the HNA_CONTROL[SBDLCK] bit is written '1', the contents of this register
  * are locked down. Otherwise, the contents of this register are the 'active' contents of the
  * HNA Scoreboard at the time of the CSR read.
- * VERIFICATION NOTE: Read data is unsafe. X's(undefined data) can propagate (in the behavioral
+ * INTERNAL: VERIFICATION NOTE: Read data is unsafe. X's(undefined data) can propagate (in the
+ * behavioral
  * model) on the reads unless the HPU Engine specified by HNA_CONTROL[SBDNUM] has previously been
  * assigned an instruction.
  */
@@ -824,7 +1207,7 @@ union cvmx_hna_sbd_dbg0 {
 	uint64_t u64;
 	struct cvmx_hna_sbd_dbg0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sbd                          : 64; /**< "HNA ScoreBoard \#0 Data
+	uint64_t sbd                          : 64; /**< "HNA ScoreBoard 0 Data.
                                                          [63:38]   (26) rptr[28:3]: Result Base Pointer (QW-aligned)
                                                          [37:22]   (16) Cumulative Result Write Counter (for HDR write)
                                                          [21]       (1) Waiting for GRdRsp EOT
@@ -858,10 +1241,11 @@ typedef union cvmx_hna_sbd_dbg0 cvmx_hna_sbd_dbg0_t;
 /**
  * cvmx_hna_sbd_dbg1
  *
- * Description: When the HNA_CONTROL[SBDLCK] bit is written '1', the contents of this register
+ * When the HNA_CONTROL[SBDLCK] bit is written '1', the contents of this register
  * are locked down. Otherwise, the contents of this register are the 'active' contents of the
  * HNA Scoreboard at the time of the CSR read.
- * VERIFICATION NOTE: Read data is unsafe. X's(undefined data) can propagate (in the behavioral
+ * INTERNAL: VERIFICATION NOTE: Read data is unsafe. X's(undefined data) can propagate (in the
+ * behavioral
  * model) on the reads unless the HPU Engine specified by HNA_CONTROL[SBDNUM] has previously been
  * assigned an instruction.
  */
@@ -869,7 +1253,7 @@ union cvmx_hna_sbd_dbg1 {
 	uint64_t u64;
 	struct cvmx_hna_sbd_dbg1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sbd                          : 64; /**< "HNA ScoreBoard \#1 Data
+	uint64_t sbd                          : 64; /**< "HNA ScoreBoard 1 Data.
                                                          [63:56]   (8) UNUSED
                                                          [55:16]  (40) Packet Data Pointer
                                                          [15:0]   (16) Packet Data Counter" */
@@ -884,10 +1268,11 @@ typedef union cvmx_hna_sbd_dbg1 cvmx_hna_sbd_dbg1_t;
 /**
  * cvmx_hna_sbd_dbg2
  *
- * Description: When the HNA_CONTROL[SBDLCK] bit is written '1', the contents of this register
+ * When the HNA_CONTROL[SBDLCK] bit is written '1', the contents of this register
  * are locked down. Otherwise, the contents of this register are the 'active' contents of the
  * HNA Scoreboard at the time of the CSR read.
- * VERIFICATION NOTE: Read data is unsafe. X's(undefined data) can propagate (in the behavioral
+ * INTERNAL: VERIFICATION NOTE: Read data is unsafe. X's(undefined data) can propagate (in the
+ * behavioral
  * model) on the reads unless the HPU Engine specified by HNA_CONTROL[SBDNUM] has previously been
  * assigned an instruction.
  */
@@ -895,7 +1280,7 @@ union cvmx_hna_sbd_dbg2 {
 	uint64_t u64;
 	struct cvmx_hna_sbd_dbg2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sbd                          : 64; /**< "HNA ScoreBoard \#2 Data
+	uint64_t sbd                          : 64; /**< "HNA ScoreBoard 2 Data.
                                                          [63:45] (19) UNUSED
                                                          [44:42]  (3) Instruction Type
                                                          [41:5]  (37) rwptr[39:3]: Result Write Pointer
@@ -911,10 +1296,11 @@ typedef union cvmx_hna_sbd_dbg2 cvmx_hna_sbd_dbg2_t;
 /**
  * cvmx_hna_sbd_dbg3
  *
- * Description: When the HNA_CONTROL[SBDLCK] bit is written '1', the contents of this register
+ * When the HNA_CONTROL[SBDLCK] bit is written '1', the contents of this register
  * are locked down. Otherwise, the contents of this register are the 'active' contents of the
  * HNA Scoreboard at the time of the CSR read.
- * VERIFICATION NOTE: Read data is unsafe. X's(undefined data) can propagate (in the behavioral
+ * INTERNAL: VERIFICATION NOTE: Read data is unsafe. X's(undefined data) can propagate (in the
+ * behavioral
  * model) on the reads unless the HPU Engine specified by HNA_CONTROL[SBDNUM] has previously been
  * assigned an instruction.
  */
@@ -922,7 +1308,7 @@ union cvmx_hna_sbd_dbg3 {
 	uint64_t u64;
 	struct cvmx_hna_sbd_dbg3_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t sbd                          : 64; /**< "HNA ScoreBoard \#3 Data
+	uint64_t sbd                          : 64; /**< "HNA ScoreBoard 3 Data.
                                                          [63:52] (11) rptr[39:29]: Result Base Pointer (QW-aligned)
                                                          [52:16] (37) glptr[39:3]: Gather List Pointer
                                                          [15:0]  (16) glcnt Gather List Counter" */

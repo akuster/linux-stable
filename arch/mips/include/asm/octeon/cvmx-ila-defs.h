@@ -78,34 +78,34 @@ static inline uint64_t CVMX_ILA_GBL_CFG_FUNC(void)
 static inline uint64_t CVMX_ILA_LNEX_TRN_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 15)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7)))))
 		cvmx_warn("CVMX_ILA_LNEX_TRN_CTL(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011800170380F0ull) + ((offset) & 15) * 1024;
+	return CVMX_ADD_IO_SEG(0x00011800170380F0ull) + ((offset) & 7) * 1024;
 }
 #else
-#define CVMX_ILA_LNEX_TRN_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800170380F0ull) + ((offset) & 15) * 1024)
+#define CVMX_ILA_LNEX_TRN_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800170380F0ull) + ((offset) & 7) * 1024)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_ILA_LNEX_TRN_LD(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 15)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7)))))
 		cvmx_warn("CVMX_ILA_LNEX_TRN_LD(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011800170380E0ull) + ((offset) & 15) * 1024;
+	return CVMX_ADD_IO_SEG(0x00011800170380E0ull) + ((offset) & 7) * 1024;
 }
 #else
-#define CVMX_ILA_LNEX_TRN_LD(offset) (CVMX_ADD_IO_SEG(0x00011800170380E0ull) + ((offset) & 15) * 1024)
+#define CVMX_ILA_LNEX_TRN_LD(offset) (CVMX_ADD_IO_SEG(0x00011800170380E0ull) + ((offset) & 7) * 1024)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_ILA_LNEX_TRN_LP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 15)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7)))))
 		cvmx_warn("CVMX_ILA_LNEX_TRN_LP(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011800170380E8ull) + ((offset) & 15) * 1024;
+	return CVMX_ADD_IO_SEG(0x00011800170380E8ull) + ((offset) & 7) * 1024;
 }
 #else
-#define CVMX_ILA_LNEX_TRN_LP(offset) (CVMX_ADD_IO_SEG(0x00011800170380E8ull) + ((offset) & 15) * 1024)
+#define CVMX_ILA_LNEX_TRN_LP(offset) (CVMX_ADD_IO_SEG(0x00011800170380E8ull) + ((offset) & 7) * 1024)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_ILA_LNE_DBG CVMX_ILA_LNE_DBG_FUNC()
@@ -348,6 +348,17 @@ static inline uint64_t CVMX_ILA_RX_LNEX_STAT1(unsigned long offset)
 }
 #else
 #define CVMX_ILA_RX_LNEX_STAT1(offset) (CVMX_ADD_IO_SEG(0x0001180017038020ull) + ((offset) & 7) * 1024)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_ILA_RX_LNEX_STAT10(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7)))))
+		cvmx_warn("CVMX_ILA_RX_LNEX_STAT10(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180017038068ull) + ((offset) & 7) * 1024;
+}
+#else
+#define CVMX_ILA_RX_LNEX_STAT10(offset) (CVMX_ADD_IO_SEG(0x0001180017038068ull) + ((offset) & 7) * 1024)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_ILA_RX_LNEX_STAT2(unsigned long offset)
@@ -743,7 +754,7 @@ union cvmx_ila_rxx_byte_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
 	uint64_t rx_bytes                     : 40; /**< Indicates the number of bytes received per channel. Wraps on overflow. On overflow, sets
-                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t rx_bytes                     : 40;
 	uint64_t reserved_40_63               : 24;
@@ -919,7 +930,7 @@ union cvmx_ila_rxx_pkt_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_34_63               : 30;
 	uint64_t rx_pkt                       : 34; /**< Indicates the number of packets received per channel. Wraps on overflow. On overflow, sets
-                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t rx_pkt                       : 34;
 	uint64_t reserved_34_63               : 30;
@@ -939,7 +950,7 @@ union cvmx_ila_rxx_stat0 {
 	uint64_t reserved_33_63               : 31;
 	uint64_t crc24_match_cnt              : 33; /**< Indicates the number of CRC24 matches received. Wraps on overflow if
                                                          ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc24_match_cnt              : 33;
 	uint64_t reserved_33_63               : 31;
@@ -959,7 +970,7 @@ union cvmx_ila_rxx_stat1 {
 	uint64_t reserved_18_63               : 46;
 	uint64_t crc24_err_cnt                : 18; /**< Indicates the number of bursts with a detected CRC error. Wraps on overflow if
                                                          ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc24_err_cnt                : 18;
 	uint64_t reserved_18_63               : 46;
@@ -979,11 +990,11 @@ union cvmx_ila_rxx_stat2 {
 	uint64_t reserved_48_63               : 16;
 	uint64_t brst_not_full_cnt            : 16; /**< Indicates the number of bursts received that terminated without an EOP and contained fewer
                                                          than BurstMax words. Wraps on overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_28_31               : 4;
 	uint64_t brst_cnt                     : 28; /**< Indicates the number of bursts correctly received (i.e. good CRC24, not in violation of
                                                          BurstMax or BurstShort). Wraps on overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_cnt                     : 28;
 	uint64_t reserved_28_31               : 4;
@@ -1005,7 +1016,7 @@ union cvmx_ila_rxx_stat3 {
 	uint64_t reserved_16_63               : 48;
 	uint64_t brst_max_err_cnt             : 16; /**< Indicates the number of bursts received longer than the BurstMax parameter. Wraps on
                                                          overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate,
-                                                         sets ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_max_err_cnt             : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1025,7 +1036,7 @@ union cvmx_ila_rxx_stat4 {
 	uint64_t reserved_16_63               : 48;
 	uint64_t brst_shrt_err_cnt            : 16; /**< Indicates the number of bursts received that violate the BurstShort parameter. Wraps on
                                                          overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate,
-                                                         sets ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_shrt_err_cnt            : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1045,7 +1056,7 @@ union cvmx_ila_rxx_stat5 {
 	uint64_t reserved_23_63               : 41;
 	uint64_t align_cnt                    : 23; /**< Indicates the number of alignment sequences received (i.e. those that do not violate the
                                                          current alignment). Wraps on overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t align_cnt                    : 23;
 	uint64_t reserved_23_63               : 41;
@@ -1065,7 +1076,7 @@ union cvmx_ila_rxx_stat6 {
 	uint64_t reserved_16_63               : 48;
 	uint64_t align_err_cnt                : 16; /**< Indicates the number of alignment sequences received in error (i.e. those that violate the
                                                          current alignment). Wraps on overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t align_err_cnt                : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1085,7 +1096,7 @@ union cvmx_ila_rxx_stat7 {
 	uint64_t reserved_16_63               : 48;
 	uint64_t bad_64b67b_cnt               : 16; /**< Indicates the number of bad 64B/67B code words. Wraps on overflow if
                                                          ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bad_64b67b_cnt               : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1223,7 +1234,7 @@ union cvmx_ila_rx_lnex_stat0 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t ser_lock_loss_cnt            : 18; /**< Indicates the number of times the lane lost clock-data-recovery. On overflow, saturates
-                                                         and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t ser_lock_loss_cnt            : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1242,7 +1253,7 @@ union cvmx_ila_rx_lnex_stat1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t bdry_sync_loss_cnt           : 18; /**< Indicates the number of times a lane lost word-boundary synchronization. On overflow,
-                                                         saturates and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bdry_sync_loss_cnt           : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1253,6 +1264,30 @@ union cvmx_ila_rx_lnex_stat1 {
 typedef union cvmx_ila_rx_lnex_stat1 cvmx_ila_rx_lnex_stat1_t;
 
 /**
+ * cvmx_ila_rx_lne#_stat10
+ */
+union cvmx_ila_rx_lnex_stat10 {
+	uint64_t u64;
+	struct cvmx_ila_rx_lnex_stat10_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_43_63               : 21;
+	uint64_t prbs_bad                     : 11; /**< Indicates the number of training frames with bad PRBS. On overflow, saturates and sets
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+	uint64_t reserved_11_31               : 21;
+	uint64_t prbs_good                    : 11; /**< Indicates the number of training frames with correct PRBS. On overflow, saturates and sets
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+#else
+	uint64_t prbs_good                    : 11;
+	uint64_t reserved_11_31               : 21;
+	uint64_t prbs_bad                     : 11;
+	uint64_t reserved_43_63               : 21;
+#endif
+	} s;
+	struct cvmx_ila_rx_lnex_stat10_s      cn78xx;
+};
+typedef union cvmx_ila_rx_lnex_stat10 cvmx_ila_rx_lnex_stat10_t;
+
+/**
  * cvmx_ila_rx_lne#_stat2
  */
 union cvmx_ila_rx_lnex_stat2 {
@@ -1261,10 +1296,10 @@ union cvmx_ila_rx_lnex_stat2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
 	uint64_t syncw_good_cnt               : 18; /**< Indicates the number of good synchronization words. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_18_31               : 14;
 	uint64_t syncw_bad_cnt                : 18; /**< Indicates the number of bad synchronization words. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t syncw_bad_cnt                : 18;
 	uint64_t reserved_18_31               : 14;
@@ -1285,7 +1320,7 @@ union cvmx_ila_rx_lnex_stat3 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t bad_64b67b_cnt               : 18; /**< Indicates the number of bad 64B/67B words, meaning bit <65> or bit <64> has been
-                                                         corrupted. On overflow, saturates and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         corrupted. On overflow, saturates and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bad_64b67b_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1304,10 +1339,10 @@ union cvmx_ila_rx_lnex_stat4 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_59_63               : 5;
 	uint64_t cntl_word_cnt                : 27; /**< Indicates the number of control words received. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_27_31               : 5;
 	uint64_t data_word_cnt                : 27; /**< Indicates the number of data words received. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t data_word_cnt                : 27;
 	uint64_t reserved_27_31               : 5;
@@ -1328,7 +1363,7 @@ union cvmx_ila_rx_lnex_stat5 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t unkwn_word_cnt               : 18; /**< Indicates the number of unknown control words. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t unkwn_word_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1348,7 +1383,7 @@ union cvmx_ila_rx_lnex_stat6 {
 	uint64_t reserved_18_63               : 46;
 	uint64_t scrm_sync_loss_cnt           : 18; /**< Indicates the number of times scrambler synchronization was lost (due to either four
                                                          consecutive bad sync words or three consecutive scrambler-state mismatches). On overflow,
-                                                         saturates and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t scrm_sync_loss_cnt           : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1367,7 +1402,7 @@ union cvmx_ila_rx_lnex_stat7 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t scrm_match_cnt               : 18; /**< Indicates the number of scrambler-state matches received. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t scrm_match_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1386,7 +1421,7 @@ union cvmx_ila_rx_lnex_stat8 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t skipw_good_cnt               : 18; /**< Indicates the number of good skip words. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t skipw_good_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1405,10 +1440,10 @@ union cvmx_ila_rx_lnex_stat9 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
 	uint64_t crc32_err_cnt                : 18; /**< Indicates the number of errors in the lane CRC. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_27_31               : 5;
 	uint64_t crc32_match_cnt              : 27; /**< Indicates the number of CRC32 matches received. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc32_match_cnt              : 27;
 	uint64_t reserved_27_31               : 5;
@@ -1465,7 +1500,7 @@ union cvmx_ila_txx_byte_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
 	uint64_t tx_bytes                     : 40; /**< Number of bytes transmitted per channel. Wraps on overflow. On overflow, sets
-                                                         ILA_TX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_TX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t tx_bytes                     : 40;
 	uint64_t reserved_40_63               : 24;
@@ -1544,12 +1579,12 @@ union cvmx_ila_txx_cfg1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_44_63               : 20;
 	uint64_t txf_byp_dis                  : 1;  /**< TX-FIFO bypass disable. */
-	uint64_t ser_limit                    : 10; /**< Reduce latency by limiting the amount of data in flight for each SerDes. SER_LIMIT must be
-                                                         set as follows:
-                                                         SER_LIMIT >= (((17 + NUM_LANES) * (BAUD/SCLK/20) + 4) * 20
+	uint64_t ser_limit                    : 10; /**< Reduce latency by limiting the amount of data in flight for each SerDes. If 0x0, hardware
+                                                         will compute it. Otherwise, SER_LIMIT must be set as follows:
+                                                         SER_LIMIT >= 148 + (BAUD / SCLK) * (12 + NUM_LANES)
                                                          For instance, for SCLK=1.1GHz,BAUD=10.3125,NUM_LANES=8:
-                                                         SER_LIMIT >= (((17 + 8) * (10.3125/1.1/20) + 4) * 20
-                                                         SER_LIMIT >= 314 */
+                                                         SER_LIMIT >= 148 + (10.3125 / 1.1 * (12+ 8))
+                                                         SER_LIMIT >= 336 */
 	uint64_t pkt_busy                     : 1;  /**< TX-link is transmitting data. */
 	uint64_t reserved_26_31               : 6;
 	uint64_t skip_cnt                     : 4;  /**< Number of skip words to insert after the scrambler state. */
@@ -1682,7 +1717,7 @@ union cvmx_ila_txx_pkt_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
 	uint64_t tx_pkt                       : 28; /**< Number of packets transmitted per channel. Wraps on overflow. On overflow, sets
-                                                         ILA_TX(0)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILA_TX(0)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t tx_pkt                       : 28;
 	uint64_t reserved_28_63               : 36;

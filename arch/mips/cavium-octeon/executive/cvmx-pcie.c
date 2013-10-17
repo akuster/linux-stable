@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 89072 $<hr>
+ * <hr>$Revision: 89436 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -644,14 +644,9 @@ retry:
 	/* Disable the peer to peer forwarding register. This must be setup
 	   by the OS after it enumerates the bus and assigns addresses to the
 	   PCIe busses */
-	if (OCTEON_IS_MODEL(OCTEON_CN63XX) ||
-	    OCTEON_IS_MODEL(OCTEON_CN66XX) ||
-	    OCTEON_IS_MODEL(OCTEON_CN68XX) ||
-	    OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		for (i = 0; i < 4; i++) {
-			cvmx_write_csr(CVMX_PESCX_P2P_BARX_START(i, pcie_port), -1);
-			cvmx_write_csr(CVMX_PESCX_P2P_BARX_END(i, pcie_port), -1);
-		}
+	for (i = 0; i < 4; i++) {
+		cvmx_write_csr(CVMX_PESCX_P2P_BARX_START(i, pcie_port), -1);
+		cvmx_write_csr(CVMX_PESCX_P2P_BARX_END(i, pcie_port), -1);
 	}
 
 	/* Set Octeon's BAR0 to decode 0-16KB. It overlaps with Bar2 */
@@ -965,8 +960,17 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 
 	mio_rst_ctl.u64 = cvmx_read_csr(rst_ctl_reg);
 	ep_mode = ((OCTEON_IS_MODEL(OCTEON_CN61XX) ||
-		    OCTEON_IS_MODEL(OCTEON_CNF71XX)) ?
-		(mio_rst_ctl.s.prtmode != 1) : (!mio_rst_ctl.s.host_mode));
+		    OCTEON_IS_MODEL(OCTEON_CNF71XX))
+		? (mio_rst_ctl.s.prtmode != 1) : (!mio_rst_ctl.s.host_mode));
+
+	if (OCTEON_IS_MODEL(OCTEON_CN70XX) && pcie_port) {
+		cvmx_pemx_cfg_t pemx_cfg;
+		pemx_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(0));
+		if ((pemx_cfg.s.md & 3) == 2) {
+			cvmx_dprintf("PCIe: Port %d in 1x4 mode.\n", pcie_port);
+			return -1;
+		}
+	}
 	if (ep_mode) {
 		cvmx_dprintf("PCIe: Port %d in endpoint mode.\n", pcie_port);
 		return -1;
@@ -1187,7 +1191,10 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 		__cvmx_increment_ba(&mem_access_subid);
 	}
 
-	if (!OCTEON_IS_MODEL(OCTEON_CN61XX)) {
+	if (OCTEON_IS_MODEL(OCTEON_CN63XX) ||
+	    OCTEON_IS_MODEL(OCTEON_CN66XX) ||
+	    OCTEON_IS_MODEL(OCTEON_CN68XX) ||
+	    OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 		/* Disable the peer to peer forwarding register. This must be setup
 		   by the OS after it enumerates the bus and assigns addresses to the
 		   PCIe busses */
@@ -1508,6 +1515,8 @@ void cvmx_pcie_cfgx_write(int pcie_port, uint32_t cfg_offset, uint32_t val)
 	}
 }
 
+extern int cvmx_pcie_is_host_mode(int pcie_port);
+
 /**
  * Initialize a PCIe port for use in target(EP) mode.
  *
@@ -1517,25 +1526,8 @@ void cvmx_pcie_cfgx_write(int pcie_port, uint32_t cfg_offset, uint32_t val)
  */
 int cvmx_pcie_ep_initialize(int pcie_port)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_NPEI)) {
-		cvmx_npei_ctl_status_t npei_ctl_status;
-		npei_ctl_status.u64 = cvmx_read_csr(CVMX_PEXP_NPEI_CTL_STATUS);
-		if (npei_ctl_status.s.host_mode)
-			return -1;
-	} else {
-		cvmx_mio_rst_ctlx_t mio_rst_ctl;
-		int ep_mode;
-		uint64_t mio_rst_reg;
-
-		if (OCTEON_IS_OCTEON3())
-			mio_rst_reg = CVMX_RST_CTLX(pcie_port);
-		else
-			mio_rst_reg = CVMX_MIO_RST_CTLX(pcie_port);
-		mio_rst_ctl.u64 = cvmx_read_csr(mio_rst_reg);
-		ep_mode = (OCTEON_IS_MODEL(OCTEON_CN61XX) ? (mio_rst_ctl.s.prtmode != 0) : mio_rst_ctl.s.host_mode);
-		if (ep_mode)
-			return -1;
-	}
+	if (!cvmx_pcie_is_host_mode(pcie_port))
+		return -1;
 
 	/* CN63XX Pass 1.0 errata G-14395 requires the QLM De-emphasis be programmed */
 	if (OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_0)) {
@@ -1713,5 +1705,34 @@ void cvmx_pcie_wait_for_pending(int pcie_port)
 					return;
 			}
 		}
+	}
+}
+
+/**
+ * Returns if a PCIe port is in host or target mode.
+ *
+ * @param pcie_port PCIe port number (PEM number)
+ *
+ * @return 0 if PCIe port is in target mode, !0 if in host mode.
+ */
+int cvmx_pcie_is_host_mode(int pcie_port)
+{
+	if (OCTEON_IS_OCTEON3()) {
+		cvmx_rst_ctlx_t rst_ctl;
+		rst_ctl.u64 = cvmx_read_csr(CVMX_RST_CTLX(pcie_port));
+		return !!rst_ctl.s.host_mode;
+	} else if (octeon_has_feature(OCTEON_FEATURE_NPEI)) {
+		cvmx_npei_ctl_status_t npei_ctl_status;
+		npei_ctl_status.u64 = cvmx_read_csr(CVMX_PEXP_NPEI_CTL_STATUS);
+		return !!npei_ctl_status.s.host_mode;
+	} else {
+		cvmx_mio_rst_ctlx_t mio_rst_ctl;
+
+		mio_rst_ctl.u64 = cvmx_read_csr(CVMX_MIO_RST_CTLX(pcie_port));
+		if (OCTEON_IS_MODEL(OCTEON_CN61XX) ||
+		    OCTEON_IS_MODEL(OCTEON_CNF71XX))
+			return mio_rst_ctl.s.prtmode != 0;
+		else
+			return !!mio_rst_ctl.s.host_mode;
 	}
 }

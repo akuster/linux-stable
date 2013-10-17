@@ -4093,17 +4093,6 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 						NULL /*cvmx_error_childbit*/
 					},
 					{0}}},
-				{1, 19 /* nand */, (struct cvmx_error_muxchild[]){
-					{CVMX_ADD_IO_SEG(0x0001070001000020ull) /* CVMX_NDF_INT */, CVMX_ADD_IO_SEG(0x0001070001000028ull) /* CVMX_NDF_INT_EN */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 2, 0, "NDF_INT[WDOG]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 3, 0, "NDF_INT[SM_BAD]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 4, 0, "NDF_INT[ECC_1BIT]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 5, 0, "NDF_INT[ECC_MULT]"},
-							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 6, 0, "NDF_INT[OVRF]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{0}}},
 				{1, 29 /* tim */, (struct cvmx_error_muxchild[]){
 					{CVMX_ADD_IO_SEG(0x0001180058000088ull) /* CVMX_TIM_REG_ERROR */, CVMX_ADD_IO_SEG(0x0001180058000090ull) /* CVMX_TIM_REG_INT_MASK */, (struct cvmx_error_regbit[]){
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "TIM_REG_ERROR[MASK]"},
@@ -4307,7 +4296,7 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 							{0}},
 						NULL /*cvmx_error_childbit*/
 					},
-					{CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((0) & 1) * 0x8000000ull /* CVMX_PCSXX_INT_REG(0) */, CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((0) & 1) * 0x8000000ull /* CVMX_PCSXX_INT_EN_REG(0) */, (struct cvmx_error_regbit[]){
+					{CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((0) & 0) * 0x8000000ull /* CVMX_PCSXX_INT_REG(0) */, CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((0) & 0) * 0x8000000ull /* CVMX_PCSXX_INT_EN_REG(0) */, (struct cvmx_error_regbit[]){
 							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 0, 0, "PCSXX_INT_REG(0)[TXFLT]"},
 							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 1, 0, "PCSXX_INT_REG(0)[RXBAD]"},
 							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 2, 0, "PCSXX_INT_REG(0)[RXSYNBAD]"},
@@ -4452,17 +4441,6 @@ static struct cvmx_error_muxchild error_tree_cn70xx =
 							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 9, 19, "PCSX_INTX_REG(3,1)[AN_BAD]"},
 							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 10, 19, "PCSX_INTX_REG(3,1)[SYNC_BAD]"},
 							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 12, 19, "PCSX_INTX_REG(3,1)[DBG_SYNC]"},
-							{0}},
-						NULL /*cvmx_error_childbit*/
-					},
-					{CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((1) & 1) * 0x8000000ull /* CVMX_PCSXX_INT_REG(1) */, CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((1) & 1) * 0x8000000ull /* CVMX_PCSXX_INT_EN_REG(1) */, (struct cvmx_error_regbit[]){
-							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 0, 16, "PCSXX_INT_REG(1)[TXFLT]"},
-							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 1, 16, "PCSXX_INT_REG(1)[RXBAD]"},
-							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 2, 16, "PCSXX_INT_REG(1)[RXSYNBAD]"},
-							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 3, 16, "PCSXX_INT_REG(1)[BITLCKLS]"},
-							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 4, 16, "PCSXX_INT_REG(1)[SYNLOS]"},
-							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 5, 16, "PCSXX_INT_REG(1)[ALGNLOS]"},
-							{1, 1, CVMX_ERROR_GROUP_ETHERNET, 6, 16, "PCSXX_INT_REG(1)[DBG_SYNC]"},
 							{0}},
 						NULL /*cvmx_error_childbit*/
 					},

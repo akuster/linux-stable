@@ -8777,10 +8777,11 @@ typedef union cvmx_mio_twsx_twsi_sw cvmx_mio_twsx_twsi_sw_t;
  * cvmx_mio_uart#_dlh
  *
  * The 8-bit divisor latch high register in conjunction with the 8-bit divisor latch low
- * (MIO_UART0/1_DLL) register form a 16-bit, read/write, Divisor Latch register that contains the
- * baud-rate divisor for the UART. It is accessed by first setting MIO_UART0/1_LCR[DLAB] (bit 7)
- * (refer to MIO UART Line Control Register). The output baud rate is equal to the coprocessor-
- * clock frequency divided by sixteen times the value of the baud-rate divisor, as follows:
+ * (MIO_UART(0..1)_DLL) register form a 16-bit, read/write, Divisor Latch register that contains
+ * the baud-rate divisor for the UART. It is accessed by first setting MIO_UART(0..1)_LCR[DLAB]
+ * (bit 7) (refer to MIO UART Line Control Register). The output baud rate is equal to the
+ * coprocessor-clock frequency divided by sixteen times the value of the baud-rate divisor, as
+ * follows:
  * baud rate = coprocessor-clock frequency / (16 * divisor).
  * Note that once both divisor latch registers are set, at least eight coprocessor-clock cycles
  * should be allowed to pass before transmitting or receiving data.
@@ -8824,10 +8825,11 @@ typedef cvmx_mio_uartx_dlh_t cvmx_uart_dlh_t;
  * cvmx_mio_uart#_dll
  *
  * The 8-bit divisor latch high register in conjunction with the 8-bit divisor latch low
- * (MIO_UART0/1_DLL) register form a 16-bit, read/write, Divisor Latch register that contains the
- * baud-rate divisor for the UART. It is accessed by first setting MIO_UART0/1_LCR[DLAB] (bit 7)
- * (refer to MIO UART Line Control Register). The output baud rate is equal to the coprocessor-
- * clock frequency divided by sixteen times the value of the baud-rate divisor, as follows:
+ * (MIO_UART(0..1)_DLL) register form a 16-bit, read/write, Divisor Latch register that contains
+ * the baud-rate divisor for the UART. It is accessed by first setting MIO_UART(0..1)_LCR[DLAB]
+ * (bit 7) (refer to MIO UART Line Control Register). The output baud rate is equal to the
+ * coprocessor-clock frequency divided by sixteen times the value of the baud-rate divisor, as
+ * follows:
  * baud rate = coprocessor-clock frequency / (16 * divisor).
  * Note that once both divisor latch registers are set, at least eight coprocessor-clock cycles
  * should be allowed to pass before transmitting or receiving data.
@@ -8872,10 +8874,10 @@ typedef cvmx_mio_uartx_dll_t cvmx_uart_dll_t;
  *
  * The FIFO access register is used to enable a FIFO-access mode for testing, so that the receive
  * FIFO can be written by software and the transmit FIFO can be read by software when the FIFOs
- * are enabled. When FIFOs are not enabled it allows the MIO_UART0/1_RBR to be written by
- * software and the MIO_UART0/1_THR to be read by software. Note, that when the FIFO-access mode
- * is enabled/disabled, the control portion of the receive FIFO and transmit FIFO is reset and
- * the FIFOs are treated as empty.
+ * are enabled. When FIFOs are not enabled it allows the MIO_UART(0..1)_RBR to be written by
+ * software and the MIO_UART(0..1)_THR to be read by software. Note, that when the FIFO-access
+ * mode is enabled/disabled, the control portion of the receive FIFO and transmit FIFO is reset
+ * and the FIFOs are treated as empty.
  */
 union cvmx_mio_uartx_far {
 	uint64_t u64;
@@ -9328,7 +9330,7 @@ typedef cvmx_mio_uartx_msr_t cvmx_uart_msr_t;
  *
  * The receive buffer register is a read-only register that contains the data byte received on
  * the serial input port (SIN). The data in this register is valid only if the
- * MIO_UART0/1_LSR[DR] bit is set (
+ * MIO_UART(0..1)_LSR[DR] bit is set (
  */
 union cvmx_mio_uartx_rbr {
 	uint64_t u64;
@@ -9410,7 +9412,7 @@ typedef cvmx_mio_uartx_rfl_t cvmx_uart_rfl_t;
  * cvmx_mio_uart#_rfw
  *
  * The receive FIFO write register is only valid when FIFO-access mode is enabled (i.e.
- * MIO_UART0/1_FAR[FAR] = 1).
+ * MIO_UART(0..1)_FAR[FAR] = 1).
  */
 union cvmx_mio_uartx_rfw {
 	uint64_t u64;
@@ -9455,8 +9457,8 @@ typedef cvmx_mio_uartx_rfw_t cvmx_uart_rfw_t;
  * cvmx_mio_uart#_sbcr
  *
  * The shadow break control register is a shadow register for the
- * MIO_UART0/1_LCR[BRK] bit that can be used to remove the burden of having to perform a read-
- * modify-write on MIO_UART0/1_LCR.
+ * MIO_UART(0..1)_LCR[BRK] bit that can be used to remove the burden of having to perform a read-
+ * modify-write on MIO_UART(0..1)_LCR.
  */
 union cvmx_mio_uartx_sbcr {
 	uint64_t u64;
@@ -9537,9 +9539,10 @@ typedef cvmx_mio_uartx_scr_t cvmx_uart_scr_t;
 /**
  * cvmx_mio_uart#_sfe
  *
- * The shadow FIFO enable register is a shadow register for MIO_UART0/1_FCR[EN] that can be used
- * to remove the burden of having to store the previously written value to MIO_UART0/1_FCR in
- * memory and having to mask this value so that only the FIFO enable bit gets updated.
+ * The shadow FIFO enable register is a shadow register for MIO_UART(0..1)_FCR[EN] that can be
+ * used to remove the burden of having to store the previously written value to
+ * MIO_UART(0..1)_FCR in memory and having to mask this value so that only the FIFO enable bit
+ * gets updated.
  */
 union cvmx_mio_uartx_sfe {
 	uint64_t u64;
@@ -9625,8 +9628,8 @@ typedef cvmx_mio_uartx_srr_t cvmx_uart_srr_t;
  * cvmx_mio_uart#_srt
  *
  * The shadow RX trigger register is a shadow register for the RX trigger bits
- * (MIO_UART0/1_FCR[RXTRIG]) that can be used to remove the burden of having to store the
- * previously written value to MIO_UART0/1_FCR in memory and having to mask this value so that
+ * (MIO_UART(0..1)_FCR[RXTRIG]) that can be used to remove the burden of having to store the
+ * previously written value to MIO_UART(0..1)_FCR in memory and having to mask this value so that
  * only the RX trigger bits get updated.
  */
 union cvmx_mio_uartx_srt {
@@ -9668,8 +9671,8 @@ typedef cvmx_mio_uartx_srt_t cvmx_uart_srt_t;
  * cvmx_mio_uart#_srts
  *
  * The shadow request to send register is a shadow register for the
- * MIO_UART0/1_MCR[RTS] bit that can be used to remove the burden of having to perform a read-
- * modify-write on MIO_UART0/1_MCR.
+ * MIO_UART(0..1)_MCR[RTS] bit that can be used to remove the burden of having to perform a read-
+ * modify-write on MIO_UART(0..1)_MCR.
  */
 union cvmx_mio_uartx_srts {
 	uint64_t u64;
@@ -9710,8 +9713,8 @@ typedef cvmx_mio_uartx_srts_t cvmx_uart_srts_t;
  * cvmx_mio_uart#_stt
  *
  * The shadow TX trigger register is a shadow register for the TX trigger bits
- * (MIO_UART0/1_FCR[TXTRIG]) that can be used to remove the burden of having to store the
- * previously written value to MIO_UART0/1_FCR in memory and having to mask this value so that
+ * (MIO_UART(0..1)_FCR[TXTRIG]) that can be used to remove the burden of having to store the
+ * previously written value to MIO_UART(0..1)_FCR in memory and having to mask this value so that
  * only the TX trigger bits get updated.
  */
 union cvmx_mio_uartx_stt {
@@ -9794,7 +9797,7 @@ typedef cvmx_mio_uartx_tfl_t cvmx_uart_tfl_t;
  * cvmx_mio_uart#_tfr
  *
  * The transmit FIFO read register is only valid when FIFO-access mode is enabled (i.e.
- * MIO_UART0/1_FAR[FAR] = 1).
+ * MIO_UART(0..1)_FAR[FAR] = 1).
  */
 union cvmx_mio_uartx_tfr {
 	uint64_t u64;
@@ -9835,8 +9838,8 @@ typedef cvmx_mio_uartx_tfr_t cvmx_uart_tfr_t;
  * cvmx_mio_uart#_thr
  *
  * The transmit holding register is a write-only register that contains data to be transmitted on
- * the serial output port (UART0/1_SOUT). Data can be written to MIO_UART0/1_THR any time that
- * MIO_UART0/1_LSR[THRE] = 1.
+ * the serial output port (UART0/1_SOUT). Data can be written to MIO_UART(0..1)_THR any time that
+ * MIO_UART(0..1)_LSR[THRE] = 1.
  */
 union cvmx_mio_uartx_thr {
 	uint64_t u64;
@@ -9877,7 +9880,7 @@ typedef cvmx_mio_uartx_thr_t cvmx_uart_thr_t;
  * cvmx_mio_uart#_usr
  *
  * The receive FIFO write register is only valid when FIFO-access mode is enabled (i.e.
- * MIO_UART0/1_FAR[FAR] = 1).
+ * MIO_UART(0..1)_FAR[FAR] = 1).
  */
 union cvmx_mio_uartx_usr {
 	uint64_t u64;

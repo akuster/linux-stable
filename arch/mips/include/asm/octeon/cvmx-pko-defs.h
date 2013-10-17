@@ -1675,6 +1675,17 @@ static inline uint64_t CVMX_PKO_PDM_CFG_DBG_FUNC(void)
 #define CVMX_PKO_PDM_CFG_DBG (CVMX_ADD_IO_SEG(0x0001540000800FF8ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_CP_DBG CVMX_PKO_PDM_CP_DBG_FUNC()
+static inline uint64_t CVMX_PKO_PDM_CP_DBG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PDM_CP_DBG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000800190ull);
+}
+#else
+#define CVMX_PKO_PDM_CP_DBG (CVMX_ADD_IO_SEG(0x0001540000800190ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_PDM_DQX_MINPAD(unsigned long offset)
 {
 	if (!(
@@ -1785,6 +1796,17 @@ static inline uint64_t CVMX_PKO_PDM_ISRD_DBG_FUNC(void)
 #define CVMX_PKO_PDM_ISRD_DBG (CVMX_ADD_IO_SEG(0x0001540000800090ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_ISRD_DBG_DQ CVMX_PKO_PDM_ISRD_DBG_DQ_FUNC()
+static inline uint64_t CVMX_PKO_PDM_ISRD_DBG_DQ_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PDM_ISRD_DBG_DQ not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000800290ull);
+}
+#else
+#define CVMX_PKO_PDM_ISRD_DBG_DQ (CVMX_ADD_IO_SEG(0x0001540000800290ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PDM_ISRM_DBG CVMX_PKO_PDM_ISRM_DBG_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ISRM_DBG_FUNC(void)
 {
@@ -1794,6 +1816,17 @@ static inline uint64_t CVMX_PKO_PDM_ISRM_DBG_FUNC(void)
 }
 #else
 #define CVMX_PKO_PDM_ISRM_DBG (CVMX_ADD_IO_SEG(0x0001540000800098ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_ISRM_DBG_DQ CVMX_PKO_PDM_ISRM_DBG_DQ_FUNC()
+static inline uint64_t CVMX_PKO_PDM_ISRM_DBG_DQ_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKO_PDM_ISRM_DBG_DQ not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000800298ull);
+}
+#else
+#define CVMX_PKO_PDM_ISRM_DBG_DQ (CVMX_ADD_IO_SEG(0x0001540000800298ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PDM_MEM_ADDR CVMX_PKO_PDM_MEM_ADDR_FUNC()
@@ -2899,11 +2932,11 @@ union cvmx_pko_dpfi_flush {
 	struct cvmx_pko_dpfi_flush_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t flush_en                     : 1;  /**< Pointer cache flush enable. When set to 1 this flag commands the DPFI logic to flush all
+	uint64_t flush_en                     : 1;  /**< Pointer cache flush enable. When set, this flag commands the DPFI logic to flush all
                                                          valid pointers from the pointer cache and return them to the FPA. The flush operation is
-                                                         complete when the CACHE_FLUSHED flag in the PKO_DFPI_STATUS register is set. Clearing the
-                                                         FLUSH_EN flag results in the DPFI reloading its pointer cache. This flush mechanism should
-                                                         only be enabled when the PKO is quiescent and all DQs have been closed. */
+                                                         complete when the CACHE_FLUSHED flag in PKO_DPFI_STATUS is set. Clearing the FLUSH_EN flag
+                                                         results in the DPFI reloading its pointer cache. This flush mechanism should only be
+                                                         enabled when the PKO is quiescent and all DQs have been closed. */
 #else
 	uint64_t flush_en                     : 1;
 	uint64_t reserved_1_63                : 63;
@@ -2943,30 +2976,19 @@ union cvmx_pko_dpfi_status {
 	uint64_t ptr_cnt                      : 32; /**< The number of pointers currently in use for storing descriptors
                                                          and meta-packets plus those available in the DPFI pointer cache. */
 	uint64_t reserved_13_31               : 19;
-	uint64_t isrd_ptr1_rtn_full           : 1;  /**< 1 = ISRD pointer return register 1 contains a valid pointer
-                                                         0 = ISRD pointer return register 1 is empty */
-	uint64_t isrd_ptr0_rtn_full           : 1;  /**< 1 = ISRD pointer return register 0 contains a valid pointer
-                                                         0 = ISRD pointer return register 0 is empty */
-	uint64_t isrm_ptr1_rtn_full           : 1;  /**< 1 = ISRM pointer return register 1 contains a valid pointer
-                                                         0 = ISRM pointer return register 1 is empty */
-	uint64_t isrm_ptr0_rtn_full           : 1;  /**< 1 = ISRM pointer return register 0 contains a valid pointer
-                                                         0 = ISRM pointer return register 0 is empty */
-	uint64_t isrd_ptr1_val                : 1;  /**< 1 = ISRD pointer register 1 contains a valid pointer
-                                                         0 = ISRD pointer register 1 is empty */
-	uint64_t isrd_ptr0_val                : 1;  /**< 1 = ISRD pointer register 0 contains a valid pointer
-                                                         0 = ISRD pointer register 0 is empty */
-	uint64_t isrm_ptr1_val                : 1;  /**< 1 = ISRM pointer register 1 contains a valid pointer
-                                                         0 = ISRM pointer register 1 is empty */
-	uint64_t isrm_ptr0_val                : 1;  /**< 1 = ISRM pointer register 0 contains a valid pointer
-                                                         0 = ISRM pointer register 0 is empty */
-	uint64_t ptr_req_pend                 : 1;  /**< 1 = DPFI has pointer requests to FPA pending
-                                                         0 = DPFI has no pointer requests to FPA pending */
-	uint64_t ptr_rtn_pend                 : 1;  /**< 1 = DPFI has pointer returns to FPA pending
-                                                         0 = DPFI has no pointer returns to FPA pending */
-	uint64_t fpa_empty                    : 1;  /**< 1 = FPA responded to pointer request with 'no pointers available'.
+	uint64_t isrd_ptr1_rtn_full           : 1;  /**< ISRD pointer return register 1 contains a valid pointer. */
+	uint64_t isrd_ptr0_rtn_full           : 1;  /**< ISRD pointer return register 0 contains a valid pointer. */
+	uint64_t isrm_ptr1_rtn_full           : 1;  /**< ISRM pointer return register 1 contains a valid pointer. */
+	uint64_t isrm_ptr0_rtn_full           : 1;  /**< ISRM pointer return register 0 contains a valid pointer. */
+	uint64_t isrd_ptr1_val                : 1;  /**< ISRD pointer register 1 contains a valid pointer. */
+	uint64_t isrd_ptr0_val                : 1;  /**< ISRD pointer register 0 contains a valid pointer. */
+	uint64_t isrm_ptr1_val                : 1;  /**< ISRM pointer register 1 contains a valid pointer. */
+	uint64_t isrm_ptr0_val                : 1;  /**< ISRM pointer register 0 contains a valid pointer. */
+	uint64_t ptr_req_pend                 : 1;  /**< DPFI has pointer requests to FPA pending. */
+	uint64_t ptr_rtn_pend                 : 1;  /**< DPFI has pointer returns to FPA pending. */
+	uint64_t fpa_empty                    : 1;  /**< 1 = FPA responded to pointer request with 'no pointers available.'
                                                          0 = FPA is providing pointers when requested. */
-	uint64_t dpfi_empty                   : 1;  /**< 1 = DPFI pointer cache is empty.
-                                                         0 = DPFI pointer cache is not empty. */
+	uint64_t dpfi_empty                   : 1;  /**< DPFI pointer cache is empty. */
 	uint64_t cache_flushed                : 1;  /**< 1 = Cache flush has completed. PKO_DPFI_STATUS[PTR_CNT] will read zero if all
                                                              outstanding pointers have been returned to the FPA.
                                                          0 = Cache flush not enabled or in-progress. */
@@ -3126,23 +3148,23 @@ union cvmx_pko_dqx_pick {
 	uint64_t u64;
 	struct cvmx_pko_dqx_pick_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dq                           : 10; /**< Descriptor Queue. Index of originating descriptor queue. */
+	uint64_t dq                           : 10; /**< Descriptor queue. Index of originating descriptor queue. */
 	uint64_t color                        : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[COLOR]. */
 	uint64_t child                        : 10; /**< Child index. When the C_CON bit of this result is set, indicating that this
                                                          result is connected in a flow that extends through the child result, this is the
                                                          index of that child result. */
-	uint64_t bubble                       : 1;  /**< This meta-packet is a fake passed forward after a prune. */
-	uint64_t p_con                        : 1;  /**< Parent Connected Flag. This pick has more picks in front of it. */
-	uint64_t c_con                        : 1;  /**< Child Connected Flag. This pick has more picks behind it. */
+	uint64_t bubble                       : 1;  /**< This metapacket is a fake passed forward after a prune. */
+	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
+	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
 	uint64_t jump                         : 1;  /**< Jump. Set when metapacket originated from a jump descriptor. */
-	uint64_t fpd                          : 1;  /**< First Packet Descriptor. Set when metapacket was the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< Don't Send. Set when metapacket is not to be sent. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when metapacket was the first in a cacheline. */
+	uint64_t ds                           : 1;  /**< Don't send. Set when metapacket is not to be sent. */
 	uint64_t adjust                       : 9;  /**< See PKO_L2_SQ(0..511)_SHAPE[ADJUST]. */
-	uint64_t pir_dis                      : 1;  /**< PIR Disable. Peak shaper disabled. */
-	uint64_t cir_dis                      : 1;  /**< CIR Disable. Committed shaper disabled. */
+	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. */
+	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. */
 	uint64_t red_algo_override            : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[RED_ALGO]. */
-	uint64_t length                       : 16; /**< Packet Length. The packet length in bytes. */
+	uint64_t length                       : 16; /**< Packet length. The packet length in bytes. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -3246,13 +3268,12 @@ union cvmx_pko_dqx_schedule {
 	struct cvmx_pko_dqx_schedule_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
-	uint64_t prio                         : 4;  /**< Priority. The priority used for this SQ in the (lower-level) parent's
-                                                         scheduling algorithm. When this SQ is not used, we recommend
-                                                         PRIO be zero. The legal PRIO values are 0-9 when the SQ is used.
-                                                         In addition to priority, PRIO determines whether the SQ is a static
-                                                         queue or not: If PRIO equals PKO_*_SQn_TOPOLOGY[RR_PRIO], where
-                                                         PKO_*_TOPOLOGY[PARENT] for this SQ equals n, then this
-                                                         is a round-robin child queue into the shaper at the next level. */
+	uint64_t prio                         : 4;  /**< Priority. The priority used for this SQ in the (lower-level) parent's scheduling
+                                                         algorithm. When this SQ is not used, we recommend setting PRIO to zero. The legal PRIO
+                                                         values are 0-9 when the SQ is used. In addition to priority, PRIO determines whether the
+                                                         SQ is a static queue or not: If PRIO equals PKO_*_SQn_TOPOLOGY[RR_PRIO], where
+                                                         PKO_*_TOPOLOGY[PARENT] for this SQ equals n, then this is a round-robin child queue into
+                                                         the shaper at the next level. */
 	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned integer). */
 #else
 	uint64_t rr_quantum                   : 24;
@@ -3272,8 +3293,8 @@ union cvmx_pko_dqx_shape {
 	struct cvmx_pko_dqx_shape_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
-	uint64_t length_disable               : 1;  /**< Length Disable. Disables the use of packet lengths in shaping calculations such that
-                                                         only the value of the ADJUST field described below is used. */
+	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in shaping calculations such that only
+                                                         the value of PKO_L5_SQ(0..1023)_SHAPE[ADJUST]. */
 	uint64_t reserved_13_23               : 11;
 	uint64_t yellow_disable               : 1;  /**< Disable yellow transitions. Disables green-to-yellow packet color marking transitions when set. */
 	uint64_t red_disable                  : 1;  /**< Disable red transitions. Disables green-to-red and yellow-to-red packet color marking
@@ -3330,14 +3351,13 @@ union cvmx_pko_dqx_sw_xoff {
 	struct cvmx_pko_dqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
-                                                         28).
-                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
-                                                         the path has drained." */
-	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
+                                                         \#28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
+                                                         until the path has drained." */
+	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -3402,9 +3422,7 @@ union cvmx_pko_dqx_wm_ctl {
 	struct cvmx_pko_dqx_wm_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_51_63               : 13;
-	uint64_t enable                       : 1;  /**< Watermark enable.
-                                                         0 = Disabled
-                                                         1 = Enable */
+	uint64_t enable                       : 1;  /**< Watermark enable. */
 	uint64_t kind                         : 1;  /**< Watermark kind. The watermark logic can use a byte count or packet count.
                                                          0 = Byte count
                                                          1 = Packet count */
@@ -3513,10 +3531,10 @@ union cvmx_pko_formatx_ctl {
 	uint64_t reserved_28_63               : 36;
 	uint64_t ip4_ck                       : 1;  /**< IPv4 header checksum recalculate */
 	uint64_t offset                       : 11; /**< Bits to add to PKO_SEND_EXT[MARKPTR]*8 to determine where to start marking. */
-	uint64_t y_mask                       : 4;  /**< Yellow mark mask. Corresponding bits in packet's data will be cleared when marking packet yellow */
-	uint64_t y_val                        : 4;  /**< Yellow mark value. Corresponding bits in packet's data will be set when marking packet yellow */
-	uint64_t r_mask                       : 4;  /**< Red mark mask. Corresponding bits in packet's data will be cleared when marking packet red */
-	uint64_t r_val                        : 4;  /**< Red mark value. Corresponding bits in packet's data will be set when marking packet red */
+	uint64_t y_mask                       : 4;  /**< Yellow mark mask. Corresponding bits in packet's data are cleared when marking packet yellow. */
+	uint64_t y_val                        : 4;  /**< Yellow mark value. Corresponding bits in packet's data are set when marking packet yellow. */
+	uint64_t r_mask                       : 4;  /**< Red mark mask. Corresponding bits in packet's data are cleared when marking packet red. */
+	uint64_t r_val                        : 4;  /**< Red mark value. Corresponding bits in packet's data are set when marking packet red. */
 #else
 	uint64_t r_val                        : 4;
 	uint64_t r_mask                       : 4;
@@ -3608,8 +3626,8 @@ union cvmx_pko_l1_sqx_green {
 	struct cvmx_pko_l1_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t rr_active                    : 1;  /**< Round-robin Red Active.  Indicates that the round-robin input is mapped to RED. */
-	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+	uint64_t rr_active                    : 1;  /**< Round-robin red active. Indicates that the round-robin input is mapped to RED. */
+	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to this
                                                          scheduling queue are active. For internal use only. */
 	uint64_t reserved_19_19               : 1;
 	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
@@ -3711,23 +3729,23 @@ union cvmx_pko_l1_sqx_pick {
 	uint64_t u64;
 	struct cvmx_pko_l1_sqx_pick_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dq                           : 10; /**< Descriptor Queue. Index of originating descriptor queue. */
+	uint64_t dq                           : 10; /**< Descriptor queue. Index of originating descriptor queue. */
 	uint64_t color                        : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[COLOR]. */
 	uint64_t child                        : 10; /**< Child index. When the C_CON bit of this result is set, indicating that this
                                                          result is connected in a flow that extends through the child result, this is the
                                                          index of that child result. */
-	uint64_t bubble                       : 1;  /**< This meta-packet is a fake passed forward after a prune. */
-	uint64_t p_con                        : 1;  /**< Parent Connected Flag. This pick has more picks in front of it. */
-	uint64_t c_con                        : 1;  /**< Child Connected Flag. This pick has more picks behind it. */
+	uint64_t bubble                       : 1;  /**< This metapacket is a fake passed forward after a prune. */
+	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
+	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
 	uint64_t jump                         : 1;  /**< Jump. Set when metapacket originated from a jump descriptor. */
-	uint64_t fpd                          : 1;  /**< First Packet Descriptor. Set when metapacket was the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< Don't Send. Set when metapacket is not to be sent. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when metapacket was the first in a cacheline. */
+	uint64_t ds                           : 1;  /**< Don't send. Set when metapacket is not to be sent. */
 	uint64_t adjust                       : 9;  /**< See PKO_L2_SQ(0..511)_SHAPE[ADJUST]. */
-	uint64_t pir_dis                      : 1;  /**< PIR Disable. Peak shaper disabled. */
-	uint64_t cir_dis                      : 1;  /**< CIR Disable. Committed shaper disabled. */
+	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. */
+	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. */
 	uint64_t red_algo_override            : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[RED_ALGO]. */
-	uint64_t length                       : 16; /**< Packet Length. The packet length in bytes. */
+	uint64_t length                       : 16; /**< Packet length. The packet length in bytes. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -3897,14 +3915,13 @@ union cvmx_pko_l1_sqx_sw_xoff {
 	struct cvmx_pko_l1_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
-                                                         28).
-                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
-                                                         the path has drained." */
-	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
+                                                         \#28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
+                                                         until the path has drained." */
+	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -4103,8 +4120,8 @@ union cvmx_pko_l2_sqx_green {
 	struct cvmx_pko_l2_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t rr_active                    : 1;  /**< Round-robin Red Active.  Indicates that the round-robin input is mapped to RED. */
-	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+	uint64_t rr_active                    : 1;  /**< Round-robin red active. Indicates that the round-robin input is mapped to RED. */
+	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to this
                                                          scheduling queue are active. For internal use only. */
 	uint64_t reserved_19_19               : 1;
 	uint64_t head                         : 9;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
@@ -4131,23 +4148,23 @@ union cvmx_pko_l2_sqx_pick {
 	uint64_t u64;
 	struct cvmx_pko_l2_sqx_pick_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dq                           : 10; /**< Descriptor Queue. Index of originating descriptor queue. */
+	uint64_t dq                           : 10; /**< Descriptor queue. Index of originating descriptor queue. */
 	uint64_t color                        : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[COLOR]. */
 	uint64_t child                        : 10; /**< Child index. When the C_CON bit of this result is set, indicating that this
                                                          result is connected in a flow that extends through the child result, this is the
                                                          index of that child result. */
-	uint64_t bubble                       : 1;  /**< This meta-packet is a fake passed forward after a prune. */
-	uint64_t p_con                        : 1;  /**< Parent Connected Flag. This pick has more picks in front of it. */
-	uint64_t c_con                        : 1;  /**< Child Connected Flag. This pick has more picks behind it. */
+	uint64_t bubble                       : 1;  /**< This metapacket is a fake passed forward after a prune. */
+	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
+	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
 	uint64_t jump                         : 1;  /**< Jump. Set when metapacket originated from a jump descriptor. */
-	uint64_t fpd                          : 1;  /**< First Packet Descriptor. Set when metapacket was the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< Don't Send. Set when metapacket is not to be sent. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when metapacket was the first in a cacheline. */
+	uint64_t ds                           : 1;  /**< Don't send. Set when metapacket is not to be sent. */
 	uint64_t adjust                       : 9;  /**< See PKO_L2_SQ(0..511)_SHAPE[ADJUST]. */
-	uint64_t pir_dis                      : 1;  /**< PIR Disable. Peak shaper disabled. */
-	uint64_t cir_dis                      : 1;  /**< CIR Disable. Committed shaper disabled. */
+	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. */
+	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. */
 	uint64_t red_algo_override            : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[RED_ALGO]. */
-	uint64_t length                       : 16; /**< Packet Length. The packet length in bytes. */
+	uint64_t length                       : 16; /**< Packet length. The packet length in bytes. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -4273,13 +4290,12 @@ union cvmx_pko_l2_sqx_schedule {
 	struct cvmx_pko_l2_sqx_schedule_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
-	uint64_t prio                         : 4;  /**< Priority. The priority used for this SQ in the (lower-level) parent's
-                                                         scheduling algorithm. When this SQ is not used, we recommend
-                                                         PRIO be zero. The legal PRIO values are 0-9 when the SQ is used.
-                                                         In addition to priority, PRIO determines whether the SQ is a static
-                                                         queue or not: If PRIO equals PKO_*_SQn_TOPOLOGY[RR_PRIO], where
-                                                         PKO_*_TOPOLOGY[PARENT] for this SQ equals n, then this
-                                                         is a round-robin child queue into the shaper at the next level. */
+	uint64_t prio                         : 4;  /**< Priority. The priority used for this SQ in the (lower-level) parent's scheduling
+                                                         algorithm. When this SQ is not used, we recommend setting PRIO to zero. The legal PRIO
+                                                         values are 0-9 when the SQ is used. In addition to priority, PRIO determines whether the
+                                                         SQ is a static queue or not: If PRIO equals PKO_*_SQn_TOPOLOGY[RR_PRIO], where
+                                                         PKO_*_TOPOLOGY[PARENT] for this SQ equals n, then this is a round-robin child queue into
+                                                         the shaper at the next level. */
 	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned integer). */
 #else
 	uint64_t rr_quantum                   : 24;
@@ -4300,17 +4316,17 @@ union cvmx_pko_l2_sqx_shape {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
 	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in shaping calculations such that only
-                                                         the value of the ADJUST field described below is used. */
+                                                         the value of PKO_L2_SQ(0..511)_SHAPE[ADJUST]. */
 	uint64_t reserved_13_23               : 11;
 	uint64_t yellow_disable               : 1;  /**< Disable yellow transitions. Disables green-to-yellow packet color marking transitions when set. */
 	uint64_t red_disable                  : 1;  /**< Disable red transitions. Disables green-to-red and yellow-to-red packet color marking
                                                          transitions when set. */
 	uint64_t red_algo                     : 2;  /**< Shaper red state algorithm.
                                                          0 = Stall packets while in RED state until YELLOW or GREEN state is reached (aka never
-                                                         send RED packets)
-                                                         1 = Send packets while in RED state
-                                                         2 = Same as 0 above (stall)
-                                                         3 = Discard packets while in RED state (red packets are converted to drop packets) */
+                                                         send RED packets).
+                                                         1 = Send packets while in RED state.
+                                                         2 = Same as 0 above (stall).
+                                                         3 = Discard packets while in RED state (red packets are converted to drop packets). */
 	uint64_t adjust                       : 9;  /**< Shaping calculation adjustment. This 9-bit signed values allows +/- 256 bytes to be added
                                                          to the packet length for the shaping calculations. */
 #else
@@ -4363,14 +4379,13 @@ union cvmx_pko_l2_sqx_sw_xoff {
 	struct cvmx_pko_l2_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
-                                                         28).
-                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
-                                                         the path has drained." */
-	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
+                                                         \#28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
+                                                         until the path has drained." */
+	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -4398,12 +4413,11 @@ union cvmx_pko_l2_sqx_topology {
 	uint64_t reserved_41_63               : 23;
 	uint64_t prio_anchor                  : 9;  /**< See PKO_L1_SQ(0..31)_TOPOLOGY[PRIO_ANCHOR]. */
 	uint64_t reserved_21_31               : 11;
-	uint64_t parent                       : 5;  /**< Parent queue index. The index of the shaping element at the next lower
-                                                         hierachical level that accepts *this* shaping element's outputs.
-                                                         Refer to the PKO_*_SQn_TOPOLOGY[PRIO_ANCHOR,RR_PRIO] descriptions
-                                                         for constraints on which child queues can attach to which shapers
-                                                         at the next lower level. When this shaper is unused, we recommend
-                                                         PARENT be zero. */
+	uint64_t parent                       : 5;  /**< Parent queue index. The index of the shaping element at the next lower hierarchical level
+                                                         that accepts this shaping element's outputs. Refer to the
+                                                         PKO_*_SQn_TOPOLOGY[PRIO_ANCHOR,RR_PRIO] descriptions for constraints on which child queues
+                                                         can attach to which shapers at the next lower level. When this shaper is unused, we
+                                                         recommend that PARENT be zero. */
 	uint64_t reserved_5_15                : 11;
 	uint64_t rr_prio                      : 4;  /**< See PKO_L1_SQ(0..31)_TOPOLOGY[RR_PRIO]. */
 	uint64_t reserved_0_0                 : 1;
@@ -4484,13 +4498,12 @@ union cvmx_pko_l3_l2_sqx_channel {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_44_63               : 20;
 	uint64_t cc_channel                   : 12; /**< Channel ID. */
-	uint64_t cc_word_cnt                  : 20; /**< Channel credit word count.
-                                                         This value, plus 1 MTU, represents the maximum outstanding word count (words are 16 bytes)
-                                                         for this channel.
-                                                         Note that this 20-bit field represents a signed value that decrements towards zero as
-                                                         credits are used. Packets are not allowed to flow when the count is less than zero. As
-                                                         such, the most significant bit should normally be programmed as zero (positive count).
-                                                         This gives a maximum value for this field of 2^18 - 1. */
+	uint64_t cc_word_cnt                  : 20; /**< Channel credit word count. This value, plus 1 MTU, represents the maximum outstanding word
+                                                         count for this channel. (Words are 16 bytes.) Note that this 20-bit field represents a
+                                                         signed value that decrements towards zero as credits are used. Packets are not allowed to
+                                                         flow when the count is less than zero. As such, the most significant bit should normally
+                                                         be programmed as zero (positive count). This gives a maximum value for this field of 2^18
+                                                         - 1. */
 	uint64_t cc_packet_cnt                : 10; /**< Channel credit packet count. This value, plus 1, represents the maximum outstanding packet
                                                          count for this channel.
                                                          Note that this 10-bit field represents a signed value that decrements towards zero as
@@ -4498,8 +4511,8 @@ union cvmx_pko_l3_l2_sqx_channel {
                                                          such the most significant bit should normally be programmed as zero (positive count). This
                                                          gives a maximum value for this field of 2^9 - 1. */
 	uint64_t cc_enable                    : 1;  /**< Channel credit enable. Enables CC_WORD_CNT and CC_PACKET_CNT credit processing. */
-	uint64_t hw_xoff                      : 1;  /**< Hardware XOFF status. The status of hardware XON/XOFF. This is write-able to get around
-                                                         LUT issues and for reconfiguration. */
+	uint64_t hw_xoff                      : 1;  /**< Hardware XOFF status. The status of hardware XON/XOFF. This is writable to get around LUT
+                                                         issues and for reconfiguration. */
 #else
 	uint64_t hw_xoff                      : 1;
 	uint64_t cc_enable                    : 1;
@@ -4554,8 +4567,8 @@ union cvmx_pko_l3_sqx_green {
 	struct cvmx_pko_l3_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t rr_active                    : 1;  /**< Round-robin Red Active.  Indicates that the round-robin input is mapped to RED. */
-	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+	uint64_t rr_active                    : 1;  /**< Round-robin red active. Indicates that the round-robin input is mapped to RED. */
+	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to this
                                                          scheduling queue are active. For internal use only. */
 	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
 	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
@@ -4578,23 +4591,23 @@ union cvmx_pko_l3_sqx_pick {
 	uint64_t u64;
 	struct cvmx_pko_l3_sqx_pick_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dq                           : 10; /**< Descriptor Queue. Index of originating descriptor queue. */
+	uint64_t dq                           : 10; /**< Descriptor queue. Index of originating descriptor queue. */
 	uint64_t color                        : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[COLOR]. */
 	uint64_t child                        : 10; /**< Child index. When the C_CON bit of this result is set, indicating that this
                                                          result is connected in a flow that extends through the child result, this is the
                                                          index of that child result. */
-	uint64_t bubble                       : 1;  /**< This meta-packet is a fake passed forward after a prune. */
-	uint64_t p_con                        : 1;  /**< Parent Connected Flag. This pick has more picks in front of it. */
-	uint64_t c_con                        : 1;  /**< Child Connected Flag. This pick has more picks behind it. */
+	uint64_t bubble                       : 1;  /**< This metapacket is a fake passed forward after a prune. */
+	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
+	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
 	uint64_t jump                         : 1;  /**< Jump. Set when metapacket originated from a jump descriptor. */
-	uint64_t fpd                          : 1;  /**< First Packet Descriptor. Set when metapacket was the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< Don't Send. Set when metapacket is not to be sent. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when metapacket was the first in a cacheline. */
+	uint64_t ds                           : 1;  /**< Don't send. Set when metapacket is not to be sent. */
 	uint64_t adjust                       : 9;  /**< See PKO_L2_SQ(0..511)_SHAPE[ADJUST]. */
-	uint64_t pir_dis                      : 1;  /**< PIR Disable. Peak shaper disabled. */
-	uint64_t cir_dis                      : 1;  /**< CIR Disable. Committed shaper disabled. */
+	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. */
+	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. */
 	uint64_t red_algo_override            : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[RED_ALGO]. */
-	uint64_t length                       : 16; /**< Packet Length. The packet length in bytes. */
+	uint64_t length                       : 16; /**< Packet length. The packet length in bytes. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -4718,13 +4731,12 @@ union cvmx_pko_l3_sqx_schedule {
 	struct cvmx_pko_l3_sqx_schedule_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
-	uint64_t prio                         : 4;  /**< Priority. The priority used for this SQ in the (lower-level) parent's
-                                                         scheduling algorithm. When this SQ is not used, we recommend
-                                                         PRIO be zero. The legal PRIO values are 0-9 when the SQ is used.
-                                                         In addition to priority, PRIO determines whether the SQ is a static
-                                                         queue or not: If PRIO equals PKO_*_SQn_TOPOLOGY[RR_PRIO], where
-                                                         PKO_*_TOPOLOGY[PARENT] for this SQ equals n, then this
-                                                         is a round-robin child queue into the shaper at the next level. */
+	uint64_t prio                         : 4;  /**< Priority. The priority used for this SQ in the (lower-level) parent's scheduling
+                                                         algorithm. When this SQ is not used, we recommend setting PRIO to zero. The legal PRIO
+                                                         values are 0-9 when the SQ is used. In addition to priority, PRIO determines whether the
+                                                         SQ is a static queue or not: If PRIO equals PKO_*_SQn_TOPOLOGY[RR_PRIO], where
+                                                         PKO_*_TOPOLOGY[PARENT] for this SQ equals n, then this is a round-robin child queue into
+                                                         the shaper at the next level. */
 	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned integer). */
 #else
 	uint64_t rr_quantum                   : 24;
@@ -4745,7 +4757,7 @@ union cvmx_pko_l3_sqx_shape {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
 	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in shaping calculations such that only
-                                                         the value of the ADJUST field described below is used. */
+                                                         the value of the ADJUST field is used. */
 	uint64_t reserved_13_23               : 11;
 	uint64_t yellow_disable               : 1;  /**< Disable yellow transitions. Disables green-to-yellow packet color marking transitions when set. */
 	uint64_t red_disable                  : 1;  /**< Disable red transitions. Disables green-to-red and yellow-to-red packet color marking
@@ -4802,14 +4814,13 @@ union cvmx_pko_l3_sqx_sw_xoff {
 	struct cvmx_pko_l3_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
-                                                         28).
-                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
-                                                         the path has drained." */
-	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
+                                                         \#28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
+                                                         until the path has drained." */
+	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -4948,8 +4959,8 @@ union cvmx_pko_l4_sqx_green {
 	struct cvmx_pko_l4_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t rr_active                    : 1;  /**< Round-robin Red Active.  Indicates that the round-robin input is mapped to RED. */
-	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+	uint64_t rr_active                    : 1;  /**< Round-robin red active. Indicates that the round-robin input is mapped to RED. */
+	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to this
                                                          scheduling queue are active. For internal use only. */
 	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
 	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
@@ -4972,23 +4983,23 @@ union cvmx_pko_l4_sqx_pick {
 	uint64_t u64;
 	struct cvmx_pko_l4_sqx_pick_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dq                           : 10; /**< Descriptor Queue. Index of originating descriptor queue. */
+	uint64_t dq                           : 10; /**< Descriptor queue. Index of originating descriptor queue. */
 	uint64_t color                        : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[COLOR]. */
 	uint64_t child                        : 10; /**< Child index. When the C_CON bit of this result is set, indicating that this
                                                          result is connected in a flow that extends through the child result, this is the
                                                          index of that child result. */
-	uint64_t bubble                       : 1;  /**< This meta-packet is a fake passed forward after a prune. */
-	uint64_t p_con                        : 1;  /**< Parent Connected Flag. This pick has more picks in front of it. */
-	uint64_t c_con                        : 1;  /**< Child Connected Flag. This pick has more picks behind it. */
+	uint64_t bubble                       : 1;  /**< This metapacket is a fake passed forward after a prune. */
+	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
+	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
 	uint64_t jump                         : 1;  /**< Jump. Set when metapacket originated from a jump descriptor. */
-	uint64_t fpd                          : 1;  /**< First Packet Descriptor. Set when metapacket was the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< Don't Send. Set when metapacket is not to be sent. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when metapacket was the first in a cacheline. */
+	uint64_t ds                           : 1;  /**< Don't send. Set when metapacket is not to be sent. */
 	uint64_t adjust                       : 9;  /**< See PKO_L2_SQ(0..511)_SHAPE[ADJUST]. */
-	uint64_t pir_dis                      : 1;  /**< PIR Disable. Peak shaper disabled. */
-	uint64_t cir_dis                      : 1;  /**< CIR Disable. Committed shaper disabled. */
+	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. */
+	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. */
 	uint64_t red_algo_override            : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[RED_ALGO]. */
-	uint64_t length                       : 16; /**< Packet Length. The packet length in bytes. */
+	uint64_t length                       : 16; /**< Packet length. The packet length in bytes. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -5112,13 +5123,12 @@ union cvmx_pko_l4_sqx_schedule {
 	struct cvmx_pko_l4_sqx_schedule_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
-	uint64_t prio                         : 4;  /**< Priority. The priority used for this SQ in the (lower-level) parent's
-                                                         scheduling algorithm. When this SQ is not used, we recommend
-                                                         PRIO be zero. The legal PRIO values are 0-9 when the SQ is used.
-                                                         In addition to priority, PRIO determines whether the SQ is a static
-                                                         queue or not: If PRIO equals PKO_*_SQn_TOPOLOGY[RR_PRIO], where
-                                                         PKO_*_TOPOLOGY[PARENT] for this SQ equals n, then this
-                                                         is a round-robin child queue into the shaper at the next level. */
+	uint64_t prio                         : 4;  /**< Priority. The priority used for this SQ in the (lower-level) parent's scheduling
+                                                         algorithm. When this SQ is not used, we recommend setting PRIO to zero. The legal PRIO
+                                                         values are 0-9 when the SQ is used. In addition to priority, PRIO determines whether the
+                                                         SQ is a static queue or not: If PRIO equals PKO_*_SQn_TOPOLOGY[RR_PRIO], where
+                                                         PKO_*_TOPOLOGY[PARENT] for this SQ equals n, then this is a round-robin child queue into
+                                                         the shaper at the next level. */
 	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned integer). */
 #else
 	uint64_t rr_quantum                   : 24;
@@ -5139,7 +5149,7 @@ union cvmx_pko_l4_sqx_shape {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
 	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in shaping calculations such that only
-                                                         the value of the ADJUST field described below is used. */
+                                                         the value of the ADJUST field is used. */
 	uint64_t reserved_13_23               : 11;
 	uint64_t yellow_disable               : 1;  /**< Disable yellow transitions. Disables green-to-yellow packet color marking transitions when set. */
 	uint64_t red_disable                  : 1;  /**< Disable red transitions. Disables green-to-red and yellow-to-red packet color marking
@@ -5196,14 +5206,13 @@ union cvmx_pko_l4_sqx_sw_xoff {
 	struct cvmx_pko_l4_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
-                                                         28).
-                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
-                                                         the path has drained." */
-	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
+                                                         \#28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
+                                                         until the path has drained." */
+	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -5342,8 +5351,8 @@ union cvmx_pko_l5_sqx_green {
 	struct cvmx_pko_l5_sqx_green_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t rr_active                    : 1;  /**< Round-robin Red Active.  Indicates that the round-robin input is mapped to RED. */
-	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to *this*
+	uint64_t rr_active                    : 1;  /**< Round-robin red active. Indicates that the round-robin input is mapped to RED. */
+	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to this
                                                          scheduling queue are active. For internal use only. */
 	uint64_t head                         : 10; /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
 	uint64_t tail                         : 10; /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
@@ -5366,23 +5375,23 @@ union cvmx_pko_l5_sqx_pick {
 	uint64_t u64;
 	struct cvmx_pko_l5_sqx_pick_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dq                           : 10; /**< Descriptor Queue. Index of originating descriptor queue. */
+	uint64_t dq                           : 10; /**< Descriptor queue. Index of originating descriptor queue. */
 	uint64_t color                        : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[COLOR]. */
 	uint64_t child                        : 10; /**< Child index. When the C_CON bit of this result is set, indicating that this
                                                          result is connected in a flow that extends through the child result, this is the
                                                          index of that child result. */
-	uint64_t bubble                       : 1;  /**< This meta-packet is a fake passed forward after a prune. */
-	uint64_t p_con                        : 1;  /**< Parent Connected Flag. This pick has more picks in front of it. */
-	uint64_t c_con                        : 1;  /**< Child Connected Flag. This pick has more picks behind it. */
+	uint64_t bubble                       : 1;  /**< This metapacket is a fake passed forward after a prune. */
+	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
+	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
 	uint64_t jump                         : 1;  /**< Jump. Set when metapacket originated from a jump descriptor. */
-	uint64_t fpd                          : 1;  /**< First Packet Descriptor. Set when metapacket was the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< Don't Send. Set when metapacket is not to be sent. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when metapacket was the first in a cacheline. */
+	uint64_t ds                           : 1;  /**< Don't send. Set when metapacket is not to be sent. */
 	uint64_t adjust                       : 9;  /**< See PKO_L2_SQ(0..511)_SHAPE[ADJUST]. */
-	uint64_t pir_dis                      : 1;  /**< PIR Disable. Peak shaper disabled. */
-	uint64_t cir_dis                      : 1;  /**< CIR Disable. Committed shaper disabled. */
+	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. */
+	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. */
 	uint64_t red_algo_override            : 2;  /**< See PKO_L2_SQ(0..511)_SHAPE[RED_ALGO]. */
-	uint64_t length                       : 16; /**< Packet Length. The packet length in bytes. */
+	uint64_t length                       : 16; /**< Packet length. The packet length in bytes. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -5506,13 +5515,12 @@ union cvmx_pko_l5_sqx_schedule {
 	struct cvmx_pko_l5_sqx_schedule_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
-	uint64_t prio                         : 4;  /**< Priority. The priority used for this SQ in the (lower-level) parent's
-                                                         scheduling algorithm. When this SQ is not used, we recommend
-                                                         PRIO be zero. The legal PRIO values are 0-9 when the SQ is used.
-                                                         In addition to priority, PRIO determines whether the SQ is a static
-                                                         queue or not: If PRIO equals PKO_*_SQn_TOPOLOGY[RR_PRIO], where
-                                                         PKO_*_TOPOLOGY[PARENT] for this SQ equals n, then this
-                                                         is a round-robin child queue into the shaper at the next level. */
+	uint64_t prio                         : 4;  /**< Priority. The priority used for this SQ in the (lower-level) parent's scheduling
+                                                         algorithm. When this SQ is not used, we recommend setting PRIO to zero. The legal PRIO
+                                                         values are 0-9 when the SQ is used. In addition to priority, PRIO determines whether the
+                                                         SQ is a static queue or not: If PRIO equals PKO_*_SQn_TOPOLOGY[RR_PRIO], where
+                                                         PKO_*_TOPOLOGY[PARENT] for this SQ equals n, then this is a round-robin child queue into
+                                                         the shaper at the next level. */
 	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned integer). */
 #else
 	uint64_t rr_quantum                   : 24;
@@ -5532,8 +5540,8 @@ union cvmx_pko_l5_sqx_shape {
 	struct cvmx_pko_l5_sqx_shape_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
-	uint64_t length_disable               : 1;  /**< Length Disable. Disables the use of packet lengths in shaping calculations such that
-                                                         only the value of the ADJUST field described below is used. */
+	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in shaping calculations such that only
+                                                         the value of PKO_L5_SQ(0..1023)_SHAPE[ADJUST]. */
 	uint64_t reserved_13_23               : 11;
 	uint64_t yellow_disable               : 1;  /**< Disable yellow transitions. Disables green-to-yellow packet color marking transitions when set. */
 	uint64_t red_disable                  : 1;  /**< Disable red transitions. Disables green-to-red and yellow-to-red packet color marking
@@ -5590,14 +5598,13 @@ union cvmx_pko_l5_sqx_sw_xoff {
 	struct cvmx_pko_l5_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< DRAIN_IRQ. Enables an interrupt that will fire when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "DRAIN_NULL_LINK. Conditions the drain path to drain through the null link (i.e. link \#
-                                                         28).
-                                                         As such, channel credits, HW_XOFF and shaping will be disabled on the draining path until
-                                                         the path has drained." */
-	uint64_t drain                        : 1;  /**< DRAIN. This control activates a drain path through the PSE that starts at this node and
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
+	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
+                                                         \#28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
+                                                         until the path has drained." */
+	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ describe above. */
+                                                         be used in combination with DRAIN_NULL_LINK and DRAIN_IRQ. */
 	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is de-asserted.
                                                          NOTE: The associated PKO_L1_SQ(0..31)_TOPOLOGY[LINK] must be configured before using this
                                                          register field. Writing to this register field before the associated
@@ -5785,8 +5792,8 @@ union cvmx_pko_lut_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_lut_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t lut_dbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_LUT_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_LUT_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_LUT_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_LUT_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.nonpse.pko_c2q_lut.pko_c2q_lut_ram_i */
@@ -5828,8 +5835,8 @@ union cvmx_pko_lut_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_lut_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t lut_sbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_LUT_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_LUT_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_LUT_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_LUT_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.nonpse.pko_c2q_lut.pko_c2q_lut_ram_i */
@@ -5853,8 +5860,9 @@ union cvmx_pko_macx_cfg {
 	uint64_t reserved_17_63               : 47;
 	uint64_t min_pad_ena                  : 1;  /**< Minimum padding is enabled for this MAC/FIFO */
 	uint64_t fcs_ena                      : 1;  /**< Enable outside FCS for this MAC/FIFO */
-	uint64_t fcs_sop_off                  : 8;  /**< Offset from SOP for beginning of outside FCS calculation */
-	uint64_t skid_max_cnt                 : 2;  /**< Maximum number of SKID credits. 0x0 = 16, 0x1 = 32, 0x2 = 64. */
+	uint64_t fcs_sop_off                  : 8;  /**< FCS start of packet offset.  For this MAC, the number of bytes in the front
+                                                         of each packet to exclude from FCS. */
+	uint64_t skid_max_cnt                 : 2;  /**< Maximum number of SKID credits. 0x0 = 16; 0x1 = 32; 0x2 = 64. */
 	uint64_t fifo_num                     : 5;  /**< The PEB TX FIFO number assigned to the given MAC. A value of 0x1F means unassigned. Unused
                                                          MACs must be assigned a FIFO_NUM = 0x1F. For each active MAC, a unique FIFO_NUM must be
                                                          assigned. Legal values depend on the values in PKO_PTGF(0..7)_CFG[SIZE]. Assigning the
@@ -7950,6 +7958,9 @@ typedef union cvmx_pko_mem_throttle_pipe cvmx_pko_mem_throttle_pipe_t;
 
 /**
  * cvmx_pko_ncb_bist_status
+ *
+ * Each bit is the BIST result of an individual memory (per bit, 0 = pass and 1 = fail).
+ *
  */
 union cvmx_pko_ncb_bist_status {
 	uint64_t u64;
@@ -8054,8 +8065,8 @@ union cvmx_pko_ncb_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_ncb_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t ncb_dbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_NCB_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_NCB_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_NCB_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_NCB_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.l2_out_fifo
@@ -8117,8 +8128,8 @@ union cvmx_pko_ncb_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_ncb_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t ncb_sbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_NCB_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_NCB_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_NCB_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_NCB_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.l2_out_fifo
@@ -8193,7 +8204,7 @@ union cvmx_pko_ncb_tx_err_word {
 	struct cvmx_pko_ncb_tx_err_word_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t err_word                     : 64; /**< PKO NCB error word (first word of erroneous transaction).
-                                                         Note: this is only the 64-bit data word; the NCB info that goes with it is in
+                                                         Note: This is only the 64-bit data word; the NCB info that goes with it is in
                                                          PKO_NCB_TX_ERR_INFO. */
 #else
 	uint64_t err_word                     : 64;
@@ -8205,6 +8216,9 @@ typedef union cvmx_pko_ncb_tx_err_word cvmx_pko_ncb_tx_err_word_t;
 
 /**
  * cvmx_pko_pdm_bist_status
+ *
+ * Each bit is the BIST result of an individual memory (per bit, 0 = pass and 1 = fail).
+ *
  */
 union cvmx_pko_pdm_bist_status {
 	uint64_t u64;
@@ -8278,26 +8292,30 @@ union cvmx_pko_pdm_cfg {
 	uint64_t u64;
 	struct cvmx_pko_pdm_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_11_63               : 53;
-	uint64_t dis_flsh_cache               : 1;  /**< Set to disable the flush buffer's cache. This will make all fills require full memory
-                                                         latency. For diagnostic use only. */
-	uint64_t pko_pad_minlen               : 7;  /**< Minimum frame padding min length. When */
+	uint64_t reserved_13_63               : 51;
+	uint64_t dis_lpd_w2r_fill             : 1;  /**< Set to disable the write to read fill caused by LPD in the PDM. If disabled, must wait for
+                                                         FPD bit from PEB, which is a performance penalty when the time is large for the PEB
+                                                         request to make it back to PDM. For diagnostic use only. */
+	uint64_t en_fr_w2r_ptr_swp            : 1;  /**< Set to enable pointer swap on a fill response when we go in-sync (only one cacheline in
+                                                         DQ).
+                                                         For diagnostic use only. */
+	uint64_t dis_flsh_cache               : 1;  /**< Set to disable the flush buffer's cache. This makes all fills require full memory latency.
+                                                         For diagnostic use only. */
+	uint64_t pko_pad_minlen               : 7;  /**< Minimum frame padding min length. */
 	uint64_t diag_mode                    : 1;  /**< Set to enable read/write to memories in PDM through CSR interface.  For diagnostic use only. */
 	uint64_t alloc_lds                    : 1;  /**< Allocate LDS. This signal prevents the loads to IOBP from being allocated in on-chip cache
-                                                         (LDWB vs. LDD). Two modes as follows:
-                                                         0 = No allocate (LDWB)
-                                                         1 = Allocate (LDD) */
+                                                         (LDWB vs. LDD). Two modes as follows: 0 = No allocate (LDWB); 1 = Allocate (LDD). */
 	uint64_t alloc_sts                    : 1;  /**< Allocate STS. This signal prevents the stores to NCB from being allocated in on-chip cache
-                                                         (STF vs. STT). Two modes as follows:
-                                                         0 = No allocate (STT)
-                                                         1 = Allocate (STF) */
+                                                         (STF vs. STT). Two modes as follows: 0 = No allocate (STT); 1 = Allocate (STF). */
 #else
 	uint64_t alloc_sts                    : 1;
 	uint64_t alloc_lds                    : 1;
 	uint64_t diag_mode                    : 1;
 	uint64_t pko_pad_minlen               : 7;
 	uint64_t dis_flsh_cache               : 1;
-	uint64_t reserved_11_63               : 53;
+	uint64_t en_fr_w2r_ptr_swp            : 1;
+	uint64_t dis_lpd_w2r_fill             : 1;
+	uint64_t reserved_13_63               : 51;
 #endif
 	} s;
 	struct cvmx_pko_pdm_cfg_s             cn78xx;
@@ -8313,8 +8331,8 @@ union cvmx_pko_pdm_cfg_dbg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
 	uint64_t cp_stall_thrshld             : 32; /**< Program this register to the 32-bit number of cycles to test for the PDM(CP) stalled on
-                                                         inputs going into the ISR's. PKO_PDM_STS[CP_STALL_THRSHLD_HIT] indicates the threshold has
-                                                         been hit. INTERNAL: Do not list field in HRM. For lab debug only; will likely disapear in
+                                                         inputs going into the ISRs. PKO_PDM_STS[CP_STALL_THRSHLD_HIT] indicates the threshold has
+                                                         been hit. INTERNAL: Do not list field in HRM. For lab debug only; will likely disappear in
                                                          pass 2. */
 #else
 	uint64_t cp_stall_thrshld             : 32;
@@ -8326,6 +8344,33 @@ union cvmx_pko_pdm_cfg_dbg {
 typedef union cvmx_pko_pdm_cfg_dbg cvmx_pko_pdm_cfg_dbg_t;
 
 /**
+ * cvmx_pko_pdm_cp_dbg
+ */
+union cvmx_pko_pdm_cp_dbg {
+	uint64_t u64;
+	struct cvmx_pko_pdm_cp_dbg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t stateless_fif_cnt            : 6;  /**< Stateless fifo count. */
+	uint64_t reserved_5_9                 : 5;
+	uint64_t op_fif_not_full              : 5;  /**< Output fifo not full signals. The order of the bits is:
+                                                         - 4: ISR CMD FIFO not full
+                                                         - 3: DESC DAT FIFO HIGH not full
+                                                         - 2: DESC DAT FIFO LOW not full
+                                                         - 1: MP DAT FIFO not full
+                                                         - 0: PSE CMD RESP FIFO has credit */
+#else
+	uint64_t op_fif_not_full              : 5;
+	uint64_t reserved_5_9                 : 5;
+	uint64_t stateless_fif_cnt            : 6;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_pko_pdm_cp_dbg_s          cn78xx;
+};
+typedef union cvmx_pko_pdm_cp_dbg cvmx_pko_pdm_cp_dbg_t;
+
+/**
  * cvmx_pko_pdm_dq#_minpad
  */
 union cvmx_pko_pdm_dqx_minpad {
@@ -8333,12 +8378,11 @@ union cvmx_pko_pdm_dqx_minpad {
 	struct cvmx_pko_pdm_dqx_minpad_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t minpad                       : 1;  /**< MINPAD setting per DQ. Each DQ has a seperate CSR address, and bit 0 of the
-                                                         data read/write value will be the MINPAD bit.
-                                                         When MINPAD is set, the send-packet header will have the total field adjusted by MINLEN
-                                                         (PKO_PDM_CFG.PKO_PAD_MINLEN) as follows:
-                                                           if( MINPAD )
-                                                               if( send_hdr.total < MINLEN ) send_hdr.total = MINLEN */
+	uint64_t minpad                       : 1;  /**< MINPAD setting per DQ. Each DQ has a separate CSR address; and bit 0 of the data
+                                                         read/write value is the MINPAD bit. When MINPAD is set, the send-packet header has the
+                                                         total field adjusted by MINLEN (PKO_PDM_CFG.PKO_PAD_MINLEN) as follows:
+                                                         if (MINPAD)
+                                                         if (send_hdr.total < MINLEN) send_hdr.total = MINLEN */
 #else
 	uint64_t minpad                       : 1;
 	uint64_t reserved_1_63                : 63;
@@ -8355,21 +8399,30 @@ union cvmx_pko_pdm_drpbuf_dbg {
 	uint64_t u64;
 	struct cvmx_pko_pdm_drpbuf_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_19_63               : 45;
-	uint64_t cur_state                    : 3;  /**< This is current state from the pbuf controller. */
-	uint64_t track_rd_cnt                 : 6;  /**< This is the track read count value. */
-	uint64_t track_wr_cnt                 : 6;  /**< This is the track write count value. */
-	uint64_t mem_en                       : 4;  /**< These are the memory write/chip enable signals. The order of the bits is:
-                                                         - 3: low wen
-                                                         - 2: low cen
-                                                         - 1: high wen
-                                                         - 0: high cen */
+	uint64_t reserved_43_63               : 21;
+	uint64_t sel_nxt_ptr                  : 1;  /**< Sel_nxt_ptr signal. */
+	uint64_t load_val                     : 1;  /**< Load valid signal. */
+	uint64_t rdy                          : 1;  /**< Ready signal. */
+	uint64_t cur_state                    : 3;  /**< Current state from the pbuf controller. */
+	uint64_t reserved_33_36               : 4;
+	uint64_t track_rd_cnt                 : 6;  /**< Track read count value. */
+	uint64_t track_wr_cnt                 : 6;  /**< Track write count value. */
+	uint64_t reserved_17_20               : 4;
+	uint64_t mem_addr                     : 13; /**< Memory address for pbuf ram. */
+	uint64_t mem_en                       : 4;  /**< Memory write/chip enable signals. The order of the bits is:
+                                                         - 3: low wen; 2: low cen; 1: high wen; 0: high cen. */
 #else
 	uint64_t mem_en                       : 4;
+	uint64_t mem_addr                     : 13;
+	uint64_t reserved_17_20               : 4;
 	uint64_t track_wr_cnt                 : 6;
 	uint64_t track_rd_cnt                 : 6;
+	uint64_t reserved_33_36               : 4;
 	uint64_t cur_state                    : 3;
-	uint64_t reserved_19_63               : 45;
+	uint64_t rdy                          : 1;
+	uint64_t load_val                     : 1;
+	uint64_t sel_nxt_ptr                  : 1;
+	uint64_t reserved_43_63               : 21;
 #endif
 	} s;
 	struct cvmx_pko_pdm_drpbuf_dbg_s      cn78xx;
@@ -8383,21 +8436,30 @@ union cvmx_pko_pdm_dwpbuf_dbg {
 	uint64_t u64;
 	struct cvmx_pko_pdm_dwpbuf_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_19_63               : 45;
-	uint64_t cur_state                    : 3;  /**< This is current state from the pbuf controller. */
-	uint64_t track_rd_cnt                 : 6;  /**< This is the track read count value. */
-	uint64_t track_wr_cnt                 : 6;  /**< This is the track write count value. */
-	uint64_t mem_en                       : 4;  /**< These are the memory write/chip enable signals. The order of the bits is:
-                                                         - 3: low wen
-                                                         - 2: low cen
-                                                         - 1: high wen
-                                                         - 0: high cen */
+	uint64_t reserved_43_63               : 21;
+	uint64_t sel_nxt_ptr                  : 1;  /**< Sel_nxt_ptr signal. */
+	uint64_t load_val                     : 1;  /**< Load valid signal. */
+	uint64_t rdy                          : 1;  /**< Ready signal. */
+	uint64_t cur_state                    : 3;  /**< Current state from the pbuf controller. */
+	uint64_t reserved_33_36               : 4;
+	uint64_t track_rd_cnt                 : 6;  /**< Track read count value. */
+	uint64_t track_wr_cnt                 : 6;  /**< Track write count value. */
+	uint64_t reserved_17_20               : 4;
+	uint64_t mem_addr                     : 13; /**< Memory address for pbuf ram. */
+	uint64_t mem_en                       : 4;  /**< Memory write/chip enable signals. The order of the bits is:
+                                                         - 3: low wen; 2: low cen; 1: high wen; 0: high cen. */
 #else
 	uint64_t mem_en                       : 4;
+	uint64_t mem_addr                     : 13;
+	uint64_t reserved_17_20               : 4;
 	uint64_t track_wr_cnt                 : 6;
 	uint64_t track_rd_cnt                 : 6;
+	uint64_t reserved_33_36               : 4;
 	uint64_t cur_state                    : 3;
-	uint64_t reserved_19_63               : 45;
+	uint64_t rdy                          : 1;
+	uint64_t load_val                     : 1;
+	uint64_t sel_nxt_ptr                  : 1;
+	uint64_t reserved_43_63               : 21;
 #endif
 	} s;
 	struct cvmx_pko_pdm_dwpbuf_dbg_s      cn78xx;
@@ -8636,8 +8698,8 @@ union cvmx_pko_pdm_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_pdm_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pdm_dbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_PDM_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PDM_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PDM_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PDM_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.flshb.flshb_cache_hi
@@ -8784,8 +8846,8 @@ union cvmx_pko_pdm_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pdm_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pdm_sbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_PDM_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PDM_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PDM_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PDM_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          fc.core.roc.pko.pko_pnr1.pko_pnr1_pdm.flshb.flshb_cache_hi
@@ -8829,8 +8891,8 @@ union cvmx_pko_pdm_isrd_dbg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_44_63               : 20;
 	uint64_t in_arb_reqs                  : 8;  /**< Input arbitration request signals. The order of the bits is:
-                                                         - 43: Fill Response - normal path request
-                                                         - 42: Fill Response - flushb path request
+                                                         - 43: Fill response - normal path request
+                                                         - 42: Fill response - flushb path request
                                                          - 41: CP queue-open request
                                                          - 40: CP queue-closed request
                                                          - 39: CP queue-query request
@@ -8838,50 +8900,49 @@ union cvmx_pko_pdm_isrd_dbg {
                                                          - 37: PEB fill request
                                                          - 36: PEB read request */
 	uint64_t in_arb_gnts                  : 7;  /**< Input arbitration grant signals. The order of the bits is:
-                                                         - 35: Fill Response grant
+                                                         - 35: Fill response grant
                                                          - 34: CP - queue-open grant
                                                          - 33: CP - queue-close grant
                                                          - 32: CP - queue-query grant
                                                          - 31: CP - send-packet grant
-                                                         - 30: PEB Fill grant
-                                                         - 29: PEB Read grant */
+                                                         - 30: PEB fill grant
+                                                         - 29: PEB read grant */
 	uint64_t cmt_arb_reqs                 : 7;  /**< Commit arbitration request signals. The order of the bits is:
-                                                         - 28: Fill Response grant
+                                                         - 28: Fill response grant
                                                          - 27: CP - queue-open grant
                                                          - 26: CP - queue-close grant
                                                          - 25: CP - queue-query grant
                                                          - 24: CP - send-packet grant
-                                                         - 23: PEB Fill grant
-                                                         - 22: PEB Read grant */
+                                                         - 23: PEB fill grant
+                                                         - 22: PEB read grant */
 	uint64_t cmt_arb_gnts                 : 7;  /**< Commit arbitration grant signals. The order of the bits is:
-                                                         - 21: Fill Response grant
+                                                         - 21: Fill response grant
                                                          - 20: CP - queue-open grant
                                                          - 19: CP - queue-close grant
                                                          - 18: CP - queue-query grant
                                                          - 17: CP - send-packet grant
-                                                         - 16: PEB Fill grant
-                                                         - 15: PEB Read grant */
+                                                         - 16: PEB fill grant
+                                                         - 15: PEB read grant */
 	uint64_t in_use                       : 4;  /**< In use signals indicate the execution units are in use. The order of the bits is:
                                                          - 14: PEB fill unit
                                                          - 13: PEB read unit
                                                          - 12: CP unit
-                                                         - 11: Fill Response unit */
+                                                         - 11: Fill response unit */
 	uint64_t has_cred                     : 4;  /**< Has credit signals indicate there is sufficient credit to commit. The order of the bits
-                                                         is:
-                                                           - 10: Flush Buffer has credit
-                                                          - 9: Fill Buffer has credit
-                                                          - 8: DW command output fifo has credit
-                                                          - 7: DR command output fifo has credit */
+                                                          is:
+                                                          - 10: Flush buffer has credit
+                                                         - 9: Fill buffer has credit
+                                                         - 8: DW command output FIFO has credit
+                                                         - 7: DR command output FIFO has credit */
 	uint64_t val_exec                     : 7;  /**< Valid bits for the execution units; means the unit can commit if it gets the grant of the
-                                                         commit arb and other conditions are met.
-                                                         The order of the bits is :
-                                                          - 6: fill response unit
-                                                          - 5: CP unit - queue-open
-                                                          - 4: CP unit - queue-close
-                                                          - 3: CP unit - queue-probe
-                                                          - 2: CP unit - send-packet
-                                                          - 1: PEB Fill unit
-                                                          - 0: PEB Read unit */
+                                                          commit arb and other conditions are met. The order of the bits is:
+                                                         - 6: Fill response unit
+                                                         - 5: CP unit - queue-open
+                                                         - 4: CP unit - queue-close
+                                                         - 3: CP unit - queue-probe
+                                                         - 2: CP unit - send-packet
+                                                         - 1: PEB fill unit
+                                                         - 0: PEB read unit */
 #else
 	uint64_t val_exec                     : 7;
 	uint64_t has_cred                     : 4;
@@ -8898,6 +8959,36 @@ union cvmx_pko_pdm_isrd_dbg {
 typedef union cvmx_pko_pdm_isrd_dbg cvmx_pko_pdm_isrd_dbg_t;
 
 /**
+ * cvmx_pko_pdm_isrd_dbg_dq
+ */
+union cvmx_pko_pdm_isrd_dbg_dq {
+	uint64_t u64;
+	struct cvmx_pko_pdm_isrd_dbg_dq_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_46_63               : 18;
+	uint64_t pebrd_sic_dq                 : 10; /**< CP SIC's DQ number. */
+	uint64_t reserved_34_35               : 2;
+	uint64_t pebfill_sic_dq               : 10; /**< CP SIC's DQ number. */
+	uint64_t reserved_22_23               : 2;
+	uint64_t fr_sic_dq                    : 10; /**< CP SIC's DQ number. */
+	uint64_t reserved_10_11               : 2;
+	uint64_t cp_sic_dq                    : 10; /**< CP SIC's DQ number. */
+#else
+	uint64_t cp_sic_dq                    : 10;
+	uint64_t reserved_10_11               : 2;
+	uint64_t fr_sic_dq                    : 10;
+	uint64_t reserved_22_23               : 2;
+	uint64_t pebfill_sic_dq               : 10;
+	uint64_t reserved_34_35               : 2;
+	uint64_t pebrd_sic_dq                 : 10;
+	uint64_t reserved_46_63               : 18;
+#endif
+	} s;
+	struct cvmx_pko_pdm_isrd_dbg_dq_s     cn78xx;
+};
+typedef union cvmx_pko_pdm_isrd_dbg_dq cvmx_pko_pdm_isrd_dbg_dq_t;
+
+/**
  * cvmx_pko_pdm_isrm_dbg
  */
 union cvmx_pko_pdm_isrm_dbg {
@@ -8906,7 +8997,7 @@ union cvmx_pko_pdm_isrm_dbg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_34_63               : 30;
 	uint64_t in_arb_reqs                  : 7;  /**< Input arbitration request signals. The order of the bits is:
-                                                         - 33: PSE ack
+                                                         - 33: PSE ACK
                                                          - 32: Fill Response - normal path request
                                                          - 31: Fill Response - flushb path request
                                                          - 30: CP queue-open
@@ -8914,41 +9005,40 @@ union cvmx_pko_pdm_isrm_dbg {
                                                          - 28: CP queue-query
                                                          - 27: CP send-packet */
 	uint64_t in_arb_gnts                  : 6;  /**< Input arbitration grant signals. The order of the bits is:
-                                                         - 26: PSE ack
+                                                         - 26: PSE ACK
                                                          - 25: Fill Response
                                                          - 24: CP - queue-open
                                                          - 23: CP - queue-close
                                                          - 22: CP - queue-query
                                                          - 21: CP - send-packet */
 	uint64_t cmt_arb_reqs                 : 6;  /**< Commit arbitration request signals. The order of the bits is:
-                                                         - 20: PSE ack
+                                                         - 20: PSE ACK
                                                          - 19: Fill Response
                                                          - 18: CP - queue-open
                                                          - 17: CP - queue-close
                                                          - 16: CP - queue-query
                                                          - 15: CP - send-packet */
 	uint64_t cmt_arb_gnts                 : 6;  /**< Commit arbitration grant signals. The order of the bits is:
-                                                          - 14: PSE ack
+                                                          - 14: PSE ACK
                                                           - 13: Fill Response
                                                           - 12: CP - queue-open
                                                           - 11: CP - queue-close
                                                           - 10: CP - queue-query
                                                          - 9: CP - send-packet */
 	uint64_t in_use                       : 3;  /**< In use signals indicate the execution units are in use. The order of the bits is:
-                                                         - 8: (PSE) ack unit
-                                                         - 7: Fill Response unit
+                                                         - 8: (PSE) ACK unit
+                                                         - 7: Fill response unit
                                                          - 6: CP unit */
 	uint64_t has_cred                     : 3;  /**< Has credit signals indicate there is sufficient credit to commit. The order of the bits
-                                                         is:
-                                                          - 5: Flush Buffer has credit
-                                                          - 4: Fill Buffer has credit
-                                                          - 3: MWP command output fifo has credit */
+                                                          is:
+                                                         - 5: Flush buffer has credit
+                                                         - 4: Fill buffer has credit
+                                                         - 3: MWP command output FIFO has credit */
 	uint64_t val_exec                     : 3;  /**< Valid bits for the execution units; means the unit can commit if it gets the grant of the
-                                                         commit arb and other conditions are met.
-                                                         The order of the bits is :
-                                                          - 2: (PSE) ack unit
-                                                          - 1: Fill response unit
-                                                          - 0: CP unit - ALL */
+                                                          commit arb and other conditions are met. The order of the bits is:
+                                                         - 2: (PSE) ACK unit
+                                                         - 1: Fill response unit
+                                                         - 0: CP unit - ALL */
 #else
 	uint64_t val_exec                     : 3;
 	uint64_t has_cred                     : 3;
@@ -8965,6 +9055,32 @@ union cvmx_pko_pdm_isrm_dbg {
 typedef union cvmx_pko_pdm_isrm_dbg cvmx_pko_pdm_isrm_dbg_t;
 
 /**
+ * cvmx_pko_pdm_isrm_dbg_dq
+ */
+union cvmx_pko_pdm_isrm_dbg_dq {
+	uint64_t u64;
+	struct cvmx_pko_pdm_isrm_dbg_dq_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_34_63               : 30;
+	uint64_t ack_sic_dq                   : 10; /**< CP SIC's DQ number. */
+	uint64_t reserved_22_23               : 2;
+	uint64_t fr_sic_dq                    : 10; /**< CP SIC's DQ number. */
+	uint64_t reserved_10_11               : 2;
+	uint64_t cp_sic_dq                    : 10; /**< CP SIC's DQ number. */
+#else
+	uint64_t cp_sic_dq                    : 10;
+	uint64_t reserved_10_11               : 2;
+	uint64_t fr_sic_dq                    : 10;
+	uint64_t reserved_22_23               : 2;
+	uint64_t ack_sic_dq                   : 10;
+	uint64_t reserved_34_63               : 30;
+#endif
+	} s;
+	struct cvmx_pko_pdm_isrm_dbg_dq_s     cn78xx;
+};
+typedef union cvmx_pko_pdm_isrm_dbg_dq cvmx_pko_pdm_isrm_dbg_dq_t;
+
+/**
  * cvmx_pko_pdm_mem_addr
  */
 union cvmx_pko_pdm_mem_addr {
@@ -8972,12 +9088,13 @@ union cvmx_pko_pdm_mem_addr {
 	struct cvmx_pko_pdm_mem_addr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t memsel                       : 3;  /**< Memory select. Selects the RAM to read or write to.
-                                                         0 = Invalid, 1 = ISRM states, 2 = ISRDstates, 3 = DWPBUF,
-                                                         4 = DRPBUF, 5 = MWPBUF */
+                                                         0 = Invalid, 1 = ISRM states, 2 = ISRD states, 3 = DWPBUF, 4 = DRPBUF, 5 = MWPBUF */
 	uint64_t reserved_17_60               : 44;
 	uint64_t memaddr                      : 14; /**< Memory address for the RAM. */
 	uint64_t reserved_2_2                 : 1;
-	uint64_t membanksel                   : 2;  /**< Memory bank select. Selects the bank to write to. */
+	uint64_t membanksel                   : 2;  /**< Memory bank select. Selects the bank to write to. Note that bit 0 is the only bit used in
+                                                         the PBUF's because there are only 2 banks per each PBUF. In the ISRM bank sel 3 is
+                                                         illegal. */
 #else
 	uint64_t membanksel                   : 2;
 	uint64_t reserved_2_2                 : 1;
@@ -8997,7 +9114,9 @@ union cvmx_pko_pdm_mem_data {
 	uint64_t u64;
 	struct cvmx_pko_pdm_mem_data_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t data                         : 64; /**< Raw data to write into the memory, or the raw data read out from the memory. */
+	uint64_t data                         : 64; /**< Raw data to write into the memory, or the raw data read out from the memory.
+                                                         Note that the ISR RAMs are only 57 bits wide, so [56:0] are the only bits that can be read
+                                                         or written to them. The PBUFs are 64 bits wide. */
 #else
 	uint64_t data                         : 64;
 #endif
@@ -9034,7 +9153,7 @@ union cvmx_pko_pdm_mem_rw_sts {
 	struct cvmx_pko_pdm_mem_rw_sts_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t readdone                     : 1;  /**< This will be set to 1 when the read is complete and the data is valid in the data register. */
+	uint64_t readdone                     : 1;  /**< This bit is set to 1 when the read is complete and the data is valid in the data register. */
 #else
 	uint64_t readdone                     : 1;
 	uint64_t reserved_1_63                : 63;
@@ -9051,21 +9170,30 @@ union cvmx_pko_pdm_mwpbuf_dbg {
 	uint64_t u64;
 	struct cvmx_pko_pdm_mwpbuf_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_19_63               : 45;
-	uint64_t cur_state                    : 3;  /**< This is current state from the pbuf controller. */
-	uint64_t track_rd_cnt                 : 6;  /**< This is the track read count value. */
-	uint64_t track_wr_cnt                 : 6;  /**< This is the track write count value. */
-	uint64_t mem_en                       : 4;  /**< These are the memory write/chip enable signals. The order of the bits is:
-                                                         - 3: low wen
-                                                         - 2: low cen
-                                                         - 1: high wen
-                                                         - 0: high cen */
+	uint64_t reserved_43_63               : 21;
+	uint64_t sel_nxt_ptr                  : 1;  /**< Sel_nxt_ptr signal. */
+	uint64_t load_val                     : 1;  /**< Load valid signal. */
+	uint64_t rdy                          : 1;  /**< Ready signal. */
+	uint64_t cur_state                    : 3;  /**< Current state from the pbuf controller. */
+	uint64_t reserved_33_36               : 4;
+	uint64_t track_rd_cnt                 : 6;  /**< Track read count value. */
+	uint64_t track_wr_cnt                 : 6;  /**< Track write count value. */
+	uint64_t reserved_17_20               : 4;
+	uint64_t mem_addr                     : 13; /**< Memory address for pbuf ram. */
+	uint64_t mem_en                       : 4;  /**< Memory write/chip enable signals. The order of the bits is:
+                                                         - 3: low wen; 2: low cen; 1: high wen; 0: high cen. */
 #else
 	uint64_t mem_en                       : 4;
+	uint64_t mem_addr                     : 13;
+	uint64_t reserved_17_20               : 4;
 	uint64_t track_wr_cnt                 : 6;
 	uint64_t track_rd_cnt                 : 6;
+	uint64_t reserved_33_36               : 4;
 	uint64_t cur_state                    : 3;
-	uint64_t reserved_19_63               : 45;
+	uint64_t rdy                          : 1;
+	uint64_t load_val                     : 1;
+	uint64_t sel_nxt_ptr                  : 1;
+	uint64_t reserved_43_63               : 21;
 #endif
 	} s;
 	struct cvmx_pko_pdm_mwpbuf_dbg_s      cn78xx;
@@ -9080,71 +9208,63 @@ union cvmx_pko_pdm_sts {
 	struct cvmx_pko_pdm_sts_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_38_63               : 26;
-	uint64_t cp_stalled_thrshld_hit       : 1;  /**< This register will be set to 1 if the PDM stalls the inputs for more than
+	uint64_t cp_stalled_thrshld_hit       : 1;  /**< This register is set to 1 if the PDM stalls the inputs for more than
                                                          PKO_PDM_CFG_DBG[CP_STALL_THRSHLD]. INTERNAL: Do not list field in HRM. For lab debug only;
                                                          will likely disapear in pass 2. */
 	uint64_t reserved_35_36               : 2;
-	uint64_t mwpbuf_data_val_err          : 1;  /**< Recieved signal that MWPBUF had data valid error. Throws
+	uint64_t mwpbuf_data_val_err          : 1;  /**< Received signal that MWPBUF had data valid error. Throws
                                                          PKO_INTSN_E::PKO_MWPBUF_DATA_VAL_ERR. */
-	uint64_t drpbuf_data_val_err          : 1;  /**< Recieved signal that DRPBUF had data valid error. Throws
+	uint64_t drpbuf_data_val_err          : 1;  /**< Received signal that DRPBUF had data valid error. Throws
                                                          PKO_INTSN_E::PKO_DRPBUF_DATA_VAL_ERR. */
-	uint64_t dwpbuf_data_val_err          : 1;  /**< Recieved signal that DWPBUF had data valid error. Throws
+	uint64_t dwpbuf_data_val_err          : 1;  /**< Received signal that DWPBUF had data valid error. Throws
                                                          PKO_INTSN_E::PKO_DWPBUF_DATA_VAL_ERR. */
 	uint64_t reserved_30_31               : 2;
-	uint64_t qcmd_iobx_err_sts            : 4;  /**< When PKO_PDM_STS[QCMD_IOBX_ERR] is set, the queue command response's status field
-                                                         for the response causing the error. Note that if multiple errors occur only the first
-                                                         error status will be captured here until PKO_PDM_STS[QCMD_IOBX_ERR] is cleared.
+	uint64_t qcmd_iobx_err_sts            : 4;  /**< When PKO_PDM_STS[QCMD_IOBX_ERR] is set, this contains the queue command response's status
+                                                         field for the response causing the error. Note that if multiple errors occur, only the
+                                                         first error status is captured here until PKO_PDM_STS[QCMD_IOBX_ERR] is cleared.
                                                          Enumerated by PKO_DQSTATUS_E. */
-	uint64_t qcmd_iobx_err                : 1;  /**< Queue command IOBDMA/IOBLD error status occured in PKO/PDM. PKO_PDM_STS[QCMD_IOBX_ERR_STS]
-                                                         contains the status code.
-                                                         Note that this bit and interrupt will not go off for the FPA being out of
-                                                         pointers (PKO_FPA_NO_PTRS is bit 4 in this CSR).
-                                                         Throws PKO_INTSN_E::PKO_QCMD_IOBX_ERR. */
-	uint64_t sendpkt_lmtdma_err_sts       : 4;  /**< This is the status field of the command response on the LMTDMA failure indicated by
-                                                         PKO_PDM_STS[SENDPKT_LMTDMA_ERR] bits being asserted.
-                                                         Note that if multiple errors occur only the first error status will be captured here until
-                                                         PKO_PDM_STS[SENDPKT_LMTDMA_ERR] is cleared.
-                                                         Enumerated by PKO_DQSTATUS_E. */
-	uint64_t sendpkt_lmtdma_err           : 1;  /**< Send-packet of type LMTDMA error status occured in PKO/PDM.
-                                                         PKO_PDM_STS[SENDPKT_LMTDMA_ERR_STS] contains the status code.
-                                                         Note that this bit and interrupt will not go off for the FPA being out of
-                                                         pointers (PKO_FPA_NO_PTRS is bit 4 in this CSR).
-                                                         Throws PKO_INTSN_E::PKO_SENDPKT_LMTDMA_ERR. */
-	uint64_t sendpkt_lmtst_err_sts        : 4;  /**< This is the status field of the command response on the LMTST failure indicated by
+	uint64_t qcmd_iobx_err                : 1;  /**< Queue command IOBDMA/IOBLD error status occurred in PKO/PDM.
+                                                         PKO_PDM_STS[QCMD_IOBX_ERR_STS] contains the status code. Note that FPA being out of
+                                                         pointers does not set this bit. (See PKO_FPA_NO_PTRS). Throws
+                                                         PKO_INTSN_E::PKO_QCMD_IOBX_ERR. */
+	uint64_t sendpkt_lmtdma_err_sts       : 4;  /**< Status field of the command response on the LMTDMA failure indicated by
+                                                         PKO_PDM_STS[SENDPKT_LMTDMA_ERR] bits being asserted. Note that if multiple errors occur,
+                                                         only the first error status is captured here until PKO_PDM_STS[SENDPKT_LMTDMA_ERR] is
+                                                         cleared. Enumerated by PKO_DQSTATUS_E. */
+	uint64_t sendpkt_lmtdma_err           : 1;  /**< Send-packet of type LMTDMA error status occurred in PKO/PDM.
+                                                         PKO_PDM_STS[SENDPKT_LMTDMA_ERR_STS] contains the status code. Note that FPA being out of
+                                                         pointers does not set this bit. (See PKO_FPA_NO_PTRS). Throws
+                                                         PKO_INTSN_E::PKO_SENDPKT_LMTDMA_ERR. */
+	uint64_t sendpkt_lmtst_err_sts        : 4;  /**< Status field of the command response on the LMTST failure indicated by
                                                          PKO_PDM_STS[SENDPKT_LMTST_ERR] bits being asserted.
                                                          Note that if multiple errors occur only the first error status will be captured here until
                                                          PKO_PDM_STS[SENDPKT_LMTST_ERR] is cleared.
                                                          Enumerated by PKO_DQSTATUS_E. */
-	uint64_t sendpkt_lmtst_err            : 1;  /**< Send-packet of type LMTST error status occured in PKO/PDM.
-                                                         PKO_PDM_STS[SENDPKT_LMTST_ERR_STS] contains the status code.
-                                                         Note that this bit and interrupt will not go off for the FPA being out of
-                                                         pointers (PKO_FPA_NO_PTRS is bit 4 in this CSR).
-                                                         Throws PKO_INTSN_E::PKO_SENDPKT_LMTST_ERR. */
+	uint64_t sendpkt_lmtst_err            : 1;  /**< Send-packet of type LMTST error status occurred in PKO/PDM.
+                                                         PKO_PDM_STS[SENDPKT_LMTST_ERR_STS] contains the status code. Note that FPA being out of
+                                                         pointers does not set this bit. (See PKO_FPA_NO_PTRS). Throws
+                                                         PKO_INTSN_E::PKO_SENDPKT_LMTST_ERR. */
 	uint64_t fpa_no_ptrs                  : 1;  /**< FPA signalled PKO that FPA can not allocate pointers. This is a fatal error.
                                                          Throws PKO_INTSN_E::PKO_FPA_NO_PTRS. */
 	uint64_t reserved_12_13               : 2;
 	uint64_t cp_sendpkt_err_no_drp_code   : 2;  /**< This field stores the error code for illegally constructed send-packets that did not drop.
-                                                         Note that if multiple errors occur only the first error code will be captured here until
-                                                         PKO_PDM_STS[CP_SENDPKT_ERR_NO_DRP] is cleared.
-                                                         Codes:
-                                                           2'b00: NO ERROR CODE
-                                                           2'b01: SEND_JUMP not at end of descriptor. */
-	uint64_t cp_sendpkt_err_no_drp        : 1;  /**< PKO/PDM/CP did not drop a send-packet, but it violates rules below.
-                                                         1) SEND_JUMP not at end of descriptor.
-                                                         The error code is captured in PKO_PDM_STS[CP_SENDPKT_ERR_NO_DRP_CODE].
-                                                         Throws PKO_INTSN_E::PKO_CP_SENDPKT_ERR_NO_DRP. */
+                                                         Note that if multiple errors occur, only the first error code is captured here until
+                                                         PKO_PDM_STS[CP_SENDPKT_ERR_NO_DRP] is cleared. Codes:
+                                                         2'b00: NO ERROR CODE
+                                                         2'b01: SEND_JUMP not at end of descriptor. */
+	uint64_t cp_sendpkt_err_no_drp        : 1;  /**< PKO/PDM/CP did not drop a send-packet; however, the SEND_JUMP command is not at end of the
+                                                         descriptor. The error code is captured in PKO_PDM_STS[CP_SENDPKT_ERR_NO_DRP_CODE]. Throws
+                                                         PKO_INTSN_E::PKO_CP_SENDPKT_ERR_NO_DRP. */
 	uint64_t reserved_7_8                 : 2;
-	uint64_t cp_sendpkt_err_drop_code     : 3;  /**< This field stores the error code for illegally constructed send-packet drops.
-                                                         Note that if multiple errors occur only the first error code will be captured here until
-                                                         PKO_PDM_STS[CP_SENDPKT_ERR_DROP] is cleared.
-                                                         PKO_CPSENDDROP_E enumerates the codes and conditions. */
-	uint64_t cp_sendpkt_err_drop          : 1;  /**< Dropped a send-packet in PDM/CP due to rule violation.
-                                                         The error code is captured in PKO_PDM_STS[CP_SENDPKT_ERR_DROP_CODE].
-                                                         Throws PKO_INTSN_E::PKO_CP_SENDPKT_ERR_DROP. */
+	uint64_t cp_sendpkt_err_drop_code     : 3;  /**< This field stores the error code for illegally constructed send-packet drops. Note that if
+                                                         multiple errors occur, only the first error code is captured here until
+                                                         PKO_PDM_STS[CP_SENDPKT_ERR_DROP] is cleared. PKO_CPSENDDROP_E enumerates the codes and
+                                                         conditions. */
+	uint64_t cp_sendpkt_err_drop          : 1;  /**< Dropped a send-packet in PDM/CP due to a rule violation. The error code is captured in
+                                                         PKO_PDM_STS[CP_SENDPKT_ERR_DROP_CODE]. Throws PKO_INTSN_E::PKO_CP_SENDPKT_ERR_DROP. */
 	uint64_t reserved_1_2                 : 2;
-	uint64_t desc_crc_err                 : 1;  /**< CRC error occurred in a descriptor. (State may have been corrupted).
-                                                         INTERNAL: Note that this is a pass 2 feature.
-                                                         Throws PKO_INTSN_E::PKO_DESC_CRC_ERR. */
+	uint64_t desc_crc_err                 : 1;  /**< CRC error occurred in a descriptor. (State may have been corrupted.) INTERNAL: Note that
+                                                         this is a pass 2 feature. Throws PKO_INTSN_E::PKO_DESC_CRC_ERR. */
 #else
 	uint64_t desc_crc_err                 : 1;
 	uint64_t reserved_1_2                 : 2;
@@ -9176,6 +9296,9 @@ typedef union cvmx_pko_pdm_sts cvmx_pko_pdm_sts_t;
 
 /**
  * cvmx_pko_peb_bist_status
+ *
+ * Each bit is the BIST result of an individual memory (per bit, 0 = pass and 1 = fail).
+ *
  */
 union cvmx_pko_peb_bist_status {
 	uint64_t u64;
@@ -9207,7 +9330,7 @@ union cvmx_pko_peb_bist_status {
 	uint64_t send_mem_fifo                : 1;  /**< SEND_MEM_FIFO RAM BIST status. */
 	uint64_t pkt_mrk_ram                  : 1;  /**< PKT_MRK RAM BIST status. */
 	uint64_t peb_st_inf_ram               : 1;  /**< PEB_ST_INF RAM BIST status. */
-	uint64_t peb_sm_jmp_ram               : 1;  /**< PEB_SM_JMP RAM BIST status. 0 = BIST passed; 1 = BIST failed. */
+	uint64_t peb_sm_jmp_ram               : 1;  /**< PEB_SM_JMP RAM BIST status. */
 #else
 	uint64_t peb_sm_jmp_ram               : 1;
 	uint64_t peb_st_inf_ram               : 1;
@@ -9474,8 +9597,8 @@ union cvmx_pko_peb_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_peb_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t peb_dbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_PEB_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PEB_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PEB_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PEB_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i
@@ -9622,8 +9745,8 @@ union cvmx_pko_peb_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_peb_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t peb_sbe_cmb0                 : 1;  /**< This bit is the logical OR of all bits in PKO_PEB_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PEB_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PEB_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PEB_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i
@@ -9666,8 +9789,8 @@ union cvmx_pko_peb_err_int {
 	struct cvmx_pko_peb_err_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
-	uint64_t peb_macx_cfg_wr_err          : 1;  /**< Asserted when SW writes a FIFO number to PKO_MACx_CFG when that FIFO is already assigned.
-                                                         Throws PKO_INTSN_E::PEB_MACX_CFG_WR_ERR. */
+	uint64_t peb_macx_cfg_wr_err          : 1;  /**< Asserted when software writes a FIFO number to PKO_MACx_CFG when that FIFO is already
+                                                         assigned. Throws PKO_INTSN_E::PEB_MACX_CFG_WR_ERR. */
 	uint64_t peb_max_link_err             : 1;  /**< Asserted when 200 LINK segments have been followed.  Indicates likelihood of infinite
                                                          loop.  Throws PKO_INTSN_E::PEB_MAX_LINK_ERR. */
 	uint64_t peb_subd_size_err            : 1;  /**< Asserted when a SEND_LINK/GATHER/IMM/JUMP subD has size=0.  Throws
@@ -9677,11 +9800,11 @@ union cvmx_pko_peb_err_int {
 	uint64_t peb_trunc_err                : 1;  /**< Asserted when a PD has truncated data.  Throws PKO_INTSN_E::PEB_TRUNC_ERR. */
 	uint64_t peb_pad_err                  : 1;  /**< Asserted when a PD has data padded to it (SEND_HDR[TOTAL] < sum(SEND_DATA[size])).  Throws
                                                          PKO_INTSN_E::PEB_PAD_ERR. */
-	uint64_t peb_pse_fifo_err             : 1;  /**< Asserted when PSE sends PD information for a non-configured FIFO.  Throws
+	uint64_t peb_pse_fifo_err             : 1;  /**< Asserted when PSE sends PD information for a nonconfigured FIFO. Throws
                                                          PKO_INTSN_E::PEB_PSE_FIFO_ERR. */
 	uint64_t peb_fcs_sop_err              : 1;  /**< Asserted when FCS SOP value greater than packet size detected.  Throws
                                                          PKO_INTSN_E::PEB_FCS_SOP_ERR. */
-	uint64_t peb_jump_def_err             : 1;  /**< Asserted when JUMP sub-descriptor is not last in a PD.  Throws
+	uint64_t peb_jump_def_err             : 1;  /**< Asserted when JUMP subdescriptor is not last in a PD. Throws
                                                          PKO_INTSN_E::PEB_JUMP_DEF_ERR. */
 	uint64_t peb_ext_hdr_def_err          : 1;  /**< Asserted when EXT_HDR is not the second sub-descriptor in a PD.  Throws
                                                          PKO_INTSN_E::PEB_EXT_HDR_DEF_ERR. */
@@ -9711,9 +9834,9 @@ union cvmx_pko_peb_ext_hdr_def_err_info {
 	struct cvmx_pko_peb_ext_hdr_def_err_info_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
-	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_EXT_HDR_DEF_ERR] is set */
-	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_EXT_HDR_DEF_ERR */
-	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_EXT_HDR_DEF_ERR */
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_EXT_HDR_DEF_ERR] is set. */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_EXT_HDR_DEF_ERR. */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_EXT_HDR_DEF_ERR. */
 #else
 	uint64_t chan                         : 12;
 	uint64_t fifo                         : 7;
@@ -9734,8 +9857,8 @@ union cvmx_pko_peb_fcs_sop_err_info {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_FCS_SOP_ERR] is set. */
-	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_FCS_SOP_ERR */
-	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_FCS_SOP_ERR */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_FCS_SOP_ERR. */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_FCS_SOP_ERR. */
 #else
 	uint64_t chan                         : 12;
 	uint64_t fifo                         : 7;
@@ -9756,8 +9879,8 @@ union cvmx_pko_peb_jump_def_err_info {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_JUMP_DEF_ERR] is set. */
-	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_JUMP_DEF_ERR */
-	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_JUMP_DEF_ERR */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_JUMP_DEF_ERR. */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_JUMP_DEF_ERR. */
 #else
 	uint64_t chan                         : 12;
 	uint64_t fifo                         : 7;
@@ -9778,7 +9901,7 @@ union cvmx_pko_peb_macx_cfg_wr_err_info {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
 	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_MACX_CFG_WR_ERR] is set. */
-	uint64_t mac                          : 7;  /**< MAC number associated with the captured PEB_MACX_CFG_WR_ERR */
+	uint64_t mac                          : 7;  /**< MAC number associated with the captured PEB_MACX_CFG_WR_ERR. */
 #else
 	uint64_t mac                          : 7;
 	uint64_t val                          : 1;
@@ -9798,8 +9921,8 @@ union cvmx_pko_peb_max_link_err_info {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_MAX_LINK_ERR] is set. */
-	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_MAX_LINK_ERR */
-	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_MAX_LINK_ERR */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_MAX_LINK_ERR. */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_MAX_LINK_ERR. */
 #else
 	uint64_t chan                         : 12;
 	uint64_t fifo                         : 7;
@@ -9820,8 +9943,8 @@ union cvmx_pko_peb_pad_err_info {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_PAD_ERR] is set. */
-	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_PAD_ERR */
-	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_PAD_ERR */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_PAD_ERR. */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_PAD_ERR. */
 #else
 	uint64_t chan                         : 12;
 	uint64_t fifo                         : 7;
@@ -9842,8 +9965,8 @@ union cvmx_pko_peb_pse_fifo_err_info {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_PSE_FIFO_ERR] is set. */
-	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_PSE_FIFO_ERR */
-	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_PSE_FIFO_ERR */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_PSE_FIFO_ERR. */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_PSE_FIFO_ERR. */
 #else
 	uint64_t chan                         : 12;
 	uint64_t fifo                         : 7;
@@ -9864,8 +9987,8 @@ union cvmx_pko_peb_subd_addr_err_info {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_SUBD_ADDR_ERR] is set. */
-	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_SUBD_ADDR_ERR */
-	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_SUBD_ADDR_ERR */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_SUBD_ADDR_ERR. */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_SUBD_ADDR_ERR. */
 #else
 	uint64_t chan                         : 12;
 	uint64_t fifo                         : 7;
@@ -9886,8 +10009,8 @@ union cvmx_pko_peb_subd_size_err_info {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_SUBD_SIZE_ERR] is set. */
-	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_SUBD_SIZE_ERR */
-	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_SUBD_SIZE_ERR */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_SUBD_SIZE_ERR. */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_SUBD_SIZE_ERR. */
 #else
 	uint64_t chan                         : 12;
 	uint64_t fifo                         : 7;
@@ -9908,8 +10031,8 @@ union cvmx_pko_peb_trunc_err_info {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_TRUNC_ERR] is set. */
-	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_TRUNC_ERR */
-	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_TRUNC_ERR */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_TRUNC_ERR. */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_TRUNC_ERR. */
 #else
 	uint64_t chan                         : 12;
 	uint64_t fifo                         : 7;
@@ -10009,21 +10132,24 @@ typedef union cvmx_pko_pqb_debug cvmx_pko_pqb_debug_t;
 
 /**
  * cvmx_pko_pse_dq_bist_status
+ *
+ * Each bit is the BIST result of an individual memory (per bit, 0 = pass and 1 = fail).
+ *
  */
 union cvmx_pko_pse_dq_bist_status {
 	uint64_t u64;
 	struct cvmx_pko_pse_dq_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_9_63                : 55;
-	uint64_t wt_sram                      : 1;  /**< Work Table */
-	uint64_t rt7_sram                     : 1;  /**< Result Table 7 - DQ FIFO[1023:896] */
-	uint64_t rt6_sram                     : 1;  /**< Result Table 6 - DQ FIFO[895:768] */
-	uint64_t rt5_sram                     : 1;  /**< Result Table 5 - DQ FIFO[767:640] */
-	uint64_t rt4_sram                     : 1;  /**< Result Table 4 - DQ FIFO[639:512] */
-	uint64_t rt3_sram                     : 1;  /**< Result Table 3 - DQ FIFO[511:384] */
-	uint64_t rt2_sram                     : 1;  /**< Result Table 2 - DQ FIFO[383:256] */
-	uint64_t rt1_sram                     : 1;  /**< Result Table 1 - DQ FIFO[255:128] */
-	uint64_t rt0_sram                     : 1;  /**< Result Table 0 - DQ FIFO[127:0] */
+	uint64_t wt_sram                      : 1;  /**< Work table. */
+	uint64_t rt7_sram                     : 1;  /**< Result table 7 - DQ FIFO[1023:896]. */
+	uint64_t rt6_sram                     : 1;  /**< Result table 6 - DQ FIFO[895:768]. */
+	uint64_t rt5_sram                     : 1;  /**< Result table 5 - DQ FIFO[767:640]. */
+	uint64_t rt4_sram                     : 1;  /**< Result table 4 - DQ FIFO[639:512]. */
+	uint64_t rt3_sram                     : 1;  /**< Result table 3 - DQ FIFO[511:384]. */
+	uint64_t rt2_sram                     : 1;  /**< Result table 2 - DQ FIFO[383:256]. */
+	uint64_t rt1_sram                     : 1;  /**< Result table 1 - DQ FIFO[255:128]. */
+	uint64_t rt0_sram                     : 1;  /**< Result table 0 - DQ FIFO[127:0]. */
 #else
 	uint64_t rt0_sram                     : 1;
 	uint64_t rt1_sram                     : 1;
@@ -10153,8 +10279,8 @@ union cvmx_pko_pse_dq_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_pse_dq_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_dq_dbe_cmb0              : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_DQ_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_DQ_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_DQ_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_DQ_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_dq.wt_sram
@@ -10236,8 +10362,8 @@ union cvmx_pko_pse_dq_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_dq_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_dq_sbe_cmb0              : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_DQ_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_DQ_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_DQ_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_DQ_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_dq.wt_sram
@@ -10261,27 +10387,30 @@ typedef union cvmx_pko_pse_dq_ecc_sbe_sts_cmb0 cvmx_pko_pse_dq_ecc_sbe_sts_cmb0_
 
 /**
  * cvmx_pko_pse_pq_bist_status
+ *
+ * Each bit is the BIST result of an individual memory (per bit, 0 = pass and 1 = fail).
+ *
  */
 union cvmx_pko_pse_pq_bist_status {
 	uint64_t u64;
 	struct cvmx_pko_pse_pq_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
-	uint64_t tp_sram                      : 1;  /**< Topology Parent - pko_pse_pq_srf32x5e */
-	uint64_t irq_fifo_sram                : 1;  /**< Interrupt Message FIFO - pko_pse_pq_srf1024x10e */
-	uint64_t wmd_sram                     : 1;  /**< Dynamic Watermark State - pko_pse_wmd_srf1024x49e */
-	uint64_t wms_sram                     : 1;  /**< Static Watermark Configuration - pko_pse_wms_srf1024x50e */
-	uint64_t cxd_sram                     : 1;  /**< Dynamic Channel State - pko_pse_cxd_srf32x31e */
-	uint64_t dqd_sram                     : 1;  /**< DQ Dropped Stats - pko_pse_stats_srf1024x88 */
-	uint64_t dqs_sram                     : 1;  /**< DQ Sent Stats - pko_pse_stats_srf1024x88 */
-	uint64_t pqd_sram                     : 1;  /**< PQ Dropped Stats - pko_pse_stats_srf32x88 */
-	uint64_t pqr_sram                     : 1;  /**< PQ Read Stats - pko_pse_stats_srf32x88 */
-	uint64_t pqy_sram                     : 1;  /**< PQ Yellow Stats - pko_pse_stats_srf32x88 */
-	uint64_t pqg_sram                     : 1;  /**< PQ Green Stats - pko_pse_stats_srf32x88 */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State - pko_pse_std_srf32x105e */
-	uint64_t st_sram                      : 1;  /**< Static Shaping Configuration - pko_pse_sts_srf32x74e */
+	uint64_t tp_sram                      : 1;  /**< Topology parent - pko_pse_pq_srf32x5e */
+	uint64_t irq_fifo_sram                : 1;  /**< Interrupt message FIFO - pko_pse_pq_srf1024x10e */
+	uint64_t wmd_sram                     : 1;  /**< Dynamic watermark state - pko_pse_wmd_srf1024x49e */
+	uint64_t wms_sram                     : 1;  /**< Static watermark configuration - pko_pse_wms_srf1024x50e */
+	uint64_t cxd_sram                     : 1;  /**< Dynamic channel state - pko_pse_cxd_srf32x31e */
+	uint64_t dqd_sram                     : 1;  /**< DQ dropped stats - pko_pse_stats_srf1024x88 */
+	uint64_t dqs_sram                     : 1;  /**< DQ sent stats - pko_pse_stats_srf1024x88 */
+	uint64_t pqd_sram                     : 1;  /**< PQ dropped stats - pko_pse_stats_srf32x88 */
+	uint64_t pqr_sram                     : 1;  /**< PQ read stats - pko_pse_stats_srf32x88 */
+	uint64_t pqy_sram                     : 1;  /**< PQ yellow stats - pko_pse_stats_srf32x88 */
+	uint64_t pqg_sram                     : 1;  /**< PQ green stats - pko_pse_stats_srf32x88 */
+	uint64_t std_sram                     : 1;  /**< Dynamic shaping state - pko_pse_std_srf32x105e */
+	uint64_t st_sram                      : 1;  /**< Static shaping configuration - pko_pse_sts_srf32x74e */
 	uint64_t reserved_1_1                 : 1;
-	uint64_t cxs_sram                     : 1;  /**< Static Channel Credit Configuration - pko_pse_cx0_srf32x6e */
+	uint64_t cxs_sram                     : 1;  /**< Static channel credit configuration - pko_pse_cx0_srf32x6e */
 #else
 	uint64_t cxs_sram                     : 1;
 	uint64_t reserved_1_1                 : 1;
@@ -10409,8 +10538,8 @@ union cvmx_pko_pse_pq_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_pse_pq_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_pq_dbe_cmb0              : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_PQ_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_PQ_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_PQ_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_PQ_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.pq.cxs_sram
@@ -10487,8 +10616,8 @@ union cvmx_pko_pse_pq_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_pq_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_pq_sbe_cmb0              : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_PQ_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_PQ_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_PQ_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_PQ_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.pq.cxs_sram
@@ -10511,33 +10640,36 @@ typedef union cvmx_pko_pse_pq_ecc_sbe_sts_cmb0 cvmx_pko_pse_pq_ecc_sbe_sts_cmb0_
 
 /**
  * cvmx_pko_pse_sq1_bist_status
+ *
+ * Each bit is the BIST result of an individual memory (per bit, 0 = pass and 1 = fail).
+ *
  */
 union cvmx_pko_pse_sq1_bist_status {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq1_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_29_63               : 35;
-	uint64_t sc_sram                      : 1;  /**< SQ[5:1] Scheduling Configuration */
+	uint64_t sc_sram                      : 1;  /**< SQ[5:1] scheduling configuration */
 	uint64_t pc_sram                      : 1;  /**< SQ[1] physical channel - pko_pse_pc_srf32x12e */
 	uint64_t xon_sram                     : 1;  /**< XON SRAM */
-	uint64_t cc_sram                      : 1;  /**< SQ[1] Channel Credit OK State Array */
+	uint64_t cc_sram                      : 1;  /**< SQ[1] channel credit OK state array */
 	uint64_t vc1_sram                     : 1;  /**< SQ[1] virtual channel - pko_pse_sq1_vc_srf256x9e */
 	uint64_t vc0_sram                     : 1;  /**< SQ[1] virtual channel - pko_pse_sq1_vc_srf256x9e */
 	uint64_t reserved_21_22               : 2;
-	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
+	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] topology parent configuration */
+	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] topology parent configuration */
 	uint64_t xo_sram                      : 1;  /**< XOFF SRAM */
-	uint64_t rt_sram                      : 1;  /**< Result Table */
+	uint64_t rt_sram                      : 1;  /**< Result table */
 	uint64_t reserved_9_16                : 8;
-	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 1 command FIFO SRAM */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State */
-	uint64_t sts_sram                     : 1;  /**< Static Shaping Configuration */
-	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 0 command FIFO SRAM */
-	uint64_t cxd_sram                     : 1;  /**< SQ[1] Dynamic Channel Credit State */
-	uint64_t cxs_sram                     : 1;  /**< SQ[1] Static Channel Credit Configuration */
-	uint64_t nt_sram                      : 1;  /**< SQ[5:1] "Next" Pointer Table */
-	uint64_t pt_sram                      : 1;  /**< SQ[5:1] "Previous" Pointer Table */
-	uint64_t wt_sram                      : 1;  /**< SQ[5:1] Work Table */
+	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 1 command FIFO SRAM */
+	uint64_t std_sram                     : 1;  /**< Dynamic shaping state */
+	uint64_t sts_sram                     : 1;  /**< Static shaping configuration */
+	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 0 command FIFO SRAM */
+	uint64_t cxd_sram                     : 1;  /**< SQ[1] dynamic channel credit state */
+	uint64_t cxs_sram                     : 1;  /**< SQ[1] static channel credit configuration */
+	uint64_t nt_sram                      : 1;  /**< SQ[5:1] next pointer table */
+	uint64_t pt_sram                      : 1;  /**< SQ[5:1] previous pointer table */
+	uint64_t wt_sram                      : 1;  /**< SQ[5:1] work table */
 #else
 	uint64_t wt_sram                      : 1;
 	uint64_t pt_sram                      : 1;
@@ -10751,8 +10883,8 @@ union cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_sq1_dbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ1_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ1_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_SQ1_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ1_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxs_sram
@@ -10879,8 +11011,8 @@ union cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_sq1_sbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ1_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ1_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_SQ1_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ1_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxs_sram
@@ -10913,27 +11045,30 @@ typedef union cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq1_ecc_sbe_sts_cmb
 
 /**
  * cvmx_pko_pse_sq2_bist_status
+ *
+ * Each bit is the BIST result of an individual memory (per bit, 0 = pass and 1 = fail).
+ *
  */
 union cvmx_pko_pse_sq2_bist_status {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq2_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_29_63               : 35;
-	uint64_t sc_sram                      : 1;  /**< Scheduling Configuration */
+	uint64_t sc_sram                      : 1;  /**< Scheduling configuration. */
 	uint64_t reserved_21_27               : 7;
-	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
+	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] topology parent configuration. */
+	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] topology parent configuration. */
 	uint64_t reserved_18_18               : 1;
-	uint64_t rt_sram                      : 1;  /**< Result Table */
+	uint64_t rt_sram                      : 1;  /**< Result table. */
 	uint64_t reserved_9_16                : 8;
-	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 1 command FIFO SRAM */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State */
-	uint64_t sts_sram                     : 1;  /**< Static Shaping Configuration */
-	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 0 command FIFO SRAM */
+	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 1 command FIFO SRAM. */
+	uint64_t std_sram                     : 1;  /**< Dynamic shaping state */
+	uint64_t sts_sram                     : 1;  /**< Static shaping configuration. */
+	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 0 command FIFO SRAM. */
 	uint64_t reserved_3_4                 : 2;
-	uint64_t nt_sram                      : 1;  /**< Next Pointer Table */
-	uint64_t pt_sram                      : 1;  /**< Previous Pointer Table */
-	uint64_t wt_sram                      : 1;  /**< Work Table */
+	uint64_t nt_sram                      : 1;  /**< Next pointer table. */
+	uint64_t pt_sram                      : 1;  /**< Previous pointer table. */
+	uint64_t wt_sram                      : 1;  /**< Work table. */
 #else
 	uint64_t wt_sram                      : 1;
 	uint64_t pt_sram                      : 1;
@@ -11101,8 +11236,8 @@ union cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_sq2_dbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ2_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ2_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_SQ2_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ2_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.nt_sram
@@ -11204,8 +11339,8 @@ union cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_sq2_sbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ2_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ2_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_SQ2_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ2_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.nt_sram
@@ -11233,33 +11368,36 @@ typedef union cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq2_ecc_sbe_sts_cmb
 
 /**
  * cvmx_pko_pse_sq3_bist_status
+ *
+ * Each bit is the BIST result of an individual memory (per bit, 0 = pass and 1 = fail).
+ *
  */
 union cvmx_pko_pse_sq3_bist_status {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq3_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_29_63               : 35;
-	uint64_t sc_sram                      : 1;  /**< Scheduling Configuration */
+	uint64_t sc_sram                      : 1;  /**< Scheduling configuration */
 	uint64_t reserved_23_27               : 5;
-	uint64_t tp3_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp2_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
+	uint64_t tp3_sram                     : 1;  /**< SQ[5:3] topology parent configuration */
+	uint64_t tp2_sram                     : 1;  /**< SQ[5:3] topology parent configuration */
+	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] topology parent configuration */
+	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] topology parent configuration */
 	uint64_t reserved_18_18               : 1;
-	uint64_t rt_sram                      : 1;  /**< Result Table */
+	uint64_t rt_sram                      : 1;  /**< Result table */
 	uint64_t reserved_15_16               : 2;
-	uint64_t tw3_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 3 command FIFO SRAM */
+	uint64_t tw3_cmd_fifo                 : 1;  /**< SQ[5:3] time wheel 3 command FIFO SRAM */
 	uint64_t reserved_12_13               : 2;
-	uint64_t tw2_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 2 command FIFO SRAM */
+	uint64_t tw2_cmd_fifo                 : 1;  /**< SQ[5:3] time wheel 2 command FIFO SRAM */
 	uint64_t reserved_9_10                : 2;
-	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 1 command FIFO SRAM */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State */
-	uint64_t sts_sram                     : 1;  /**< Static Shaping Configuration */
-	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 0 command FIFO SRAM */
+	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 1 command FIFO SRAM */
+	uint64_t std_sram                     : 1;  /**< Dynamic shaping state */
+	uint64_t sts_sram                     : 1;  /**< Static shaping configuration */
+	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 0 command FIFO SRAM */
 	uint64_t reserved_3_4                 : 2;
-	uint64_t nt_sram                      : 1;  /**< Next Pointer Table */
-	uint64_t pt_sram                      : 1;  /**< Previous Pointer Table */
-	uint64_t wt_sram                      : 1;  /**< Work Table */
+	uint64_t nt_sram                      : 1;  /**< Next pointer table */
+	uint64_t pt_sram                      : 1;  /**< Previous pointer table */
+	uint64_t wt_sram                      : 1;  /**< Work table */
 #else
 	uint64_t wt_sram                      : 1;
 	uint64_t pt_sram                      : 1;
@@ -11497,8 +11635,8 @@ union cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_sq3_dbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ3_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ3_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_SQ3_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ3_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq5.nt_sram
@@ -11640,8 +11778,8 @@ union cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_sq3_sbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ3_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ3_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_SQ3_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ3_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq5.nt_sram
@@ -11677,33 +11815,36 @@ typedef union cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq3_ecc_sbe_sts_cmb
 
 /**
  * cvmx_pko_pse_sq4_bist_status
+ *
+ * Each bit is the BIST result of an individual memory (per bit, 0 = pass and 1 = fail).
+ *
  */
 union cvmx_pko_pse_sq4_bist_status {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq4_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_29_63               : 35;
-	uint64_t sc_sram                      : 1;  /**< Scheduling Configuration */
+	uint64_t sc_sram                      : 1;  /**< Scheduling configuration */
 	uint64_t reserved_23_27               : 5;
-	uint64_t tp3_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp2_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
+	uint64_t tp3_sram                     : 1;  /**< SQ[5:3] topology parent configuration */
+	uint64_t tp2_sram                     : 1;  /**< SQ[5:3] topology parent configuration */
+	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] topology parent configuration */
+	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] topology parent configuration */
 	uint64_t reserved_18_18               : 1;
 	uint64_t rt_sram                      : 1;  /**< Result Table */
 	uint64_t reserved_15_16               : 2;
-	uint64_t tw3_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 3 command FIFO SRAM */
+	uint64_t tw3_cmd_fifo                 : 1;  /**< SQ[5:3] time wheel 3 command FIFO SRAM */
 	uint64_t reserved_12_13               : 2;
-	uint64_t tw2_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 2 command FIFO SRAM */
+	uint64_t tw2_cmd_fifo                 : 1;  /**< SQ[5:3] time wheel 2 command FIFO SRAM. */
 	uint64_t reserved_9_10                : 2;
-	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 1 command FIFO SRAM */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State */
-	uint64_t sts_sram                     : 1;  /**< Static Shaping Configuration */
-	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 0 command FIFO SRAM */
+	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 1 command FIFO SRAM. */
+	uint64_t std_sram                     : 1;  /**< Dynamic shaping state. */
+	uint64_t sts_sram                     : 1;  /**< Static shaping configuration. */
+	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 0 command FIFO SRAM. */
 	uint64_t reserved_3_4                 : 2;
-	uint64_t nt_sram                      : 1;  /**< Next Pointer Table */
-	uint64_t pt_sram                      : 1;  /**< Previous Pointer Table */
-	uint64_t wt_sram                      : 1;  /**< Work Table */
+	uint64_t nt_sram                      : 1;  /**< Next pointer table. */
+	uint64_t pt_sram                      : 1;  /**< Previous pointer table. */
+	uint64_t wt_sram                      : 1;  /**< Work table. */
 #else
 	uint64_t wt_sram                      : 1;
 	uint64_t pt_sram                      : 1;
@@ -11941,8 +12082,8 @@ union cvmx_pko_pse_sq4_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq4_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_sq4_dbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ4_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ4_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_SQ4_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ4_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq4.nt_sram
@@ -12084,8 +12225,8 @@ union cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_sq4_sbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ4_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ4_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_SQ4_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ4_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq4.nt_sram
@@ -12121,33 +12262,36 @@ typedef union cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq4_ecc_sbe_sts_cmb
 
 /**
  * cvmx_pko_pse_sq5_bist_status
+ *
+ * Each bit is the BIST result of an individual memory (per bit, 0 = pass and 1 = fail).
+ *
  */
 union cvmx_pko_pse_sq5_bist_status {
 	uint64_t u64;
 	struct cvmx_pko_pse_sq5_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_29_63               : 35;
-	uint64_t sc_sram                      : 1;  /**< Scheduling Configuration */
+	uint64_t sc_sram                      : 1;  /**< Scheduling configuration. */
 	uint64_t reserved_23_27               : 5;
-	uint64_t tp3_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp2_sram                     : 1;  /**< SQ[5:3] Topology Parent Configuration */
-	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
-	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] Topology Parent Configuration */
+	uint64_t tp3_sram                     : 1;  /**< SQ[5:3] topology parent configuration. */
+	uint64_t tp2_sram                     : 1;  /**< SQ[5:3] topology parent configuration. */
+	uint64_t tp1_sram                     : 1;  /**< SQ[5:1] topology parent configuration. */
+	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] topology parent configuration. */
 	uint64_t reserved_18_18               : 1;
-	uint64_t rt_sram                      : 1;  /**< Result Table */
+	uint64_t rt_sram                      : 1;  /**< Result table. */
 	uint64_t reserved_15_16               : 2;
-	uint64_t tw3_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 3 command FIFO SRAM */
+	uint64_t tw3_cmd_fifo                 : 1;  /**< SQ[5:3] time wheel 3 command FIFO SRAM. */
 	uint64_t reserved_12_13               : 2;
-	uint64_t tw2_cmd_fifo                 : 1;  /**< SQ[5:3] Timewheel 2 command FIFO SRAM */
+	uint64_t tw2_cmd_fifo                 : 1;  /**< SQ[5:3] time wheel 2 command FIFO SRAM. */
 	uint64_t reserved_9_10                : 2;
-	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 1 command FIFO SRAM */
-	uint64_t std_sram                     : 1;  /**< Dynamic Shaping State */
-	uint64_t sts_sram                     : 1;  /**< Static Shaping Configuration */
-	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] Timewheel 0 command FIFO SRAM */
+	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 1 command FIFO SRAM. */
+	uint64_t std_sram                     : 1;  /**< Dynamic shaping state. */
+	uint64_t sts_sram                     : 1;  /**< Static shaping configuration. */
+	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 0 command FIFO SRAM. */
 	uint64_t reserved_3_4                 : 2;
-	uint64_t nt_sram                      : 1;  /**< Next Pointer Table */
-	uint64_t pt_sram                      : 1;  /**< Previous Pointer Table */
-	uint64_t wt_sram                      : 1;  /**< Work Table */
+	uint64_t nt_sram                      : 1;  /**< Next pointer table. */
+	uint64_t pt_sram                      : 1;  /**< Previous pointer table. */
+	uint64_t wt_sram                      : 1;  /**< Work table. */
 #else
 	uint64_t wt_sram                      : 1;
 	uint64_t pt_sram                      : 1;
@@ -12385,8 +12529,8 @@ union cvmx_pko_pse_sq5_ecc_dbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq5_ecc_dbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_sq5_dbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ5_ECC_DBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ5_ECC_DBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_SQ5_ECC_DBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ5_DBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq3.nt_sram
@@ -12528,8 +12672,8 @@ union cvmx_pko_pse_sq5_ecc_sbe_sts_cmb0 {
 	struct cvmx_pko_pse_sq5_ecc_sbe_sts_cmb0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pse_sq5_sbe_cmb0             : 1;  /**< This bit is the logical OR of all bits in PKO_PSE_SQ5_ECC_SBE_STS.
-                                                         To clear this bit, must clear bits in PKO_PSE_SQ5_ECC_SBE_STS.
-                                                         When this bit is set the corresponding interrupt is set.
+                                                         To clear this bit, software must clear bits in PKO_PSE_SQ5_ECC_SBE_STS.
+                                                         When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ5_SBE_CMB0.
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq3.nt_sram
@@ -12571,12 +12715,12 @@ union cvmx_pko_ptfx_status {
 	struct cvmx_pko_ptfx_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
-	uint64_t total_in_flight_cnt          : 8;  /**< This field returns the total number of packets currently in-flight within PEB.  Useful
-                                                         both for reconfiguration (able to disable a FIFO when it is empty) and debugging */
-	uint64_t in_flight_cnt                : 7;  /**< This field returns the number of packets currently in-flight within PEB for this link.
-                                                         Useful both for reconfiguration (able to disable a FIFO when it is empty) and debugging */
-	uint64_t mac_num                      : 5;  /**< The MAC assigned to the given PKO TX FIFO. A value of 0x1F means unassigned. These
-                                                         registers values are derived automatically by the hardware from the
+	uint64_t total_in_flight_cnt          : 8;  /**< Total number of packets currently in-flight within PEB.  Useful
+                                                         both for reconfiguration (able to disable a FIFO when it is empty) and debugging. */
+	uint64_t in_flight_cnt                : 7;  /**< Number of packets currently in-flight within PEB for this link.
+                                                         Useful both for reconfiguration (able to disable a FIFO when it is empty) and debugging. */
+	uint64_t mac_num                      : 5;  /**< MAC assigned to the given PKO TX FIFO. A value of 0x1F means unassigned. These
+                                                         register values are derived automatically by the hardware from the
                                                          PKO_MAC(0..27)_CFG[FIFO_NUM] settings. */
 #else
 	uint64_t mac_num                      : 5;
@@ -12622,13 +12766,13 @@ union cvmx_pko_ptgfx_cfg {
 	struct cvmx_pko_ptgfx_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_7_63                : 57;
-	uint64_t reset                        : 1;  /**< This bit will reset the address pointers for the FIFOs in this group.  This should
-                                                         only be performed when a PTGF is empty and the SIZE field is to be being changed. */
-	uint64_t rate                         : 3;  /**< Each PTGF can support up to 100Gbs. The total aggregate rate across all FIFOs
-                                                         (including the NULL) should NEVER exceed 250Gbs.
-                                                         This field represents the rate for each active FIFO in PEB, thus the calculation
-                                                         for throughput is a function of the SIZE field below and if the FIFO is assigned
-                                                         to a MAC in PKO_MACx_CFG.
+	uint64_t reset                        : 1;  /**< This bit resets the address pointers for the FIFOs in this group. This should only be
+                                                         performed when a PTGF is empty and the SIZE field is to be being changed. */
+	uint64_t rate                         : 3;  /**< Each PTGF can support up to 100Gbs. The total aggregate rate across all FIFOs (including
+                                                         the NULL) should never exceed 250Gbs.
+                                                         This field represents the rate for each active FIFO in PEB; thus the calculation for
+                                                         throughput is a function of the SIZE field and whether or not the FIFO is assigned to a
+                                                         MAC in PKO_MACx_CFG.
                                                          RATE: Throughput
                                                          ----------------
                                                          - 000:    6.25Gbs
@@ -12637,9 +12781,9 @@ union cvmx_pko_ptgfx_cfg {
                                                          - 011:   50   Gbs
                                                          - 100:  100   Gbs
                                                          Note: 101-111 are illegal RATE values and should not be used. */
-	uint64_t size                         : 3;  /**< "The PKO supports up to 29 independent TX FIFOs where 0-27 are physical and 28 is
-                                                         virtual. The FIFOs are grouped into 8 sets of four contiguously numbered queues
-                                                         where each FIFO has a base storage amount of 2.5K bytes of buffering.
+	uint64_t size                         : 3;  /**< "PKO supports up to 29 independent TX FIFOs where 0-27 are physical and 28 is virtual. The
+                                                         FIFOs are grouped into 8 sets of four contiguously numbered queues where each FIFO has a
+                                                         base storage amount of 2.5K bytes of buffering.
                                                          PKO_PTGF(0)_CFG -> FIFO#  0-3
                                                          PKO_PTGF(1)_CFG -> FIFO#  4-7
                                                          PKO_PTGF(2)_CFG -> FIFO#  8-11
@@ -12660,19 +12804,17 @@ union cvmx_pko_ptgfx_cfg {
                                                          011 :     5.0k    0.0k    5.0k    0.0k
                                                          100 :    10.0k    0.0k    0.0k    0.0k
                                                          Note: 101-111 are illegal SIZE values and should not be used.
-                                                         Note that when a FIFO is set to a size of 0K bytes that FIFO_NUM is no longer legal and
-                                                         cannot be assigned to an active MAC. For example, for the set of FIFOs 8-11, if the
-                                                         PKO_PTGF(2)_CFG.SIZE = 3'b100 then FIFO_NUMs 9, 10 and 11 are no longer valid. Only
-                                                         FIFO_NUM = 8 is available from this set for assignment to a MAC because all of the
-                                                         10 Kbytes of buffering was configured to FIFO#8.
+                                                         Note that when a FIFO is set to a size of 0K bytes, FIFO_NUM is no longer legal and cannot
+                                                         be assigned to an active MAC. For example, for the set of FIFOs 8-11, if the
+                                                         PKO_PTGF(2)_CFG[SIZE] = 3'b100, then FIFO_NUMs 9, 10 and 11 are no longer valid. Only
+                                                         FIFO_NUM = 8 is available from this set for assignment to a MAC because all of the 10
+                                                         Kbytes of buffering was configured to FIFO#8.
                                                          FIFO_NUM = 28 is a virtual FIFO and is used exclusively to indicate the NULL FIFO. Packets
-                                                         targeting the NULL FIFO are dropped by the PKO and their buffers returned to the FPA. The
-                                                         SIZE field for PKO_PTGF(7) should always be set to zero"
-                                                         Modifications to this field require two writes.  The first write must assert
-                                                         PKO_PTGFx_CFG[RESET]
-                                                         to reset the address pointers for the FIFOS in this group.  The second write clears the
-                                                         RESET
-                                                         bit as well as configures the new SIZE values." */
+                                                         targeting the NULL FIFO are dropped by PKO and their buffers returned to the FPA. The SIZE
+                                                         field for PKO_PTGF(7) should always be set to zero.
+                                                         Modifications to this field require two writes. The first write must assert
+                                                         PKO_PTGFx_CFG[RESET] to reset the address pointers for the FIFOS in this group. The second
+                                                         write clears the RESET bit as well as configures the new SIZE values." */
 #else
 	uint64_t size                         : 3;
 	uint64_t rate                         : 3;
@@ -14331,8 +14473,7 @@ union cvmx_pko_status {
 	uint64_t csi_rdy                      : 1;  /**< PKO CSI block ready for configuration. */
 	uint64_t reserved_5_15                : 11;
 	uint64_t ncb_bist_status              : 1;  /**< PKO NCB block BIST status. 0 = BIST passed; 1 = BIST failed. */
-	uint64_t c2qlut_bist_status           : 1;  /**< PKO C2QLUT block BIST status. 0 = BIST passed;
-                                                         1 = BIST failed. */
+	uint64_t c2qlut_bist_status           : 1;  /**< PKO C2QLUT block BIST status. 0 = BIST passed; 1 = BIST failed. */
 	uint64_t pdm_bist_status              : 1;  /**< PKO PDM block BIST status. 0 = BIST passed; 1 = BIST failed. */
 	uint64_t peb_bist_status              : 1;  /**< PKO PEB block BIST status. 0 = BIST passed; 1 = BIST failed. */
 	uint64_t pse_bist_status              : 1;  /**< PKO PSE block BIST status. 0 = BIST passed; 1 = BIST failed. */

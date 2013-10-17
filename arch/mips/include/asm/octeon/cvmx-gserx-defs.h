@@ -2523,70 +2523,70 @@ union cvmx_gserx_lanex_px_mode_0 {
                                                          0x2 = ~15dB of peaking at 5.5 GHz
                                                          0x3 = ~20dB of peaking at 6 GHz (Maximum bandwidth).
                                                          Recommended settings:
-                                                         25G_REFCLK100: 0x0
-                                                         5G_REFCLK100: 0x0
-                                                         8G_REFCLK100: 0x3
-                                                         125G_REFCLK15625_KX: 0x0
-                                                         3125G_REFCLK15625_XAUI: 0x0
-                                                         103215G_REFCLK15625_KR: 0x3
-                                                         125G_REFCLK15625_SGMII: 0x0
-                                                         5G_REFCLK15625_QSGMII: 0x0
-                                                         625G_REFCLK15625_RXAUI: 0x0
-                                                         25G_REFCLK125: 0x0
-                                                         5G_REFCLK125: 0x0
-                                                         8G_REFCLK125: 0x3 */
+                                                         R_25G_REFCLK100: 0x0
+                                                         R_5G_REFCLK100: 0x0
+                                                         R_8G_REFCLK100: 0x3
+                                                         R_125G_REFCLK15625_KX: 0x0
+                                                         R_3125G_REFCLK15625_XAUI: 0x0
+                                                         R_103215G_REFCLK15625_KR: 0x3
+                                                         R_125G_REFCLK15625_SGMII: 0x0
+                                                         R_5G_REFCLK15625_QSGMII: 0x0
+                                                         R_625G_REFCLK15625_RXAUI: 0x0
+                                                         R_25G_REFCLK125: 0x0
+                                                         R_5G_REFCLK125: 0x0
+                                                         R_8G_REFCLK125: 0x3 */
 	uint64_t pcie                         : 1;  /**< Selects between RX terminations.
                                                          - 0: Differential termination
                                                          - 1: Termination between pad and SDS_VDDS.
                                                           Recommended settings:
-                                                          25G_REFCLK100: 0x1
-                                                          5G_REFCLK100: 0x1
-                                                          8G_REFCLK100: 0x0
-                                                          125G_REFCLK15625_KX: 0x0
-                                                          3125G_REFCLK15625_XAUI: 0x0
-                                                          103215G_REFCLK15625_KR: 0x0
-                                                          125G_REFCLK15625_SGMII: 0x0
-                                                          5G_REFCLK15625_QSGMII: 0x0
-                                                          625G_REFCLK15625_RXAUI: 0x0
-                                                          25G_REFCLK125: 0x1
-                                                          5G_REFCLK125: 0x1
-                                                          8G_REFCLK125: 0x0 */
+                                                          R_25G_REFCLK100: 0x1
+                                                          R_5G_REFCLK100: 0x1
+                                                          R_8G_REFCLK100: 0x0
+                                                          R_125G_REFCLK15625_KX: 0x0
+                                                          R_3125G_REFCLK15625_XAUI: 0x0
+                                                          R_103215G_REFCLK15625_KR: 0x0
+                                                          R_125G_REFCLK15625_SGMII: 0x0
+                                                          R_5G_REFCLK15625_QSGMII: 0x0
+                                                          R_625G_REFCLK15625_RXAUI: 0x0
+                                                          R_25G_REFCLK125: 0x1
+                                                          R_5G_REFCLK125: 0x1
+                                                          R_8G_REFCLK125: 0x0 */
 	uint64_t tx_ldiv                      : 2;  /**< Configures clock divider used to determine the receive rate. Encoding is:
                                                          0x0 = full data rate.
                                                          0x1 = 1/2 data rate.
                                                          0x2 = 1/4 data rate.
                                                          0x3 = 1/8 data rate.
                                                          Recommended settings:
-                                                         25G_REFCLK100: 0x1
-                                                         5G_REFCLK100: 0x0
-                                                         8G_REFCLK100: 0x0
-                                                         125G_REFCLK15625_KX: 0x2
-                                                         3125G_REFCLK15625_XAUI: 0x1
-                                                         103215G_REFCLK15625_KR: 0x0
-                                                         125G_REFCLK15625_SGMII: 0x2
-                                                         5G_REFCLK15625_QSGMII: 0x0
-                                                         625G_REFCLK15625_RXAUI: 0x0
-                                                         25G_REFCLK125: 0x1
-                                                         5G_REFCLK125: 0x0
-                                                         8G_REFCLK125: 0x0 */
+                                                         R_25G_REFCLK100: 0x1
+                                                         R_5G_REFCLK100: 0x0
+                                                         R_8G_REFCLK100: 0x0
+                                                         R_125G_REFCLK15625_KX: 0x2
+                                                         R_3125G_REFCLK15625_XAUI: 0x1
+                                                         R_103215G_REFCLK15625_KR: 0x0
+                                                         R_125G_REFCLK15625_SGMII: 0x2
+                                                         R_5G_REFCLK15625_QSGMII: 0x0
+                                                         R_625G_REFCLK15625_RXAUI: 0x0
+                                                         R_25G_REFCLK125: 0x1
+                                                         R_5G_REFCLK125: 0x0
+                                                         R_8G_REFCLK125: 0x0 */
 	uint64_t rx_ldiv                      : 2;  /**< Configures clock divider used to determine the receive rate. Encoding is:
                                                          0x0 = full data rate
                                                          0x1 = 1/2 data rate
                                                          0x2 = 1/4 data rate
                                                          0x3 = 1/8 data rate
                                                          Recommended settings:
-                                                         25G_REFCLK100: 0x1
-                                                         5G_REFCLK100: 0x0
-                                                         8G_REFCLK100: 0x0
-                                                         125G_REFCLK15625_KX: 0x2
-                                                         3125G_REFCLK15625_XAUI: 0x1
-                                                         103215G_REFCLK15625_KR: 0x0
-                                                         125G_REFCLK15625_SGMII: 0x2
-                                                         5G_REFCLK15625_QSGMII: 0x0
-                                                         625G_REFCLK15625_RXAUI: 0x0
-                                                         25G_REFCLK125: 0x1
-                                                         5G_REFCLK125: 0x0
-                                                         8G_REFCLK125: 0x0 */
+                                                         R_25G_REFCLK100: 0x1
+                                                         R_5G_REFCLK100: 0x0
+                                                         R_8G_REFCLK100: 0x0
+                                                         R_125G_REFCLK15625_KX: 0x2
+                                                         R_3125G_REFCLK15625_XAUI: 0x1
+                                                         R_103215G_REFCLK15625_KR: 0x0
+                                                         R_125G_REFCLK15625_SGMII: 0x2
+                                                         R_5G_REFCLK15625_QSGMII: 0x0
+                                                         R_625G_REFCLK15625_RXAUI: 0x0
+                                                         R_25G_REFCLK125: 0x1
+                                                         R_5G_REFCLK125: 0x0
+                                                         R_8G_REFCLK125: 0x0 */
 	uint64_t srate                        : 3;  /**< Sample rate, used to generate strobe to effectively divide the clock down to a slower
                                                          rate. Encoding is:
                                                          0x0 = Full rate
@@ -2641,31 +2641,31 @@ union cvmx_gserx_lanex_px_mode_1 {
                                                          0 = Adaptive DFE (5 Gbps and higher)
                                                          1 = Manual DFE, fixed tap (3.125 Gbps and lower). */
 	uint64_t cdr_fgain                    : 4;  /**< CDR frequency gain. Values at reset:
-                                                         25G_REFCLK100: 0xA
-                                                         5G_REFCLK100: 0xA
-                                                         8G_REFCLK100: 0xB
-                                                         125G_REFCLK15625_KX: 0xC
-                                                         3125G_REFCLK15625_XAUI: 0xC
-                                                         103215G_REFCLK15625_KR: 0xA
-                                                         125G_REFCLK15625_SGMII: 0xC
-                                                         5G_REFCLK15625_QSGMII: 0xC
-                                                         625G_REFCLK15625_RXAUI: 0xA
-                                                         25G_REFCLK125: 0xA
-                                                         5G_REFCLK125: 0xA
-                                                         8G_REFCLK125: 0xB */
+                                                         R_25G_REFCLK100: 0xA
+                                                         R_5G_REFCLK100: 0xA
+                                                         R_8G_REFCLK100: 0xB
+                                                         R_125G_REFCLK15625_KX: 0xC
+                                                         R_3125G_REFCLK15625_XAUI: 0xC
+                                                         R_103215G_REFCLK15625_KR: 0xA
+                                                         R_125G_REFCLK15625_SGMII: 0xC
+                                                         R_5G_REFCLK15625_QSGMII: 0xC
+                                                         R_625G_REFCLK15625_RXAUI: 0xA
+                                                         R_25G_REFCLK125: 0xA
+                                                         R_5G_REFCLK125: 0xA
+                                                         R_8G_REFCLK125: 0xB */
 	uint64_t ph_acc_adj                   : 10; /**< Phase accumulator adjust. Values at reset:
-                                                         25G_REFCLK100: 0x14
-                                                         5G_REFCLK100: 0x14
-                                                         8G_REFCLK100: 0x23
-                                                         125G_REFCLK15625_KX: 0x1E
-                                                         3125G_REFCLK15625_XAUI: 0x1E
-                                                         103215G_REFCLK15625_KR: 0xF
-                                                         125G_REFCLK15625_SGMII: 0x1E
-                                                         5G_REFCLK15625_QSGMII: 0x1E
-                                                         625G_REFCLK15625_RXAUI: 0x14
-                                                         25G_REFCLK125: 0x14
-                                                         5G_REFCLK125: 0x14
-                                                         8G_REFCLK125: 0x23 */
+                                                         R_25G_REFCLK100: 0x14
+                                                         R_5G_REFCLK100: 0x14
+                                                         R_8G_REFCLK100: 0x23
+                                                         R_125G_REFCLK15625_KX: 0x1E
+                                                         R_3125G_REFCLK15625_XAUI: 0x1E
+                                                         R_103215G_REFCLK15625_KR: 0xF
+                                                         R_125G_REFCLK15625_SGMII: 0x1E
+                                                         R_5G_REFCLK15625_QSGMII: 0x1E
+                                                         R_625G_REFCLK15625_RXAUI: 0x14
+                                                         R_25G_REFCLK125: 0x14
+                                                         R_5G_REFCLK125: 0x14
+                                                         R_8G_REFCLK125: 0x23 */
 #else
 	uint64_t ph_acc_adj                   : 10;
 	uint64_t cdr_fgain                    : 4;
@@ -3135,21 +3135,21 @@ union cvmx_gserx_lane_mode {
 	uint64_t lmode                        : 4;  /**< For links that are not in PCIE mode (including all OCI links), used to index into the PHY
                                                          table to select electrical specs and link rate. Note that the PHY table can be modified
                                                          such that any supported link rate can be derived regardless of the configured LMODE.
-                                                         0x0: 25G_REFCLK100
-                                                         0x1: 5G_REFCLK100
-                                                         0x2: 8G_REFCLK100
-                                                         0x3: 125G_REFCLK15625_KX
-                                                         0x4: 3125G_REFCLK15625_XAUI
-                                                         0x5: 103215G_REFCLK15625_KR
-                                                         0x6: 125G_REFCLK15625_SGMII
-                                                         0x7: 5G_REFCLK15625_QSGMII
-                                                         0x8: 625G_REFCLK15625_RXAUI
-                                                         0x9: 25G_REFCLK125
-                                                         0xA: 5G_REFCLK125
-                                                         0xB: 8G_REFCLK125
+                                                         0x0: R_25G_REFCLK100
+                                                         0x1: R_5G_REFCLK100
+                                                         0x2: R_8G_REFCLK100
+                                                         0x3: R_125G_REFCLK15625_KX
+                                                         0x4: R_3125G_REFCLK15625_XAUI
+                                                         0x5: R_103215G_REFCLK15625_KR
+                                                         0x6: R_125G_REFCLK15625_SGMII
+                                                         0x7: R_5G_REFCLK15625_QSGMII
+                                                         0x8: R_625G_REFCLK15625_RXAUI
+                                                         0x9: R_25G_REFCLK125
+                                                         0xA: R_5G_REFCLK125
+                                                         0xB: R_8G_REFCLK125
                                                          0xC - 0xF: reserved
                                                          This register is not used for PCIE configurations. For non-OCI links, this registers
-                                                         defaults to 625G_REFCLK15625_RXAUI. For OCI links, the value is mapped at reset from the
+                                                         defaults to R_625G_REFCLK15625_RXAUI. For OCI links, the value is mapped at reset from the
                                                          GSER_SPD and the appropriate table updates are performed so the rate is obtained for the
                                                          particular reference clock.
                                                          It is recommended that the PHY be in reset when reconfiguring the LMODE
@@ -3359,18 +3359,18 @@ union cvmx_gserx_pcie_pipe_port_sel {
 	struct cvmx_gserx_pcie_pipe_port_sel_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
-	uint64_t cfg_pem1_dlm2                : 1;  /**< The PIPE/PHY configuration for PEM1 when in 4-Pipe Mode.
-                                                          Used as status for determining which DLM PEM1 is tied to.
+	uint64_t cfg_pem1_dlm2                : 1;  /**< The PIPE (Pipe1 or Pipe2) and PHY (DLM1 or DLM2) configuration for PEM1
+                                                          when in 4-Pipe Mode.
                                                           This bit should not be set in Single Pipe or 2-Pipe Mode.
-                                                         - 0: PEM1 is tied to DLM1.  This is 3x1 PCIe mode when all 4 PIPES are enabled.
-                                                         - 1: PEM1 is tied to DLM2.  This is 2x1 PCIe mode with SATA */
+                                                         - 0: PEM1 is tied to Pipe1/DLM1.  This is 3x1 PCIe mode when all 4 PIPES are enabled.
+                                                         - 1: PEM1 is tied to Pipe2/DLM2.  This is 2x1 PCIe mode with SATA */
 	uint64_t pipe_port_sel                : 2;  /**< PIPE enable request.  Change only when phy_reset is asserted.
                                                          - 00: Disables all PIPEs
-                                                         - 01: Single Pipe Mode. Enables PIPE0 only.
+                                                         - 01: Single Pipe Mode. Enables PIPE0 (PEM0) only.
                                                              This is 1x4 PCIe mode.
-                                                         - 10: 2-Pipe Mode.  Enables PIPEs 0 and 1.
+                                                         - 10: 2-Pipe Mode.  Enables PIPEs 0 (PEM0) and 1 (PEM1).
                                                              This is 2x2 PCIe mode or 1x2 PCIe mode with SATA.
-                                                         - 11: 4-Pipe Mode. Enables PIPEs 0, 1, 2, and 3.
+                                                         - 11: 4-Pipe Mode. Enables PIPEs 0 (PEM0), 1, 2 (PEM1), and 3 (PEM2).
                                                              This is 2x1 PCIe mode with SATA or 3x1 PCIe mode. */
 #else
 	uint64_t pipe_port_sel                : 2;
@@ -3393,10 +3393,15 @@ union cvmx_gserx_pcie_pipe_rst {
 	struct cvmx_gserx_pcie_pipe_rst_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t pipe3_rst                    : 1;  /**< Pipe 3 Reset.  Setting this bit will put Pipe 3 into reset. */
-	uint64_t pipe2_rst                    : 1;  /**< Pipe 2 Reset.  Setting this bit will put Pipe 2 into reset. */
-	uint64_t pipe1_rst                    : 1;  /**< Pipe 1 Reset.  Setting this bit will put Pipe 1 into reset. */
-	uint64_t pipe0_rst                    : 1;  /**< Pipe 0 Reset.  Setting this bit will put Pipe 0 into reset. */
+	uint64_t pipe3_rst                    : 1;  /**< Pipe 3 Reset.  Setting this bit will put Pipe 3 into reset.
+                                                         PEM2 is always tied to Pipe 3. */
+	uint64_t pipe2_rst                    : 1;  /**< Pipe 2 Reset.  Setting this bit will put Pipe 2 into reset.
+                                                         PEM1 is tied to Pipe 2 in 3x1 PCIe mode (GSER_PCIE_PIPE_PORT_SEL.PIPE_PORT_SEL
+                                                         is set to 4-pipe mode, and GSER_PCIE_PIPE_PORT_SEL.CFG_PEM1_DLM2 is also set). */
+	uint64_t pipe1_rst                    : 1;  /**< Pipe 1 Reset.  Setting this bit will put Pipe 1 into reset.
+                                                         PEM1 is tied to Pipe 1 in 2x2 PCIe or 2x1 PCIe with SATA modes. */
+	uint64_t pipe0_rst                    : 1;  /**< Pipe 0 Reset.  Setting this bit will put Pipe 0 into reset.
+                                                         PEM0 is always tied to Pipe 0. */
 #else
 	uint64_t pipe0_rst                    : 1;
 	uint64_t pipe1_rst                    : 1;
@@ -3422,20 +3427,23 @@ union cvmx_gserx_pcie_pipe_rst_sts {
 	uint64_t reserved_4_63                : 60;
 	uint64_t pipe3_rst                    : 1;  /**< Reflects the current state of the pipe3_rst_n which includes
                                                          the rst__pem2_pcs_rst_n term from the reset controller.  Note that
-                                                         when PIPE3_RST is asserted, no Pipe clocks are generated to PEM3 and
-                                                         any RSL reads to the application side registers will time out. */
+                                                         when PIPE3_RST is asserted (active low), no Pipe clocks are generated
+                                                         to PEM3 and any RSL reads to the application side registers will time out. */
 	uint64_t pipe2_rst                    : 1;  /**< Reflects the current state of the pipe2_rst_n which includes
                                                          the rst__pem2_pcs_rst_n term from the reset controller.  Note that
-                                                         when PIPE2_RST is asserted, no Pipe clocks are generated to PEM1 and
-                                                         any RSL reads to the application side registers will time out. */
+                                                         when PIPE2_RST is asserted (active low) and PEM1 is being used in
+                                                         3x1 PCIe mode (4-Pipe Mode with CFG_PEM1_DLM2 set), no Pipe clocks
+                                                         are generated to PEM1 and any RSL reads to the application side
+                                                         registers will time out. */
 	uint64_t pipe1_rst                    : 1;  /**< Reflects the current state of the pipe1_rst_n which includes
                                                          the rst__pem1_pcs_rst_n term from the reset controller.  Note that
-                                                         when PIPE1_RST is asserted, no Pipe clocks are generated to PEM1 and
-                                                         any RSL reads to the application side registers will time out. */
+                                                         when PIPE1_RST is asserted (active low) and PEM1 is being used in
+                                                         2x2 PCIe or 2x1 PCIe with SATA, no Pipe clocks are generated to PEM1
+                                                         and any RSL reads to the application side registers will time out. */
 	uint64_t pipe0_rst                    : 1;  /**< Reflects the current state of the pipe0_rst_n which includes
                                                          the rst__pem0_pcs_rst_n term from the reset controller.  Note that
-                                                         when PIPE0_RST is asserted, no Pipe clocks are generated to PEM0 and
-                                                         any RSL reads to the application side registers will time out. */
+                                                         when PIPE0_RST is asserted (active low), no Pipe clocks are generated
+                                                         to PEM0 and any RSL reads to the application side registers will time out. */
 #else
 	uint64_t pipe0_rst                    : 1;
 	uint64_t pipe1_rst                    : 1;
@@ -4005,8 +4013,7 @@ union cvmx_gserx_pll_px_mode_0 {
                                                          1.25G: 0x28
                                                          2.5G: 0x5
                                                          3.125G: 0x24
-                                                         5.0G: 0xA (100 MHz REFCLK)
-                                                         5.0G: 0x5 (156.25 MHz REFCLK)
+                                                         5.0G: 0xA
                                                          6.25G: 0xA
                                                          8.0G: 0xA
                                                          10.3215G: 0x24 */
@@ -4697,21 +4704,21 @@ union cvmx_gserx_spd {
                                                          settings of the specific lane mode (LMODE) table entry to derive the correct link rate.
                                                          For non-OCI links, this field is not used.
                                                          config  refclk      link rate       LMODE
-                                                         0x0:    100Mhz      1.25Gbps        125G_REFCLK15625_KX
-                                                         0x1:    100Mhz      2.5Gbps         25G_REFCLK100
-                                                         0x2:    100Mhz      5Gbps           5G_REFCLK100
-                                                         0x3:    100Mhz      8Gbps           8G_REFCLK100
-                                                         0x4:    125Mhz      1.25Gbps        125G_REFCLK15625_KX
-                                                         0x5:    125Mhz      2.5Gbps         25G_REFCLK125
-                                                         0x6:    125Mhz      3.125Gbps       3125G_REFCLK15625_XAUI
-                                                         0x7:    125Mhz      5Gbps           5G_REFCLK125
-                                                         0x8:    125Mhz      6.25Gbps        625G_REFCLK15625_RXAUI
-                                                         0x9:    125Mhz      8Gbps           8G_REFCLK125
-                                                         0xA:    156.25Mhz   2.5Gbps         25G_REFCLK100
-                                                         0xB:    156.25Mhz   3.125Gbps       3125G_REFCLK15625_XAUI
-                                                         0xC:    156.25Mhz   5Gbps           5G_REFCLK125
-                                                         0xD:    156.25Mhz   6.25Gbps        625G_REFCLK15625_RXAUI
-                                                         0xE:    126.25Mhz   10.3125Gbps     103215G_REFCLK15625_KR
+                                                         0x0:    100Mhz      1.25Gbps        R_125G_REFCLK15625_KX
+                                                         0x1:    100Mhz      2.5Gbps         R_25G_REFCLK100
+                                                         0x2:    100Mhz      5Gbps           R_5G_REFCLK100
+                                                         0x3:    100Mhz      8Gbps           R_8G_REFCLK100
+                                                         0x4:    125Mhz      1.25Gbps        R_125G_REFCLK15625_KX
+                                                         0x5:    125Mhz      2.5Gbps         R_25G_REFCLK125
+                                                         0x6:    125Mhz      3.125Gbps       R_3125G_REFCLK15625_XAUI
+                                                         0x7:    125Mhz      5Gbps           R_5G_REFCLK125
+                                                         0x8:    125Mhz      6.25Gbps        R_625G_REFCLK15625_RXAUI
+                                                         0x9:    125Mhz      8Gbps           R_8G_REFCLK125
+                                                         0xA:    156.25Mhz   2.5Gbps         R_25G_REFCLK100
+                                                         0xB:    156.25Mhz   3.125Gbps       R_3125G_REFCLK15625_XAUI
+                                                         0xC:    156.25Mhz   5Gbps           R_5G_REFCLK125
+                                                         0xD:    156.25Mhz   6.25Gbps        R_625G_REFCLK15625_RXAUI
+                                                         0xE:    126.25Mhz   10.3125Gbps     R_103215G_REFCLK15625_KR
                                                          0xF:    SW_MODE
                                                          Note that a value of 0xF is called SW_MODE. The OCI link does not come up configured.
                                                          Software can come up and configure the interface at a later time. */
