@@ -7233,7 +7233,7 @@ union cvmx_bgxx_spu_dbg_control {
                                                          40GBASE-R), this field specifies the expected alignment marker receive period per lane,
                                                          i.e. the expected number of received 66b non-marker blocks between consecutive markers on
                                                          the same lane. The default value corresponds to a period of 16363 blocks (exclusive) as
-                                                         specified in 802.3ba-2010. */
+                                                         specified in 802.3ba-2010. Must be greater than 64. */
 #else
 	uint64_t marker_rxp                   : 15;
 	uint64_t reserved_15_15               : 1;

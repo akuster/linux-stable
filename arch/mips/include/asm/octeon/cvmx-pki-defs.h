@@ -53,6 +53,39 @@
 #define __CVMX_PKI_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKI_ACTIVE0 CVMX_PKI_ACTIVE0_FUNC()
+static inline uint64_t CVMX_PKI_ACTIVE0_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKI_ACTIVE0 not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180044000220ull);
+}
+#else
+#define CVMX_PKI_ACTIVE0 (CVMX_ADD_IO_SEG(0x0001180044000220ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKI_ACTIVE1 CVMX_PKI_ACTIVE1_FUNC()
+static inline uint64_t CVMX_PKI_ACTIVE1_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKI_ACTIVE1 not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180044000230ull);
+}
+#else
+#define CVMX_PKI_ACTIVE1 (CVMX_ADD_IO_SEG(0x0001180044000230ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKI_ACTIVE2 CVMX_PKI_ACTIVE2_FUNC()
+static inline uint64_t CVMX_PKI_ACTIVE2_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKI_ACTIVE2 not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180044000240ull);
+}
+#else
+#define CVMX_PKI_ACTIVE2 (CVMX_ADD_IO_SEG(0x0001180044000240ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKI_AURAX_CFG(unsigned long offset)
 {
 	if (!(
@@ -480,6 +513,28 @@ static inline uint64_t CVMX_PKI_PCAM_RESULT_FUNC(void)
 }
 #else
 #define CVMX_PKI_PCAM_RESULT (CVMX_ADD_IO_SEG(0x0001180044000510ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKI_PFE_DIAG CVMX_PKI_PFE_DIAG_FUNC()
+static inline uint64_t CVMX_PKI_PFE_DIAG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKI_PFE_DIAG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180044000560ull);
+}
+#else
+#define CVMX_PKI_PFE_DIAG (CVMX_ADD_IO_SEG(0x0001180044000560ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKI_PIX_DIAG CVMX_PKI_PIX_DIAG_FUNC()
+static inline uint64_t CVMX_PKI_PIX_DIAG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKI_PIX_DIAG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180044000580ull);
+}
+#else
+#define CVMX_PKI_PIX_DIAG (CVMX_ADD_IO_SEG(0x0001180044000580ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKI_PKINDX_ICGSEL(unsigned long offset)
@@ -965,6 +1020,77 @@ static inline uint64_t CVMX_PKI_TAG_SECRET_FUNC(void)
 #else
 #define CVMX_PKI_TAG_SECRET (CVMX_ADD_IO_SEG(0x0001180044000430ull))
 #endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKI_X2P_REQ_OFL CVMX_PKI_X2P_REQ_OFL_FUNC()
+static inline uint64_t CVMX_PKI_X2P_REQ_OFL_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKI_X2P_REQ_OFL not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180044000038ull);
+}
+#else
+#define CVMX_PKI_X2P_REQ_OFL (CVMX_ADD_IO_SEG(0x0001180044000038ull))
+#endif
+
+/**
+ * cvmx_pki_active0
+ */
+union cvmx_pki_active0 {
+	uint64_t u64;
+	struct cvmx_pki_active0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_1_63                : 63;
+	uint64_t pfe_active                   : 1;  /**< PFE active. For internal use; software should use PKI_SFT_RST[ACTIVE]. */
+#else
+	uint64_t pfe_active                   : 1;
+	uint64_t reserved_1_63                : 63;
+#endif
+	} s;
+	struct cvmx_pki_active0_s             cn78xx;
+};
+typedef union cvmx_pki_active0 cvmx_pki_active0_t;
+
+/**
+ * cvmx_pki_active1
+ */
+union cvmx_pki_active1 {
+	uint64_t u64;
+	struct cvmx_pki_active1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_4_63                : 60;
+	uint64_t fpc_active                   : 1;  /**< PBE FPC and FPA bus active. For internal use; software should use PKI_SFT_RST[ACTIVE]. */
+	uint64_t iobp_active                  : 1;  /**< PBE PMW and IOBP bus active. For internal use; software should use PKI_SFT_RST[ACTIVE]. */
+	uint64_t sws_active                   : 1;  /**< PBE SWS active. For internal use; software should use PKI_SFT_RST[ACTIVE]. */
+	uint64_t pbtag_active                 : 1;  /**< PBE pbtags active. For internal use; software should use PKI_SFT_RST[ACTIVE]. */
+#else
+	uint64_t pbtag_active                 : 1;
+	uint64_t sws_active                   : 1;
+	uint64_t iobp_active                  : 1;
+	uint64_t fpc_active                   : 1;
+	uint64_t reserved_4_63                : 60;
+#endif
+	} s;
+	struct cvmx_pki_active1_s             cn78xx;
+};
+typedef union cvmx_pki_active1 cvmx_pki_active1_t;
+
+/**
+ * cvmx_pki_active2
+ */
+union cvmx_pki_active2 {
+	uint64_t u64;
+	struct cvmx_pki_active2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_5_63                : 59;
+	uint64_t pix_active                   : 5;  /**< PIX control and ICG active. For internal use; software should use PKI_SFT_RST[ACTIVE]. */
+#else
+	uint64_t pix_active                   : 5;
+	uint64_t reserved_5_63                : 59;
+#endif
+	} s;
+	struct cvmx_pki_active2_s             cn78xx;
+};
+typedef union cvmx_pki_active2 cvmx_pki_active2_t;
 
 /**
  * cvmx_pki_aura#_cfg
@@ -1074,9 +1200,16 @@ union cvmx_pki_bist_status2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
 	uint64_t bist                         : 25; /**< BIST results. Hardware sets a bit in BIST for memory that fails BIST. INTERNAL: This
-                                                         register collects status for PKI_PIX.
+                                                         register collects status for PKI_PIX (verif/vkits/pki/pki_mem_info_table.sv).
                                                          - 24: IMEM
-                                                         23..16: IPEC IPEs
+                                                         - 23: IPEC3 / IPEs 10 .. 19 (RegFile + DMEM)
+                                                         - 22: IPEC3 / IPEs  0 ..  9 (RegFile + DMEM)
+                                                         - 21: IPEC2 / IPEs 10 .. 19 (RegFile + DMEM)
+                                                         - 20: IPEC2 / IPEs  0 ..  9 (RegFile + DMEM)
+                                                         - 19: IPEC1 / IPEs 10 .. 19 (RegFile + DMEM)
+                                                         - 18: IPEC1 / IPEs  0 ..  9 (RegFile + DMEM)
+                                                         - 17: IPEC0 / IPEs 10 .. 19 (RegFile + DMEM)
+                                                         - 16: IPEC0 / IPEs  0 ..  9 (RegFile + DMEM)
                                                          15..12: IPEC SMEM
                                                          11..8: IPEC PCAM ECC
                                                          7..4: IPEC PCAM RES
@@ -1125,10 +1258,7 @@ union cvmx_pki_buf_ctl {
                                                          1 = Wait until buffers become available, only dropping packets if buffering ahead of PKI
                                                          fills. This may lead to head-of-line blocking of packets on other Auras. */
 	uint64_t fpa_cac_dis                  : 1;  /**< When set, disable caching any FPA buffers, and immediately return any cached buffers to the FPA. */
-	uint64_t reserved_7_8                 : 2;
-	uint64_t pki_full                     : 1;  /**< PKI full. When this bit is set to 1, the PKI drives the PKI_BUFF_FULL line to the IOB
-                                                         arbiter, telling it to not give grants to IOI devices sending packet data; when it is
-                                                         clear to 0, the PKI acts normally. */
+	uint64_t reserved_6_8                 : 3;
 	uint64_t pkt_off                      : 1;  /**< Packet buffer off. When this bit is set to 1, the PKI does not buffer the received packet
                                                          data; when it is clear to 0, the PKI works normally, buffering the received packet data. */
 	uint64_t reserved_3_4                 : 2;
@@ -1148,8 +1278,7 @@ union cvmx_pki_buf_ctl {
 	uint64_t pbp_en                       : 1;
 	uint64_t reserved_3_4                 : 2;
 	uint64_t pkt_off                      : 1;
-	uint64_t pki_full                     : 1;
-	uint64_t reserved_7_8                 : 2;
+	uint64_t reserved_6_8                 : 3;
 	uint64_t fpa_cac_dis                  : 1;
 	uint64_t fpa_wait                     : 1;
 	uint64_t reserved_11_63               : 53;
@@ -1267,7 +1396,10 @@ union cvmx_pki_clx_int {
 	uint64_t u64;
 	struct cvmx_pki_clx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_4_63                : 60;
+	uint64_t reserved_5_63                : 59;
+	uint64_t trapz                        : 1;  /**< PCAM sequencer trapz interrupt. Throws PKI_INTSN_E::PKI_CL(0..3)_INT_TRAPZ. INTERNAL:
+                                                         Caused by TRAP sequence state, may indicate PKI enabled without proper sequencer code
+                                                         loaded in PKI_IMEM(0..2047). */
 	uint64_t iptint                       : 1;  /**< PCAM sequencer debug interrupt. Throws PKI_INTSN_E::PKI_CL(0..3)_INT_IPTINT. INTERNAL:
                                                          Caused by TRAP or INTR sequence state. */
 	uint64_t sched_conf                   : 1;  /**< PCAM/SMEM internal port conflict. Internal error, should not occur. Throws
@@ -1280,7 +1412,8 @@ union cvmx_pki_clx_int {
 	uint64_t pcam_conf                    : 2;
 	uint64_t sched_conf                   : 1;
 	uint64_t iptint                       : 1;
-	uint64_t reserved_4_63                : 60;
+	uint64_t trapz                        : 1;
+	uint64_t reserved_5_63                : 59;
 #endif
 	} s;
 	struct cvmx_pki_clx_int_s             cn78xx;
@@ -1341,8 +1474,8 @@ union cvmx_pki_clx_pcamx_actionx {
 	uint64_t setty                        : 5;  /**< Set pointer type. If non-zero, indicates the layer type to be set as described under
                                                          PKI_PCAM_TERM_E. Values are enumerated in PKI_LTYPE_E. Must be zero for invalid entries. */
 	uint64_t advance                      : 8;  /**< Relative number of bytes to advance scan pointer when entry matches. See Parser Skip and
-                                                         Advancing. Must be zero for invalid entries and for TERMs that do not allow an advance as
-                                                         specified in the PKI_PCAM_TERM_E table. */
+                                                         Advancing. Must be even. Must be zero for invalid entries and for TERMs that do not allow
+                                                         an advance as specified in the PKI_PCAM_TERM_E table. */
 #else
 	uint64_t advance                      : 8;
 	uint64_t setty                        : 5;
@@ -1432,7 +1565,12 @@ union cvmx_pki_clx_pkindx_cfg {
 	uint64_t u64;
 	struct cvmx_pki_clx_pkindx_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_7_63                : 57;
+	uint64_t reserved_8_63                : 56;
+	uint64_t fcs_pres                     : 1;  /**< FCS present.
+                                                         0 = FCS not present. FCS may not be checked nor stripped.
+                                                         1 = FCS present; the last four bytes of the packet are part of the FCS and may not be
+                                                         considered part of a IP, TCP or other header for length error checks.
+                                                         PKI_CL(0..3)_STYLE(0..63)_CFG[FCS_CHK or FCS_STRIP] may optionally be set. */
 	uint64_t mpls_en                      : 1;  /**< Enable MPLS parsing.
                                                          0 = Any MPLS labels are ignored, but may be handled by custom Ethertype PCAM matchers.
                                                          1 = MPLS label stacks are parsed and skipped over. PKI_GBL_PEN[MPLS_PEN] must be set. */
@@ -1465,7 +1603,8 @@ union cvmx_pki_clx_pkindx_cfg {
 	uint64_t lg_custom                    : 1;
 	uint64_t inst_hdr                     : 1;
 	uint64_t mpls_en                      : 1;
-	uint64_t reserved_7_63                : 57;
+	uint64_t fcs_pres                     : 1;
+	uint64_t reserved_8_63                : 56;
 #endif
 	} s;
 	struct cvmx_pki_clx_pkindx_cfg_s      cn78xx;
@@ -1550,13 +1689,14 @@ union cvmx_pki_clx_pkindx_skip {
 	struct cvmx_pki_clx_pkindx_skip_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t fcs_skip                     : 8;  /**< Skip amount from front of packet to first byte covered by FCS start. If PTP_MODE, the
-                                                         8-byte timestamp is prepended to the packet, and FCS_SKIP must be at least 8. */
+	uint64_t fcs_skip                     : 8;  /**< Skip amount from front of packet to first byte covered by FCS start. The skip must be
+                                                         even. If PTP_MODE, the 8-byte timestamp is prepended to the packet, and FCS_SKIP must be
+                                                         at least 8. */
 	uint64_t inst_skip                    : 8;  /**< Skip amount from front of packet to begin parsing at. If
                                                          PKI_CL(0..3)_PKIND(0..63)_CFG[INST_HDR] is set, points at the first byte of the
-                                                         instruction header. If INST_HDR is clear, points at the first byte to begin parsing at. If
-                                                         PTP_MODE, the 8-byte timestamp is prepended to the packet, and INST_SKIP must be at least
-                                                         8. */
+                                                         instruction header. If INST_HDR is clear, points at the first byte to begin parsing at.
+                                                         The skip must be even. If PTP_MODE, the 8-byte timestamp is prepended to the packet, and
+                                                         INST_SKIP must be at least 8. */
 #else
 	uint64_t inst_skip                    : 8;
 	uint64_t fcs_skip                     : 8;
@@ -1733,17 +1873,18 @@ union cvmx_pki_clx_stylex_cfg {
 	uint64_t minerr_en                    : 1;  /**< Min frame error check enable. This check is typically not enabled for incoming packets on
                                                          the DPI ports. */
 	uint64_t qpg_dis_grptag               : 1;  /**< Disable computing group using WQE[TAG]. */
-	uint64_t fcs_strip                    : 1;  /**< Strip L2 FCS bytes from packet, decrease WQE[LEN] by 4 bytes. */
-	uint64_t fcs_chk                      : 1;  /**< FCS Checking enabled. */
+	uint64_t fcs_strip                    : 1;  /**< Strip L2 FCS bytes from packet, decrease WQE[LEN] by 4 bytes.
+                                                         PKI_CL(0..3)_PKIND(0..63)_CFG[FCS_PRES] must be set. */
+	uint64_t fcs_chk                      : 1;  /**< FCS checking enabled. PKI_CL(0..3)_PKIND(0..63)_CFG[FCS_PRES] must be set. */
 	uint64_t rawdrp                       : 1;  /**< Allow RAW packet drop.
                                                          0 = Never drop packets with WQE[RAW] set.
-                                                         1 = Allow the PKI to drop RAW packets based on QoS. */
+                                                         1 = Allow the PKI to drop RAW packets based on PKI_AURA(0..1023)_CFG[ENA_RED/ENA_DROP]. */
 	uint64_t drop                         : 1;  /**< Force packet dropping.
-                                                         0 = Drop packet based on QoS.
+                                                         0 = Drop packet based on PKI_AURA(0..1023)_CFG[ENA_RED/ENA_DROP].
                                                          1 = Always drop the packet. Overrides NODROP, RAWDRP. */
 	uint64_t nodrop                       : 1;  /**< Disable QoS packet drop.
-                                                         0 = Allowed to drop packet based on QoS.
-                                                         1 = Never drop the packet based on QoS. Overrides RAWDRP. */
+                                                         0 = Allowed to drop packet based on PKI_AURA(0..1023)_CFG[ENA_RED/ENA_DROP].
+                                                         1 = Never drop the packet. Overrides RAWDRP. */
 	uint64_t qpg_dis_padd                 : 1;  /**< Disable computing port adder by QPG algorithm. */
 	uint64_t qpg_dis_grp                  : 1;  /**< Disable computing group by QPG algorithm. */
 	uint64_t qpg_dis_aura                 : 1;  /**< Disable computing aura by QPG algorithm. */
@@ -2210,7 +2351,9 @@ union cvmx_pki_gen_int {
 	uint64_t u64;
 	struct cvmx_pki_gen_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_7_63                : 57;
+	uint64_t reserved_8_63                : 56;
+	uint64_t x2p_req_ofl                  : 1;  /**< Set when a device attempts to have more than the allocated requests outstanding to PKI.
+                                                         Throws PKI_INTSN_E::PKI_GEN_X2P_REQ_OFL. */
 	uint64_t drp_noavail                  : 1;  /**< Set when packet dropped due to no FPA pointers available for the aura the packet
                                                          requested. Throws PKI_INTSN_E::PKI_GEN_DRP_NOAVAIL. */
 	uint64_t dat                          : 1;  /**< Set when data arrives before a SOP for the same reasm-id for a packet. The first detected
@@ -2224,12 +2367,15 @@ union cvmx_pki_gen_int {
                                                          detected error associated with bits [DAT,EOP,SOP] of this register is only set here. A new
                                                          bit can be set when the previous reported bit is cleared. Also see PKI_PKT_ERR. Throws
                                                          PKI_INTSN_E::PKI_GEN_SOP. */
-	uint64_t bckprs                       : 1;  /**< PKI asserted backpressure. PKI can assert backpressure to the receive logic when the to-do
-                                                         list exceeds a high-water mark. When this occurs, PKI can raise an interrupt to software.
-                                                         Throws PKI_INTSN_E::PKI_GEN_BCKPRS. */
-	uint64_t crcerr                       : 1;  /**< PKI calculated bad CRC. PKI can compute CRC in two places. Each RGMII port computes its
-                                                         own CRC, but PKI can provide an additional check. If PKI computes a bad CRC, PKI raises an
-                                                         interrupt. Throws PKI_INTSN_E::PKI_GEN_CRCERR. */
+	uint64_t bckprs                       : 1;  /**< PKI asserted backpressure. Set when PKI was unable to accept the next valid data from
+                                                         BGX/DPI/ILK etc. over X2P due to all internal resources being used up, and PKI will
+                                                         backpressure X2P. Throws PKI_INTSN_E::PKI_GEN_BCKPRS. */
+	uint64_t crcerr                       : 1;  /**< PKI calculated bad CRC. If the packet arrived via a BGX interface, the packet had an FCS
+                                                         error. If the packet arrived via PKO internal loopback, the packet had one or more parity
+                                                         errors. Not applicable when the packet arrived via the DPI interface. For ILK interfaces,
+                                                         the following ILK errors can cause packets to terminate with this error code:
+                                                         SERDES_LOCK_LOSS, BDRY_SYNC_LOSS, SCRM_SYNC_LOSS, LANE_ALIGN_FAIL, DESKEW_FIFO_OVFL,
+                                                         CRC24_ERR, UKWN_CNTL_WORD, and BAD_64B67B. Throws PKI_INTSN_E::PKI_GEN_CRCERR. */
 	uint64_t pktdrp                       : 1;  /**< Packet dropped due to QOS. If the QOS algorithm decides to drop a packet, PKI asserts this
                                                          interrupt. Throws PKI_INTSN_E::PKI_GEN_PKTDRP. */
 #else
@@ -2240,7 +2386,8 @@ union cvmx_pki_gen_int {
 	uint64_t eop                          : 1;
 	uint64_t dat                          : 1;
 	uint64_t drp_noavail                  : 1;
-	uint64_t reserved_7_63                : 57;
+	uint64_t x2p_req_ofl                  : 1;
+	uint64_t reserved_8_63                : 56;
 #endif
 	} s;
 	struct cvmx_pki_gen_int_s             cn78xx;
@@ -2264,8 +2411,8 @@ union cvmx_pki_icgx_cfg {
                                                          packet processing, other values will decrease performance. */
 	uint64_t reserved_36_47               : 12;
 	uint64_t clusters                     : 4;  /**< Bit-mask of clusters in this cluster group. A given cluster can only be enabled in a
-                                                         single cluster group. A value of 0 disables the cluster group, all packets to this group
-                                                         will be dropped. IGC(0)'s entry resets to 0xF, all other entries to 0x0. */
+                                                         single cluster group. Behavior is undefined for an ICG which receives traffic with a
+                                                         [CLUSTERS] of 0x0. IGC(0)'s entry resets to 0xF, all other entries to 0x0. */
 	uint64_t reserved_27_31               : 5;
 	uint64_t release_rqd                  : 1;  /**< Release required. For diagnostic use only. INTERNAL:
                                                          0 = Release of r64 to r95 will occur immediately, no release microop is needed.
@@ -2344,8 +2491,8 @@ typedef union cvmx_pki_ltypex_map cvmx_pki_ltypex_map_t;
 /**
  * cvmx_pki_pcam_lookup
  *
- * For diagnostic use only, perform a PCAM lookup against the provided cluster and PCAM and load
- * results into PKI_PCAM_RESULT.
+ * For diagnostic use only, perform a PCAM lookup against the provided cluster and PCAM instance
+ * and loads results into PKI_PCAM_RESULT.
  */
 union cvmx_pki_pcam_lookup {
 	uint64_t u64;
@@ -2379,27 +2526,71 @@ union cvmx_pki_pcam_result {
 	uint64_t u64;
 	struct cvmx_pki_pcam_result_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_32_63               : 32;
+	uint64_t reserved_41_63               : 23;
+	uint64_t match                        : 1;  /**< Resulting match. */
+	uint64_t entry                        : 8;  /**< Resulting matching entry number, unpredictable unless [MATCH] set. */
 	uint64_t result                       : 32; /**< Resulting data from matching line's PKI_CL(0..3)_PCAM(0..1)_ACTION(0..191), or zero if no match. */
 #else
 	uint64_t result                       : 32;
-	uint64_t reserved_32_63               : 32;
+	uint64_t entry                        : 8;
+	uint64_t match                        : 1;
+	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
 	struct cvmx_pki_pcam_result_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t conflict                     : 1;  /**< Conflict. The lookup resulted in multiple entries matching PKI_PCAM_LOOKUP[DATA] and
-                                                         [TERM], or zero if no match. */
-	uint64_t reserved_32_62               : 31;
+	uint64_t conflict                     : 1;  /**< Conflict. The lookup resulted in multiple entries matching PKI_PCAM_LOOKUP[DATA], [TERM]
+                                                         and [STYLE], or zero if no match. */
+	uint64_t reserved_41_62               : 22;
+	uint64_t match                        : 1;  /**< Resulting match. */
+	uint64_t entry                        : 8;  /**< Resulting matching entry number, unpredictable unless [MATCH] set. */
 	uint64_t result                       : 32; /**< Resulting data from matching line's PKI_CL(0..3)_PCAM(0..1)_ACTION(0..191), or zero if no match. */
 #else
 	uint64_t result                       : 32;
-	uint64_t reserved_32_62               : 31;
+	uint64_t entry                        : 8;
+	uint64_t match                        : 1;
+	uint64_t reserved_41_62               : 22;
 	uint64_t conflict                     : 1;
 #endif
 	} cn78xx;
 };
 typedef union cvmx_pki_pcam_result cvmx_pki_pcam_result_t;
+
+/**
+ * cvmx_pki_pfe_diag
+ */
+union cvmx_pki_pfe_diag {
+	uint64_t u64;
+	struct cvmx_pki_pfe_diag_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_1_63                : 63;
+	uint64_t bad_rid                      : 1;  /**< Asserted when PFE sees and drops an X2P transaction with a RID > 95. */
+#else
+	uint64_t bad_rid                      : 1;
+	uint64_t reserved_1_63                : 63;
+#endif
+	} s;
+	struct cvmx_pki_pfe_diag_s            cn78xx;
+};
+typedef union cvmx_pki_pfe_diag cvmx_pki_pfe_diag_t;
+
+/**
+ * cvmx_pki_pix_diag
+ */
+union cvmx_pki_pix_diag {
+	uint64_t u64;
+	struct cvmx_pki_pix_diag_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_4_63                : 60;
+	uint64_t nosched                      : 4;  /**< Asserted when PFE requests an ICG with no enabled CLUSTERS. */
+#else
+	uint64_t nosched                      : 4;
+	uint64_t reserved_4_63                : 60;
+#endif
+	} s;
+	struct cvmx_pki_pix_diag_s            cn78xx;
+};
+typedef union cvmx_pki_pix_diag cvmx_pki_pix_diag_t;
 
 /**
  * cvmx_pki_pkind#_icgsel
@@ -2602,21 +2793,28 @@ typedef union cvmx_pki_req_wgt cvmx_pki_req_wgt_t;
 
 /**
  * cvmx_pki_sft_rst
- *
- * Allows soft reset.
- *
  */
 union cvmx_pki_sft_rst {
 	uint64_t u64;
 	struct cvmx_pki_sft_rst_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t busy                         : 1;  /**< When 1, PKI is busy completing reset. No access except the reading of this bit should
-                                                         occur to the PKI until this is clear. */
-	uint64_t reserved_1_62                : 62;
-	uint64_t rst                          : 1;  /**< Reset. When set to 1 by software, PKI gets a short reset pulse (three cycles in duration). */
+	uint64_t busy                         : 1;  /**< When set, PKI is busy completing reset. No access except the reading of this bit should
+                                                         occur to the PKI until this is clear. INTERNAL: The BUSY bit for this implementation is a
+                                                         placeholder and is not required to be implemented in HW. The soft reset pulse is short
+                                                         enough that we can guarantee that reset will complete below a subsequent RSL reference can
+                                                         be made. It is still useful for this bit to exist in case that property every changes and
+                                                         the reset requires a longer duration. For this implementation, SW will check the bit which
+                                                         will always report not BUSY allowing SW to proceed with its flow. */
+	uint64_t reserved_33_62               : 30;
+	uint64_t active                       : 1;  /**< When set, PKI is actively processing packet traffic. It is recommenced that software wait
+                                                         until ACTIVE is clear before setting RST. INTERNAL: ACTIVE is an OR of PKI_ACTIVE0..2. */
+	uint64_t reserved_1_31                : 31;
+	uint64_t rst                          : 1;  /**< Reset. When set to 1 by software, PKI will produce an internal reset pulse. */
 #else
 	uint64_t rst                          : 1;
-	uint64_t reserved_1_62                : 62;
+	uint64_t reserved_1_31                : 31;
+	uint64_t active                       : 1;
+	uint64_t reserved_33_62               : 30;
 	uint64_t busy                         : 1;
 #endif
 	} s;
@@ -2831,8 +3029,8 @@ union cvmx_pki_statx_stat12 {
 	struct cvmx_pki_statx_stat12_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t l2err                        : 48; /**< Number of packets with receive errors (WQE[ERRLEV]==RE or L2) not covered by more specific
-                                                         length or FCS statistic error registers. */
+	uint64_t l2err                        : 48; /**< Number of non-dropped packets with receive errors (WQE[ERRLEV]==RE or L2) not covered by
+                                                         more specific length or FCS statistic error registers. */
 #else
 	uint64_t l2err                        : 48;
 	uint64_t reserved_48_63               : 16;
@@ -2850,7 +3048,8 @@ union cvmx_pki_statx_stat13 {
 	struct cvmx_pki_statx_stat13_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t spec                         : 48; /**< Number of packets with special handling. For profiling and diagnostic use only.
+	uint64_t spec                         : 48; /**< Number of packets, dropped or non-dropped, with special handling. For profiling and
+                                                         diagnostic use only.
                                                          INTERNAL: Counts packets completing IPE processing with WQE[SH] set. */
 #else
 	uint64_t spec                         : 48;
@@ -3151,13 +3350,13 @@ union cvmx_pki_stylex_buf {
 	uint64_t first_skip                   : 6;  /**< The number of eight-byte words from the top of the first MBUF that the PKI stores the next
                                                          pointer. If [DIS_WQ_DAT]=1, any value is legal. If [DIS_WQ_DAT]=0, legal values must
                                                          satisfy:
-                                                         FIRST_SKIP + 18 <= PKI_STYLE(0..63)_BUF[MB_SIZE]
+                                                         FIRST_SKIP <= PKI_STYLE(0..63)_BUF[MB_SIZE] - 18.
                                                          FIRST_SKIP must be at least 0x4, but 0x5 is recommended minimum. 0x4 will drop WQE WORD4,
                                                          for use in backward compatible applications.
                                                          WQE_SKIP * (128/8) + 4 <= FIRST_SKIP, to insure the minimum of four work-queue entry words
                                                          will fit within FIRST_SKIP. */
 	uint64_t later_skip                   : 6;  /**< The number of eight-byte words from the top of any MBUF that is not the first MBUF that
-                                                         PKI writes the next-pointer to. Legal values are 0 to PKI_STYLE(0..63)_BUF[MB_SIZE] - 16. */
+                                                         PKI writes the next-pointer to. Legal values are 0 to PKI_STYLE(0..63)_BUF[MB_SIZE] - 18. */
 	uint64_t opc_mode                     : 2;  /**< Select the style of write to the L2C.
                                                          0 = all packet data and next-buffer pointers are written through to memory.
                                                          1 = all packet data and next-buffer pointers are written into the cache.
@@ -3364,5 +3563,24 @@ union cvmx_pki_tag_secret {
 	struct cvmx_pki_tag_secret_s          cn78xx;
 };
 typedef union cvmx_pki_tag_secret cvmx_pki_tag_secret_t;
+
+/**
+ * cvmx_pki_x2p_req_ofl
+ */
+union cvmx_pki_x2p_req_ofl {
+	uint64_t u64;
+	struct cvmx_pki_x2p_req_ofl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_4_63                : 60;
+	uint64_t x2p_did                      : 4;  /**< When PKI_GEN_INT[X2P_REQ_OFL] is set, this field latches the X2P device id number which
+                                                         attempted to overflow the allowed outstanding requests to PKI. */
+#else
+	uint64_t x2p_did                      : 4;
+	uint64_t reserved_4_63                : 60;
+#endif
+	} s;
+	struct cvmx_pki_x2p_req_ofl_s         cn78xx;
+};
+typedef union cvmx_pki_x2p_req_ofl cvmx_pki_x2p_req_ofl_t;
 
 #endif

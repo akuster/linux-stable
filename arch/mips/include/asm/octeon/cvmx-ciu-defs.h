@@ -916,6 +916,17 @@ static inline uint64_t CVMX_CIU_PP_POKEX(unsigned long offset)
 #endif
 #define CVMX_CIU_PP_RST (CVMX_ADD_IO_SEG(0x0001070000000700ull))
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_CIU_PP_RST_PENDING CVMX_CIU_PP_RST_PENDING_FUNC()
+static inline uint64_t CVMX_CIU_PP_RST_PENDING_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+		cvmx_warn("CVMX_CIU_PP_RST_PENDING not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001070000000740ull);
+}
+#else
+#define CVMX_CIU_PP_RST_PENDING (CVMX_ADD_IO_SEG(0x0001070000000740ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_CIU_QLM0 CVMX_CIU_QLM0_FUNC()
 static inline uint64_t CVMX_CIU_QLM0_FUNC(void)
 {
@@ -12550,7 +12561,12 @@ typedef union cvmx_ciu_pp_pokex cvmx_ciu_pp_pokex_t;
  *
  * Contains the reset control for each PP.  Value of '1' will hold a PP in reset, '0' will
  * release.
- * Resets to all 1's when PCI boot is enabled, 0xe otherwise.
+ * Resets to all 1's when REMOTE_BOOT is enabled, 0xe otherwise.  Writes to this register should
+ * occur
+ * only if the CIU_PP_RST_PENDING register is cleared.
+ * On pass 2, RST_PP_POWER register can be statically set and writes to this register will
+ * automatically enable/disable power
+ * saving when RST_PP_POWER[GATE] is enabled.
  */
 union cvmx_ciu_pp_rst {
 	uint64_t u64;
@@ -12662,6 +12678,30 @@ union cvmx_ciu_pp_rst {
 	struct cvmx_ciu_pp_rst_cn52xx         cnf71xx;
 };
 typedef union cvmx_ciu_pp_rst cvmx_ciu_pp_rst_t;
+
+/**
+ * cvmx_ciu_pp_rst_pending
+ *
+ * This register contains the reset status for each core. A 1 indicated the core is waiting to
+ * change it's reset state.
+ * (Pass 2) Normally a reset change occurs immediately but if RST_PP_POWER[GATE] bit is set and
+ * the core is released from reset
+ * a delay of 64K core clocks per PP will occur to satisify power management.
+ */
+union cvmx_ciu_pp_rst_pending {
+	uint64_t u64;
+	struct cvmx_ciu_pp_rst_pending_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t pend                         : 48; /**< Core waiting on reset to deassert complete.  This register always returns zero on 70xx Pass 1. */
+#else
+	uint64_t pend                         : 48;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_ciu_pp_rst_pending_s      cn70xx;
+};
+typedef union cvmx_ciu_pp_rst_pending cvmx_ciu_pp_rst_pending_t;
 
 /**
  * cvmx_ciu_qlm0

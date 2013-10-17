@@ -2295,7 +2295,12 @@ union cvmx_l2c_cbcx_dll {
 	uint64_t u64;
 	struct cvmx_l2c_cbcx_dll_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_16_63               : 48;
+	uint64_t reserved_36_63               : 28;
+	uint64_t pd_pos_rclk_refclk           : 1;  /**< Phase detector output. */
+	uint64_t pdl_rclk_refclk              : 1;  /**< Phase detector output. */
+	uint64_t pdr_rclk_refclk              : 1;  /**< Phase detector output. */
+	uint64_t clk_invert                   : 1;  /**< Clock invert. */
+	uint64_t dly_elem_enable              : 16; /**< Delay element enable. */
 	uint64_t dll_setting                  : 12; /**< DLL setting. */
 	uint64_t dll_state                    : 3;  /**< DLL state. */
 	uint64_t dll_lock                     : 1;  /**< DLL locked. */
@@ -2303,7 +2308,12 @@ union cvmx_l2c_cbcx_dll {
 	uint64_t dll_lock                     : 1;
 	uint64_t dll_state                    : 3;
 	uint64_t dll_setting                  : 12;
-	uint64_t reserved_16_63               : 48;
+	uint64_t dly_elem_enable              : 16;
+	uint64_t clk_invert                   : 1;
+	uint64_t pdr_rclk_refclk              : 1;
+	uint64_t pdl_rclk_refclk              : 1;
+	uint64_t pd_pos_rclk_refclk           : 1;
+	uint64_t reserved_36_63               : 28;
 #endif
 	} s;
 	struct cvmx_l2c_cbcx_dll_s            cn78xx;
@@ -3077,7 +3087,7 @@ typedef union cvmx_l2c_cfg cvmx_l2c_cfg_t;
  *  1   18   0     RO     CP0 Root.WatchLo0                         RW
  *  1   19   0     RO     CP0 Root.WatchHi0                         RW
  *  1   22   0     RO     CP0 Root.MultiCoreDebug                   RW
- *  1   22   1            CP0 Root.VoltageMonitor                   RW
+ *  1   22   1            CP0 Root.ImplDebug                        R0
  *  1   22   2     RO     CP0 Root.CvmCountOffset                   RW
  *  1   23   0     RO     CP0 Root.Debug                            RW
  *  1   23   6     RO     CP0 Root.Debug2                           RO
@@ -3706,7 +3716,8 @@ union cvmx_l2c_ctl {
                                                          For optimal performance set to
                                                          10 * (DDR-clock period/core-clock period) - 1.
                                                          To disable set to 0. All other values are reserved. */
-	uint64_t reserved_3_5                 : 3;
+	uint64_t reserved_4_5                 : 2;
+	uint64_t disldwb                      : 1;  /**< Suppresses the DWB functionality of any received LDWB, effectively turning them into LDTs. */
 	uint64_t dissblkdty                   : 1;  /**< Disable bandwidth optimization between L2 and LMC and MOB which only transfers modified
                                                          sub-blocks when possible. NOTE: in an OCI system all nodes must use the same setting of
                                                          DISSBLKDTY or operation is undefined. FIXME: should reset to 0, once verif supports it. */
@@ -3716,7 +3727,8 @@ union cvmx_l2c_ctl {
 	uint64_t disidxalias                  : 1;
 	uint64_t disecc                       : 1;
 	uint64_t dissblkdty                   : 1;
-	uint64_t reserved_3_5                 : 3;
+	uint64_t disldwb                      : 1;
+	uint64_t reserved_4_5                 : 2;
 	uint64_t rdf_cnt                      : 8;
 	uint64_t xmc_arb_mode                 : 1;
 	uint64_t rsp_arb_mode                 : 1;
@@ -4384,8 +4396,7 @@ union cvmx_l2c_ecc_ctl {
 	uint64_t u64;
 	struct cvmx_l2c_ecc_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_14_63               : 50;
-	uint64_t xmdmskflip                   : 2;  /**< Generate an ECC error in the XMD MSK. */
+	uint64_t reserved_12_63               : 52;
 	uint64_t mibflip                      : 2;  /**< Generate an ECC error in the MIB. See note above. */
 	uint64_t l2dflip                      : 2;  /**< Generate an ECC error in the L2D. See note above. */
 	uint64_t l2tflip                      : 2;  /**< Generate an ECC error in the L2T. */
@@ -4399,8 +4410,7 @@ union cvmx_l2c_ecc_ctl {
 	uint64_t l2tflip                      : 2;
 	uint64_t l2dflip                      : 2;
 	uint64_t mibflip                      : 2;
-	uint64_t xmdmskflip                   : 2;
-	uint64_t reserved_14_63               : 50;
+	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
 	struct cvmx_l2c_ecc_ctl_cn70xx {
@@ -5950,7 +5960,20 @@ union cvmx_l2c_oci_ctl {
 	uint64_t u64;
 	struct cvmx_l2c_oci_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_7_63                : 57;
+	uint64_t reserved_17_63               : 47;
+	uint64_t shtoioen                     : 1;  /**< When set, any PP issues any of an IO load, acking store, IOBDMA, LMTDMA, acking IOBADDR,
+                                                         or acking LMTST to a node that doesn't exist (existence defined by the ENAOCI bits),
+                                                         then the hardware sets the SHTO CSR field. */
+	uint64_t shtoen                       : 3;  /**< When set, if the corresponding OCI link is down, the hardware sets the SHTO CSR field. */
+	uint64_t shto                         : 1;  /**< Use short timeout intervals. When set, PP will use SDIDTTO for both DID and commit counter
+                                                         timeouts, rather than DIDTTO/DIDTTO2. Similarly, L2C will use short instead of long
+                                                         timeout (FIXME -  more info needed) */
+	uint64_t inv_mode                     : 2;  /**< Describes how aggressive to be when waiting for local invalidates before sending OCI
+                                                         responses which act like commits at the remote. 0 - conservative mode, waits until all
+                                                         local invalidates have been sent by their respective CBCs to the PPs. 1 - moderate mode,
+                                                         waits until all local invalidates have been sent to their respective CBCs, but not
+                                                         necessarily actually sent to the PPs themselves. 2 - aggressive mode, does not wait for
+                                                         local invalidates to begin their processing. */
 	uint64_t cas_fdx                      : 1;  /**< When set, L2 STC/CAS operations performed at the home will immediately bring the block
                                                          exclusive into the home. Default operation is to first request the block shared and only
                                                          invalidate the remote if the compare succeeds. */
@@ -5968,16 +5991,21 @@ union cvmx_l2c_oci_ctl {
 	uint64_t gksegnode                    : 2;  /**< Initialized to the OCX_COM_NODE[ID] value on reset, which will equal the OCI_NODE_ID pins
                                                          on a cold reset, but could be something else on a chip warm or soft reset; writable by
                                                          software. */
-	uint64_t enaoci                       : 1;  /**< Enable OCI processing. When set, perform OCI processing. When clear, OCI references cause
+	uint64_t enaoci                       : 4;  /**< Enable OCI processing (one per node_id). When set, perform OCI processing. When clear, OCI
+                                                         references cause
                                                          RDDISOCI/WRDISOCI interrupts (NYI). */
 #else
-	uint64_t enaoci                       : 1;
+	uint64_t enaoci                       : 4;
 	uint64_t gksegnode                    : 2;
 	uint64_t iofrcl                       : 1;
 	uint64_t lock_local                   : 1;
 	uint64_t rldd_psha                    : 1;
 	uint64_t cas_fdx                      : 1;
-	uint64_t reserved_7_63                : 57;
+	uint64_t inv_mode                     : 2;
+	uint64_t shto                         : 1;
+	uint64_t shtoen                       : 3;
+	uint64_t shtoioen                     : 1;
+	uint64_t reserved_17_63               : 47;
 #endif
 	} s;
 	struct cvmx_l2c_oci_ctl_s             cn78xx;
@@ -6885,6 +6913,29 @@ union cvmx_l2c_tadx_dll {
 	uint64_t u64;
 	struct cvmx_l2c_tadx_dll_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_36_63               : 28;
+	uint64_t pd_pos_rclk_refclk           : 1;  /**< Phase detector output. */
+	uint64_t pdl_rclk_refclk              : 1;  /**< Phase detector output. */
+	uint64_t pdr_rclk_refclk              : 1;  /**< Phase detector output. */
+	uint64_t clk_invert                   : 1;  /**< Clock invert. */
+	uint64_t dly_elem_enable              : 16; /**< Delay element enable. */
+	uint64_t dll_setting                  : 12; /**< DLL setting. */
+	uint64_t dll_state                    : 3;  /**< DLL state. */
+	uint64_t dll_lock                     : 1;  /**< DLL locked. */
+#else
+	uint64_t dll_lock                     : 1;
+	uint64_t dll_state                    : 3;
+	uint64_t dll_setting                  : 12;
+	uint64_t dly_elem_enable              : 16;
+	uint64_t clk_invert                   : 1;
+	uint64_t pdr_rclk_refclk              : 1;
+	uint64_t pdl_rclk_refclk              : 1;
+	uint64_t pd_pos_rclk_refclk           : 1;
+	uint64_t reserved_36_63               : 28;
+#endif
+	} s;
+	struct cvmx_l2c_tadx_dll_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t dll_setting                  : 12; /**< DLL setting. */
 	uint64_t dll_state                    : 3;  /**< DLL state. */
@@ -6895,8 +6946,7 @@ union cvmx_l2c_tadx_dll {
 	uint64_t dll_setting                  : 12;
 	uint64_t reserved_16_63               : 48;
 #endif
-	} s;
-	struct cvmx_l2c_tadx_dll_s            cn70xx;
+	} cn70xx;
 	struct cvmx_l2c_tadx_dll_s            cn78xx;
 };
 typedef union cvmx_l2c_tadx_dll cvmx_l2c_tadx_dll_t;

@@ -5432,7 +5432,7 @@ union cvmx_lmcx_ddr_pll_ctl {
 	uint64_t reserved_18_26               : 9;
 	uint64_t diffamp                      : 4;  /**< PLL diffamp input transconductance */
 	uint64_t cps                          : 3;  /**< PLL charge-pump current */
-	uint64_t cpb                          : 3;  /**< PLL charge-pump current */
+	uint64_t reserved_8_10                : 3;
 	uint64_t reset_n                      : 1;  /**< PLL reset */
 	uint64_t clkf                         : 7;  /**< Multiply reference by CLKF
                                                          32 <= CLKF <= 64
@@ -5441,7 +5441,7 @@ union cvmx_lmcx_ddr_pll_ctl {
 #else
 	uint64_t clkf                         : 7;
 	uint64_t reset_n                      : 1;
-	uint64_t cpb                          : 3;
+	uint64_t reserved_8_10                : 3;
 	uint64_t cps                          : 3;
 	uint64_t diffamp                      : 4;
 	uint64_t reserved_18_26               : 9;
@@ -5609,14 +5609,16 @@ union cvmx_lmcx_ddr_pll_ctl {
                                                          0xE = divide LMC PLL by TBD.
                                                          0xF = divide LMC PLL by TBD.
                                                          DDR_PS_EN is not used when DDR_DIV_RESET = 1 */
-	uint64_t reserved_8_17                : 10;
+	uint64_t reserved_9_17                : 9;
+	uint64_t clkf_ext                     : 1;  /**< A 1-bit extension to the CLKF register to support for DDR4-2666. */
 	uint64_t reset_n                      : 1;  /**< PLL reset */
 	uint64_t clkf                         : 7;  /**< Multiply reference by CLKF. 32 <= CLKF <= 64. LMC PLL frequency = 50 * CLKF. min = 1.6
                                                          GHz, max = 3.2 GHz. */
 #else
 	uint64_t clkf                         : 7;
 	uint64_t reset_n                      : 1;
-	uint64_t reserved_8_17                : 10;
+	uint64_t clkf_ext                     : 1;
+	uint64_t reserved_9_17                : 9;
 	uint64_t ddr_ps_en                    : 4;
 	uint64_t ddr_div_reset                : 1;
 	uint64_t jtg_test_mode                : 1;
@@ -8807,29 +8809,30 @@ typedef union cvmx_lmcx_read_level_rankx cvmx_lmcx_read_level_rankx_t;
  * cvmx_lmc#_reset_ctl
  *
  * "Specify the RSL base addresses for the block.
- * &quot;DDR3RST DDR3 DRAM parts have a RESET# pin that wasn't present in DDR2 parts. The DDR3RST
- * CSR field controls the assertion of the 7xxx pin that attaches to RESET#. When DDR3RST is set,
- * 6xxx asserts RESET#. When DDR3RST is clear, 6xxx de-asserts RESET#. DDR3RST is set on a cold
- * reset. Warm and soft chip resets do not affect the DDR3RST value. Outside of cold reset, only
- * software CSR writes change the DDR3RST value. DDR3PWARM Enables preserve mode during a warm
- * reset. When set, the DDR3 controller hardware automatically puts the attached DDR3 DRAM parts
- * into self refresh (see LMC*CONFIG[SEQ_SEL] below) at the beginning of a warm reset sequence,
- * provided that the DDR3 controller is up. When clear, the DDR3 controller hardware does not put
- * the attached DDR3 DRAM parts into self-refresh during a warm reset sequence. DDR3PWARM is
- * cleared on a cold reset. Warm and soft chip resets do not affect the DDR3PWARM value. Outside
- * of cold reset, only software CSR writes change the DDR3PWARM value. Note that if a warm reset
- * follows a soft reset, DDR3PWARM has no effect, as the DDR3 controller is no longer up after
- * any cold/warm/soft reset sequence. DDR3PSOFT Enables preserve mode during a soft reset. When
- * set, the DDR3 controller hardware automatically puts the attached DDR3 DRAM parts into self
- * refresh (see LMC*CONFIG[SEQ_SEL] below) at the beginning of a soft reset sequence, provided
- * that the DDR3 controller is up. When clear, the DDR3 controller hardware does not put the
- * attached DDR3 DRAM parts into self-refresh during a soft reset sequence. DDR3PSOFT is cleared
- * on a cold reset. Warm and soft chip resets do not affect the DDR3PSOFT value. Outside of cold
- * reset, only software CSR writes change the DDR3PSOFT value. DDR3PSV May be useful for system
- * software to determine when the DDR3 contents have been preserved. Cleared by hardware during a
- * cold reset. Never cleared by hardware during a warm/soft reset. Set by hardware during a
- * warm/soft reset if the hardware automatically put the DDR3 DRAM into self-refresh during the
- * reset sequence. Can also be written by software (to any value).&quot;"
+ * INTERNAL: DDR3RST DDR3 DRAM parts have a RESET# pin that wasn't present in DDR2 parts. The
+ * DDR3RST CSR field controls the assertion of the 7xxx pin that attaches to RESET#. When DDR3RST
+ * is set, 6xxx asserts RESET#. When DDR3RST is clear, 6xxx de-asserts RESET#. DDR3RST is set on
+ * a cold reset. Warm and soft chip resets do not affect the DDR3RST value. Outside of cold
+ * reset, only software CSR writes change the DDR3RST value. DDR3PWARM Enables preserve mode
+ * during a warm reset. When set, the DDR3 controller hardware automatically puts the attached
+ * DDR3 DRAM parts into self refresh (see LMC*CONFIG[SEQ_SEL] below) at the beginning of a warm
+ * reset sequence, provided that the DDR3 controller is up. When clear, the DDR3 controller
+ * hardware does not put the attached DDR3 DRAM parts into self-refresh during a warm reset
+ * sequence. DDR3PWARM is cleared on a cold reset. Warm and soft chip resets do not affect the
+ * DDR3PWARM value. Outside of cold reset, only software CSR writes change the DDR3PWARM value.
+ * Note that if a warm reset follows a soft reset, DDR3PWARM has no effect, as the DDR3
+ * controller is no longer up after any cold/warm/soft reset sequence. DDR3PSOFT Enables preserve
+ * mode during a soft reset. When set, the DDR3 controller hardware automatically puts the
+ * attached DDR3 DRAM parts into self refresh (see LMC*CONFIG[SEQ_SEL] below) at the beginning of
+ * a soft reset sequence, provided that the DDR3 controller is up. When clear, the DDR3
+ * controller hardware does not put the attached DDR3 DRAM parts into self-refresh during a soft
+ * reset sequence. DDR3PSOFT is cleared on a cold reset. Warm and soft chip resets do not affect
+ * the DDR3PSOFT value. Outside of cold reset, only software CSR writes change the DDR3PSOFT
+ * value. DDR3PSV May be useful for system software to determine when the DDR3 contents have been
+ * preserved. Cleared by hardware during a cold reset. Never cleared by hardware during a
+ * warm/soft reset. Set by hardware during a warm/soft reset if the hardware automatically put
+ * the DDR3 DRAM into self-refresh during the reset sequence. Can also be written by software (to
+ * any value)."
  */
 union cvmx_lmcx_reset_ctl {
 	uint64_t u64;
@@ -9446,7 +9449,8 @@ union cvmx_lmcx_seq_ctl {
                                                          DRAM). DDR*_DIMM*_CKE* signals are activated (if not already active). RDIMM register
                                                          control words 0-15 are written to LMC(0..3)_CONFIG[RANKMASK]-selected RDIMMs when
                                                          LMC(0..3)_CONTROL[RDIMM_ENA] = 1 and corresponding LMC(0..3)_DIMM_CTL[DIMM*_WMASK] bits
-                                                         are set. (Refer to LMC(0..3)_DIMM0/1_PARAMS and LMC(0..3)_DIMM_CTL descriptions for more
+                                                         are set. (Refer to LMC(0..3)_DIMM(0..1)_PARAMS and LMC(0..3)_DIMM_CTL descriptions for
+                                                         more
                                                          details.)
                                                          The DRAM registers MR0, MR1, MR2, and MR3 are written in the selected ranks.
                                                          0x1 = Read-leveling:
@@ -9470,7 +9474,7 @@ union cvmx_lmcx_seq_ctl {
                                                          DRAM). In DDR3 mode, RDIMM register control words 0-15 are written to
                                                          LMC(0..3)_CONFIG[RANKMASK]-selected RDIMMs when LMC(0..3)_CONTROL[RDIMM_ENA] = 1 and
                                                          corresponding LMC(0..3)_DIMM_CTL[DIMM*_WMASK] bits are set. (Refer to
-                                                         LMC(0..3)_DIMM0/1_PARAMS and LMC(0..3)_DIMM_CTL descriptions for more details.) */
+                                                         LMC(0..3)_DIMM(0..1)_PARAMS and LMC(0..3)_DIMM_CTL descriptions for more details.) */
 	uint64_t init_start                   : 1;  /**< A 0->1 transition starts the DDR memory sequence that is selected by SEQ_SEL. This
                                                          register is a one-shot and clears itself each time it is set. */
 #else

@@ -2024,7 +2024,9 @@ union cvmx_sso_err0 {
 	uint64_t fff_sbe                      : 1;  /**< Single-bit error for  RAM. Throws SSO_INTSN_E::SSO_ERR0_FFF_SBE. */
 	uint64_t wes_dbe                      : 1;  /**< Double-bit error for WES RAM. Throws SSO_INTSN_E::SSO_ERR0_WES_DBE. */
 	uint64_t wes_sbe                      : 1;  /**< Single-bit error for WES RAM. Throws SSO_INTSN_E::SSO_ERR0_WES_SBE. */
-	uint64_t reserved_5_31                : 27;
+	uint64_t reserved_6_31                : 26;
+	uint64_t addwq_dropped                : 1;  /**< Add work dropped due to wrong command/DID requested. Throws
+                                                         SSO_INTSN_E::SSO_ERR0_ADD_WQDROPPED. */
 	uint64_t awempty                      : 1;  /**< Received add work with tag specified as EMPTY. Throws SSO_INTSN_E::SSO_ERR0_AWEMPTY. */
 	uint64_t grpdis                       : 1;  /**< Add work to disabled group. An ADDWQ was received and dropped to a group with
                                                          SSO_GRP(0..255)_IAQ_THR[RSVD_THR] = 0. Throws SSO_INTSN_E::SSO_ERR0_GRPDIS. */
@@ -2039,7 +2041,8 @@ union cvmx_sso_err0 {
 	uint64_t bfp                          : 1;
 	uint64_t grpdis                       : 1;
 	uint64_t awempty                      : 1;
-	uint64_t reserved_5_31                : 27;
+	uint64_t addwq_dropped                : 1;
+	uint64_t reserved_6_31                : 26;
 	uint64_t wes_sbe                      : 1;
 	uint64_t wes_dbe                      : 1;
 	uint64_t fff_sbe                      : 1;
@@ -2729,14 +2732,9 @@ union cvmx_sso_gwe_cfg {
 	uint64_t gwe_rfpgw_dis                : 1;  /**< Disable periodic restart of GWE for pending get_work */
 	uint64_t odu_prf_dis                  : 1;  /**< Disable ODU-initiated prefetches of WQEs into L2C
                                                          For diagnostic use only. */
-	uint64_t odu_bmp_dis                  : 1;  /**< Disable ODU bumps.
-                                                         If SSO_PP_STRICT is true, could
-                                                         prevent forward progress under some circumstances.
-                                                         For diagnostic use only. */
-	uint64_t reserved_0_7                 : 8;
+	uint64_t reserved_0_8                 : 9;
 #else
-	uint64_t reserved_0_7                 : 8;
-	uint64_t odu_bmp_dis                  : 1;
+	uint64_t reserved_0_8                 : 9;
 	uint64_t odu_prf_dis                  : 1;
 	uint64_t gwe_rfpgw_dis                : 1;
 	uint64_t odu_ffpgw_dis                : 1;
@@ -2799,13 +2797,15 @@ union cvmx_sso_gwe_cfg {
 	} cn68xxp1;
 	struct cvmx_sso_gwe_cfg_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_8_63                : 56;
+	uint64_t reserved_9_63                : 55;
+	uint64_t dis_wgt_credit               : 1;  /**< Disable group weight credits. When set, groups have infinite weight credit. */
 	uint64_t ws_retries                   : 8;  /**< Work slot retries. When a given work-slot performs this number of retries without
                                                          successfully finding work then NO_WORK will be returned. Zero disables the retry counter.
                                                          Values 1, 2, 3 are reserved. */
 #else
 	uint64_t ws_retries                   : 8;
-	uint64_t reserved_8_63                : 56;
+	uint64_t dis_wgt_credit               : 1;
+	uint64_t reserved_9_63                : 55;
 #endif
 	} cn78xx;
 };
@@ -2912,13 +2912,16 @@ union cvmx_sso_ientx_links {
 	struct cvmx_sso_ientx_links_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
-	uint64_t prev_index                   : 12; /**< The previous entry in the tag chain. Unpredictable if the entry is at the head of the list. */
-	uint64_t reserved_12_15               : 4;
+	uint64_t prev_index                   : 12; /**< The previous entry in the tag chain. Unpredictable if the entry is at the head of the list
+                                                         or the head of a conflicted tag chain. */
+	uint64_t reserved_13_15               : 3;
+	uint64_t next_index_vld               : 1;  /**< The NEXT_INDEX is valid. Unpredictable unless the entry is the tail entry of an atomic tag chain. */
 	uint64_t next_index                   : 12; /**< The next entry in the tag chain or conflicted tag chain. Unpredictable if the entry is at
                                                          the tail of the list. */
 #else
 	uint64_t next_index                   : 12;
-	uint64_t reserved_12_15               : 4;
+	uint64_t next_index_vld               : 1;
+	uint64_t reserved_13_15               : 3;
 	uint64_t prev_index                   : 12;
 	uint64_t reserved_28_63               : 36;
 #endif
@@ -3991,8 +3994,8 @@ union cvmx_sso_sl_ppx_links {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t tailc                        : 1;  /**< Set when this SSO entry is the tail of the conflicted tail chain, and so there are no
                                                          additional conflicts on this tag chain. */
-	uint64_t reserved_61_62               : 2;
-	uint64_t index                        : 13; /**< The SSO entry attached to the core. */
+	uint64_t reserved_60_62               : 3;
+	uint64_t index                        : 12; /**< The SSO entry attached to the core. */
 	uint64_t reserved_38_47               : 10;
 	uint64_t grp                          : 10; /**< The group attached to the core (updated when new tag list entered on SWTAG_FULL). The
                                                          upper two bits are hardcoded to the node number. */
@@ -4001,20 +4004,19 @@ union cvmx_sso_sl_ppx_links {
 	uint64_t reserved_25_25               : 1;
 	uint64_t revlink_index                : 12; /**< Prior SSO entry in the tag list when HEAD==0 and TT is not UNTAGGED nor EMPTY, otherwise
                                                          unpredictable. */
-	uint64_t reserved_11_12               : 2;
-	uint64_t link_index                   : 11; /**< Next SSO entry in the tag list when TAIL==0 and TT is not UNTAGGED nor EMPTY, otherwise
-                                                         unpredictable. */
+	uint64_t link_index_vld               : 1;  /**< LINK_INDEX is valid when TAIL==1 and TT is ATOMIC, otherwise unpredictable. */
+	uint64_t link_index                   : 12; /**< Next SSO entry in the tag list when TAILC==0 and TT is ATOMIC, otherwise unpredictable. */
 #else
-	uint64_t link_index                   : 11;
-	uint64_t reserved_11_12               : 2;
+	uint64_t link_index                   : 12;
+	uint64_t link_index_vld               : 1;
 	uint64_t revlink_index                : 12;
 	uint64_t reserved_25_25               : 1;
 	uint64_t tail                         : 1;
 	uint64_t head                         : 1;
 	uint64_t grp                          : 10;
 	uint64_t reserved_38_47               : 10;
-	uint64_t index                        : 13;
-	uint64_t reserved_61_62               : 2;
+	uint64_t index                        : 12;
+	uint64_t reserved_60_62               : 3;
 	uint64_t tailc                        : 1;
 #endif
 	} s;
@@ -4642,7 +4644,8 @@ union cvmx_sso_ws_cfg {
 	struct cvmx_sso_ws_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_56_63               : 8;
-	uint64_t ocla_bp                      : 8;  /**< Enable OCLA backpressure stalls. For diagnostic use only. INTERNAL:
+	uint64_t ocla_bp                      : 8;  /**< Enable OCLA backpressure stalls. For diagnostic use only.
+                                                         INTERNAL:
                                                          <55> NCBB input fifo stall (ncbo.)
                                                          <54> Work-slot response. (arbrsp.)
                                                          <53> Work-slot switching of descheduled work entries. (arbx.)
@@ -4651,13 +4654,17 @@ union cvmx_sso_ws_cfg {
                                                          <50> Work-slot CAM access. (arbc.)
                                                          <49> Work-slot RAM access. (arbr.)
                                                          <48> Work-slot pushes to AQ, CQ, DQ. (arbq.) */
-	uint64_t reserved_2_47                : 46;
+	uint64_t reserved_4_47                : 44;
+	uint64_t arbc_step_en                 : 1;  /**< Enable single-stepping WS CAM arbiter, twice per 16 clocks. For diagnostic use only. */
+	uint64_t ncbo_step_en                 : 1;  /**< Enable single-stepping commands from NCBO, once per 32 clocks. For diagnostic use only. */
 	uint64_t soc_ccam_dis                 : 1;  /**< Disable power saving SOC conditional CAM. */
 	uint64_t sso_cclk_dis                 : 1;  /**< Disable power saving SSO conditional clocking, */
 #else
 	uint64_t sso_cclk_dis                 : 1;
 	uint64_t soc_ccam_dis                 : 1;
-	uint64_t reserved_2_47                : 46;
+	uint64_t ncbo_step_en                 : 1;
+	uint64_t arbc_step_en                 : 1;
+	uint64_t reserved_4_47                : 44;
 	uint64_t ocla_bp                      : 8;
 	uint64_t reserved_56_63               : 8;
 #endif

@@ -622,6 +622,17 @@ static inline uint64_t CVMX_ILK_RX_LNEX_STAT1(unsigned long offset)
 #define CVMX_ILK_RX_LNEX_STAT1(offset) (CVMX_ADD_IO_SEG(0x0001180014038020ull) + ((offset) & 15) * 1024)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_ILK_RX_LNEX_STAT10(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 15)))))
+		cvmx_warn("CVMX_ILK_RX_LNEX_STAT10(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180014038068ull) + ((offset) & 15) * 1024;
+}
+#else
+#define CVMX_ILK_RX_LNEX_STAT10(offset) (CVMX_ADD_IO_SEG(0x0001180014038068ull) + ((offset) & 15) * 1024)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_ILK_RX_LNEX_STAT2(unsigned long offset)
 {
 	if (!(
@@ -1830,7 +1841,7 @@ union cvmx_ilk_rxx_byte_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
 	uint64_t rx_bytes                     : 40; /**< Number of bytes received per channel. Wraps on overflow. On overflow, sets
-                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t rx_bytes                     : 40;
 	uint64_t reserved_40_63               : 24;
@@ -2934,7 +2945,7 @@ union cvmx_ilk_rxx_pkt_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_34_63               : 30;
 	uint64_t rx_pkt                       : 34; /**< Number of packets received per channel. Wraps on overflow. On overflow, sets
-                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t rx_pkt                       : 34;
 	uint64_t reserved_34_63               : 30;
@@ -2990,7 +3001,7 @@ union cvmx_ilk_rxx_stat0 {
 	uint64_t reserved_35_63               : 29;
 	uint64_t crc24_match_cnt              : 35; /**< Indicates the number of CRC24 matches received. Wraps on overflow if
                                                          ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc24_match_cnt              : 35;
 	uint64_t reserved_35_63               : 29;
@@ -3030,7 +3041,7 @@ union cvmx_ilk_rxx_stat1 {
 	uint64_t reserved_20_63               : 44;
 	uint64_t crc24_err_cnt                : 20; /**< Indicates the number of bursts with a detected CRC error. Wraps on overflow if
                                                          ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc24_err_cnt                : 20;
 	uint64_t reserved_20_63               : 44;
@@ -3061,11 +3072,11 @@ union cvmx_ilk_rxx_stat2 {
 	uint64_t reserved_50_63               : 14;
 	uint64_t brst_not_full_cnt            : 18; /**< Indicates the number of bursts received that terminated without an EOP and contained fewer
                                                          than BurstMax words. Wraps on overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_30_31               : 2;
 	uint64_t brst_cnt                     : 30; /**< Indicates the number of bursts correctly received. (i.e. good CRC24, not in violation of
                                                          BurstMax or BurstShort). Wraps on overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1.
-                                                         Otherwise, saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         Otherwise, saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_cnt                     : 30;
 	uint64_t reserved_30_31               : 2;
@@ -3119,7 +3130,7 @@ union cvmx_ilk_rxx_stat3 {
 	uint64_t reserved_18_63               : 46;
 	uint64_t brst_max_err_cnt             : 18; /**< Indicates the number of bursts received longer than the BurstMax parameter. Wraps on
                                                          overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On
-                                                         overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_max_err_cnt             : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3149,7 +3160,7 @@ union cvmx_ilk_rxx_stat4 {
 	uint64_t reserved_18_63               : 46;
 	uint64_t brst_shrt_err_cnt            : 18; /**< Indicates the number of bursts received that violate the BurstShort parameter. Wraps on
                                                          overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On
-                                                         overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_shrt_err_cnt            : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3181,7 +3192,7 @@ union cvmx_ilk_rxx_stat5 {
 	uint64_t reserved_25_63               : 39;
 	uint64_t align_cnt                    : 25; /**< Indicates the number of alignment sequences received (i.e. those that do not violate the
                                                          current alignment). Wraps on overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t align_cnt                    : 25;
 	uint64_t reserved_25_63               : 39;
@@ -3223,7 +3234,7 @@ union cvmx_ilk_rxx_stat6 {
 	uint64_t reserved_18_63               : 46;
 	uint64_t align_err_cnt                : 18; /**< Indicates the number of alignment sequences received in error (i.e. those that violate the
                                                          current alignment). Wraps on overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t align_err_cnt                : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3255,7 +3266,7 @@ union cvmx_ilk_rxx_stat7 {
 	uint64_t reserved_18_63               : 46;
 	uint64_t bad_64b67b_cnt               : 18; /**< Indicates the number of bad 64B/67B code words.Wraps on overflow if
                                                          ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bad_64b67b_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3286,10 +3297,10 @@ union cvmx_ilk_rxx_stat8 {
 	uint64_t reserved_32_63               : 32;
 	uint64_t pkt_drop_rid_cnt             : 16; /**< Indicates the number of packets dropped due to the lack of reassembly IDs or because
                                                          ILK_RX(0..1)_CFG1[PKT_ENA] = 0. Wraps on overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1.
-                                                         Otherwise, saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         Otherwise, saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 	uint64_t pkt_drop_rxf_cnt             : 16; /**< Indicates the number of packets dropped due to RX_FIFO_CNT >= RX_FIFO_MAX. Wraps on
                                                          overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1.Otherwise, saturates. On
-                                                         overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t pkt_drop_rxf_cnt             : 16;
 	uint64_t pkt_drop_rid_cnt             : 16;
@@ -3545,7 +3556,7 @@ union cvmx_ilk_rx_lnex_stat0 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t ser_lock_loss_cnt            : 18; /**< Indicates the number of times the lane lost clock-data-recovery. On overflow, saturates
-                                                         and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t ser_lock_loss_cnt            : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3566,7 +3577,7 @@ union cvmx_ilk_rx_lnex_stat1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t bdry_sync_loss_cnt           : 18; /**< Indicates the number of times a lane lost word-boundary synchronization. On overflow,
-                                                         saturates and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bdry_sync_loss_cnt           : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3579,6 +3590,30 @@ union cvmx_ilk_rx_lnex_stat1 {
 typedef union cvmx_ilk_rx_lnex_stat1 cvmx_ilk_rx_lnex_stat1_t;
 
 /**
+ * cvmx_ilk_rx_lne#_stat10
+ */
+union cvmx_ilk_rx_lnex_stat10 {
+	uint64_t u64;
+	struct cvmx_ilk_rx_lnex_stat10_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_43_63               : 21;
+	uint64_t prbs_bad                     : 11; /**< Indicates the number of training frames with bad PRBS. On overflow, saturates and sets
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+	uint64_t reserved_11_31               : 21;
+	uint64_t prbs_good                    : 11; /**< Indicates the number of training frames with correct PRBS. On overflow, saturates and sets
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+#else
+	uint64_t prbs_good                    : 11;
+	uint64_t reserved_11_31               : 21;
+	uint64_t prbs_bad                     : 11;
+	uint64_t reserved_43_63               : 21;
+#endif
+	} s;
+	struct cvmx_ilk_rx_lnex_stat10_s      cn78xx;
+};
+typedef union cvmx_ilk_rx_lnex_stat10 cvmx_ilk_rx_lnex_stat10_t;
+
+/**
  * cvmx_ilk_rx_lne#_stat2
  */
 union cvmx_ilk_rx_lnex_stat2 {
@@ -3587,10 +3622,10 @@ union cvmx_ilk_rx_lnex_stat2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
 	uint64_t syncw_good_cnt               : 18; /**< Indicates the number of good synchronization words. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_18_31               : 14;
 	uint64_t syncw_bad_cnt                : 18; /**< Indicates the number of bad synchronization words. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t syncw_bad_cnt                : 18;
 	uint64_t reserved_18_31               : 14;
@@ -3613,7 +3648,7 @@ union cvmx_ilk_rx_lnex_stat3 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t bad_64b67b_cnt               : 18; /**< Indicates the number of bad 64B/67B words, meaning bit <65> or bit <64> has been
-                                                         corrupted. On overflow, saturates and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         corrupted. On overflow, saturates and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bad_64b67b_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3634,10 +3669,10 @@ union cvmx_ilk_rx_lnex_stat4 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_59_63               : 5;
 	uint64_t cntl_word_cnt                : 27; /**< Indicates the number of control words received. SOn overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_27_31               : 5;
 	uint64_t data_word_cnt                : 27; /**< Indicates the number of data words received. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t data_word_cnt                : 27;
 	uint64_t reserved_27_31               : 5;
@@ -3660,7 +3695,7 @@ union cvmx_ilk_rx_lnex_stat5 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t unkwn_word_cnt               : 18; /**< Indicates the number of unknown control words.On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t unkwn_word_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3682,7 +3717,7 @@ union cvmx_ilk_rx_lnex_stat6 {
 	uint64_t reserved_18_63               : 46;
 	uint64_t scrm_sync_loss_cnt           : 18; /**< Indicates the number of times scrambler synchronization was lost (due to either four
                                                          consecutive bad sync words or three consecutive scrambler-state mismatches). On overflow,
-                                                         saturates and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         saturates and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t scrm_sync_loss_cnt           : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3703,7 +3738,7 @@ union cvmx_ilk_rx_lnex_stat7 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t scrm_match_cnt               : 18; /**< Indicates the number of scrambler-state matches received. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t scrm_match_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3724,7 +3759,7 @@ union cvmx_ilk_rx_lnex_stat8 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t skipw_good_cnt               : 18; /**< Indicates the number of good skip words. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t skipw_good_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3745,10 +3780,10 @@ union cvmx_ilk_rx_lnex_stat9 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
 	uint64_t crc32_err_cnt                : 18; /**< Indicates the number of errors in the lane CRC. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_27_31               : 5;
 	uint64_t crc32_match_cnt              : 27; /**< Indicates the number of CRC32 matches received. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc32_match_cnt              : 27;
 	uint64_t reserved_27_31               : 5;
@@ -3913,7 +3948,7 @@ union cvmx_ilk_txx_byte_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
 	uint64_t tx_bytes                     : 40; /**< Number of bytes transmitted per channel. Wraps on overflow. On overflow, sets
-                                                         ILK_TX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_TX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t tx_bytes                     : 40;
 	uint64_t reserved_40_63               : 24;
@@ -4147,11 +4182,12 @@ union cvmx_ilk_txx_cfg1 {
                                                          enhancement. When non-zero, must satisfy:
                                                          (BRST_SHRT*8) <= (BRST_MIN*32) <= (BRST_MAX*64)/2. */
 	uint64_t reserved_43_47               : 5;
-	uint64_t ser_limit                    : 10; /**< Reduce latency by limiting the amount of data in flight for each SerDes.
-                                                         SER_LIMIT >= (((17 + NUM_LANES) * (BAUD/SCLK/20)) + 4) * 20.
+	uint64_t ser_limit                    : 10; /**< Reduce latency by limiting the amount of data in flight for each SerDes. If 0x0, hardware
+                                                         will compute it. Otherwise, SER_LIMIT must be set as follows:
+                                                         SER_LIMIT >= 148 + (BAUD / SCLK) * (12 + (NUM_LANES/2))
                                                          For instance, for sclk=1.1GHz,BAUD=10.3125,NUM_LANES=16 :
-                                                         SER_LIMIT >= (((17+16)*(10.3125/1.1/20))+4)*20
-                                                         SER_LIMIT >= 390 */
+                                                         SER_LIMIT >= 148 + (10.3125 / 1.1 * (12 + (12/2))
+                                                         SER_LIMIT >= 317 */
 	uint64_t pkt_busy                     : 1;  /**< Packet busy. When set to 1, indicates the TX-link is transmitting data. */
 	uint64_t pipe_crd_dis                 : 1;  /**< Disable channel credits. Should be set to 1 when PKO is configured to ignore channel credits. */
 	uint64_t ptp_delay                    : 5;  /**< Reserved. */
@@ -4884,7 +4920,7 @@ union cvmx_ilk_txx_pkt_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_34_63               : 30;
 	uint64_t tx_pkt                       : 34; /**< Number of packets transmitted per channel. Wraps on overflow. On overflow, sets
-                                                         ILK_TX(0..1)_INT[STAT_CNT_OVFL]=1. */
+                                                         ILK_TX(0..1)_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t tx_pkt                       : 34;
 	uint64_t reserved_34_63               : 30;
