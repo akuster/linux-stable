@@ -485,6 +485,8 @@ void output_kvm_defines(void)
 	OFFSET(VCPU_GUEST_KERNEL_ASID, kvm_vcpu_arch, guest_kernel_asid);
 	OFFSET(VCPU_GUEST_USER_ASID, kvm_vcpu_arch, guest_user_asid);
 
+	OFFSET(KVM_MIPS_VCPU_VZ_INJECTED_IPX, kvm_mips_vcpu_vz, injected_ipx);
+
 	OFFSET(COP0_TLB_HI, mips_coproc, reg[MIPS_CP0_TLB_HI][0]);
 	OFFSET(COP0_STATUS, mips_coproc, reg[MIPS_CP0_STATUS][0]);
 	BLANK();

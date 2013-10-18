@@ -18,6 +18,45 @@ struct kvm_mips_vz {
 	unsigned int asid[NR_CPUS];	/* Per CPU ASIDs for pgd. */
 };
 
+struct kvm_mips_vcpu_vz {
+	struct kvm_vcpu *vcpu;
+	u64 c0_entrylo0;
+	u64 c0_entrylo1;
+	u64 c0_context;
+	u64 c0_userlocal;
+	u64 c0_badvaddr;
+	u64 c0_entryhi;
+	u64 c0_ebase;
+	u64 c0_xcontext;
+	u64 c0_kscratch[6];
+	u32 c0_pagemask;
+	u32 c0_pagegrain;
+	u32 c0_wired;
+	u32 c0_hwrena;
+	u32 c0_compare;
+	u32 c0_status;
+	u32 c0_cause;
+	u32 c0_index;
+
+	u32 c0_count; /* Not settable, value at last exit. */
+	u32 c0_count_offset;
+
+	int tlb_size;
+	struct mipsvz_kvm_tlb_entry *tlb_state;
+
+	u32 last_exit_insn;
+	/* Saved  mips_kvm_rootsp[] value when we are off the CPU. */
+	unsigned long rootsp;
+
+	/* Protected by kvm_arch.irq_chip_lock, the value of Guestctl2[VIP] */
+	u8 injected_ipx;
+
+	struct hrtimer compare_timer;
+	ktime_t compare_timer_read;
+
+	bool have_counter_state;
+};
+
 bool mipsvz_page_fault(struct pt_regs *regs, unsigned long write,
 		       unsigned long address);
 
