@@ -55,6 +55,7 @@
 #define CP0_BADINSTRP $8, 2
 #define CP0_COUNT $9
 #define CP0_ENTRYHI $10
+#define CP0_GUESTCTL2 $10, 5
 #define CP0_COMPARE $11
 #define CP0_STATUS $12
 #define CP0_GUESTCTL0 $12, 6
