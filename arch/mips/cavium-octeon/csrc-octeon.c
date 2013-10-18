@@ -92,6 +92,12 @@ void octeon_init_cvmcount(void)
 			}
 		}
 		write_c0_cvmcount(clk_count);
+		/*
+		 * cn70XX-P1 core-19049 requires synchronized Count for
+		 * KVM guest timers to report with required GTOffset
+		 * of 0.
+		 */
+		write_c0_count((u32)clk_count);
 	}
 	local_irq_restore(flags);
 }
