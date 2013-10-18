@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 88975 $<hr>
+ * <hr>$Revision: 89635 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -807,8 +807,6 @@ static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn70xx(int qlm)
 			pem1_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(1));
 			pem2_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(2));
 
-			if (sata_cfg.s.sata_en)
-				return CVMX_QLM_MODE_SATA_2X1;
 			if (pem0_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_4LANE
 			    || pem0_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_4LANE)
 				return CVMX_QLM_MODE_PCIE;
@@ -827,6 +825,8 @@ static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn70xx(int qlm)
 			    || pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE)
 				return CVMX_QLM_MODE_PCIE_2X1;
 			return CVMX_QLM_MODE_DISABLED;
+			if (sata_cfg.s.sata_en)
+				return CVMX_QLM_MODE_SATA_2X1;
 		}
 	default:
 		return CVMX_QLM_MODE_DISABLED;
