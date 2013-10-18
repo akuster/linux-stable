@@ -179,8 +179,13 @@ void octeon3_usb_set_endian_mode(int index)
 {
 	union cvmx_usbdrdx_uctl_shim_cfg shim_cfg;
 	shim_cfg.u64 = cvmx_read_csr(CVMX_USBDRDX_UCTL_SHIM_CFG(index));
+#ifdef __BIG_ENDIAN
 	shim_cfg.s.dma_endian_mode = 1;
-	shim_cfg.s.csr_endian_mode = 1; //to_do, check for little big endian
+	shim_cfg.s.csr_endian_mode = 1;
+#else
+	shim_cfg.s.dma_endian_mode = 0;
+	shim_cfg.s.csr_endian_mode = 0;
+#endif
 	cvmx_write_csr(CVMX_USBDRDX_UCTL_SHIM_CFG(index), shim_cfg.u64);
 }
 EXPORT_SYMBOL(octeon3_usb_set_endian_mode);
