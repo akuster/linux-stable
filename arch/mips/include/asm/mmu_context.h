@@ -115,6 +115,7 @@ get_new_asid(unsigned long cpu)
 		if (!asid)		/* fix version if needed */
 			asid = ASID_FIRST_VERSION;
 	}
+	asid_cache(cpu) = asid;
 	return asid;
 }
 
@@ -122,7 +123,7 @@ static inline void
 get_new_mmu_context(struct mm_struct *mm, unsigned long cpu)
 {
 	unsigned long asid = get_new_asid(cpu);
-	cpu_context(cpu, mm) = asid_cache(cpu) = asid;
+	cpu_context(cpu, mm) = asid;
 }
 
 /*
