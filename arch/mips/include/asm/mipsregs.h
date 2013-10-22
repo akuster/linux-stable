@@ -1557,6 +1557,9 @@ do {									\
 #define read_gc0_cause()		__read_32bit_gc0_register($13, 0)
 #define write_gc0_cause(val)		__write_32bit_gc0_register($13, 0, val)
 
+#define read_gc0_epc()			__read_64bit_gc0_register($14, 0)
+#define write_gc0_epc(val)		__write_64bit_gc0_register($14, 0, val)
+
 #define read_gc0_ebase()		__read_64bit_gc0_register($15, 1)
 #define write_gc0_ebase(val)		__write_64bit_gc0_register($15, 1, val)
 
@@ -1579,6 +1582,9 @@ do {									\
 
 #define read_gc0_xcontext()		__read_64bit_gc0_register($20, 0)
 #define write_gc0_xcontext(val)		__write_64bit_gc0_register($20, 0, val)
+
+#define read_gc0_errorepc()		__read_64bit_gc0_register($30, 0)
+#define write_gc0_errorepc(val)		__write_64bit_gc0_register($30, 0, val)
 
 #define read_gc0_kscratch(idx)		__read_64bit_gc0_register($31, (idx))
 #define write_gc0_kscratch(idx, val)	__write_64bit_gc0_register($31, (idx), val)
