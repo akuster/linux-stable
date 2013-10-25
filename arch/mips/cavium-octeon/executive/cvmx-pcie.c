@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 89436 $<hr>
+ * <hr>$Revision: 89912 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -922,6 +922,8 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 			cvmx_dprintf("PCIe: Port %d is ILK, skipping.\n", pcie_port);
 			return -1;
 		} else if (mode != CVMX_QLM_MODE_PCIE &&
+			   mode != CVMX_QLM_MODE_PCIE_1X2_SATA_2X1 &&
+			   mode != CVMX_QLM_MODE_PCIE_2X1_SATA_2X1 &&
 			   mode != CVMX_QLM_MODE_PCIE_1X2 &&
 			   mode != CVMX_QLM_MODE_PCIE_2X1 &&
 			   mode != CVMX_QLM_MODE_PCIE_1X1) {

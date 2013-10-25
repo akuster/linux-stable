@@ -43,7 +43,7 @@
  * Interface to the Level 2 Cache (L2C) control, measurement, and debugging
  * facilities.
  *
- * <hr>$Revision: 84158 $<hr>
+ * <hr>$Revision: 89914 $<hr>
  *
  */
 
@@ -59,13 +59,13 @@
 #define CVMX_L2C_MEMBANK_SELECT_SIZE  4096
 
 /* Maximium number of TADs */
-#define CVMX_L2C_MAX_TADS     4
+#define CVMX_L2C_MAX_TADS     8
 /* Maximium number of L2C performance counters */
 #define CVMX_L2C_MAX_PCNT     4
 
 /* Number of L2C Tag-and-data sections (TADs) that are connected to LMC. */
-#define CVMX_L2C_TADS  ((OCTEON_IS_MODEL(OCTEON_CN68XX) \
-			 || OCTEON_IS_MODEL(OCTEON_CN78XX)) ? 4 : 1)
+#define CVMX_L2C_TADS  ((OCTEON_IS_MODEL(OCTEON_CN68XX)) ? 4 : \
+			(OCTEON_IS_MODEL(OCTEON_CN78XX)) ? 8 : 1)
 /* Number of L2C IOBs connected to LMC. */
 #define CVMX_L2C_IOBS  ((OCTEON_IS_MODEL(OCTEON_CN68XX) \
 			 || OCTEON_IS_MODEL(OCTEON_CN78XX)) ? 2 : 1)
@@ -201,6 +201,22 @@ enum cvmx_l2c_tad_event {
 	CVMX_L2C_TAD_EVENT_QUAD3_READ = 177,	/* Quad 3 read data bus inuse */
 	CVMX_L2C_TAD_EVENT_QUAD3_BANK = 178,	/* Quad 3 \# banks inuse (0-4/cycle) */
 	CVMX_L2C_TAD_EVENT_QUAD3_WDAT = 179,	/* Quad 3 wdat flops inuse (0-4/cycle) */
+	CVMX_L2C_TAD_EVENT_QUAD4_INDEX = 192,	/* Quad 4 index bus inuse */
+	CVMX_L2C_TAD_EVENT_QUAD4_READ = 193,	/* Quad 4 read data bus inuse */
+	CVMX_L2C_TAD_EVENT_QUAD4_BANK = 194,	/* Quad 4 \# banks inuse (0-4/cycle) */
+	CVMX_L2C_TAD_EVENT_QUAD4_WDAT = 195,	/* Quad 4 wdat flops inuse (0-4/cycle) */
+	CVMX_L2C_TAD_EVENT_QUAD5_INDEX = 208,	/* Quad 5 index bus inuse */
+	CVMX_L2C_TAD_EVENT_QUAD5_READ = 209,	/* Quad 5 read data bus inuse */
+	CVMX_L2C_TAD_EVENT_QUAD5_BANK = 210,	/* Quad 5 \# banks inuse (0-4/cycle) */
+	CVMX_L2C_TAD_EVENT_QUAD5_WDAT = 211,	/* Quad 5 wdat flops inuse (0-4/cycle) */
+	CVMX_L2C_TAD_EVENT_QUAD6_INDEX = 224,	/* Quad 6 index bus inuse */
+	CVMX_L2C_TAD_EVENT_QUAD6_READ = 225,	/* Quad 6 read data bus inuse */
+	CVMX_L2C_TAD_EVENT_QUAD6_BANK = 226,	/* Quad 6 \# banks inuse (0-4/cycle) */
+	CVMX_L2C_TAD_EVENT_QUAD6_WDAT = 227,	/* Quad 6 wdat flops inuse (0-4/cycle) */
+	CVMX_L2C_TAD_EVENT_QUAD7_INDEX = 240,	/* Quad 7 index bus inuse */
+	CVMX_L2C_TAD_EVENT_QUAD7_READ = 241,	/* Quad 7 read data bus inuse */
+	CVMX_L2C_TAD_EVENT_QUAD7_BANK = 242,	/* Quad 7 \# banks inuse (0-4/cycle) */
+	CVMX_L2C_TAD_EVENT_QUAD7_WDAT = 243,	/* Quad 7 wdat flops inuse (0-4/cycle) */
 	CVMX_L2C_TAD_EVENT_MAX
 };
 typedef enum cvmx_l2c_tad_event cvmx_l2c_tad_event_t;

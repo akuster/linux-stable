@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 89635 $<hr>
+ * <hr>$Revision: 89912 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -811,15 +811,22 @@ static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn70xx(int qlm)
 			    || pem0_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_4LANE)
 				return CVMX_QLM_MODE_PCIE;
 			if (pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_2LANE
-			    || pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_2LANE)
-				return CVMX_QLM_MODE_PCIE_1X2;
+			    || pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_2LANE) {
+				if (sata_cfg.s.sata_en)
+					return CVMX_QLM_MODE_PCIE_1X2_SATA_2X1;
+				else
+					return CVMX_QLM_MODE_PCIE_1X2;
+			}
 			if (pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_1LANE
 			    || pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE) {
 				if (pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_1LANE
-				    || pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE)
-					return CVMX_QLM_MODE_PCIE_2X1;
-				else
-					return CVMX_QLM_MODE_PCIE_1X1;
+				    || pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE) {
+					if (sata_cfg.s.sata_en)
+						return CVMX_QLM_MODE_PCIE_2X1_SATA_2X1;
+					else
+						return CVMX_QLM_MODE_PCIE_2X1;
+				} else
+						return CVMX_QLM_MODE_PCIE_1X1;
 			}
 			if (pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_1LANE
 			    || pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE)
