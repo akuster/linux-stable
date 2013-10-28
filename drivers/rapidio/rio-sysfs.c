@@ -354,10 +354,6 @@ int rio_create_sysfs_dev_files(struct rio_dev *rdev)
 		pr_warning("RIO: Failed to create attribute file(s) for %s\n",
 			   rio_name(rdev));
 
-	err = sysfs_create_bin_file(&rdev->dev.kobj, &rio_config_attr);
-	if (err)
-		return err;
-
 	rdev->memory.attr.name = "memory";
 	rdev->memory.attr.mode = S_IRUGO | S_IWUSR;
 	rdev->memory.read = rio_read_memory;
