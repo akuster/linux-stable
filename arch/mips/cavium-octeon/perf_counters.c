@@ -640,7 +640,7 @@ static int __init proc_perf_init(void)
 		proc_perf_label[CVMX_CORE_PERF_FPCOPYC1] = "fpcopyc1";
 		proc_perf_label[CVMX_CORE_PERF_FPCOMPARE] = "fpcompare";
 		proc_perf_label[CVMX_CORE_PERF_FPBRANCH] = "fpbranch";
-		proc_perf_label[CVMX_CORE_PERF_FPMOV] = "fpbmov";
+		proc_perf_label[CVMX_CORE_PERF_FPMOV] = "fpmov";
 		proc_perf_label[CVMX_CORE_PERF_FPABSNEG] = "fpabs";
 		proc_perf_label[CVMX_CORE_PERF_FPADDSUB] = "fpadd";
 		proc_perf_label[CVMX_CORE_PERF_FPCVT] = "fpcvt";
