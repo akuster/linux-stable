@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 89912 $<hr>
+ * <hr>$Revision: 90025 $<hr>
  */
 
 #ifndef __CVMX_QLM_H__
@@ -185,8 +185,6 @@ enum cvmx_qlm_mode {
 	CVMX_QLM_MODE_QSGMII_SGMII,
 	CVMX_QLM_MODE_RXAUI_1X2,
 	CVMX_QLM_MODE_SATA_2X1,
-	CVMX_QLM_MODE_PCIE_2X1_SATA_2X1,
-	CVMX_QLM_MODE_PCIE_1X2_SATA_2X1,
 };
 
 enum cvmx_gmx_inf_mode {
@@ -221,7 +219,7 @@ enum cvmx_pemx_cfg_mode {
  * Read QLM and return mode.
  */
 extern enum cvmx_qlm_mode cvmx_qlm_get_mode(int qlm);
-extern enum cvmx_qlm_mode cvmx_qlm_get_dlm_mode(int qlm, int interface);
+extern enum cvmx_qlm_mode cvmx_qlm_get_dlm_mode(int dlm_mode, int interface);
 
 extern void cvmx_qlm_display_registers(int qlm);
 

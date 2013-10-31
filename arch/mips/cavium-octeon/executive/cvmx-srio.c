@@ -714,9 +714,7 @@ int cvmx_srio_initialize(int srio_port, cvmx_srio_initialize_flags_t flags)
 	cvmx_write_csr(CVMX_SRIOX_INT_REG(srio_port), cvmx_read_csr(CVMX_SRIOX_INT_REG(srio_port)));
 
 	/* Enable error reporting */
-#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
-	octeon_error_tree_enable(CVMX_ERROR_GROUP_SRIO, srio_port);
-#elif !defined(CVMX_BUILD_FOR_LINUX_HOST)
+#if defined(CVMX_BUILD_FOR_STANDALONE)
 	cvmx_error_enable_group(CVMX_ERROR_GROUP_SRIO, srio_port);
 #endif
 
