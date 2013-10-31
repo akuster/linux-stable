@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 89912 $<hr>
+ * <hr>$Revision: 90025 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -888,7 +888,13 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 	}
 
 	/* Make sure this interface is PCIe */
-	if (octeon_has_feature(OCTEON_FEATURE_PCIE)) {
+	if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
+		if (cvmx_qlm_get_dlm_mode(1, pcie_port) == CVMX_QLM_MODE_DISABLED) {
+			cvmx_dprintf("PCIe: Port %d not in PCIe mode, skipping\n",
+						pcie_port);
+			return -1;
+		}
+	} else if (octeon_has_feature(OCTEON_FEATURE_PCIE)) {
 		/* Requires reading the MIO_QLMX_CFG register to figure
 		   out the port type. */
 		if (OCTEON_IS_MODEL(OCTEON_CN68XX))
@@ -903,8 +909,7 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 		   2 PCIe ports in x1 */
 		else if (OCTEON_IS_MODEL(OCTEON_CNF71XX))
 			qlm = 1;
-		else if (OCTEON_IS_MODEL(OCTEON_CN70XX))
-			qlm = (pcie_port == 0) ? 1 : 2;
+
 		mode = cvmx_qlm_get_mode(qlm);
 		if (mode == CVMX_QLM_MODE_SRIO_1X4 ||
 		    mode == CVMX_QLM_MODE_SRIO_2X2 ||
@@ -922,8 +927,6 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 			cvmx_dprintf("PCIe: Port %d is ILK, skipping.\n", pcie_port);
 			return -1;
 		} else if (mode != CVMX_QLM_MODE_PCIE &&
-			   mode != CVMX_QLM_MODE_PCIE_1X2_SATA_2X1 &&
-			   mode != CVMX_QLM_MODE_PCIE_2X1_SATA_2X1 &&
 			   mode != CVMX_QLM_MODE_PCIE_1X2 &&
 			   mode != CVMX_QLM_MODE_PCIE_2X1 &&
 			   mode != CVMX_QLM_MODE_PCIE_1X1) {

@@ -42,7 +42,7 @@
  *
  * Module to support operations on core such as TLB config, etc.
  *
- * <hr>$Revision: 84158 $<hr>
+ * <hr>$Revision: 90021 $<hr>
  *
  */
 
@@ -208,20 +208,20 @@ typedef enum cvmx_core_perf {
 	CVMX_CORE_PERF_FPADDSUB = 87,
 				     /**< Number of retired FP ADD.fmt and SUB.fmt instructions */
 	CVMX_CORE_PERF_FPCVT = 88,
-				     /**< Number of retired FP ormat conversion instructions (e.g., CVT.S.D) */
+				     /**< Number of retired FP format conversion instructions (e.g., CVT.S.D) */
 	CVMX_CORE_PERF_FPMUL = 89,
 				     /**< Number of retired FP MUL.fmt instructions */
-	CVMX_CORE_PERF_FPMADD = 96,
+	CVMX_CORE_PERF_FPMADD = 90,
 				     /**< Number of retired FP MADD.fmt variant instructions */
-	CVMX_CORE_PERF_FPDIVRECIP = 97,
+	CVMX_CORE_PERF_FPDIVRECIP = 91,
 				     /**< Number of retired FP DIV.fmt and RECIP.fmt instructions */
-	CVMX_CORE_PERF_FPSQRTRSQRT = 98,
+	CVMX_CORE_PERF_FPSQRTRSQRT = 92,
 				     /**< Number of retired FP SQRT.fmt and RSQRT.fmt instructions */
-	CVMX_CORE_PERF_FPLOAD = 99,
+	CVMX_CORE_PERF_FPLOAD = 93,
 				     /**< Number of retired FP load instructions */
-	CVMX_CORE_PERF_FPSTORE = 100,
+	CVMX_CORE_PERF_FPSTORE = 94,
 				     /**< Number of retired FP store instructions */
-	CVMX_CORE_PERF_FPALL = 101,
+	CVMX_CORE_PERF_FPALL = 95,
 				     /**< Number of retired FP instructions(all) */
 	CVMX_CORE_PERF_MAX	     /**< This not a counter, just a marker for the highest number */
 } cvmx_core_perf_t;
@@ -234,7 +234,14 @@ typedef union cvmx_core_perf_control {
 #ifdef __BIG_ENDIAN_BITFIELD
 		uint32_t m:1;	     /**< Set to 1 for sel 0 and 0 for sel 2, indicating there are two performance counters */
 		uint32_t w:1;	     /**< Set to 1 indicating counters are 64 bit */
-		uint32_t reserved_11_29:15;
+		uint32_t reserved_25_29:5;
+		uint32_t ec:2;       /**< Event Class
+					  0x0 = root events counted; active in root context
+					  0x1 = root intervention events counted; active in root context
+					  0x2 = guest events counted; active in guest context
+					  0x3 = guest events plus root intervention events counted; active in guest
+context */
+		uint32_t reserved_15_22:8;
 		cvmx_core_perf_t event:10;
 				     /**< Selects the event to be counted by the corresponding Counter Register */
 		uint32_t ie:1;
@@ -251,7 +258,9 @@ typedef union cvmx_core_perf_control {
 		uint32_t u:1;
 		uint32_t ie:1;
 		uint32_t event:10;
-		uint32_t reserved_11_29:15;
+		uint32_t reserved_15_22:8;
+		uint32_t ec:2;
+		uint32_t reserved_25_29:5;
 		uint32_t w:1;
 		uint32_t m:1;
 #endif

@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 89912 $<hr>
+ * <hr>$Revision: 90025 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -807,33 +807,27 @@ static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn70xx(int qlm)
 			pem1_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(1));
 			pem2_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(2));
 
+			if (sata_cfg.s.sata_en)
+				return CVMX_QLM_MODE_SATA_2X1;
 			if (pem0_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_4LANE
 			    || pem0_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_4LANE)
 				return CVMX_QLM_MODE_PCIE;
 			if (pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_2LANE
 			    || pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_2LANE) {
-				if (sata_cfg.s.sata_en)
-					return CVMX_QLM_MODE_PCIE_1X2_SATA_2X1;
-				else
-					return CVMX_QLM_MODE_PCIE_1X2;
+				return CVMX_QLM_MODE_PCIE_1X2;
 			}
 			if (pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_1LANE
 			    || pem1_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE) {
 				if (pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_1LANE
 				    || pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE) {
-					if (sata_cfg.s.sata_en)
-						return CVMX_QLM_MODE_PCIE_2X1_SATA_2X1;
-					else
-						return CVMX_QLM_MODE_PCIE_2X1;
+					return CVMX_QLM_MODE_PCIE_2X1;
 				} else
-						return CVMX_QLM_MODE_PCIE_1X1;
+					return CVMX_QLM_MODE_PCIE_1X1;
 			}
 			if (pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN2_1LANE
 			    || pem2_cfg.cn70xx.md == CVMX_PEM_MD_GEN1_1LANE)
 				return CVMX_QLM_MODE_PCIE_2X1;
 			return CVMX_QLM_MODE_DISABLED;
-			if (sata_cfg.s.sata_en)
-				return CVMX_QLM_MODE_SATA_2X1;
 		}
 	default:
 		return CVMX_QLM_MODE_DISABLED;
@@ -842,41 +836,90 @@ static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn70xx(int qlm)
 	return CVMX_QLM_MODE_DISABLED;
 }
 
-enum cvmx_qlm_mode cvmx_qlm_get_dlm_mode(int qlm, int interface)
+/*
+ * Get the DLM mode for the interface based on the interface type.
+ *
+ * @param interface_type   0 - SGMII/QSGMII/RXAUI interface
+ *                         1 - PCIe
+ *                         2 - SATA
+ * @param interface        interface to use
+ * @return  the qlm mode the interface is
+ */
+enum cvmx_qlm_mode cvmx_qlm_get_dlm_mode(int interface_type, int interface)
 {
-	enum cvmx_qlm_mode qlm_mode = __cvmx_qlm_get_mode_cn70xx(qlm);
+	switch (interface_type) {
+	case 0:  /* SGMII/QSGMII/RXAUI */
+	{
+		enum cvmx_qlm_mode qlm_mode = __cvmx_qlm_get_mode_cn70xx(0);
+		switch (interface) {
+		case 0:
+			switch (qlm_mode) {
+			case CVMX_QLM_MODE_SGMII_SGMII:
+			case CVMX_QLM_MODE_SGMII_DISABLED:
+			case CVMX_QLM_MODE_SGMII_QSGMII:
+				return CVMX_QLM_MODE_SGMII;
+			case CVMX_QLM_MODE_QSGMII_QSGMII:
+			case CVMX_QLM_MODE_QSGMII_DISABLED:
+			case CVMX_QLM_MODE_QSGMII_SGMII:
+				return CVMX_QLM_MODE_QSGMII;
+			case CVMX_QLM_MODE_RXAUI_1X2:
+				return CVMX_QLM_MODE_RXAUI;
+			default:
+				return CVMX_QLM_MODE_DISABLED;
+			}
+		case 1:
+			switch (qlm_mode) {
+			case CVMX_QLM_MODE_SGMII_SGMII:
+			case CVMX_QLM_MODE_DISABLED_SGMII:
+			case CVMX_QLM_MODE_QSGMII_SGMII:
+				return CVMX_QLM_MODE_SGMII;
+			case CVMX_QLM_MODE_QSGMII_QSGMII:
+			case CVMX_QLM_MODE_DISABLED_QSGMII:
+			case CVMX_QLM_MODE_SGMII_QSGMII:
+				return CVMX_QLM_MODE_QSGMII;
+			default:
+				return CVMX_QLM_MODE_DISABLED;
+			}
+		default:
+			return qlm_mode;
+		}
+	}
+	case 1:  /* PCIe */
+	{
+		enum cvmx_qlm_mode qlm_mode1 = __cvmx_qlm_get_mode_cn70xx(1);
+		enum cvmx_qlm_mode qlm_mode2 = __cvmx_qlm_get_mode_cn70xx(2);
 
-	switch (interface) {
-	case 0:
-		switch (qlm_mode) {
-		case CVMX_QLM_MODE_SGMII_SGMII:
-		case CVMX_QLM_MODE_SGMII_DISABLED:
-		case CVMX_QLM_MODE_SGMII_QSGMII:
-			return CVMX_QLM_MODE_SGMII;
-		case CVMX_QLM_MODE_QSGMII_QSGMII:
-		case CVMX_QLM_MODE_QSGMII_DISABLED:
-		case CVMX_QLM_MODE_QSGMII_SGMII:
-			return CVMX_QLM_MODE_QSGMII;
-		case CVMX_QLM_MODE_RXAUI_1X2:
-			return CVMX_QLM_MODE_RXAUI;
+		switch (interface) {
+		case 0: /* PCIe0 can be DLM1 with 1, 2 or 4 lanes */
+			return qlm_mode1;
+		case 1: /* PCIe1 can be in DLM1 1 lane(1), DLM2 1 lane(0) or 2 lanes(0-1) */
+			if (qlm_mode1 == CVMX_QLM_MODE_PCIE_2X1)
+				return CVMX_QLM_MODE_PCIE_2X1;
+			else if (qlm_mode2 == CVMX_QLM_MODE_PCIE_1X2 ||
+				 qlm_mode2 == CVMX_QLM_MODE_PCIE_2X1)
+				return qlm_mode2;
+			else
+				return CVMX_QLM_MODE_DISABLED;
+		case 2: /* PCIe2 can be DLM2 1 lanes(1) */
+			if (qlm_mode2 == CVMX_QLM_MODE_PCIE_2X1)
+				return qlm_mode2;
+			else
+				return CVMX_QLM_MODE_DISABLED;
 		default:
 			return CVMX_QLM_MODE_DISABLED;
 		}
-	case 1:
-		switch (qlm_mode) {
-		case CVMX_QLM_MODE_SGMII_SGMII:
-		case CVMX_QLM_MODE_DISABLED_SGMII:
-		case CVMX_QLM_MODE_QSGMII_SGMII:
-			return CVMX_QLM_MODE_SGMII;
-		case CVMX_QLM_MODE_QSGMII_QSGMII:
-		case CVMX_QLM_MODE_DISABLED_QSGMII:
-		case CVMX_QLM_MODE_SGMII_QSGMII:
-			return CVMX_QLM_MODE_QSGMII;
-		default:
+	}
+	case 2:  /* SATA */
+	{
+		enum cvmx_qlm_mode qlm_mode = __cvmx_qlm_get_mode_cn70xx(2);
+
+		if (qlm_mode == CVMX_QLM_MODE_SATA_2X1)
+			return CVMX_QLM_MODE_SATA_2X1;
+		else
 			return CVMX_QLM_MODE_DISABLED;
-		}
+	}
 	default:
-		return qlm_mode;
+		return CVMX_QLM_MODE_DISABLED;
 	}
 }
 

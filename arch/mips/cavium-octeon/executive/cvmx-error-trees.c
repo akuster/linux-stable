@@ -3687,10 +3687,7 @@ static struct cvmx_error_muxchild error_tree_cn56xx =
 static struct cvmx_error_muxchild error_tree_cn70xx =
 	{0x0000000000000000ull /* CVMX_ROOT */, 0, NULL /* cvmx_error_regbit */, (struct cvmx_error_childbit[]){
 		{1, 0 /* root */, (struct cvmx_error_muxchild[]){
-			{CVMX_ADD_IO_SEG(0x0001070000000000ull) + ((0) & 63) * 8 /* CVMX_CIU_INTX_SUM0(0) */, 0, (struct cvmx_error_regbit[]){
-					{1, 1, CVMX_ERROR_GROUP_INTERNAL, 16, 0, "CIU_INTX_SUM0(0)[GPIO]"},
-					{0}},
-				(struct cvmx_error_childbit[]){
+			{CVMX_ADD_IO_SEG(0x0001070000000000ull) + ((0) & 63) * 8 /* CVMX_CIU_INTX_SUM0(0) */, 0, NULL /* cvmx_error_regbit */, (struct cvmx_error_childbit[]){
 				{1, 60 /* powiq */, (struct cvmx_error_muxchild[]){
 					{CVMX_ADD_IO_SEG(0x0001670000000238ull) /* CVMX_POW_IQ_INT */, CVMX_ADD_IO_SEG(0x0001670000000240ull) /* CVMX_POW_IQ_INT_EN */, (struct cvmx_error_regbit[]){
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "POW_IQ_INT[IQ_INT]"},
@@ -8787,10 +8784,7 @@ static struct cvmx_error_muxchild error_tree_cn52xx =
 static struct cvmx_error_muxchild error_tree_cn61xx =
 	{0x0000000000000000ull /* CVMX_ROOT */, 0, NULL /* cvmx_error_regbit */, (struct cvmx_error_childbit[]){
 		{1, 0 /* root */, (struct cvmx_error_muxchild[]){
-			{CVMX_ADD_IO_SEG(0x0001070000000000ull) + ((0) & 63) * 8 /* CVMX_CIU_INTX_SUM0(0) */, 0, (struct cvmx_error_regbit[]){
-					{1, 1, CVMX_ERROR_GROUP_INTERNAL, 16, 0, "CIU_INTX_SUM0(0)[GPIO]"},
-					{0}},
-				(struct cvmx_error_childbit[]){
+			{CVMX_ADD_IO_SEG(0x0001070000000000ull) + ((0) & 63) * 8 /* CVMX_CIU_INTX_SUM0(0) */, 0, NULL /* cvmx_error_regbit */, (struct cvmx_error_childbit[]){
 				{1, 60 /* powiq */, (struct cvmx_error_muxchild[]){
 					{CVMX_ADD_IO_SEG(0x0001670000000238ull) /* CVMX_POW_IQ_INT */, CVMX_ADD_IO_SEG(0x0001670000000240ull) /* CVMX_POW_IQ_INT_EN */, (struct cvmx_error_regbit[]){
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "POW_IQ_INT[IQ_INT]"},
@@ -9583,10 +9577,7 @@ static struct cvmx_error_muxchild error_tree_cn61xx =
 static struct cvmx_error_muxchild error_tree_cnf71xx =
 	{0x0000000000000000ull /* CVMX_ROOT */, 0, NULL /* cvmx_error_regbit */, (struct cvmx_error_childbit[]){
 		{1, 0 /* root */, (struct cvmx_error_muxchild[]){
-			{CVMX_ADD_IO_SEG(0x0001070000000000ull) + ((0) & 63) * 8 /* CVMX_CIU_INTX_SUM0(0) */, 0, (struct cvmx_error_regbit[]){
-					{1, 1, CVMX_ERROR_GROUP_INTERNAL, 16, 0, "CIU_INTX_SUM0(0)[GPIO]"},
-					{0}},
-				(struct cvmx_error_childbit[]){
+			{CVMX_ADD_IO_SEG(0x0001070000000000ull) + ((0) & 63) * 8 /* CVMX_CIU_INTX_SUM0(0) */, 0, NULL /* cvmx_error_regbit */, (struct cvmx_error_childbit[]){
 				{1, 60 /* powiq */, (struct cvmx_error_muxchild[]){
 					{CVMX_ADD_IO_SEG(0x0001670000000238ull) /* CVMX_POW_IQ_INT */, CVMX_ADD_IO_SEG(0x0001670000000240ull) /* CVMX_POW_IQ_INT_EN */, (struct cvmx_error_regbit[]){
 							{1, 1, CVMX_ERROR_GROUP_INTERNAL, 0, 0, "POW_IQ_INT[IQ_INT]"},
