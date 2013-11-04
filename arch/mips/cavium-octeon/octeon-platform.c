@@ -432,6 +432,7 @@ static struct of_device_id __initdata octeon_ids[] = {
 	{ .compatible = "cavium,mdio-mux", },
 	{ .compatible = "gpio-leds", },
 	{ .compatible = "cavium,octeon-7130-usb-uctl", },
+	{ .compatible = "cavium,octeon-7130-sata-uctl", },
 	{},
 };
 
