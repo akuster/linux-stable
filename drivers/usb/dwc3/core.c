@@ -48,8 +48,8 @@
 #include "debug.h"
 
 extern void octeon3_usb_phy_reset(int index);
-extern int xhci_octeon_start(struct paltform_device *pdev);
-extern int xhci_octeon_stop(struct paltform_device *pdev);
+extern int xhci_octeon_start(struct platform_device *pdev);
+extern int xhci_octeon_stop(struct platform_device *pdev);
 static u64 xhci_octeon_dma_mask = DMA_BIT_MASK(64);
 
 /* -------------------------------------------------------------------------- */

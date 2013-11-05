@@ -202,7 +202,7 @@ static void octeon3_usb_clocks_start(struct platform_device *pdev, int index)
 	uctl_ctl.s.drd_mode = 0;
 	cvmx_write_csr(CVMX_USBDRDX_UCTL_CTL(index), uctl_ctl.u64);
 
-	octeon_error_tree_enable(CVMX_ERROR_GROUP_USB, -1);//to_do separate for both usb
+	octeon_error_tree_enable(CVMX_ERROR_GROUP_USB, index);
 exit:
 	if (index == 0)
 		mutex_unlock(&octeon3_usb1_clocks_mutex);
@@ -217,13 +217,13 @@ static void octeon3_usb_clocks_stop(int index)
 		mutex_lock(&octeon3_usb1_clocks_mutex);
 		octeon3_usb1_clock_start_cnt--;
 		if (octeon3_usb1_clock_start_cnt == 0)
-			octeon_error_tree_disable(CVMX_ERROR_GROUP_USB, -1);//to_do separate for both usb
+			octeon_error_tree_disable(CVMX_ERROR_GROUP_USB, index);
 		mutex_unlock(&octeon3_usb1_clocks_mutex);
 	} else {
 		mutex_lock(&octeon3_usb2_clocks_mutex);
 		octeon3_usb2_clock_start_cnt--;
 		if (octeon3_usb2_clock_start_cnt == 0 )
-			octeon_error_tree_disable(CVMX_ERROR_GROUP_USB, -1);//to_do separate for both usb
+			octeon_error_tree_disable(CVMX_ERROR_GROUP_USB, index);
 		mutex_unlock(&octeon3_usb1_clocks_mutex);
 	}
 }
@@ -279,7 +279,7 @@ int xhci_octeon_start(struct platform_device *pdev)
 	}
 	octeon3_usb_clocks_start(pr_pdev, host_ctrl);
 	octeon3_usb_set_endian_mode(host_ctrl);
-	dev_info(&pr_pdev->dev, "clocks initialized!!!!!!\n");
+	dev_info(&pr_pdev->dev, "clocks initialized.\n");
 	return 0;
 }
 
