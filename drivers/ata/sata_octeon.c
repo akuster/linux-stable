@@ -13,7 +13,7 @@
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-sata-defs.h>
 
-int ahci_octeon_config(struct platform_device *pdev)
+void ahci_octeon_config(void)
 {
 	cvmx_sata_uctl_shim_cfg_t shim_cfg;
 
