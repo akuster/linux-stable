@@ -10,6 +10,7 @@
  *
  */
 
+#include <linux/module.h>
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-sata-defs.h>
 
@@ -28,3 +29,8 @@ void ahci_octeon_config(void)
 #endif
 	cvmx_write_csr(CVMX_SATA_UCTL_SHIM_CFG, shim_cfg.u64);
 }
+EXPORT_SYMBOL(ahci_octeon_config);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Cavium, Inc. <support@cavium.com>");
+MODULE_DESCRIPTION("Cavium Inc. sata config.");
