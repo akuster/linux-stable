@@ -88,7 +88,7 @@ static int dwc3_core_soft_reset(struct dwc3 *dwc)
 	dwc3_writel(dwc->regs, DWC3_GUSB2PHYCFG(0), reg);
 
 	index = (((uint64_t)(dwc->regs) & 0x10000000000ull) ? 1:0);
-#ifdef CONFIG_USB_XHCI_HCD_OCTEON
+#if defined(CONFIG_USB_XHCI_HCD_OCTEON) || defined(CONFIG_USB_XHCI_HCD_OCTEON_MODULE)
 	octeon3_usb_phy_reset(index);
 #else
 	usb_phy_init(dwc->usb2_phy);
@@ -499,7 +499,7 @@ static void dwc3_core_exit(struct dwc3 *dwc)
 {
 	dwc3_free_scratch_buffers(dwc);
 
-#ifndef CONFIG_USB_XHCI_HCD_OCTEON
+#if !defined(CONFIG_USB_XHCI_HCD_OCTEON) && !defined(CONFIG_USB_XHCI_HCD_OCTEON_MODULE)
 	usb_phy_shutdown(dwc->usb2_phy);
 	usb_phy_shutdown(dwc->usb3_phy);
 #endif
@@ -652,7 +652,7 @@ static int dwc3_probe(struct platform_device *pdev)
 	void __iomem		*regs;
 	void			*mem;
 
-#ifdef CONFIG_USB_XHCI_HCD_OCTEON
+#if defined(CONFIG_USB_XHCI_HCD_OCTEON) || defined(CONFIG_USB_XHCI_HCD_OCTEON_MODULE)
 	ret = xhci_octeon_start(pdev);
 	if (ret)
 		return ret;
@@ -734,7 +734,7 @@ static int dwc3_probe(struct platform_device *pdev)
 	dwc->regs_size	= resource_size(res);
 	dwc->dev	= dev;
 
-#ifdef CONFIG_USB_XHCI_HCD_OCTEON
+#if defined(CONFIG_USB_XHCI_HCD_OCTEON) || defined(CONFIG_USB_XHCI_HCD_OCTEON_MODULE)
 	dev->dma_mask	= &xhci_octeon_dma_mask;
 #else
 	dev->dma_mask	= dev->parent->dma_mask;
@@ -769,7 +769,7 @@ static int dwc3_probe(struct platform_device *pdev)
 		goto err0;
 	}
 
-#ifndef CONFIG_USB_XHCI_HCD_OCTEON
+#if !defined(CONFIG_USB_XHCI_HCD_OCTEON) && !defined(CONFIG_USB_XHCI_HCD_OCTEON_MODULE)
 	usb_phy_set_suspend(dwc->usb2_phy, 0);
 	usb_phy_set_suspend(dwc->usb3_phy, 0);
 	ret = phy_power_on(dwc->usb2_generic_phy);
@@ -814,7 +814,7 @@ err_usb2phy_power:
 	phy_power_off(dwc->usb2_generic_phy);
 
 err1:
-#ifndef CONFIG_USB_XHCI_HCD_OCTEON
+#if !defined(CONFIG_USB_XHCI_HCD_OCTEON) && !defined(CONFIG_USB_XHCI_HCD_OCTEON_MODULE)
 	usb_phy_set_suspend(dwc->usb2_phy, 1);
 	usb_phy_set_suspend(dwc->usb3_phy, 1);
 #endif
@@ -830,12 +830,15 @@ static int dwc3_remove(struct platform_device *pdev)
 {
 	struct dwc3	*dwc = platform_get_drvdata(pdev);
 
+	pm_runtime_put_sync(&pdev->dev);
+	pm_runtime_disable(&pdev->dev);
+
 	dwc3_debugfs_exit(dwc);
 	dwc3_core_exit_mode(dwc);
 	dwc3_event_buffers_cleanup(dwc);
 	dwc3_free_event_buffers(dwc);
 
-#ifndef CONFIG_USB_XHCI_HCD_OCTEON
+#if !defined(CONFIG_USB_XHCI_HCD_OCTEON) && !defined(CONFIG_USB_XHCI_HCD_OCTEON_MODULE)
 	usb_phy_set_suspend(dwc->usb2_phy, 1);
 	usb_phy_set_suspend(dwc->usb3_phy, 1);
 	phy_power_off(dwc->usb2_generic_phy);
@@ -847,7 +850,7 @@ static int dwc3_remove(struct platform_device *pdev)
 	pm_runtime_put_sync(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
 
-#ifdef CONFIG_USB_XHCI_HCD_OCTEON
+#if defined(CONFIG_USB_XHCI_HCD_OCTEON) || defined(CONFIG_USB_XHCI_HCD_OCTEON_MODULE)
 	xhci_octeon_stop(pdev);
 #endif
 	return 0;
@@ -919,7 +922,7 @@ static int dwc3_suspend(struct device *dev)
 	dwc->gctl = dwc3_readl(dwc->regs, DWC3_GCTL);
 	spin_unlock_irqrestore(&dwc->lock, flags);
 
-#ifndef CONFIG_USB_XHCI_HCD_OCTEON
+#if !defined(CONFIG_USB_XHCI_HCD_OCTEON) && !defined(CONFIG_USB_XHCI_HCD_OCTEON_MODULE)
 	usb_phy_shutdown(dwc->usb2_phy);
 	usb_phy_shutdown(dwc->usb3_phy);
 #endif
@@ -935,6 +938,7 @@ static int dwc3_resume(struct device *dev)
 	unsigned long	flags;
 	int		ret;
 
+#if !defined(CONFIG_USB_XHCI_HCD_OCTEON) && !defined(CONFIG_USB_XHCI_HCD_OCTEON_MODULE)
 	usb_phy_init(dwc->usb3_phy);
 	usb_phy_init(dwc->usb2_phy);
 	ret = phy_init(dwc->usb2_generic_phy);
@@ -944,12 +948,7 @@ static int dwc3_resume(struct device *dev)
 	ret = phy_init(dwc->usb3_generic_phy);
 	if (ret < 0)
 		goto err_usb2phy_init;
-=======
-#ifndef CONFIG_USB_XHCI_HCD_OCTEON
-	usb_phy_init(dwc->usb3_phy);
-	usb_phy_init(dwc->usb2_phy);
 #endif
->>>>>>> f0b8361... ed usb clock init for octeon to be called from dwc3 driver. Signed-off-by: Vinita Gupta <vgupta@caviumnetworks.com>
 
 	spin_lock_irqsave(&dwc->lock, flags);
 
