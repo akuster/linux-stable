@@ -144,7 +144,7 @@ static void octeon3_usb_clocks_start(struct platform_device *pdev, int index)
 	cvmx_write_csr(CVMX_USBDRDX_UCTL_CTL(index), uctl_ctl.u64);
 	uctl_ctl.u64 = cvmx_read_csr(CVMX_USBDRDX_UCTL_CTL(index));
 	if ((div != uctl_ctl.s.h_clkdiv_sel) || (!uctl_ctl.s.h_clk_en)) {
-		printk("ERROR: usb controller clock init\n");
+		dev_err(&pdev->dev, "ERROR: usb controller clock init\n");
 			goto exit;
 	}
 
@@ -224,7 +224,7 @@ static void octeon3_usb_clocks_stop(int index)
 		octeon3_usb2_clock_start_cnt--;
 		if (octeon3_usb2_clock_start_cnt == 0 )
 			octeon_error_tree_disable(CVMX_ERROR_GROUP_USB, index);
-		mutex_unlock(&octeon3_usb1_clocks_mutex);
+		mutex_unlock(&octeon3_usb2_clocks_mutex);
 	}
 }
 EXPORT_SYMBOL(octeon3_usb_clocks_stop);
@@ -282,6 +282,7 @@ int xhci_octeon_start(struct platform_device *pdev)
 	dev_info(&pr_pdev->dev, "clocks initialized.\n");
 	return 0;
 }
+EXPORT_SYMBOL(xhci_octeon_start);
 
 int xhci_octeon_stop(struct platform_device *pdev)
 {
@@ -311,3 +312,8 @@ int xhci_octeon_stop(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 	return 0;
 }
+EXPORT_SYMBOL(xhci_octeon_stop);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Cavium, Inc. <support@cavium.com>");
+MODULE_DESCRIPTION("Cavium Inc. octeon usb3 clock init.");
