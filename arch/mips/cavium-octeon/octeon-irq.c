@@ -3052,8 +3052,8 @@ static int __init octeon_irq_init_cib(struct device_node *ciu_node,
 		pr_err("request_irq cib failed %d\n", r);
 		return r;
 	}
-	pr_info("interrupt controller probed: %s: %llx %llx %d\n",
-		ciu_node->name, host_data->raw_reg, host_data->en_reg, host_data->max_bits);
+	pr_info("CIB interrupt controller probed: %llx %d\n",
+		host_data->raw_reg, host_data->max_bits);
 	return 0;
 }
 
