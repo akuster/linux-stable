@@ -77,6 +77,17 @@ struct mips_perf_event {
 #endif
 };
 
+static ATOMIC_NOTIFIER_HEAD(mipsxx_pmu_chain);
+int mipspmu_notifier_register(struct notifier_block *nb)
+{
+	return atomic_notifier_chain_register(&mipsxx_pmu_chain, nb);
+}
+
+int mipspmu_notifier_unregister(struct notifier_block *nb)
+{
+	return atomic_notifier_chain_unregister(&mipsxx_pmu_chain, nb);
+}
+
 static struct mips_perf_event raw_event;
 static DEFINE_MUTEX(raw_event_mutex);
 
@@ -526,6 +537,7 @@ static void mipspmu_enable(struct pmu *pmu)
 	write_unlock(&pmuint_rwlock);
 #endif
 	resume_local_counters();
+	atomic_notifier_call_chain(&mipsxx_pmu_chain, MIPSPMU_ENABLE, NULL);
 }
 
 /*
@@ -545,6 +557,7 @@ static void mipspmu_disable(struct pmu *pmu)
 #ifdef CONFIG_MIPS_PERF_SHARED_TC_COUNTERS
 	write_lock(&pmuint_rwlock);
 #endif
+	atomic_notifier_call_chain(&mipsxx_pmu_chain, MIPSPMU_DISABLE, NULL);
 }
 
 static atomic_t active_events = ATOMIC_INIT(0);
