@@ -1562,15 +1562,13 @@ static const struct mips_perf_event *mipsxx_pmu_map_raw_event(u64 config)
 
 static const struct mips_perf_event *octeon_pmu_map_raw_event(u64 config)
 {
-	unsigned int raw_id = config & 0xff;
-	unsigned int base_id = raw_id & 0x7f;
-
+	unsigned int base_id = config & 0x7f;
 
 	raw_event.cntr_mask = CNTR_ALL;
 	raw_event.event_id = base_id;
 
 	if (current_cpu_type() == CPU_CAVIUM_OCTEON3) {
-		if (base_id > 0x65)
+		if (base_id > 0x5f)
 			return ERR_PTR(-EOPNOTSUPP);
 	} else if (current_cpu_type() == CPU_CAVIUM_OCTEON2) {
 		if (base_id > 0x42)
@@ -1587,7 +1585,6 @@ static const struct mips_perf_event *octeon_pmu_map_raw_event(u64 config)
 	case 0x1f:
 	case 0x2f:
 	case 0x34:
-	case 0x3b ... 0x3f:
 		return ERR_PTR(-EOPNOTSUPP);
 	default:
 		break;
