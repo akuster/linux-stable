@@ -42,10 +42,22 @@ static void octeon_icache_flush(void)
 	asm volatile ("synci 0($0)\n");
 }
 
+#ifdef CONFIG_KEXEC
+void (*dump_ipi_function_ptr)(void *);
+static void octeon_crash_dump(void)
+{
+	if (dump_ipi_function_ptr)
+		dump_ipi_function_ptr(NULL);
+}
+#endif
+
 static octeon_message_fn_t  octeon_message_functions[8] = {
 	scheduler_ipi,
 	smp_call_function_interrupt,
 	octeon_icache_flush,
+#ifdef CONFIG_KEXEC
+	octeon_crash_dump,
+#endif
 };
 
 static  int octeon_message_free_mask = 0xf8;
