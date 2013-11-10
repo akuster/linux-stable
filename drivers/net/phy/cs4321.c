@@ -877,20 +877,6 @@ static int cs4321_write_seq(struct phy_device *phydev,
 	return cs4321_write_seq_x(phydev, 0, seq);
 }
 
-static int cs4321_write_multi_reg(struct phy_device *phydev, u16 *dat, int cnt)
-{
-	int i;
-	int ret = 0;
-	for (i = 0; i < (cnt * 2); i += 2) {
-		u16 reg = dat[i];
-		u16 val = dat[i + 1];
-		ret = cs4321_phy_write(phydev, reg, val);
-		if (ret)
-			break;
-	}
-	return ret;
-}
-
 static int cs4321_write_microcode_slice(struct phy_device *phydev, int s)
 {
 	int i;
