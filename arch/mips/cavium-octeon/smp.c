@@ -43,7 +43,6 @@ static void octeon_icache_flush(void)
 }
 
 #ifdef CONFIG_KEXEC
-void (*dump_ipi_function_ptr)(void *);
 static void octeon_crash_dump(void)
 {
 	if (dump_ipi_function_ptr)
