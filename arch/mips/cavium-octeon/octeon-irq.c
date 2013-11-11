@@ -20,6 +20,7 @@
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-ciu2-defs.h>
 #include <asm/octeon/cvmx-ciu3-defs.h>
+#include <asm/octeon/octeon-hw-status.h>
 
 static DEFINE_PER_CPU(unsigned long, octeon_irq_ciu0_en_mirror);
 static DEFINE_PER_CPU(unsigned long, octeon_irq_ciu1_en_mirror);
@@ -2764,7 +2765,7 @@ static int __init octeon_irq_init_cib(struct device_node *ciu_node,
 		pr_err("request_irq cib failed %d\n", r);
 		return r;
 	}
-	pr_info("CIB interrupt controller probed: %llx %d\n",
+	pr_info("CIB interrupt controller probed: %llx %d bits\n",
 		host_data->raw_reg, host_data->max_bits);
 	return 0;
 }
