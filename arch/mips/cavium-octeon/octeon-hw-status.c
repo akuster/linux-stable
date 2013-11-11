@@ -60,9 +60,16 @@ static int visit_leaves(struct octeon_hw_status_node *s, bool visit_sibs,
 {
 	int depth = 0;
 	struct octeon_hw_status_node *w = s;
+	bool visit_roots = visit_sibs; /* should they ever differ? bitmask? */
 	int r;
 
 	while (w && depth >= 0) {
+		if (visit_roots && !depth) {
+			r = cb(w, arg);
+			if (r)
+				return r;
+		}
+
 		if (w->child) {
 			/* Go out to the leaves */
 			w = w->child;
