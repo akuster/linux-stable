@@ -11,10 +11,13 @@
  */
 
 #include <linux/module.h>
+#include <linux/dma-mapping.h>
+#include <linux/platform_device.h>
+
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-sata-defs.h>
 
-void ahci_octeon_config(void)
+void ahci_octeon_config(struct platform_device *pdev)
 {
 	cvmx_sata_uctl_shim_cfg_t shim_cfg;
 
@@ -28,6 +31,10 @@ void ahci_octeon_config(void)
 	shim_cfg.s.csr_endian_mode = 0;
 #endif
 	cvmx_write_csr(CVMX_SATA_UCTL_SHIM_CFG, shim_cfg.u64);
+
+	/* Set a good dma_mask */
+	pdev->dev.coherent_dma_mask = DMA_BIT_MASK(64);
+	pdev->dev.dma_mask = &pdev->dev.coherent_dma_mask;
 }
 EXPORT_SYMBOL(ahci_octeon_config);
 
