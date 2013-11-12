@@ -967,6 +967,14 @@ int _cvmx_srio_config_read32(int srio_port, int srcid_index, int destid, int is1
 				cvmx_dprintf("SRIO%d: Remote read [id=0x%04x hop=%3d offset=0x%06x] <= ", srio_port, destid, hopcount, (unsigned int)offset);
 
 			/* Finally do the maintenance read to complete the config request */
+#ifdef __LITTLE_ENDIAN
+			/*
+			 * When running in little endian mode, the cpu xor's bit
+			 * 2 of the address. We need to xor it here to cancel it
+			 * out.
+			 */
+			physical ^= 0x4;
+#endif
 			*result = cvmx_read64_uint32(CVMX_ADD_IO_SEG(physical));
 			cvmx_srio_physical_unmap(physical, 4);
 
@@ -1150,6 +1158,14 @@ int _cvmx_srio_config_write32(int srio_port, int srcid_index, int destid, int is
 					     (unsigned int)data);
 
 			/* Finally do the maintenance write to complete the config request */
+#ifdef __LITTLE_ENDIAN
+			/*
+			 * When running in little endian mode, the cpu xor's bit
+			 * 2 of the address. We need to xor it here to cancel it
+			 * out.
+			 */
+			physical ^= 0x4;
+#endif
 			cvmx_write64_uint32(CVMX_ADD_IO_SEG(physical), data);
 			return cvmx_srio_physical_unmap(physical, 4);
 #else
