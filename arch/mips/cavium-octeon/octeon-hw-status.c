@@ -424,3 +424,71 @@ int octeon_hw_status_disable(u64 reg, u64 bit_mask)
 	return 0;
 }
 EXPORT_SYMBOL(octeon_hw_status_disable);
+
+#ifdef CONFIG_DEBUG_FS
+
+#include <linux/module.h>
+#include <linux/fs.h>
+#include <linux/mount.h>
+#include <linux/init.h>
+#include <linux/namei.h>
+#include <linux/debugfs.h>
+#include <linux/semaphore.h>
+
+static DEFINE_SEMAPHORE(hwstat_sem); /* single open */
+
+static int hwstat_show_node(struct octeon_hw_status_node *n, void *data)
+{
+	struct seq_file *s = (struct seq_file *)data;
+
+	seq_printf(s, "%p@%p: u%d ",
+		n, n->parent, n->users);
+	if (n->is_hwint)
+		seq_printf(s, "i%d %d/%d\n",
+			n->is_hwint, (int)n->hwint, n->irq);
+	else
+		seq_printf(s, "i%d %llx/%llx:%d a%d\n",
+			n->is_hwint,
+			n->reg, n->mask_reg, n->bit,
+			n->ack_w1c);
+	return 0;
+}
+
+static int hwstat_show(struct seq_file *s, void *data)
+{
+	/* print heading */
+	read_lock(&octeon_hw_status_lock);
+	visit_leaves(octeon_hw_status_roots, true, hwstat_show_node, s);
+	read_unlock(&octeon_hw_status_lock);
+
+	return 0;
+}
+
+static int hwstat_open(struct inode *inode, struct file *file)
+{
+	down(&hwstat_sem);
+	return single_open(file, hwstat_show, NULL);
+}
+
+static int hwstat_release(struct inode *inode, struct file *file)
+{
+	up(&hwstat_sem);
+	return single_release(inode, file);
+}
+
+static const struct file_operations hwstat_operations = {
+	.open		= hwstat_open,
+	.read		= seq_read,
+	.llseek		= seq_lseek,
+	.release	= hwstat_release,
+};
+
+static int __init hwstat_debugfs_init(void)
+{
+	/* /sys/kernel/debug/hwstat */
+	(void) debugfs_create_file("hwstat", S_IFREG | S_IRUGO, NULL, NULL, &hwstat_operations);
+	return 0;
+}
+postcore_initcall(hwstat_debugfs_init);
+
+#endif /* CONFIG_DEBUG_FS */
