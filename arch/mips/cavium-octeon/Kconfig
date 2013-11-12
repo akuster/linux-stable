@@ -172,7 +172,6 @@ config CAVIUM_OCTEON_NAND
 
 config CAVIUM_OCTEON_RAPIDIO
 	bool "Enable support for Octeon Serial Rapid IO"
-	depends on !CPU_LITTLE_ENDIAN
 	select RAPIDIO
 	select OCTEON_ETHERNET_MEM
 	help
