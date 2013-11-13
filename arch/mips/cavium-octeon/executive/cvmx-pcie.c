@@ -822,7 +822,7 @@ static int __cvmx_pcie_rc_initialize_link_gen2(int pcie_port)
 	/* Wait for the link to come up */
 	start_cycle = cvmx_get_cycle();
 	do {
-		if (cvmx_get_cycle() - start_cycle > cvmx_clock_get_rate(CVMX_CLOCK_CORE))
+		if ((cvmx_get_cycle() - start_cycle) > cvmx_clock_get_rate(CVMX_CLOCK_CORE) * 2)
 			return -1;
 		cvmx_wait(10000);
 		pciercx_cfg032.u32 = cvmx_pcie_cfgx_read(pcie_port, CVMX_PCIERCX_CFG032(pcie_port));
