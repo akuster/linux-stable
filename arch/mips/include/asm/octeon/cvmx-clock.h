@@ -133,9 +133,9 @@ static inline uint64_t cvmx_clock_get_rate(cvmx_clock_t clock)
 {
 	switch (clock) {
 	case CVMX_CLOCK_RCLK:
+	case CVMX_CLOCK_CORE:
 		return octeon_get_clock_rate();
 	case CVMX_CLOCK_SCLK:
-	case CVMX_CLOCK_CORE:
 	case CVMX_CLOCK_TIM:
 	case CVMX_CLOCK_IPD:
 		return octeon_get_io_clock_rate();
