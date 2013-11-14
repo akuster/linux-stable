@@ -427,7 +427,7 @@ int octeon_hw_status_add_source(struct octeon_hw_status_reg *chain0)
 	warn_mismatch(&match);
 
 	if (root_created && !root->irq) {
-		WARN(rv, pr_fmt("handler for irq %d already set\n",
+		WARN(rv, pr_fmt("handler for irq %d already set\n"),
 			root->irq);
 	} else if (root_created) {
 		/* register an interrupt handler */
@@ -440,7 +440,7 @@ int octeon_hw_status_add_source(struct octeon_hw_status_reg *chain0)
 		rv = request_threaded_irq(root->irq, NULL, octeon_hw_status_irq,
 					  IRQF_ONESHOT, "octeon-hw-status",
 					  root);
-		WARN(rv, pr_fmt("request_threaded_irq failed: irq %d, err %d\n",
+		WARN(rv, pr_fmt("request_threaded_irq failed: irq %d, err %d\n"),
 			root->irq, rv);
 	}
 
