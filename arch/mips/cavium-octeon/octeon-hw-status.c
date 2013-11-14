@@ -1,4 +1,3 @@
-#define DEBUG
 /*
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -426,27 +425,34 @@ int octeon_hw_status_add_source(struct octeon_hw_status_reg *chain0)
 	WARN(oflow, pr_fmt("Reference count overflowed!\n"));
 	warn_mismatch(&match);
 
-	if (root_created && !root->irq) {
-		WARN(rv, pr_fmt("handler for irq %d already set\n"),
-			root->irq);
-	} else if (root_created) {
-		/* register an interrupt handler */
-		root->irq = irq_create_mapping(NULL, root->hwint);
-		if (!root->irq) {
-			rv = -ENXIO;
-			goto bye;
+	if (root_created) {
+		if (root->irq) {
+			WARN(rv, pr_fmt("handler for irq %d already set\n"),
+				root->irq);
+		} else {
+			/* register an interrupt handler */
+			root->irq = irq_create_mapping(NULL, root->hwint);
+
+			if (!root->irq) {
+				WARN(rv, pr_fmt("cannot map handler"
+					" for hwint %d\n"),
+					(int) root->hwint);
+				rv = -ENXIO;
+				goto bye;
+			}
+
+			rv = request_threaded_irq(root->irq, NULL,
+					octeon_hw_status_irq, IRQF_ONESHOT,
+					"octeon-hw-status", root);
+			WARN(rv, pr_fmt("request_threaded_irq failed:"
+				" irq %d, err %d\n"),
+				root->irq, rv);
 		}
 
-		rv = request_threaded_irq(root->irq, NULL, octeon_hw_status_irq,
-					  IRQF_ONESHOT, "octeon-hw-status",
-					  root);
-		WARN(rv, pr_fmt("request_threaded_irq failed: irq %d, err %d\n"),
-			root->irq, rv);
+		if (count_debug)
+			pr_debug("%d/%d created root\n",
+			       (int)root->hwint, root->irq);
 	}
-
-	if (count_debug && root_created)
-		pr_debug("%d/%d created root\n",
-		       (int)root->hwint, root->irq);
 
 	/* notifies on leaf creation, not intermediate nodes */
 	ohsd.reg = w->reg;
