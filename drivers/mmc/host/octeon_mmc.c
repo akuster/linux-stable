@@ -1069,22 +1069,21 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 
 	node = of_get_next_child(pdev->dev.of_node, NULL);
 	while (node) {
-		int size;
-		const __be32 *data;
+		int r;
+		u32 slot;
 		found = 0;
 
-		data = of_get_property(node, "reg", &size);
-		if (data) {
+		r = of_property_read_u32(node, "reg", &slot);
+		if (!r) {
 			int ro_gpio, cd_gpio, pwr_gpio;
 			bool ro_low, cd_low, pwr_low;
-			int bus_width, max_freq;
-			int slot = be32_to_cpu(*data);
-			data = of_get_property(node, "cavium,bus-max-width", &size);
-			if (!data || size != 4) {
+			u32 bus_width, max_freq;
+
+			r = of_property_read_u32(node, "cavium,bus-max-width", &bus_width);
+			if (r) {
 				pr_info("Bus width not found for slot %d\n", slot);
 				bus_width = 8;
 			} else {
-				bus_width = be32_to_cpup(data);
 				switch (bus_width) {
 				case 1:
 				case 4:
@@ -1095,15 +1094,12 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 					break;
 				}
 			}
-			data = of_get_property(node,
-					       "spi-max-frequency",
-					       &size);
-			if (!data || size != 4) {
+
+			r = of_property_read_u32(node, "spi-max-frequency", &max_freq);
+			if (r) {
 				max_freq = 52000000;
 				pr_info("no spi-max-frequency for slot %d, defautling to %d\n",
 					slot, max_freq);
-			} else {
-				max_freq = be32_to_cpup(data);
 			}
 
 			ro_gpio = of_get_named_gpio_flags(node, "wp-gpios", 0, &f);
