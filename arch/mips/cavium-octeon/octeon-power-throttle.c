@@ -21,6 +21,7 @@
 #include <linux/init.h>
 #include <linux/smp.h>
 #include <linux/cpu.h>
+#include <linux/moduleparam.h>
 
 #include <asm/byteorder.h>
 #include <asm/octeon/octeon.h>
@@ -55,6 +56,15 @@ union octeon_power_throttle_bits {
 #endif
 	} s;
 };
+
+/*
+ * Boot-time power limit as percentage,
+ * set with bootparam: octeon_power_throttle.start=85
+ * Useful for situations where full-throttle boot would exceed power budget.
+ * Individual cores' power can be throttled up/down after boot.
+ */
+static int boot_powlim = 100;
+module_param_named(start, boot_powlim, int, 0444);
 
 /* IPI calls to ask target CPU to access own registers ... */
 static inline void read_my_power_throttle(void *info)
@@ -91,8 +101,9 @@ static void octeon_power_throttle_init_cpu(int cpu)
 	r.s.distag = 0;		/* MBZ */
 	r.s.period = 2;		/* 256 cycles */
 	r.s.minthr = 0;
+	/* start at max allowed speed, subject to bootparams */
 	r.s.maxthr = 0xff;
-	r.s.powlim = 0xff;	/* start full speed */
+	r.s.powlim = 0xff * boot_powlim / 100;
 
 	octeon_power_throttle_csr_op(cpu, &r, true);
 }
