@@ -110,6 +110,20 @@ module_param(force_no_multi, int, S_IRUGO);
 MODULE_PARM_DESC(force_no_multi,
 		 "Force the interface to emulate multi-block transfers as a series of single block transfres.");
 
+
+static void octeon_mmc_acquire_bus(void)
+{
+	down(&octeon_bootbus_sem);
+	/* On cn70XX switch the mmc unit onto the bus. */
+	if (OCTEON_IS_MODEL(OCTEON_CN70XX))
+		cvmx_write_csr(CVMX_MIO_BOOT_CTL, 0);
+}
+
+static void octeon_mmc_release_bus(void)
+{
+	up(&octeon_bootbus_sem);
+}
+
 struct octeon_mmc_cr_type {
 	u8 ctype;
 	u8 rtype;
@@ -420,7 +434,7 @@ static irqreturn_t octeon_mmc_interrupt(int irq, void *dev_id)
 no_req_done:
 	spin_unlock_irqrestore(&host->lock, flags);
 	if (host_done)
-		up(&octeon_bootbus_sem);
+		octeon_mmc_release_bus();
 out:
 	return IRQ_RETVAL(emm_int.u64 != 0);
 }
@@ -480,7 +494,7 @@ static void octeon_mmc_dma_request(struct mmc_host *mmc,
 	host = slot->host;
 
 	/* Only a single user of the bootbus at a time. */
-	down(&octeon_bootbus_sem);
+	octeon_mmc_acquire_bus();
 
 	octeon_mmc_switch_to(slot);
 
@@ -555,7 +569,7 @@ static void octeon_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	host = slot->host;
 
 	/* Only a single user of the bootbus at a time. */
-	down(&octeon_bootbus_sem);
+	octeon_mmc_acquire_bus();
 
 	octeon_mmc_switch_to(slot);
 
@@ -698,7 +712,7 @@ static void octeon_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	host = slot->host;
 
 	/* Only a single user of the bootbus at a time. */
-	down(&octeon_bootbus_sem);
+	octeon_mmc_acquire_bus();
 
 	octeon_mmc_switch_to(slot);
 
@@ -789,7 +803,7 @@ static void octeon_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		}
 	}
 out:
-	up(&octeon_bootbus_sem);
+	octeon_mmc_release_bus();
 }
 
 static int octeon_mmc_get_ro(struct mmc_host *mmc)
@@ -969,13 +983,13 @@ static int __init octeon_init_slot(struct octeon_mmc_host *host, int id,
 	slot->bus_id = id;
 
 	/* Only a single user of the bootbus at a time. */
-	down(&octeon_bootbus_sem);
+	octeon_mmc_acquire_bus();
 
 	octeon_mmc_switch_to(slot);
 	/* Initialize MMC Block. */
 	octeon_mmc_initlowlevel(slot, bus_width);
 
-	up(&octeon_bootbus_sem);
+	octeon_mmc_release_bus();
 
 	host->slot[id] = slot;
 	ret = mmc_add_host(mmc);
