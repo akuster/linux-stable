@@ -51,6 +51,7 @@
 #define OCT_MIO_EMM_INT			0x78
 #define OCT_MIO_EMM_INT_EN		0x80
 #define OCT_MIO_EMM_WDOG		0x88
+#define OCT_MIO_EMM_SAMPLE		0x90
 #define OCT_MIO_EMM_STS_MASK		0x98
 #define OCT_MIO_EMM_RCA			0xa0
 #define OCT_MIO_EMM_BUF_IDX		0xe0
@@ -85,6 +86,9 @@ struct octeon_mmc_slot {
 
 	u64			cached_switch;
 	u64			cached_rca;
+
+	unsigned int		cmd_cnt; /* sample delay */
+	unsigned int		dat_cnt; /* sample delay */
 
 	int			bus_width;
 	int			bus_id;
@@ -426,6 +430,7 @@ static void octeon_mmc_switch_to(struct octeon_mmc_slot	*slot)
 	struct octeon_mmc_host	*host = slot->host;
 	struct octeon_mmc_slot	*old_slot;
 	union cvmx_mio_emm_switch sw;
+	union cvmx_mio_emm_sample samp;
 
 	if (host->last_slot < 0 || slot->bus_id == host->last_slot)
 		goto out;
@@ -440,6 +445,11 @@ static void octeon_mmc_switch_to(struct octeon_mmc_slot	*slot)
 	cvmx_write_csr(host->base + OCT_MIO_EMM_SWITCH, sw.u64);
 	sw.s.bus_id = slot->bus_id;
 	cvmx_write_csr(host->base + OCT_MIO_EMM_SWITCH, sw.u64);
+
+	samp.u64 = 0;
+	samp.s.cmd_cnt = slot->cmd_cnt;
+	samp.s.cmd_cnt = slot->cmd_cnt;
+	cvmx_write_csr(host->base + OCT_MIO_EMM_SAMPLE, samp.u64);
 out:
 	host->last_slot = slot->bus_id;
 }
@@ -859,12 +869,14 @@ static int octeon_mmc_initlowlevel(struct octeon_mmc_slot *slot,
 }
 
 static int __init octeon_init_slot(struct octeon_mmc_host *host, int id,
-				      int bus_width, int max_freq,
-				      int ro_gpio, int cd_gpio, int pwr_gpio,
-				      bool ro_low, bool cd_low, bool power_low)
+				   int bus_width, int max_freq,
+				   int ro_gpio, int cd_gpio, int pwr_gpio,
+				   bool ro_low, bool cd_low, bool power_low,
+				   u32 cmd_skew, u32 dat_skew)
 {
 	struct mmc_host *mmc;
 	struct octeon_mmc_slot *slot;
+	u64 clock_period;
 	int ret;
 
 	/*
@@ -948,6 +960,10 @@ static int __init octeon_init_slot(struct octeon_mmc_host *host, int id,
 
 	slot->clock = mmc->f_min;
 	slot->sclock = octeon_get_io_clock_rate();
+
+	clock_period = 1000000000000ull / slot->sclock; /* period in pS */
+	slot->cmd_cnt = (cmd_skew + clock_period / 2) / clock_period;
+	slot->dat_cnt = (dat_skew + clock_period / 2) / clock_period;
 
 	slot->bus_width = bus_width;
 	slot->bus_id = id;
@@ -1077,7 +1093,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 		if (!r) {
 			int ro_gpio, cd_gpio, pwr_gpio;
 			bool ro_low, cd_low, pwr_low;
-			u32 bus_width, max_freq;
+			u32 bus_width, max_freq, cmd_skew, dat_skew;
 
 			r = of_property_read_u32(node, "cavium,bus-max-width", &bus_width);
 			if (r) {
@@ -1095,6 +1111,14 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 				}
 			}
 
+			r = of_property_read_u32(node, "cavium,cmd-clk-skew", &cmd_skew);
+			if (r)
+				cmd_skew = 0;
+
+			r = of_property_read_u32(node, "cavium,dat-clk-skew", &dat_skew);
+			if (r)
+				dat_skew = 0;
+
 			r = of_property_read_u32(node, "spi-max-frequency", &max_freq);
 			if (r) {
 				max_freq = 52000000;
@@ -1111,7 +1135,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 
 			ret = octeon_init_slot(host, slot, bus_width, max_freq,
 					       ro_gpio, cd_gpio, pwr_gpio,
-					       ro_low, cd_low, pwr_low);
+					       ro_low, cd_low, pwr_low, cmd_skew, dat_skew);
 			pr_debug("init slot %d, ret = %d\n", slot, ret);
 			if (ret)
 				goto err;
