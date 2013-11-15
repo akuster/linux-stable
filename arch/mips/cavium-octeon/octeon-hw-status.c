@@ -55,6 +55,7 @@ struct octeon_hw_status_node {
 	u8 users;  /* Reference count. */
 	u8 is_hwint:1;
 	u8 ack_w1c:1;
+	u8 own_irq:1;
 };
 
 /* Protects octeon_hw_status_roots & their trees */
@@ -447,6 +448,8 @@ int octeon_hw_status_add_source(struct octeon_hw_status_reg *chain0)
 			WARN(rv, pr_fmt("request_threaded_irq failed:"
 				" irq %d, err %d\n"),
 				root->irq, rv);
+			if (!rv)
+				root->own_irq = 1;
 		}
 
 		if (count_debug)
@@ -520,7 +523,7 @@ static bool dispose_of_node(struct octeon_hw_status_node *n)
 				}
 
 				*pw = n->next;
-				if (n->is_hwint) {
+				if (n->is_hwint && n->own_irq) {
 					rv = true;
 					write_unlock(&octeon_hw_status_lock);
 					free_irq(n->irq, n);
