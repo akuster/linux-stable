@@ -197,6 +197,7 @@ int __cvmx_helper_agl_probe(int interface)
 int __cvmx_helper_agl_enable(int interface)
 {
 	int port = cvmx_helper_agl_get_port(interface);
+	int ipd_port = cvmx_helper_get_ipd_port(interface, port);
 	union cvmx_pko_mem_port_ptrs pko_mem_port_ptrs;
 	union cvmx_pko_reg_read_idx read_idx;
 	int do_link_set = 1;
@@ -230,7 +231,7 @@ int __cvmx_helper_agl_enable(int interface)
 		do_link_set = 0;
 #endif
 	if (do_link_set)
-		cvmx_agl_link_set(port, cvmx_agl_link_get(port), 1);
+		cvmx_agl_link_set(port, cvmx_agl_link_get(ipd_port), 1);
 
 	return 0;
 }
@@ -248,9 +249,7 @@ int __cvmx_helper_agl_enable(int interface)
  */
 cvmx_helper_link_info_t __cvmx_helper_agl_link_get(int ipd_port)
 {
-	int interface = cvmx_helper_get_interface_num(ipd_port);
-	int port = cvmx_helper_agl_get_port(interface);
-	return cvmx_agl_link_get(port);
+	return cvmx_agl_link_get(ipd_port);
 }
 
 /**

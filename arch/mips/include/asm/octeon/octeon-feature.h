@@ -42,7 +42,6 @@
  *
  * File defining checks for different Octeon features.
  *
- * <hr>$Revision: 30468 $<hr>
  */
 
 #ifndef __OCTEON_FEATURE_H__
@@ -153,10 +152,16 @@ typedef enum {
 				/**<  Octeon has node support */
 	OCTEON_FEATURE_CIU3,
 				/**<  Octeon has CIU3 */
+	OCTEON_FEATURE_FPA3,
+				/**<  Octeon has FPA first seen on 78XX */
 	OCTEON_FEATURE_CN78XX_WQE,
 				/**<  CN78XX has different fields in word0 - word2 */
 	OCTEON_FEATURE_SPI,
 				/**< Octeon supports SPI interfaces */
+	OCTEON_FEATURE_ZIP3,
+				/**<  Octeon has zip first seen on 78XX */
+ 	OCTEON_FEATURE_BCH,
+  				/**< Octeon supports BCH ECC */
 	OCTEON_MAX_FEATURE
 } octeon_feature_t;
 
@@ -173,6 +178,16 @@ static inline int octeon_has_feature_OCTEON_FEATURE_ZIP(void)
 		return 0;
 	else
 		return !cvmx_fuse_read(121);
+}
+
+static inline int octeon_has_feature_OCTEON_FEATURE_ZIP3(void)
+{
+	return (OCTEON_IS_MODEL(OCTEON_CN78XX));
+}
+
+static inline int octeon_has_feature_OCTEON_FEATURE_BCH(void)
+{
+	return OCTEON_IS_OCTEON3();
 }
 
 static inline int octeon_has_feature_OCTEON_FEATURE_CRYPTO(void)
@@ -329,6 +344,10 @@ static inline int octeon_has_feature_OCTEON_FEATURE_CIU3(void)
 	return (OCTEON_IS_MODEL(OCTEON_CN78XX));
 }
 
+static inline int octeon_has_feature_OCTEON_FEATURE_FPA3(void)
+{
+	return (OCTEON_IS_MODEL(OCTEON_CN78XX));
+}
 
 static inline int octeon_has_feature_OCTEON_FEATURE_NAND(void)
 {

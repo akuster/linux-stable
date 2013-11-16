@@ -1,6 +1,6 @@
 /***********************license start***************
  * Author: Cavium Networks
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  * Contact: support@caviumnetworks.com
@@ -63,7 +63,7 @@
  * Support functions for managing command queues used for
  * various hardware blocks.
  *
- * <hr>$Revision: 78972 $<hr>
+ * <hr>$Revision: 90196 $<hr>
  */
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
@@ -110,19 +110,25 @@ static cvmx_cmd_queue_result_t __cvmx_cmd_queue_init_state_ptr(void)
 #if defined(CONFIG_CAVIUM_RESERVE32) && CONFIG_CAVIUM_RESERVE32
 	if (octeon_reserve32_memory)
 		__cvmx_cmd_queue_state_ptr = cvmx_bootmem_alloc_named_range(sizeof(*__cvmx_cmd_queue_state_ptr),
-									    octeon_reserve32_memory,
-									    octeon_reserve32_memory + (CONFIG_CAVIUM_RESERVE32 << 20) - 1,
-									    128, alloc_name);
+					       octeon_reserve32_memory,
+					       (octeon_reserve32_memory
+					        + (CONFIG_CAVIUM_RESERVE32 << 20)
+					        - 1),
+					      128, alloc_name);
 	else
 #endif
-		__cvmx_cmd_queue_state_ptr = cvmx_bootmem_alloc_named(sizeof(*__cvmx_cmd_queue_state_ptr), 128, alloc_name);
+		__cvmx_cmd_queue_state_ptr =
+			cvmx_bootmem_alloc_named(sizeof(*__cvmx_cmd_queue_state_ptr),
+						 128, alloc_name);
 #else
-	__cvmx_cmd_queue_state_ptr = cvmx_bootmem_alloc_named(sizeof(*__cvmx_cmd_queue_state_ptr), 128, alloc_name);
+	__cvmx_cmd_queue_state_ptr = cvmx_bootmem_alloc_named(sizeof(*__cvmx_cmd_queue_state_ptr),
+							      128, alloc_name);
 #endif
 	if (__cvmx_cmd_queue_state_ptr)
 		memset(__cvmx_cmd_queue_state_ptr, 0, sizeof(*__cvmx_cmd_queue_state_ptr));
 	else {
-		const cvmx_bootmem_named_block_desc_t *block_desc = cvmx_bootmem_find_named_block(alloc_name);
+		const cvmx_bootmem_named_block_desc_t *block_desc =
+				cvmx_bootmem_find_named_block(alloc_name);
 		if (block_desc)
 			__cvmx_cmd_queue_state_ptr = cvmx_phys_to_ptr(block_desc->base_addr);
 		else {
@@ -196,10 +202,13 @@ cvmx_cmd_queue_result_t cvmx_cmd_queue_initialize(cvmx_cmd_queue_id_t queue_id,
 		union cvmx_fpa_ctl_status status;
 		void *buffer;
 
-		status.u64 = cvmx_read_csr(CVMX_FPA_CTL_STATUS);
-		if (!status.s.enb) {
-			cvmx_dprintf("ERROR: cvmx_cmd_queue_initialize: FPA is not enabled.\n");
-			return CVMX_CMD_QUEUE_NO_MEMORY;
+		if (!(octeon_has_feature(OCTEON_FEATURE_FPA3))) {
+			status.u64 = cvmx_read_csr(CVMX_FPA_CTL_STATUS);
+			if (!status.s.enb) {
+				cvmx_dprintf("ERROR: cvmx_cmd_queue_initialize:"
+					     " FPA is not enabled.\n");
+				return CVMX_CMD_QUEUE_NO_MEMORY;
+			}
 		}
 		buffer = cvmx_fpa_alloc(fpa_pool);
 		if (buffer == NULL) {
@@ -310,6 +319,9 @@ int cvmx_cmd_queue_length(cvmx_cmd_queue_id_t queue_id)
 			dmax_counts.u64 = cvmx_read_csr(CVMX_DPI_DMAX_COUNTS(queue_id & 0x7));
 			return dmax_counts.s.dbell;
 		}
+	case CVMX_CMD_QUEUE_BCH:
+		/* Not available */
+		return 0;
 	case CVMX_CMD_QUEUE_END:
 		return CVMX_CMD_QUEUE_INVALID_PARAM;
 	}

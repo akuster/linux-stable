@@ -82,7 +82,7 @@
  * internal cycle counter to completely eliminate any causes of
  * bus traffic.
  *
- * <hr> $Revision: 85265 $ <hr>
+ * <hr> $Revision: 90195 $ <hr>
  */
 
 #ifndef __CVMX_CMD_QUEUE_H__
@@ -120,7 +120,9 @@ typedef enum {
 	CVMX_CMD_QUEUE_RAID = 0x30000,
 	CVMX_CMD_QUEUE_DMA_BASE = 0x40000,
 #define CVMX_CMD_QUEUE_DMA(queue) ((cvmx_cmd_queue_id_t)(CVMX_CMD_QUEUE_DMA_BASE + (0xffff&(queue))))
-	CVMX_CMD_QUEUE_END = 0x50000,
+	CVMX_CMD_QUEUE_BCH = 0x50000,
+#define CVMX_CMD_QUEUE_BCH(queue) ((cvmx_cmd_queue_id_t)(CVMX_CMD_QUEUE_BCH + (0xffff&(queue))))
+	CVMX_CMD_QUEUE_END = 0x60000,
 } cvmx_cmd_queue_id_t;
 
 /**
@@ -186,7 +188,9 @@ typedef struct {
  *
  * @return CVMX_CMD_QUEUE_SUCCESS or a failure code
  */
-cvmx_cmd_queue_result_t cvmx_cmd_queue_initialize(cvmx_cmd_queue_id_t queue_id, int max_depth, int fpa_pool, int pool_size);
+cvmx_cmd_queue_result_t cvmx_cmd_queue_initialize(cvmx_cmd_queue_id_t queue_id,
+						  int max_depth, int fpa_pool,
+						  int pool_size);
 
 /**
  * Shutdown a queue a free it's command buffers to the FPA. The
@@ -231,10 +235,12 @@ void *cvmx_cmd_queue_buffer(cvmx_cmd_queue_id_t queue_id);
  */
 static inline int __cvmx_cmd_queue_get_index(cvmx_cmd_queue_id_t queue_id)
 {
-	/* Warning: This code currently only works with devices that have 256 queues
-	   or less. Devices with more than 16 queues are laid out in memory to allow
-	   cores quick access to every 16th queue. This reduces cache thrashing
-	   when you are running 16 queues per port to support lockless operation */
+	/* Warning: This code currently only works with devices that have 256
+	 * queues or less.  Devices with more than 16 queues are laid out in
+	 * memory to allow cores quick access to every 16th queue. This reduces
+	 * cache thrashing when you are running 16 queues per port to support
+	 * lockless operation
+	 */
 	int unit = queue_id >> 16;
 	int q = (queue_id >> 4) & 0xf;
 	int core = queue_id & 0xf;
@@ -248,7 +254,9 @@ static inline int __cvmx_cmd_queue_get_index(cvmx_cmd_queue_id_t queue_id)
  *
  * @param queue_id Queue ID to lock
  * @param qptr     Pointer to the queue's global state
- */ static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id, __cvmx_cmd_queue_state_t * qptr)
+ */
+static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id,
+					 __cvmx_cmd_queue_state_t * qptr)
 {
 	extern CVMX_SHARED __cvmx_cmd_queue_all_state_t *__cvmx_cmd_queue_state_ptr;
 	int tmp;
@@ -258,7 +266,9 @@ static inline int __cvmx_cmd_queue_get_index(cvmx_cmd_queue_id_t queue_id)
 		      ".set noreorder\n"
 		      "1:\n"
 		      "lld     %[my_ticket], %[ticket_ptr]\n"
-		      /* Atomic add one to ticket_ptr 64-bit operation for endian nutral access. */
+		      /* Atomic add one to ticket_ptr 64-bit operation for
+		       * endian nutral access.
+		       */
 		      "daddiu  %[ticket], %[my_ticket], 1\n"
 		      /*    and store the original value  in my_ticket */
 		      "scd     %[ticket], %[ticket_ptr]\n"
@@ -306,7 +316,8 @@ static inline void __cvmx_cmd_queue_unlock(__cvmx_cmd_queue_state_t * qptr)
  *
  * @return Queue structure or NULL on failure
  */
-static inline __cvmx_cmd_queue_state_t *__cvmx_cmd_queue_get_state(cvmx_cmd_queue_id_t queue_id)
+static inline __cvmx_cmd_queue_state_t *
+__cvmx_cmd_queue_get_state(cvmx_cmd_queue_id_t queue_id)
 {
 	extern CVMX_SHARED __cvmx_cmd_queue_all_state_t *__cvmx_cmd_queue_state_ptr;
 	if (CVMX_ENABLE_PARAMETER_CHECKING) {
@@ -333,7 +344,9 @@ static inline __cvmx_cmd_queue_state_t *__cvmx_cmd_queue_get_state(cvmx_cmd_queu
  *
  * @return CVMX_CMD_QUEUE_SUCCESS or a failure code
  */
-static inline cvmx_cmd_queue_result_t cvmx_cmd_queue_write(cvmx_cmd_queue_id_t queue_id, int use_locking, int cmd_count, uint64_t * cmds)
+static inline cvmx_cmd_queue_result_t
+cvmx_cmd_queue_write(cvmx_cmd_queue_id_t queue_id, int use_locking,
+		     int cmd_count, uint64_t * cmds)
 {
 	__cvmx_cmd_queue_state_t *qptr = __cvmx_cmd_queue_get_state(queue_id);
 
@@ -379,16 +392,18 @@ static inline cvmx_cmd_queue_result_t cvmx_cmd_queue_write(cvmx_cmd_queue_id_t q
 			return CVMX_CMD_QUEUE_NO_MEMORY;
 		}
 		ptr = (uint64_t *) cvmx_phys_to_ptr((uint64_t) qptr->base_ptr_div128 << 7);
-		/* Figure out how many command words will fit in this buffer. One
-		   location will be needed for the next buffer pointer */
+		/* Figure out how many command words will fit in this buffer.
+		 * One location will be needed for the next buffer pointer
+		 */
 		count = qptr->pool_size_m1 - qptr->index;
 		ptr += qptr->index;
 		cmd_count -= count;
 		while (count--)
 			*ptr++ = *cmds++;
 		*ptr = cvmx_ptr_to_phys(new_buffer);
-		/* The current buffer is full and has a link to the next buffer. Time
-		   to write the rest of the commands into the new buffer */
+		/* The current buffer is full and has a link to the next buffer.
+		 * Time to write the rest of the commands into the new buffer
+		 */
 		qptr->base_ptr_div128 = *ptr >> 7;
 		qptr->index = cmd_count;
 		ptr = new_buffer;
@@ -416,7 +431,9 @@ static inline cvmx_cmd_queue_result_t cvmx_cmd_queue_write(cvmx_cmd_queue_id_t q
  *
  * @return CVMX_CMD_QUEUE_SUCCESS or a failure code
  */
-static inline cvmx_cmd_queue_result_t cvmx_cmd_queue_write2(cvmx_cmd_queue_id_t queue_id, int use_locking, uint64_t cmd1, uint64_t cmd2)
+static inline cvmx_cmd_queue_result_t
+cvmx_cmd_queue_write2(cvmx_cmd_queue_id_t queue_id, int use_locking,
+		      uint64_t cmd1, uint64_t cmd2)
 {
 	__cvmx_cmd_queue_state_t *qptr = __cvmx_cmd_queue_get_state(queue_id);
 
@@ -497,7 +514,9 @@ static inline cvmx_cmd_queue_result_t cvmx_cmd_queue_write2(cvmx_cmd_queue_id_t 
  *
  * @return CVMX_CMD_QUEUE_SUCCESS or a failure code
  */
-static inline cvmx_cmd_queue_result_t cvmx_cmd_queue_write3(cvmx_cmd_queue_id_t queue_id, int use_locking, uint64_t cmd1, uint64_t cmd2, uint64_t cmd3)
+static inline cvmx_cmd_queue_result_t
+cvmx_cmd_queue_write3(cvmx_cmd_queue_id_t queue_id, int use_locking,
+		      uint64_t cmd1, uint64_t cmd2, uint64_t cmd3)
 {
 	__cvmx_cmd_queue_state_t *qptr = __cvmx_cmd_queue_get_state(queue_id);
 
@@ -531,8 +550,9 @@ static inline cvmx_cmd_queue_result_t cvmx_cmd_queue_write3(cvmx_cmd_queue_id_t 
 		ptr[2] = cmd3;
 	} else {
 		uint64_t *ptr;
-		/* Figure out how many command words will fit in this buffer. One
-		   location will be needed for the next buffer pointer */
+		/* Figure out how many command words will fit in this buffer.
+		 * One location will be needed for the next buffer pointer
+		 */
 		int count = qptr->pool_size_m1 - qptr->index;
 		/* We need a new command buffer. Fail if there isn't one available */
 		uint64_t *new_buffer = (uint64_t *) cvmx_fpa_alloc(qptr->fpa_pool);
@@ -551,8 +571,9 @@ static inline cvmx_cmd_queue_result_t cvmx_cmd_queue_write3(cvmx_cmd_queue_id_t 
 				*ptr++ = cmd3;
 		}
 		*ptr = cvmx_ptr_to_phys(new_buffer);
-		/* The current buffer is full and has a link to the next buffer. Time
-		   to write the rest of the commands into the new buffer */
+		/* The current buffer is full and has a link to the next buffer.
+		 * Time to write the rest of the commands into the new buffer
+		 */
 		qptr->base_ptr_div128 = *ptr >> 7;
 		qptr->index = 0;
 		ptr = new_buffer;
