@@ -264,7 +264,7 @@ void arch_teardown_msi_irq(unsigned int irq)
 static DEFINE_RAW_SPINLOCK(octeon_irq_msi_lock);
 
 static u64 msi_rcv_reg[4];
-static u64 mis_ena_reg[4];
+static u64 msi_ena_reg[4];
 
 static int (*octeon_irq_msi_to_irq)(int);
 static int (*octeon_irq_irq_to_msi)(int);
@@ -362,10 +362,10 @@ static void octeon_irq_msi_enable_pcie(struct irq_data *data)
 	int irq_bit = msi_number & 0x3f;
 
 	raw_spin_lock_irqsave(&octeon_irq_msi_lock, flags);
-	en = cvmx_read_csr(mis_ena_reg[irq_index]);
+	en = cvmx_read_csr(msi_ena_reg[irq_index]);
 	en |= 1ull << irq_bit;
-	cvmx_write_csr(mis_ena_reg[irq_index], en);
-	cvmx_read_csr(mis_ena_reg[irq_index]);
+	cvmx_write_csr(msi_ena_reg[irq_index], en);
+	cvmx_read_csr(msi_ena_reg[irq_index]);
 	raw_spin_unlock_irqrestore(&octeon_irq_msi_lock, flags);
 }
 
@@ -378,10 +378,10 @@ static void octeon_irq_msi_disable_pcie(struct irq_data *data)
 	int irq_bit = msi_number & 0x3f;
 
 	raw_spin_lock_irqsave(&octeon_irq_msi_lock, flags);
-	en = cvmx_read_csr(mis_ena_reg[irq_index]);
+	en = cvmx_read_csr(msi_ena_reg[irq_index]);
 	en &= ~(1ull << irq_bit);
-	cvmx_write_csr(mis_ena_reg[irq_index], en);
-	cvmx_read_csr(mis_ena_reg[irq_index]);
+	cvmx_write_csr(msi_ena_reg[irq_index], en);
+	cvmx_read_csr(msi_ena_reg[irq_index]);
 	raw_spin_unlock_irqrestore(&octeon_irq_msi_lock, flags);
 }
 
@@ -635,10 +635,10 @@ int __init octeon_msi_initialize(void)
 		msi_rcv_reg[1] = CVMX_PEXP_SLI_MSI_RCV1;
 		msi_rcv_reg[2] = CVMX_PEXP_SLI_MSI_RCV2;
 		msi_rcv_reg[3] = CVMX_PEXP_SLI_MSI_RCV3;
-		mis_ena_reg[0] = CVMX_PEXP_SLI_MSI_ENB0;
-		mis_ena_reg[1] = CVMX_PEXP_SLI_MSI_ENB1;
-		mis_ena_reg[2] = CVMX_PEXP_SLI_MSI_ENB2;
-		mis_ena_reg[3] = CVMX_PEXP_SLI_MSI_ENB3;
+		msi_ena_reg[0] = CVMX_PEXP_SLI_MSI_ENB0;
+		msi_ena_reg[1] = CVMX_PEXP_SLI_MSI_ENB1;
+		msi_ena_reg[2] = CVMX_PEXP_SLI_MSI_ENB2;
+		msi_ena_reg[3] = CVMX_PEXP_SLI_MSI_ENB3;
 		msi = &octeon_irq_chip_msi_pcie;
 		octeon_irq_msi_to_irq = octeon_irq_msi_to_irq_scatter;
 		octeon_irq_irq_to_msi = octeon_irq_irq_to_msi_scatter;
@@ -648,10 +648,10 @@ int __init octeon_msi_initialize(void)
 		msi_rcv_reg[1] = CVMX_PEXP_NPEI_MSI_RCV1;
 		msi_rcv_reg[2] = CVMX_PEXP_NPEI_MSI_RCV2;
 		msi_rcv_reg[3] = CVMX_PEXP_NPEI_MSI_RCV3;
-		mis_ena_reg[0] = CVMX_PEXP_NPEI_MSI_ENB0;
-		mis_ena_reg[1] = CVMX_PEXP_NPEI_MSI_ENB1;
-		mis_ena_reg[2] = CVMX_PEXP_NPEI_MSI_ENB2;
-		mis_ena_reg[3] = CVMX_PEXP_NPEI_MSI_ENB3;
+		msi_ena_reg[0] = CVMX_PEXP_NPEI_MSI_ENB0;
+		msi_ena_reg[1] = CVMX_PEXP_NPEI_MSI_ENB1;
+		msi_ena_reg[2] = CVMX_PEXP_NPEI_MSI_ENB2;
+		msi_ena_reg[3] = CVMX_PEXP_NPEI_MSI_ENB3;
 		msi = &octeon_irq_chip_msi_pcie;
 		octeon_irq_msi_to_irq = octeon_irq_msi_to_irq_scatter;
 		octeon_irq_irq_to_msi = octeon_irq_irq_to_msi_scatter;
@@ -662,10 +662,10 @@ int __init octeon_msi_initialize(void)
 		msi_rcv_reg[1] = INVALID_GENERATE_ADE;
 		msi_rcv_reg[2] = INVALID_GENERATE_ADE;
 		msi_rcv_reg[3] = INVALID_GENERATE_ADE;
-		mis_ena_reg[0] = INVALID_GENERATE_ADE;
-		mis_ena_reg[1] = INVALID_GENERATE_ADE;
-		mis_ena_reg[2] = INVALID_GENERATE_ADE;
-		mis_ena_reg[3] = INVALID_GENERATE_ADE;
+		msi_ena_reg[0] = INVALID_GENERATE_ADE;
+		msi_ena_reg[1] = INVALID_GENERATE_ADE;
+		msi_ena_reg[2] = INVALID_GENERATE_ADE;
+		msi_ena_reg[3] = INVALID_GENERATE_ADE;
 		msi = &octeon_irq_chip_msi_pci;
 		octeon_irq_msi_to_irq = octeon_irq_msi_to_irq_linear;
 		octeon_irq_irq_to_msi = octeon_irq_irq_to_msi_linear;
