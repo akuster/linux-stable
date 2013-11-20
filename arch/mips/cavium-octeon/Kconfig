@@ -199,6 +199,13 @@ config CAVIUM_OCTEON_KERNEL_CRYPTO
 	  crypto state.  If OCTEON crypto instruction support is
 	  needed, select this option.
 
+config CAVIUM_OCTEON_PERF
+	bool "OCTEON-specific hardware performance counters"
+	default y
+	depends on PERF_EVENTS
+	help
+	  support extra performance counters, including L2 cache & DRAM controller
+
 config ARCH_SPARSEMEM_ENABLE
 	def_bool y
 	select SPARSEMEM_STATIC
