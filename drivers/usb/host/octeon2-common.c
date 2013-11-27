@@ -72,6 +72,17 @@ void octeon2_usb_clocks_start(struct device *dev)
 	if_ena.s.en = 1;
 	cvmx_write_csr(CVMX_UCTLX_IF_ENA(0), if_ena.u64);
 
+	for (i = 0; i <= 1; i++) {
+		port_ctl_status.u64 =
+			cvmx_read_csr(CVMX_UCTLX_UPHY_PORTX_CTL_STATUS(i, 0));
+		/* Set txvreftune to 15 to obtain compliant 'eye' diagram. */
+		port_ctl_status.s.txvreftune = 15;
+		port_ctl_status.s.txrisetune = 1;
+		port_ctl_status.s.txpreemphasistune = 1;
+		cvmx_write_csr(CVMX_UCTLX_UPHY_PORTX_CTL_STATUS(i, 0),
+			       port_ctl_status.u64);
+	}
+
 	/* Step 3: Configure the reference clock, PHY, and HCLK */
 	clk_rst_ctl.u64 = cvmx_read_csr(CVMX_UCTLX_CLK_RST_CTL(0));
 
@@ -202,6 +213,20 @@ void octeon2_usb_clocks_start(struct device *dev)
 	clk_rst_ctl.s.p_prst = 1;
 	cvmx_write_csr(CVMX_UCTLX_CLK_RST_CTL(0), clk_rst_ctl.u64);
 
+	/* Step 11b */
+	udelay(1);
+
+	/* Step 11c */
+	clk_rst_ctl.s.p_prst = 0;
+	cvmx_write_csr(CVMX_UCTLX_CLK_RST_CTL(1), clk_rst_ctl.u64);
+
+	/* Step 11d */
+	mdelay(1);
+
+	/* Step 11e */
+	clk_rst_ctl.s.p_prst = 1;
+	cvmx_write_csr(CVMX_UCTLX_CLK_RST_CTL(0), clk_rst_ctl.u64);
+
 	/* Step 12: Wait 1 uS. */
 	udelay(1);
 
@@ -210,19 +235,6 @@ void octeon2_usb_clocks_start(struct device *dev)
 	cvmx_write_csr(CVMX_UCTLX_CLK_RST_CTL(0), clk_rst_ctl.u64);
 
 end_clock:
-	/* Now we can set some other registers.  */
-
-	for (i = 0; i <= 1; i++) {
-		port_ctl_status.u64 =
-			cvmx_read_csr(CVMX_UCTLX_UPHY_PORTX_CTL_STATUS(i, 0));
-		/* Set txvreftune to 15 to obtain compliant 'eye' diagram. */
-		port_ctl_status.s.txvreftune = 15;
-		port_ctl_status.s.txrisetune = 1;
-		port_ctl_status.s.txpreemphasistune = 1;
-		cvmx_write_csr(CVMX_UCTLX_UPHY_PORTX_CTL_STATUS(i, 0),
-			       port_ctl_status.u64);
-	}
-
 	/* Set uSOF cycle period to 60,000 bits. */
 	cvmx_write_csr(CVMX_UCTLX_EHCI_FLA(0), 0x20ull);
 
