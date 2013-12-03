@@ -284,6 +284,7 @@ typedef struct cvmx_debug_globals_s {
 	uint64_t tlb_entries;
 	uint64_t state[sizeof(cvmx_debug_state_t) / sizeof(uint64_t)];
 	cvmx_spinlock_t lock;
+	uint32_t pad;
 
 	volatile cvmx_debug_core_context_t contextes[CVMX_MAX_CORES];
 } cvmx_debug_globals_t;

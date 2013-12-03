@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 90514 $<hr>
+ * <hr>$Revision: 91009 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -1204,8 +1204,8 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 		   by the OS after it enumerates the bus and assigns addresses to the
 		   PCIe busses */
 		for (i = 0; i < 4; i++) {
-			cvmx_write_csr(CVMX_PEMX_P2P_BARX_START(pcie_port, i), -1);
-			cvmx_write_csr(CVMX_PEMX_P2P_BARX_END(pcie_port, i), -1);
+			cvmx_write_csr(CVMX_PEMX_P2P_BARX_START(i, pcie_port), -1);
+			cvmx_write_csr(CVMX_PEMX_P2P_BARX_END(i, pcie_port), -1);
 		}
 	}
 
