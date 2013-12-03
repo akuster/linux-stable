@@ -193,7 +193,7 @@ int cvmx_agl_link_set(int port, cvmx_helper_link_info_t link_info, int mode)
 		/* MII (both speeds) and RGMII 1000 setting */
 		agl_clk.s.clk_cnt = 1;
 		/* Check other speeds for RGMII mode */
-		if (mode == CVMX_MGMT_PORT_RGMII_MODE) {
+		if ((mode == CVMX_MGMT_PORT_RGMII_MODE) || OCTEON_IS_OCTEON3()) {
 			if (link_info.s.speed == 10)
 				agl_clk.s.clk_cnt = 50;
 			else if (link_info.s.speed == 100)

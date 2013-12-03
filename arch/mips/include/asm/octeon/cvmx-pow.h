@@ -1806,12 +1806,59 @@ static inline void cvmx_pow_work_request_async_nocheck(int scr_addr, cvmx_pow_wa
 
 	/* scr_addr must be 8 byte aligned */
 	data.u64 = 0;
-	data.s.scraddr = scr_addr >> 3;
-	data.s.len = 1;
-	data.s.did = CVMX_OCT_DID_TAG_SWTAG;
-	data.s.wait = wait;
-	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		data.s_cn78xx.node = cvmx_get_node_num();
+		data.s_cn78xx.scraddr = scr_addr >> 3;
+		data.s_cn78xx.len = 1;
+		data.s_cn78xx.did = CVMX_OCT_DID_TAG_SWTAG;
+		data.s_cn78xx.wait = wait;
+	} else {
+		data.s.scraddr = scr_addr >> 3;
+		data.s.len = 1;
+		data.s.did = CVMX_OCT_DID_TAG_SWTAG;
+		data.s.wait = wait;
+	}
+	cvmx_send_single(data.u64);
+}
+
+/**
+ * Asynchronous work request.  Work is requested from the POW unit, and should later
+ * be checked with function cvmx_pow_work_response_async.
+ * This function does NOT wait for previous tag switches to complete,
+ * so the caller must ensure that there is not a pending tag switch.
+ *
+ * @param scr_addr Scratch memory address that response will be returned to,
+ *                  which is either a valid WQE, or a response with the invalid bit set.
+ *                  Byte address, must be 8 byte aligned.
+ * @param group     group to receive work for.
+ * @param wait      1 to cause response to wait for work to become available (or timeout)
+ *                  0 to cause response to return immediately
+ */
+static inline void cvmx_sso_work_request_grp_async_nocheck(int scr_addr, unsigned group, cvmx_pow_wait_t wait)
+{
+	cvmx_pow_iobdma_store_t data;
+	if (CVMX_ENABLE_POW_CHECKS)
+		__cvmx_pow_warn_if_pending_switch(__func__);
+
+	/* scr_addr must be 8 byte aligned */
+	data.u64 = 0;
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		unsigned int node = cvmx_get_node_num();
+		data.s_cn78xx.scraddr = scr_addr >> 3;
+		data.s_cn78xx.len = 1;
+		data.s_cn78xx.did = CVMX_OCT_DID_TAG_SWTAG;
+		data.s_cn78xx.grouped = 1;
+		data.s_cn78xx.index_grp_mask = (node << 8) | (group & 0xff);
+		data.s_cn78xx.wait = wait;
+		data.s_cn78xx.node = node;
+	} else {
+		/* GRP not supported on older chips, ignore it */
+		data.s.scraddr = scr_addr >> 3;
+		data.s.len = 1;
+		data.s.did = CVMX_OCT_DID_TAG_SWTAG;
+		data.s.wait = wait;
+	}
+
 	cvmx_send_single(data.u64);
 }
 
@@ -1870,7 +1917,7 @@ static inline cvmx_wqe_t *cvmx_pow_work_response_async(int scr_addr)
  */
 static inline uint64_t cvmx_pow_work_invalid(cvmx_wqe_t * wqe_ptr)
 {
-	return (wqe_ptr == NULL);
+	return (wqe_ptr == NULL);	/* FIXME: improve */
 }
 
 /**
@@ -1924,6 +1971,7 @@ static inline void cvmx_pow_tag_sw_nocheck(uint32_t tag, cvmx_pow_tag_type_t tag
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		tag_req.s_cn78xx_other.op   = CVMX_POW_TAG_OP_SWTAG;
 		tag_req.s_cn78xx_other.type = tag_type;
+		/* FIXME: tag */
 	} else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
 		tag_req.s_cn68xx_other.op = CVMX_POW_TAG_OP_SWTAG;
 		tag_req.s_cn68xx_other.tag = tag;
@@ -2044,7 +2092,7 @@ static inline void cvmx_pow_tag_sw_full_nocheck(cvmx_wqe_t * wqp, uint32_t tag, 
 		tag_req.s_cn78xx_other.op = CVMX_POW_TAG_OP_SWTAG_FULL;
 		tag_req.s_cn78xx_other.type = tag_type;
 		tag_req.s_cn78xx_other.grp = group;
-		tag_req.s_cn78xx_other.wqp = CAST64(wqp);
+		tag_req.s_cn78xx_other.wqp = CAST64(wqp); /* FIXME: phys ? */
 	}
 	else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
 		tag_req.s_cn68xx_other.op = CVMX_POW_TAG_OP_SWTAG_FULL;
@@ -2620,7 +2668,7 @@ static inline void cvmx_pow_desched(uint64_t no_sched)
 	CVMX_SYNCWS;
 
 	tag_req.u64 = 0;
-	if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		tag_req.s_cn78xx_other.op = CVMX_POW_TAG_OP_DESCH;
 		tag_req.s_cn78xx_other.no_sched = no_sched;
 	} else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
@@ -2714,6 +2762,37 @@ static inline uint32_t cvmx_pow_tag_get_sw_bits(uint64_t tag)
 static inline uint32_t cvmx_pow_tag_get_hw_bits(uint64_t tag)
 {
 	return (tag & cvmx_build_mask(32 - CVMX_TAG_SW_BITS));
+}
+
+static inline uint64_t cvmx_sso_get_total_wqe_count(void)
+{
+	if(OCTEON_IS_MODEL(OCTEON_CN78XX))
+	{
+		cvmx_sso_grpx_aq_cnt_t sso_iq_com_cnt;
+		int grp = 0;
+		uint64_t cnt = 0;
+
+		for( grp = 0; grp < CVMX_SSO_NUM_GROUPS_78XX; grp++) {
+			sso_iq_com_cnt.u64 = cvmx_read_csr_node(0,CVMX_SSO_GRPX_AQ_CNT(grp));
+			cnt += sso_iq_com_cnt.u64;
+		}
+		return cnt;
+	}
+	else if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+	{
+		cvmx_sso_iq_com_cnt_t sso_iq_com_cnt;
+
+		sso_iq_com_cnt.u64 = cvmx_read_csr(CVMX_SSO_IQ_COM_CNT);
+
+		return (sso_iq_com_cnt.s.iq_cnt);
+	}
+	else
+	{
+		cvmx_pow_iq_com_cnt_t pow_iq_com_cnt;
+
+		pow_iq_com_cnt.u64 = cvmx_read_csr(CVMX_POW_IQ_COM_CNT);
+		return(pow_iq_com_cnt.s.iq_cnt);
+	}
 }
 
 /**

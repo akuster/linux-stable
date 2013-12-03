@@ -63,7 +63,7 @@
  * Support functions for managing command queues used for
  * various hardware blocks.
  *
- * <hr>$Revision: 90196 $<hr>
+ * <hr>$Revision: 91009 $<hr>
  */
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
@@ -110,25 +110,19 @@ static cvmx_cmd_queue_result_t __cvmx_cmd_queue_init_state_ptr(void)
 #if defined(CONFIG_CAVIUM_RESERVE32) && CONFIG_CAVIUM_RESERVE32
 	if (octeon_reserve32_memory)
 		__cvmx_cmd_queue_state_ptr = cvmx_bootmem_alloc_named_range(sizeof(*__cvmx_cmd_queue_state_ptr),
-					       octeon_reserve32_memory,
-					       (octeon_reserve32_memory
-					        + (CONFIG_CAVIUM_RESERVE32 << 20)
-					        - 1),
-					      128, alloc_name);
+									    octeon_reserve32_memory,
+									    octeon_reserve32_memory + (CONFIG_CAVIUM_RESERVE32 << 20) - 1,
+									    128, alloc_name);
 	else
 #endif
-		__cvmx_cmd_queue_state_ptr =
-			cvmx_bootmem_alloc_named(sizeof(*__cvmx_cmd_queue_state_ptr),
-						 128, alloc_name);
+		__cvmx_cmd_queue_state_ptr = cvmx_bootmem_alloc_named(sizeof(*__cvmx_cmd_queue_state_ptr), 128, alloc_name);
 #else
-	__cvmx_cmd_queue_state_ptr = cvmx_bootmem_alloc_named(sizeof(*__cvmx_cmd_queue_state_ptr),
-							      128, alloc_name);
+	__cvmx_cmd_queue_state_ptr = cvmx_bootmem_alloc_named(sizeof(*__cvmx_cmd_queue_state_ptr), 128, alloc_name);
 #endif
 	if (__cvmx_cmd_queue_state_ptr)
 		memset(__cvmx_cmd_queue_state_ptr, 0, sizeof(*__cvmx_cmd_queue_state_ptr));
 	else {
-		const cvmx_bootmem_named_block_desc_t *block_desc =
-				cvmx_bootmem_find_named_block(alloc_name);
+		const cvmx_bootmem_named_block_desc_t *block_desc = cvmx_bootmem_find_named_block(alloc_name);
 		if (block_desc)
 			__cvmx_cmd_queue_state_ptr = cvmx_phys_to_ptr(block_desc->base_addr);
 		else {
