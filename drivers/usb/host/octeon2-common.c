@@ -241,6 +241,9 @@ static int __init octeon2_usb_reset(void)
 	union cvmx_uahcx_ehci_usbcmd ehci_usbcmd;
 	union cvmx_uahcx_ohci0_hccommandstatus ohci_usbcmd;
 
+	if (!OCTEON_IS_OCTEON2())
+		return 0;
+
 	clk_rst_ctl.u64 = cvmx_read_csr(CVMX_UCTLX_CLK_RST_CTL(0));
 	if (clk_rst_ctl.s.hrst) {
 		ehci_usbcmd.u32 = cvmx_read64_uint32(CVMX_UAHCX_EHCI_USBCMD(0));
