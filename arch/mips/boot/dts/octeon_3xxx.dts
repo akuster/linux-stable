@@ -552,7 +552,7 @@
 		};
 
 		usbn: usbn@1180068000000 {
-			compatible = "cavium,octeon-6335-uctl";
+			compatible = "cavium,octeon-5750-usbn";
 			reg = <0x11800 0x68000000 0x0 0x1000>;
 			ranges; /* Direct mapping */
 			#address-cells = <2>;
