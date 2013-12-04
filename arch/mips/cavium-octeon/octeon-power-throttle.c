@@ -187,6 +187,8 @@ static ssize_t show(
 		goto bye;
 
 	switch (attr->attr.name[0]) {
+		int maxt;
+
 	case 'p': /* percent */
 		ret = sprintf(buf, "%d\n", scaled(r, r.s.powlim));
 		break;
@@ -204,6 +206,12 @@ static ssize_t show(
 		ret = sprintf(buf, "%d\n", (1024 >> r.s.period));
 		break;
 
+	case 'm': /* maxthr/minthr */
+		/* this name[0] "perfect hash" just broke ... */
+		maxt = (attr->attr.name[2] == 'x');
+		ret = sprintf(buf, "%d\n", maxt ? r.s.maxthr : r.s.minthr);
+		break;
+
 	case 's':
 		ret = sprintf(buf,
 			"recent power:         %d\n"
@@ -219,7 +227,9 @@ static ssize_t show(
 			r.s.thrott,
 			scaled(r, r.s.powlim), r.s.powlim,
 			scaled(r, get_powbase(r)), get_powbase(r),
-			(boot_powlim >= 0 ? boot_powlim : get_powbase(r)),
+			(boot_powlim >= 0
+				? boot_powlim
+				: (get_powbase(r) * 100) / r.s.maxpow),
 			(1024 >> r.s.period),
 			r.s.minthr, r.s.maxthr,
 			"NY"[r.s.ovrrd],
@@ -270,6 +280,8 @@ static ssize_t store(
 		goto bye;
 
 	switch (attr->attr.name[0]) {
+		int maxt;
+
 	case 'p': /* percent */
 		if (restore_default_powlim)
 			val = get_powbase(r);
@@ -303,6 +315,15 @@ static ssize_t store(
 			error = -EINVAL;
 		break;
 
+	case 'm': /* maxthr/minthr */
+		/* this name[0] "perfect hash" just broke ... */
+		maxt = (attr->attr.name[2] == 'x');
+		if (maxt)
+			r.s.maxthr = val;
+		else
+			r.s.minthr = val;
+		break;
+
 	default:
 		error = -EINVAL;
 		break;
@@ -322,6 +343,8 @@ bye:
 static DEVICE_ATTR(percentage, S_IRUGO | S_IWUSR, show, store); 
 static DEVICE_ATTR(override, S_IRUGO | S_IWUSR, show, store); 
 static DEVICE_ATTR(cycles, S_IRUGO | S_IWUSR, show, store); 
+static DEVICE_ATTR(maxthr, S_IRUGO | S_IWUSR, show, store); 
+static DEVICE_ATTR(minthr, S_IRUGO | S_IWUSR, show, store); 
 static DEVICE_ATTR(default, S_IRUGO, show, NULL);
 static DEVICE_ATTR(state, S_IRUGO, show, NULL);
 
@@ -329,6 +352,8 @@ static struct attribute *octeon_power_throttle_attrs[] = {
 	&dev_attr_percentage.attr,
 	&dev_attr_override.attr,
 	&dev_attr_cycles.attr,
+	&dev_attr_maxthr.attr,
+	&dev_attr_minthr.attr,
 	&dev_attr_default.attr,
 	&dev_attr_state.attr,
 	NULL
