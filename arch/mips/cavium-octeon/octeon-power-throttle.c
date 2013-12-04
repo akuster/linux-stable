@@ -114,16 +114,15 @@ static void octeon_power_throttle_init_cpu(int cpu)
 	if (throttle_op(cpu, &r, false))
 		return;
 
+	if (cpu == 0)
+		pr_debug("old power_throttle %llx\n",
+			r.raw);
+
 	r.s.ovrrd = 0;		/* MBZ */
 	r.s.distag = 0;		/* MBZ */
 	r.s.period = 2;		/* 256 cycles */
 	r.s.minthr = 0;
-
-	/*
-	 * allow instantaneous power to peak above HRM default
-	 * of (maxpow - adj), even if powlim holds average to that.
-	 */
-	r.s.maxthr = r.s.maxpow;
+	r.s.maxthr = 0xff;
 
 	/* limit average power to boot_powlim% of max power */
 	if (boot_powlim >= 0)
