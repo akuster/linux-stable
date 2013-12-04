@@ -30,6 +30,7 @@ void ahci_octeon_config(struct platform_device *pdev)
 	shim_cfg.s.dma_endian_mode = 0;
 	shim_cfg.s.csr_endian_mode = 0;
 #endif
+	shim_cfg.s.dma_read_cmd = 1; /* No allocate L2C */
 	cvmx_write_csr(CVMX_SATA_UCTL_SHIM_CFG, shim_cfg.u64);
 
 	/* Set a good dma_mask */
