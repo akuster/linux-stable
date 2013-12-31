@@ -329,6 +329,9 @@ int octeon_hw_status_add_source(struct octeon_hw_status_reg *chain0)
 				root->mask_reg = chain->mask_reg;
 			}
 
+			/* roots never evaporate - count starts at 1 */
+			root->users = 1;
+
 			root->next = octeon_hw_status_roots;
 			octeon_hw_status_roots = root;
 			root_created = true;
