@@ -2985,7 +2985,10 @@ static irqreturn_t octeon_irq_cib_handler(int my_irq, void *data)
 			continue;
 		irq = irq_find_mapping(cib_domain, i);
 		if (!irq) {
-			pr_err("ERROR: No mapping for cib %d\n", i);
+			pr_err("ERROR: CIB bit %d@%llx IRQ unhandled, disabling\n", i, host_data->raw_reg);
+			en &= ~(1ull << i);
+			cvmx_write_csr(host_data->en_reg, en);
+			cvmx_write_csr(host_data->raw_reg, 1ull << i);
 		} else {
 			struct irq_desc *desc = irq_to_desc(irq);
 			struct irq_data *irq_data = irq_desc_get_irq_data(desc);
@@ -3046,6 +3049,9 @@ static int __init octeon_irq_init_cib(struct device_node *ciu_node,
 		pr_err("ERROR: Couldn't irq_domain_add_linear()\n.");
 		return -ENOMEM;
 	}
+
+	cvmx_write_csr(host_data->en_reg, 0); /* disable all IRQs */
+	cvmx_write_csr(host_data->raw_reg, ~0); /* ack any outstanding */
 
 	r = request_irq(parent_irq, octeon_irq_cib_handler, 0,
 			"cib", cib_domain);
