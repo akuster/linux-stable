@@ -30,7 +30,7 @@
 #define COMM "COMM"
 
 static struct format_field comm = {
-	.name = "COMM",
+	.name = (char *) "COMM",
 };
 
 struct event_list {
@@ -2060,7 +2060,7 @@ static char *op_to_str(struct event_filter *filter, struct filter_arg *arg)
 	char *str = NULL;
 	char *left = NULL;
 	char *right = NULL;
-	char *op = NULL;
+	const char *op = NULL;
 	int left_val = -1;
 	int right_val = -1;
 	int val;
@@ -2177,7 +2177,7 @@ static char *exp_to_str(struct event_filter *filter, struct filter_arg *arg)
 {
 	char *lstr;
 	char *rstr;
-	char *op;
+	const char *op;
 	char *str = NULL;
 
 	lstr = arg_to_str(filter, arg->exp.left);
@@ -2234,7 +2234,7 @@ static char *num_to_str(struct event_filter *filter, struct filter_arg *arg)
 	char *lstr;
 	char *rstr;
 	char *str = NULL;
-	char *op = NULL;
+	const char *op = NULL;
 
 	lstr = arg_to_str(filter, arg->num.left);
 	rstr = arg_to_str(filter, arg->num.right);
@@ -2282,7 +2282,7 @@ out:
 static char *str_to_str(struct event_filter *filter, struct filter_arg *arg)
 {
 	char *str = NULL;
-	char *op = NULL;
+	const char *op = NULL;
 
 	switch (arg->str.type) {
 	case FILTER_CMP_MATCH:
