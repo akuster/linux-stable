@@ -1226,6 +1226,13 @@ static int octeon_nand_probe(struct platform_device *pdev)
 			return -ENXIO;
 		}
 
+		/* Disable subpage support, as it is not properly supported
+		 * in this octeon-nand driver. Subpage support is assumed by
+		 * nand_base.c for all large-page NAND flashes that use soft
+		 * ECC.
+		 */
+		priv->nand.options &= ~NAND_SUBPAGE_READ;
+
 		/* We need to override the name, as the default names
 		 * have spaces in them, and this prevents the passing
 		 * of partitioning information on the kernel command line.
