@@ -204,7 +204,7 @@ static void octeon3_usb_clocks_start(struct platform_device *pdev, int index)
 	cvmx_write_csr(CVMX_USBDRDX_UCTL_CTL(index), uctl_ctl.u64);
 
 	/* Step ??*/
-	cvmx_wait(2000);
+	udelay(10);
 
 	/* Step 6a-6d & 7: Reference clock configuration */
 	uctl_ctl.u64 = cvmx_read_csr(CVMX_USBDRDX_UCTL_CTL(index));
@@ -250,7 +250,7 @@ static void octeon3_usb_clocks_start(struct platform_device *pdev, int index)
 	cvmx_write_csr(CVMX_USBDRDX_UCTL_CTL(index), uctl_ctl.u64);
 
 	/* Step 9c*/
-	cvmx_wait(10);
+	ndelay(200);
 
 	/* Step 10*/
 	uctl_ctl.u64 = cvmx_read_csr(CVMX_USBDRDX_UCTL_CTL(index));
