@@ -22,25 +22,18 @@
 #include <asm/octeon/cvmx-ciu2-defs.h>
 #include <asm/octeon/pci-octeon.h>
 
+#define MSI_IRQ_SIZE		256
+
 /*
- * Each bit in msi_free_irq_bitmask represents a MSI interrupt that is
+ * Each bit in msi_free_irq_bitmap represents a MSI interrupt that is
  * in use.
  */
-static u64 msi_free_irq_bitmask[4];
+static DECLARE_BITMAP(msi_free_irq_bitmap, MSI_IRQ_SIZE);
 
 /*
- * Each bit in msi_multiple_irq_bitmask tells that the device using
- * this bit in msi_free_irq_bitmask is also using the next bit. This
- * is used so we can disable all of the MSI interrupts when a device
- * uses multiple.
+ * This lock controls updates to msi_free_irq_bitmap.
  */
-static u64 msi_multiple_irq_bitmask[4];
-
-/*
- * This lock controls updates to msi_free_irq_bitmask and
- * msi_multiple_irq_bitmask.
- */
-static DEFINE_SPINLOCK(msi_free_irq_bitmask_lock);
+static DEFINE_SPINLOCK(msi_free_irq_bitmap_lock);
 
 /*
  * Number of MSI IRQs used. This variable is set up in
@@ -115,36 +108,23 @@ try_only_one:
 	search_mask = (1ull << irq_step) - 1;
 
 	/*
-	 * We're going to search msi_free_irq_bitmask_lock for zero
-	 * bits. This represents an MSI interrupt number that isn't in
-	 * use.
+	 * We're going to search msi_free_irq_bitmap for zero bits. This
+	 * represents an MSI interrupt number that isn't in use.
 	 */
-	spin_lock(&msi_free_irq_bitmask_lock);
-	for (index = 0; index < msi_irq_size/64; index++) {
-		for (irq = 0; irq < 64; irq += irq_step) {
-			if ((msi_free_irq_bitmask[index] & (search_mask << irq)) == 0) {
-				msi_free_irq_bitmask[index] |= search_mask << irq;
-				msi_multiple_irq_bitmask[index] |= (search_mask >> 1) << irq;
-				goto msi_irq_allocated;
-			}
-		}
+	spin_lock(&msi_free_irq_bitmap_lock);
+	irq = find_next_zero_bit(msi_free_irq_bitmap, MSI_IRQ_SIZE, 1);
+	if (irq < MSI_IRQ_SIZE) {
+		set_bit(irq, msi_free_irq_bitmap);
+		spin_unlock(&msi_free_irq_bitmap_lock);
 	}
-msi_irq_allocated:
-	spin_unlock(&msi_free_irq_bitmask_lock);
-
-	/* Make sure the search for available interrupts didn't fail */
-	if (irq >= 64) {
-		if (request_private_bits) {
-			pr_err("arch_setup_msi_irq: Unable to find %d free interrupts, trying just one",
-			       1 << request_private_bits);
-			request_private_bits = 0;
-			goto try_only_one;
-		} else
-			panic("arch_setup_msi_irq: Unable to find a free MSI interrupt");
+	else {
+		spin_unlock(&msi_free_irq_bitmap_lock);
+		WARN(1, "arch_setup_msi_irq: Unable to find a free MSI "
+		     "interrupt");
+		return -ENOSPC;
 	}
 
 	/* MSI interrupts start at logical IRQ OCTEON_IRQ_MSI_BIT0 */
-	irq += index*64;
 	msg.data = irq;
 	irq += OCTEON_IRQ_MSI_BIT0;
 
@@ -185,35 +165,6 @@ msi_irq_allocated:
 	return 0;
 }
 
-int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
-{
-	struct msi_desc *entry;
-	int ret;
-
-	/*
-	 * MSI-X is not supported.
-	 */
-	if (type == PCI_CAP_ID_MSIX)
-		return -EINVAL;
-
-	/*
-	 * If an architecture wants to support multiple MSI, it needs to
-	 * override arch_setup_msi_irqs()
-	 */
-	if (type == PCI_CAP_ID_MSI && nvec > 1)
-		return 1;
-
-	list_for_each_entry(entry, &dev->msi_list, list) {
-		ret = arch_setup_msi_irq(dev, entry);
-		if (ret < 0)
-			return ret;
-		if (ret > 0)
-			return -ENOSPC;
-	}
-
-	return 0;
-}
-
 /**
  * Called when a device no longer needs its MSI interrupts. All
  * MSI interrupts for the device are freed.
@@ -222,10 +173,7 @@ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
  */
 void arch_teardown_msi_irq(unsigned int irq)
 {
-	int number_irqs;
-	u64 bitmask;
-	int index = 0;
-	int irq0;
+	int old;
 
 	if ((irq < OCTEON_IRQ_MSI_BIT0)
 		|| (irq > msi_irq_size + OCTEON_IRQ_MSI_BIT0 - 1))
@@ -233,32 +181,14 @@ void arch_teardown_msi_irq(unsigned int irq)
 		      irq);
 
 	irq -= OCTEON_IRQ_MSI_BIT0;
-	index = irq / 64;
-	irq0 = irq % 64;
-	/*
-	 * Count the number of IRQs we need to free by looking at the
-	 * msi_multiple_irq_bitmask. Each bit set means that the next
-	 * IRQ is also owned by this device.
-	 */
-	number_irqs = 0;
-	while ((irq0 + number_irqs < 64) &&
-	       (msi_multiple_irq_bitmask[index]
-		& (1ull << (irq0 + number_irqs))))
-		number_irqs++;
-	number_irqs++;
-	/* Mask with one bit for each IRQ */
-	bitmask = (1ull << number_irqs) - 1;
-	/* Shift the mask to the correct bit location */
-	bitmask <<= irq0;
-	if ((msi_free_irq_bitmask[index] & bitmask) != bitmask)
-		panic("arch_teardown_msi_irq: Attempted to teardown MSI interrupt (%d) not in use",
-		      irq);
+	spin_lock(&msi_free_irq_bitmap_lock);
+	old = test_and_clear_bit(irq, msi_free_irq_bitmap);
+	spin_unlock(&msi_free_irq_bitmap_lock);
 
-	/* Checks are done, update the in use bitmask */
-	spin_lock(&msi_free_irq_bitmask_lock);
-	msi_free_irq_bitmask[index] &= ~bitmask;
-	msi_multiple_irq_bitmask[index] &= ~bitmask;
-	spin_unlock(&msi_free_irq_bitmask_lock);
+	if (!old) {
+		WARN(1, "arch_teardown_msi_irq: Attempted to teardown MSI "
+		     "interrupt (%d) not in use", irq);
+	}
 }
 
 static DEFINE_RAW_SPINLOCK(octeon_irq_msi_lock);
@@ -367,6 +297,7 @@ static void octeon_irq_msi_enable_pcie(struct irq_data *data)
 	cvmx_write_csr(msi_ena_reg[irq_index], en);
 	cvmx_read_csr(msi_ena_reg[irq_index]);
 	raw_spin_unlock_irqrestore(&octeon_irq_msi_lock, flags);
+	unmask_msi_irq(data);
 }
 
 static void octeon_irq_msi_disable_pcie(struct irq_data *data)
@@ -383,6 +314,7 @@ static void octeon_irq_msi_disable_pcie(struct irq_data *data)
 	cvmx_write_csr(msi_ena_reg[irq_index], en);
 	cvmx_read_csr(msi_ena_reg[irq_index]);
 	raw_spin_unlock_irqrestore(&octeon_irq_msi_lock, flags);
+	mask_msi_irq(data);
 }
 
 static struct irq_chip octeon_irq_chip_msi_pcie = {
@@ -625,6 +557,10 @@ int __init octeon_msi_initialize(void)
 
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
 		return 0;
+
+	/* Clear msi irq bitmap */
+	bitmap_zero(msi_free_irq_bitmap, MSI_IRQ_SIZE);
+
 #if 0
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX) && !OCTEON_IS_MODEL(OCTEON_CN68XX_PASS1_X))
 		return octeon_msi_68XX_init();
