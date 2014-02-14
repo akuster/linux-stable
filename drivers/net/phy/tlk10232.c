@@ -112,10 +112,7 @@ static int tlk10232_config_init(struct phy_device *phydev)
 	if (ret < 0)
 		goto err;
 
-	ret =  phy_read(phydev, TI_RESERVED_20);
-	if (ret < 0)
-		goto err;
-	v = ret | 3; /* Magic */
+	v = 3; /* Magic */
 	ret = phy_write(phydev, TI_RESERVED_20, v);
 	if (ret < 0)
 		goto err;
