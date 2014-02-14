@@ -2985,10 +2985,14 @@ static irqreturn_t octeon_irq_cib_handler(int my_irq, void *data)
 			continue;
 		irq = irq_find_mapping(cib_domain, i);
 		if (!irq) {
+			unsigned long flags;
 			pr_err("ERROR: CIB bit %d@%llx IRQ unhandled, disabling\n", i, host_data->raw_reg);
+			raw_spin_lock_irqsave(&host_data->lock, flags);
+			en = cvmx_read_csr(host_data->en_reg);
 			en &= ~(1ull << i);
 			cvmx_write_csr(host_data->en_reg, en);
 			cvmx_write_csr(host_data->raw_reg, 1ull << i);
+			raw_spin_unlock_irqrestore(&host_data->lock, flags);
 		} else {
 			struct irq_desc *desc = irq_to_desc(irq);
 			struct irq_data *irq_data = irq_desc_get_irq_data(desc);
@@ -3053,8 +3057,8 @@ static int __init octeon_irq_init_cib(struct device_node *ciu_node,
 	cvmx_write_csr(host_data->en_reg, 0); /* disable all IRQs */
 	cvmx_write_csr(host_data->raw_reg, ~0); /* ack any outstanding */
 
-	r = request_irq(parent_irq, octeon_irq_cib_handler, 0,
-			"cib", cib_domain);
+	r = request_irq(parent_irq, octeon_irq_cib_handler,
+			IRQF_NO_THREAD, "cib", cib_domain);
 	if (r) {
 		pr_err("request_irq cib failed %d\n", r);
 		return r;
