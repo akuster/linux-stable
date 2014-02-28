@@ -555,17 +555,7 @@ void cvmx_pko_initialize_global(void)
 	if (OCTEON_IS_MODEL(OCTEON_CN38XX) || OCTEON_IS_MODEL(OCTEON_CN58XX) ||
 	    OCTEON_IS_MODEL(OCTEON_CN56XX) || OCTEON_IS_MODEL(OCTEON_CN52XX) ||
 	    OCTEON_IS_OCTEON2() || OCTEON_IS_MODEL(OCTEON_CN70XX)) {
-		int num_interfaces;
-		int last_port;
-		int max_queues;
-
-		if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
-			max_queues = __cvmx_helper_cfg_pko_max_queue();
-		} else {
-			num_interfaces = cvmx_helper_get_number_of_interfaces();
-			last_port = cvmx_helper_get_last_ipd_port(num_interfaces - 1);
-			max_queues = cvmx_pko_get_base_queue(last_port) + cvmx_pko_get_num_queues(last_port);
-		}
+		int max_queues = __cvmx_helper_cfg_pko_max_queue();
 
 		if (OCTEON_IS_MODEL(OCTEON_CN38XX)) {
 			if (max_queues <= 32)

@@ -89,6 +89,7 @@ CVMX_SHARED struct cvmx_cfg_port_param cvmx_cfg_port[CVMX_HELPER_MAX_IFACE][CVMX
 /*
  * Indexed by the pko_port number
  */
+static CVMX_SHARED int __cvmx_cfg_pko_highest_queue;
 CVMX_SHARED struct cvmx_cfg_pko_port_param cvmx_pko_queue_table [CVMX_HELPER_CFG_MAX_PKO_PORT] =
 {[0 ... CVMX_HELPER_CFG_MAX_PKO_PORT - 1] = {CVMX_HELPER_CFG_INVALID_VALUE,CVMX_HELPER_CFG_INVALID_VALUE}};
 
@@ -166,21 +167,7 @@ int __cvmx_helper_cfg_pko_queue_base(int pko_port)
 
 int __cvmx_helper_cfg_pko_max_queue(void)
 {
-	int i;
-
-	i = CVMX_HELPER_CFG_MAX_PKO_PORT - 1;
-
-	while (i >= 0) {
-		if (cvmx_pko_queue_table[i].ccppp_queue_base != CVMX_HELPER_CFG_INVALID_VALUE) {
-			cvmx_helper_cfg_assert(cvmx_pko_queue_table[i].ccppp_num_queues > 0);
-			return (cvmx_pko_queue_table[i].ccppp_queue_base + cvmx_pko_queue_table[i].ccppp_num_queues);
-		}
-		i--;
-	}
-	cvmx_pko_queue_show();
-	cvmx_helper_cfg_assert(0);	/* shouldn't get here */
-
-	return 0;
+	return __cvmx_cfg_pko_highest_queue;
 }
 
 int __cvmx_helper_cfg_pko_max_engine(void)
@@ -308,6 +295,7 @@ int init_cvmx_pko_que_range(void)
 int cvmx_pko_queue_alloc(uint64_t port, uint64_t count)
 {
     int ret_val = -1;
+    int highest_queue;
 
     init_cvmx_pko_que_range();
     if (port >= CVMX_HELPER_CFG_MAX_PKO_QUEUES) {
@@ -320,6 +308,10 @@ int cvmx_pko_queue_alloc(uint64_t port, uint64_t count)
         return ret_val;
     cvmx_pko_queue_table[port].ccppp_queue_base = ret_val;
     cvmx_pko_queue_table[port].ccppp_num_queues = count;
+
+    highest_queue = ret_val + count - 1;
+    if (highest_queue > __cvmx_cfg_pko_highest_queue)
+	    __cvmx_cfg_pko_highest_queue = highest_queue;
     return 0;
 }
 
