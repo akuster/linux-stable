@@ -2620,7 +2620,8 @@ static unsigned int octeon_irq_ciu3_mbox_intsn_for_core(int core, unsigned int m
 
 static unsigned int octeon_irq_ciu3_mbox_intsn_for_cpu(int cpu, unsigned int mbox)
 {
-	return octeon_irq_ciu3_mbox_intsn_for_core(octeon_coreid_for_cpu(cpu), mbox);
+	int local_core = octeon_coreid_for_cpu(cpu) & 0x3f;
+	return octeon_irq_ciu3_mbox_intsn_for_core(local_core, mbox);
 }
 
 static void octeon_irq_ciu3_mbox(void)
@@ -2773,12 +2774,12 @@ static int octeon_irq_ciu3_alloc_resources(struct octeon_ciu3_info *ciu3_info)
 
 	/* ip2 interrupts for this CPU */
 	cvmx_write_csr(b + CIU3_IDT_CTL(idt_ip2), 0);
-	cvmx_write_csr(b + CIU3_IDT_PP(idt_ip2, 0), 1ull << cvmx_get_core_num());
+	cvmx_write_csr(b + CIU3_IDT_PP(idt_ip2, 0), 1ull << core);
 	cvmx_write_csr(b + CIU3_IDT_IO(idt_ip2), 0);
 
 	/* ip3 interrupts for this CPU */
 	cvmx_write_csr(b + CIU3_IDT_CTL(idt_ip3), 1);
-	cvmx_write_csr(b + CIU3_IDT_PP(idt_ip3, 0), 1ull << cvmx_get_core_num());
+	cvmx_write_csr(b + CIU3_IDT_PP(idt_ip3, 0), 1ull << core);
 	cvmx_write_csr(b + CIU3_IDT_IO(idt_ip3), 0);
 
 	cvmx_write_csr(b + CIU3_IDT_CTL(unused_idt1), 0);
@@ -2875,13 +2876,17 @@ static int __init octeon_irq_init_ciu3(struct device_node *ciu_node,
 		ciu3_info->domain[i] = domain;
 
 	octeon_ciu3_info_per_node[node] = ciu3_info;
-	octeon_irq_ciu3_alloc_resources(ciu3_info);
-	if (node == 0)
-		irq_set_default_host(domain);
 
-	/* Enable the CIU lines */
-	set_c0_status(STATUSF_IP2 | STATUSF_IP3);
-	clear_c0_status(STATUSF_IP4);
+	if (node == cvmx_get_node_num()) {
+		/* Only do per CPU things if it is the CIU of the boot node. */
+		octeon_irq_ciu3_alloc_resources(ciu3_info);
+		if (node == 0)
+			irq_set_default_host(domain);
+
+		/* Enable the CIU lines */
+		set_c0_status(STATUSF_IP2 | STATUSF_IP3);
+		clear_c0_status(STATUSF_IP4);
+	}
 
 	return 0;
 }
