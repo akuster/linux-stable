@@ -35,8 +35,6 @@ static struct cvmx_app_hotplug_global *octeon_hotplug_global_ptr;
 uint64_t octeon_bootloader_entry_addr;
 EXPORT_SYMBOL(octeon_bootloader_entry_addr);
 
-static unsigned long long boot_core_mask;
-
 static void octeon_icache_flush(void)
 {
 	asm volatile ("synci 0($0)\n");
@@ -227,8 +225,7 @@ static void octeon_smp_setup(void)
 	char hexstr[CVMX_MIPS_MAX_CORES/4+1];
 	unsigned long t;
 #endif
-
-	boot_core_mask = octeon_get_boot_coremask();
+	struct cvmx_sysinfo *sysinfo = cvmx_sysinfo_get();
 
 	labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
 
@@ -247,8 +244,8 @@ static void octeon_smp_setup(void)
 
 	/* The present CPUs get the lowest CPU numbers. */
 	cpus = 1;
-	for (id = 0; id < NR_CPUS; id++) {
-		if ((id != coreid) && (boot_core_mask & (1 << id))) {
+	for (id = 0; id < CONFIG_MIPS_NR_CPU_NR_MAP; id++) {
+		if ((id != coreid) && cvmx_coremask_is_core_set(&sysinfo->core_mask, id)) {
 			set_cpu_possible(cpus, true);
 			set_cpu_present(cpus, true);
 			__cpu_number_map[id] = cpus;
@@ -256,6 +253,9 @@ static void octeon_smp_setup(void)
 			cpus++;
 		}
 	}
+
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return;
 
 #ifdef CONFIG_HOTPLUG_CPU
 	t = __pa_symbol(octeon_hotplug_entry);
@@ -268,9 +268,8 @@ static void octeon_smp_setup(void)
 	 * will assign CPU numbers for possible cores as well.	Cores
 	 * are always consecutively numberd from 0.
 	 */
-	for (id = 0; setup_max_cpus && octeon_bootloader_entry_addr &&
-		     id < num_cores && id < NR_CPUS; id++) {
-		if (!(boot_core_mask & (1 << id))) {
+	for (id = 0; id < num_cores && id < NR_CPUS; id++) {
+		if (!(cvmx_coremask_is_core_set(&sysinfo->core_mask, id))) {
 			set_cpu_possible(cpus, true);
 			__cpu_number_map[id] = cpus;
 			__cpu_logical_map[cpus] = id;
@@ -417,9 +416,6 @@ static void octeon_cpus_done(void)
 
 	hgp = octeon_hotplug_global_ptr;
 
-	/* Boot core_mask not needed any longer */
-	boot_core_mask = 0;
-
 	/* Boot core_mask CPUs are now all on-line,
 	 * make the rest of the CPUs available for HOTPLUG
 	 * regardless if they are presently available
@@ -550,14 +546,6 @@ void play_dead(void)
 
 	wmb(); /* nudge writeback */
 
-#ifdef	CONFIG_CPU_LITTLE_ENDIAN
-	/* Switch CPU core back to Big Endian mode */
-	CVMX_MF_CVM_CTL(v);
-	v &= ~2;
-	CVMX_MT_CVM_CTL(v);
-	mb();
-#endif	/*CONFIG_CPU_LITTLE_ENDIAN*/
-
 	while (1) {	/* core will be reset here */
 		asm volatile ("nop\n wait\n nop\n");
 	}
@@ -577,16 +565,20 @@ static int octeon_update_boot_vector(unsigned int cpu)
 	struct boot_init_vector *boot_vect =
 		phys_to_virt(BOOTLOADER_BOOT_VECTOR);
 
+
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return 0;
+
 	/* Verify that required entry points are known at this stage */
 	if (!hgp || !octeon_hotplug_entry_addr ||
 			!octeon_bootloader_entry_addr) {
-		pr_warn("Cavium Hotplog: boot-loader incompatible with Hotplog\n");
+		pr_warn("Cavium Hotplug: boot-loader incompatible with Hotplug\n");
 		return -EINVAL;
 	}
 
 	/* Verify that coreid does not exceed the number of vector slots */
 	if (coreid >= CVMX_MAX_CORES) {
-		pr_warn("Cavium Hotplog: physical core %d is out of range\n",
+		pr_warn("Cavium Hotplug: physical core %d is out of range\n",
 			coreid );
 		return -EINVAL;
 	}
@@ -595,16 +587,17 @@ static int octeon_update_boot_vector(unsigned int cpu)
 	 * A core being brought up must be present either in the boot
 	 * core_mask or in the hotplug available coremask
 	 */
+#if 0
 	if (boot_core_mask & (1 << coreid)) {
 		boot_core_mask &= ~(1 << coreid);
 		/* CPU in boot core mask needs no further handling */
 		return 0;
 	}
-
+#endif
 	cvmx_spinlock_lock(&hgp->hotplug_global_lock);
 	if (!cvmx_coremask_is_core_set(&hgp->avail_coremask, coreid)) {
 		cvmx_spinlock_unlock(&hgp->hotplug_global_lock);
-		pr_warn("Cavium Hotplog: cpu %u core %u is not available\n",
+		pr_warn("Cavium Hotplug: cpu %u core %u is not available\n",
 			cpu, coreid);
 		return -EBUSY;
 	}
