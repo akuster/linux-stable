@@ -551,14 +551,9 @@ void play_dead(void)
 	}
 }
 
-#ifdef	CONFIG_CPU_LITTLE_ENDIAN
-# ifdef __BIG_ENDIAN_BITFIELD
-#   error "Endian Configuration Mismatch"
-# endif
-#endif
-
 static int octeon_update_boot_vector(unsigned int cpu)
 {
+#if 0
 	int coreid = cpu_logical_map(cpu);
 	int node;
 	struct cvmx_app_hotplug_global *hgp = octeon_hotplug_global_ptr;
@@ -587,13 +582,11 @@ static int octeon_update_boot_vector(unsigned int cpu)
 	 * A core being brought up must be present either in the boot
 	 * core_mask or in the hotplug available coremask
 	 */
-#if 0
 	if (boot_core_mask & (1 << coreid)) {
 		boot_core_mask &= ~(1 << coreid);
 		/* CPU in boot core mask needs no further handling */
 		return 0;
 	}
-#endif
 	cvmx_spinlock_lock(&hgp->hotplug_global_lock);
 	if (!cvmx_coremask_is_core_set(&hgp->avail_coremask, coreid)) {
 		cvmx_spinlock_unlock(&hgp->hotplug_global_lock);
@@ -616,6 +609,7 @@ static int octeon_update_boot_vector(unsigned int cpu)
 	node = cvmx_coremask_core_to_node(coreid);
 	coreid = cvmx_coremask_core_on_node(coreid);
 	cvmx_write_csr_node(node, CVMX_CIU_NMI, (1 << coreid));
+#endif
 
 	return 0;
 }
