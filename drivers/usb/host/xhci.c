@@ -198,7 +198,7 @@ int xhci_reset(struct xhci_hcd *xhci)
 	return ret;
 }
 
-#ifdef CONFIG_DWC3_PCI
+#ifdef CONFIG_PCI
 static int xhci_free_msi(struct xhci_hcd *xhci)
 {
 	int i;
