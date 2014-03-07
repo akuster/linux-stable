@@ -94,6 +94,7 @@ static inline unsigned int cvmx_get_node_num(void)
 #include "cvmx-csr-enums.h"
 
 #include "cvmx-ciu-defs.h"
+#include "cvmx-ciu3-defs.h"
 #include "cvmx-gpio-defs.h"
 #include "cvmx-iob-defs.h"
 #include "cvmx-ipd-defs.h"
@@ -462,8 +463,12 @@ extern uint64_t octeon_get_clock_rate(void);
 /* Return the number of cores available in the chip */
 static inline uint32_t cvmx_octeon_num_cores(void)
 {
-	uint32_t ciu_fuse = (uint32_t) cvmx_read_csr(CVMX_CIU_FUSE) & 0xffffffff;
-	return cvmx_pop(ciu_fuse);
+	u64 ciu_fuse;
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		ciu_fuse = cvmx_read_csr(CVMX_CIU3_FUSE);
+	else
+		ciu_fuse = cvmx_read_csr(CVMX_CIU_FUSE) & 0xffffffffull;
+	return cvmx_dpop(ciu_fuse);
 }
 
 /**
