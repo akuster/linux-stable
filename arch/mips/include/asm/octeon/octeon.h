@@ -13,6 +13,7 @@
 #include <linux/notifier.h>
 #include <asm/octeon/cvmx.h>
 #include <asm/bitfield.h>
+#include <linux/irq.h>
 
 extern uint64_t octeon_bootmem_alloc_range_phys(uint64_t size,
 						uint64_t alignment,
@@ -284,6 +285,21 @@ union octeon_cvmemctl {
 	} s;
 };
 
+struct octeon_ciu_chip_data {
+	union {
+		struct {		/* only used for ciu3 */
+			u64 ciu3_addr;
+			unsigned int intsn;
+		};
+		struct {		/* only used for ciu/ciu2 */
+			u8 line;
+			u8 bit;
+			u8 gpio_line;
+		};
+	};
+	int current_cpu;	/* Next CPU expected to take this irq */
+};
+
 extern void octeon_write_lcd(const char *s);
 extern void octeon_check_cpu_bist(void);
 extern int octeon_get_boot_uart(void);
@@ -369,6 +385,23 @@ int octeon_request_ipi_handler(octeon_message_fn_t fn);
 void octeon_send_ipi_single(int cpu, unsigned int action);
 void octeon_release_ipi_handler(int action);
 void octeon_ciu3_mbox_send(int cpu, unsigned int mbox);
+void octeon_irq_ciu3_enable(struct irq_data *data);
+void octeon_irq_ciu3_disable(struct irq_data *data);
+void octeon_irq_ciu3_mask(struct irq_data *data);
+void octeon_irq_ciu3_ack(struct irq_data *data);
+void octeon_irq_ciu3_mask_ack(struct irq_data *data);
+int octeon_irq_ciu3_set_affinity(struct irq_data *data,
+				 const struct cpumask *dest, bool force);
+void octeon_irq_free_cd(struct irq_domain *d, unsigned int irq);
+int octeon_irq_ciu3_xlat(struct irq_domain *d, struct device_node *node,
+			 const u32 *intspec, unsigned int intsize,
+			 unsigned long *out_hwirq, unsigned int *out_type);
+int octeon_irq_ciu3_mapx(struct irq_domain *d, unsigned int virq,
+			 irq_hw_number_t hw, struct irq_chip *chip);
+void *octeon_irq_get_ciu3_info(int node);
+void octeon_irq_add_block_domain(int node, uint8_t block,
+				 struct irq_domain *domain);
+struct irq_domain *octeon_irq_get_block_domain(int node, uint8_t block);
 
 #define OCTEON_DEBUG_UART 1
 

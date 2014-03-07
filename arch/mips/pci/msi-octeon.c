@@ -22,13 +22,16 @@
 #include <asm/octeon/cvmx-ciu2-defs.h>
 #include <asm/octeon/pci-octeon.h>
 
+/* MSI major block number (8 MSBs of intsn) */
+#define MSI_BLOCK_NUMBER	0x1e
+
 #define MSI_IRQ_SIZE		256
 
 /*
  * Each bit in msi_free_irq_bitmap represents a MSI interrupt that is
- * in use.
+ * in use. Each node requires its own set of bits.
  */
-static DECLARE_BITMAP(msi_free_irq_bitmap, MSI_IRQ_SIZE);
+static DECLARE_BITMAP(msi_free_irq_bitmap[CVMX_MAX_NODES], MSI_IRQ_SIZE);
 
 /*
  * This lock controls updates to msi_free_irq_bitmap.
@@ -112,21 +115,31 @@ try_only_one:
 	 * represents an MSI interrupt number that isn't in use.
 	 */
 	spin_lock(&msi_free_irq_bitmap_lock);
-	irq = find_next_zero_bit(msi_free_irq_bitmap, MSI_IRQ_SIZE, 1);
-	if (irq < MSI_IRQ_SIZE) {
-		set_bit(irq, msi_free_irq_bitmap);
-		spin_unlock(&msi_free_irq_bitmap_lock);
-	}
-	else {
+	msi = find_next_zero_bit(msi_free_irq_bitmap[node], MSI_IRQ_SIZE, 0);
+	if (msi >= MSI_IRQ_SIZE) {
 		spin_unlock(&msi_free_irq_bitmap_lock);
 		WARN(1, "arch_setup_msi_irq: Unable to find a free MSI "
 		     "interrupt");
 		return -ENOSPC;
 	}
 
-	/* MSI interrupts start at logical IRQ OCTEON_IRQ_MSI_BIT0 */
-	msg.data = irq;
-	irq += OCTEON_IRQ_MSI_BIT0;
+	set_bit(msi, msi_free_irq_bitmap[node]);
+	spin_unlock(&msi_free_irq_bitmap_lock);
+	msg.data = msi;
+
+	if (octeon_has_feature(OCTEON_FEATURE_CIU3)) {
+		/* Get the domain for the msi interrupts */
+		domain = octeon_irq_get_block_domain(node, MSI_BLOCK_NUMBER);
+
+		/* Get a irq for the msi intsn (hardware interrupt) */
+		hwirq = MSI_BLOCK_NUMBER << 12 | msi;
+		irq = irq_create_mapping(domain, hwirq);
+		irqd_set_trigger_type(irq_get_irq_data(irq),
+				      IRQ_TYPE_EDGE_RISING);
+	} else {
+		/* MSI interrupts start at logical IRQ OCTEON_IRQ_MSI_BIT0 */
+		irq = msi + OCTEON_IRQ_MSI_BIT0;
+	}
 
 	switch (octeon_dma_bar_type) {
 	case OCTEON_DMA_BAR_TYPE_SMALL:
@@ -174,6 +187,7 @@ try_only_one:
 void arch_teardown_msi_irq(unsigned int irq)
 {
 	int old;
+	int node = 0; /* Must use node device is in. TODO */
 
 	if ((irq < OCTEON_IRQ_MSI_BIT0)
 		|| (irq > msi_irq_size + OCTEON_IRQ_MSI_BIT0 - 1))
@@ -182,7 +196,7 @@ void arch_teardown_msi_irq(unsigned int irq)
 
 	irq -= OCTEON_IRQ_MSI_BIT0;
 	spin_lock(&msi_free_irq_bitmap_lock);
-	old = test_and_clear_bit(irq, msi_free_irq_bitmap);
+	old = test_and_clear_bit(irq, msi_free_irq_bitmap[node]);
 	spin_unlock(&msi_free_irq_bitmap_lock);
 
 	if (!old) {
@@ -546,21 +560,92 @@ static int __init octeon_msi_68XX_init(void)
 }
 #endif /* 0 */
 
+static void octeon_irq_msi_ciu3_ack(struct irq_data *data)
+{
+	u64 csr_addr;
+	struct octeon_ciu_chip_data *cd;
+	int msi;
+
+	octeon_irq_ciu3_ack(data);
+
+	cd = irq_data_get_irq_chip_data(data);
+
+	/* Acknowledge lsi (msi) interrupt (get the node from the ciu3 addr) */
+	msi = cd->intsn & 0xff;
+	csr_addr = (cd->ciu3_addr & CVMX_NODE_MASK) | msi_rcv_reg[msi >> 6];
+	cvmx_write_csr(csr_addr, 1 << (msi & 0x3f));
+}
+
+static void octeon_irq_msi_ciu3_mask_ack(struct irq_data *data)
+{
+	u64 csr_addr;
+	struct octeon_ciu_chip_data *cd;
+	int msi;
+
+	octeon_irq_ciu3_mask_ack(data);
+
+	cd = irq_data_get_irq_chip_data(data);
+
+	/* Acknowledge lsi (msi) interrupt (get the node from the ciu3 addr) */
+	msi = cd->intsn & 0xff;
+	csr_addr = (cd->ciu3_addr & CVMX_NODE_MASK) | msi_rcv_reg[msi >> 6];
+	cvmx_write_csr(csr_addr, 1 << (msi & 0x3f));
+}
+
+static struct irq_chip octeon_irq_msi_chip_ciu3 = {
+	.name = "CIU3",
+	.irq_enable = octeon_irq_ciu3_enable,
+	.irq_disable = octeon_irq_ciu3_disable,
+	.irq_ack = octeon_irq_msi_ciu3_ack,
+	.irq_mask = octeon_irq_ciu3_mask,
+	.irq_mask_ack = octeon_irq_msi_ciu3_mask_ack,
+	.irq_unmask = octeon_irq_ciu3_enable,
+#ifdef CONFIG_SMP
+	.irq_set_affinity = octeon_irq_ciu3_set_affinity,
+#endif
+};
+
+static int octeon_irq_msi_ciu3_map(struct irq_domain *d,
+				   unsigned int virq, irq_hw_number_t hw)
+{
+	return octeon_irq_ciu3_mapx(d, virq, hw, &octeon_irq_msi_chip_ciu3);
+}
+
+struct irq_domain_ops octeon_msi_domain_ciu3_ops = {
+	.map = octeon_irq_msi_ciu3_map,
+	.unmap = octeon_irq_free_cd,
+	.xlate = octeon_irq_ciu3_xlat,
+};
+
 /*
  * Initializes the MSI interrupt handling code
  */
 int __init octeon_msi_initialize(void)
 {
 	int irq;
+	struct irq_domain *domain;
 	struct irq_chip *msi;
 	u64 msi_map_reg;
-
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
-		return 0;
+	int i;
+	int node = 0; /* Must use correct node. TODO */
 
 	/* Clear msi irq bitmap */
-	bitmap_zero(msi_free_irq_bitmap, MSI_IRQ_SIZE);
+	for (i = 0; i < CVMX_MAX_NODES; i++)
+		bitmap_zero(msi_free_irq_bitmap[i], MSI_IRQ_SIZE);
 
+	if (octeon_has_feature(OCTEON_FEATURE_CIU3)) {
+		/* MSI interrupts use their own domain */
+		domain = irq_domain_add_tree(NULL, &octeon_msi_domain_ciu3_ops,
+					     octeon_irq_get_ciu3_info(node));
+		octeon_irq_add_block_domain(node, MSI_BLOCK_NUMBER, domain);
+
+		/* Registers to acknowledge msi interrupts */
+		msi_rcv_reg[0] = CVMX_PEXP_SLI_MSI_RCV0;
+		msi_rcv_reg[1] = CVMX_PEXP_SLI_MSI_RCV1;
+		msi_rcv_reg[2] = CVMX_PEXP_SLI_MSI_RCV2;
+		msi_rcv_reg[3] = CVMX_PEXP_SLI_MSI_RCV3;
+		return 0;
+	}
 #if 0
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX) && !OCTEON_IS_MODEL(OCTEON_CN68XX_PASS1_X))
 		return octeon_msi_68XX_init();
