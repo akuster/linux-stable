@@ -222,7 +222,6 @@ static void octeon_smp_setup(void)
 #ifdef CONFIG_HOTPLUG_CPU
 	unsigned int num_cores = cvmx_octeon_num_cores();
 	struct cvmx_app_hotplug_global *hgp;
-	char hexstr[CVMX_MIPS_MAX_CORES/4+1];
 	unsigned long t;
 #endif
 	struct cvmx_sysinfo *sysinfo = cvmx_sysinfo_get();
@@ -297,13 +296,13 @@ static void octeon_smp_setup(void)
 		octeon_hotplug_entry_addr = 0;
 		return;
 	}
-
+#if 0
 	/* Convert coremask to string for printing */
 	cvmx_coremask_bmp2str(&hgp->avail_coremask, hexstr);
 
 	/* Print the available coremask on to the console */
 	pr_info("Cavium Hotplug: Available coremask 0x%s\n", hexstr);
-
+#endif
 	/* Set global ptr for use by other functions */
 	octeon_hotplug_global_ptr = hgp;
 #endif
@@ -411,7 +410,6 @@ static void octeon_cpus_done(void)
 {
 #ifdef CONFIG_HOTPLUG_CPU
 	struct cvmx_app_hotplug_global *hgp;
-	char hexstr[CVMX_MIPS_MAX_CORES/4+1];
 	unsigned int cpu;
 
 	hgp = octeon_hotplug_global_ptr;
@@ -424,12 +422,13 @@ static void octeon_cpus_done(void)
 		if (!cpu_online(cpu))
 			set_cpu_present(cpu, true);
 	}
-
+#if 0
 	/* Convert coremask to string for printing */
 	cvmx_coremask_bmp2str(&hgp->avail_coremask, hexstr);
 
 	/* Print the available coremask on to the console */
 	pr_info("Cavium Hotplug: Available coremask 0x%s\n", hexstr);
+#endif
 #endif
 }
 
@@ -437,54 +436,6 @@ static void octeon_cpus_done(void)
 
 /* State of each CPU. */
 DEFINE_PER_CPU(int, cpu_state);
-
-/*
- * Convert coremask to a printable hex string
- * Same function by name and purpose is also found in cvmx-coremask.c
- * but with a different implementation.
- */
-int cvmx_coremask_bmp2str(const cvmx_coremask_t *pcm, char *hexstr)
-{
-	int core;
-	char *p;
-	unsigned int i;
-	unsigned int nibbles;
-	unsigned int num_cores = cvmx_octeon_num_cores();
-	static const char hextab[16] = {
-		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-		'a', 'b', 'c', 'd', 'e', 'f'};
-
-	if (num_cores >= CVMX_MIPS_MAX_CORES)
-		return -1;
-
-	p = hexstr;
-
-	/* round-up num_cores to modulus 4 */
-	num_cores += 3;
-	num_cores &= ~3;
-
-	/* Calculate nibble count */
-	nibbles = num_cores >> 2;
-
-	/* Clear the buffer */
-	for (i = 0; i <= nibbles; i++)
-		p[i] = '\0';
-
-	/* Place core bits into nibbles, 4 bits per nibble */
-	for (core = num_cores - 1; core >= 0; core--) {
-		if (cvmx_coremask_is_core_set(pcm, core))
-			p[nibbles - (core>>2) - 1] |= 1 << (core & 3);
-	}
-
-	/* Convert each nibble into a hex char */
-	for (i = 0; i < nibbles; i++)
-		p[i] = hextab[p[i] & 0xf];
-
-	p[i] = '\0';
-
-	/* return the number if buffer bytes touched */
-	return nibbles+1;
-}
 
 static int octeon_cpu_disable(void)
 {
@@ -511,7 +462,6 @@ static void octeon_cpu_die(unsigned int cpu)
 	int coreid = cpu_logical_map(cpu);
 	int node;
 	struct cvmx_app_hotplug_global *hgp = octeon_hotplug_global_ptr;
-	char hexstr[CVMX_MIPS_MAX_CORES/4+3];
 
 	BUG_ON(!hgp);
 
@@ -523,11 +473,11 @@ static void octeon_cpu_die(unsigned int cpu)
 	cvmx_spinlock_unlock(&hgp->hotplug_global_lock);
 
 	mb();
-
+#if 0
 	/* Convert coremask to string for printing */
 	cvmx_coremask_bmp2str(&hgp->avail_coremask, hexstr);
 	pr_info("Reset core %d. Available Coremask = 0x%s\n", coreid, hexstr);
-
+#endif
 	/* Covert coreid to node/core spec and send NMI to target core */
 	node = cvmx_coremask_core_to_node(coreid);
 	coreid = cvmx_coremask_core_on_node(coreid);
