@@ -65,21 +65,6 @@ struct octeon_irq_ciu_domain_data {
 
 static __read_mostly u8 octeon_irq_ciu_to_irq[8][64];
 
-struct octeon_ciu_chip_data {
-	union {
-		struct {		/* only used for ciu3 */
-			u64 ciu3_addr;
-			unsigned int intsn;
-		};
-		struct {		/* only used for ciu/ciu2 */
-			u8 line;
-			u8 bit;
-			u8 gpio_line;
-		};
-	};
-	int current_cpu;	/* Next CPU expected to take this irq */
-};
-
 struct octeon_core_chip_data {
 	struct mutex core_irq_mutex;
 	bool current_en;
@@ -111,7 +96,7 @@ static int octeon_irq_set_ciu_mapping(int irq, int line, int bit, int gpio_line,
 	return 0;
 }
 
-static void octeon_irq_free_cd(struct irq_domain *d, unsigned int irq)
+void octeon_irq_free_cd(struct irq_domain *d, unsigned int irq)
 {
 	struct irq_data *data = irq_get_irq_data(irq);
 	struct octeon_ciu_chip_data *cd = irq_data_get_irq_chip_data(data);
@@ -2053,7 +2038,7 @@ err:
 	return r;
 }
 
-static void octeon_irq_ciu3_enable(struct irq_data *data)
+void octeon_irq_ciu3_enable(struct irq_data *data)
 {
 	int cpu;
 	union cvmx_ciu3_iscx_ctl isc_ctl;
@@ -2078,7 +2063,7 @@ static void octeon_irq_ciu3_enable(struct irq_data *data)
 	cvmx_read_csr(isc_ctl_addr);
 }
 
-static void octeon_irq_ciu3_disable(struct irq_data *data)
+void octeon_irq_ciu3_disable(struct irq_data *data)
 {
 	u64 isc_ctl_addr;
 	union cvmx_ciu3_iscx_w1c isc_w1c;
@@ -2096,7 +2081,7 @@ static void octeon_irq_ciu3_disable(struct irq_data *data)
 	cvmx_read_csr(isc_ctl_addr);
 }
 
-static void octeon_irq_ciu3_ack(struct irq_data *data)
+void octeon_irq_ciu3_ack(struct irq_data *data)
 {
 	u64 isc_w1c_addr;
 	union cvmx_ciu3_iscx_w1c isc_w1c;
@@ -2120,7 +2105,7 @@ static void octeon_irq_ciu3_ack(struct irq_data *data)
 	cvmx_read_csr(isc_w1c_addr);
 }
 
-static void octeon_irq_ciu3_mask(struct irq_data *data)
+void octeon_irq_ciu3_mask(struct irq_data *data)
 {
 	union cvmx_ciu3_iscx_w1c isc_w1c;
 	u64 isc_w1c_addr;
@@ -2136,7 +2121,7 @@ static void octeon_irq_ciu3_mask(struct irq_data *data)
 	cvmx_read_csr(isc_w1c_addr);
 }
 
-static void octeon_irq_ciu3_mask_ack(struct irq_data *data)
+void octeon_irq_ciu3_mask_ack(struct irq_data *data)
 {
 	union cvmx_ciu3_iscx_w1c isc_w1c;
 	u64 isc_w1c_addr;
@@ -2161,8 +2146,8 @@ static void octeon_irq_ciu3_mask_ack(struct irq_data *data)
 }
 
 #ifdef CONFIG_SMP
-static int octeon_irq_ciu3_set_affinity(struct irq_data *data,
-					const struct cpumask *dest, bool force)
+int octeon_irq_ciu3_set_affinity(struct irq_data *data,
+				 const struct cpumask *dest, bool force)
 {
 	union cvmx_ciu3_iscx_ctl isc_ctl;
 	union cvmx_ciu3_iscx_w1c isc_w1c;
@@ -2209,12 +2194,12 @@ static struct irq_chip octeon_irq_chip_ciu3 = {
 #endif
 };
 
-static int octeon_irq_ciu3_xlat(struct irq_domain *d,
-				struct device_node *node,
-				const u32 *intspec,
-				unsigned int intsize,
-				unsigned long *out_hwirq,
-				unsigned int *out_type)
+int octeon_irq_ciu3_xlat(struct irq_domain *d,
+			 struct device_node *node,
+			 const u32 *intspec,
+			 unsigned int intsize,
+			 unsigned long *out_hwirq,
+			 unsigned int *out_type)
 {
 	struct octeon_ciu3_info *ciu3_info = d->host_data;
 	unsigned int hwirq, type, intsn_major;
@@ -2254,8 +2239,8 @@ static int octeon_irq_ciu3_xlat(struct irq_domain *d,
 	return 0;
 }
 
-static int octeon_irq_ciu3_map(struct irq_domain *d,
-			       unsigned int virq, irq_hw_number_t hw)
+int octeon_irq_ciu3_mapx(struct irq_domain *d, unsigned int virq,
+			 irq_hw_number_t hw, struct irq_chip *chip)
 {
 	struct octeon_ciu3_info *ciu3_info = d->host_data;
 	struct octeon_ciu_chip_data *cd = kzalloc_node(sizeof(*cd), GFP_KERNEL,
@@ -2266,11 +2251,16 @@ static int octeon_irq_ciu3_map(struct irq_domain *d,
 	cd->current_cpu = -1;
 	cd->ciu3_addr = ciu3_info->ciu3_addr;
 
-	irq_set_chip_and_handler(virq, &octeon_irq_chip_ciu3,
-				 octeon_irq_handle_trigger);
+	irq_set_chip_and_handler(virq, chip, octeon_irq_handle_trigger);
 	irq_set_chip_data(virq, cd);
 
 	return 0;
+}
+
+static int octeon_irq_ciu3_map(struct irq_domain *d,
+			       unsigned int virq, irq_hw_number_t hw)
+{
+	return octeon_irq_ciu3_mapx(d, virq, hw, &octeon_irq_chip_ciu3);
 }
 
 static struct irq_domain_ops octeon_dflt_domain_ciu3_ops = {
@@ -2870,3 +2860,25 @@ void octeon_fixup_irqs(void)
 }
 
 #endif /* CONFIG_HOTPLUG_CPU */
+
+void *octeon_irq_get_ciu3_info(int node)
+{
+	return octeon_ciu3_info_per_node[node & CVMX_NODE_MASK];
+}
+
+void octeon_irq_add_block_domain(int node, uint8_t block,
+				 struct irq_domain *domain)
+{
+	struct octeon_ciu3_info *ciu3_info;
+
+	ciu3_info = octeon_ciu3_info_per_node[node & CVMX_NODE_MASK];
+	ciu3_info->domain[block] = domain;
+}
+
+struct irq_domain *octeon_irq_get_block_domain(int node, uint8_t block)
+{
+	struct octeon_ciu3_info *ciu3_info;
+
+	ciu3_info = octeon_ciu3_info_per_node[node & CVMX_NODE_MASK];
+	return ciu3_info->domain[block];
+}
