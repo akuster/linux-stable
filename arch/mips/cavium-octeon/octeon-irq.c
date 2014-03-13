@@ -1179,16 +1179,6 @@ static struct irq_chip *octeon_irq_ciu_chip;
 static struct irq_chip *octeon_irq_ciu_chip_edge;
 static struct irq_chip *octeon_irq_gpio_chip;
 
-static bool octeon_irq_virq_in_range(unsigned int virq)
-{
-	/* We cannot let it overflow the mapping array. */
-	if (virq < (1ul << 8 * sizeof(octeon_irq_ciu_to_irq[0][0])))
-		return true;
-
-	WARN_ONCE(true, "virq out of range %u.\n", virq);
-	return false;
-}
-
 static int octeon_irq_ciu_map(struct irq_domain *d,
 			      unsigned int virq, irq_hw_number_t hw)
 {
@@ -1196,9 +1186,6 @@ static int octeon_irq_ciu_map(struct irq_domain *d,
 	unsigned int line = hw >> 6;
 	unsigned int bit = hw & 63;
 	struct octeon_irq_ciu_domain_data *dd = d->host_data;
-
-	if (!octeon_irq_virq_in_range(virq))
-		return -EINVAL;
 
 	/* Don't map irq if it is reserved for GPIO. */
 	if (line == 0 && bit >= 16 && bit <32)
@@ -1235,9 +1222,6 @@ static int octeon_irq_gpio_map(struct irq_domain *d,
 	struct octeon_irq_gpio_domain_data *gpiod = d->host_data;
 	unsigned int line, bit;
 	int r;
-
-	if (!octeon_irq_virq_in_range(virq))
-		return -EINVAL;
 
 	line = (hw + gpiod->base_hwirq) >> 6;
 	bit = (hw + gpiod->base_hwirq) & 63;
@@ -1930,9 +1914,6 @@ static int octeon_irq_ciu2_map(struct irq_domain *d,
 {
 	unsigned int line = hw >> 6;
 	unsigned int bit = hw & 63;
-
-	if (!octeon_irq_virq_in_range(virq))
-		return -EINVAL;
 
 	/*
 	 * Don't map irq if it is reserved for GPIO.
