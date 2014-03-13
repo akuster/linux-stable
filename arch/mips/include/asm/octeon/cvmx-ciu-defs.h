@@ -881,6 +881,10 @@ static inline uint64_t CVMX_CIU_PP_POKEX(unsigned long offset)
 			if ((offset <= 31))
 				return CVMX_ADD_IO_SEG(0x0001070100100200ull) + ((offset) & 31) * 8;
 			break;
+
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 47))
+				return CVMX_ADD_IO_SEG(0x0001010000030000ull) + ((offset) & 63) * 8;
 	}
 	cvmx_warn("CVMX_CIU_PP_POKEX (offset = %lu) not supported on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000000580ull) + ((offset) & 3) * 8;
@@ -910,6 +914,8 @@ static inline uint64_t CVMX_CIU_PP_POKEX(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001070000000580ull) + (offset) * 8;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070100100200ull) + (offset) * 8;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000030000ull) + (offset) * 8;
 	}
 	return CVMX_ADD_IO_SEG(0x0001070000000580ull) + (offset) * 8;
 }
@@ -1258,6 +1264,10 @@ static inline uint64_t CVMX_CIU_WDOGX(unsigned long offset)
 			if ((offset <= 31))
 				return CVMX_ADD_IO_SEG(0x0001070100100000ull) + ((offset) & 31) * 8;
 			break;
+
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 47))
+				return CVMX_ADD_IO_SEG(0x0001010000020000ull) + ((offset) & 63) * 8;
 	}
 	cvmx_warn("CVMX_CIU_WDOGX (offset = %lu) not supported on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000000500ull) + ((offset) & 3) * 8;
@@ -1287,6 +1297,8 @@ static inline uint64_t CVMX_CIU_WDOGX(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001070000000500ull) + (offset) * 8;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070100100000ull) + (offset) * 8;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000020000ull) + (offset) * 8;
 	}
 	return CVMX_ADD_IO_SEG(0x0001070000000500ull) + (offset) * 8;
 }
