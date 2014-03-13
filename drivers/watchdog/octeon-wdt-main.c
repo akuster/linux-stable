@@ -76,6 +76,9 @@
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-ciu2-defs.h>
 
+/* Watchdog interrupt major block number (8 MSBs of intsn) */
+#define WD_BLOCK_NUMBER		0x01
+
 /* The count needed to achieve timeout_sec. */
 static unsigned int timeout_cnt;
 
@@ -281,11 +284,12 @@ static irqreturn_t octeon_wdt_poke_irq(int cpl, void *dev_id)
 {
 	unsigned int core = cvmx_get_core_num();
 	int cpu = core2cpu(core);
+	int node = cvmx_get_node_num();
 
 	if (do_coundown) {
 		if (per_cpu_countdown[cpu] > 0) {
 			/* We're alive, poke the watchdog */
-			cvmx_write_csr(CVMX_CIU_PP_POKEX(core), 1);
+			cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(core), 1);
 			per_cpu_countdown[cpu]--;
 		} else {
 			/* Bad news, you are about to reboot. */
@@ -294,7 +298,7 @@ static irqreturn_t octeon_wdt_poke_irq(int cpl, void *dev_id)
 		}
 	} else {
 		/* Not open, just ping away... */
-		cvmx_write_csr(CVMX_CIU_PP_POKEX(core), 1);
+		cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(core), 1);
 	}
 	return IRQ_HANDLED;
 }
@@ -396,7 +400,7 @@ void octeon_wdt_nmi_stage3(u64 reg[32])
 	octeon_wdt_write_hex(cp0_cause, 16);
 	octeon_wdt_write_string("\r\n");
 
-	/* The CIU register are different in cn68xx compared to other models. */
+	/* The CIU register are different on the different octeon models */
 	if (is_ciu2) {
 		octeon_wdt_write_string("\tsrc_wd\t0x");
 		octeon_wdt_write_hex(cvmx_read_csr(CVMX_CIU2_SRC_PPX_IP2_WDOG(coreid)), 16);
@@ -411,7 +415,7 @@ void octeon_wdt_nmi_stage3(u64 reg[32])
 		octeon_wdt_write_string("\tsum\t0x");
 		octeon_wdt_write_hex(cvmx_read_csr(CVMX_CIU2_SUM_PPX_IP2(coreid)), 16);
 		octeon_wdt_write_string("\r\n");
-	} else {
+	} else if (!octeon_has_feature(OCTEON_FEATURE_CIU3)) {
 		octeon_wdt_write_string("\tsum0\t0x");
 		octeon_wdt_write_hex(cvmx_read_csr(CVMX_CIU_INTX_SUM0(coreid * 2)), 16);
 		octeon_wdt_write_string("\ten0\t0x");
@@ -426,18 +430,20 @@ static void octeon_wdt_disable_interrupt(int cpu)
 {
 	unsigned int core;
 	unsigned int irq;
+	int node;
 	union cvmx_ciu_wdogx ciu_wdog;
 
 	core = cpu2core(cpu);
+	node = cpu_to_node(cpu);
 
 	irq = OCTEON_IRQ_WDOG0 + core;
 
 	/* Poke the watchdog to clear out its state */
-	cvmx_write_csr(CVMX_CIU_PP_POKEX(core), 1);
+	cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(core), 1);
 
 	/* Disable the hardware. */
 	ciu_wdog.u64 = 0;
-	cvmx_write_csr(CVMX_CIU_WDOGX(core), ciu_wdog.u64);
+	cvmx_write_csr_node(node, CVMX_CIU_WDOGX(core), ciu_wdog.u64);
 
 	free_irq(irq, octeon_wdt_poke_irq);
 }
@@ -447,31 +453,52 @@ static void octeon_wdt_setup_interrupt(int cpu)
 	unsigned int core;
 	unsigned int irq;
 	union cvmx_ciu_wdogx ciu_wdog;
+	int node;
+	struct irq_domain *domain;
+	int hwirq;
 
 	core = cpu2core(cpu);
+	node = cpu_to_node(cpu);
 
 	/* Disable it before doing anything with the interrupts. */
 	ciu_wdog.u64 = 0;
-	cvmx_write_csr(CVMX_CIU_WDOGX(core), ciu_wdog.u64);
+	cvmx_write_csr_node(node, CVMX_CIU_WDOGX(core), ciu_wdog.u64);
 
 	per_cpu_countdown[cpu] = countdown_reset;
 
-	irq = OCTEON_IRQ_WDOG0 + core;
+	if (octeon_has_feature(OCTEON_FEATURE_CIU3)) {
+		/* Must get the domain for the watchdog block */
+		domain = octeon_irq_get_block_domain(node, WD_BLOCK_NUMBER);
+
+		/* Get a irq for the wd intsn (hardware interrupt) */
+		hwirq = WD_BLOCK_NUMBER << 12 | 0x200 | core;
+		irq = irq_create_mapping(domain, hwirq);
+	} else
+		irq = OCTEON_IRQ_WDOG0 + core;
 
 	if (request_irq(irq, octeon_wdt_poke_irq,
 			IRQF_NO_THREAD, "octeon_wdt", octeon_wdt_poke_irq))
 		panic("octeon_wdt: Couldn't obtain irq %d", irq);
 
+	/* Must set the irq affinity here */
+	if (octeon_has_feature(OCTEON_FEATURE_CIU3)) {
+		cpumask_t mask;
+
+		cpumask_clear(&mask);
+		cpumask_set_cpu(cpu, &mask);
+		irq_set_affinity(irq, &mask);
+	}
+
 	cpumask_set_cpu(cpu, &irq_enabled_cpus);
 
 	/* Poke the watchdog to clear out its state */
-	cvmx_write_csr(CVMX_CIU_PP_POKEX(core), 1);
+	cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(core), 1);
 
 	/* Finally enable the watchdog now that all handlers are installed */
 	ciu_wdog.u64 = 0;
 	ciu_wdog.s.len = timeout_cnt;
 	ciu_wdog.s.mode = 3;	/* 3 = Interrupt + NMI + Soft-Reset */
-	cvmx_write_csr(CVMX_CIU_WDOGX(core), ciu_wdog.u64);
+	cvmx_write_csr_node(node, CVMX_CIU_WDOGX(core), ciu_wdog.u64);
 }
 
 static int octeon_wdt_cpu_callback(struct notifier_block *nfb,
@@ -497,19 +524,29 @@ static int octeon_wdt_ping(struct watchdog_device __always_unused *wdog)
 {
 	int cpu;
 	int coreid;
+	int node;
+	int irq;
+	struct irq_domain *domain;
+	int hwirq;
 
 	if (disable)
 		return;
 
 	for_each_online_cpu(cpu) {
 		coreid = cpu2core(cpu);
-		cvmx_write_csr(CVMX_CIU_PP_POKEX(coreid), 1);
+		node = cpu_to_node(cpu);
+		cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(coreid), 1);
 		per_cpu_countdown[cpu] = countdown_reset;
 		if ((countdown_reset || !do_coundown) &&
 		    !cpumask_test_cpu(cpu, &irq_enabled_cpus)) {
 			/* We have to enable the irq */
-			int irq = OCTEON_IRQ_WDOG0 + coreid;
-
+			if (octeon_has_feature(OCTEON_FEATURE_CIU3)) {
+				domain = octeon_irq_get_block_domain(node,
+						               WD_BLOCK_NUMBER);
+				hwirq = WD_BLOCK_NUMBER << 12 | 0x200 | coreid;
+				irq = irq_find_mapping(domain, hwirq);
+			} else
+				irq = OCTEON_IRQ_WDOG0 + coreid;
 			enable_irq(irq);
 			cpumask_set_cpu(cpu, &irq_enabled_cpus);
 		}
@@ -552,6 +589,7 @@ static int octeon_wdt_set_timeout(struct watchdog_device *wdog,
 	int cpu;
 	int coreid;
 	union cvmx_ciu_wdogx ciu_wdog;
+	int node;
 
 	if (t <= 0)
 		return -1;
@@ -563,12 +601,13 @@ static int octeon_wdt_set_timeout(struct watchdog_device *wdog,
 
 	for_each_online_cpu(cpu) {
 		coreid = cpu2core(cpu);
-		cvmx_write_csr(CVMX_CIU_PP_POKEX(coreid), 1);
+		node = cpu_to_node(cpu);
+		cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(coreid), 1);
 		ciu_wdog.u64 = 0;
 		ciu_wdog.s.len = timeout_cnt;
 		ciu_wdog.s.mode = 3;	/* 3 = Interrupt + NMI + Soft-Reset */
-		cvmx_write_csr(CVMX_CIU_WDOGX(coreid), ciu_wdog.u64);
-		cvmx_write_csr(CVMX_CIU_PP_POKEX(coreid), 1);
+		cvmx_write_csr_node(node, CVMX_CIU_WDOGX(coreid), ciu_wdog.u64);
+		cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(coreid), 1);
 	}
 	octeon_wdt_ping(wdog); /* Get the irqs back on. */
 	return 0;
@@ -688,6 +727,10 @@ static int __init octeon_wdt_init(void)
 static void __exit octeon_wdt_cleanup(void)
 {
 	int cpu;
+	int node;
+	unsigned int irq;
+	struct irq_domain *domain;
+	int hwirq;
 
 	watchdog_unregister_device(&octeon_wdt);
 
@@ -698,10 +741,19 @@ static void __exit octeon_wdt_cleanup(void)
 
 	for_each_online_cpu(cpu) {
 		int core = cpu2core(cpu);
+		node = cpu_to_node(cpu);
 		/* Disable the watchdog */
-		cvmx_write_csr(CVMX_CIU_WDOGX(core), 0);
+		cvmx_write_csr_node(node, CVMX_CIU_WDOGX(core), 0);
+
 		/* Free the interrupt handler */
-		free_irq(OCTEON_IRQ_WDOG0 + core, octeon_wdt_poke_irq);
+		if (octeon_has_feature(OCTEON_FEATURE_CIU3)) {
+			domain = octeon_irq_get_block_domain(node,
+							     WD_BLOCK_NUMBER);
+			hwirq = WD_BLOCK_NUMBER << 12 | 0x200 | core;
+			irq = irq_find_mapping(domain, hwirq);
+		} else
+			irq = OCTEON_IRQ_WDOG0 + core;
+		free_irq(irq, octeon_wdt_poke_irq);
 	}
 
 	cpu_notifier_register_done();
