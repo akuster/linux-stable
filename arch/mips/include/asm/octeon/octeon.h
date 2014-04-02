@@ -181,7 +181,12 @@ union octeon_cvmemctl {
 		/* RO 1 = BIST fail, 0 = BIST pass */
 		uint64_t wbfbist:1;
 		/* Reserved */
-		uint64_t reserved:13;
+		uint64_t reserved:6;
+		/* When set, LMTDMA/LMTST operations are permitted */
+		uint64_t lmtena:1;
+		/* Selects the CVMSEG LM cacheline used by LMTDMA
+		   LMTST and wide atomic store operations */
+		uint64_t lmtline:6;
 		/* When set, TLB parity errors can occur. */
 		uint64_t tlbperrena:1;
 		/* OCTEON II - When set, CVMSET LM parity errors are enabled. */
@@ -319,7 +324,9 @@ union octeon_cvmemctl {
 		uint64_t disstpref:1;
 		uint64_t lmemperrena:1;
 		uint64_t tlbperrena:1;
-		uint64_t reserved:13;
+		uint64_t lmtline:6;
+		uint64_t lmtena:1;
+		uint64_t reserved:6;
 		uint64_t wbfbist:1;
 		uint64_t ptgbist:1;
 		uint64_t dcmbist:1;
