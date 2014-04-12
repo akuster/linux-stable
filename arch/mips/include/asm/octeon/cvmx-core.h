@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -42,7 +42,7 @@
  *
  * Module to support operations on core such as TLB config, etc.
  *
- * <hr>$Revision: 90021 $<hr>
+ * <hr>$Revision: 96463 $<hr>
  *
  */
 
@@ -287,7 +287,17 @@ int cvmx_core_add_fixed_tlb_mapping_bits(uint64_t vaddr, uint64_t page0_addr, ui
 /**
  * Return number of TLB entries.
  */
-int cvmx_core_get_tlb_entries(void);
+static inline int cvmx_core_get_tlb_entries(void)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN3XXX))
+		return 32;
+	else if (OCTEON_IS_MODEL(OCTEON_CN5XXX))
+		return 64;
+	else if (OCTEON_IS_OCTEON2())
+		return 128;
+	else
+		return 256;
+}
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
 }
