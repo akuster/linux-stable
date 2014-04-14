@@ -29,6 +29,9 @@
 #ifndef CONFIG_PREEMPT
 FEXPORT(ret_from_exception)
 	local_irq_disable			# preempt stop
+#ifdef CONFIG_TRACE_IRQFLAGS
+	jal	trace_hardirqs_off
+#endif
 	b	__ret_from_irq
 #endif
 FEXPORT(ret_from_irq)
@@ -52,6 +55,9 @@ resume_userspace:
 	bnez	k0, restore_all_from_r2_emul
 #endif
 
+#ifdef CONFIG_TRACE_IRQFLAGS
+	jal	trace_hardirqs_off
+#endif
 	LONG_L	a2, TI_FLAGS($28)	# current->work
 	andi	t0, a2, _TIF_WORK_MASK	# (ignoring syscall_trace)
 	bnez	t0, work_pending
@@ -60,6 +66,9 @@ resume_userspace:
 #ifdef CONFIG_PREEMPT
 resume_kernel:
 	local_irq_disable
+#ifdef CONFIG_TRACE_IRQFLAGS
+	jal	trace_hardirqs_off
+#endif
 	lw	t0, TI_PRE_COUNT($28)
 	bnez	t0, restore_all
 need_resched:
@@ -86,6 +95,9 @@ FEXPORT(syscall_exit)
 	local_irq_disable		# make sure need_resched and
 					# signals dont change between
 					# sampling and return
+#ifdef CONFIG_TRACE_IRQFLAGS
+	jal	trace_hardirqs_off
+#endif
 	LONG_L	a2, TI_FLAGS($28)	# current->work
 	li	t0, _TIF_ALLWORK_MASK
 	and	t0, a2, t0
@@ -142,6 +154,9 @@ work_resched:
 	local_irq_disable		# make sure need_resched and
 					# signals dont change between
 					# sampling and return
+#ifdef CONFIG_TRACE_IRQFLAGS
+	jal	trace_hardirqs_off
+#endif
 	LONG_L	a2, TI_FLAGS($28)
 	andi	t0, a2, _TIF_WORK_MASK	# is there any work to be done
 					# other than syscall tracing?
@@ -159,6 +174,9 @@ work_notifysig:				# deal with pending signals and
 FEXPORT(syscall_exit_partial)
 	local_irq_disable		# make sure need_resched doesn't
 					# change between and return
+#ifdef CONFIG_TRACE_IRQFLAGS
+	jal	trace_hardirqs_off
+#endif
 	LONG_L	a2, TI_FLAGS($28)	# current->work
 	li	t0, _TIF_ALLWORK_MASK
 	and	t0, a2
@@ -173,6 +191,9 @@ syscall_exit_work:
 	beqz	t0, work_pending	# trace bit set?
 	local_irq_enable		# could let syscall_trace_leave()
 					# call schedule() instead
+#ifdef CONFIG_TRACE_IRQFLAGS
+	jal	trace_hardirqs_on
+#endif
 	move	a0, sp
 	jal	syscall_trace_leave
 	b	resume_userspace
