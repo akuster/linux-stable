@@ -518,6 +518,24 @@ enum MIPS6e_i8_func {
  */
 #define MM_NOP16	0x0c00
 
+/*
+ * Damn ...  bitfields depend from byteorder :-(
+ */
+#ifdef __MIPSEB__
+#define __BITFIELD_FIELD(field, more)					\
+	field;								\
+	more
+
+#elif defined(__MIPSEL__)
+
+#define __BITFIELD_FIELD(field, more)					\
+	more								\
+	field;
+
+#else /* !defined (__MIPSEB__) && !defined (__MIPSEL__) */
+#error "MIPS but neither __MIPSEL__ nor __MIPSEB__?"
+#endif
+
 struct j_format {
 	__BITFIELD_FIELD(unsigned int opcode : 6, /* Jump format */
 	__BITFIELD_FIELD(unsigned int target : 26,
@@ -599,20 +617,20 @@ struct b_format {			/* BREAK and SYSCALL */
 };
 
 struct c0_format {			/* WAIT, TLB?? */
-	BITFIELD_FIELD(unsigned int opcode : 6,
-	BITFIELD_FIELD(unsigned int co : 1,
-	BITFIELD_FIELD(unsigned int code : 19,
-	BITFIELD_FIELD(unsigned int func : 6,
+	__BITFIELD_FIELD(unsigned int opcode : 6,
+	__BITFIELD_FIELD(unsigned int co : 1,
+	__BITFIELD_FIELD(unsigned int code : 19,
+	__BITFIELD_FIELD(unsigned int func : 6,
 	;))))
 };
 
 struct c0m_format {			/* MTC0, MFC0, ... */
-	BITFIELD_FIELD(unsigned int opcode : 6,
-	BITFIELD_FIELD(unsigned int func : 5,
-	BITFIELD_FIELD(unsigned int rt : 5,
-	BITFIELD_FIELD(unsigned int rd : 5,
-	BITFIELD_FIELD(unsigned int code : 8,
-	BITFIELD_FIELD(unsigned int sel : 3,
+	__BITFIELD_FIELD(unsigned int opcode : 6,
+	__BITFIELD_FIELD(unsigned int func : 5,
+	__BITFIELD_FIELD(unsigned int rt : 5,
+	__BITFIELD_FIELD(unsigned int rd : 5,
+	__BITFIELD_FIELD(unsigned int code : 8,
+	__BITFIELD_FIELD(unsigned int sel : 3,
 	;))))))
 };
 
