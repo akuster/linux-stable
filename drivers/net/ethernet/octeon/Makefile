@@ -1,7 +1,8 @@
 #
 # Makefile for the Cavium network device drivers.
 #
-
+obj-$(CONFIG_OCTEON_BGX)		+= octeon-bgx.o
+obj-$(CONFIG_OCTEON3_ETHERNET)		+= octeon3-ethernet.o
 obj-$(CONFIG_OCTEON_MGMT_ETHERNET)	+= octeon_mgmt.o
 obj-$(CONFIG_OCTEON_POW_ONLY_ETHERNET)	+= octeon-pow-ethernet.o
 obj-$(CONFIG_OCTEON_ETHERNET) +=  octeon-ethernet.o
