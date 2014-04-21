@@ -30,6 +30,8 @@
 struct device;
 struct net_device;
 
+void bgx_nexus_load(void);
+
 int bgx_port_enable(struct device *dev);
 int bgx_port_disable(struct device *dev);
 const u8 *bgx_port_get_mac(struct device *dev);

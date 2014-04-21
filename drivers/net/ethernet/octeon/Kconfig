@@ -2,16 +2,19 @@
 # Cavium network device configuration
 #
 
-config OCTEON_BGX
-	tristate "Cavium Inc. OCTEON III BGX support"
+config OCTEON_BGX_NEXUS
+	tristate
 	depends on CAVIUM_OCTEON_SOC
-	help
-	  Support for 'BGX' Ethernet MAC on cn78XX.
+
+config OCTEON_BGX_PORT
+	tristate
+	depends on CAVIUM_OCTEON_SOC
+	select OCTEON_BGX_NEXUS
 
 config OCTEON3_ETHERNET
 	tristate "Cavium Inc. OCTEON III Ethernet support"
 	depends on CAVIUM_OCTEON_SOC
-	select OCTEON_BGX
+	select OCTEON_BGX_PORT
 	help
 	  Support for 'BGX' Ethernet via PKI/PKO units.
 

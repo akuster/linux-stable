@@ -53,6 +53,8 @@ const u8 *bgx_port_get_mac(struct device *dev)
 	struct bgx_port_priv *priv = dev_get_drvdata(dev);
 	return priv->mac_addr;
 }
+EXPORT_SYMBOL(bgx_port_get_mac);
+
 static void bgx_port_write_cam(int numa_node, int interface, int index, int cam, const u8 *mac)
 {
 	int i;
@@ -123,6 +125,7 @@ void bgx_port_set_rx_filtering(struct net_device *netdev, struct device *dev)
 			    CVMX_BGXX_CMRX_RX_ADR_CTL(priv->index, priv->bgx_interface),
 			    adr_ctl.u64);
 }
+EXPORT_SYMBOL(bgx_port_set_rx_filtering);
 
 int bgx_port_enable(struct device *dev)
 {
@@ -200,111 +203,26 @@ static struct platform_driver bgx_port_driver = {
 	.shutdown       = bgx_port_shutdown,
 	.driver		= {
 		.owner	= THIS_MODULE,
-		.name	= KBUILD_MODNAME "_port",
+		.name	= KBUILD_MODNAME,
 		.of_match_table = bgx_port_match,
 	},
 };
-module_platform_driver(bgx_port_driver);
 
-static int bgx_probe(struct platform_device *pdev)
-{
-	struct bgx_platform_data platform_data;
-	const __be32 *reg;
-	u32 port;
-	u64 addr;
-	struct device_node *child;
-	struct platform_device *new_dev;
-	struct platform_device *pki_dev;
-	static int pki_id;
-	int numa_node, interface;
-	int i;
-	int r = 0;
-	char id[64];
-
-	reg = of_get_property(pdev->dev.of_node, "reg", NULL);
-	addr = of_translate_address(pdev->dev.of_node, reg);
-	interface = (addr >> 24) & 0xf;
-	numa_node = (addr >> 36) & 0x7;
-	for_each_available_child_of_node(pdev->dev.of_node, child) {
-		if (!of_device_is_compatible(child, "cavium,octeon-7880-bgx-port"))
-			continue;
-		r = of_property_read_u32(child, "reg", &port);
-		if (r)
-			return -ENODEV;
-		snprintf(id, sizeof(id), "%llx.%u.ethernet-mac", (unsigned long long)addr, port);
-		new_dev = of_platform_device_create(child, id, &pdev->dev);
-		if (!new_dev) {
-			dev_err(&pdev->dev, "Error creating %s\n", id);
-			continue;
-		}
-		platform_data.numa_node = numa_node;
-		platform_data.interface = interface;
-		platform_data.port = port;
-
-		pki_dev = platform_device_register_data(&new_dev->dev, "ethernet-mac-pki", pki_id++,
-							&platform_data, sizeof(platform_data));
-		dev_info(&pdev->dev, "Created PKI %u: %p\n", pki_dev->id, pki_dev);
-#ifdef CONFIG_NUMA
-		new_dev->dev.numa_node = pdev->dev.numa_node;
-		pki_dev->dev.numa_node = pdev->dev.numa_node;
-#endif
-	}
-	__cvmx_helper_packet_hardware_enable(cvmx_helper_node_interface_to_xiface(numa_node, interface));
-	/* Assign 8 CAM entries per LMAC */
-	for (i = 0; i < 32; i++) {
-		union cvmx_bgxx_cmr_rx_adrx_cam adr_cam;
-		adr_cam.u64 = 0;
-		adr_cam.s.id = i >> 3;
-		cvmx_write_csr_node(numa_node, CVMX_BGXX_CMR_RX_ADRX_CAM(i, interface), adr_cam.u64);
-	}
-
-	dev_info(&pdev->dev, "Probed\n");
-	return 0;
-}
-
-static int bgx_remove(struct platform_device *pdev)
-{
-	return 0;
-}
-
-static void bgx_shutdown(struct platform_device *pdev)
-{
-	return;
-}
-
-static struct of_device_id bgx_match[] = {
-	{
-		.compatible = "cavium,octeon-7880-bgx",
-	},
-	{},
-};
-MODULE_DEVICE_TABLE(of, bgx_match);
-
-static struct platform_driver bgx_driver = {
-	.probe		= bgx_probe,
-	.remove		= bgx_remove,
-	.shutdown       = bgx_shutdown,
-	.driver		= {
-		.owner	= THIS_MODULE,
-		.name	= KBUILD_MODNAME,
-		.of_match_table = bgx_match,
-	},
-};
-
-static int __init bgx_driver_init(void)
+static int __init bgx_port_driver_init(void)
 {
 	int r;
-	__cvmx_helper_init_port_config_data();
-	r =  platform_driver_register(&bgx_driver);
+
+	bgx_nexus_load();
+	r =  platform_driver_register(&bgx_port_driver);
 	return r;
 }
-module_init(bgx_driver_init);
+module_init(bgx_port_driver_init);
 
-static void __exit bgx_driver_exit(void)
+static void __exit bgx_port_driver_exit(void)
 {
-	platform_driver_unregister(&bgx_driver);
+	platform_driver_unregister(&bgx_port_driver);
 }
-module_exit(bgx_driver_exit);
+module_exit(bgx_port_driver_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Cavium Networks <support@caviumnetworks.com>");
