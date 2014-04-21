@@ -416,9 +416,28 @@ static int octeon3_eth_rx_one(struct octeon3_ethernet *priv)
 	return ret;
 }
 
+static void octeon3_eth_replentish_rx(struct octeon3_ethernet *priv, int count)
+{
+	struct sk_buff *skb;
+	int i;
+
+	for (i = 0; i < count; i++) {
+		void **buf;
+		skb = __alloc_skb(2048 + 128, GFP_ATOMIC, 0, priv->numa_node);
+		if (!skb) {
+			pr_err("WARNING: octeon3_eth_replentish_rx out of memory\n");
+			break;
+		}
+		buf = (void **)PTR_ALIGN(skb->head, 128);
+		buf[0] = skb;
+		cvmx_fpa3_free_aura(buf, priv->numa_node, priv->pki_laura, 0);
+	}
+}
+
 static int octeon3_eth_napi(struct napi_struct *napi, int budget)
 {
 	int rx_count = 0;
+	int bufs_consumed = 0;
 	struct octeon3_ethernet *priv = container_of(napi, struct octeon3_ethernet, napi);
 
 	while (rx_count < budget) {
@@ -429,7 +448,11 @@ static int octeon3_eth_napi(struct napi_struct *napi, int budget)
 			break;
 		}
 		rx_count++;
+		bufs_consumed += n;
 	}
+
+	if (bufs_consumed)
+		octeon3_eth_replentish_rx(priv, bufs_consumed);
 
 	return rx_count;
 }
@@ -481,9 +504,7 @@ static int octeon3_eth_ndo_open(struct net_device *netdev)
 	struct octeon3_ethernet *priv = netdev_priv(netdev);
 	struct irq_domain *d = octeon_irq_get_block_domain(priv->numa_node, SSO_INTSN_EXE);
 	unsigned int sso_intsn = SSO_INTSN_EXE << 12 | priv->rx_grp;
-	int i;
 	int r;
-	struct sk_buff *skb;
 
 	priv->rx_irq = irq_create_mapping(d, sso_intsn);
 	if (!priv->rx_irq) {
@@ -498,19 +519,7 @@ static int octeon3_eth_ndo_open(struct net_device *netdev)
 	if (r)
 		goto err;
 
-	for (i = 0; i < 100; i++) {
-		void **buf;
-		skb = __alloc_skb(2048 + 128, GFP_KERNEL, 0, priv->numa_node);
-		if (!skb) {
-			r = -ENOMEM;
-			goto err;
-		}
-		buf = (void **)PTR_ALIGN(skb->head, 128);
-		buf[0] = skb;
-		cvmx_fpa3_free_aura(buf, priv->numa_node, priv->pki_laura, 0);
-		pr_err("%p -> %p\n", skb->head, buf);
-	}
-	netdev_err(netdev, "Populated aura:%d\n", priv->pki_laura);
+	octeon3_eth_replentish_rx(priv, 100);
 
 	netif_carrier_on(netdev);
 	return 0;
