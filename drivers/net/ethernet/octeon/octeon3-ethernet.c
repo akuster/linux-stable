@@ -24,7 +24,7 @@
  * This file may also be available under a different license from Cavium.
  * Contact Cavium, Inc. for more information
  **********************************************************************/
-#include <linux/init.h>
+#include <linux/module.h>
 #include <linux/atomic.h>
 #include <linux/kthread.h>
 #include <linux/interrupt.h>
@@ -818,3 +818,7 @@ static void __exit octeon3_eth_exit(void)
 	platform_driver_unregister(&octeon3_eth_driver);
 }
 module_exit(octeon3_eth_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Cavium Networks <support@caviumnetworks.com>");
+MODULE_DESCRIPTION("Cavium Networks PKI/PKO Ethernet driver.");
