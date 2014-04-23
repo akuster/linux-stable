@@ -12,11 +12,12 @@ config OCTEON_BGX_PORT
 	select OCTEON_BGX_NEXUS
 
 config OCTEON3_ETHERNET
-	tristate "Cavium Inc. OCTEON III Ethernet support"
+	tristate "Cavium Inc. OCTEON III PKI/PKO Ethernet support (not cn70xx)"
 	depends on CAVIUM_OCTEON_SOC
 	select OCTEON_BGX_PORT
 	help
-	  Support for 'BGX' Ethernet via PKI/PKO units.
+	  Support for 'BGX' Ethernet via PKI/PKO units.  No support
+	  for cn70xx chips (use OCTEON_ETHERNET for cn70xx)
 
 config OCTEON_ETHERNET
 	tristate "Cavium Inc. OCTEON Ethernet support"
