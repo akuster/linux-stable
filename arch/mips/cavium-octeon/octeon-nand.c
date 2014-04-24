@@ -923,8 +923,9 @@ static int octeon_nand_scan_onfi(struct octeon_nand *priv)
 		 * OCTEON requires ((15 * t) + 7) / 8
 		 */
 		priv->nand.ecc.bytes = ((15 * priv->nand.ecc.strength) + 7) / 8;
-		priv->nand.ecc.strength =
-			(priv->nand.ecc.bytes * 8) / fls(8 * priv->nand.ecc.size);
+		if (!priv->nand.ecc.strength)
+			priv->nand.ecc.strength =
+				(priv->nand.ecc.bytes * 8) / fls(8 * priv->nand.ecc.size);
 		priv->nand.ecc.steps = (1 << priv->nand.page_shift) / priv->nand.ecc.size;
 		priv->nand.ecc.calculate = octeon_nand_bch_calculate;
 		priv->nand.ecc.correct = octeon_nand_bch_correct;
