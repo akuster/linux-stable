@@ -358,7 +358,7 @@ static int ocla_release(struct inode *inode, struct file *file)
  *
  *  returns:			0 on success, error otherwise.
  */
-static int __init ocla_probe(struct platform_device *pdev)
+static int ocla_probe(struct platform_device *pdev)
 {
 	struct ocla_complex	*complex;
 	const __be32		*zero_addr;
@@ -437,7 +437,7 @@ static int __init ocla_probe(struct platform_device *pdev)
  *
  *  returns:			0 on success, error otherwise.
  */
-static int __exit ocla_remove(struct platform_device *pdev)
+static int ocla_remove(struct platform_device *pdev)
 {
 	struct ocla_complex	*complex;
 	int			i;
