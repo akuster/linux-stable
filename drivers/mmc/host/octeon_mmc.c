@@ -59,6 +59,7 @@
 
 struct octeon_mmc_host {
 	spinlock_t		lock;
+	struct mmc_host         *mmc;
 	u64	base;
 	u64	ndf_base;
 	u64	emm_cfg;
@@ -78,7 +79,6 @@ struct octeon_mmc_host {
 };
 
 struct octeon_mmc_slot {
-	struct mmc_host         *mmc;
 	struct octeon_mmc_host	*host;
 
 	unsigned int		clock;
@@ -274,8 +274,9 @@ static unsigned int octeon_mmc_timeout_to_wdog(struct octeon_mmc_slot *slot,
 	return (unsigned int)(bt / 1000000000);
 }
 
-static void octeon_mmc_dma_next(struct octeon_mmc_host	*host)
+static void octeon_mmc_dma_next(struct octeon_mmc_slot	*slot)
 {
+	struct octeon_mmc_host *host = slot->host;
 	struct scatterlist *sg;
 	struct mmc_data *data;
 	union cvmx_mio_ndf_dma_cfg dma_cfg;
@@ -516,7 +517,7 @@ static void octeon_mmc_dma_request(struct mmc_host *mmc,
 	/* Clear any pending irqs */
 	cvmx_write_csr(host->ndf_base + OCT_MIO_NDF_DMA_INT, 1);
 
-	octeon_mmc_dma_next(host);
+	octeon_mmc_dma_next(slot);
 	emm_dma.u64 = 0;
 	emm_dma.s.bus_id = slot->bus_id;
 	emm_dma.s.dma_val = 1;
@@ -848,7 +849,7 @@ static const struct mmc_host_ops octeon_mmc_ops = {
 static void octeon_mmc_set_clock(struct octeon_mmc_slot *slot,
 				 unsigned int clock)
 {
-	struct mmc_host *mmc = slot->mmc;
+	struct mmc_host *mmc = slot->host->mmc;
 	clock = min(clock, mmc->f_max);
 	clock = max(clock, mmc->f_min);
 	slot->clock = clock;
@@ -902,8 +903,8 @@ static int __init octeon_init_slot(struct octeon_mmc_host *host, int id,
 		return -ENOMEM;
 	}
 
+	host->mmc = mmc;
 	slot = mmc_priv(mmc);
-	slot->mmc = mmc;
 	slot->host = host;
 	slot->ro_gpio = ro_gpio;
 	slot->cd_gpio = cd_gpio;
@@ -1182,6 +1183,10 @@ static int octeon_mmc_remove(struct platform_device *pdev)
 
 	if (host) {
 		int i;
+
+		/* quench all users */
+		mmc_remove_host(host->mmc);
+
 		/* Reset bus_id */
 		ndf_dma_cfg.u64 = cvmx_read_csr(host->ndf_base + OCT_MIO_NDF_DMA_CFG);
 		ndf_dma_cfg.s.en = 0;
@@ -1215,6 +1220,8 @@ static int octeon_mmc_remove(struct platform_device *pdev)
 						host->global_pwr_gpio_low);
 			gpio_free(host->global_pwr_gpio);
 		}
+
+		mmc_free_host(host->mmc);
 	}
 
 	platform_set_drvdata(pdev, NULL);
