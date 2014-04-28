@@ -191,7 +191,7 @@ static void bgx_port_shutdown(struct platform_device *pdev)
 
 static struct of_device_id bgx_port_match[] = {
 	{
-		.compatible = "cavium,octeon-7880-bgx-port",
+		.compatible = "cavium,octeon-7890-bgx-port",
 	},
 	{},
 };

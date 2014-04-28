@@ -58,7 +58,7 @@ static int bgx_probe(struct platform_device *pdev)
 	interface = (addr >> 24) & 0xf;
 	numa_node = (addr >> 36) & 0x7;
 	for_each_available_child_of_node(pdev->dev.of_node, child) {
-		if (!of_device_is_compatible(child, "cavium,octeon-7880-bgx-port"))
+		if (!of_device_is_compatible(child, "cavium,octeon-7890-bgx-port"))
 			continue;
 		r = of_property_read_u32(child, "reg", &port);
 		if (r)
@@ -106,7 +106,7 @@ static void bgx_shutdown(struct platform_device *pdev)
 
 static struct of_device_id bgx_match[] = {
 	{
-		.compatible = "cavium,octeon-7880-bgx",
+		.compatible = "cavium,octeon-7890-bgx",
 	},
 	{},
 };

@@ -457,7 +457,7 @@ static const struct file_operations ocla_fops = {
 };
 
 static const struct of_device_id ocla_of_match_table[] = {
-        { .compatible = "cavium,octeon-7xxx-ocla", },
+        { .compatible = "cavium,octeon-7130-ocla", },
         {}
 };
 

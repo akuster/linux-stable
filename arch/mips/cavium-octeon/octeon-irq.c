@@ -3084,7 +3084,7 @@ static struct of_device_id ciu_types[] __initdata = {
 	{.compatible = "cavium,octeon-6880-ciu2", .data = octeon_irq_init_ciu2},
 	{.compatible = "cavium,octeon-7130-cib", .data = octeon_irq_init_cib},
 	{.compatible = "cavium,octeon-7880-ciu3", .data = octeon_irq_init_ciu3},
-	{.compatible = "cavium,octeon-7130-cib", .data = octeon_irq_init_cib},
+	{.compatible = "cavium,octeon-7890-ciu3", .data = octeon_irq_init_ciu3},
 	{}
 };
 
