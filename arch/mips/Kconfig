@@ -2547,7 +2547,7 @@ config  MIPS_NR_CPU_NR_MAP_1024
 
 config MIPS_NR_CPU_NR_MAP
 	int
-	default 48 if MIPS_NR_CPU_NR_MAP_1024
+	default 1024 if MIPS_NR_CPU_NR_MAP_1024
 	default NR_CPUS if !MIPS_NR_CPU_NR_MAP_1024
 
 #
