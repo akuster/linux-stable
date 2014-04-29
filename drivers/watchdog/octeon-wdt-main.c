@@ -77,6 +77,8 @@
 /* Watchdog interrupt major block number (8 MSBs of intsn) */
 #define WD_BLOCK_NUMBER		0x01
 
+static int counter_shift;
+
 /* The count needed to achieve timeout_sec. */
 static unsigned int timeout_cnt;
 
@@ -571,10 +573,7 @@ static void octeon_wdt_calc_parameters(int t)
 
 	countdown_reset = periods > 2 ? periods - 2 : 0;
 	heartbeat = t;
-	timeout_cnt = ((octeon_get_io_clock_rate() >> 8) * timeout_sec) >> 8;
-	/* cn68XX runs at half that rate.  */
-	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
-		timeout_cnt >>= 1;
+	timeout_cnt = ((octeon_get_io_clock_rate() >> counter_shift) * timeout_sec) >> 8;
 }
 
 static int octeon_wdt_set_heartbeat(int t)
@@ -767,10 +766,17 @@ static int __init octeon_wdt_init(void)
 	int cpu;
 	u64 *ptr;
 
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		counter_shift = 9;
+	else if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		counter_shift = 10;
+	else
+		counter_shift = 8;
+
 	/*
 	 * Watchdog time expiration length = The 16 bits of LEN
 	 * represent the most significant bits of a 24 bit decrementer
-	 * that decrements every 256 cycles.
+	 * that decrements every 2^counter_shift cycles.
 	 *
 	 * Try for a timeout of 5 sec, if that fails a smaller number
 	 * of even seconds,
@@ -778,7 +784,7 @@ static int __init octeon_wdt_init(void)
 	max_timeout_sec = 6;
 	do {
 		max_timeout_sec--;
-		timeout_cnt = ((octeon_get_io_clock_rate() >> 8) * max_timeout_sec) >> 8;
+		timeout_cnt = ((octeon_get_io_clock_rate() >> counter_shift) * max_timeout_sec) >> 8;
 	} while (timeout_cnt > 65535);
 
 	BUG_ON(timeout_cnt == 0);
