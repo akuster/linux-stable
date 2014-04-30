@@ -184,6 +184,7 @@ ifeq ($(ARCH), arm64)
 	ARCH_WANT_LIBFDT := y
 endif
 
+# MIPS (octeon3)
 ifeq ($(ARCH),mips)
 	DEFINES		+= -DCONFIG_MIPS
 	ARCH_INCLUDE	:= mips/include
@@ -358,6 +359,9 @@ $(GUEST_INIT): guest/init.c
 	$(E) "  LINK    " $@
 	$(Q) $(CC) -static guest/init.c -o $@
 	$(Q) $(LD) $(LDFLAGS) -r -b binary -o guest/guest_init.o $(GUEST_INIT)
+ifeq ($(ARCH),mips)
+	$(Q) util/mips-fix-e_flags.sh
+endif
 
 $(DEPS):
 
