@@ -55,6 +55,7 @@ struct bgx_port_priv {
 	unsigned int last_link;
 	unsigned int last_speed;
 };
+
 static struct bgx_port_priv *bgx_port_netdev2priv(struct net_device *netdev)
 {
 	struct bgx_port_netdev_priv *nd_priv = netdev_priv(netdev);
@@ -214,11 +215,13 @@ int bgx_port_enable(struct net_device *netdev)
 
 	return 0;
 }
+EXPORT_SYMBOL(bgx_port_enable);
 
 int bgx_port_disable(struct net_device *netdev)
 {
 	return 0;
 }
+EXPORT_SYMBOL(bgx_port_disable);
 
 static int bgx_port_probe(struct platform_device *pdev)
 {
