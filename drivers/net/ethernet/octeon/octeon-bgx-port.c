@@ -29,6 +29,7 @@
 #include <linux/etherdevice.h>
 #include <linux/of_platform.h>
 #include <linux/of_address.h>
+#include <linux/of_mdio.h>
 #include <linux/of_net.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -45,12 +46,32 @@ struct bgx_port_priv {
 	int numa_node;
 	int bgx_interface;
 	int index; /* Port index on BGX block*/
+	int ipd_port;
 	const u8 *mac_addr;
+	struct phy_device *phydev;
+	struct device_node *phy_np;
+	spinlock_t lock;
+	unsigned int last_duplex;
+	unsigned int last_link;
+	unsigned int last_speed;
 };
-
-const u8 *bgx_port_get_mac(struct device *dev)
+static struct bgx_port_priv *bgx_port_netdev2priv(struct net_device *netdev)
 {
+	struct bgx_port_netdev_priv *nd_priv = netdev_priv(netdev);
+	return nd_priv->bgx_priv;
+}
+
+void bgx_port_set_netdev(struct device *dev, struct net_device *netdev)
+{
+	struct bgx_port_netdev_priv *nd_priv = netdev_priv(netdev);
 	struct bgx_port_priv *priv = dev_get_drvdata(dev);
+	nd_priv->bgx_priv = priv;
+}
+EXPORT_SYMBOL(bgx_port_set_netdev);
+
+const u8 *bgx_port_get_mac(struct net_device *netdev)
+{
+	struct bgx_port_priv *priv = bgx_port_netdev2priv(netdev);
 	return priv->mac_addr;
 }
 EXPORT_SYMBOL(bgx_port_get_mac);
@@ -69,11 +90,11 @@ static void bgx_port_write_cam(int numa_node, int interface, int index, int cam,
 	cvmx_write_csr_node(numa_node, CVMX_BGXX_CMR_RX_ADRX_CAM(index * 8 + cam, interface), adr_cam.u64);
 }
 
-/* Set MAC address for the ned_device that is attached. */
-void bgx_port_set_rx_filtering(struct net_device *netdev, struct device *dev)
+/* Set MAC address for the net_device that is attached. */
+void bgx_port_set_rx_filtering(struct net_device *netdev)
 {
 	union cvmx_bgxx_cmrx_rx_adr_ctl adr_ctl;
-	struct bgx_port_priv *priv = dev_get_drvdata(dev);
+	struct bgx_port_priv *priv = bgx_port_netdev2priv(netdev);
 	int available_cam_entries, current_cam_entry;
 	struct netdev_hw_addr *ha;
 
@@ -127,12 +148,74 @@ void bgx_port_set_rx_filtering(struct net_device *netdev, struct device *dev)
 }
 EXPORT_SYMBOL(bgx_port_set_rx_filtering);
 
-int bgx_port_enable(struct device *dev)
+static void bgx_port_adjust_link(struct net_device *netdev)
 {
+	struct bgx_port_priv *p = bgx_port_netdev2priv(netdev);
+	int link_changed = 0;
+	unsigned int link, speed, duplex;
+	unsigned long flags;
+
+	spin_lock_irqsave(&p->lock, flags);
+
+	if (!p->phydev->link && p->last_link)
+		link_changed = -1;
+
+	if (p->phydev->link
+	    && (p->last_duplex != p->phydev->duplex
+		|| p->last_link != p->phydev->link
+		|| p->last_speed != p->phydev->speed)) {
+		link_changed = 1;
+	}
+
+	link = p->last_link = p->phydev->link;
+	speed = p->last_speed = p->phydev->speed;
+	duplex = p->last_duplex = p->phydev->duplex;
+
+	spin_unlock_irqrestore(&p->lock, flags);
+
+	if (link_changed != 0) {
+		cvmx_helper_link_info_t link_info;
+		if (link_changed > 0) {
+			pr_info("%s: Link is up - %d/%s\n", netdev->name,
+				p->phydev->speed,
+				DUPLEX_FULL == p->phydev->duplex ?
+				"Full" : "Half");
+		} else {
+			pr_info("%s: Link is down\n", netdev->name);
+		}
+		link_info.u64 = 0;
+		link_info.s.link_up = link ? 1 : 0;
+		link_info.s.full_duplex = duplex ? 1 : 0;
+		link_info.s.speed = speed;
+		cvmx_helper_link_set(p->ipd_port, link_info);
+		if (link)
+			netif_carrier_on(netdev);
+		else
+			netif_carrier_off(netdev);
+	}
+}
+
+int bgx_port_enable(struct net_device *netdev)
+{
+	struct bgx_port_priv *priv = bgx_port_netdev2priv(netdev);
+
+	if (priv->phy_np == NULL) {
+		netif_carrier_on(netdev);
+		return 0;
+	}
+	priv->phydev = of_phy_connect(netdev, priv->phy_np,
+				      bgx_port_adjust_link, 0,
+				      PHY_INTERFACE_MODE_SGMII);
+	if (!priv->phydev)
+		return -ENODEV;
+
+	netif_carrier_off(netdev);
+	phy_start_aneg(priv->phydev);
+
 	return 0;
 }
 
-int bgx_port_disable(struct device *dev)
+int bgx_port_disable(struct net_device *netdev)
 {
 	return 0;
 }
@@ -145,11 +228,12 @@ static int bgx_port_probe(struct platform_device *pdev)
 	u32 index;
 	int r;
 	struct bgx_port_priv *priv;
+	int xiface;
 	int numa_node;
 
 	reg = of_get_property(pdev->dev.parent->of_node, "reg", NULL);
 	addr = of_translate_address(pdev->dev.parent->of_node, reg);
-	mac = of_get_mac_address(pdev->dev.parent->of_node);
+	mac = of_get_mac_address(pdev->dev.of_node);
 
 	numa_node = (addr >> 36) & 0x7;
 
@@ -160,11 +244,16 @@ static int bgx_port_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
+	spin_lock_init(&priv->lock);
 	priv->numa_node = numa_node;
 	priv->bgx_interface = (addr >> 24) & 0xf;
 	priv->index = index;
+	xiface = cvmx_helper_node_interface_to_xiface(numa_node, priv->bgx_interface);
+	priv->ipd_port = cvmx_helper_get_ipd_port(xiface, index);
 	if (mac)
 		priv->mac_addr = mac;
+
+	priv->phy_np = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
 
 	r = dev_set_drvdata(&pdev->dev, priv);
 	if (r)
