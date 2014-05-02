@@ -29,13 +29,19 @@
 
 struct device;
 struct net_device;
+struct bgx_port_priv;
+
+struct bgx_port_netdev_priv {
+	struct bgx_port_priv *bgx_priv;
+};
 
 void bgx_nexus_load(void);
 
-int bgx_port_enable(struct device *dev);
-int bgx_port_disable(struct device *dev);
-const u8 *bgx_port_get_mac(struct device *dev);
-void bgx_port_set_rx_filtering(struct net_device *netdev, struct device *dev);
+void bgx_port_set_netdev(struct device *dev, struct net_device *netdev);
+int bgx_port_enable(struct net_device *netdev);
+int bgx_port_disable(struct net_device *netdev);
+const u8 *bgx_port_get_mac(struct net_device *netdev);
+void bgx_port_set_rx_filtering(struct net_device *netdev);
 
 
 struct bgx_platform_data {

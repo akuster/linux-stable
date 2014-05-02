@@ -52,7 +52,7 @@
 #define OCTEON3_ETH_MAX_NUMA_NODES 2
 
 struct octeon3_ethernet {
-	struct device *bgx_dev;
+	struct bgx_port_netdev_priv bgx_priv;
 	struct net_device *netdev;
 	struct napi_struct napi;
 	int pki_laura;
@@ -622,14 +622,14 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	cvmx_write_csr_node(priv->numa_node, CVMX_PKI_STATX_STAT3(priv->pki_pkind), 0);
 	priv->last_dropped = 0;
 
-	mac = bgx_port_get_mac(priv->bgx_dev);
+	mac = bgx_port_get_mac(netdev);
 	if (mac && is_valid_ether_addr(mac)) {
 		memcpy(netdev->dev_addr, mac, ETH_ALEN);
 		netdev->addr_assign_type &= ~NET_ADDR_RANDOM;
 	} else {
 		eth_hw_addr_random(netdev);
 	}
-	bgx_port_set_rx_filtering(netdev, priv->bgx_dev);
+	bgx_port_set_rx_filtering(netdev);
 
 	netif_napi_add(netdev, &priv->napi, octeon3_eth_napi, 32);
 	napi_enable(&priv->napi);
@@ -680,8 +680,7 @@ static int octeon3_eth_ndo_open(struct net_device *netdev)
 
 	octeon3_eth_replentish_rx(priv, priv->rx_buf_count);
 
-	netif_carrier_on(netdev);
-	return 0;
+	return bgx_port_enable(netdev);
 err:
 	/* Cleanup mapping ?? */
 	return r;
@@ -911,9 +910,8 @@ static int octeon3_eth_probe(struct platform_device *pdev)
 	SET_NETDEV_DEV(netdev, &pdev->dev);
 	dev_set_drvdata(&pdev->dev, netdev);
 
-
+	bgx_port_set_netdev(pdev->dev.parent, netdev);
 	priv = netdev_priv(netdev);
-	priv->bgx_dev = pdev->dev.parent;
 	priv->netdev = netdev;
 	priv->numa_node = pd->numa_node;
 	priv->xiface = cvmx_helper_node_interface_to_xiface(pd->numa_node, pd->interface);
