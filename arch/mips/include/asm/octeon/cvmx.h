@@ -581,4 +581,15 @@ struct cvmx_error_tree {
 
 extern struct cvmx_error_tree octeon_error_trees[];
 
+struct cvmx_error_78xx {
+	u64 block_csr;		/* CSR's address */
+	const char *err_mesg;	/* Error message */
+	u32 intsn;		/* Interrupt source number */
+	u16 flags;		/* Flags */
+	u8 error_group;		/* Error group */
+	u8 block_csr_bitpos;	/* Bit position in the CSR */
+};
+
+extern struct cvmx_error_78xx error_array_cn78xxp1[];
+
 #endif /*  __CVMX_H__  */

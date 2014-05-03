@@ -341,7 +341,10 @@ struct octeon_ciu_chip_data {
 	union {
 		struct {		/* only used for ciu3 */
 			u64 ciu3_addr;
-			unsigned int intsn;
+			union {
+				unsigned int intsn;
+				unsigned int idt; /* For errbit irq */
+			};
 		};
 		struct {		/* only used for ciu/ciu2 */
 			u8 line;
@@ -409,9 +412,6 @@ static inline uint64_t octeon_read_ptp_csr(u64 csr)
 
 extern void (*octeon_irq_setup_secondary)(void);
 
-typedef void (*octeon_irq_ip4_handler_t)(void);
-void octeon_irq_set_ip4_handler(octeon_irq_ip4_handler_t);
-
 int octeon_coreid_for_cpu(int cpu);
 int octeon_cpu_for_coreid(int coreid);
 
@@ -457,6 +457,10 @@ static inline int octeon_error_tree_disable(enum cvmx_error_groups group, int un
 	return 0;
 }
 #endif
+
+int octeon_ciu3_errbits_set_handler(void (* handler)(int node, int intsn));
+int octeon_ciu3_errbits_enable_intsn(int node, int intsn);
+int octeon_ciu3_errbits_disable_intsn(int node , int intsn);
 
 int octeon_i2c_cvmx2i2c(unsigned int cvmx_twsi_bus_num);
 
