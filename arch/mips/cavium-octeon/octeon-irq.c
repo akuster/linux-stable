@@ -51,6 +51,16 @@ struct octeon_ciu3_info {
 /* Each ciu3 in the system uses its own data (one ciu3 per node) */
 static struct octeon_ciu3_info	*octeon_ciu3_info_per_node[4];
 
+struct octeon_ciu3_errbits_cfg {
+	u64 ciu3_addr;
+	int idt;
+	int irq;
+	int node;
+};
+
+static struct octeon_ciu3_errbits_cfg octeon_ciu3_errbits_per_node[4];
+static void (* octeon_ciu3_errbits_handler)(int node , int intsn);
+
 struct octeon_irq_ciu_domain_data {
 	int num_sum;  /* number of sum registers (2 or 3). */
 };
@@ -1302,11 +1312,6 @@ static void octeon_irq_ip4_ciu(void)
 
 static bool octeon_irq_use_ip4;
 
-static void octeon_irq_local_enable_ip4(void *arg)
-{
-	set_c0_status(STATUSF_IP4);
-}
-
 static void octeon_irq_ip4_mask(void)
 {
 	clear_c0_status(STATUSF_IP4);
@@ -1318,13 +1323,6 @@ static void (*octeon_irq_ip3)(void);
 static void (*octeon_irq_ip4)(void);
 
 void (*octeon_irq_setup_secondary)(void);
-
-void octeon_irq_set_ip4_handler(octeon_irq_ip4_handler_t h)
-{
-	octeon_irq_ip4 = h;
-	octeon_irq_use_ip4 = true;
-	on_each_cpu(octeon_irq_local_enable_ip4, NULL, 1);
-}
 
 static void octeon_irq_percpu_enable(void)
 {
@@ -2722,11 +2720,41 @@ static void octeon_irq_ciu3_mbox_cpu_offline(struct irq_data *data)
 	octeon_irq_ciu3_mbox_set_enable(data, smp_processor_id(), false);
 }
 
+static void octeon_irq_ciu3_ip4(void)
+{
+	union cvmx_ciu3_destx_pp_int dest_pp_int;
+	struct octeon_ciu3_info *ciu3_info;
+	u64 ciu3_addr;
+	int node = cvmx_get_node_num();
+	struct octeon_ciu3_errbits_cfg *cfg = octeon_ciu3_errbits_per_node + node;
+
+	ciu3_info = __this_cpu_read(octeon_ciu3_info);
+	ciu3_addr = ciu3_info->ciu3_addr;
+
+	dest_pp_int.u64 = cvmx_read_csr(ciu3_addr + CIU3_DEST_PP_INT(3 * octeon_irq_get_local_core_num() + 2));
+
+	if (likely(dest_pp_int.s.intr)) {
+		if (likely(cfg->irq)) {
+			do_IRQ(cfg->irq);
+		} else {
+			union cvmx_ciu3_iscx_w1c isc_w1c;
+			u64 isc_w1c_addr = ciu3_addr + CIU3_ISC_W1C(dest_pp_int.s.intsn);
+			isc_w1c.u64 = 0;
+			isc_w1c.s.en = 1;
+			cvmx_write_csr(isc_w1c_addr, isc_w1c.u64);
+			cvmx_read_csr(isc_w1c_addr);
+			spurious_interrupt();
+		}
+	} else {
+		spurious_interrupt();
+	}
+}
+
 static int octeon_irq_ciu3_alloc_resources(struct octeon_ciu3_info *ciu3_info)
 {
 	u64 b = ciu3_info->ciu3_addr;
-	int idt_ip2, idt_ip3;
-	int unused_idt1, unused_idt2;
+	int idt_ip2, idt_ip3, idt_ip4;
+	int unused_idt2;
 	int core = octeon_irq_get_local_core_num();
 	int i;
 
@@ -2738,7 +2766,7 @@ static int octeon_irq_ciu3_alloc_resources(struct octeon_ciu3_info *ciu3_info)
 	 */
 	idt_ip2 = core * 4 + 1;
 	idt_ip3 = core * 4 + 2;
-	unused_idt1 = core * 4 + 3;
+	idt_ip4 = core * 4 + 3;
 	unused_idt2 = core * 4 + 4;
 	__this_cpu_write(octeon_irq_ciu3_idt_ip2, idt_ip2);
 	__this_cpu_write(octeon_irq_ciu3_idt_ip3, idt_ip3);
@@ -2753,9 +2781,10 @@ static int octeon_irq_ciu3_alloc_resources(struct octeon_ciu3_info *ciu3_info)
 	cvmx_write_csr(b + CIU3_IDT_PP(idt_ip3, 0), 1ull << core);
 	cvmx_write_csr(b + CIU3_IDT_IO(idt_ip3), 0);
 
-	cvmx_write_csr(b + CIU3_IDT_CTL(unused_idt1), 0);
-	cvmx_write_csr(b + CIU3_IDT_PP(unused_idt1, 0), 0);
-	cvmx_write_csr(b + CIU3_IDT_IO(unused_idt1), 0);
+	/* ip4 interrupts for this CPU */
+	cvmx_write_csr(b + CIU3_IDT_CTL(idt_ip4), 2);
+	cvmx_write_csr(b + CIU3_IDT_PP(idt_ip4, 0), 0);
+	cvmx_write_csr(b + CIU3_IDT_IO(idt_ip4), 0);
 
 	cvmx_write_csr(b + CIU3_IDT_CTL(unused_idt2), 0);
 	cvmx_write_csr(b + CIU3_IDT_PP(unused_idt2, 0), 0);
@@ -2797,6 +2826,136 @@ static struct irq_chip octeon_irq_chip_ciu3_mbox = {
 	.flags = IRQCHIP_ONOFFLINE_ENABLED,
 };
 
+void octeon_irq_ciu3_errbits_disable(struct irq_data *data)
+{
+	u64 idt_pp;
+	struct octeon_ciu_chip_data *cd;
+
+	cd = irq_data_get_irq_chip_data(data);
+
+	idt_pp = cd->ciu3_addr + CIU3_IDT_PP(cd->idt, 0);
+	cvmx_write_csr(idt_pp, 0);
+	cvmx_read_csr(idt_pp);
+}
+
+void octeon_irq_ciu3_errbits_enable(struct irq_data *data)
+{
+	u64 idt_pp;
+	int cpu, lcore;
+	struct octeon_ciu_chip_data *cd;
+
+	cpu = next_cpu_for_irq(data);
+	lcore = octeon_coreid_for_cpu(cpu) & 0x7f;
+	cd = irq_data_get_irq_chip_data(data);
+
+	idt_pp = cd->ciu3_addr + CIU3_IDT_PP(cd->idt, 0);
+	cvmx_write_csr(idt_pp, 1ull << lcore);
+	cvmx_read_csr(idt_pp);
+}
+
+static struct irq_chip octeon_irq_chip_ciu3_errbits = {
+	.name = "CIU3-E",
+	.irq_enable = octeon_irq_ciu3_errbits_enable,
+	.irq_disable = octeon_irq_ciu3_errbits_disable,
+	.irq_mask = octeon_irq_ciu3_errbits_disable,
+	.irq_unmask = octeon_irq_ciu3_errbits_enable,
+};
+
+int octeon_ciu3_errbits_set_handler(void (* handler)(int node, int intsn))
+{
+	octeon_ciu3_errbits_handler = handler;
+	return 0;
+}
+
+static irqreturn_t octeon_ciu3_errbits_irq_handler(int irq, void *a)
+{
+	struct octeon_ciu3_errbits_cfg *cfg = a;
+	union cvmx_ciu3_idtx_ctl idt_ctl;
+	union cvmx_ciu3_iscx_w1c isc_w1c;
+	u64 isc_w1c_addr;
+
+
+	idt_ctl.u64 = cvmx_read_csr(cfg->ciu3_addr + CIU3_IDT_CTL(cfg->idt));
+
+	isc_w1c_addr = cfg->ciu3_addr + CIU3_ISC_W1C(idt_ctl.s.intsn);
+	isc_w1c.u64 = 0;
+	isc_w1c.s.raw = 1;
+	cvmx_write_csr(isc_w1c_addr, isc_w1c.u64);
+	cvmx_read_csr(isc_w1c_addr);
+
+	if (octeon_ciu3_errbits_handler)
+		octeon_ciu3_errbits_handler(cfg->node, idt_ctl.s.intsn);
+
+	return IRQ_HANDLED;
+}
+
+int octeon_ciu3_errbits_enable_intsn(int node, int intsn)
+{
+	int r;
+	u64 ciu3_addr = octeon_ciu3_info_per_node[node]->ciu3_addr;
+	struct octeon_ciu3_errbits_cfg *cfg = octeon_ciu3_errbits_per_node + node;
+	union cvmx_ciu3_iscx_ctl isc_ctl;
+	u64 isc_ctl_addr;
+
+	if (!cfg->irq) {
+		int irq;
+		struct octeon_ciu_chip_data *cd;
+		int core = octeon_irq_get_local_core_num();
+
+		irq = irq_alloc_descs(-1, 1, 1, node);
+		if (irq < 0)
+			return irq;
+		cfg->irq = irq;
+		cfg->idt = core * 4 + 3; /* FIXME for Multi-node.*/
+		cfg->node = node;
+		cfg->ciu3_addr = ciu3_addr;
+
+		cd = kzalloc_node(sizeof(*cd), GFP_KERNEL, node);
+		cd->ciu3_addr = ciu3_addr;
+		cd->idt = cfg->idt;
+		irq_set_chip_and_handler(irq, &octeon_irq_chip_ciu3_errbits, handle_level_irq);
+		irq_set_chip_data(irq, cd);
+
+		r = request_irq(irq, octeon_ciu3_errbits_irq_handler, 0, "errbits", cfg);
+		if (WARN_ON(r))
+			return r;
+	}
+	isc_ctl_addr = ciu3_addr + CIU3_ISC_CTL(intsn);
+	isc_ctl.u64 = cvmx_read_csr(isc_ctl_addr);
+	if (WARN(!isc_ctl.s.imp, "Bad intsn: 0x%x", intsn))
+		return -ENODEV;
+	if (isc_ctl.s.en) {
+		union cvmx_ciu3_iscx_w1c isc_w1c;
+		u64 isc_w1c_addr = ciu3_addr + CIU3_ISC_W1C(intsn);
+		pr_info("Already enabled intsn: 0x%x\n", intsn);
+		isc_w1c.u64 = 0;
+		isc_w1c.s.en = 1;
+		cvmx_write_csr(isc_w1c_addr, isc_w1c.u64);
+		cvmx_read_csr(isc_w1c_addr);
+	}
+	isc_ctl.u64 = 0;
+	isc_ctl.s.idt = cfg->idt;
+	isc_ctl.s.en = 1;
+	cvmx_write_csr(isc_ctl_addr, isc_ctl.u64);
+	cvmx_read_csr(isc_ctl_addr);
+	return 0;
+}
+
+int octeon_ciu3_errbits_disable_intsn(int node, int intsn)
+{
+	u64 ciu3_addr = octeon_ciu3_info_per_node[node]->ciu3_addr;
+	u64 isc_w1c_addr;
+	union cvmx_ciu3_iscx_w1c isc_w1c;
+
+	isc_w1c_addr = ciu3_addr + CIU3_ISC_W1C(intsn);
+	isc_w1c.u64 = 0;
+	isc_w1c.s.en = 1;
+	cvmx_write_csr(isc_w1c_addr, isc_w1c.u64);
+	cvmx_read_csr(isc_w1c_addr);
+	return 0;
+}
+
+
 static int __init octeon_irq_init_ciu3(struct device_node *ciu_node,
 				       struct device_node *parent)
 {
@@ -2829,7 +2988,7 @@ static int __init octeon_irq_init_ciu3(struct device_node *ciu_node,
 
 	octeon_irq_ip2 = octeon_irq_ciu3_ip2;
 	octeon_irq_ip3 = octeon_irq_ciu3_mbox;
-	octeon_irq_ip4 = octeon_irq_ip4_mask;
+	octeon_irq_ip4 = octeon_irq_ciu3_ip4;
 
 	/* Mips internal */
 	octeon_irq_init_core();
@@ -2854,9 +3013,9 @@ static int __init octeon_irq_init_ciu3(struct device_node *ciu_node,
 		if (node == 0)
 			irq_set_default_host(domain);
 
+		octeon_irq_use_ip4 = true;
 		/* Enable the CIU lines */
-		set_c0_status(STATUSF_IP2 | STATUSF_IP3);
-		clear_c0_status(STATUSF_IP4);
+		set_c0_status(STATUSF_IP2 | STATUSF_IP3 |STATUSF_IP4);
 	}
 
 	return 0;
@@ -3091,9 +3250,11 @@ static struct of_device_id ciu_types[] __initdata = {
 void __init arch_init_irq(void)
 {
 #ifdef CONFIG_SMP
-	/* Set the default affinity to the boot cpu. */
-	cpumask_clear(irq_default_affinity);
-	cpumask_set_cpu(smp_processor_id(), irq_default_affinity);
+	if (!OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		/* Set the default affinity to the boot cpu. */
+		cpumask_clear(irq_default_affinity);
+		cpumask_set_cpu(smp_processor_id(), irq_default_affinity);
+	}
 #endif
 	of_irq_init(ciu_types);
 }

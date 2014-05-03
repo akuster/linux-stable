@@ -274,3 +274,62 @@ static int __init octeon_error_tree_init(void)
 	return octeon_error_tree_enable(CVMX_ERROR_GROUP_INTERNAL, -1);
 }
 arch_initcall(octeon_error_tree_init);
+
+static int octeon_78xx_tree_size;
+static void octeon_error_tree_handler78(int node, int intsn)
+{
+	int idx, prev_low, prev_high;
+	char msg[128];
+
+	prev_low = 0;
+	prev_high = octeon_78xx_tree_size - 1;
+
+	idx = octeon_78xx_tree_size / 2;
+
+	/* Try to do a binary search */
+	while (prev_low < prev_high && error_array_cn78xxp1[idx].intsn != intsn) {
+		if (error_array_cn78xxp1[idx].intsn < intsn) {
+			prev_low = idx + 1;
+			idx += (prev_high - idx) / 2;
+			if (idx < prev_low)
+				idx = prev_low;
+		} else {
+			prev_high = idx - 1;
+			idx -= (idx - prev_low) / 2;
+			if (idx > prev_high)
+				idx = prev_high;
+		}
+	}
+	if (error_array_cn78xxp1[idx].intsn == intsn) {
+		snprintf(msg, sizeof(msg), error_array_cn78xxp1[idx].err_mesg,
+			 error_array_cn78xxp1[idx].block_csr, error_array_cn78xxp1[idx].block_csr_bitpos);
+		pr_err("%s\n", msg);
+		if (error_array_cn78xxp1[idx].block_csr) {
+			u64 clear_addr;
+			clear_addr = 0x8000000000000000ull | error_array_cn78xxp1[idx].block_csr;
+			cvmx_write_csr(clear_addr, 1ull << error_array_cn78xxp1[idx].block_csr_bitpos);
+		}
+	} else {
+		pr_err("ERROR: Unknown intsn 0x%x\n", intsn);
+		octeon_ciu3_errbits_disable_intsn(0, intsn);
+	}
+}
+
+static int __init octeon_error_tree_init78(void)
+{
+	int i;
+	if (disable || !OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return 0;
+
+	octeon_ciu3_errbits_set_handler(octeon_error_tree_handler78);
+	for (i = 0; error_array_cn78xxp1[i].intsn < 0xfffff; i++)
+		/* Just count them... */;
+	octeon_78xx_tree_size = i;
+
+	for (i = 0; error_array_cn78xxp1[i].intsn < 0xfffff; i++)
+		if (error_array_cn78xxp1[i].error_group != CVMX_ERROR_GROUP_ETHERNET)
+			octeon_ciu3_errbits_enable_intsn(0, error_array_cn78xxp1[i].intsn);
+
+	return 0;
+}
+arch_initcall(octeon_error_tree_init78);
