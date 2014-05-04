@@ -202,8 +202,8 @@ int bgx_port_enable(struct net_device *netdev)
 	struct bgx_port_priv *priv = bgx_port_netdev2priv(netdev);
 
 	cvmx_helper_set_1000x_mode(priv->xiface, priv->index, false);
+	cvmx_helper_set_mac_phy_mode(priv->xiface, priv->index, false);
 	if (priv->phy_np == NULL) {
-		cvmx_helper_set_mac_phy_mode(priv->xiface, priv->index, false);
 		netif_carrier_on(netdev);
 		return 0;
 	}
@@ -213,7 +213,6 @@ int bgx_port_enable(struct net_device *netdev)
 	if (!priv->phydev)
 		return -ENODEV;
 
-	cvmx_helper_set_mac_phy_mode(priv->xiface, priv->index, true);
 	netif_carrier_off(netdev);
 	phy_start_aneg(priv->phydev);
 
