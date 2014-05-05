@@ -570,6 +570,7 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 		goto err;
 	}
 	prt_schd->style = -1; /* Allocate net style per port */
+	prt_schd->qpg_base = -1;
 	prt_schd->aura_per_prt = true;
 	prt_schd->aura = priv->pki_laura;
 	prt_schd->sso_grp_per_prt = true;
@@ -737,7 +738,6 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 	 * submitting the command below
 	 */
 	wmb();
-
 	send_hdr.u64 = 0;
 #ifdef __LITTLE_ENDIAN
 	send_hdr.s.le = 1;
