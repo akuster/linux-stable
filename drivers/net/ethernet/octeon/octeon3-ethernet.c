@@ -552,7 +552,7 @@ static int octeon3_eth_napi(struct napi_struct *napi, int budget)
 	return rx_count;
 }
 
-#define BROKEN_SIMULATOR_CSUM 1
+//#define BROKEN_SIMULATOR_CSUM 1
 
 static int octeon3_eth_ndo_init(struct net_device *netdev)
 {
@@ -755,6 +755,7 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 	union cvmx_pko_lmtdma_data lmtdma_data;
 	union cvmx_pko_query_rtn query_rtn;
 	u8 l4_hdr = 0;
+	unsigned int checksum_alg;
 	long backlog;
 	int frag_count;
 	int head_len, i;
@@ -823,14 +824,19 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 		break;
 	}
 #endif
+	checksum_alg = 1; /* UDP == 1 */
 	switch (l4_hdr) {
-	case IPPROTO_TCP:
 	case IPPROTO_SCTP:
+		checksum_alg++; /* SCTP == 3 */
+		/* Fall through */
+	case IPPROTO_TCP: /* TCP == 2 */
+		checksum_alg++;
+		/* Fall through */
 	case IPPROTO_UDP:
 		if (skb_transport_header_was_set(skb)) {
 			int l4ptr = skb_transport_header(skb) - skb->data;
 			send_hdr.s.l4ptr = l4ptr;
-			send_hdr.s.ckl4 = 1;
+			send_hdr.s.ckl4 = checksum_alg;
 		}
 		break;
 	default:
