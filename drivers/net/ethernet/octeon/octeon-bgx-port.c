@@ -100,6 +100,8 @@ void bgx_port_set_rx_filtering(struct net_device *netdev)
 	int available_cam_entries, current_cam_entry;
 	struct netdev_hw_addr *ha;
 
+	if(true)
+		return;
 	available_cam_entries = 8;
 	adr_ctl.u64 = 0;
 	adr_ctl.s.bcst_accept = 1; /* Accept all Broadcast*/
