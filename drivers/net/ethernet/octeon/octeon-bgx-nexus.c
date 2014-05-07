@@ -57,6 +57,16 @@ static int bgx_probe(struct platform_device *pdev)
 	addr = of_translate_address(pdev->dev.of_node, reg);
 	interface = (addr >> 24) & 0xf;
 	numa_node = (addr >> 36) & 0x7;
+
+	__cvmx_helper_packet_hardware_enable(cvmx_helper_node_interface_to_xiface(numa_node, interface));
+	/* Assign 8 CAM entries per LMAC */
+	for (i = 0; i < 32; i++) {
+		union cvmx_bgxx_cmr_rx_adrx_cam adr_cam;
+		adr_cam.u64 = 0;
+		adr_cam.s.id = i >> 3;
+		cvmx_write_csr_node(numa_node, CVMX_BGXX_CMR_RX_ADRX_CAM(i, interface), adr_cam.u64);
+	}
+
 	for_each_available_child_of_node(pdev->dev.of_node, child) {
 		if (!of_device_is_compatible(child, "cavium,octeon-7890-bgx-port"))
 			continue;
@@ -80,14 +90,6 @@ static int bgx_probe(struct platform_device *pdev)
 		new_dev->dev.numa_node = pdev->dev.numa_node;
 		pki_dev->dev.numa_node = pdev->dev.numa_node;
 #endif
-	}
-	__cvmx_helper_packet_hardware_enable(cvmx_helper_node_interface_to_xiface(numa_node, interface));
-	/* Assign 8 CAM entries per LMAC */
-	for (i = 0; i < 32; i++) {
-		union cvmx_bgxx_cmr_rx_adrx_cam adr_cam;
-		adr_cam.u64 = 0;
-		adr_cam.s.id = i >> 3;
-		cvmx_write_csr_node(numa_node, CVMX_BGXX_CMR_RX_ADRX_CAM(i, interface), adr_cam.u64);
 	}
 
 	dev_info(&pdev->dev, "Probed\n");
