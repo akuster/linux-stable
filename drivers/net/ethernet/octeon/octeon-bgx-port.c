@@ -85,10 +85,10 @@ static void bgx_port_write_cam(int numa_node, int interface, int index, int cam,
 	u64 m = 0;
 	if (mac)
 		for (i = 0; i < 6; i++)
-			m |= ((u64)mac[i]) << (6 * i);
+			m |= (((u64)mac[i]) << ((5 - i) * 8));
 	adr_cam.u64 = m;
 	adr_cam.s.en = mac ? 1 : 0;
-	adr_cam.s.id = index >> 3;
+	adr_cam.s.id = index;
 	cvmx_write_csr_node(numa_node, CVMX_BGXX_CMR_RX_ADRX_CAM(index * 8 + cam, interface), adr_cam.u64);
 }
 
@@ -100,8 +100,6 @@ void bgx_port_set_rx_filtering(struct net_device *netdev)
 	int available_cam_entries, current_cam_entry;
 	struct netdev_hw_addr *ha;
 
-	if(true)
-		return;
 	available_cam_entries = 8;
 	adr_ctl.u64 = 0;
 	adr_ctl.s.bcst_accept = 1; /* Accept all Broadcast*/
