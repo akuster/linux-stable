@@ -77,6 +77,8 @@ struct octeon_mmc_host {
 	bool dma_err_pending;
 	bool need_bootbus_lock;
 	bool big_dma_addr;
+	bool need_irq_handler_lock;
+	spinlock_t irq_handler_lock;
 
 	struct octeon_mmc_slot	*slot[OCTEON_MAX_MMC];
 };
@@ -291,7 +293,10 @@ static irqreturn_t octeon_mmc_interrupt(int irq, void *dev_id)
 	struct mmc_request	*req;
 	bool host_done;
 	union cvmx_mio_emm_rsp_sts rsp_sts;
+	unsigned long flags = 0;
 
+	if (host->need_irq_handler_lock)
+		spin_lock_irqsave(&host->irq_handler_lock, flags);
 	emm_int.u64 = cvmx_read_csr(host->base + OCT_MIO_EMM_INT);
 	req = host->current_req;
 	cvmx_write_csr(host->base + OCT_MIO_EMM_INT, emm_int.u64);
@@ -429,6 +434,8 @@ no_req_done:
 	if (host_done)
 		octeon_mmc_release_bus(host);
 out:
+	if (host->need_irq_handler_lock)
+		spin_unlock_irqrestore(&host->irq_handler_lock, flags);
 	return IRQ_RETVAL(emm_int.u64 != 0);
 }
 
@@ -1021,12 +1028,14 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "devm_kzalloc failed\n");
 		return -ENOMEM;
 	}
+	spin_lock_init(&host->irq_handler_lock);
 	sema_init(&host->mmc_serializer, 1);
 
 	cn78xx_style = of_device_is_compatible(node, "cavium,octeon-7890-mmc");
 	if (cn78xx_style) {
 		host->need_bootbus_lock = false;
 		host->big_dma_addr = true;
+		host->need_irq_handler_lock = true;
 		/*
 		 * First seven are the EMM_INT bits 0..6, then two for
 		 * the EMM_DMA_INT bits
@@ -1039,6 +1048,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 	} else {
 		host->need_bootbus_lock = true;
 		host->big_dma_addr = false;
+		host->need_irq_handler_lock = false;
 		/* First one is EMM second NDF_DMA */
 		for (i = 0; i < 2; i++) {
 			mmc_irq[i] = platform_get_irq(pdev, i);
@@ -1088,7 +1098,8 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 	t = cvmx_read_csr(host->base + OCT_MIO_EMM_INT);
 	cvmx_write_csr(host->base + OCT_MIO_EMM_INT, t);
 	if (cn78xx_style) {
-		for (i = 0; i < 7; i++) {
+		/* Only CMD_DONE, DMA_DONE, CMD_ERR, DMA_ERR */
+		for (i = 1; i <= 4; i++) {
 			ret = devm_request_irq(&pdev->dev, mmc_irq[i], octeon_mmc_interrupt,
 					       0, DRV_NAME, host);
 			if (ret < 0) {
