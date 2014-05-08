@@ -552,7 +552,7 @@ static int octeon3_eth_napi(struct napi_struct *napi, int budget)
 	return rx_count;
 }
 
-//#define BROKEN_SIMULATOR_CSUM 1
+#define BROKEN_SIMULATOR_CSUM 1
 
 static int octeon3_eth_ndo_init(struct net_device *netdev)
 {
