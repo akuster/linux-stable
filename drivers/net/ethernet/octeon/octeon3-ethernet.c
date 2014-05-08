@@ -552,7 +552,7 @@ static int octeon3_eth_napi(struct napi_struct *napi, int budget)
 	return rx_count;
 }
 
-#define BROKEN_SIMULATOR_CSUM 1
+//#define BROKEN_SIMULATOR_CSUM 1
 
 static int octeon3_eth_ndo_init(struct net_device *netdev)
 {
@@ -816,6 +816,7 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 		send_hdr.s.l3ptr = ETH_HLEN;
 		send_hdr.s.ckl3 = 1;
 		l4_hdr = ip_hdr(skb)->protocol;
+		send_hdr.s.l4ptr = ETH_HLEN + (4 * ip_hdr(skb)->ihl);
 		break;
 	case __constant_htons(ETH_P_IPV6):
 		l4_hdr = ipv6_hdr(skb)->nexthdr;
