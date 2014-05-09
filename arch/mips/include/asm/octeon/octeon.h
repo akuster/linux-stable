@@ -300,6 +300,7 @@ struct octeon_ciu_chip_data {
 		};
 	};
 	int current_cpu;	/* Next CPU expected to take this irq */
+	int ciu_node; /* NUMA node number of the CIU */
 };
 
 extern void octeon_write_lcd(const char *s);

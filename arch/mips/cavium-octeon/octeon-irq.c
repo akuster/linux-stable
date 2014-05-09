@@ -45,6 +45,7 @@ static DEFINE_PER_CPU(struct octeon_ciu3_info *, octeon_ciu3_info);
 /* Information for each ciu3 in the system */
 struct octeon_ciu3_info {
 	u64			ciu3_addr;
+	int			node;
 	struct irq_domain	*domain[MAX_CIU3_DOMAINS];
 };
 
@@ -2517,6 +2518,7 @@ int octeon_irq_ciu3_mapx(struct irq_domain *d, unsigned int virq,
 	cd->intsn = hw;
 	cd->current_cpu = -1;
 	cd->ciu3_addr = ciu3_info->ciu3_addr;
+	cd->ciu_node = ciu3_info->node;
 
 	irq_set_chip_and_handler(virq, chip, octeon_irq_handle_trigger);
 	irq_set_chip_data(virq, cd);
@@ -2556,15 +2558,19 @@ static void octeon_irq_ciu3_ip2(void)
 	if (likely(dest_pp_int.s.intr)) {
 		irq_hw_number_t intsn = dest_pp_int.s.intsn;
 		/* Get the domain to use from the major block */
-		int block = intsn > 12;
+		int block = intsn >> 12;
 		int irq = irq_find_mapping(ciu3_info->domain[block], intsn);
 
 		if (likely(irq)) {
 			do_IRQ(irq);
 		} else {
-			u64 isc_ctl_addr = ciu3_addr + CIU3_ISC_CTL(intsn);
-			cvmx_write_csr(isc_ctl_addr, 0);
-			cvmx_read_csr(isc_ctl_addr);
+			union cvmx_ciu3_iscx_w1c isc_w1c;
+			u64 isc_w1c_addr = ciu3_addr + CIU3_ISC_W1C(intsn);
+
+			isc_w1c.u64 = 0;
+			isc_w1c.s.en = 1;
+			cvmx_write_csr(isc_w1c_addr, isc_w1c.u64);
+			cvmx_read_csr(isc_w1c_addr);
 			spurious_interrupt();
 		}
 	} else {
@@ -2612,9 +2618,13 @@ static void octeon_irq_ciu3_mbox(void)
 		if (likely(mbox >= 0 && mbox < CIU3_MBOX_PER_CORE)) {
 			do_IRQ(mbox + OCTEON_IRQ_MBOX0);
 		} else {
-			u64 isc_ctl_addr = ciu3_addr + CIU3_ISC_CTL(intsn);
-			cvmx_write_csr(isc_ctl_addr, 0);
-			cvmx_read_csr(isc_ctl_addr);
+			union cvmx_ciu3_iscx_w1c isc_w1c;
+			u64 isc_w1c_addr = ciu3_addr + CIU3_ISC_W1C(intsn);
+
+			isc_w1c.u64 = 0;
+			isc_w1c.s.en = 1;
+			cvmx_write_csr(isc_w1c_addr, isc_w1c.u64);
+			cvmx_read_csr(isc_w1c_addr);
 			spurious_interrupt();
 		}
 	} else {
@@ -2981,6 +2991,7 @@ static int __init octeon_irq_init_ciu3(struct device_node *ciu_node,
 	node = (base_addr >> 36) & 3;
 
 	ciu3_info->ciu3_addr = base_addr;
+	ciu3_info->node = node;
 
 	consts.u64 = cvmx_read_csr(base_addr + CIU3_CONST);
 
