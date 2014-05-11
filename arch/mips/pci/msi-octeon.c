@@ -447,7 +447,7 @@ int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
 		domain = octeon_irq_get_block_domain(node, MSI_BLOCK_NUMBER);
 
 		/* Get a irq for the msi intsn (hardware interrupt) */
-		hwirq = MSI_BLOCK_NUMBER << 12 | msi;
+		hwirq = MSI_BLOCK_NUMBER << 12 | (msi * 64);
 		irq = irq_create_mapping(domain, hwirq);
 		irqd_set_trigger_type(irq_get_irq_data(irq),
 				      IRQ_TYPE_EDGE_RISING);
