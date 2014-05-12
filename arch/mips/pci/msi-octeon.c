@@ -447,7 +447,7 @@ int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
 		domain = octeon_irq_get_block_domain(node, MSI_BLOCK_NUMBER);
 
 		/* Get a irq for the msi intsn (hardware interrupt) */
-		hwirq = MSI_BLOCK_NUMBER << 12 | (msi * 64);
+		hwirq = MSI_BLOCK_NUMBER << 12 | msi;
 		irq = irq_create_mapping(domain, hwirq);
 		irqd_set_trigger_type(irq_get_irq_data(irq),
 				      IRQ_TYPE_EDGE_RISING);
@@ -589,10 +589,22 @@ static void octeon_irq_msi_ciu3_mask_ack(struct irq_data *data)
 	cvmx_write_csr(csr_addr, 1 << (msi & 0x3f));
 }
 
+static void octeon_irq_msi_ciu3_enable(struct irq_data *data)
+{
+	octeon_irq_ciu3_enable(data);
+	unmask_msi_irq(data);
+}
+
+static void octeon_irq_msi_ciu3_disable(struct irq_data *data)
+{
+	octeon_irq_ciu3_disable(data);
+	mask_msi_irq(data);
+}
+
 static struct irq_chip octeon_irq_msi_chip_ciu3 = {
-	.name = "CIU3",
-	.irq_enable = octeon_irq_ciu3_enable,
-	.irq_disable = octeon_irq_ciu3_disable,
+	.name = "MSI-X",
+	.irq_enable = octeon_irq_msi_ciu3_enable,
+	.irq_disable = octeon_irq_msi_ciu3_disable,
 	.irq_ack = octeon_irq_msi_ciu3_ack,
 	.irq_mask = octeon_irq_ciu3_mask,
 	.irq_mask_ack = octeon_irq_msi_ciu3_mask_ack,
