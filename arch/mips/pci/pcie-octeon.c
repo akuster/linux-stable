@@ -344,34 +344,35 @@ static struct pci_ops octeon_pcie_ops = {
 	octeon_pcie_write_config,
 };
 
-#define OCTEON_PCIE_MEM_RESOURCE(PORT)				\
-static struct resource octeon_pcie##PORT##_mem_resource = {	\
-	.name = "Octeon PCIe##PORT## MEM",			\
-	.flags = IORESOURCE_MEM,				\
+struct octeon_pcie_interface {
+	struct pci_controller controller;
+	struct resource mem;
+	struct resource io;
+	char mem_name[20];
+	char io_name[20];
+	int node;
+	int pem;
 };
 
-#define OCTEON_PCIE_IO_RESOURCE(PORT)				\
-static struct resource octeon_pcie##PORT##_io_resource = {	\
-	.name = "Octeon PCIe##PORT## IO",			\
-	.flags = IORESOURCE_IO,					\
-};
+static struct octeon_pcie_interface octeon_pcie[3];
 
-#define OCTEON_PCIE_CONTROLLER(PORT)				\
-static struct pci_controller octeon_pcie##PORT##_controller = {	\
-	 .pci_ops = &octeon_pcie_ops,				\
-	 .mem_resource = &octeon_pcie##PORT##_mem_resource,	\
-	 .io_resource = &octeon_pcie##PORT##_io_resource,	\
-};
+static void octeon_pcie_interface_init(struct octeon_pcie_interface *iface, int node, int pem)
+{
+	snprintf(iface->mem_name, sizeof(iface->mem_name), "OCTEON PCIe-%d MEM", pem);
+	iface->mem.name = iface->mem_name;
+	iface->mem.flags = IORESOURCE_MEM;
 
-OCTEON_PCIE_MEM_RESOURCE(0)
-OCTEON_PCIE_MEM_RESOURCE(1)
-OCTEON_PCIE_MEM_RESOURCE(2)
-OCTEON_PCIE_IO_RESOURCE(0)
-OCTEON_PCIE_IO_RESOURCE(1)
-OCTEON_PCIE_IO_RESOURCE(2)
-OCTEON_PCIE_CONTROLLER(0)
-OCTEON_PCIE_CONTROLLER(1)
-OCTEON_PCIE_CONTROLLER(2)
+	snprintf(iface->mem_name, sizeof(iface->mem_name), "OCTEON PCIe-%d IO", pem);
+	iface->io.name = iface->io_name;
+	iface->io.flags = IORESOURCE_IO;
+
+	iface->controller.pci_ops = &octeon_pcie_ops;
+	iface->controller.mem_resource = &iface->mem;
+	iface->controller.io_resource = &iface->io;
+
+	iface->node = node;
+	iface->pem = pem;
+}
 
 static struct pci_ops octeon_dummy_ops = {
 	octeon_dummy_read_config,
@@ -504,9 +505,11 @@ static int __init octeon_pcie_setup(void)
 			/* Set IO offsets, Memory/IO resource start and end limits */
 			switch (port) {
 			case 0:
+			case 1:
+			case 2:
+				octeon_pcie_interface_init(&octeon_pcie[port], 0, port);
 				/* Memory offsets are physical addresses */
-				octeon_pcie0_controller.mem_offset =
-					cvmx_pcie_get_mem_base_address(0);
+				octeon_pcie[port].controller.mem_offset = cvmx_pcie_get_mem_base_address(port);
 				/*
 				 * To calculate the address for accessing the 2nd PCIe device,
 				 * either 'io_map_base' (pci_iomap()), or 'mips_io_port_base'
@@ -516,8 +519,7 @@ static int __init octeon_pcie_setup(void)
 				 * based on first slot's value so that both the routines will
 				 * work properly.
 				 */
-				octeon_pcie0_controller.io_map_base =
-					CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(0));
+				octeon_pcie[port].controller.io_map_base = CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(port));
 				/*
 				 * To keep things similar to PCI, we start
 				 * device addresses at the same place as PCI
@@ -525,73 +527,29 @@ static int __init octeon_pcie_setup(void)
 				 * translates to 4GB-256MB, which is the same
 				 * as most x86 PCs.
 				 */
-				octeon_pcie0_controller.mem_resource->start =
-					cvmx_pcie_get_mem_base_address(0) +
-					(4ul << 30) - (OCTEON_PCI_BAR1_HOLE_SIZE << 20);
-				octeon_pcie0_controller.mem_resource->end =
-					cvmx_pcie_get_mem_base_address(0) +
-					cvmx_pcie_get_mem_size(0) - 1;
-
-				/* IO offsets are Mips virtual addresses */
-				octeon_pcie0_controller.io_offset = 0;
-				/*
-				 * Ports must be above 16KB for the ISA bus
-				 * filtering in the PCI-X to PCI bridge.
-				 */
-				octeon_pcie0_controller.io_resource->start = 4 << 10;
-				octeon_pcie0_controller.io_resource->end =
-					(cvmx_pcie_get_io_size(0) - 1);
+				octeon_pcie[port].mem.start =
+					cvmx_pcie_get_mem_base_address(port) + (4ul << 30) - (OCTEON_PCI_BAR1_HOLE_SIZE << 20);
+				octeon_pcie[port].mem.end =
+					cvmx_pcie_get_mem_base_address(port) + cvmx_pcie_get_mem_size(port) - 1;
+				if (port == 0) {
+					/* IO offsets are Mips virtual addresses */
+					octeon_pcie[port].controller.io_offset = 0;
+					/*
+					 * Ports must be above 16KB for the ISA bus
+					 * filtering in the PCI-X to PCI bridge.
+					 */
+					octeon_pcie[port].io.start = 4 << 10;
+					octeon_pcie[port].io.end = cvmx_pcie_get_io_size(port) - 1;
+				} else {
+					octeon_pcie[port].controller.io_offset =
+						cvmx_pcie_get_io_base_address(port) - cvmx_pcie_get_io_base_address(port - 1);
+					octeon_pcie[port].io.start =
+						cvmx_pcie_get_io_base_address(port) - cvmx_pcie_get_io_base_address(port - 1);
+					octeon_pcie[port].io.end = octeon_pcie[port].io.start + cvmx_pcie_get_io_size(port) - 1;
+				}
 				msleep(100); /* Some devices need extra time */
-				octeon_pcie0_controller.index = 0;
-				register_pci_controller(&octeon_pcie0_controller);
-				break;
-			case 1:
-				octeon_pcie1_controller.mem_offset =
-					cvmx_pcie_get_mem_base_address(1);
-				octeon_pcie1_controller.io_map_base =
-					CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(0));
-				octeon_pcie1_controller.mem_resource->start =
-					cvmx_pcie_get_mem_base_address(1) +
-					(4ul << 30) - (OCTEON_PCI_BAR1_HOLE_SIZE << 20);
-				octeon_pcie1_controller.mem_resource->end =
-					cvmx_pcie_get_mem_base_address(1) +
-					cvmx_pcie_get_mem_size(1) - 1;
-				octeon_pcie1_controller.io_offset =
-					cvmx_pcie_get_io_base_address(1) -
-					cvmx_pcie_get_io_base_address(0);
-				octeon_pcie1_controller.io_resource->start =
-					(cvmx_pcie_get_io_base_address(1) -
-					cvmx_pcie_get_io_base_address(0));
-				octeon_pcie1_controller.io_resource->end =
-					octeon_pcie1_controller.io_resource->start +
-					cvmx_pcie_get_io_size(1) - 1;
-				msleep(100); /* Some devices need extra time */
-				octeon_pcie1_controller.index = 1;
-				register_pci_controller(&octeon_pcie1_controller);
-				break;
-			case 2:
-				octeon_pcie2_controller.mem_offset =
-					cvmx_pcie_get_mem_base_address(2);
-				octeon_pcie2_controller.io_map_base =
-					CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(0));
-				octeon_pcie2_controller.mem_resource->start =
-					cvmx_pcie_get_mem_base_address(2) +
-					(4ul << 30) - (OCTEON_PCI_BAR1_HOLE_SIZE << 20);
-				octeon_pcie2_controller.mem_resource->end =
-					cvmx_pcie_get_mem_base_address(2) +
-					cvmx_pcie_get_mem_size(2) - 1;
-				octeon_pcie2_controller.io_offset =
-					cvmx_pcie_get_io_base_address(2) -
-					cvmx_pcie_get_io_base_address(1);
-				octeon_pcie2_controller.io_resource->start =
-					cvmx_pcie_get_io_base_address(2) -
-					cvmx_pcie_get_io_base_address(1);
-				octeon_pcie2_controller.io_resource->end =
-					octeon_pcie2_controller.io_resource->start +
-					cvmx_pcie_get_io_size(2) - 1;
-				msleep(100); /* Some devices need extra time */
-				octeon_pcie2_controller.index = 2;
-				register_pci_controller(&octeon_pcie2_controller);
+				octeon_pcie[port].controller.index = port;
+				register_pci_controller(&octeon_pcie[port].controller);
 				break;
 			default:
 				break;
