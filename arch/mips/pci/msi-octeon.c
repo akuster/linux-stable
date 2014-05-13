@@ -459,13 +459,13 @@ int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
 		if (msi_to_irq[msi])
 			irq = msi_to_irq[msi];
 		else {
-			cd = kzalloc(sizeof(*cd), GFP_KERNEL);
+			cd = kzalloc_node(sizeof(*cd), GFP_KERNEL, node);
+			if (!cd)
+				return -ENOMEM;
 			cd->msi = msi;
 			cd->hwmsi = hwmsi;
-
-			if ((irq = irq_alloc_descs(-1, 1, 1, node)) < 0) {
-				WARN(1, "arch_setup_msi_irq: Unable to find a "
-				     "free irq\n");
+			irq = irq_alloc_descs(-1, 1, 1, node);
+			if (WARN(irq < 0, "arch_setup_msi_irq: Unable to find a free irq\n")) {
 				clear_bit(msi, msi_free_irq_bitmap[node]);
 				kfree(cd);
 				return -ENOSPC;
