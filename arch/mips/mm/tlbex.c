@@ -524,7 +524,8 @@ static void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 			break;
 
 		default:
-			uasm_i_ehb(p);
+			if (cpu_has_mips_r2_exec_hazard)
+				uasm_i_ehb(p);
 			break;
 		}
 		tlbw(p);
