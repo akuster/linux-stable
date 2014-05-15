@@ -558,7 +558,7 @@ static int __init octeon_pcie_setup(void)
 	set_io_port_base(CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(0)));
 	ioport_resource.start = 0;
 	ioport_resource.end =
-		cvmx_pcie_get_io_base_address(CVMX_PCIE_PORTS) -
+		cvmx_pcie_get_io_base_address(CVMX_PCIE_PORTS-1) -
 		cvmx_pcie_get_io_base_address(0) + cvmx_pcie_get_io_size(1) - 1;
 
 	/*
@@ -626,6 +626,7 @@ static int __init octeon_pcie_setup(void)
 			case 0:
 			case 1:
 			case 2:
+			case 3:
 				octeon_pcie_interface_init(&octeon_pcie[port], 0, port);
 				/* Memory offsets are physical addresses */
 				octeon_pcie[port].controller.mem_offset = cvmx_pcie_get_mem_base_address(port);
@@ -638,7 +639,7 @@ static int __init octeon_pcie_setup(void)
 				 * based on first slot's value so that both the routines will
 				 * work properly.
 				 */
-				octeon_pcie[port].controller.io_map_base = CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(port));
+				octeon_pcie[port].controller.io_map_base = CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(0));
 				/*
 				 * To keep things similar to PCI, we start
 				 * device addresses at the same place as PCI
