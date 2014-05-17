@@ -115,11 +115,15 @@ void bgx_port_set_rx_filtering(struct net_device *netdev)
 		available_cam_entries = 7 - netdev->uc.count;
 	}
 
-	if (netdev->flags & IFF_MULTICAST) {
-		if ((netdev->flags & IFF_ALLMULTI) || netdev_mc_count(netdev) > available_cam_entries)
-			adr_ctl.s.mcst_mode = 1; /* Accept all Multicast */
-		else
-			adr_ctl.s.mcst_mode = 2; /* Accept all Multicast via CAM */
+	if (netdev->flags & IFF_PROMISC) {
+		adr_ctl.s.mcst_mode = 1; /* Accept all Multicast */
+	} else {
+		if (netdev->flags & IFF_MULTICAST) {
+			if ((netdev->flags & IFF_ALLMULTI) || netdev_mc_count(netdev) > available_cam_entries)
+				adr_ctl.s.mcst_mode = 1; /* Accept all Multicast */
+			else
+				adr_ctl.s.mcst_mode = 2; /* Accept all Multicast via CAM */
+		}
 	}
 	current_cam_entry = 0;
 	if (adr_ctl.s.cam_accept) {
@@ -225,6 +229,31 @@ int bgx_port_disable(struct net_device *netdev)
 	return 0;
 }
 EXPORT_SYMBOL(bgx_port_disable);
+
+int bgx_port_change_mtu(struct net_device *netdev, int new_mtu)
+{
+	union cvmx_bgxx_cmrx_config cfg;
+	struct bgx_port_priv *priv = bgx_port_netdev2priv(netdev);
+
+	if (new_mtu < 60 || new_mtu > 65392)
+		return -EINVAL;
+
+	netdev->mtu = new_mtu;
+
+	cfg.u64 = cvmx_read_csr_node(priv->numa_node, CVMX_BGXX_CMRX_CONFIG(priv->index, priv->bgx_interface));
+	if (cfg.s.lmac_type == 0)
+		cvmx_write_csr_node(priv->numa_node,		/* 1G */
+				    CVMX_BGXX_GMP_GMI_RXX_JABBER(priv->index, priv->bgx_interface),
+				    new_mtu);
+	else
+		cvmx_write_csr_node(priv->numa_node,		/* 10G or higher */
+				    CVMX_BGXX_SMUX_RX_JABBER(priv->index, priv->bgx_interface),
+				    new_mtu);
+
+
+	return 0;
+}
+EXPORT_SYMBOL(bgx_port_change_mtu);
 
 static int bgx_port_probe(struct platform_device *pdev)
 {

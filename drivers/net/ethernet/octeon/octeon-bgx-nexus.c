@@ -68,11 +68,18 @@ static int bgx_probe(struct platform_device *pdev)
 	}
 
 	for_each_available_child_of_node(pdev->dev.of_node, child) {
+		union cvmx_bgxx_cmrx_config cmr_config;
 		if (!of_device_is_compatible(child, "cavium,octeon-7890-bgx-port"))
 			continue;
 		r = of_property_read_u32(child, "reg", &port);
 		if (r)
 			return -ENODEV;
+
+		/* Connect to PKI/PKO */
+		cmr_config.u64 = cvmx_read_csr_node(numa_node, CVMX_BGXX_CMRX_CONFIG(port, interface));
+		cmr_config.s.mix_en = 0;
+		cvmx_write_csr_node(numa_node, CVMX_BGXX_CMRX_CONFIG(port, interface), cmr_config.u64);
+
 		snprintf(id, sizeof(id), "%llx.%u.ethernet-mac", (unsigned long long)addr, port);
 		new_dev = of_platform_device_create(child, id, &pdev->dev);
 		if (!new_dev) {
