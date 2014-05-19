@@ -240,15 +240,17 @@ int bgx_port_change_mtu(struct net_device *netdev, int new_mtu)
 
 	netdev->mtu = new_mtu;
 
+	int max_frame = round_up(new_mtu + ETH_HLEN + ETH_FCS_LEN, 8);
+
 	cfg.u64 = cvmx_read_csr_node(priv->numa_node, CVMX_BGXX_CMRX_CONFIG(priv->index, priv->bgx_interface));
 	if (cfg.s.lmac_type == 0)
 		cvmx_write_csr_node(priv->numa_node,		/* 1G */
 				    CVMX_BGXX_GMP_GMI_RXX_JABBER(priv->index, priv->bgx_interface),
-				    new_mtu);
+				    max_frame);
 	else
 		cvmx_write_csr_node(priv->numa_node,		/* 10G or higher */
 				    CVMX_BGXX_SMUX_RX_JABBER(priv->index, priv->bgx_interface),
-				    new_mtu);
+				    max_frame);
 
 
 	return 0;
