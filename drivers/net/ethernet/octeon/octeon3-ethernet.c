@@ -73,6 +73,9 @@ struct octeon3_ethernet {
 	atomic64_t rx_packets;
 	atomic64_t rx_octets;
 	atomic64_t rx_dropped;
+	atomic64_t rx_errors;
+	atomic64_t rx_length_errors;
+	atomic64_t rx_crc_errors;
 	atomic64_t tx_packets;
 	atomic64_t tx_octets;
 	atomic64_t tx_dropped;
@@ -406,11 +409,12 @@ static struct sk_buff *octeon3_eth_work_to_skb(void *w)
  */
 static int octeon3_eth_rx_one(struct octeon3_ethernet *priv)
 {
-	unsigned int segments;
+	int segments;
 	int ret;
 	unsigned int packet_len;
 	cvmx_wqe_78xx_t *work;
 	u8 *data;
+	int len_remaining;
 	struct sk_buff *skb;
 	union cvmx_buf_ptr_pki packet_ptr;
 	struct wr_ret r;
@@ -422,15 +426,38 @@ static int octeon3_eth_rx_one(struct octeon3_ethernet *priv)
 	skb = octeon3_eth_work_to_skb(work);
 	segments = work->word0.bufs;
 	ret = segments;
-	if (unlikely(work->word2.err_level <= CVMX_PKI_ERRLEV_LA &&
-		     work->word2.err_code != CVMX_PKI_OPCODE_RE_NONE))
-		goto drop; /* FIXME:  Free chained buffers in this case */
+	packet_ptr = work->packet_ptr;
+	if (unlikely(work->word2.err_level <= CVMX_PKI_ERRLEV_E_LA &&
+		     work->word2.err_code != CVMX_PKI_OPCODE_RE_NONE)) {
+		atomic64_inc(&priv->rx_errors);
+		switch (work->word2.err_code) {
+		case CVMX_PKI_OPCODE_RE_JABBER:
+			atomic64_inc(&priv->rx_length_errors);
+			break;
+		case CVMX_PKI_OPCODE_RE_FCS:
+			atomic64_inc(&priv->rx_crc_errors);
+			break;
+		}
+		data = phys_to_virt(packet_ptr.addr);
+		for (;;) {
+			dev_kfree_skb_any(skb);
+			segments--;
+			if (segments <= 0)
+				break;
+			packet_ptr.u64 = *(u64 *)(data - 8);
+			/* PKI-20776 PKI_BUFLINK_S's are endian-swapped */
+			packet_ptr.u64 = swab64(packet_ptr.u64);
+			data = phys_to_virt(packet_ptr.addr);
+			skb = octeon3_eth_work_to_skb((void *)round_down((unsigned long)data, 128ul));
+		}
+		goto out;
+	}
 
 	packet_len = work->word1.len;
-	packet_ptr = work->packet_ptr;
 	data = phys_to_virt(packet_ptr.addr);
 	skb->data = data;
 	skb->len = packet_len;
+	len_remaining = packet_len;
 	if (segments == 1) {
 		skb_set_tail_pointer(skb, skb->len);
 	} else {
@@ -441,7 +468,8 @@ static int octeon3_eth_rx_one(struct octeon3_ethernet *priv)
 
 		skb_frag_list_init(skb);
 		for (;;) {
-			segment_size = packet_ptr.size;
+			segment_size = (segments == 1) ? len_remaining : packet_ptr.size;
+			len_remaining -= segment_size;
 			if (!first_frag) {
 				current_skb->len = segment_size;
 				skb->data_len += segment_size;
@@ -452,7 +480,6 @@ static int octeon3_eth_rx_one(struct octeon3_ethernet *priv)
 			if (segments == 0)
 				break;
 			packet_ptr.u64 = *(u64 *)(data - 8);
-
 			/* PKI-20776 PKI_BUFLINK_S's are endian-swapped */
 			packet_ptr.u64 = swab64(packet_ptr.u64);
 
@@ -466,20 +493,19 @@ static int octeon3_eth_rx_one(struct octeon3_ethernet *priv)
 			}
 			current_skb = next_skb;
 			first_frag = false;
-			current_skb->data = phys_to_virt(packet_ptr.addr);
+			current_skb->data = data;
 		}
 	}
 	if (likely(priv->netdev->flags & IFF_UP)) {
-		//pr_info("Got packet segments: %d, len: %d\n", ret, skb->len);
 		skb_checksum_none_assert(skb);
 		skb->protocol = eth_type_trans(skb, priv->netdev);
 		skb->dev = priv->netdev;
 		if (priv->netdev->features & NETIF_F_RXCSUM) {
-			if ((work->word2.lc_hdr_type == CVMX_PKI_LTYPE_IPV4 ||
-			     work->word2.lc_hdr_type == CVMX_PKI_LTYPE_IPV6) &&
-			    (work->word2.lf_hdr_type == CVMX_PKI_LTYPE_TCP ||
-			     work->word2.lf_hdr_type == CVMX_PKI_LTYPE_UDP ||
-			     work->word2.lf_hdr_type == CVMX_PKI_LTYPE_SCTP))
+			if ((work->word2.lc_hdr_type == CVMX_PKI_LTYPE_E_IP4 ||
+			     work->word2.lc_hdr_type == CVMX_PKI_LTYPE_E_IP6) &&
+			    (work->word2.lf_hdr_type == CVMX_PKI_LTYPE_E_TCP ||
+			     work->word2.lf_hdr_type == CVMX_PKI_LTYPE_E_UDP ||
+			     work->word2.lf_hdr_type == CVMX_PKI_LTYPE_E_SCTP))
 				if (work->word2.err_code == 0)
 					skb->ip_summed = CHECKSUM_UNNECESSARY;
 
@@ -487,11 +513,11 @@ static int octeon3_eth_rx_one(struct octeon3_ethernet *priv)
 		}
 		netif_receive_skb(skb);
 	} else {
-	drop:
 		/* Drop any packet received for a device that isn't up */
-		atomic64_add(1, (atomic64_t *)&priv->netdev->stats.rx_dropped);
+		atomic64_inc(&priv->rx_dropped);
 		dev_kfree_skb_any(skb);
 	}
+out:
 	return ret;
 }
 
@@ -545,6 +571,7 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	struct cvmx_pki_port_config pki_prt_cfg;
 	struct cvmx_pki_prt_schd *prt_schd = NULL;
 	int ipd_port, node_dq;
+	int first_skip, later_skip;
 	struct cvmx_xport xdq;
 	int r;
 	const u8 *mac;
@@ -623,8 +650,10 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	pki_prt_cfg.style_cfg.parm_cfg.ip6_udp_opt = false;
 	pki_prt_cfg.style_cfg.parm_cfg.ip6_udp_opt = false;
 	pki_prt_cfg.style_cfg.parm_cfg.wqe_skip = 1 * 128;
-	pki_prt_cfg.style_cfg.parm_cfg.first_skip = 8 * 21;
-	pki_prt_cfg.style_cfg.parm_cfg.later_skip = 8 * 16;
+	first_skip = 8 * 21;
+	later_skip = 8 * 16;
+	pki_prt_cfg.style_cfg.parm_cfg.first_skip = first_skip;
+	pki_prt_cfg.style_cfg.parm_cfg.later_skip = later_skip;
 	pki_prt_cfg.style_cfg.parm_cfg.pkt_lend = false;
 	pki_prt_cfg.style_cfg.parm_cfg.tag_type = CVMX_SSO_TAG_TYPE_UNTAGGED;
 	pki_prt_cfg.style_cfg.parm_cfg.qpg_dis_grptag = true;
@@ -644,7 +673,7 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	pki_prt_cfg.style_cfg.parm_cfg.len_lf = true;
 	pki_prt_cfg.style_cfg.parm_cfg.len_lg = false;
 
-	pki_prt_cfg.style_cfg.parm_cfg.mbuff_size = packet_buffer_size - 128;
+	pki_prt_cfg.style_cfg.parm_cfg.mbuff_size = (packet_buffer_size - 128) & ~0xf;
 
 	cvmx_pki_config_port(ipd_port, &pki_prt_cfg);
 
@@ -931,6 +960,10 @@ static struct rtnl_link_stats64 *octeon3_eth_ndo_get_stats64(struct net_device *
 	s->rx_packets = atomic64_read(&priv->rx_packets);
 	s->rx_bytes = atomic64_read(&priv->rx_octets);
 	s->rx_dropped = atomic64_read(&priv->rx_dropped);
+	s->rx_errors = atomic64_read(&priv->rx_errors);
+	s->rx_length_errors = atomic64_read(&priv->rx_length_errors);
+	s->rx_crc_errors = atomic64_read(&priv->rx_crc_errors);
+
 	s->tx_packets = atomic64_read(&priv->tx_packets);
 	s->tx_bytes = atomic64_read(&priv->tx_octets);
 	s->tx_dropped = atomic64_read(&priv->tx_dropped);
