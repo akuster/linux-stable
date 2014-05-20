@@ -751,6 +751,43 @@ err:
 	return r;
 }
 
+static int octeon3_eth_ndo_stop(struct net_device *netdev)
+{
+	struct octeon3_ethernet *priv = netdev_priv(netdev);
+	void **w;
+	struct sk_buff *skb;
+	int r;
+
+	r = bgx_port_disable(netdev);
+	if (r)
+		goto err;
+
+	msleep(20);
+
+	/* Wait for SSO to drain */
+	while (cvmx_read_csr_node(priv->numa_node, CVMX_SSO_GRPX_AQ_CNT(priv->rx_grp)))
+		msleep(20);
+
+	octeon3_eth_sso_irq_set_armed(priv->numa_node, priv->rx_grp, false);
+
+	free_irq(priv->rx_irq, netdev);
+
+	msleep(20);
+
+	/* Free the packet buffers */
+	for (;;) {
+		w = cvmx_fpa3_alloc_aura(priv->numa_node, priv->pki_laura);
+		if (!w)
+			break;
+		skb = w[0];
+		dev_kfree_skb(skb);
+	}
+
+
+err:
+	return r;
+}
+
 static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
 	struct sk_buff *skb_tmp;
@@ -986,6 +1023,7 @@ static const struct net_device_ops octeon3_eth_netdev_ops = {
 	.ndo_init		= octeon3_eth_ndo_init,
 	.ndo_uninit		= octeon3_eth_ndo_uninit,
 	.ndo_open		= octeon3_eth_ndo_open,
+	.ndo_stop		= octeon3_eth_ndo_stop,
 	.ndo_start_xmit		= octeon3_eth_ndo_start_xmit,
 	.ndo_get_stats64	= octeon3_eth_ndo_get_stats64,
 	.ndo_set_rx_mode	= bgx_port_set_rx_filtering,
