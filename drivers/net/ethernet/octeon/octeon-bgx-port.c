@@ -226,6 +226,17 @@ EXPORT_SYMBOL(bgx_port_enable);
 
 int bgx_port_disable(struct net_device *netdev)
 {
+	struct bgx_port_priv *priv = bgx_port_netdev2priv(netdev);
+	cvmx_helper_link_info_t link_info;
+
+	if (priv->phydev)
+		phy_disconnect(priv->phydev);
+	priv->phydev = NULL;
+
+	netif_carrier_off(netdev);
+	link_info.u64 = 0;
+	cvmx_helper_link_set(priv->ipd_port, link_info);
+
 	return 0;
 }
 EXPORT_SYMBOL(bgx_port_disable);
@@ -234,13 +245,14 @@ int bgx_port_change_mtu(struct net_device *netdev, int new_mtu)
 {
 	union cvmx_bgxx_cmrx_config cfg;
 	struct bgx_port_priv *priv = bgx_port_netdev2priv(netdev);
+	int max_frame;
 
 	if (new_mtu < 60 || new_mtu > 65392)
 		return -EINVAL;
 
 	netdev->mtu = new_mtu;
 
-	int max_frame = round_up(new_mtu + ETH_HLEN + ETH_FCS_LEN, 8);
+	max_frame = round_up(new_mtu + ETH_HLEN + ETH_FCS_LEN, 8);
 
 	cfg.u64 = cvmx_read_csr_node(priv->numa_node, CVMX_BGXX_CMRX_CONFIG(priv->index, priv->bgx_interface));
 	if (cfg.s.lmac_type == 0)
