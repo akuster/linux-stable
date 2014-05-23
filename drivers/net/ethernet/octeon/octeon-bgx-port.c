@@ -203,10 +203,54 @@ static void bgx_port_adjust_link(struct net_device *netdev)
 
 int bgx_port_enable(struct net_device *netdev)
 {
+	union cvmx_bgxx_cmrx_config cfg;
 	struct bgx_port_priv *priv = bgx_port_netdev2priv(netdev);
 
 	cvmx_helper_set_1000x_mode(priv->xiface, priv->index, false);
 	cvmx_helper_set_mac_phy_mode(priv->xiface, priv->index, false);
+
+	cfg.u64 = cvmx_read_csr_node(priv->numa_node, CVMX_BGXX_CMRX_CONFIG(priv->index, priv->bgx_interface));
+	if (cfg.s.lmac_type == 0) {
+		/* 1G */
+		union cvmx_bgxx_gmp_gmi_txx_append tx_append;
+		union cvmx_bgxx_gmp_gmi_txx_min_pkt min_pkt;
+
+		tx_append.u64 = cvmx_read_csr_node(priv->numa_node,
+						   CVMX_BGXX_GMP_GMI_TXX_APPEND(priv->index, priv->bgx_interface));
+		tx_append.s.fcs = 1;
+		tx_append.s.pad = 1;
+
+		cvmx_write_csr_node(priv->numa_node,
+				    CVMX_BGXX_GMP_GMI_TXX_APPEND(priv->index, priv->bgx_interface),
+				    tx_append.u64);
+
+		min_pkt.u64 = 0;
+		min_pkt.s.min_size = 60 - 1; /* packets are padded to MIN_SIZE + 1 in SGMII */
+		cvmx_write_csr_node(priv->numa_node,
+				    CVMX_BGXX_GMP_GMI_TXX_MIN_PKT(priv->index, priv->bgx_interface),
+				    min_pkt.u64);
+	} else {
+		/* 10G or higher */
+		union cvmx_bgxx_smux_tx_append tx_append;
+		union cvmx_bgxx_smux_tx_min_pkt min_pkt;
+
+		tx_append.u64 = cvmx_read_csr_node(priv->numa_node,
+						   CVMX_BGXX_SMUX_TX_APPEND(priv->index, priv->bgx_interface));
+		tx_append.s.fcs_d = 1;
+		tx_append.s.pad = 1;
+
+		cvmx_write_csr_node(priv->numa_node,
+				    CVMX_BGXX_SMUX_TX_APPEND(priv->index, priv->bgx_interface),
+				    tx_append.u64);
+
+		min_pkt.u64 = 0;
+		min_pkt.s.min_size = 60;/* packets are padded to MIN_SIZE in non-SGMII */
+		cvmx_write_csr_node(priv->numa_node,
+				    CVMX_BGXX_SMUX_TX_MIN_PKT(priv->index, priv->bgx_interface),
+				    min_pkt.u64);
+
+	}
+
 	if (priv->phy_np == NULL) {
 		netif_carrier_on(netdev);
 		return 0;
