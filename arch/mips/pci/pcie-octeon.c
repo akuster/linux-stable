@@ -81,10 +81,13 @@ static struct irq_chip pcie_17400_chip = {
 #endif
 };
 
+static int pcie_17400_irqs[4][4];
+
 static irqreturn_t pcie_17400_handler(int irq, void *data)
 {
 	u64 int_sum;
 	struct pcie_17400_chip_data *cd = data;
+
 	generic_handle_irq(cd->irq);
 
 	int_sum = cvmx_read_csr_node(cd->node, CVMX_PEMX_INT_SUM(cd->pem));
@@ -118,6 +121,8 @@ static int __init octeon_pcie78xx_pcibios_map_irq(const struct pci_dev *dev,
 	c = dev->bus->sysdata;
 	pcie = container_of(c, struct octeon_pcie_interface, controller);
 
+	pin--; /* Adjust from 1 based to 0 based pinA */
+
 	intsn = 0xc003c + pin + (0x1000 * pcie->pem);
 
 	d = octeon_irq_get_block_domain(pcie->node, intsn >> 12);
@@ -126,6 +131,10 @@ static int __init octeon_pcie78xx_pcibios_map_irq(const struct pci_dev *dev,
 
 	if (!OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
 		return irq;
+
+	if (pcie_17400_irqs[pin][pcie->pem])
+		return pcie_17400_irqs[pin][pcie->pem];
+
 	/* Else use the PCIE-17400 WAR */
 	cd = kzalloc_node(sizeof(*cd), GFP_KERNEL, pcie->node);
 	if (!cd)
@@ -151,6 +160,7 @@ static int __init octeon_pcie78xx_pcibios_map_irq(const struct pci_dev *dev,
 
 	irq_set_chip_and_handler(cd->irq, &pcie_17400_chip, handle_simple_irq);
 	irq_set_chip_data(cd->irq, cd);
+	pcie_17400_irqs[pin][pcie->pem] = cd->irq;
 
 	return cd->irq;
 
