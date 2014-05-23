@@ -342,6 +342,7 @@ int cvmx_ocla_reset(int	node,
 	state_int.u64 = 0;
 	state_int.s.fsm0_int = 1;
 	state_int.s.fsm1_int = 1;
+	state_int.s.trigfull = 1;
 	cvmx_write_csr_node(node, CVMX_OCLAX_STATE_INT(ix), state_int.u64);
 
 	/* Enable ocla */
@@ -375,6 +376,7 @@ int cvmx_ocla_clear_interrupts(int	node,
 	state_int.u64 = 0;
 	state_int.s.fsm0_int = 1;
 	state_int.s.fsm1_int = 1;
+	state_int.s.trigfull = 1;
 	cvmx_write_csr_node(node, CVMX_OCLAX_STATE_INT(ix), state_int.u64);
 
 	return 0;
@@ -413,6 +415,8 @@ EXPORT_SYMBOL(cvmx_ocla_disable);
  *
  * @param node		Node ocla complex is on.
  * @param ix		OCLA complex to initialize.
+ * @param buf		Pointer to ddr buffer to use as capture buffer.
+ * @param buf_size	Size of ddr capture buffer.
  * @param num_entries	Number of entries to capture. Zero for wrapping mode.
  * @param lo_cap	Selects when to capture the lower 36-bit debug bus half.
  * @param hi_cap	Selects when to capture the upper 36-bit debug bus half.
@@ -421,12 +425,13 @@ EXPORT_SYMBOL(cvmx_ocla_disable);
  */
 int cvmx_ocla_init(int			node,
 		   int			ix,
+		   uint64_t		buf,
+		   uint			buf_size,
 		   int			num_entries,
 		   cvmx_cap_sel_t	lo_cap,
 		   cvmx_cap_sel_t	hi_cap)
 {
 	cvmx_oclax_time_t		time;
-	cvmx_oclax_const_t		constant;
 	cvmx_oclax_fifo_trig_t		fifo_trig;
 	cvmx_oclax_cdhx_ctl_t		cdhx_ctl;
 
@@ -444,19 +449,36 @@ int cvmx_ocla_init(int			node,
 	time.s.cycle = 0;
 	cvmx_write_csr_node(node, CVMX_OCLAX_TIME(ix), time.u64);
 
-	/*
-	 * Set the number of entries to collect after trigger event to the size
-	 * of ram.
-	 */
-	fifo_trig.u64 = 0;
-	if (num_entries) {
-		int	max_entries;
+	/* Use the ddr buffer if present */
+	if (buf && buf_size) {
+		cvmx_oclax_stack_base_t	base;
+		cvmx_oclax_stack_top_t	top;
+		cvmx_oclax_stack_cur_t	cur;
+		cvmx_oclax_fifo_limit_t	limit;
 
-		constant.u64 = cvmx_read_csr_node(node, CVMX_OCLAX_CONST(ix));
-		max_entries = constant.s.dat_size - 5;
-		fifo_trig.s.limit = num_entries <= max_entries ? num_entries :
-			max_entries;
+		base.u64 = 0;
+		base.s.ptr = buf >> 7;
+		cvmx_write_csr_node(node, CVMX_OCLAX_STACK_BASE(ix), base.u64);
+
+		top.u64 = 0;
+		top.s.ptr = (buf + buf_size + CVMX_CACHE_LINE_SIZE) >> 7;
+		cvmx_write_csr_node(node, CVMX_OCLAX_STACK_TOP(ix), top.u64);
+
+		cur.u64 = 0;
+		cur.s.ptr = buf >> 7;
+		cvmx_write_csr_node(node, CVMX_OCLAX_STACK_CUR(ix), cur.u64);
+
+		cvmx_write_csr_node(node, CVMX_OCLAX_STACK_WRAP(ix), 0);
+		cvmx_write_csr_node(node, CVMX_OCLAX_STACK_STORE_CNT(ix), 0);
+
+		limit.u64 = cvmx_read_csr_node(node, CVMX_OCLAX_FIFO_LIMIT(ix));
+		limit.s.ddr = 0;
+		cvmx_write_csr_node(node, CVMX_OCLAX_FIFO_LIMIT(ix), limit.u64);
 	}
+
+	/* Stop capture after num_entries entries have been captured */
+	fifo_trig.u64 = 0;
+	fifo_trig.s.limit = num_entries;
 	cvmx_write_csr_node(node, CVMX_OCLAX_FIFO_TRIG(ix), fifo_trig.u64);
 
 	/* Configure when to capture for both the lower and upper 36 bits */
@@ -733,32 +755,3 @@ int cvmx_ocla_get_packet(int		node,
 	return rc;
 }
 EXPORT_SYMBOL(cvmx_ocla_get_packet);
-
-/**
- * Check if the ocla fifo is full.
- *
- * @param node		Node ocla complex is on.
- * @param ix		OCLA complex whose fifo is to be checked.
- * 
- * @return Returned value. Zero if fifo is not full, 1 if it's full.
- */
-int cvmx_is_fifo_full(int	node,
-		      int	ix)
-{
-	cvmx_oclax_fifo_trig_t	fifo_trig;
-	int			rc;
-
-	fifo_trig.u64 = cvmx_read_csr_node(node, CVMX_OCLAX_FIFO_TRIG(ix));
-
-	/*
-	 * When wrapping is enabled, the fifo never fills. Well.. it does fill
-	 * but capturing never stops and the fifo wraps forever.
-	 */
-	if (!fifo_trig.s.limit)
-		rc = 0;
-	else
-		rc = fifo_trig.s.cnt >= fifo_trig.s.limit;
-
-	return rc;
-}
-EXPORT_SYMBOL(cvmx_is_fifo_full);
