@@ -95,7 +95,6 @@ struct octeon3_ethernet_node {
 	struct task_struct *tx_complete_task;
 	struct kthread_worker tx_complete_worker;
 	struct kthread_work tx_complete_work;
-	u8 *sixty_zeros;
 };
 
 static int num_packet_buffers = 512;
@@ -291,11 +290,6 @@ static int octeon3_eth_global_init(unsigned int node)
 		goto done;
 
 	nd->numa_node = node;
-	nd->sixty_zeros = kzalloc_node(ETH_ZLEN, GFP_KERNEL, node);
-	if (!nd->sixty_zeros) {
-		rv = -ENOMEM;
-		goto done;
-	}
 	for (i = 0; i < 1024; i++) {
 		cvmx_write_csr_node(node, CVMX_FPA_AURAX_CNT(i), 0x100000000ull);
 		cvmx_write_csr_node(node, CVMX_FPA_AURAX_CNT_LIMIT(i), 0xfffffffffull);
@@ -603,9 +597,8 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	if (r < 0)
 		return -ENODEV;
 
-	r = cvmx_pko3_interface_options(priv->xiface, priv->port_index,
-					__cvmx_helper_get_has_fcs(priv->xiface),
-					__cvmx_helper_get_pko_padding(priv->xiface), 0);
+	/* Padding and FCS are done in BGX */
+	r = cvmx_pko3_interface_options(priv->xiface, priv->port_index, false, false, 0);
 	if (r)
 		return -ENODEV;
 
@@ -806,17 +799,9 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 	int frag_count;
 	int head_len, i;
 	u64 dma_addr;
-	int zero_pad;
 	void **work;
 
-	/* PKO-20715, must manually pad. */
-	if (skb->len < ETH_ZLEN) {
-		zero_pad = ETH_ZLEN - skb->len;
-		frag_count = 1;
-	} else {
-		zero_pad = 0;
-		frag_count = 0;
-	}
+	frag_count = 0;
 	if (skb_has_frag_list(skb))
 		skb_walk_frags(skb, skb_tmp)
 			frag_count++;
@@ -852,7 +837,7 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 #endif
 /* broken in sim */	send_hdr.s.n2 = 1; /* Don't allocate to L2 */
 	send_hdr.s.df = 1; /* Don't automatically free to FPA */
-	send_hdr.s.total = skb->len + zero_pad;
+	send_hdr.s.total = skb->len;
 
 #ifndef BROKEN_SIMULATOR_CSUM
 	switch (skb->protocol) {
@@ -912,13 +897,6 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 	skb_walk_frags(skb, skb_tmp) {
 		buf_ptr.s.addr = virt_to_phys(skb_tmp->data);
 		buf_ptr.s.size = skb_tmp->len;
-		cvmx_scratch_write64(scr_off, buf_ptr.u64);
-		scr_off += sizeof(buf_ptr);
-	}
-
-	if (zero_pad) {
-		buf_ptr.s.addr = virt_to_phys(octeon3_eth_node[priv->numa_node].sixty_zeros);
-		buf_ptr.s.size = zero_pad;
 		cvmx_scratch_write64(scr_off, buf_ptr.u64);
 		scr_off += sizeof(buf_ptr);
 	}
