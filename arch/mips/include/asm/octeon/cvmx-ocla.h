@@ -248,8 +248,25 @@ struct cap_req {
 	uint			ix;
 };
 
+/**
+ * Capture ddr buffer request. The kernel must fulfill the request as a
+ * physical address is needed by ocla.
+ *
+ *  node:			Node to capture data on.
+ *  ix:				Ocla complex index.
+ *  size:			Size of ddr buffer.
+ *  pbuf:			Pointer to physicall address of ddr buffer.
+ */
+struct ddr_buf_req {
+	uint			node;
+	uint			ix;
+	uint			size;
+	uint64_t		pbuf;
+};
+
 /* Ioctl commands */
 #define OCLA_CAP_REQ		_IOW('o', 0x01, struct cap_req)
+#define OCLA_DDR_BUF_REQ	_IOWR('o', 0x02, struct ddr_buf_req)
 
 /**
  * Selects what causes data to be captured.
@@ -356,14 +373,17 @@ extern int cvmx_ocla_disable(int node, int ix);
  *
  * @param node		Node ocla complex is on.
  * @param ix		OCLA complex to initialize.
+ * @param buf		Pointer to ddr buffer to use as capture buffer.
+ * @param buf_size	Size of ddr capture buffer.
  * @param num_entries	Number of entries to capture. Zero for wrapping mode.
  * @param lo_cap	Selects when to capture the lower 36-bit debug bus half.
  * @param hi_cap	Selects when to capture the upper 36-bit debug bus half.
  * 
  * @return Returned value. Zero on success, -1 otherwise.
  */
-extern int cvmx_ocla_init(int node, int ix, int num_entries,
-			  cvmx_cap_sel_t lo_cap, cvmx_cap_sel_t hi_cap);
+extern int cvmx_ocla_init(int node, int ix, uint64_t buf, uint buf_size,
+			  int num_entries, cvmx_cap_sel_t lo_cap,
+			  cvmx_cap_sel_t hi_cap);
 
 /**
  * Initialize the OCLA matchers hardware.
