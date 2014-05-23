@@ -225,7 +225,8 @@ int bgx_port_enable(struct net_device *netdev)
 				    tx_append.u64);
 
 		min_pkt.u64 = 0;
-		min_pkt.s.min_size = 60 - 1; /* packets are padded to MIN_SIZE + 1 in SGMII */
+		/* packets are padded (without FCS) to MIN_SIZE + 1 in SGMII */
+		min_pkt.s.min_size = 60 - 1;
 		cvmx_write_csr_node(priv->numa_node,
 				    CVMX_BGXX_GMP_GMI_TXX_MIN_PKT(priv->index, priv->bgx_interface),
 				    min_pkt.u64);
@@ -244,7 +245,8 @@ int bgx_port_enable(struct net_device *netdev)
 				    tx_append.u64);
 
 		min_pkt.u64 = 0;
-		min_pkt.s.min_size = 60;/* packets are padded to MIN_SIZE in non-SGMII */
+		/* packets are padded(with FCS) to MIN_SIZE  in non-SGMII */
+		min_pkt.s.min_size = 60 + 4;
 		cvmx_write_csr_node(priv->numa_node,
 				    CVMX_BGXX_SMUX_TX_MIN_PKT(priv->index, priv->bgx_interface),
 				    min_pkt.u64);
