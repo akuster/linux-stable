@@ -458,7 +458,7 @@ static irqreturn_t octeon_mmc_interrupt(int irq, void *dev_id)
 			req->data->bytes_xfered = req->data->blocks * req->data->blksz;
 			if (!(req->data->flags & MMC_DATA_WRITE) && req->data->sg_len > 1) {
 				size_t r = sg_copy_from_buffer(req->data->sg, req->data->sg_len,
-							       host->linear_buf, host->linear_buf_size);
+						   host->linear_buf, req->data->bytes_xfered);
 				WARN_ON(r != req->data->bytes_xfered);
 			}
 		}
@@ -603,7 +603,7 @@ static void octeon_mmc_dma_request(struct mmc_host *mmc,
 
 	if ((data->flags & MMC_DATA_WRITE) && data->sg_len > 1) {
 		size_t r = sg_copy_to_buffer(data->sg, data->sg_len,
-					     host->linear_buf, host->linear_buf_size);
+			 host->linear_buf, data->blksz * data->blocks);
 		WARN_ON(data->blksz * data->blocks != r);
 	}
 
@@ -1175,11 +1175,12 @@ static int octeon_mmc_probe(struct platform_device *pdev)
 		}
 	}
 	host->last_slot = -1;
-	if (bb_size > 512 && bb_size < (1 << 24))
-		host->linear_buf_size = bb_size;
-	else
-		host->linear_buf_size = 1 << 18;
+
+	if (bb_size < 512 || bb_size >= (1 << 24))
+		bb_size = 1 << 18;
+	host->linear_buf_size = bb_size;
 	host->linear_buf = devm_kzalloc(&pdev->dev, host->linear_buf_size, GFP_KERNEL);
+
 	if (!host->linear_buf) {
 		dev_err(&pdev->dev, "devm_kzalloc failed\n");
 		return -ENOMEM;
