@@ -111,10 +111,11 @@ module_param(bb_size, int, S_IRUGO);
 MODULE_PARM_DESC(limit_max_blk,
 		 "Size of DMA linearizing buffer (max transfer size).");
 
-static bool ddr = 1;
-module_param(ddr, bool, S_IRUGO);
+static int ddr = 2;
+module_param(ddr, int, S_IRUGO);
 MODULE_PARM_DESC(ddr,
-		 "enable DoubleDataRate clocking");
+		 "enable DoubleDataRate clocking:"
+		 " 0=no, 1=always, 2=at spi-max-frequency/2");
 
 #if 1
 #define octeon_mmc_dbg trace_printk
@@ -805,7 +806,7 @@ static void octeon_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	struct octeon_mmc_host	*host;
 	int bus_width;
 	int clock;
-	bool ddr;
+	bool ddr_clock;
 	int hs_timing;
 	int power_class = 10;
 	int clk_period;
@@ -860,9 +861,9 @@ static void octeon_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	}
 
 	hs_timing = (ios->timing == MMC_TIMING_MMC_HS);
-	ddr = (bus_width && ios->timing >= MMC_TIMING_UHS_DDR50);
+	ddr_clock = (bus_width && ios->timing >= MMC_TIMING_UHS_DDR50);
 
-	if (ddr && bus_width)
+	if (ddr_clock)
 		bus_width |= 4;
 
 	if (ios->clock) {
@@ -872,9 +873,13 @@ static void octeon_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		clock = slot->clock;
 
 		if (clock > 52000000)
-			clock = 50000000;
+			clock = 52000000;
 
 		clk_period = (octeon_get_io_clock_rate() + clock - 1) / (2 * clock);
+
+		/* until clock-renengotiate-on-CRC is in */
+		if (ddr_clock && ddr > 1)
+			clk_period *= 2;
 
 		emm_switch.u64 = 0;
 		emm_switch.s.hs_timing = hs_timing;
