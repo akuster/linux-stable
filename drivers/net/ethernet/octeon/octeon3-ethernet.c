@@ -579,10 +579,12 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 #ifndef BROKEN_SIMULATOR_CSUM
 		|
 		NETIF_F_IP_CSUM |
-		NETIF_F_IPV6_CSUM |
-		NETIF_F_SCTP_CSUM
+		NETIF_F_IPV6_CSUM
 #endif
 		;
+
+	if (!OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) /* PKO-18824 */
+		netdev->features |= NETIF_F_SCTP_CSUM;
 
 	priv->rx_buf_count = num_packet_buffers;
 
@@ -857,6 +859,8 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 	checksum_alg = 1; /* UDP == 1 */
 	switch (l4_hdr) {
 	case IPPROTO_SCTP:
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) /* PKO-18824 */
+			break;
 		checksum_alg++; /* SCTP == 3 */
 		/* Fall through */
 	case IPPROTO_TCP: /* TCP == 2 */
