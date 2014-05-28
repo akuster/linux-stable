@@ -393,6 +393,7 @@ static irqreturn_t octeon_mmc_interrupt(int irq, void *dev_id)
 
 	if (host->dma_err_pending) {
 		host->current_req = NULL;
+		host->dma_err_pending = false;
 		req->done(req);
 		host_done = true;
 		goto no_req_done;
@@ -492,7 +493,6 @@ static irqreturn_t octeon_mmc_interrupt(int irq, void *dev_id)
 		}
 		if (emm_int.s.dma_err && rsp_sts.s.dma_pend) {
 			/* Try to clean up failed DMA */
-			union cvmx_mio_ndf_dma_cfg dma_cfg;
 			union cvmx_mio_emm_dma emm_dma;
 			emm_dma.u64 = cvmx_read_csr(host->base + OCT_MIO_EMM_DMA);
 			emm_dma.s.dma_val = 1;
@@ -500,10 +500,6 @@ static irqreturn_t octeon_mmc_interrupt(int irq, void *dev_id)
 			emm_dma.s.bus_id = rsp_sts.s.bus_id;
 			cvmx_write_csr(host->base + OCT_MIO_EMM_DMA,
 				       emm_dma.u64);
-			dma_cfg.u64 = 0;
-			dma_cfg.s.en = 1;
-			dma_cfg.s.clr = 1;
-			cvmx_write_csr(host->ndf_base + OCT_MIO_NDF_DMA_CFG, dma_cfg.u64);
 			host->dma_err_pending = true;
 			host_done = false;
 			goto no_req_done;
