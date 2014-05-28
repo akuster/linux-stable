@@ -57,7 +57,6 @@
 #define OCT_MIO_EMM_BUF_DAT		0xe8
 
 struct octeon_mmc_host {
-	struct mmc_host         *mmc;
 	u64	base;
 	u64	ndf_base;
 	u64	emm_cfg;
@@ -85,7 +84,8 @@ struct octeon_mmc_host {
 };
 
 struct octeon_mmc_slot {
-	struct octeon_mmc_host	*host;
+	struct mmc_host         *mmc;	/* slot-level mmc_core object */
+	struct octeon_mmc_host	*host;	/* common hw for all 4 slots */
 
 	unsigned int		clock;
 	unsigned int		sclock;
@@ -964,7 +964,7 @@ static const struct mmc_host_ops octeon_mmc_ops = {
 static void octeon_mmc_set_clock(struct octeon_mmc_slot *slot,
 				 unsigned int clock)
 {
-	struct mmc_host *mmc = slot->host->mmc;
+	struct mmc_host *mmc = slot->mmc;
 	clock = min(clock, mmc->f_max);
 	clock = max(clock, mmc->f_min);
 	slot->clock = clock;
@@ -1018,8 +1018,8 @@ static int __init octeon_init_slot(struct octeon_mmc_host *host, int id,
 		return -ENOMEM;
 	}
 
-	host->mmc = mmc;
 	slot = mmc_priv(mmc);
+	slot->mmc = mmc;
 	slot->host = host;
 	slot->ro_gpio = ro_gpio;
 	slot->cd_gpio = cd_gpio;
@@ -1338,12 +1338,19 @@ static int octeon_mmc_remove(struct platform_device *pdev)
 {
 	union cvmx_mio_ndf_dma_cfg ndf_dma_cfg;
 	struct octeon_mmc_host *host = platform_get_drvdata(pdev);
+	struct octeon_mmc_slot *slot;
+
+	platform_set_drvdata(pdev, NULL);
 
 	if (host) {
 		int i;
 
 		/* quench all users */
-		mmc_remove_host(host->mmc);
+		for (i = 0; i < OCTEON_MAX_MMC; i++) {
+			slot = host->slot[i];
+			if (slot)
+				mmc_remove_host(slot->mmc);
+		}
 
 		/* Reset bus_id */
 		ndf_dma_cfg.u64 = cvmx_read_csr(host->ndf_base + OCT_MIO_NDF_DMA_CFG);
@@ -1367,6 +1374,7 @@ static int octeon_mmc_remove(struct platform_device *pdev)
 				gpio_free(slot->pwr_gpio);
 			}
 		}
+
 		if (host->global_pwr_gpio >= 0) {
 			dev_dbg(&pdev->dev, "Global power off\n");
 			gpio_set_value_cansleep(host->global_pwr_gpio,
@@ -1374,9 +1382,13 @@ static int octeon_mmc_remove(struct platform_device *pdev)
 			gpio_free(host->global_pwr_gpio);
 		}
 
-		mmc_free_host(host->mmc);
+		for (i = 0; i < OCTEON_MAX_MMC; i++) {
+			slot = host->slot[i];
+			if (slot)
+				mmc_free_host(slot->mmc);
+		}
+
 	}
-	platform_set_drvdata(pdev, NULL);
 	return 0;
 }
 
