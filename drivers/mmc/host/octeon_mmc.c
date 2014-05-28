@@ -1086,6 +1086,9 @@ static int __init octeon_init_slot(struct octeon_mmc_host *host, int id,
 		((mmc->f_max >= 50000000) * MMC_CAP_UHS_SDR50) |
 		MMC_CAP_CMD23;
 
+	mmc->caps |=
+		MMC_CAP_NEEDS_POLL; /* could drop if has cd-gpio with irq */
+
 	if (host->global_pwr_gpio >= 0)
 		mmc->caps |= MMC_CAP_POWER_OFF_CARD;
 
