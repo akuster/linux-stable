@@ -611,8 +611,7 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	priv->rx_buf_count = num_packet_buffers;
 
 	ipd_port = cvmx_helper_get_ipd_port(priv->xiface, priv->port_index);
-	cvmx_helper_interface_enumerate(priv->xiface);
-	cvmx_helper_interface_probe(priv->xiface);
+
 	r =  __cvmx_pko3_config_gen_interface(priv->xiface, priv->port_index, 1, false);
 	if (r)
 		return -ENODEV;
