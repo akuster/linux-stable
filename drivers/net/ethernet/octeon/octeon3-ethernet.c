@@ -979,6 +979,17 @@ skip_xmit:
 	return NETDEV_TX_OK;
 }
 
+static u64 read_pki_stat(int numa_node, u64 csr)
+{
+	u64 v;
+
+	/* PKI-20775, must read until not all ones. */
+	do {
+		v = cvmx_read_csr_node(numa_node, csr);
+	} while (v == 0xffffffffffffffffull);
+	return v;
+}
+
 static struct rtnl_link_stats64 *octeon3_eth_ndo_get_stats64(struct net_device *netdev,
 							     struct rtnl_link_stats64 *s)
 {
@@ -988,9 +999,9 @@ static struct rtnl_link_stats64 *octeon3_eth_ndo_get_stats64(struct net_device *
 
 	spin_lock(&priv->stat_lock);
 
-	packets = cvmx_read_csr_node(priv->numa_node, CVMX_PKI_STATX_STAT0(priv->pki_pkind));
-	octets = cvmx_read_csr_node(priv->numa_node, CVMX_PKI_STATX_STAT1(priv->pki_pkind));
-	dropped = cvmx_read_csr_node(priv->numa_node, CVMX_PKI_STATX_STAT3(priv->pki_pkind));
+	packets = read_pki_stat(priv->numa_node, CVMX_PKI_STATX_STAT0(priv->pki_pkind));
+	octets = read_pki_stat(priv->numa_node, CVMX_PKI_STATX_STAT1(priv->pki_pkind));
+	dropped = read_pki_stat(priv->numa_node, CVMX_PKI_STATX_STAT3(priv->pki_pkind));
 
 	delta_packets = (packets - priv->last_packets) & ((1ull << 48) - 1);
 	delta_octets = (octets - priv->last_octets) & ((1ull << 48) - 1);
