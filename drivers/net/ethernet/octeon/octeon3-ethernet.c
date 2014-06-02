@@ -670,7 +670,11 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	later_skip = 8 * 16;
 	pki_prt_cfg.style_cfg.parm_cfg.first_skip = first_skip;
 	pki_prt_cfg.style_cfg.parm_cfg.later_skip = later_skip;
+#ifdef __LITTLE_ENDIAN
+	pki_prt_cfg.style_cfg.parm_cfg.pkt_lend = true;
+#else
 	pki_prt_cfg.style_cfg.parm_cfg.pkt_lend = false;
+#endif
 	pki_prt_cfg.style_cfg.parm_cfg.tag_type = CVMX_SSO_TAG_TYPE_UNTAGGED;
 	pki_prt_cfg.style_cfg.parm_cfg.qpg_dis_grptag = true;
 	pki_prt_cfg.style_cfg.parm_cfg.dis_wq_dat = false;
