@@ -89,7 +89,8 @@ struct octeon3_ethernet_node {
 	int next_cpu_irq_affinity;
 	int numa_node;
 	int pki_packet_pool;
-	int sso_pko_pool;
+	int sso_pool;
+	int pko_pool;
 	int sso_aura;
 	int pko_aura;
 	int tx_complete_grp;
@@ -315,8 +316,13 @@ static int octeon3_eth_global_init(unsigned int node)
 		cvmx_write_csr_node(node, CVMX_FPA_AURAX_CNT_LIMIT(i), 0xfffffffffull);
 		cvmx_write_csr_node(node, CVMX_FPA_AURAX_CNT_THRESHOLD(i), 0xffffffffeull);
 	}
-	nd->sso_pko_pool = cvmx_fpa_alloc_pool(-1);
-	if (nd->sso_pko_pool < 0) {
+	nd->sso_pool = cvmx_fpa_alloc_pool(-1);
+	if (nd->sso_pool < 0) {
+		rv = -ENODEV;
+		goto done;
+	}
+	nd->pko_pool = cvmx_fpa_alloc_pool(-1);
+	if (nd->pko_pool < 0) {
 		rv = -ENODEV;
 		goto done;
 	}
@@ -328,13 +334,14 @@ static int octeon3_eth_global_init(unsigned int node)
 	nd->sso_aura = cvmx_fpa3_allocate_aura(node);
 	nd->pko_aura = cvmx_fpa3_allocate_aura(node);
 
-	pr_err("octeon3_eth_global_init  Pool:%d, SSO:%d, PKO:%d\n",
-	       nd->sso_pko_pool, nd->sso_aura, nd->pko_aura);
+	pr_err("octeon3_eth_global_init  SSO:%d:%d, PKO:%d:%d\n",
+	       nd->sso_pool, nd->sso_aura,  nd->pko_pool, nd->pko_aura);
 
-	octeon3_eth_fpa_pool_init(node, nd->sso_pko_pool, 40960);
+	octeon3_eth_fpa_pool_init(node, nd->sso_pool, 40960);
+	octeon3_eth_fpa_pool_init(node, nd->pko_pool, 40960);
 	octeon3_eth_fpa_pool_init(node, nd->pki_packet_pool, 64 * num_packet_buffers);
-	octeon3_eth_fpa_aura_init(node, nd->sso_pko_pool, nd->sso_aura, 20480);
-	octeon3_eth_fpa_aura_init(node, nd->sso_pko_pool, nd->pko_aura, 20480);
+	octeon3_eth_fpa_aura_init(node, nd->sso_pool, nd->sso_aura, 20480);
+	octeon3_eth_fpa_aura_init(node, nd->pko_pool, nd->pko_aura, 20480);
 
 	if (!octeon3_eth_sso_pko_cache) {
 		octeon3_eth_sso_pko_cache = kmem_cache_create("sso_pko", 4096, 128, 0, NULL);
