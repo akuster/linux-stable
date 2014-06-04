@@ -117,10 +117,10 @@ MODULE_PARM_DESC(ddr,
 		 "enable DoubleDataRate clocking:"
 		 " 0=no, 1=always, 2=at spi-max-frequency/2");
 
-#if 1
+#if 0
 #define octeon_mmc_dbg trace_printk
 #else
-static inline octeon_mmc_dbg(const char *s, ...) { }
+static inline void octeon_mmc_dbg(const char *s, ...) { }
 #endif
 
 static void octeon_mmc_acquire_bus(struct octeon_mmc_host *host)
