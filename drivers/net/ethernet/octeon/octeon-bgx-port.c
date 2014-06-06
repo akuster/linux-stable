@@ -254,6 +254,7 @@ int bgx_port_enable(struct net_device *netdev)
 	}
 
 	if (priv->phy_np == NULL) {
+		cvmx_helper_link_autoconf(priv->ipd_port);
 		netif_carrier_on(netdev);
 		return 0;
 	}
