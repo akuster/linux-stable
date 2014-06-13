@@ -18,18 +18,6 @@ int prom_putchar(char c)
 {
 	kvm_hypercall3(KVM_HC_MIPS_CONSOLE_OUTPUT, 0 /*  port 0 */,
 		(unsigned long)&c, 1 /* len == 1 */);
-#if 0
-	register char *pc asm("a1");
-
-	pc = &c;
-	asm volatile(
-		"li	$v0, 0\n\t"	/* console output*/
-		"li	$a0, 0\n\t"	/* console port 0*/
-		"li	$a2, 1\n\t"	/* one char only */
-		".word 0x42000028"	/* HYPCALL */
-		: : "r" (pc), "m" (*pc) : "v0", "a0", "a2"
-		);
-#endif
 
 	return 1;
 }
