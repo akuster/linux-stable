@@ -8,22 +8,16 @@
 
 #include <linux/kernel.h>
 #include <linux/virtio_console.h>
-<<<<<<< HEAD
 #include <linux/kvm_para.h>
-=======
-
 #include <asm/mipsregs.h>
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 
 /*
  * Emit one character to the boot console.
  */
 int prom_putchar(char c)
 {
-<<<<<<< HEAD
 	kvm_hypercall3(KVM_HC_MIPS_CONSOLE_OUTPUT, 0 /*  port 0 */,
 		(unsigned long)&c, 1 /* len == 1 */);
-=======
 #if 0
 	register char *pc asm("a1");
 
@@ -36,8 +30,6 @@ int prom_putchar(char c)
 		: : "r" (pc), "m" (*pc) : "v0", "a0", "a2"
 		);
 #endif
-	hypcall3(0 /* Console output */, 0 /*  port 0 */, (unsigned long)&c, 1 /* len == 1 */);
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 
 	return 1;
 }
@@ -45,13 +37,9 @@ int prom_putchar(char c)
 #ifdef CONFIG_VIRTIO_CONSOLE
 static int paravirt_put_chars(u32 vtermno, const char *buf, int count)
 {
-<<<<<<< HEAD
 	kvm_hypercall3(KVM_HC_MIPS_CONSOLE_OUTPUT, vtermno,
 		(unsigned long)buf, count);
 
-=======
-	hypcall3(0 /* Console output */, vtermno, (unsigned long)buf, count);
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 	return count;
 }
 

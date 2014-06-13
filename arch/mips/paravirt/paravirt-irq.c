@@ -15,20 +15,12 @@
 
 #define MBOX_BITS_PER_CPU 3
 
-<<<<<<< HEAD
 static int cpunum_for_cpu(int cpu)
-=======
-int cpunum_for_cpu(int cpu)
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 {
 #ifdef CONFIG_SMP
 	return cpu_logical_map(cpu);
 #else
-<<<<<<< HEAD
 	return get_ebase_cpunum();
-=======
-	return mips_cpunum();
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 #endif
 }
 
@@ -229,6 +221,7 @@ static void irq_pci_unmask(struct irq_data *data)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 static int irq_pci_set_affinity(struct irq_data *data, const struct cpumask *dest, bool force)
 {
@@ -240,6 +233,8 @@ static void irq_pci_cpu_offline(struct irq_data *data)
 }
 
 >>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
+=======
+>>>>>>> 4172569... MIPS: paravirt: Misc adaptions to sync /w mainline Linux
 static struct irq_chip irq_chip_pci = {
 	.name = "PCI",
 	.irq_enable = irq_pci_enable,
@@ -248,10 +243,13 @@ static struct irq_chip irq_chip_pci = {
 	.irq_mask = irq_pci_mask,
 	.irq_unmask = irq_pci_unmask,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	.irq_set_affinity = irq_pci_set_affinity,
 	.irq_cpu_offline = irq_pci_cpu_offline,
 >>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
+=======
+>>>>>>> 4172569... MIPS: paravirt: Misc adaptions to sync /w mainline Linux
 };
 
 static void irq_mbox_all(struct irq_data *data,  void __iomem *base)
@@ -287,10 +285,14 @@ static void irq_mbox_ack(struct irq_data *data)
 	WARN_ON(mbox >= MBOX_BITS_PER_CPU);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	mask = 1 << (get_ebase_cpunum() * MBOX_BITS_PER_CPU + mbox);
 =======
 	mask = 1 << (mips_cpunum() * MBOX_BITS_PER_CPU + mbox);
 >>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
+=======
+	mask = 1 << (get_ebase_cpunum() * MBOX_BITS_PER_CPU + mbox);
+>>>>>>> 4172569... MIPS: paravirt: Misc adaptions to sync /w mainline Linux
 	__raw_writel(mask, mips_irq_chip + mips_irq_chip_reg_raw_w1c + sizeof(u32));
 }
 
@@ -309,10 +311,14 @@ static void irq_mbox_cpu_onoffline(struct irq_data *data,  void __iomem *base)
 {
 	unsigned int mbox = data->irq - MIPS_IRQ_MBOX0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	unsigned int cpuid = get_ebase_cpunum();
 =======
 	unsigned int cpuid = mips_cpunum();
 >>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
+=======
+	unsigned int cpuid = get_ebase_cpunum();
+>>>>>>> 4172569... MIPS: paravirt: Misc adaptions to sync /w mainline Linux
 	u32 mask;
 
 	WARN_ON(mbox >= MBOX_BITS_PER_CPU);
@@ -376,6 +382,7 @@ static void __init irq_pci_init(void)
 static void irq_pci_dispatch(void)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	unsigned int cpuid = get_ebase_cpunum();
 	u32 en;
 
@@ -386,6 +393,13 @@ static void irq_pci_dispatch(void)
 
 	u32 en = __raw_readl(mips_irq_chip + mips_irq_chip_reg_src + (cpuid * mips_irq_cpu_stride));
 >>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
+=======
+	unsigned int cpuid = get_ebase_cpunum();
+	u32 en;
+
+	en = __raw_readl(mips_irq_chip + mips_irq_chip_reg_src +
+			(cpuid * mips_irq_cpu_stride));
+>>>>>>> 4172569... MIPS: paravirt: Misc adaptions to sync /w mainline Linux
 
 	if (!en) {
 		en = __raw_readl(mips_irq_chip + mips_irq_chip_reg_src + (cpuid * mips_irq_cpu_stride) + sizeof(u32));

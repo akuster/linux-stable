@@ -2224,7 +2224,7 @@ static inline unsigned long hypcall3(unsigned long num, unsigned long arg0,
 	return r;
 }
 
-static inline unsigned int mips_cpunum(void)
+static inline unsigned int get_ebase_cpunum(void)
 {
 	return read_c0_ebase() & 0x3ff; /* Low 10 bits of ebase. */
 }
