@@ -11,9 +11,7 @@
 
 #include <asm/reboot.h>
 #include <asm/bootinfo.h>
-#include <asm/mipsregs.h>
 #include <asm/smp-ops.h>
-#include <asm/reboot.h>
 #include <asm/time.h>
 
 extern struct plat_smp_ops paravirt_smp_ops;
@@ -38,7 +36,7 @@ static void pv_machine_halt(void)
 /*
 static void plat_halt_this_cpu(void *ignore)
 {
-	hypcall0(1 /* Exit VM. */);
+	kvm_hypercall0(KVM_HC_MIPS_EXIT_VM);
 }
 
 static void plat_halt(void)
