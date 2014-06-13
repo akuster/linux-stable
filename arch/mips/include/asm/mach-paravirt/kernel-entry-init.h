@@ -43,10 +43,7 @@
 
 	PTR_LA	t1, paravirt_smp_gp
 	PTR_ADDU t1, t1, t0
-<<<<<<< HEAD
 	sync
-=======
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 	PTR_L	gp, 0(t1)
 	.endm
 
