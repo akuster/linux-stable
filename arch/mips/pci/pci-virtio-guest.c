@@ -11,17 +11,13 @@
 #include <linux/interrupt.h>
 #include <linux/pci.h>
 
-<<<<<<< HEAD
 #include <uapi/asm/bitfield.h>
-=======
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 #include <asm/byteorder.h>
 #include <asm/io.h>
 
 #define PCI_CONFIG_ADDRESS	0xcf8
 #define PCI_CONFIG_DATA		0xcfc
 
-<<<<<<< HEAD
 union pci_config_address {
 	struct {
 		__BITFIELD_FIELD(unsigned enable_bit	  : 1,	/* 31       */
@@ -30,29 +26,6 @@ union pci_config_address {
 		__BITFIELD_FIELD(unsigned devfn_number	  : 8,	/* 15 .. 8  */
 		__BITFIELD_FIELD(unsigned register_number : 8,	/* 7  .. 0  */
 		)))));
-=======
-#ifdef __BIG_ENDIAN_BITFIELD
-#define BITFIELD_FIELD(field, more)					\
-	field;								\
-	more
-
-#else defined(__MIPSEL__)
-
-#define BITFIELD_FIELD(field, more)					\
-	more								\
-	field;
-
-#endif
-
-union pci_config_address {
-	struct {
-		BITFIELD_FIELD(unsigned enable_bit	:1,	/* 31       */
-		BITFIELD_FIELD(unsigned reserved	:7,	/* 30 .. 24 */
-		BITFIELD_FIELD(unsigned bus_number	:8,	/* 23 .. 16 */
-		BITFIELD_FIELD(unsigned devfn_number	:8,	/* 15 .. 8  */
-		BITFIELD_FIELD(unsigned	register_number	:8,	/* 7  .. 0  */
-		;)))))
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 	};
 	u32 w;
 };
@@ -64,7 +37,6 @@ int pcibios_plat_dev_init(struct pci_dev *dev)
 
 int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
-<<<<<<< HEAD
 	return ((pin + slot) % 4)+ MIPS_IRQ_PCIA;
 }
 
@@ -73,23 +45,13 @@ static void pci_virtio_guest_write_config_addr(struct pci_bus *bus,
 {
 	union pci_config_address pca = { .w = 0 };
 
-=======
-	return ((pin + slot) % 4) + MIPS_IRQ_PCIA;
-}
-
-static unsigned long pci_virtio_guest_write_config_addr(struct pci_bus *bus, unsigned int devfn, int reg)
-{
-	union pci_config_address pca;
-
 	pca.w = 0;
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
 	pca.register_number = reg;
 	pca.devfn_number = devfn;
 	pca.bus_number = bus->number;
 	pca.enable_bit = 1;
 
 	outl(pca.w, PCI_CONFIG_ADDRESS);
-<<<<<<< HEAD
 }
 
 static int pci_virtio_guest_write_config(struct pci_bus *bus,
@@ -110,36 +72,31 @@ static int pci_virtio_guest_write_config(struct pci_bus *bus,
 	}
 
 	return PCIBIOS_SUCCESSFUL;
-=======
-
-	return PCI_CONFIG_DATA + (reg & 3);
 }
 
-static int pci_virtio_guest_write_config(struct pci_bus *bus, unsigned int devfn,
-					 int reg, int size, u32 val)
+static int pci_virtio_guest_write_config(struct pci_bus *bus,
+		unsigned int devfn, int reg, int size, u32 val)
 {
-	unsigned long port = pci_virtio_guest_write_config_addr(bus, devfn, reg);
+	pci_virtio_guest_write_config_addr(bus, devfn, reg);
 
 	switch (size) {
 	case 1:
-		outb(val, port);
-		return PCIBIOS_SUCCESSFUL;
+		outb(val, PCI_CONFIG_DATA + (reg & 3));
+		break;
 	case 2:
-		outw(val, port);
-		return PCIBIOS_SUCCESSFUL;
+		outw(val, PCI_CONFIG_DATA + (reg & 2));
+		break;
 	case 4:
-		outl(val, port);
-		return PCIBIOS_SUCCESSFUL;
-	default:
-		return PCIBIOS_FUNC_NOT_SUPPORTED;
+		outl(val, PCI_CONFIG_DATA);
+		break;
 	}
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
+
+	return PCIBIOS_SUCCESSFUL;
 }
 
 static int pci_virtio_guest_read_config(struct pci_bus *bus, unsigned int devfn,
 					int reg, int size, u32 *val)
 {
-<<<<<<< HEAD
 	pci_virtio_guest_write_config_addr(bus, devfn, reg);
 
 	switch (size) {
@@ -154,23 +111,20 @@ static int pci_virtio_guest_read_config(struct pci_bus *bus, unsigned int devfn,
 		break;
 	}
 	return PCIBIOS_SUCCESSFUL;
-=======
 	unsigned long port = pci_virtio_guest_write_config_addr(bus, devfn, reg);
 
 	switch (size) {
 	case 1:
-		*val = inb(port);
-		return PCIBIOS_SUCCESSFUL;
+		*val = inb(PCI_CONFIG_DATA + (reg & 3));
+		break;
 	case 2:
-		*val = inw(port);
-		return PCIBIOS_SUCCESSFUL;
+		*val = inw(PCI_CONFIG_DATA + (reg & 2));
+		break;
 	case 4:
-		*val = inl(port);
-		return PCIBIOS_SUCCESSFUL;
-	default:
-		return PCIBIOS_FUNC_NOT_SUPPORTED;
+		*val = inl(PCI_CONFIG_DATA);
+		break;
 	}
->>>>>>> 8b00ae8... MIPS: Add new system 'paravirt'.
+	return PCIBIOS_SUCCESSFUL;
 }
 
 static struct pci_ops pci_virtio_guest_ops = {
