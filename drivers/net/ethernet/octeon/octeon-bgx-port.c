@@ -193,11 +193,13 @@ static void bgx_port_adjust_link(struct net_device *netdev)
 		link_info.s.link_up = link ? 1 : 0;
 		link_info.s.full_duplex = duplex ? 1 : 0;
 		link_info.s.speed = speed;
+		if (!link) {
+			netif_carrier_off(netdev);
+			mdelay(50); /* Let TX drain.  FIXME really check that it is drained. */
+		}
 		cvmx_helper_link_set(p->ipd_port, link_info);
 		if (link)
 			netif_carrier_on(netdev);
-		else
-			netif_carrier_off(netdev);
 	}
 }
 
