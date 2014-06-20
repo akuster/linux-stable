@@ -1108,6 +1108,7 @@ static int __init octeon_init_slot(struct octeon_mmc_host *host, int id,
 
 	/* Only a single user of the bootbus at a time. */
 	octeon_mmc_acquire_bus(host);
+	host->slot[id] = slot;
 
 	octeon_mmc_switch_to(slot);
 	/* Initialize MMC Block. */
@@ -1115,7 +1116,6 @@ static int __init octeon_init_slot(struct octeon_mmc_host *host, int id,
 
 	octeon_mmc_release_bus(host);
 
-	host->slot[id] = slot;
 	ret = mmc_add_host(mmc);
 	octeon_mmc_dbg("mmc_add_host returned %d\n", ret);
 
