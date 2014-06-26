@@ -57,11 +57,9 @@ struct kvm_mips_vcpu_vz {
 	bool have_counter_state;
 };
 
-bool mipsvz_page_fault(struct pt_regs *regs, unsigned long write,
-		       unsigned long address);
 
-bool mipsvz_cp_unusable(struct pt_regs *regs);
 int mipsvz_arch_init(void *opaque);
+void mipsvz_arch_exit(void);
 int mipsvz_arch_hardware_enable(void *garbage);
 int mipsvz_init_vm(struct kvm *kvm, unsigned long type);
 

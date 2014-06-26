@@ -61,7 +61,6 @@
 #include <asm/types.h>
 #include <asm/stacktrace.h>
 #include <asm/uasm.h>
-#include <asm/kvm_mips_vz.h>
 
 extern void check_wait(void);
 extern asmlinkage void rollback_handle_int(void);
@@ -1211,12 +1210,7 @@ asmlinkage void do_cpu(struct pt_regs *regs)
 	unsigned long __maybe_unused flags;
 
 	prev_state = exception_enter();
-#ifdef CONFIG_KVM_MIPS_VZ
-	if (test_tsk_thread_flag(current, TIF_GUESTMODE)) {
-		if (mipsvz_cp_unusable(regs))
-			goto out;
-	}
-#endif
+
 	cpid = (regs->cp0_cause >> CAUSEB_CE) & 3;
 
 	if (cpid != 2)
@@ -1757,11 +1751,6 @@ void __uasminit *set_except_vector(int n, void *addr)
 #endif
 		u32 *buf = (u32 *)(ebase + 0x200);
 		unsigned int k0 = 26;
-#ifdef CONFIG_KVM_MIPS_VZ
-		unsigned int k1 = 27;
-		UASM_i_MTC0(&buf, k0, 31, 2);
-		UASM_i_MTC0(&buf, k1, 31, 3);
-#endif
 		if ((handler & jump_mask) == ((ebase + 0x200) & jump_mask)) {
 			uasm_i_j(&buf, handler & ~jump_mask);
 			uasm_i_nop(&buf);

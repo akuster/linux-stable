@@ -292,7 +292,7 @@ struct thread_struct {
 	unsigned long cp0_badvaddr;	/* Last user fault */
 	unsigned long cp0_baduaddr;	/* Last kernel fault accessing USEG */
 	unsigned long error_code;
-#ifdef CONFIG_KVM_MIPS_VZ
+#if IS_ENABLED(CONFIG_KVM_MIPS_VZ)
 	struct kvm_vcpu *vcpu;
 	unsigned int mm_asid;
 	unsigned int guest_asid;
