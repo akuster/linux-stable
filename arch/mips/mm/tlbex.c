@@ -906,17 +906,21 @@ build_get_pgd_vmalloc64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 		 * to mimic that here by taking a load/istream page
 		 * fault.
 		 */
-		UASM_i_LA(p, ptr, (unsigned long)tlb_do_page_fault_0);
-		uasm_i_jr(p, ptr);
+		UASM_i_MTC0(p, 0, C0_ENTRYLO0); /* Invalid */
+		UASM_i_MTC0(p, 0, C0_ENTRYLO1); /* Invalid */
+		build_tlb_write_entry(p, l, r, tlb_random);
 
 		if (mode == refill_scratch) {
 			if (scratch_reg >= 0)
 				UASM_i_MFC0(p, 1, c0_kscratch(), scratch_reg);
 			else
 				UASM_i_LW(p, 1, scratchpad_offset(0), 0);
-		} else {
-			uasm_i_nop(p);
 		}
+#ifdef CONFIG_KVM_MIPS_VZ
+		UASM_i_MFC0(p, K0, 31, 2);
+		UASM_i_MFC0(p, K1, 31, 3);
+#endif
+		uasm_i_eret(p); /* return from trap */
 	}
 }
 
