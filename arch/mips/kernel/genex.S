@@ -32,11 +32,6 @@
 NESTED(except_vec3_generic, 0, sp)
 	.set	push
 	.set	noat
-#ifdef CONFIG_KVM_MIPS_VZ
-		/* With KVM_MIPS_VZ, we must not clobber k0/k1 */
-	MTC0	k0, CP0_KSCRATCH1
-	MTC0	k1, CP0_KSCRATCH2
-#endif
 #if R5432_CP0_INTERRUPT_WAR
 	mfc0	k0, CP0_INDEX
 #endif
@@ -473,9 +468,6 @@ NESTED(nmi_handler, PT_SIZE, sp)
 	BUILD_HANDLER mcheck mcheck mce verbose		/* #24 */
 	BUILD_HANDLER mt mt sti silent			/* #25 */
 	BUILD_HANDLER dsp dsp sti silent		/* #26 */
-#ifdef CONFIG_KVM_MIPS_VZ
-	BUILD_HANDLER hypervisor hypervisor cli silent	/* #27 */
-#endif
 	BUILD_HANDLER reserved reserved sti verbose	/* others */
 
 	.align	5
