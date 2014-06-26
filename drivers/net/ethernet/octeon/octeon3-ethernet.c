@@ -999,7 +999,7 @@ static int octeon3_eth_ndo_stop(struct net_device *netdev)
 		octeon3_eth_sso_irq_set_armed(priv->numa_node, rx->rx_grp, false);
 
 		irq_set_affinity_hint(rx->rx_irq, NULL);
-		free_irq(rx->rx_irq, netdev);
+		free_irq(rx->rx_irq, rx);
 		rx->rx_irq = 0;
 	}
 	msleep(20);
