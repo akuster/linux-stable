@@ -10,6 +10,7 @@
 #include <sys/uio.h>
 
 #include "kvm/kvm.h"
+#include "kvm/barrier.h"
 
 #define VIRTIO_IRQ_LOW		0
 #define VIRTIO_IRQ_HIGH		1
@@ -108,6 +109,7 @@ static inline bool virt_queue__available(struct virt_queue *vq)
 	if (!vq->vring.avail)
 		return 0;
 
+	rmb();
 	vring_avail_event(&vq->vring) = virtio_host_to_guest_u16(vq, vq->last_avail_idx);
 	return virtio_guest_to_host_u16(vq, vq->vring.avail->idx) != vq->last_avail_idx;
 }
