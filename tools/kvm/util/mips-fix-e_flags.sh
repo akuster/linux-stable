@@ -9,7 +9,7 @@ then
     _elfclass=64
 else
     # ELF Class 32
-    _offset=48
+    _offset=36
     _elfclass=32
 fi
 echo "Setting ELF$_elfclass header flags in binary $_blob to what's used in guest/init"
