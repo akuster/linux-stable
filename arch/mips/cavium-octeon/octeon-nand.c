@@ -27,6 +27,7 @@
 #include <linux/mtd/partitions.h>
 #include <linux/of.h>
 #include <linux/slab.h>
+#include <linux/mm.h>
 #include <net/irda/parameters.h>
 
 
@@ -219,15 +220,18 @@ static int octeon_nand_hw_bch_read_page(struct mtd_info *mtd,
 	int i, eccsize = chip->ecc.size;
 	int eccbytes = chip->ecc.bytes;
 	int eccsteps = chip->ecc.steps;
-	uint8_t *p = buf;
+	uint8_t *p;
 	uint8_t *ecc_code = chip->buffers->ecccode;
 	uint32_t *eccpos = chip->ecc.layout->eccpos;
 
 	DEV_DBG(DEBUG_READ, priv->dev, "%s(%p, %p, %p, %d, %d)\n", __func__,
 		mtd, chip, buf, oob_required, page);
 
-	chip->read_buf(mtd, buf, mtd->writesize);
-	chip->read_buf(mtd, chip->oob_poi, mtd->oobsize);
+	/* chip->read_buf() insists on sequential order, we do OOB first */
+	memcpy(chip->oob_poi, priv->data + mtd->writesize, mtd->oobsize);
+
+	/* Use private->data buffer as input for ECC correction */
+	p = priv->data;
 
 	for (i = 0; i < chip->ecc.total; i++)
 		ecc_code[i] = chip->oob_poi[eccpos[i]];
@@ -239,6 +243,7 @@ static int octeon_nand_hw_bch_read_page(struct mtd_info *mtd,
 			"Correcting block offset %ld, ecc offset %d\n",
 			p - buf, i);
 		stat = chip->ecc.correct(mtd, p, &ecc_code[i], NULL);
+
 		if (stat < 0) {
 			mtd->ecc_stats.failed++;
 			DEV_DBG(DEBUG_ALL, priv->dev,
@@ -247,6 +252,10 @@ static int octeon_nand_hw_bch_read_page(struct mtd_info *mtd,
 			mtd->ecc_stats.corrected += stat;
 		}
 	}
+
+	/* Copy corrected data to caller's buffer now */
+	memcpy(buf, priv->data, mtd->writesize);
+
 	return 0;
 }
 
@@ -258,7 +267,7 @@ static int octeon_nand_hw_bch_write_page(struct mtd_info *mtd,
 	int i, eccsize = chip->ecc.size;
 	int eccbytes = chip->ecc.bytes;
 	int eccsteps = chip->ecc.steps;
-	const uint8_t *p = buf;
+	const uint8_t *p;
 	uint32_t *eccpos = chip->ecc.layout->eccpos;
 	uint8_t *ecc_calc = chip->buffers->ecccalc;
 
@@ -266,6 +275,11 @@ static int octeon_nand_hw_bch_write_page(struct mtd_info *mtd,
 		chip, buf, oob_required);
 	for (i = 0; i < chip->ecc.total; i++)
 		ecc_calc[i] = 0xFF;
+
+	/* Copy the page data from caller's buffers to private buffer */
+	chip->write_buf(mtd, buf, mtd->writesize);
+	/* Use private date as source for ECC calculation */
+	p = priv->data;
 
 	/* Hardware ECC calculation */
 	for (i = 0; eccsteps; eccsteps--, i += eccbytes, p += eccsize) {
@@ -285,7 +299,7 @@ static int octeon_nand_hw_bch_write_page(struct mtd_info *mtd,
 	for (i = 0; i < chip->ecc.total; i++)
 		chip->oob_poi[eccpos[i]] = ecc_calc[i];
 
-	chip->write_buf(mtd, buf, mtd->writesize);
+	/* Store resulting OOB into private buffer, will be sent to HW */
 	chip->write_buf(mtd, chip->oob_poi, mtd->oobsize);
 
 	return 0;
@@ -476,6 +490,7 @@ static void octeon_nand_cmdfunc(struct mtd_info *mtd, unsigned command,
 			"SEQIN column=%d page_addr=0x%x\n", column, page_addr);
 		/* If we don't seem to be doing sequential writes then erase
 			all data assuming it is old */
+		/* FIXME: if (priv->selected_page != page_addr) */
 		if (priv->data_index != column)
 			memset(priv->data, 0xff, sizeof(priv->data));
 		priv->data_index = column;
@@ -535,10 +550,14 @@ static int octeon_nand_bch_calculate_ecc_internal(struct octeon_nand *priv,
 						  uint8_t *code)
 {
 	struct nand_chip *nand_chip = &priv->nand;
-	static volatile cvmx_bch_response_t response;
+	static cvmx_bch_response_t response;
 	int rc;
 	int i;
 	static uint8_t *ecc_buffer;
+
+	/* Can only use logical or xkphys pointers */
+	WARN_ON(is_vmalloc_or_module_addr(buf));
+	WARN_ON(is_vmalloc_or_module_addr(code));
 
 	if (!ecc_buffer)
 		ecc_buffer = kmalloc(1024, GFP_KERNEL);
@@ -548,7 +567,7 @@ static int octeon_nand_bch_calculate_ecc_internal(struct octeon_nand *priv,
 	memset(ecc_buffer, 0, nand_chip->ecc.bytes);
 
 	response.u16 = 0;
-
+	barrier();
 
 	rc = cvmx_bch_encode((void *)buf, nand_chip->ecc.size,
 			     nand_chip->ecc.strength,
@@ -560,9 +579,9 @@ static int octeon_nand_bch_calculate_ecc_internal(struct octeon_nand *priv,
 	}
 
 	udelay(10);
+	barrier();
 
 	if (!response.s.done) {
-		DEV_DBG(DEBUG_ALL, priv->dev,
 			"octeon_bch_encode timed out, response done: %d, "
 			 "uncorrectable: %d, num_errors: %d, erased: %d\n",
 			response.s.done, response.s.uncorrectable,
@@ -598,8 +617,6 @@ static int octeon_nand_bch_calculate(struct mtd_info *mtd,
 
 	return ret;
 }
-
-
 /*
  * Detect and correct multi-bit ECC for a page
  *
@@ -615,12 +632,15 @@ static int octeon_nand_bch_correct(struct mtd_info *mtd, u_char *dat,
 {
 	struct octeon_nand *priv = container_of(mtd, struct octeon_nand, mtd);
 	struct nand_chip *nand_chip = &priv->nand;
-	static volatile cvmx_bch_response_t response;
+	static cvmx_bch_response_t response;
 	int rc;
 	int i = nand_chip->ecc.size + nand_chip->ecc.bytes;
 	static uint8_t *data_buffer;
 	static int buffer_size;
 	int max_time = 100;
+
+	/* Can only use logical or xkphys pointers */
+	WARN_ON(is_vmalloc_or_module_addr(dat));
 
 	if (i > buffer_size) {
 		kfree(data_buffer);
@@ -641,6 +661,7 @@ static int octeon_nand_bch_correct(struct mtd_info *mtd, u_char *dat,
 		data_buffer[nand_chip->ecc.size + i] ^= priv->eccmask[i];
 
 	response.u16 = 0;
+	barrier();
 
 	rc = cvmx_bch_decode(data_buffer, nand_chip->ecc.size,
 			     nand_chip->ecc.strength, dat, &response);
@@ -651,8 +672,10 @@ static int octeon_nand_bch_correct(struct mtd_info *mtd, u_char *dat,
 	}
 
 	/* Wait for BCH engine to finsish */
-	while (!response.s.done && max_time--)
+	while (!response.s.done && max_time--) {
 		udelay(1);
+		barrier();
+	}
 
 	if (!response.s.done) {
 		dev_err(priv->dev, "Error: BCH engine timeout\n");
@@ -1151,6 +1174,7 @@ static int octeon_nand_hw_bch_init(struct octeon_nand *priv)
 	unsigned int eccbytes = chip->ecc.bytes;
 	uint8_t erased_ecc[eccbytes];
 
+	/* Without HW BCH, the ECC callbacks would have not been installed */
 	if (!octeon_has_feature(OCTEON_FEATURE_BCH))
 		return 0;
 
@@ -1195,9 +1219,8 @@ static int octeon_nand_hw_bch_init(struct octeon_nand *priv)
 	return 0;
 
 fail:
-	if (priv->eccmask)
-		priv->eccmask = NULL;
 	kfree(priv->eccmask);
+	priv->eccmask = NULL;
 
 	kfree(erased_page);
 
