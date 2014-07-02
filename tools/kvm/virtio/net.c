@@ -37,6 +37,13 @@ struct net_dev_operations {
 	int (*tx)(struct iovec *iov, u16 in, struct net_dev *ndev);
 };
 
+struct pthread_data {
+	pthread_t			thread;
+	struct mutex			lock;
+	pthread_cond_t			cond;
+} __attribute__((aligned(128)));
+
+
 struct net_dev {
 	struct mutex			mutex;
 	struct virtio_device		vdev;
@@ -46,9 +53,7 @@ struct net_dev {
 	struct virtio_net_config	config;
 	u32				features, rx_vqs, tx_vqs, queue_pairs;
 
-	pthread_t			io_thread[VIRTIO_NET_NUM_QUEUES * 2 + 1];
-	struct mutex			io_lock[VIRTIO_NET_NUM_QUEUES * 2 + 1];
-	pthread_cond_t			io_cond[VIRTIO_NET_NUM_QUEUES * 2 + 1];
+	struct pthread_data		io[VIRTIO_NET_NUM_QUEUES * 2 + 1];
 
 	int				vhost_fd;
 	int				tap_fd;
@@ -112,10 +117,11 @@ static void *virtio_net_rx_thread(void *p)
 	vq = &ndev->vqs[id];
 
 	while (1) {
-		mutex_lock(&ndev->io_lock[id]);
-		if (!virt_queue__available(vq))
-			pthread_cond_wait(&ndev->io_cond[id], &ndev->io_lock[id].mutex);
-		mutex_unlock(&ndev->io_lock[id]);
+		mutex_lock(&ndev->io[id].lock);
+		if (!virt_queue__available(vq)) {
+			pthread_cond_wait(&ndev->io[id].cond, &ndev->io[id].lock.mutex);
+		}
+		mutex_unlock(&ndev->io[id].lock);
 
 		while (virt_queue__available(vq)) {
 			unsigned char buffer[MAX_PACKET_SIZE + sizeof(struct virtio_net_hdr_mrg_rxbuf)];
@@ -187,10 +193,10 @@ static void *virtio_net_tx_thread(void *p)
 	vq = &ndev->vqs[id];
 
 	while (1) {
-		mutex_lock(&ndev->io_lock[id]);
+		mutex_lock(&ndev->io[id].lock);
 		if (!virt_queue__available(vq))
-			pthread_cond_wait(&ndev->io_cond[id], &ndev->io_lock[id].mutex);
-		mutex_unlock(&ndev->io_lock[id]);
+			pthread_cond_wait(&ndev->io[id].cond, &ndev->io[id].lock.mutex);
+		mutex_unlock(&ndev->io[id].lock);
 
 		while (virt_queue__available(vq)) {
 			struct virtio_net_hdr *hdr;
@@ -234,10 +240,10 @@ static void *virtio_net_ctrl_thread(void *p)
 	virtio_net_ctrl_ack *ack;
 
 	while (1) {
-		mutex_lock(&ndev->io_lock[id]);
+		mutex_lock(&ndev->io[id].lock);
 		if (!virt_queue__available(vq))
-			pthread_cond_wait(&ndev->io_cond[id], &ndev->io_lock[id].mutex);
-		mutex_unlock(&ndev->io_lock[id]);
+			pthread_cond_wait(&ndev->io[id].cond, &ndev->io[id].lock.mutex);
+		mutex_unlock(&ndev->io[id].lock);
 
 		while (virt_queue__available(vq)) {
 			head = virt_queue__get_iov(&ndev->vqs[id], iov, &out, &in, kvm);
@@ -271,9 +277,9 @@ static void virtio_net_handle_callback(struct kvm *kvm, struct net_dev *ndev, in
 		return;
 	}
 
-	mutex_lock(&ndev->io_lock[queue]);
-	pthread_cond_signal(&ndev->io_cond[queue]);
-	mutex_unlock(&ndev->io_lock[queue]);
+	mutex_lock(&ndev->io[queue].lock);
+	pthread_cond_signal(&ndev->io[queue].cond);
+	mutex_unlock(&ndev->io[queue].lock);
 }
 
 static bool virtio_net__tap_init(struct net_dev *ndev)
@@ -492,17 +498,17 @@ static int init_vq(struct kvm *kvm, void *dev, u32 vq, u32 page_size, u32 align,
 	vring_init(&queue->vring, VIRTIO_NET_QUEUE_SIZE, p, align);
 	virtio_init_device_vq(&ndev->vdev, queue);
 
-	mutex_init(&ndev->io_lock[vq]);
-	pthread_cond_init(&ndev->io_cond[vq], NULL);
+	mutex_init(&ndev->io[vq].lock);
+	pthread_cond_init(&ndev->io[vq].cond, NULL);
 	if (is_ctrl_vq(ndev, vq)) {
-		pthread_create(&ndev->io_thread[vq], NULL, virtio_net_ctrl_thread, ndev);
+		pthread_create(&ndev->io[vq].thread, NULL, virtio_net_ctrl_thread, ndev);
 
 		return 0;
 	} else if (ndev->vhost_fd == 0 ) {
 		if (vq & 1)
-			pthread_create(&ndev->io_thread[vq], NULL, virtio_net_tx_thread, ndev);
+			pthread_create(&ndev->io[vq].thread, NULL, virtio_net_tx_thread, ndev);
 		else
-			pthread_create(&ndev->io_thread[vq], NULL, virtio_net_rx_thread, ndev);
+			pthread_create(&ndev->io[vq].thread, NULL, virtio_net_rx_thread, ndev);
 
 		return 0;
 	}
