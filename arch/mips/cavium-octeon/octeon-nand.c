@@ -582,6 +582,7 @@ static int octeon_nand_bch_calculate_ecc_internal(struct octeon_nand *priv,
 	barrier();
 
 	if (!response.s.done) {
+		dev_err(priv->dev,
 			"octeon_bch_encode timed out, response done: %d, "
 			 "uncorrectable: %d, num_errors: %d, erased: %d\n",
 			response.s.done, response.s.uncorrectable,
