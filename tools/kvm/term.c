@@ -104,6 +104,8 @@ static void *term_poll_thread_loop(void *param)
 
 	int i;
 
+	kvm__set_thread_name("term-poll");
+
 	for (i = 0; i < TERM_MAX_DEVS; i++) {
 		fds[i].fd = term_fds[i][TERM_FD_IN];
 		fds[i].events = POLLIN;
