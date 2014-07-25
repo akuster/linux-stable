@@ -277,10 +277,11 @@ static void octeon_smp_setup(void)
 	}
 
 	/* Atomically allocate Hotplug global structure */
+	/* must be KSEG0-addresable to support N32 hotplugged apps */
 	hgp = (struct cvmx_app_hotplug_global *)
 		cvmx_bootmem_alloc_named_range_once(
 			CVMX_APP_HOTPLUG_INFO_REGION_SIZE,
-			0x0, 0x0, 0,
+			0x0, 1ull << 29, 0,
 			CVMX_APP_HOTPLUG_INFO_REGION_NAME,
 			octeon_hotplug_global_init
 		);
