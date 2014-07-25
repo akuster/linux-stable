@@ -1011,8 +1011,15 @@ void __init plat_mem_setup(void)
 	while ((boot_mem_map.nr_map < BOOT_MEM_MAP_MAX)
 		&& (total < MAX_MEMORY)) {
 #if defined(CONFIG_64BIT) || defined(CONFIG_64BIT_PHYS_ADDR)
+		const uint64_t min_low_ram = 256 << 20; /* 256 MBytes */
+		uint64_t limit;
+		if (total < min_low_ram)
+			limit = (1ull << 32)-1;
+		else
+			limit = ~0ull;
+
 		memory = cvmx_bootmem_phy_alloc(mem_alloc_size,
-						__pa_symbol(&__init_end), -1,
+						__pa_symbol(&__init_end), limit,
 						0x100000,
 						CVMX_BOOTMEM_FLAG_NO_LOCKING);
 #elif defined(CONFIG_HIGHMEM)
