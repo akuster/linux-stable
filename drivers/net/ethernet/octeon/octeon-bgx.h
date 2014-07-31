@@ -27,6 +27,8 @@
 #ifndef _OCTEON_BGX_H_
 #define _OCTEON_BGX_H_
 
+#include <linux/ethtool.h>
+
 struct device;
 struct net_device;
 struct bgx_port_priv;
@@ -43,6 +45,11 @@ int bgx_port_disable(struct net_device *netdev);
 const u8 *bgx_port_get_mac(struct net_device *netdev);
 void bgx_port_set_rx_filtering(struct net_device *netdev);
 int bgx_port_change_mtu(struct net_device *netdev, int new_mtu);
+int bgx_port_ethtool_get_settings(struct net_device *netdev,
+				  struct ethtool_cmd *cmd);
+int bgx_port_ethtool_set_settings(struct net_device *netdev,
+				  struct ethtool_cmd *cmd);
+int bgx_port_ethtool_nway_reset(struct net_device *netdev);
 
 struct bgx_platform_data {
 	int numa_node;

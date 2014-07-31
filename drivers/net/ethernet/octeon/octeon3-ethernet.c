@@ -727,6 +727,22 @@ static int octeon3_eth_napi(struct napi_struct *napi, int budget)
 
 //#define BROKEN_SIMULATOR_CSUM 1
 
+static void ethtool_get_drvinfo(struct net_device *netdev,
+				struct ethtool_drvinfo *info)
+{
+	strcpy(info->driver, "octeon3-ethernet");
+	strcpy(info->version, "1.0");
+	strcpy(info->bus_info, "Builtin");
+}
+
+static const struct ethtool_ops octeon3_ethtool_ops = {
+	.get_drvinfo = ethtool_get_drvinfo,
+	.get_settings = bgx_port_ethtool_get_settings,
+	.set_settings = bgx_port_ethtool_set_settings,
+	.nway_reset = bgx_port_ethtool_nway_reset,
+	.get_link = ethtool_op_get_link,
+};
+
 static int octeon3_eth_ndo_init(struct net_device *netdev)
 {
 	struct octeon3_ethernet *priv = netdev_priv(netdev);
@@ -913,6 +929,9 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 		netif_napi_add(netdev, &priv->rx_cxt[i].napi, octeon3_eth_napi, 32);
 		napi_enable(&priv->rx_cxt[i].napi);
 	}
+
+	/* Register ethtool methods */
+	SET_ETHTOOL_OPS(netdev, &octeon3_ethtool_ops);
 
 	netdev_info(netdev, "octeon3_eth_ndo_init\n");
 	return 0;
