@@ -71,6 +71,52 @@ void bgx_port_set_netdev(struct device *dev, struct net_device *netdev)
 }
 EXPORT_SYMBOL(bgx_port_set_netdev);
 
+int bgx_port_ethtool_get_settings(struct net_device	*netdev,
+				  struct ethtool_cmd	*cmd)
+{
+	cvmx_helper_link_info_t link_info;
+	struct bgx_port_priv *p = bgx_port_netdev2priv(netdev);
+
+	if (p->phydev)
+		return phy_ethtool_gset(p->phydev, cmd);
+
+	link_info = cvmx_helper_link_get(p->ipd_port);
+	cmd->speed = link_info.s.link_up ? link_info.s.speed : 0;
+	cmd->duplex = link_info.s.full_duplex ? DUPLEX_FULL : DUPLEX_HALF;
+
+	return 0;
+}
+EXPORT_SYMBOL(bgx_port_ethtool_get_settings);
+
+int bgx_port_ethtool_set_settings(struct net_device	*netdev,
+				  struct ethtool_cmd	*cmd)
+{
+	struct bgx_port_priv *p = bgx_port_netdev2priv(netdev);
+
+	if (!capable(CAP_NET_ADMIN))
+		return -EPERM;
+
+	if (p->phydev)
+		return phy_ethtool_sset(p->phydev, cmd);
+
+	return -EOPNOTSUPP;
+}
+EXPORT_SYMBOL(bgx_port_ethtool_set_settings);
+
+int bgx_port_ethtool_nway_reset(struct net_device *netdev)
+{
+	struct bgx_port_priv *p = bgx_port_netdev2priv(netdev);
+
+	if (!capable(CAP_NET_ADMIN))
+		return -EPERM;
+
+	if (p->phydev)
+		return phy_start_aneg(p->phydev);
+
+	return -EOPNOTSUPP;
+}
+EXPORT_SYMBOL(bgx_port_ethtool_nway_reset);
+
 const u8 *bgx_port_get_mac(struct net_device *netdev)
 {
 	struct bgx_port_priv *priv = bgx_port_netdev2priv(netdev);
