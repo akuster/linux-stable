@@ -981,6 +981,17 @@ int cvmx_helper_board_get_mii_address(int ipd_port)
 			return 8;
 		else
 			return -1;
+
+	/* can these come purely from of_xxx()?? */
+	case CVMX_BOARD_TYPE_EAP7000_REF:
+	case CVMX_BOARD_TYPE_ROUTER7000_REF:
+		if (ipd_port == 16) /* qca833x = eth1 */
+			return 1;
+		if (ipd_port == 0) /* sgmii at803x = eth0 */
+			return 4;
+		if (ipd_port == 24) /* rgmii at803x = agl0 */
+			return 5;
+		return -1;
 	}
 
 	/* Some unknown board. Somebody forgot to update this function... */
