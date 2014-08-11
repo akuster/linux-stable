@@ -49,9 +49,10 @@
 #include <asm/octeon/cvmx-qlm.h>
 #include <asm/octeon/cvmx-debug.h>
 
-#define SDK_VERSION "3.1"
+#define SDK_VERSION "3.1.1"
 
 static unsigned long long MAX_MEMORY = 512ull << 20;
+static const unsigned long MIN_MEM_32 = 256 << 20;
 
 /*
  * modified in hernel-entry-init.h, must have an initial value to keep
@@ -956,6 +957,7 @@ void __init plat_mem_setup(void)
 	uint64_t mem_alloc_size;
 	uint64_t total = 0;
 	int64_t memory;
+	uint64_t limit_max, limit_min;
 	const struct cvmx_bootmem_named_block_desc *named_block;
 
 #ifdef CONFIG_BLK_DEV_INITRD
@@ -1013,26 +1015,21 @@ void __init plat_mem_setup(void)
 	while ((boot_mem_map.nr_map < BOOT_MEM_MAP_MAX)
 		&& (total < MAX_MEMORY)) {
 #if defined(CONFIG_64BIT) || defined(CONFIG_64BIT_PHYS_ADDR)
-		const uint64_t min_low_ram = 256 << 20; /* 256 MBytes */
-		uint64_t limit;
-		if (total < min_low_ram)
-			limit = (1ull << 32)-1;
+		if (total < MIN_MEM_32)
+			limit_max = (1ull << 32)-1;	/* 4GBytes */
 		else
-			limit = ~0ull;
+			limit_max = ~0ull;		/* unlimitted */
+#elif defined(CONFIG_HIGHMEM)
+		limit_max = (1ull << 31) - 1;	/* 4GBytes */
+#else
+		limit_max = (1ull << 29) - 1;	/* 512MBytes */
+#endif
+		limit_min = __pa_symbol(&__init_end);
 
 		memory = cvmx_bootmem_phy_alloc(mem_alloc_size,
-						__pa_symbol(&__init_end), limit,
-						0x100000,
-						CVMX_BOOTMEM_FLAG_NO_LOCKING);
-#elif defined(CONFIG_HIGHMEM)
-		memory = cvmx_bootmem_phy_alloc(mem_alloc_size, 0, 1ull << 31,
-						0x100000,
-						CVMX_BOOTMEM_FLAG_NO_LOCKING);
-#else
-		memory = cvmx_bootmem_phy_alloc(mem_alloc_size, 0, 512 << 20,
-						0x100000,
-						CVMX_BOOTMEM_FLAG_NO_LOCKING);
-#endif
+				limit_min, limit_max, 0x100000,
+				CVMX_BOOTMEM_FLAG_NO_LOCKING);
+
 		if (memory >= 0) {
 			u64 size = mem_alloc_size;
 
