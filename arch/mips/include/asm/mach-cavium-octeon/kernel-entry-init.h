@@ -29,7 +29,6 @@
 	.set arch=octeon
 #ifdef CONFIG_HOTPLUG_CPU
 	b	7f
-	nop
 
 FEXPORT(octeon_hotplug_entry)
 	move	a0, zero
@@ -38,22 +37,14 @@ FEXPORT(octeon_hotplug_entry)
 	move	a3, zero
 7:
 #endif	/* CONFIG_HOTPLUG_CPU */
-#ifdef	CONFIG_CPU_LITTLE_ENDIAN
-	.set push
-	.set noreorder
-	/* Hotpplugged CPUs enter in Big-Endian mode, switch here to LE */
-	dmfc0   v0, CP0_CVMCTL_REG
-	nop
-	ori     v0, v0, 2
-	nop
-	dmtc0   v0, CP0_CVMCTL_REG	/* little-endian */
-	nop
-	synci	0($0)
-	.set pop
-#endif	/* CONFIG_CPU_LITTLE_ENDIAN */
 	mfc0	v0, CP0_STATUS
 	/* Force 64-bit addressing enabled */
 	ori	v0, v0, (ST0_UX | ST0_SX | ST0_KX)
+	/* Clear NMI and SR as they are sometimes restored and 0 -> 1
+	 * transitions are not allowed
+	 */
+	li	v1, ~(ST0_NMI | ST0_SR)
+	and	v0, v1
 	mtc0	v0, CP0_STATUS
 
 	# Clear the TLB.
@@ -157,11 +148,12 @@ FEXPORT(octeon_hotplug_entry)
 	dsllv	v1, v1, t1
 	daddu	v1, v1, t3
 	sd	v1, 0(v0)
+#endif
 	dla	v0, continue_in_mapped_space
 	jr	v0
 
 continue_in_mapped_space:
-#endif
+
 	mfc0	v1, CP0_PRID_REG
 	andi	v1, 0xff00
 	li	v0, 0x9500		# cn78XX or later
