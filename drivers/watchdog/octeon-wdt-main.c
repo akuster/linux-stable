@@ -74,6 +74,7 @@
 #include <asm/uasm.h>
 
 #include <asm/octeon/octeon.h>
+#include <asm/octeon/cvmx-boot-vector.h>
 #include <asm/octeon/cvmx-ciu2-defs.h>
 
 /* Watchdog interrupt major block number (8 MSBs of intsn) */
@@ -135,6 +136,8 @@ enum lable_id {
 #define C0_STATUS 12, 0
 #define C0_EBASE 15, 1
 #define C0_DESAVE 31, 0
+
+static void **octeon_wdt_bootvector;
 
 void octeon_wdt_nmi_stage2(void);
 
@@ -428,17 +431,37 @@ void octeon_wdt_nmi_stage3(u64 reg[32])
 	octeon_wdt_write_string("*** Chip soft reset soon ***\r\n");
 }
 
+static int octeon_wdt_cpu_to_irq(int cpu)
+{
+	unsigned int coreid;
+	int node;
+	int irq;
+
+	coreid = cpu2core(cpu);
+	node = cpu_to_node(cpu);
+
+	if (octeon_has_feature(OCTEON_FEATURE_CIU3)) {
+		struct irq_domain *domain;
+		int hwirq;
+		domain = octeon_irq_get_block_domain(node,
+						     WD_BLOCK_NUMBER);
+		hwirq = WD_BLOCK_NUMBER << 12 | 0x200 | coreid;
+		irq = irq_find_mapping(domain, hwirq);
+	} else {
+		irq = OCTEON_IRQ_WDOG0 + coreid;
+	}
+	return irq;
+
+}
+
 static void octeon_wdt_disable_interrupt(int cpu)
 {
 	unsigned int core;
-	unsigned int irq;
 	int node;
 	union cvmx_ciu_wdogx ciu_wdog;
 
 	core = cpu2core(cpu);
 	node = cpu_to_node(cpu);
-
-	irq = OCTEON_IRQ_WDOG0 + core;
 
 	/* Poke the watchdog to clear out its state */
 	cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(core), 1);
@@ -447,7 +470,7 @@ static void octeon_wdt_disable_interrupt(int cpu)
 	ciu_wdog.u64 = 0;
 	cvmx_write_csr_node(node, CVMX_CIU_WDOGX(core), ciu_wdog.u64);
 
-	free_irq(irq, octeon_wdt_poke_irq);
+	free_irq(octeon_wdt_cpu_to_irq(cpu), octeon_wdt_poke_irq);
 }
 
 static void octeon_wdt_setup_interrupt(int cpu)
@@ -461,6 +484,8 @@ static void octeon_wdt_setup_interrupt(int cpu)
 
 	core = cpu2core(cpu);
 	node = cpu_to_node(cpu);
+
+	octeon_wdt_bootvector[core] = octeon_wdt_nmi_stage2;
 
 	/* Disable it before doing anything with the interrupts. */
 	ciu_wdog.u64 = 0;
@@ -527,9 +552,6 @@ static int octeon_wdt_ping(struct watchdog_device __always_unused *wdog)
 	int cpu;
 	int coreid;
 	int node;
-	int irq;
-	struct irq_domain *domain;
-	int hwirq;
 
 	if (disable)
 		return;
@@ -542,14 +564,7 @@ static int octeon_wdt_ping(struct watchdog_device __always_unused *wdog)
 		if ((countdown_reset || !do_coundown) &&
 		    !cpumask_test_cpu(cpu, &irq_enabled_cpus)) {
 			/* We have to enable the irq */
-			if (octeon_has_feature(OCTEON_FEATURE_CIU3)) {
-				domain = octeon_irq_get_block_domain(node,
-						               WD_BLOCK_NUMBER);
-				hwirq = WD_BLOCK_NUMBER << 12 | 0x200 | coreid;
-				irq = irq_find_mapping(domain, hwirq);
-			} else
-				irq = OCTEON_IRQ_WDOG0 + coreid;
-			enable_irq(irq);
+			enable_irq(octeon_wdt_cpu_to_irq(cpu));
 			cpumask_set_cpu(cpu, &irq_enabled_cpus);
 		}
 	}
@@ -655,10 +670,14 @@ static struct watchdog_device octeon_wdt = {
  */
 static int __init octeon_wdt_init(void)
 {
-	int i;
 	int ret;
 	int cpu;
-	u64 *ptr;
+
+	octeon_wdt_bootvector = cvmx_boot_vector_get();
+	if (!octeon_wdt_bootvector) {
+		pr_err("Error: Cannot allocate boot vector.\n");
+		return -ENOMEM;
+	}
 
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
 		counter_shift = 9;
@@ -703,17 +722,6 @@ static int __init octeon_wdt_init(void)
 		pr_notice("disabled\n");
 		return 0;
 	}
-
-	/* Build the NMI handler ... */
-	octeon_wdt_build_stage1();
-
-	/* ... and install it. */
-	ptr = (u64 *) nmi_stage1_insns;
-	for (i = 0; i < 16; i++) {
-		cvmx_write_csr(CVMX_MIO_BOOT_LOC_ADR, i * 8);
-		cvmx_write_csr(CVMX_MIO_BOOT_LOC_DAT, ptr[i]);
-	}
-	cvmx_write_csr(CVMX_MIO_BOOT_LOC_CFGX(0), 0x81fc0000);
 
 	cpumask_clear(&irq_enabled_cpus);
 
