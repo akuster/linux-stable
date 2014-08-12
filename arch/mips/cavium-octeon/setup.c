@@ -41,7 +41,6 @@
 #include <asm/perf_event.h>
 
 #include <asm/octeon/octeon.h>
-#include <asm/octeon/octeon-boot-info.h>
 #include <asm/octeon/pci-octeon.h>
 #include <asm/octeon/cvmx-mio-defs.h>
 #include <asm/octeon/cvmx-rst-defs.h>
