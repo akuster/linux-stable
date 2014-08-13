@@ -34,3 +34,11 @@ obj-$(CONFIG_OCTEON_ERROR_INJECTOR)	+= octeon-error-injector.o
 obj-$(CONFIG_CAVIUM_OCTEON_RAPIDIO)	+= octeon-rapidio.o
 obj-$(CONFIG_PERF_EVENTS)		+= perf_counters.o
 obj-$(CONFIG_CAVIUM_OCTEON_PERF)	+= perf_uncore.o
+
+ifdef CONFIG_SMP
+ifdef CONFIG_SYSFS
+ifdef CONFIG_HOTPLUG_CPU
+obj-y += unplug-cpu.o unplug-cpu-ll.o
+endif
+endif
+endif
