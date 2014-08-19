@@ -53,12 +53,6 @@
 static unsigned long long MAX_MEMORY = 512ull << 20;
 static const unsigned long MIN_MEM_32 = 256 << 20;
 
-/*
- * modified in hernel-entry-init.h, must have an initial value to keep
- * it from being clobbered when bss is zeroed.
- */
-u32 octeon_cvmseg_lines = 2;
-
 DEFINE_SEMAPHORE(octeon_bootbus_sem);
 EXPORT_SYMBOL(octeon_bootbus_sem);
 
