@@ -34,14 +34,14 @@ EXPORT_SYMBOL_GPL(cache_err_dcache);
 static RAW_NOTIFIER_HEAD(co_cache_error_chain);
 
 /**
- * Octeon automatically flushes the dcache on tlb changes, so
- * from Linux's viewpoint it acts much like a physically
- * tagged cache. No flushing is needed
+ * Octeon automatically flushes the dcache on tlb changes, but we need
+ * a full barrier to make sure subsequent icache fills see any queued
+ * stores.
  *
  */
 static void octeon_flush_data_cache_page(unsigned long addr)
 {
-    /* Nothing to do */
+	mb(); /* SYNC */
 }
 
 static void octeon_local_flush_icache(void)
