@@ -562,64 +562,7 @@
 #undef HEADER_EN
 #endif
 
-#define ATHR_LAN_PORT_VLAN	1
-#define ATHR_WAN_PORT_VLAN	2
-
-#define ENET_UNIT_GE0		0
-#define ENET_UNIT_GE1		1
-
-#define ATHR_PHY0_ADDR		0x0
-#define ATHR_PHY1_ADDR		0x1
-#define ATHR_PHY2_ADDR		0x2
-#define ATHR_PHY3_ADDR		0x3
-#define ATHR_PHY4_ADDR		0x4
-#define ATHR_IND_PHY		4
-
 #define MODULE_NAME "qca833x"
 #define S17_PHY_DEBUG 1
-
-#if defined(ATH_S17_MAC0_SGMII)
-# define ENET_UNIT		ENET_UNIT_GE1
-# define ENET_UNIT_WAN		ENET_UNIT_GE0
-#else
-# define ENET_UNIT		ENET_UNIT_GE0
-# define ENET_UNIT_WAN		ENET_UNIT_GE1
-#endif
-
-/* Convenience macros to access myPhyInfo */
-#define ATHR_IS_ENET_PORT(phyUnit) (athrPhyInfo[phyUnit].isEnetPort)
-#define ATHR_IS_PHY_ALIVE(phyUnit) (athrPhyInfo[phyUnit].isPhyAlive)
-#define ATHR_ETHUNIT(phyUnit) (athrPhyInfo[phyUnit].ethUnit)
-#define ATHR_PHYBASE(phyUnit) (athrPhyInfo[phyUnit].phyBase)
-#define ATHR_PHYADDR(phyUnit) (athrPhyInfo[phyUnit].phyAddr)
-#define ATHR_VLAN_TABLE_SETTING(phyUnit) (athrPhyInfo[phyUnit].VLANTableSetting)
-
-#define ATHR_IS_ETHUNIT(phyUnit, ethUnit)	\
-	(ATHR_IS_ENET_PORT(phyUnit) &&		\
-	 ATHR_ETHUNIT(phyUnit) == (ethUnit))
-
-#define ATHR_IS_WAN_PORT(phyUnit) (!(ATHR_ETHUNIT(phyUnit)==ENET_UNIT_GE0))
-
-//#define ATHR_PHY_MAX (sizeof(ipPhyInfo) / sizeof(ipPhyInfo[0]))
-//#define ATHR_PHY_MAX 5
-#define ATHR_PHY_MAX 4
-
-/* Range of valid PHY IDs is [MIN..MAX] */
-#define ATHR_ID_MIN 0
-#define ATHR_ID_MAX (ATHR_PHY_MAX-1)
-#define _1000BASET 1000
-#define _100BASET  100
-#define _10BASET   10
-
-extern int qca8334_17_reg_read(struct phy_device *phydev, u32 reg_addr);
-extern int qca8334_17_reg_write(struct phy_device *phydev, u32 reg_addr,
-				u32 reg_val);
-extern int phy_qca8334_init(void);
-extern void qca8334_vlan_config(struct phy_device *phydev);
-extern void __qca8334_vlan_config(struct phy_device *phydev);
-extern void qca8334_17_reg_init_wan(struct phy_device *phydev);
-extern void __qca8334_17_reg_init_wan(struct phy_device *phydev);
-int qca8334_config(struct phy_device *phydev);
-int __qca8334_config(struct phy_device *phydev);
 
 #endif
