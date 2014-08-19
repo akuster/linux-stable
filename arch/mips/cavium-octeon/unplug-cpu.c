@@ -16,7 +16,7 @@
 #include <asm/octeon/cvmx-app-hotplug.h>
 #include <asm/octeon/cvmx-spinlock.h>
 
-static void **octeon_bootvector;
+static struct cvmx_boot_vector_element *octeon_bootvector;
 static void *octeon_replug_ll_raw;
 asmlinkage void octeon_replug_ll(void);
 
@@ -61,7 +61,7 @@ static ssize_t __ref plug_cpu_store(struct device *dev,
 			goto not_available_out;
 		}
 
-		octeon_bootvector[coreid] = octeon_replug_ll_raw;
+		octeon_bootvector[coreid].target_ptr = (uint64_t)octeon_replug_ll_raw;
 		mb();
 		node = cvmx_coremask_core_to_node(coreid);
 		coreid = cvmx_coremask_core_on_node(coreid);

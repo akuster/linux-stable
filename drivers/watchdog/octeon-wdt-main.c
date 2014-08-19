@@ -117,7 +117,7 @@ MODULE_PARM_DESC(disable,
 
 static unsigned long octeon_wdt_is_open;
 static char expect_close;
-static void **octeon_wdt_bootvector;
+static struct cvmx_boot_vector_element *octeon_wdt_bootvector;
 
 void octeon_wdt_nmi_stage2(void);
 
@@ -463,7 +463,7 @@ static void octeon_wdt_setup_interrupt(int cpu)
 	core = cpu2core(cpu);
 	node = cpu_to_node(cpu);
 
-	octeon_wdt_bootvector[core] = octeon_wdt_nmi_stage2;
+	octeon_wdt_bootvector[core].target_ptr = (uint64_t)octeon_wdt_nmi_stage2;
 
 	/* Disable it before doing anything with the interrupts. */
 	ciu_wdog.u64 = 0;
