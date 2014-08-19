@@ -24,7 +24,7 @@ __cpuinitdata unsigned long octeon_processor_sp;
 __cpuinitdata unsigned long octeon_processor_gp;
 
 #ifdef CONFIG_HOTPLUG_CPU
-static void **octeon_bootvector;
+static struct cvmx_boot_vector_element *octeon_bootvector;
 static void *octeon_hotplug_entry_raw;
 extern asmlinkage void octeon_hotplug_entry(void);
 #endif
@@ -424,7 +424,7 @@ static int octeon_up_prepare(unsigned int cpu)
 	int node;
 
 	per_cpu(cpu_state, cpu) = CPU_UP_PREPARE;
-	octeon_bootvector[coreid] = octeon_hotplug_entry_raw;
+	octeon_bootvector[coreid].target_ptr = (uint64_t)octeon_hotplug_entry_raw;
 	mb();
 	/* Convert coreid to node,core spair and send NMI to target core */
 	node = cvmx_coremask_core_to_node(coreid);
