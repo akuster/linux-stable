@@ -116,7 +116,7 @@ static inline unsigned int cvmx_get_node_num(void)
 #endif
 
 #if CVMX_ENABLE_DEBUG_PRINTS
-#define cvmx_dprintf        printk
+#define cvmx_dprintf        pr_debug
 #define cvmx_dvprintf       vprintk
 #else
 #define cvmx_dprintf(...)   {}
