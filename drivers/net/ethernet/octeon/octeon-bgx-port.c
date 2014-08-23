@@ -51,11 +51,16 @@ struct bgx_port_priv {
 	const u8 *mac_addr;
 	struct phy_device *phydev;
 	struct device_node *phy_np;
+	struct net_device *netdev;
 	spinlock_t lock;
 	unsigned int last_duplex;
 	unsigned int last_link;
 	unsigned int last_speed;
+	struct delayed_work dwork;
 };
+
+static struct workqueue_struct *check_state_wq;
+static DEFINE_MUTEX(check_state_wq_mutex);
 
 static struct bgx_port_priv *bgx_port_netdev2priv(struct net_device *netdev)
 {
@@ -68,6 +73,7 @@ void bgx_port_set_netdev(struct device *dev, struct net_device *netdev)
 	struct bgx_port_netdev_priv *nd_priv = netdev_priv(netdev);
 	struct bgx_port_priv *priv = dev_get_drvdata(dev);
 	nd_priv->bgx_priv = priv;
+	priv->netdev = netdev;
 }
 EXPORT_SYMBOL(bgx_port_set_netdev);
 
@@ -249,6 +255,27 @@ static void bgx_port_adjust_link(struct net_device *netdev)
 	}
 }
 
+static void bgx_port_check_state(struct work_struct *work)
+{
+	struct bgx_port_priv		*priv;
+	cvmx_helper_link_info_t		link_info;
+
+	priv = container_of(work, struct bgx_port_priv, dwork.work);
+
+	link_info = cvmx_helper_link_get(priv->ipd_port);
+	if (priv->last_link != link_info.s.link_up) {
+		priv->last_link = link_info.s.link_up;
+		if (link_info.s.link_up)
+			pr_info("%s: Link is up - %d/%s\n",
+				    priv->netdev->name, link_info.s.speed,
+				    link_info.s.full_duplex ? "Full" : "Half");
+		else
+			pr_info("%s: Link is down\n", priv->netdev->name);
+	}
+
+	queue_delayed_work(check_state_wq, &priv->dwork, HZ);
+}
+
 int bgx_port_enable(struct net_device *netdev)
 {
 	union cvmx_bgxx_cmrx_config cfg;
@@ -304,8 +331,24 @@ int bgx_port_enable(struct net_device *netdev)
 	if (priv->phy_np == NULL) {
 		cvmx_helper_link_autoconf(priv->ipd_port);
 		netif_carrier_on(netdev);
+
+		mutex_lock(&check_state_wq_mutex);
+		if (!check_state_wq) {
+			check_state_wq =
+				alloc_workqueue("check_state_wq", WQ_UNBOUND |
+						WQ_MEM_RECLAIM, 1);
+		}
+		mutex_unlock(&check_state_wq_mutex);
+		if (!check_state_wq)
+			return -ENOMEM;
+
+		INIT_DELAYED_WORK(&priv->dwork, bgx_port_check_state);
+		queue_delayed_work(check_state_wq, &priv->dwork, 0);
+		pr_info("%s: Link is not ready\n", netdev->name);
+
 		return 0;
 	}
+
 	priv->phydev = of_phy_connect(netdev, priv->phy_np,
 				      bgx_port_adjust_link, 0,
 				      PHY_INTERFACE_MODE_SGMII);
@@ -330,7 +373,11 @@ int bgx_port_disable(struct net_device *netdev)
 
 	netif_carrier_off(netdev);
 	link_info.u64 = 0;
+	priv->last_link = 0;
 	cvmx_helper_link_set(priv->ipd_port, link_info);
+
+	if (priv->phy_np == NULL)
+		cancel_delayed_work_sync(&priv->dwork);
 
 	return 0;
 }
@@ -453,6 +500,7 @@ module_init(bgx_port_driver_init);
 static void __exit bgx_port_driver_exit(void)
 {
 	platform_driver_unregister(&bgx_port_driver);
+	destroy_workqueue(check_state_wq);
 }
 module_exit(bgx_port_driver_exit);
 
