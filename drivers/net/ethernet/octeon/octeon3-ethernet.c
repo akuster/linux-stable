@@ -933,7 +933,6 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	/* Register ethtool methods */
 	SET_ETHTOOL_OPS(netdev, &octeon3_ethtool_ops);
 
-	netdev_info(netdev, "octeon3_eth_ndo_init\n");
 	return 0;
 err:
 	kfree(prt_schd);
@@ -1321,6 +1320,7 @@ static int octeon3_eth_probe(struct platform_device *pdev)
 		list_del(&priv->list);
 		free_netdev(netdev);
 	}
+	netdev_info(netdev, "Registered\n");
 	return 0;
 }
 
