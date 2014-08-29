@@ -27,10 +27,10 @@ __cpuinitdata unsigned long octeon_processor_gp;
 static void **octeon_bootvector;
 static void *octeon_hotplug_entry_raw;
 extern asmlinkage void octeon_hotplug_entry(void);
+#endif
 
 /* State of each CPU. */
 DEFINE_PER_CPU(int, cpu_state);
-#endif
 
 static void octeon_icache_flush(void)
 {
