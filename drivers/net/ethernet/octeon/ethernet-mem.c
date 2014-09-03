@@ -216,6 +216,8 @@ int cvm_oct_alloc_fpa_pool(int pool, int size)
 	if (pool >= (int)ARRAY_SIZE(cvm_oct_pools) || size < 128)
 		return -EINVAL;
 
+	BUG_ON(octeon_has_feature(OCTEON_FEATURE_FPA3));
+
 	mutex_lock(&cvm_oct_pools_lock);
 
 	if (pool >= 0) {
@@ -232,7 +234,7 @@ int cvm_oct_alloc_fpa_pool(int pool, int size)
 			}
 		}
 		/* reserve/alloc fpa pool */
-		pool = cvmx_fpa_alloc_pool(pool);
+		pool = cvmx_fpa1_reserve_pool(pool);
 		if (pool < 0) {
 			ret = -EINVAL;
 			goto out;
@@ -248,7 +250,7 @@ int cvm_oct_alloc_fpa_pool(int pool, int size)
 			}
 
 		/* Alloc fpa pool */
-		pool = cvmx_fpa_alloc_pool(pool);
+		pool = cvmx_fpa1_reserve_pool(pool);
 		if (pool < 0) {
 			/* No empties. */
 			ret = -EINVAL;
@@ -276,7 +278,7 @@ int cvm_oct_alloc_fpa_pool(int pool, int size)
 		if (!cvm_oct_pools[pool].kmem) {
 			ret = -ENOMEM;
 			cvm_oct_pools[pool].pool = -1;
-			cvmx_fpa_release_pool(pool);
+			cvmx_fpa1_release_pool(pool);
 			goto out;
 		}
 	}
@@ -311,7 +313,7 @@ int cvm_oct_release_fpa_pool(int pool)
 	cvm_oct_pools[pool].users--;
 
 	if (cvm_oct_pools[pool].users == 0)
-		cvmx_fpa_release_pool(pool);
+		cvmx_fpa1_release_pool(pool);
 
 	ret = 0;
 out:
