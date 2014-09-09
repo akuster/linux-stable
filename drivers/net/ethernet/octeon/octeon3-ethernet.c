@@ -322,7 +322,7 @@ static void octeon3_eth_replentish_rx(struct octeon3_ethernet *priv, int count)
 
 	for (i = 0; i < count; i++) {
 		void **buf;
-		skb = __alloc_skb(packet_buffer_size, GFP_KERNEL, 0, priv->numa_node);
+		skb = __alloc_skb(packet_buffer_size, GFP_ATOMIC, 0, priv->numa_node);
 		if (!skb) {
 			pr_err("WARNING: octeon3_eth_replentish_rx out of memory\n");
 			break;
