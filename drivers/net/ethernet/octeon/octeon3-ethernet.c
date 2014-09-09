@@ -370,7 +370,11 @@ static int octeon3_eth_tx_complete_worker(void *data)
 	unsigned long last_jiffies = jiffies;
 #endif
 	for (;;) {
-		wait_event(worker->queue, octeon3_eth_tx_complete_runnable(worker));
+		/*
+		 * repalced by wait_event to avoid warnings like
+		 * "task oct3_eth/0:2:1250 blocked for more than 120 seconds."
+		 */
+		wait_event_interruptible(worker->queue, octeon3_eth_tx_complete_runnable(worker));
 		atomic_dec_if_positive(&worker->kick); /* clear the flag */
 		loops = 0;
 		do {
