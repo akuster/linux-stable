@@ -38,6 +38,8 @@
 
 #include "octeon-bgx.h"
 
+static atomic_t bgx_nexus_once;
+
 static int bgx_probe(struct platform_device *pdev)
 {
 	struct bgx_platform_data platform_data;
@@ -52,6 +54,10 @@ static int bgx_probe(struct platform_device *pdev)
 	int i;
 	int r = 0;
 	char id[64];
+
+	/* One time initialization */
+	if (atomic_cmpxchg(&bgx_nexus_once, 0, 1) == 0)
+		__cvmx_helper_init_port_config_data();
 
 	reg = of_get_property(pdev->dev.of_node, "reg", NULL);
 	addr = of_translate_address(pdev->dev.of_node, reg);
@@ -138,20 +144,7 @@ void bgx_nexus_load(void)
 }
 EXPORT_SYMBOL(bgx_nexus_load);
 
-static int __init bgx_driver_init(void)
-{
-	int r;
-	__cvmx_helper_init_port_config_data();
-	r =  platform_driver_register(&bgx_driver);
-	return r;
-}
-module_init(bgx_driver_init);
-
-static void __exit bgx_driver_exit(void)
-{
-	platform_driver_unregister(&bgx_driver);
-}
-module_exit(bgx_driver_exit);
+module_platform_driver(bgx_driver);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Cavium Networks <support@caviumnetworks.com>");
