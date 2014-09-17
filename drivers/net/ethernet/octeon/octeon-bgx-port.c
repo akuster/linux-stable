@@ -278,6 +278,7 @@ static void bgx_port_check_state(struct work_struct *work)
 
 int bgx_port_enable(struct net_device *netdev)
 {
+	bool dont_use_phy;
 	union cvmx_bgxx_cmrx_config cfg;
 	struct bgx_port_priv *priv = bgx_port_netdev2priv(netdev);
 
@@ -328,7 +329,19 @@ int bgx_port_enable(struct net_device *netdev)
 
 	}
 
-	if (priv->phy_np == NULL) {
+	switch (cvmx_helper_interface_get_mode(priv->xiface)) {
+	case CVMX_HELPER_INTERFACE_MODE_XLAUI:
+	case CVMX_HELPER_INTERFACE_MODE_XFI:
+	case CVMX_HELPER_INTERFACE_MODE_10G_KR:
+	case CVMX_HELPER_INTERFACE_MODE_40G_KR4:
+		dont_use_phy = true;
+		break;
+	default:
+		dont_use_phy = false;
+		break;
+	}
+
+	if (priv->phy_np == NULL || dont_use_phy) {
 		cvmx_helper_link_autoconf(priv->ipd_port);
 		netif_carrier_on(netdev);
 
@@ -347,16 +360,18 @@ int bgx_port_enable(struct net_device *netdev)
 		pr_info("%s: Link is not ready\n", netdev->name);
 
 		return 0;
+	} else {
+		priv->phydev = of_phy_connect(netdev, priv->phy_np,
+					      bgx_port_adjust_link, 0,
+					      PHY_INTERFACE_MODE_SGMII);
+		if (!priv->phydev)
+			return -ENODEV;
 	}
 
-	priv->phydev = of_phy_connect(netdev, priv->phy_np,
-				      bgx_port_adjust_link, 0,
-				      PHY_INTERFACE_MODE_SGMII);
-	if (!priv->phydev)
-		return -ENODEV;
-
 	netif_carrier_off(netdev);
-	phy_start_aneg(priv->phydev);
+
+	if (priv->phydev)
+		phy_start_aneg(priv->phydev);
 
 	return 0;
 }
@@ -444,6 +459,11 @@ static int bgx_port_probe(struct platform_device *pdev)
 		priv->mac_addr = mac;
 
 	priv->phy_np = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+
+	if (priv->phy_np == NULL)
+		cvmx_helper_set_port_phy_present(priv->xiface, priv->index, false);
+	else
+		cvmx_helper_set_port_phy_present(priv->xiface, priv->index, true);
 
 	r = dev_set_drvdata(&pdev->dev, priv);
 	if (r)
