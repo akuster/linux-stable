@@ -250,7 +250,7 @@ static int __init octeon_error_tree_init(void)
 	u32 prid = read_c0_prid();
 	struct cvmx_error_tree *tree = octeon_error_trees;
 
-	if (disable)
+	if (disable || octeon_has_feature(OCTEON_FEATURE_CIU3))
 		return 0;
 
 	while (tree->tree) {
@@ -318,7 +318,7 @@ static void octeon_error_tree_handler78(int node, int intsn)
 static int __init octeon_error_tree_init78(void)
 {
 	int i;
-	if (disable || !OCTEON_IS_MODEL(OCTEON_CN78XX))
+	if (disable || !octeon_has_feature(OCTEON_FEATURE_CIU3))
 		return 0;
 
 	octeon_ciu3_errbits_set_handler(octeon_error_tree_handler78);
