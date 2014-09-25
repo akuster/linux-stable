@@ -1007,10 +1007,13 @@ void __init plat_mem_setup(void)
 		mem_alloc_size = MAX_MEMORY;
 
 	cvmx_bootmem_lock();
+	limit_max = 0xffffffffull;
+	limit_min = 0;
 	while ((boot_mem_map.nr_map < BOOT_MEM_MAP_MAX)
 		&& (total < MAX_MEMORY)) {
-		limit_max = ~0ull;		/* unlimitted */
-		limit_min = 0;
+		/* Try to get 64MB of 32=bit memory */
+		if (total >= 64 * (1<<20))
+			limit_max = ~0ull;		/* unlimitted */
 
 		memory = cvmx_bootmem_phy_alloc(mem_alloc_size,
 				limit_min, limit_max, 0x100000,
@@ -1039,7 +1042,10 @@ void __init plat_mem_setup(void)
 				add_memory_region(memory, size, BOOT_MEM_RAM);
 			total += mem_alloc_size;
 		} else {
-			break;
+			if (limit_max < ~0ull)
+				limit_max = ~0ull;		/* unlimitted */
+			else
+				break;
 		}
 	}
 	cvmx_bootmem_unlock();
