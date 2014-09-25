@@ -430,6 +430,13 @@ void octeon_setup_smp(void);
 #else
 static inline void octeon_setup_smp(void) {}
 #endif
+#ifdef CONFIG_NUMA
+void octeon_setup_numa(void);
+void octeon_numa_cpu_online(void);
+#else
+static inline void octeon_setup_numa(void) {}
+static inline void octeon_numa_cpu_online(void) {}
+#endif
 
 extern struct semaphore octeon_bootbus_sem;
 
