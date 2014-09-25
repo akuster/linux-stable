@@ -37,6 +37,8 @@
 #include <asm/smp-ops.h>
 #include <asm/prom.h>
 
+#include <mach_bootmem.h>
+
 struct cpuinfo_mips cpu_data[NR_CPUS] __read_mostly;
 
 EXPORT_SYMBOL(cpu_data);
@@ -285,11 +287,16 @@ static unsigned long __init init_initrd(void)
  * Initialize the bootmem allocator. It also setup initrd related data
  * if needed.
  */
-#if defined(CONFIG_SGI_IP27) || (defined(CONFIG_CPU_LOONGSON3) && defined(CONFIG_NUMA))
+#if defined(CONFIG_SGI_IP27) defined(mach_bootmem_init) || (defined(CONFIG_CPU_LOONGSON3) && defined(CONFIG_NUMA))
+
+#ifndef mach_bootmem_init
+static void mach_bootmem_init(void) {}
+#endif
 
 static void __init bootmem_init(void)
 {
 	init_initrd();
+	mach_bootmem_init();
 	finalize_initrd();
 }
 
