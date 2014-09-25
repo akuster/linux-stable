@@ -34,6 +34,7 @@
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-util.h>
 #include <asm/octeon/cvmx-helper-cfg.h>
+#include <asm/octeon/cvmx-helper-bgx.h>
 #include <asm/octeon/cvmx-bgxx-defs.h>
 
 #include "octeon-bgx.h"
@@ -64,7 +65,8 @@ static int bgx_probe(struct platform_device *pdev)
 	interface = (addr >> 24) & 0xf;
 	numa_node = (addr >> 36) & 0x7;
 
-	__cvmx_helper_packet_hardware_enable(cvmx_helper_node_interface_to_xiface(numa_node, interface));
+	__cvmx_helper_bgx_probe(cvmx_helper_node_interface_to_xiface(numa_node, interface));
+
 	/* Assign 8 CAM entries per LMAC */
 	for (i = 0; i < 32; i++) {
 		union cvmx_bgxx_cmr_rx_adrx_cam adr_cam;

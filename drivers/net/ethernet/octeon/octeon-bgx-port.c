@@ -39,6 +39,7 @@
 #include <asm/octeon/cvmx-helper-util.h>
 #include <asm/octeon/cvmx-helper-cfg.h>
 #include <asm/octeon/cvmx-bgxx-defs.h>
+#include <asm/octeon/cvmx-helper-bgx.h>
 
 #include "octeon-bgx.h"
 
@@ -466,6 +467,12 @@ static int bgx_port_probe(struct platform_device *pdev)
 		cvmx_helper_set_port_phy_present(priv->xiface, priv->index, true);
 
 	r = dev_set_drvdata(&pdev->dev, priv);
+
+	if (priv->phy_np)
+		__cvmx_helper_bgx_port_init(priv->ipd_port, 1);
+	else
+		__cvmx_helper_bgx_port_init(priv->ipd_port, 0);
+
 	if (r)
 		goto err;
 
