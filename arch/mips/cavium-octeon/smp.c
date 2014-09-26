@@ -423,7 +423,7 @@ static int octeon_up_prepare(unsigned int cpu)
 	int coreid = cpu_logical_map(cpu);
 	int node;
 
-	per_cpu(cpu_state, smp_processor_id()) = CPU_UP_PREPARE;
+	per_cpu(cpu_state, cpu) = CPU_UP_PREPARE;
 	octeon_bootvector[coreid] = octeon_hotplug_entry_raw;
 	mb();
 	/* Convert coreid to node,core spair and send NMI to target core */
