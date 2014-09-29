@@ -1011,8 +1011,8 @@ void __init plat_mem_setup(void)
 	limit_min = 0;
 	while ((boot_mem_map.nr_map < BOOT_MEM_MAP_MAX)
 		&& (total < MAX_MEMORY)) {
-		/* Try to get 64MB of 32=bit memory */
-		if (total >= 64 * (1<<20))
+		/* Try to get 256MB of 32-bit memory */
+		if (total >= 256 * (1<<20))
 			limit_max = ~0ull;		/* unlimitted */
 
 		memory = cvmx_bootmem_phy_alloc(mem_alloc_size,
