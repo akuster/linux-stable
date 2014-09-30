@@ -86,6 +86,8 @@ void __init mem_init(void)
 	int node;
 
 	for_each_online_node(node) {
+		if (__node_data[node].endpfn == 0)
+			continue;
 		totalram_pages += free_all_bootmem_node(NODE_DATA(node));
 	}
 	setup_zero_pages();	/* This comes from node 0 */
