@@ -973,8 +973,13 @@ void __init plat_mem_setup(void)
 #endif
 
 	if (named_memory_blocks[0][0]) {
+		phys_t kernel_begin, kernel_end;
+		phys_t block_begin, block_size;
 		/* Memory from named blocks only */
 		int i;
+
+		kernel_begin = PFN_DOWN(__pa_symbol(&_text)) << PAGE_SHIFT;
+		kernel_end = PFN_UP(__pa_symbol(&_end)) << PAGE_SHIFT;
 
 		for (i = 0;
 		     named_memory_blocks[i][0] && i < ARRAY_SIZE(named_memory_blocks);
@@ -989,9 +994,27 @@ void __init plat_mem_setup(void)
 				named_memory_blocks[i],
 				(unsigned long)named_block->size,
 				(unsigned long)named_block->base_addr);
-			add_memory_region(named_block->base_addr, named_block->size,
-					  BOOT_MEM_RAM);
-			total += named_block->size;
+
+			block_begin = named_block->base_addr;
+			block_size = named_block->size;
+			if (kernel_begin <= block_begin && kernel_end >= block_begin + block_size)
+				continue;
+
+			if (kernel_begin > block_begin && kernel_begin < block_begin + block_size) {
+				u64 sz = kernel_begin - named_block->base_addr;
+				add_memory_region(named_block->base_addr, sz, BOOT_MEM_RAM);
+				total += sz;
+				if (block_begin + block_size <= kernel_end)
+					continue;
+				block_size = block_begin + block_size - kernel_end;
+				block_begin = kernel_end;
+			}
+			if (kernel_end > block_begin && kernel_end < block_begin + block_size) {
+				block_size = block_begin + block_size - kernel_end;
+				block_begin = kernel_end;
+			}
+			add_memory_region(block_begin, block_size, BOOT_MEM_RAM);
+			total += block_size;
 		}
 		goto mem_alloc_done;
 	}
