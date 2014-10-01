@@ -1088,6 +1088,7 @@ mem_alloc_done:
 }
 
 struct node_data __node_data[4];
+EXPORT_SYMBOL(__node_data);
 
 void __init mach_bootmem_init(void)
 {
