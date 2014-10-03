@@ -20,8 +20,6 @@
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
 
-MODULE_DESCRIPTION("Qualcomm qca833x PHY driver");
-
 #include "qca833x.h"
 
 /* just one private state (number of ports), so squeeze it into phydev->priv */
@@ -453,3 +451,6 @@ static struct mdio_device_id __maybe_unused qca833x_tbl[] = {
 };
 
 MODULE_DEVICE_TABLE(mdio, qca833x_tbl);
+
+MODULE_DESCRIPTION("Qualcomm qca833x PHY driver");
+MODULE_LICENSE("GPL");
