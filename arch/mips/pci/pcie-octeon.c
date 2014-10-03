@@ -480,7 +480,7 @@ static struct pci_ops octeon_pcie_ops = {
 	octeon_pcie_write_config,
 };
 
-static struct octeon_pcie_interface octeon_pcie[3];
+static struct octeon_pcie_interface octeon_pcie[4];
 
 static void octeon_pcie_interface_init(struct octeon_pcie_interface *iface, int node, int pem)
 {
