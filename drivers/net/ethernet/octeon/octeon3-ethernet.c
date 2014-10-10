@@ -137,12 +137,15 @@
 #define SKB_AURA_OFFSET		1
 #define SKB_AURA_MAGIC		0xbadc0ffee4dad000UL
 
-/*  octeon3_napi_wrapper:	Structure containing napi structure. This
+#define USE_ASYNC_IOBDMA	1
+#define CVMX_SCR_SCRATCH	0
+
+/*  octeon3_napi_wrapper:	Structure containing the napi structure. This
  *				structure is added to receive contexts to
  *				increase the number of threads (napis) receiving
  *				packets.
  *
- *  napi:			Used with the kernel napi core.
+ *  napi:			Used by the kernel napi core.
  *  available:			0 = This napi instance is in use.
  *				1 = This napi instance is available.
  *  idx:			Napi index per context.
@@ -206,9 +209,10 @@ struct octeon3_ethernet {
 	 * updates them. The idea is to prevent other fields from being
 	 * invalidated unnecessarily.
 	 */
-	char cacheline_pad[CVMX_CACHE_LINE_SIZE];
+	char cacheline_pad1[CVMX_CACHE_LINE_SIZE];
 	atomic64_t buffers_needed;
 	atomic64_t tx_backlog;
+	char cacheline_pad2[CVMX_CACHE_LINE_SIZE];
 };
 
 static DEFINE_MUTEX(octeon3_eth_init_mutex);
@@ -256,7 +260,7 @@ static int wait_pko_response;
 module_param(wait_pko_response, int, 0644);
 MODULE_PARM_DESC(use_tx_queues, "Wait for response after each pko command.");
 
-static int num_packet_buffers = 2048;
+static int num_packet_buffers = 4096;
 module_param(num_packet_buffers, int, S_IRUGO);
 MODULE_PARM_DESC(num_packet_buffers, "Number of packet buffers to allocate per port.");
 
@@ -447,6 +451,51 @@ static inline struct wr_ret octeon3_eth_work_request_grp_sync(unsigned int lgrp,
 	ptr.swork_78xx.wait = wait;
 
 	result.u64 = cvmx_read_csr(ptr.u64);
+	r.grp = result.s_work.grp;
+	if (result.s_work.no_work)
+		r.work = NULL;
+	else
+		r.work = cvmx_phys_to_ptr(result.s_work.addr);
+	return r;
+}
+
+/* octeon3_eth_get_work_async:	Request work via a iobdma command. Doesn't wait
+ *				for the response.
+ *
+ *  lgrp:			Group to request work for.
+ */
+static inline void octeon3_eth_get_work_async(unsigned int lgrp)
+{
+	cvmx_pow_iobdma_store_t	data;
+	int			node = cvmx_get_node_num();
+
+	data.u64 = 0;
+	data.s_cn78xx.scraddr = CVMX_SCR_SCRATCH;
+	data.s_cn78xx.len = 1;
+	data.s_cn78xx.did = CVMX_OCT_DID_TAG_SWTAG;
+	data.s_cn78xx.node = node;
+	data.s_cn78xx.grouped = 1;
+	data.s_cn78xx.rtngrp = 1;
+	data.s_cn78xx.index_grp_mask = (lgrp & 0xff) | node << 8;
+	data.s_cn78xx.wait = CVMX_POW_NO_WAIT;
+
+	cvmx_send_single(data.u64);
+}
+
+/* octeon3_eth_get_work_response_async:	Read the request work response. Must
+ *					be called after calling
+ *					octeon3_eth_get_work_async().
+ *
+ *  Returns:				Work queue entry.
+ */
+static inline struct wr_ret octeon3_eth_get_work_response_async(void)
+{
+	cvmx_pow_tag_load_resp_t	result;
+	struct wr_ret			r;
+
+	CVMX_SYNCIOBDMA;
+	result.u64 = cvmx_scratch_read64(CVMX_SCR_SCRATCH);
+
 	r.grp = result.s_work.grp;
 	if (result.s_work.no_work)
 		r.work = NULL;
@@ -736,7 +785,7 @@ static struct sk_buff *octeon3_eth_work_to_skb(void *w)
  *					<  0: use any cpu.
  *					>= 0: use requested cpu.
  *
- *  Returns:			Pointer to napi or NULL on error.
+ *  Returns:			Pointer to napi wrapper or NULL on error.
  */
 static struct octeon3_napi_wrapper *octeon3_napi_alloc(struct octeon3_rx *cxt,
 						       int		  idx,
@@ -750,10 +799,10 @@ static struct octeon3_napi_wrapper *octeon3_napi_alloc(struct octeon3_rx *cxt,
 	oen = octeon3_eth_node + node;
 	spin_lock(&oen->napi_alloc_lock);
 
-	/* Find a free napi */
+	/* Find a free napi wrapper */
 	for (i = 0; i < CVMX_MAX_CORES; i++) {
 		if (napi_wrapper[node][i].available) {
-			/* Get the cpu to use */
+			/* Assign a cpu to use (a free cpu if possible) */
 			if (cpu < 0) {
 				cpu = find_first_zero_bit(oen->napi_cpu_bitmap,
 							  oen->napi_max_cpus);
@@ -765,7 +814,8 @@ static struct octeon3_napi_wrapper *octeon3_napi_alloc(struct octeon3_rx *cxt,
 					get_random_bytes(&cpu, sizeof(int));
 					cpu = cpu % oen->napi_max_cpus;
 				}
-			}
+			} else
+				bitmap_set(oen->napi_cpu_bitmap, cpu, 1);
 
 			napi_wrapper[node][i].available = 0;
 			napi_wrapper[node][i].idx = idx;
@@ -790,44 +840,6 @@ static void octeon_cpu_napi_sched(void	*info)
 {
 	struct napi_struct		*napi = info;
 	napi_schedule(napi);
-}
-
-/* octeon3_add_napi_to_cxt:	Add a napi to a receive context.
- *
- *  cxt:			Pointer to receive context.
- *
- *  returns:			0 on success, otherwise a negative error code.
- */
-static int octeon3_add_napi_to_cxt(struct octeon3_rx *cxt)
-{
-	struct octeon3_napi_wrapper	*napiw;
-	int				idx;
-	int				rc = -ENOMEM;
-
-	/* Get a free napi idx */
-	spin_lock(&cxt->napi_idx_lock);
-	idx = find_first_zero_bit(cxt->napi_idx_bitmap, CVMX_MAX_CORES);
-	if (idx >= CVMX_MAX_CORES) {
-		spin_unlock(&cxt->napi_idx_lock);
-		return rc;
-	}
-	bitmap_set(cxt->napi_idx_bitmap, idx, 1);
-	spin_unlock(&cxt->napi_idx_lock);
-
-	/* Get a free napi block */
-	napiw = octeon3_napi_alloc(cxt, idx, -1);
-	if (napiw) {
-		rc = smp_call_function_single(napiw->cpu, octeon_cpu_napi_sched,
-					      &napiw->napi, 0);
-	}
-
-	if (rc) {
-		spin_lock(&cxt->napi_idx_lock);
-		bitmap_clear(cxt->napi_idx_bitmap, idx, 1);
-		spin_unlock(&cxt->napi_idx_lock);
-	}
-
-	return rc;
 }
 
 /* octeon3_rm_napi_from_cxt:	Remove a napi from a receive context.
@@ -865,10 +877,51 @@ static int octeon3_rm_napi_from_cxt(int				node,
 	return 0;
 }
 
+/* octeon3_add_napi_to_cxt:	Add a napi to a receive context.
+ *
+ *  cxt:			Pointer to receive context.
+ *
+ *  returns:			0 on success, otherwise a negative error code.
+ */
+static int octeon3_add_napi_to_cxt(struct octeon3_rx *cxt)
+{
+	struct octeon3_napi_wrapper	*napiw;
+	struct octeon3_ethernet		*priv = cxt->parent;
+	int				idx;
+	int				rc;
+
+	/* Get a free napi idx */
+	spin_lock(&cxt->napi_idx_lock);
+	idx = find_first_zero_bit(cxt->napi_idx_bitmap, CVMX_MAX_CORES);
+	if (unlikely(idx >= CVMX_MAX_CORES)) {
+		spin_unlock(&cxt->napi_idx_lock);
+		return -ENOMEM;
+	}
+	bitmap_set(cxt->napi_idx_bitmap, idx, 1);
+	spin_unlock(&cxt->napi_idx_lock);
+
+	/* Get a free napi block */
+	napiw = octeon3_napi_alloc(cxt, idx, -1);
+	if (unlikely(napiw == NULL)) {
+		spin_lock(&cxt->napi_idx_lock);
+		bitmap_clear(cxt->napi_idx_bitmap, idx, 1);
+		spin_unlock(&cxt->napi_idx_lock);
+		return -ENOMEM;
+	}
+
+	rc = smp_call_function_single(napiw->cpu, octeon_cpu_napi_sched,
+				      &napiw->napi, 0);
+	if (unlikely(rc))
+		octeon3_rm_napi_from_cxt(priv->numa_node, napiw);
+
+	return rc;
+}
+
 /* Receive one packet.
  * returns the number of RX buffers consumed.
  */
-static int octeon3_eth_rx_one(struct octeon3_rx *rx)
+static int octeon3_eth_rx_one(struct octeon3_rx *rx, bool is_async,
+			      bool req_next)
 {
 	int segments;
 	int ret;
@@ -882,10 +935,19 @@ static int octeon3_eth_rx_one(struct octeon3_rx *rx)
 	struct octeon3_ethernet *priv = rx->parent;
 	void **buf;
 
-	r = octeon3_eth_work_request_grp_sync(rx->rx_grp, CVMX_POW_NO_WAIT);
+	if (is_async == true)
+		r = octeon3_eth_get_work_response_async();
+	else
+		r = octeon3_eth_work_request_grp_sync(rx->rx_grp,
+						      CVMX_POW_NO_WAIT);
 	work = r.work;
 	if (!work)
 		return 0;
+
+	/* Request the next work so it'll be ready when we need it */
+	if (is_async == true && req_next)
+		octeon3_eth_get_work_async(rx->rx_grp);
+
 	skb = octeon3_eth_work_to_skb(work);
 
 	/* Save the aura this skb came from to allow the pko to free the skb
@@ -1004,6 +1066,7 @@ static int octeon3_eth_napi(struct napi_struct *napi, int budget)
 	int napis_inuse;
 	int n = 0;
 	int n_bufs = 0;
+	u64 old_scratch;
 
 	napiw = container_of(napi, struct octeon3_napi_wrapper, napi);
 	cxt = napiw->cxt;
@@ -1014,7 +1077,8 @@ static int octeon3_eth_napi(struct napi_struct *napi, int budget)
 					CVMX_SSO_GRPX_AQ_CNT(cxt->rx_grp));
 
 	/* Allow the last thread to add/remove threads if the work
-	 * incremented/decremented by more than 25%.
+	 * incremented/decremented by more than what the current number
+	 * of threads can support.
 	 */
 	idx = find_last_bit(cxt->napi_idx_bitmap, CVMX_MAX_CORES);
 	napis_inuse = bitmap_weight(cxt->napi_idx_bitmap, CVMX_MAX_CORES);
@@ -1030,10 +1094,24 @@ static int octeon3_eth_napi(struct napi_struct *napi, int budget)
 		}
 	}
 
+	if (likely(USE_ASYNC_IOBDMA)) {
+		/* Save scratch in case userspace is using it */
+		CVMX_SYNCIOBDMA;
+		old_scratch = cvmx_scratch_read64(CVMX_SCR_SCRATCH);
+
+		octeon3_eth_get_work_async(cxt->rx_grp);
+	}
+
 	while (rx_count < budget) {
 		n = 0;
 
-		n = octeon3_eth_rx_one(cxt);
+		if (likely(USE_ASYNC_IOBDMA)) {
+			bool req_next = rx_count < (budget - 1) ? true : false;
+
+			n = octeon3_eth_rx_one(cxt, true, req_next);
+		} else
+			n = octeon3_eth_rx_one(cxt, false, false);
+
 		if (n == 0) {
 			break;
 		}
@@ -1062,6 +1140,11 @@ static int octeon3_eth_napi(struct napi_struct *napi, int budget)
 			octeon3_eth_sso_irq_set_armed(cxt->parent->numa_node,
 						      cxt->rx_grp, true);
 		}
+	}
+
+	if (likely(USE_ASYNC_IOBDMA)) {
+		/* Restore the scratch area */
+		cvmx_scratch_write64(CVMX_SCR_SCRATCH, old_scratch);
 	}
 
 	return rx_count;
@@ -1342,45 +1425,56 @@ static int octeon3_eth_ndo_open(struct net_device *netdev)
 {
 	struct octeon3_ethernet *priv = netdev_priv(netdev);
 	struct irq_domain *d = octeon_irq_get_block_domain(priv->numa_node, SSO_INTSN_EXE);
+	struct octeon3_rx *rx;
+	int idx;
+	int cpu;
 	int i;
 	int r;
 
 	for (i = 0; i < priv->num_rx_cxt; i++) {
-		struct octeon3_rx *rx = priv->rx_cxt + i;
-		unsigned int sso_intsn = SSO_INTSN_EXE << 12 | rx->rx_grp;
-		int idx;
-		int cpu;
+		unsigned int sso_intsn;
+
+		rx = priv->rx_cxt + i;
+		sso_intsn = SSO_INTSN_EXE << 12 | rx->rx_grp;
 
 		spin_lock_init(&rx->napi_idx_lock);
 
-		/* Allocate a napi thread for this receive context */
+		rx->rx_irq = irq_create_mapping(d, sso_intsn);
+		if (!rx->rx_irq) {
+			netdev_err(netdev, "ERROR: Couldn't map hwirq: %x\n",
+				   sso_intsn);
+			r = -EINVAL;
+			goto err1;
+		}
+		r = request_irq(rx->rx_irq, octeon3_eth_rx_handler, 0,
+				netdev_name(netdev), rx);
+		if (r) {
+			netdev_err(netdev, "ERROR: Couldn't request irq: %d\n",
+				   rx->rx_irq);
+			r = -ENOMEM;
+			goto err2;
+		}
+
+		octeon3_eth_gen_affinity(priv->numa_node, &rx->rx_affinity_hint);
+		irq_set_affinity_hint(rx->rx_irq, &rx->rx_affinity_hint);
+
+		/* Allocate a napi index for this receive context */
 		bitmap_zero(priv->rx_cxt[i].napi_idx_bitmap, CVMX_MAX_CORES);
 		idx = find_first_zero_bit(priv->rx_cxt[i].napi_idx_bitmap,
 					 CVMX_MAX_CORES);
 		if (idx >= CVMX_MAX_CORES) {
-			netdev_err(netdev, "ERROR: Couldn't map napi\n");
-			return -EINVAL;
+			netdev_err(netdev, "ERROR: Couldn't get napi index\n");
+			r = -ENOMEM;
+			goto err3;
 		}
 		bitmap_set(priv->rx_cxt[i].napi_idx_bitmap, idx, 1);
-
-		rx->rx_irq = irq_create_mapping(d, sso_intsn);
-		if (!rx->rx_irq) {
-			netdev_err(netdev, "ERROR: Couldn't map hwirq: %x\n", sso_intsn);
-			return -EINVAL;
-		}
-		r = request_irq(rx->rx_irq, octeon3_eth_rx_handler, 0, netdev_name(netdev), rx);
-		if (r)
-			goto err;
-
-		octeon3_eth_gen_affinity(priv->numa_node, &rx->rx_affinity_hint);
-		irq_set_affinity_hint(rx->rx_irq, &rx->rx_affinity_hint);
 
 		cpu = cpumask_first(&rx->rx_affinity_hint);
 		priv->rx_cxt[i].napiw = octeon3_napi_alloc(&priv->rx_cxt[i],
 							   idx, cpu);
 		if (priv->rx_cxt[i].napiw == NULL) {
 			r = -ENOMEM;
-			goto err;
+			goto err4;
 		}
 
 		/* Arm the irq. */
@@ -1390,9 +1484,25 @@ static int octeon3_eth_ndo_open(struct net_device *netdev)
 	octeon3_eth_replenish_rx(priv, priv->rx_buf_count);
 
 	r = bgx_port_enable(netdev);
+
 	return r;
-err:
-	/* Cleanup mapping ?? */
+
+ err4:
+	bitmap_clear(priv->rx_cxt[i].napi_idx_bitmap, idx, 1);
+ err3:
+	free_irq(rx->rx_irq, rx);
+ err2:
+	irq_dispose_mapping(rx->rx_irq);
+ err1:
+	for (i--; i >= 0; i--) {
+		rx = priv->rx_cxt + i;
+		irq_dispose_mapping(rx->rx_irq);
+		free_irq(rx->rx_irq, rx);
+		octeon3_rm_napi_from_cxt(priv->numa_node,
+					 priv->rx_cxt[i].napiw);
+		priv->rx_cxt[i].napiw = NULL;
+	}
+
 	return r;
 }
 
@@ -1437,6 +1547,12 @@ static int octeon3_eth_ndo_stop(struct net_device *netdev)
 		dev_kfree_skb(skb);
 	}
 
+	/* Free the napis */
+	for (i = 0; i < priv->num_rx_cxt; i++) {
+		octeon3_rm_napi_from_cxt(priv->numa_node,
+					 priv->rx_cxt[i].napiw);
+		priv->rx_cxt[i].napiw = NULL;
+	}
 
 err:
 	return r;

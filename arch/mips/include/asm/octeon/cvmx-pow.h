@@ -1622,7 +1622,7 @@ typedef union {
 		CVMX_BITFIELD_FIELD(uint64_t scraddr:8,/**< the (64-bit word) location in scratchpad to write to (if len != 0) */
 		CVMX_BITFIELD_FIELD(uint64_t len:8,    /**< the number of words in the response (0 => no response) */
 		CVMX_BITFIELD_FIELD(uint64_t did:8,    /**< the ID of the device on the non-coherent bus */
-		CVMX_BITFIELD_FIELD(uint64_t node:2,   /**< OCI node numbe, should always be local node */
+		CVMX_BITFIELD_FIELD(uint64_t node:4,   /**< OCI node number, should always be local node */
 		CVMX_BITFIELD_FIELD(uint64_t unused1:4,
 		CVMX_BITFIELD_FIELD(uint64_t indexed:1,
 		CVMX_BITFIELD_FIELD(uint64_t grouped:1,
