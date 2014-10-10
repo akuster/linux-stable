@@ -262,16 +262,6 @@ int octeon_get_boot_uart(void)
 }
 
 /**
- * Get the coremask Linux was booted on.
- *
- * Returns Core mask
- */
-int octeon_get_boot_coremask(void)
-{
-	return octeon_boot_desc_ptr->core_mask;
-}
-
-/**
  * Check the hardware BIST results for a CPU
  */
 void octeon_check_cpu_bist(void)
