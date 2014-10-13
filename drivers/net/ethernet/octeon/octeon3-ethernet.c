@@ -43,6 +43,7 @@
 #include <asm/octeon/cvmx-pow.h>
 #include <asm/octeon/cvmx-pko3.h>
 #include <asm/octeon/cvmx-fpa3.h>
+#include <asm/octeon/cvmx-app-config.h>
 
 #include <asm/octeon/cvmx-fpa-defs.h>
 #include <asm/octeon/cvmx-sso-defs.h>
@@ -641,6 +642,8 @@ static int octeon3_eth_global_init(unsigned int node)
 	if (oen->init_done)
 		goto done;
 
+	__cvmx_export_app_config_to_named_block(CVMX_APP_CONFIG);
+
 	INIT_LIST_HEAD(&oen->device_list);
 	mutex_init(&oen->device_list_lock);
 	spin_lock_init(&oen->napi_alloc_lock);
@@ -762,6 +765,8 @@ static int octeon3_eth_global_init(unsigned int node)
 	irq_set_affinity_hint(oen->tx_irq, &oen->tx_affinity_hint);
 
 	octeon3_eth_sso_irq_set_armed(node, oen->tx_complete_grp, true);
+
+	__cvmx_export_config();
 
 	oen->init_done = true;
 done:
@@ -1399,6 +1404,8 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	/* Register ethtool methods */
 	SET_ETHTOOL_OPS(netdev, &octeon3_ethtool_ops);
 
+	__cvmx_export_config();
+
 	return 0;
 err:
 	kfree(prt_schd);
@@ -1484,6 +1491,7 @@ static int octeon3_eth_ndo_open(struct net_device *netdev)
 	octeon3_eth_replenish_rx(priv, priv->rx_buf_count);
 
 	r = bgx_port_enable(netdev);
+	__cvmx_export_config();
 
 	return r;
 
