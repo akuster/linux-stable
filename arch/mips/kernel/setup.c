@@ -26,6 +26,7 @@
 #include <linux/sizes.h>
 #include <linux/device.h>
 #include <linux/dma-contiguous.h>
+#include <linux/sort.h>
 
 #include <asm/addrspace.h>
 #include <asm/bootinfo.h>
@@ -629,6 +630,19 @@ static void __init request_crashkernel(struct resource *res)
 }
 #endif /* !defined(CONFIG_KEXEC)  */
 
+static int __init mem_map_entry_cmp(const void *a, const void *b)
+{
+	const struct boot_mem_map_entry *ea = a;
+	const struct boot_mem_map_entry *eb = b;
+
+	if (ea->addr < eb->addr)
+		return -1;
+	else if (ea->addr > eb->addr)
+		return 1;
+	else
+		return 0;
+}
+
 static void __init arch_mem_init(char **cmdline_p)
 {
 	struct memblock_region *reg;
@@ -651,6 +665,9 @@ static void __init arch_mem_init(char **cmdline_p)
 	arch_mem_addpart(kernel_begin, init_begin, BOOT_MEM_KERNEL);
 	arch_mem_addpart(init_end, kernel_end, BOOT_MEM_KERNEL);
 	arch_mem_addpart(init_begin, init_end, BOOT_MEM_INIT_RAM);
+
+	sort(boot_mem_map.map, boot_mem_map.nr_map,
+	     sizeof(struct boot_mem_map_entry), mem_map_entry_cmp, NULL);
 
 	pr_info("Determined physical RAM map:\n");
 	print_memory_map();
@@ -737,6 +754,24 @@ static void __init resource_init(void)
 		case BOOT_MEM_INIT_RAM:
 		case BOOT_MEM_ROM_DATA:
 		case BOOT_MEM_KERNEL:
+			/* Try to merge on next piece, they are sorted. */
+			while (i + 1 < boot_mem_map.nr_map &&
+			    boot_mem_map.map[i + 1].addr == end + 1) {
+				switch (boot_mem_map.map[i + 1].type) {
+				case BOOT_MEM_RAM:
+				case BOOT_MEM_INIT_RAM:
+				case BOOT_MEM_ROM_DATA:
+				case BOOT_MEM_KERNEL:
+					i++;
+					end = boot_mem_map.map[i].addr + boot_mem_map.map[i].size - 1;
+					if (end >= HIGHMEM_START)
+						end = HIGHMEM_START - 1;
+					break;
+				default:
+					goto no_merge;
+				}
+			}
+no_merge:
 			res->name = "System RAM";
 			break;
 		case BOOT_MEM_RESERVED:
