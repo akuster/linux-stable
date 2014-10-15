@@ -277,6 +277,48 @@ MODULE_PARM_DESC(rx_contexts, "Number of RX threads per port.");
 static struct octeon3_ethernet_node octeon3_eth_node[OCTEON3_ETH_MAX_NUMA_NODES];
 static struct kmem_cache *octeon3_eth_sso_pko_cache;
 
+/* octeon3_eth_sso_pass1_limit:	Near full TAQ can cause hang. When the TAQ
+ *				(Transitory Admission Queue) is near-full, it is
+ *				possible for SSO to hang.
+ *				Workaround: Ensure that the sum of
+ *				SSO_GRP(0..255)_TAQ_THR[MAX_THR] of all used
+ *				groups is <= 1264. This may reduce single-group
+ *				performance when many groups are used.
+ *
+ *  node:			Node to update.
+ *  grp:			SSO group to update.
+ */
+static void octeon3_eth_sso_pass1_limit(int node, int	grp)
+{
+	cvmx_sso_grpx_taq_thr_t	taq_thr;
+	cvmx_sso_taq_add_t	taq_add;
+	int			max_thr;
+	int			rsvd_thr;
+
+	/* Ideally, we would like to divide the maximum number of TAQ buffers
+	 * (1264) among the sso groups in use. However, since we don't know how
+	 * many sso groups are used by code outside this driver we take the
+	 * worst case approach and assume all 256 sso groups must be supported.
+	 */
+	max_thr = 1264 / CVMX_SSO_NUM_XGRP;
+	if (max_thr < 4)
+		max_thr = 4;
+	rsvd_thr = max_thr - 1;
+
+	/* Changes to CVMX_SSO_GRPX_TAQ_THR[rsvd_thr] must also update
+	 * SSO_TAQ_ADD[RSVD_FREE].
+	 */
+	taq_thr.u64 = cvmx_read_csr_node(node, CVMX_SSO_GRPX_TAQ_THR(grp));
+	taq_add.u64 = 0;
+	taq_add.s.rsvd_free = rsvd_thr - taq_thr.s.rsvd_thr;
+
+	taq_thr.s.max_thr = max_thr;
+	taq_thr.s.rsvd_thr = rsvd_thr;
+
+	cvmx_write_csr_node(node, CVMX_SSO_GRPX_TAQ_THR(grp), taq_thr.u64);
+	cvmx_write_csr_node(node, CVMX_SSO_TAQ_ADD, taq_add.u64);
+}
+
 /*
  * Map auras to the field priv->buffers_needed. Used to speed up packet
  * transmission.
@@ -757,6 +799,9 @@ static int octeon3_eth_global_init(unsigned int node)
 			wake_up_process(oen->workers[i].task);
 		}
 	}
+
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
+		octeon3_eth_sso_pass1_limit(node, oen->tx_complete_grp);
 
 	rv = request_irq(oen->tx_irq, octeon3_eth_tx_handler, 0, "oct3_eth_tx_done", oen);
 	if (rv)
@@ -1281,6 +1326,11 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	for (i = 0; i < rx_contexts; i++) {
 		priv->rx_cxt[i].rx_grp = base_rx_grp + i;
 		priv->rx_cxt[i].parent = priv;
+
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) {
+			octeon3_eth_sso_pass1_limit(priv->numa_node,
+						    priv->rx_cxt[i].rx_grp);
+		}
 	}
 	priv->num_rx_cxt = rx_contexts;
 
