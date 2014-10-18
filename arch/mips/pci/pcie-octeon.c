@@ -568,7 +568,8 @@ static int __init octeon_pcie_setup(void)
 	set_io_port_base(CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(0)));
 	ioport_resource.start = 0;
 	ioport_resource.end =
-		(cvmx_pcie_get_io_size(0) * CVMX_PCIE_PORTS) - 1;
+		cvmx_pcie_get_io_base_address(CVMX_PCIE_PORTS-1) -
+		cvmx_pcie_get_io_base_address(0) + (1ull << 34) - 1;
 
 	/*
 	 * Create a dummy PCIe controller to swallow up bus 0. IDT bridges
@@ -671,10 +672,9 @@ static int __init octeon_pcie_setup(void)
 					octeon_pcie[port].io.end = cvmx_pcie_get_io_size(port) - 1;
 				} else {
 					octeon_pcie[port].controller.io_offset =
-						cvmx_pcie_get_io_base_address(port) - cvmx_pcie_get_io_base_address(port - 1);
 					octeon_pcie[port].io.start =
-						cvmx_pcie_get_io_base_address(port) & ((1ull << 34) - 1);
-					octeon_pcie[port].io.end = octeon_pcie[port].io.start + cvmx_pcie_get_io_size(port) - 1;
+						(cvmx_pcie_get_io_base_address(port) & ((1ull << 34) - 1)) + (1ull << 20);
+					octeon_pcie[port].io.end = octeon_pcie[port].io.start + (1ull << 20);
 				}
 				msleep(100); /* Some devices need extra time */
 				octeon_pcie[port].controller.index = port;
