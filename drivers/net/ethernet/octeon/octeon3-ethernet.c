@@ -1665,12 +1665,17 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 	void *buffers_needed = NULL;
 	void **buf;
 
+	frag_count = 0;
+	if (skb_has_frag_list(skb))
+		skb_walk_frags(skb, skb_tmp)
+			frag_count++;
+
 	/* Check if the skb can be recycled (freed back to the fpa) */
 	if (likely(recycle_skbs) &&
 	    likely(skb_shinfo(skb)->nr_frags == 0) &&
 	    likely(skb_shared(skb) == 0) &&
 	    likely(skb_cloned(skb) == 0) &&
-	    likely(skb->len < packet_buffer_size - 128 - 127) &&
+	    likely(frag_count == 0) &&
 	    likely(skb->fclone == SKB_FCLONE_UNAVAILABLE)) {
 		uint64_t	magic;
 
@@ -1684,10 +1689,6 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 		}
 	}
 
-	frag_count = 0;
-	if (skb_has_frag_list(skb))
-		skb_walk_frags(skb, skb_tmp)
-			frag_count++;
 	/* We have space for 13 segment pointers, If there will be
 	 * more than that, we must linearize.  The count is: 1 (base
 	 * SKB) + frag_count + nr_frags.
