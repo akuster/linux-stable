@@ -40,6 +40,7 @@
 #include "octeon-bgx.h"
 
 static atomic_t bgx_nexus_once;
+static atomic_t request_ethernet3_once;
 
 static int bgx_probe(struct platform_device *pdev)
 {
@@ -105,6 +106,9 @@ static int bgx_probe(struct platform_device *pdev)
 		new_dev->dev.numa_node = pdev->dev.numa_node;
 		pki_dev->dev.numa_node = pdev->dev.numa_node;
 #endif
+		/* One time request driver module */
+		if (atomic_cmpxchg(&request_ethernet3_once, 0, 1) == 0)
+			request_module_nowait("octeon3-ethernet");
 	}
 
 	dev_info(&pdev->dev, "Probed\n");
