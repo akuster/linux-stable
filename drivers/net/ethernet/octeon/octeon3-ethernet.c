@@ -1029,7 +1029,7 @@ static int octeon3_eth_rx_one(struct octeon3_rx *rx, bool is_async,
 			if (segments <= 0)
 				break;
 			packet_ptr.u64 = *(u64 *)(data - 8);
-			/* PKI-20776 PKI_BUFLINK_S's are endian-swapped */
+			/* PKI_BUFLINK_S's are endian-swapped */
 			packet_ptr.u64 = swab64(packet_ptr.u64);
 			data = phys_to_virt(packet_ptr.addr);
 			skb = octeon3_eth_work_to_skb((void *)round_down((unsigned long)data, 128ul));
@@ -1064,7 +1064,7 @@ static int octeon3_eth_rx_one(struct octeon3_rx *rx, bool is_async,
 			if (segments == 0)
 				break;
 			packet_ptr.u64 = *(u64 *)(data - 8);
-			/* PKI-20776 PKI_BUFLINK_S's are endian-swapped */
+			/* PKI_BUFLINK_S's are endian-swapped */
 			packet_ptr.u64 = swab64(packet_ptr.u64);
 
 			data = phys_to_virt(packet_ptr.addr);
@@ -1276,8 +1276,10 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	netif_carrier_off(netdev);
 
 	netdev->features |=
+#if 0 /* Memory corruption if these are enabled. */
 		NETIF_F_SG |
 		NETIF_F_FRAGLIST |
+#endif
 		NETIF_F_RXCSUM |
 		NETIF_F_LLTX
 #ifndef BROKEN_SIMULATOR_CSUM
@@ -1287,7 +1289,7 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 #endif
 		;
 
-	if (!OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) /* PKO-18824 */
+	if (!OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
 		netdev->features |= NETIF_F_SCTP_CSUM;
 
 	priv->rx_buf_count = num_packet_buffers;
