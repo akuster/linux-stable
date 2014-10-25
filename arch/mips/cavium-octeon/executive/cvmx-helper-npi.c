@@ -43,21 +43,33 @@
  * Functions for NPI initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 88039 $<hr>
+ * <hr>$Revision: 99993 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-helper.h>
-#include <asm/octeon/cvmx-pko.h>
+#include <asm/octeon/cvmx-hwpko.h>
 #include <asm/octeon/cvmx-pexp-defs.h>
 #include <asm/octeon/cvmx-sli-defs.h>
 #include <asm/octeon/cvmx-pip-defs.h>
+#include <asm/octeon/cvmx-pki.h>
 #else
 #include "cvmx.h"
-#include "cvmx-pko.h"
+#include "cvmx-hwpko.h"
 #include "cvmx-helper.h"
+#include "cvmx-pki.h"
 #endif
 
+int CVMX_SHARED cvmx_npi_num_pipes = -1;
+
+/**
+ * Sets the number of pipe used by SLI packet output in the variable,
+ * which then later used for setting it up in HW
+ */
+void cvmx_npi_config_set_num_pipes(int num_pipes)
+{
+	cvmx_npi_num_pipes = num_pipes;
+}
 
 /**
  * @INTERNAL
@@ -71,11 +83,11 @@
  */
 int __cvmx_helper_npi_probe(int interface)
 {
-	/* TODO: When using config language what do we return? */
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 			return 32;
-	}
-	else if (!(OCTEON_IS_MODEL(OCTEON_CN52XX_PASS1_X) ||
+        } else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+                return 64;
+        } else if (!(OCTEON_IS_MODEL(OCTEON_CN52XX_PASS1_X) ||
 		   OCTEON_IS_MODEL(OCTEON_CN56XX_PASS1_X) ||
 		   OCTEON_IS_MODEL(OCTEON_CN31XX) ||
 		   OCTEON_IS_MODEL(OCTEON_CN50XX) ||
@@ -96,8 +108,10 @@ int __cvmx_helper_npi_probe(int interface)
  *
  * @return Zero on success, negative on failure
  */
-int __cvmx_helper_npi_enable(int interface)
+int __cvmx_helper_npi_enable(int xiface)
 {
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	int interface = xi.interface;
 	int port;
 	int num_ports = cvmx_helper_ports_on_interface(interface);
 
@@ -115,13 +129,19 @@ int __cvmx_helper_npi_enable(int interface)
 	 */
 	for (port = 0; port < num_ports; port++) {
 		union cvmx_pip_prt_cfgx port_cfg;
-		int ipd_port = (OCTEON_IS_MODEL(OCTEON_CN68XX)) ? cvmx_helper_get_pknd(interface, port) : cvmx_helper_get_ipd_port(interface, port);
-		port_cfg.u64 = cvmx_read_csr(CVMX_PIP_PRT_CFGX(ipd_port));
-		port_cfg.s.lenerr_en = 0;
-		port_cfg.s.maxerr_en = 0;
-		port_cfg.s.minerr_en = 0;
-		cvmx_write_csr(CVMX_PIP_PRT_CFGX(ipd_port), port_cfg.u64);
+		int ipd_port = (octeon_has_feature(OCTEON_FEATURE_PKND)) ?
+				cvmx_helper_get_pknd(interface, port) : cvmx_helper_get_ipd_port(interface, port);
+		if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+			unsigned int node = cvmx_get_node_num();
+			cvmx_pki_endis_l2_errs(node, ipd_port, 0, 0, 0);
 
+		} else {
+			port_cfg.u64 = cvmx_read_csr(CVMX_PIP_PRT_CFGX(ipd_port));
+			port_cfg.s.lenerr_en = 0;
+			port_cfg.s.maxerr_en = 0;
+			port_cfg.s.minerr_en = 0;
+			cvmx_write_csr(CVMX_PIP_PRT_CFGX(ipd_port), port_cfg.u64);
+		}
 		if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 			/* Set up pknd and bpid */
 			union cvmx_sli_portx_pkind config;
@@ -139,11 +159,7 @@ int __cvmx_helper_npi_enable(int interface)
 		union cvmx_sli_tx_pipe config;
 		config.u64 = cvmx_read_csr(CVMX_PEXP_SLI_TX_PIPE);
 		config.s.base = __cvmx_pko_get_pipe(interface, 0);
-#ifdef CVMX_HELPER_NPI_MAX_PIPES
-		config.s.nump = CVMX_HELPER_NPI_MAX_PIPES;
-#else
-		config.s.nump = num_ports;
-#endif
+		config.s.nump = cvmx_npi_num_pipes < 0 ? num_ports : cvmx_npi_num_pipes;
 		cvmx_write_csr(CVMX_PEXP_SLI_TX_PIPE, config.u64);
 	}
 

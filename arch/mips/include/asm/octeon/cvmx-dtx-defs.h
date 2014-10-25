@@ -2839,7 +2839,7 @@ union cvmx_dtx_agl_bcst_rsp {
 	struct cvmx_dtx_agl_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -2861,7 +2861,8 @@ union cvmx_dtx_agl_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -2943,7 +2944,7 @@ union cvmx_dtx_ase_bcst_rsp {
 	struct cvmx_dtx_ase_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -2964,7 +2965,8 @@ union cvmx_dtx_ase_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -3042,7 +3044,7 @@ union cvmx_dtx_bgxx_bcst_rsp {
 	struct cvmx_dtx_bgxx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3063,7 +3065,8 @@ union cvmx_dtx_bgxx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -3144,7 +3147,8 @@ union cvmx_dtx_broadcast_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -3209,7 +3213,7 @@ union cvmx_dtx_ciu_bcst_rsp {
 	struct cvmx_dtx_ciu_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3230,7 +3234,8 @@ union cvmx_dtx_ciu_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -3308,7 +3313,7 @@ union cvmx_dtx_dfa_bcst_rsp {
 	struct cvmx_dtx_dfa_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3331,7 +3336,8 @@ union cvmx_dtx_dfa_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -3417,7 +3423,7 @@ union cvmx_dtx_dpi_bcst_rsp {
 	struct cvmx_dtx_dpi_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3440,7 +3446,8 @@ union cvmx_dtx_dpi_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -3526,7 +3533,7 @@ union cvmx_dtx_fpa_bcst_rsp {
 	struct cvmx_dtx_fpa_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3549,7 +3556,8 @@ union cvmx_dtx_fpa_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -3635,7 +3643,7 @@ union cvmx_dtx_gmxx_bcst_rsp {
 	struct cvmx_dtx_gmxx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3657,7 +3665,8 @@ union cvmx_dtx_gmxx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -3739,7 +3748,7 @@ union cvmx_dtx_gserx_bcst_rsp {
 	struct cvmx_dtx_gserx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3760,7 +3769,8 @@ union cvmx_dtx_gserx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -3838,7 +3848,7 @@ union cvmx_dtx_hna_bcst_rsp {
 	struct cvmx_dtx_hna_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3859,7 +3869,8 @@ union cvmx_dtx_hna_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -3937,7 +3948,7 @@ union cvmx_dtx_ila_bcst_rsp {
 	struct cvmx_dtx_ila_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3958,7 +3969,8 @@ union cvmx_dtx_ila_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -4036,7 +4048,7 @@ union cvmx_dtx_ilk_bcst_rsp {
 	struct cvmx_dtx_ilk_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4057,7 +4069,8 @@ union cvmx_dtx_ilk_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -4135,7 +4148,7 @@ union cvmx_dtx_iob_bcst_rsp {
 	struct cvmx_dtx_iob_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4157,7 +4170,8 @@ union cvmx_dtx_iob_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -4239,7 +4253,7 @@ union cvmx_dtx_iobn_bcst_rsp {
 	struct cvmx_dtx_iobn_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4260,7 +4274,8 @@ union cvmx_dtx_iobn_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -4338,7 +4353,7 @@ union cvmx_dtx_iobp_bcst_rsp {
 	struct cvmx_dtx_iobp_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4359,7 +4374,8 @@ union cvmx_dtx_iobp_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -4437,7 +4453,7 @@ union cvmx_dtx_ipd_bcst_rsp {
 	struct cvmx_dtx_ipd_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4459,7 +4475,8 @@ union cvmx_dtx_ipd_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -4541,7 +4558,7 @@ union cvmx_dtx_key_bcst_rsp {
 	struct cvmx_dtx_key_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4563,7 +4580,8 @@ union cvmx_dtx_key_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -4645,7 +4663,7 @@ union cvmx_dtx_l2c_cbcx_bcst_rsp {
 	struct cvmx_dtx_l2c_cbcx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4668,7 +4686,8 @@ union cvmx_dtx_l2c_cbcx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -4754,7 +4773,7 @@ union cvmx_dtx_l2c_mcix_bcst_rsp {
 	struct cvmx_dtx_l2c_mcix_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4777,7 +4796,8 @@ union cvmx_dtx_l2c_mcix_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -4863,7 +4883,7 @@ union cvmx_dtx_l2c_tadx_bcst_rsp {
 	struct cvmx_dtx_l2c_tadx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4886,7 +4906,8 @@ union cvmx_dtx_l2c_tadx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -4972,7 +4993,7 @@ union cvmx_dtx_lapx_bcst_rsp {
 	struct cvmx_dtx_lapx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4993,7 +5014,8 @@ union cvmx_dtx_lapx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -5071,7 +5093,7 @@ union cvmx_dtx_lbk_bcst_rsp {
 	struct cvmx_dtx_lbk_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -5092,7 +5114,8 @@ union cvmx_dtx_lbk_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -5170,7 +5193,7 @@ union cvmx_dtx_lmcx_bcst_rsp {
 	struct cvmx_dtx_lmcx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -5193,7 +5216,8 @@ union cvmx_dtx_lmcx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -5279,7 +5303,7 @@ union cvmx_dtx_mio_bcst_rsp {
 	struct cvmx_dtx_mio_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -5302,7 +5326,8 @@ union cvmx_dtx_mio_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -5388,7 +5413,7 @@ union cvmx_dtx_ocx_lnkx_bcst_rsp {
 	struct cvmx_dtx_ocx_lnkx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -5409,7 +5434,8 @@ union cvmx_dtx_ocx_lnkx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -5487,7 +5513,7 @@ union cvmx_dtx_ocx_olex_bcst_rsp {
 	struct cvmx_dtx_ocx_olex_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -5508,7 +5534,8 @@ union cvmx_dtx_ocx_olex_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -5586,7 +5613,7 @@ union cvmx_dtx_ocx_top_bcst_rsp {
 	struct cvmx_dtx_ocx_top_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -5607,7 +5634,8 @@ union cvmx_dtx_ocx_top_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -5685,7 +5713,7 @@ union cvmx_dtx_osm_bcst_rsp {
 	struct cvmx_dtx_osm_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -5706,7 +5734,8 @@ union cvmx_dtx_osm_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -5784,7 +5813,7 @@ union cvmx_dtx_pcsx_bcst_rsp {
 	struct cvmx_dtx_pcsx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -5806,7 +5835,8 @@ union cvmx_dtx_pcsx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -5888,7 +5918,7 @@ union cvmx_dtx_pemx_bcst_rsp {
 	struct cvmx_dtx_pemx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -5911,7 +5941,8 @@ union cvmx_dtx_pemx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -5997,7 +6028,7 @@ union cvmx_dtx_pip_bcst_rsp {
 	struct cvmx_dtx_pip_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -6019,7 +6050,8 @@ union cvmx_dtx_pip_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -6101,7 +6133,7 @@ union cvmx_dtx_pki_pbe_bcst_rsp {
 	struct cvmx_dtx_pki_pbe_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -6122,7 +6154,8 @@ union cvmx_dtx_pki_pbe_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -6200,7 +6233,7 @@ union cvmx_dtx_pki_pfe_bcst_rsp {
 	struct cvmx_dtx_pki_pfe_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -6221,7 +6254,8 @@ union cvmx_dtx_pki_pfe_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -6299,7 +6333,7 @@ union cvmx_dtx_pki_pix_bcst_rsp {
 	struct cvmx_dtx_pki_pix_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -6320,7 +6354,8 @@ union cvmx_dtx_pki_pix_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -6398,7 +6433,7 @@ union cvmx_dtx_pko_bcst_rsp {
 	struct cvmx_dtx_pko_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -6421,7 +6456,8 @@ union cvmx_dtx_pko_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -6507,7 +6543,7 @@ union cvmx_dtx_pow_bcst_rsp {
 	struct cvmx_dtx_pow_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -6529,7 +6565,8 @@ union cvmx_dtx_pow_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -6611,7 +6648,7 @@ union cvmx_dtx_rad_bcst_rsp {
 	struct cvmx_dtx_rad_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -6632,7 +6669,8 @@ union cvmx_dtx_rad_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -6710,7 +6748,7 @@ union cvmx_dtx_rnm_bcst_rsp {
 	struct cvmx_dtx_rnm_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -6731,7 +6769,8 @@ union cvmx_dtx_rnm_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -6809,7 +6848,7 @@ union cvmx_dtx_rst_bcst_rsp {
 	struct cvmx_dtx_rst_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -6832,7 +6871,8 @@ union cvmx_dtx_rst_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -6918,7 +6958,7 @@ union cvmx_dtx_sata_bcst_rsp {
 	struct cvmx_dtx_sata_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -6940,7 +6980,8 @@ union cvmx_dtx_sata_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -7022,7 +7063,7 @@ union cvmx_dtx_sli_bcst_rsp {
 	struct cvmx_dtx_sli_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -7045,7 +7086,8 @@ union cvmx_dtx_sli_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -7131,7 +7173,7 @@ union cvmx_dtx_sso_bcst_rsp {
 	struct cvmx_dtx_sso_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -7152,7 +7194,8 @@ union cvmx_dtx_sso_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -7230,7 +7273,7 @@ union cvmx_dtx_tim_bcst_rsp {
 	struct cvmx_dtx_tim_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -7253,7 +7296,8 @@ union cvmx_dtx_tim_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -7339,7 +7383,7 @@ union cvmx_dtx_usbdrdx_bcst_rsp {
 	struct cvmx_dtx_usbdrdx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -7361,7 +7405,8 @@ union cvmx_dtx_usbdrdx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -7443,7 +7488,7 @@ union cvmx_dtx_usbhx_bcst_rsp {
 	struct cvmx_dtx_usbhx_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -7464,7 +7509,8 @@ union cvmx_dtx_usbhx_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;
@@ -7542,7 +7588,7 @@ union cvmx_dtx_zip_bcst_rsp {
 	struct cvmx_dtx_zip_bcst_rsp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX Broadcast reads/writes. */
+	uint64_t ena                          : 1;  /**< Enable this DTX instance as the responder to DTX broadcast read/write operations. */
 #else
 	uint64_t ena                          : 1;
 	uint64_t reserved_1_63                : 63;
@@ -7563,7 +7609,8 @@ union cvmx_dtx_zip_ctl {
 	uint64_t active                       : 1;  /**< Force block's gated clocks on, so that the state of idle signals may be captured. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t echoen                       : 1;  /**< Drive debug bus with the value in DTX_MIO_ENA(0..1) instead of normal block debug data.
-                                                         Not applicable when SW directly reads the DAT(0..1) registers.  For diagnostic use only. */
+                                                         Not applicable when software directly reads the DAT(0..1) registers.  For diagnostic use
+                                                         only. */
 	uint64_t swap                         : 1;  /**< Swap the high and low 36-bit debug bus outputs. */
 #else
 	uint64_t swap                         : 1;

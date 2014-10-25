@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -431,6 +431,7 @@ union cvmx_oclax_bist_result {
 #endif
 	} s;
 	struct cvmx_oclax_bist_result_s       cn70xx;
+	struct cvmx_oclax_bist_result_s       cn70xxp1;
 	struct cvmx_oclax_bist_result_s       cn78xx;
 };
 typedef union cvmx_oclax_bist_result cvmx_oclax_bist_result_t;
@@ -446,19 +447,19 @@ union cvmx_oclax_cdhx_ctl {
 	uint64_t dup                          : 1;  /**< Retain duplicates in the data stream. */
 	uint64_t dis_stamp                    : 1;  /**< Remove time stamps from data stream. */
 	uint64_t cap_ctl                      : 4;  /**< Minterms that will cause data to be captured. These minterms are the four inputs to a 4-1
-                                                         mux selected by PLA1 and 0. The output is thus calulated from the equation:
-                                                         fsmcap0 = OCLA(0..4)_FSM(0)_STATE[state0][CAP]
-                                                         fsmcap1 = OCLA(0..4)_FSM(1)_STATE[state1][CAP]
-                                                         out = (    (<3> & fsmcap0 & fsmcap0)
-                                                         || (<2> & fsmcap1 & !fsmcap0)
-                                                         || (<1> & !fsmcap1 & fsmcap0)
-                                                         || (<0> & !fsmcap1 & !fsmcap0))
+                                                         mux selected by PLA1 and 0. The output is thus calculated from the equation:
+                                                           fsmcap0 = OCLA(0..4)_FSM(0)_STATE[state0][CAP].
+                                                           fsmcap1 = OCLA(0..4)_FSM(1)_STATE[state1][CAP].
+                                                           out = (   (<3> & fsmcap0 & fsmcap0)
+                                                         _        || (<2> & fsmcap1 & !fsmcap0)
+                                                         _        || (<1> & !fsmcap1 & fsmcap0)
+                                                         _        || (<0> & !fsmcap1 & !fsmcap0)).
                                                          Common examples:
-                                                         0x0 = No capture
-                                                         0x2 = Capture when fsmcap0 requests capture
-                                                         0x4 = Capture when fsmcap1 requests capture
-                                                         0x6 = Capture on fsmcap0 | fsmcap1
-                                                         0x8 = Capture on fsmcap0 & fsmcap1
+                                                         0x0 = No capture.
+                                                         0x2 = Capture when fsmcap0 requests capture.
+                                                         0x4 = Capture when fsmcap1 requests capture.
+                                                         0x6 = Capture on fsmcap0 | fsmcap1.
+                                                         0x8 = Capture on fsmcap0 & fsmcap1.
                                                          0xF = Always capture. */
 #else
 	uint64_t cap_ctl                      : 4;
@@ -468,6 +469,7 @@ union cvmx_oclax_cdhx_ctl {
 #endif
 	} s;
 	struct cvmx_oclax_cdhx_ctl_s          cn70xx;
+	struct cvmx_oclax_cdhx_ctl_s          cn70xxp1;
 	struct cvmx_oclax_cdhx_ctl_s          cn78xx;
 };
 typedef union cvmx_oclax_cdhx_ctl cvmx_oclax_cdhx_ctl_t;
@@ -489,6 +491,7 @@ union cvmx_oclax_const {
 #endif
 	} s;
 	struct cvmx_oclax_const_s             cn70xx;
+	struct cvmx_oclax_const_s             cn70xxp1;
 	struct cvmx_oclax_const_s             cn78xx;
 };
 typedef union cvmx_oclax_const cvmx_oclax_const_t;
@@ -508,6 +511,7 @@ union cvmx_oclax_datx {
 #endif
 	} s;
 	struct cvmx_oclax_datx_s              cn70xx;
+	struct cvmx_oclax_datx_s              cn70xxp1;
 	struct cvmx_oclax_datx_s              cn78xx;
 };
 typedef union cvmx_oclax_datx cvmx_oclax_datx_t;
@@ -519,15 +523,15 @@ union cvmx_oclax_dat_pop {
 	uint64_t u64;
 	struct cvmx_oclax_dat_pop_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t valid                        : 1;  /**< Valid entry. Indicates the FIFO contains data, and equivalent to OCLA(0..4)_FIFO_DEPTH[DEPTH] != 0. */
-	uint64_t trig                         : 1;  /**< Internal trigger set. Equivalent to OCLA(0..4)_STATE_INT[TRIG]. */
-	uint64_t wmark                        : 1;  /**< Internal buffer watermark reached. Equivalent to OCLA(0..4)_STATE_INT[WMARK]. */
+	uint64_t valid                        : 1;  /**< Valid entry. Indicates the FIFO contains data, and equivalent to OCLA()_FIFO_DEPTH[DEPTH] != 0. */
+	uint64_t trig                         : 1;  /**< Internal trigger set. Equivalent to OCLA()_STATE_INT[TRIG]. */
+	uint64_t wmark                        : 1;  /**< Internal buffer watermark reached. Equivalent to OCLA()_STATE_INT[WMARK]. */
 	uint64_t reserved_38_60               : 23;
 	uint64_t entry                        : 38; /**< Captured entry. If VALID is set, has read side effect of unloading data by decrementing
-                                                         OCLA(0..4)_FIFO_DEPTH[DEPTH]. Data is in the format described by OCLA_CAP_DAT_S or
+                                                         OCLA()_FIFO_DEPTH[DEPTH]. Data is in the format described by OCLA_CAP_DAT_S or
                                                          OCLA_CAP_CTL_S.
                                                          Note that unloading data will cause that data not to be sent to memory, therefore
-                                                         OCLA(0..4)_DAT_POP should not be read when OCLA(0..4)_FIFO_LIMIT[DDR] != all-ones. */
+                                                         OCLA()_DAT_POP should not be read when OCLA()_FIFO_LIMIT[DDR] != all-ones. */
 #else
 	uint64_t entry                        : 38;
 	uint64_t reserved_38_60               : 23;
@@ -537,6 +541,7 @@ union cvmx_oclax_dat_pop {
 #endif
 	} s;
 	struct cvmx_oclax_dat_pop_s           cn70xx;
+	struct cvmx_oclax_dat_pop_s           cn70xxp1;
 	struct cvmx_oclax_dat_pop_s           cn78xx;
 };
 typedef union cvmx_oclax_dat_pop cvmx_oclax_dat_pop_t;
@@ -556,6 +561,7 @@ union cvmx_oclax_fifo_depth {
 #endif
 	} s;
 	struct cvmx_oclax_fifo_depth_s        cn70xx;
+	struct cvmx_oclax_fifo_depth_s        cn70xxp1;
 	struct cvmx_oclax_fifo_depth_s        cn78xx;
 };
 typedef union cvmx_oclax_fifo_depth cvmx_oclax_fifo_depth_t;
@@ -567,17 +573,17 @@ union cvmx_oclax_fifo_limit {
 	uint64_t u64;
 	struct cvmx_oclax_fifo_limit_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t overfull                     : 16; /**< Stop level. When OCLA(0..4)_FIFO_DEPTH > OVERFULL, stop capturing and set
-                                                         OCLA(0..4)_STATE_INT[OVERFULL]. This should be set to no more than
-                                                         OCLA(0..4)_CONST[DAT_SIZE] minus 26 when using DDR capture to insure that overflow can be
+	uint64_t overfull                     : 16; /**< Stop level. When OCLA()_FIFO_DEPTH > [OVERFULL], stop capturing and set
+                                                         OCLA()_STATE_INT[OVERFULL]. This should be set to no more than
+                                                         OCLA()_CONST[DAT_SIZE] minus 26 when using DDR capture to insure that overflow can be
                                                          detected. */
-	uint64_t ddr                          : 16; /**< DDR level. When OCLA(0..4)_FIFO_DEPTH > DDR, FIFO entries will be removed, packed into a
+	uint64_t ddr                          : 16; /**< DDR level. When OCLA()_FIFO_DEPTH > [DDR], FIFO entries will be removed, packed into a
                                                          cache line, and overflowed to DDR/L2. All-ones disables overflow to DDR/L2. If non-zero
                                                          must be at least 28. */
-	uint64_t bp                           : 16; /**< Backpressure level. When OCLA(0..4)_FIFO_DEPTH > BP, OCLA will signal backpressure to
+	uint64_t bp                           : 16; /**< Backpressure level. When OCLA()_FIFO_DEPTH > [BP], OCLA will signal backpressure to
                                                          coprocessors. All-ones disables indicating backpressure. */
-	uint64_t wmark                        : 16; /**< Interrupt watermark level. When OCLA(0..4)_FIFO_DEPTH > WMARK OCLA will set
-                                                         OCLA(0..4)_STATE_INT[WMARK] interrupt. All-ones disables setting the interrupt. */
+	uint64_t wmark                        : 16; /**< Interrupt watermark level. When OCLA()_FIFO_DEPTH > [WMARK], OCLA will set
+                                                         OCLA()_STATE_INT[WMARK] interrupt. All-ones disables setting the interrupt. */
 #else
 	uint64_t wmark                        : 16;
 	uint64_t bp                           : 16;
@@ -586,6 +592,7 @@ union cvmx_oclax_fifo_limit {
 #endif
 	} s;
 	struct cvmx_oclax_fifo_limit_s        cn70xx;
+	struct cvmx_oclax_fifo_limit_s        cn70xxp1;
 	struct cvmx_oclax_fifo_limit_s        cn78xx;
 };
 typedef union cvmx_oclax_fifo_limit cvmx_oclax_fifo_limit_t;
@@ -605,6 +612,7 @@ union cvmx_oclax_fifo_tail {
 #endif
 	} s;
 	struct cvmx_oclax_fifo_tail_s         cn70xx;
+	struct cvmx_oclax_fifo_tail_s         cn70xxp1;
 	struct cvmx_oclax_fifo_tail_s         cn78xx;
 };
 typedef union cvmx_oclax_fifo_tail cvmx_oclax_fifo_tail_t;
@@ -619,8 +627,8 @@ union cvmx_oclax_fifo_trig {
 	uint64_t reserved_32_63               : 32;
 	uint64_t limit                        : 16; /**< Post-trigger number of entries to collect before stopping collection. If zero, collection
                                                          will never stop, which may be desirable when overflowing to DDR/L2. Must be <
-                                                         OCLA(0..4)_CONST[DAT_SIZE] - 5. */
-	uint64_t cnt                          : 16; /**< Number of entries collected since trigger. Cleared when OCLA(0..4)_STATE_INT[TRIG] clear. */
+                                                         OCLA()_CONST[DAT_SIZE] - 5. */
+	uint64_t cnt                          : 16; /**< Number of entries collected since trigger. Cleared when OCLA()_STATE_INT[TRIG] clear. */
 #else
 	uint64_t cnt                          : 16;
 	uint64_t limit                        : 16;
@@ -628,6 +636,7 @@ union cvmx_oclax_fifo_trig {
 #endif
 	} s;
 	struct cvmx_oclax_fifo_trig_s         cn70xx;
+	struct cvmx_oclax_fifo_trig_s         cn70xxp1;
 	struct cvmx_oclax_fifo_trig_s         cn78xx;
 };
 typedef union cvmx_oclax_fifo_trig cvmx_oclax_fifo_trig_t;
@@ -640,13 +649,14 @@ union cvmx_oclax_fifo_wrap {
 	struct cvmx_oclax_fifo_wrap_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t wraps                        : 32; /**< Number of times FIFO has wrapped since trigger. Cleared when OCLA(0..4)_STATE_INT[TRIG] clear. */
+	uint64_t wraps                        : 32; /**< Number of times FIFO has wrapped since trigger. Cleared when OCLA()_STATE_INT[TRIG] clear. */
 #else
 	uint64_t wraps                        : 32;
 	uint64_t reserved_32_63               : 32;
 #endif
 	} s;
 	struct cvmx_oclax_fifo_wrap_s         cn70xx;
+	struct cvmx_oclax_fifo_wrap_s         cn70xxp1;
 	struct cvmx_oclax_fifo_wrap_s         cn78xx;
 };
 typedef union cvmx_oclax_fifo_wrap cvmx_oclax_fifo_wrap_t;
@@ -663,7 +673,7 @@ union cvmx_oclax_fsmx_andx_ix {
 	struct cvmx_oclax_fsmx_andx_ix_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
-	uint64_t mcd                          : 3;  /**< Multichip Debug (MCD) 0..2 inputs. */
+	uint64_t mcd                          : 3;  /**< Multichip debug (MCD) 0..2 inputs. */
 	uint64_t match                        : 4;  /**< Matcher 0..3 input. */
 	uint64_t fsm1_state                   : 4;  /**< FSM 1 last state. */
 	uint64_t fsm0_state                   : 4;  /**< FSM 0 last state. */
@@ -676,6 +686,7 @@ union cvmx_oclax_fsmx_andx_ix {
 #endif
 	} s;
 	struct cvmx_oclax_fsmx_andx_ix_s      cn70xx;
+	struct cvmx_oclax_fsmx_andx_ix_s      cn70xxp1;
 	struct cvmx_oclax_fsmx_andx_ix_s      cn78xx;
 };
 typedef union cvmx_oclax_fsmx_andx_ix cvmx_oclax_fsmx_andx_ix_t;
@@ -687,15 +698,24 @@ union cvmx_oclax_fsmx_orx {
 	uint64_t u64;
 	struct cvmx_oclax_fsmx_orx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t or_state                     : 16; /**< Column to drive on PLA OR-plane. Widened to 16-bits in pass 2. */
+#else
+	uint64_t or_state                     : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_oclax_fsmx_orx_s          cn70xx;
+	struct cvmx_oclax_fsmx_orx_cn70xxp1 {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t or_state                     : 4;  /**< Column to drive on PLA OR-plane. */
+	uint64_t or_state                     : 4;  /**< Column to drive on PLA OR-plane. Widened to 16-bits in pass 2. */
 #else
 	uint64_t or_state                     : 4;
 	uint64_t reserved_4_63                : 60;
 #endif
-	} s;
-	struct cvmx_oclax_fsmx_orx_s          cn70xx;
-	struct cvmx_oclax_fsmx_orx_s          cn78xx;
+	} cn70xxp1;
+	struct cvmx_oclax_fsmx_orx_cn70xxp1   cn78xx;
 };
 typedef union cvmx_oclax_fsmx_orx cvmx_oclax_fsmx_orx_t;
 
@@ -708,6 +728,39 @@ typedef union cvmx_oclax_fsmx_orx cvmx_oclax_fsmx_orx_t;
 union cvmx_oclax_fsmx_statex {
 	uint64_t u64;
 	struct cvmx_oclax_fsmx_statex_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_31_63               : 33;
+	uint64_t sinfo_set                    : 1;  /**< If a control packet is generated in this state (due to capture starting
+                                                         in the next cycle), set OCLA_CAP_CTL_S[SINFO].
+                                                         Added in pass 2. */
+	uint64_t set_int                      : 1;  /**< In this state set interrupt. */
+	uint64_t cap                          : 1;  /**< In this state request capture this cycle. */
+	uint64_t set_mcd                      : 3;  /**< In this state set MCD. */
+	uint64_t set_trig                     : 1;  /**< In this state set internal trigger indication. */
+	uint64_t reserved_20_23               : 4;
+	uint64_t set_val                      : 4;  /**< In this state store match value into matcher 0..3. */
+	uint64_t reserved_12_15               : 4;
+	uint64_t clr_cnt                      : 4;  /**< In this state clear match counter. */
+	uint64_t reserved_4_7                 : 4;
+	uint64_t inc_cnt                      : 4;  /**< In this state increment match counter. See State Outputs for more information on this or
+                                                         any of the bits above. */
+#else
+	uint64_t inc_cnt                      : 4;
+	uint64_t reserved_4_7                 : 4;
+	uint64_t clr_cnt                      : 4;
+	uint64_t reserved_12_15               : 4;
+	uint64_t set_val                      : 4;
+	uint64_t reserved_20_23               : 4;
+	uint64_t set_trig                     : 1;
+	uint64_t set_mcd                      : 3;
+	uint64_t cap                          : 1;
+	uint64_t set_int                      : 1;
+	uint64_t sinfo_set                    : 1;
+	uint64_t reserved_31_63               : 33;
+#endif
+	} s;
+	struct cvmx_oclax_fsmx_statex_s       cn70xx;
+	struct cvmx_oclax_fsmx_statex_cn70xxp1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_30_63               : 34;
 	uint64_t set_int                      : 1;  /**< In this state set interrupt. */
@@ -734,9 +787,8 @@ union cvmx_oclax_fsmx_statex {
 	uint64_t set_int                      : 1;
 	uint64_t reserved_30_63               : 34;
 #endif
-	} s;
-	struct cvmx_oclax_fsmx_statex_s       cn70xx;
-	struct cvmx_oclax_fsmx_statex_s       cn78xx;
+	} cn70xxp1;
+	struct cvmx_oclax_fsmx_statex_cn70xxp1 cn78xx;
 };
 typedef union cvmx_oclax_fsmx_statex cvmx_oclax_fsmx_statex_t;
 
@@ -751,7 +803,7 @@ union cvmx_oclax_gen_ctl {
 	uint64_t exten                        : 1;  /**< Enable external triggering.
                                                          0 = External triggering ignored.
                                                          1 = When the external trigger pin selected with GPIO_OCLA_EXTEN_TRIG is high it will cause
-                                                         triggerring and set OCLA(0..4)_STATE_SET[TRIG]. The external device must de-assert the
+                                                         triggerring and set OCLA()_STATE_SET[TRIG]. The external device must de-assert the
                                                          signal to release the trigger (it is not edge sensitive.) */
 	uint64_t den                          : 1;  /**< Enable data bus and counter clocking. When set, the OCLA inbound data bus may be used and
                                                          counters may increment. When clear, the bus is always zero and internal flops may be clock
@@ -767,6 +819,7 @@ union cvmx_oclax_gen_ctl {
 #endif
 	} s;
 	struct cvmx_oclax_gen_ctl_s           cn70xx;
+	struct cvmx_oclax_gen_ctl_s           cn70xxp1;
 	struct cvmx_oclax_gen_ctl_s           cn78xx;
 };
 typedef union cvmx_oclax_gen_ctl cvmx_oclax_gen_ctl_t;
@@ -787,6 +840,7 @@ union cvmx_oclax_matx_count {
 #endif
 	} s;
 	struct cvmx_oclax_matx_count_s        cn70xx;
+	struct cvmx_oclax_matx_count_s        cn70xxp1;
 	struct cvmx_oclax_matx_count_s        cn78xx;
 };
 typedef union cvmx_oclax_matx_count cvmx_oclax_matx_count_t;
@@ -801,9 +855,9 @@ union cvmx_oclax_matx_ctl {
 	uint64_t reserved_8_63                : 56;
 	uint64_t fsm_ctr                      : 1;  /**< What output matcher provides to FSM:
                                                          0 = FSM receives raw match signal, asserting only in those cycles with matches.
-                                                         1 = FSM receives OCLA(0..4)_MAT(0..3)_COUNT >= OCLA(0..4)_MAT(0..3)_THRESH. */
-	uint64_t inc_match                    : 1;  /**< Increment OCLA(0..4)_MAT(0..3)_COUNT counter automatically on each match. */
-	uint64_t shift                        : 6;  /**< Right rotation amount to apply to data loaded into OCLA(0..4)_MAT(0..3)_VALUE(0..1)
+                                                         1 = FSM receives OCLA()_MAT()_COUNT >= OCLA()_MAT()_THRESH. */
+	uint64_t inc_match                    : 1;  /**< Increment OCLA()_MAT()_COUNT counter automatically on each match. */
+	uint64_t shift                        : 6;  /**< Right rotation amount to apply to data loaded into OCLA()_MAT()_VALUE()
                                                          register when FSM requests a value load. */
 #else
 	uint64_t shift                        : 6;
@@ -813,6 +867,7 @@ union cvmx_oclax_matx_ctl {
 #endif
 	} s;
 	struct cvmx_oclax_matx_ctl_s          cn70xx;
+	struct cvmx_oclax_matx_ctl_s          cn70xxp1;
 	struct cvmx_oclax_matx_ctl_s          cn78xx;
 };
 typedef union cvmx_oclax_matx_ctl cvmx_oclax_matx_ctl_t;
@@ -825,13 +880,20 @@ union cvmx_oclax_matx_maskx {
 	struct cvmx_oclax_matx_maskx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_36_63               : 28;
-	uint64_t mask                         : 36; /**< Bitmask of which bits in OCLA(0..4)_MAT(0..3)_VALUE(0..1) are to be compared. */
+	uint64_t mask                         : 36; /**< Bitmask of which bits in OCLA()_MAT()_VALUE() are to be compared.
+                                                         Each bit of OCLA()_MAT()_VALUE() and OCLA()_MAT()_MASK() are combined as
+                                                         follows:
+                                                         _ If MASK = 1 and VALUE = 0, matches when data = "0".
+                                                         _ If MASK = 1 and VALUE = 1, matches when data = "1".
+                                                         _ If MASK = 0 and VALUE = 0, matches any data.
+                                                         _ If MASK = 0 and VALUE = 1, reserved in pass 1, matches any data pass 2 and later. */
 #else
 	uint64_t mask                         : 36;
 	uint64_t reserved_36_63               : 28;
 #endif
 	} s;
 	struct cvmx_oclax_matx_maskx_s        cn70xx;
+	struct cvmx_oclax_matx_maskx_s        cn70xxp1;
 	struct cvmx_oclax_matx_maskx_s        cn78xx;
 };
 typedef union cvmx_oclax_matx_maskx cvmx_oclax_matx_maskx_t;
@@ -844,14 +906,15 @@ union cvmx_oclax_matx_thresh {
 	struct cvmx_oclax_matx_thresh_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t thresh                       : 32; /**< Counter threshold value. Compared against OCLA(0..4)_MAT(0..3)_COUNT to assert matcher
-                                                         output, and set OCLA(0..4)_STATE_INT[OVFL]. */
+	uint64_t thresh                       : 32; /**< Counter threshold value. Compared against OCLA()_MAT()_COUNT to assert matcher
+                                                         output, and set OCLA()_STATE_INT[OVFL]. */
 #else
 	uint64_t thresh                       : 32;
 	uint64_t reserved_32_63               : 32;
 #endif
 	} s;
 	struct cvmx_oclax_matx_thresh_s       cn70xx;
+	struct cvmx_oclax_matx_thresh_s       cn70xxp1;
 	struct cvmx_oclax_matx_thresh_s       cn78xx;
 };
 typedef union cvmx_oclax_matx_thresh cvmx_oclax_matx_thresh_t;
@@ -864,13 +927,15 @@ union cvmx_oclax_matx_valuex {
 	struct cvmx_oclax_matx_valuex_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_36_63               : 28;
-	uint64_t mask                         : 36; /**< Data value to compare against when corresponding bits of OCLA(0..4)_MAT(0..3)_MASK(0..1) are set. */
+	uint64_t mask                         : 36; /**< Data value to compare against when corresponding bits of OCLA()_MAT()_MASK()
+                                                         are set. Value may be updated with OCLA()_FSM()_STATE()[SET_VAL]. */
 #else
 	uint64_t mask                         : 36;
 	uint64_t reserved_36_63               : 28;
 #endif
 	} s;
 	struct cvmx_oclax_matx_valuex_s       cn70xx;
+	struct cvmx_oclax_matx_valuex_s       cn70xxp1;
 	struct cvmx_oclax_matx_valuex_s       cn78xx;
 };
 typedef union cvmx_oclax_matx_valuex cvmx_oclax_matx_valuex_t;
@@ -890,6 +955,7 @@ union cvmx_oclax_rawx {
 #endif
 	} s;
 	struct cvmx_oclax_rawx_s              cn70xx;
+	struct cvmx_oclax_rawx_s              cn70xxp1;
 	struct cvmx_oclax_rawx_s              cn78xx;
 };
 typedef union cvmx_oclax_rawx cvmx_oclax_rawx_t;
@@ -909,6 +975,7 @@ union cvmx_oclax_sft_rst {
 #endif
 	} s;
 	struct cvmx_oclax_sft_rst_s           cn70xx;
+	struct cvmx_oclax_sft_rst_s           cn70xxp1;
 	struct cvmx_oclax_sft_rst_s           cn78xx;
 };
 typedef union cvmx_oclax_sft_rst cvmx_oclax_sft_rst_t;
@@ -921,7 +988,7 @@ union cvmx_oclax_stack_base {
 	struct cvmx_oclax_stack_base_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t ptr                          : 35; /**< Memory address for base of overflow stack. This address must be on the local node in a OCI system. */
+	uint64_t ptr                          : 35; /**< Memory address for base of overflow stack. This address must be on the local node in a CCPI system. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -930,6 +997,7 @@ union cvmx_oclax_stack_base {
 #endif
 	} s;
 	struct cvmx_oclax_stack_base_s        cn70xx;
+	struct cvmx_oclax_stack_base_s        cn70xxp1;
 	struct cvmx_oclax_stack_base_s        cn78xx;
 };
 typedef union cvmx_oclax_stack_base cvmx_oclax_stack_base_t;
@@ -942,9 +1010,9 @@ union cvmx_oclax_stack_cur {
 	struct cvmx_oclax_stack_cur_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t ptr                          : 35; /**< Next address to write for overflow stack. This address must be on the local node in a OCI
-                                                         system. During initialization this must be between OCLA(0..4)_STACK_BASE and
-                                                         OCLA(0..4)_STACK_TOP. */
+	uint64_t ptr                          : 35; /**< Next address to write for overflow stack. This address must be on the local node in a
+                                                         CCPI system. During initialization this must be between OCLA()_STACK_BASE and
+                                                         OCLA()_STACK_TOP. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -953,6 +1021,7 @@ union cvmx_oclax_stack_cur {
 #endif
 	} s;
 	struct cvmx_oclax_stack_cur_s         cn70xx;
+	struct cvmx_oclax_stack_cur_s         cn70xxp1;
 	struct cvmx_oclax_stack_cur_s         cn78xx;
 };
 typedef union cvmx_oclax_stack_cur cvmx_oclax_stack_cur_t;
@@ -972,6 +1041,7 @@ union cvmx_oclax_stack_store_cnt {
 #endif
 	} s;
 	struct cvmx_oclax_stack_store_cnt_s   cn70xx;
+	struct cvmx_oclax_stack_store_cnt_s   cn70xxp1;
 	struct cvmx_oclax_stack_store_cnt_s   cn78xx;
 };
 typedef union cvmx_oclax_stack_store_cnt cvmx_oclax_stack_store_cnt_t;
@@ -984,8 +1054,8 @@ union cvmx_oclax_stack_top {
 	struct cvmx_oclax_stack_top_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t ptr                          : 35; /**< Memory address for top of overflow stack plus one. This address must be on the local node
-                                                         in a OCI system. */
+	uint64_t ptr                          : 35; /**< Memory address for top of overflow stack plus one. This address must be on the
+                                                         local node in a CCPI system. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -994,6 +1064,7 @@ union cvmx_oclax_stack_top {
 #endif
 	} s;
 	struct cvmx_oclax_stack_top_s         cn70xx;
+	struct cvmx_oclax_stack_top_s         cn70xxp1;
 	struct cvmx_oclax_stack_top_s         cn78xx;
 };
 typedef union cvmx_oclax_stack_top cvmx_oclax_stack_top_t;
@@ -1006,14 +1077,15 @@ union cvmx_oclax_stack_wrap {
 	struct cvmx_oclax_stack_wrap_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t wraps                        : 32; /**< Number of times stack has been reset to OCLA(0..4)_STACK_BASE since trigger. Cleared when
-                                                         OCLA(0..4)_STATE_INT[TRIG] clear. */
+	uint64_t wraps                        : 32; /**< Number of times stack has been reset to OCLA()_STACK_BASE since trigger. Cleared when
+                                                         OCLA()_STATE_INT[TRIG] clear. */
 #else
 	uint64_t wraps                        : 32;
 	uint64_t reserved_32_63               : 32;
 #endif
 	} s;
 	struct cvmx_oclax_stack_wrap_s        cn70xx;
+	struct cvmx_oclax_stack_wrap_s        cn70xxp1;
 	struct cvmx_oclax_stack_wrap_s        cn78xx;
 };
 typedef union cvmx_oclax_stack_wrap cvmx_oclax_stack_wrap_t;
@@ -1033,6 +1105,7 @@ union cvmx_oclax_stagex {
 #endif
 	} s;
 	struct cvmx_oclax_stagex_s            cn70xx;
+	struct cvmx_oclax_stagex_s            cn70xxp1;
 	struct cvmx_oclax_stagex_s            cn78xx;
 };
 typedef union cvmx_oclax_stagex cvmx_oclax_stagex_t;
@@ -1047,30 +1120,30 @@ union cvmx_oclax_state_int {
 	uint64_t fsm1_state                   : 4;  /**< FSM1 current state. */
 	uint64_t fsm0_state                   : 4;  /**< FSM0 current state. */
 	uint64_t reserved_36_55               : 20;
-	uint64_t fsm1_rst                     : 1;  /**< FSM1 hold in state zero. Writing one to OCLA(0..4)_STATE_SET[FSM1_RST] sets this bit and
-                                                         holds FSM1 in state zero, writing one to OCLA(0..4)_STATE_INT[FSM1_RST] removes the hold. */
-	uint64_t fsm0_rst                     : 1;  /**< FSM0 hold in state zero. Writing one to OCLA(0..4)_STATE_SET[FSM0_RST] sets this bit and
-                                                         holds FSM0 in state zero, writing one to OCLA(0..4)_STATE_INT[FSM0_RST] removes the hold. */
+	uint64_t fsm1_rst                     : 1;  /**< FSM1 hold in state zero. Writing one to OCLA()_STATE_SET[FSM1_RST] sets this bit and
+                                                         holds FSM1 in state zero, writing one to OCLA()_STATE_INT[FSM1_RST] removes the hold. */
+	uint64_t fsm0_rst                     : 1;  /**< FSM0 hold in state zero. Writing one to OCLA()_STATE_SET[FSM0_RST] sets this bit and
+                                                         holds FSM0 in state zero, writing one to OCLA()_STATE_INT[FSM0_RST] removes the hold. */
 	uint64_t fsm1_ena                     : 1;  /**< FSM1 sequencing enabled. */
 	uint64_t fsm0_ena                     : 1;  /**< FSM0 sequencing enabled. */
 	uint64_t reserved_19_31               : 13;
-	uint64_t ddrfull                      : 1;  /**< DDR buffer wrapped. Asserted when OCLA(0..4)_STACK_CUR has wrapped and been re-initialized
-                                                         to OCLA(0..4)_STACK_BASE. */
-	uint64_t wmark                        : 1;  /**< Internal buffer watermark reached. Asserted when OCLA(0..4)_FIFO_DEPTH >
-                                                         OCLA(0..4)_FIFO_LIMIT[WMARK]. */
-	uint64_t overfull                     : 1;  /**< Capture ended due to FIFO overflow. Asserted when OCLA(0..4)_FIFO_DEPTH >
-                                                         OCLA(0..4)_FIFO_LIMIT[OVERFULL]. */
-	uint64_t trigfull                     : 1;  /**< Capture ended due to buffer full. Asserted when OCLA(0..4)_FIFO_TRIG[LIMIT] >=
-                                                         OCLA(0..4)_FIFO_TRIG[COUNT]. */
+	uint64_t ddrfull                      : 1;  /**< DDR buffer wrapped. Asserted when OCLA()_STACK_CUR has wrapped and been re-initialized
+                                                         to OCLA()_STACK_BASE. */
+	uint64_t wmark                        : 1;  /**< Internal buffer watermark reached. Asserted when OCLA()_FIFO_DEPTH >
+                                                         OCLA()_FIFO_LIMIT[WMARK]. */
+	uint64_t overfull                     : 1;  /**< Capture ended due to FIFO overflow. Asserted when OCLA()_FIFO_DEPTH >
+                                                         OCLA()_FIFO_LIMIT[OVERFULL]. */
+	uint64_t trigfull                     : 1;  /**< Capture ended due to buffer full. Asserted when OCLA()_FIFO_TRIG[LIMIT] >=
+                                                         OCLA()_FIFO_TRIG[CNT]. */
 	uint64_t captured                     : 1;  /**< Capture started. Asserted when the first capture is made. Informational only; often masked. */
 	uint64_t fsm1_int                     : 1;  /**< FSM1 interrupt requested. */
 	uint64_t fsm0_int                     : 1;  /**< FSM0 interrupt requested. */
-	uint64_t mcd                          : 3;  /**< Multichip Debug (MCD0..2) set. Asserted on MCD received from another coprocessor or code,
-                                                         or FSM MCD request or W1S to OCLA(0..4)_STATE_SET[MCD]. */
-	uint64_t trig                         : 1;  /**< Internal trigger set. Asserted on FSM internal trigger request or W1S to OCLA(0..4)_STATE_SET[TRIG] */
+	uint64_t mcd                          : 3;  /**< Multichip debug (MCD0..2) set. Asserted on MCD received from another coprocessor or code,
+                                                         or FSM MCD request or W1S to OCLA()_STATE_SET[MCD]. */
+	uint64_t trig                         : 1;  /**< Internal trigger set. Asserted on FSM internal trigger request or W1S to OCLA()_STATE_SET[TRIG]. */
 	uint64_t reserved_4_7                 : 4;
-	uint64_t ovfl                         : 4;  /**< Match counter has overflowed. Asserted when OCLA(0..4)_MAT(0..3)_COUNT >=
-                                                         OCLA(0..4)_MAT(0..3)_THRESH. Informational only; often masked. Writing 1 clears the
+	uint64_t ovfl                         : 4;  /**< Match counter has overflowed. Asserted when OCLA()_MAT()_COUNT >=
+                                                         OCLA()_MAT()_THRESH. Informational only; often masked. Writing 1 clears the
                                                          counter, not just the interrupt. */
 #else
 	uint64_t ovfl                         : 4;
@@ -1095,6 +1168,7 @@ union cvmx_oclax_state_int {
 #endif
 	} s;
 	struct cvmx_oclax_state_int_s         cn70xx;
+	struct cvmx_oclax_state_int_s         cn70xxp1;
 	struct cvmx_oclax_state_int_s         cn78xx;
 };
 typedef union cvmx_oclax_state_int cvmx_oclax_state_int_t;
@@ -1102,32 +1176,32 @@ typedef union cvmx_oclax_state_int cvmx_oclax_state_int_t;
 /**
  * cvmx_ocla#_state_set
  *
- * This register reads identically to OCLA(0..4)_STATE_INT, but allows R/W1S instead of R/W1C access.
+ * This register reads identically to OCLA()_STATE_INT, but allows R/W1S instead of R/W1C access.
  *
  */
 union cvmx_oclax_state_set {
 	uint64_t u64;
 	struct cvmx_oclax_state_set_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t fsm1_state                   : 4;  /**< See OCLA(0..4)_STATE_INT[FSM1_STATE]. */
-	uint64_t fsm0_state                   : 4;  /**< See OCLA(0..4)_STATE_INT[FSM0_STATE]. */
+	uint64_t fsm1_state                   : 4;  /**< See OCLA()_STATE_INT[FSM1_STATE]. */
+	uint64_t fsm0_state                   : 4;  /**< See OCLA()_STATE_INT[FSM0_STATE]. */
 	uint64_t reserved_36_55               : 20;
-	uint64_t fsm1_rst                     : 1;  /**< See OCLA(0..4)_STATE_INT[FSM1_RST]. */
-	uint64_t fsm0_rst                     : 1;  /**< See OCLA(0..4)_STATE_INT[FSM0_RST]. */
-	uint64_t fsm1_ena                     : 1;  /**< See OCLA(0..4)_STATE_INT[FSM1_ENA]. */
-	uint64_t fsm0_ena                     : 1;  /**< See OCLA(0..4)_STATE_INT[FSM0_ENA]. */
+	uint64_t fsm1_rst                     : 1;  /**< See OCLA()_STATE_INT[FSM1_RST]. */
+	uint64_t fsm0_rst                     : 1;  /**< See OCLA()_STATE_INT[FSM0_RST]. */
+	uint64_t fsm1_ena                     : 1;  /**< See OCLA()_STATE_INT[FSM1_ENA]. */
+	uint64_t fsm0_ena                     : 1;  /**< See OCLA()_STATE_INT[FSM0_ENA]. */
 	uint64_t reserved_19_31               : 13;
-	uint64_t ddrfull                      : 1;  /**< See OCLA(0..4)_STATE_INT[DDRFULL]. */
-	uint64_t wmark                        : 1;  /**< See OCLA(0..4)_STATE_INT[WMARK]. */
-	uint64_t overfull                     : 1;  /**< See OCLA(0..4)_STATE_INT[OVERFULL]. */
-	uint64_t trigfull                     : 1;  /**< See OCLA(0..4)_STATE_INT[TRIGFULL]. */
-	uint64_t captured                     : 1;  /**< See OCLA(0..4)_STATE_INT[CAPTURED]. */
-	uint64_t fsm1_int                     : 1;  /**< See OCLA(0..4)_STATE_INT[FSM1_INT]. */
-	uint64_t fsm0_int                     : 1;  /**< See OCLA(0..4)_STATE_INT[FSM0_INT]. */
-	uint64_t mcd                          : 3;  /**< See OCLA(0..4)_STATE_INT[MCD]. */
-	uint64_t trig                         : 1;  /**< See OCLA(0..4)_STATE_INT[TRIG]. */
+	uint64_t ddrfull                      : 1;  /**< See OCLA()_STATE_INT[DDRFULL]. */
+	uint64_t wmark                        : 1;  /**< See OCLA()_STATE_INT[WMARK]. */
+	uint64_t overfull                     : 1;  /**< See OCLA()_STATE_INT[OVERFULL]. */
+	uint64_t trigfull                     : 1;  /**< See OCLA()_STATE_INT[TRIGFULL]. */
+	uint64_t captured                     : 1;  /**< See OCLA()_STATE_INT[CAPTURED]. */
+	uint64_t fsm1_int                     : 1;  /**< See OCLA()_STATE_INT[FSM1_INT]. */
+	uint64_t fsm0_int                     : 1;  /**< See OCLA()_STATE_INT[FSM0_INT]. */
+	uint64_t mcd                          : 3;  /**< See OCLA()_STATE_INT[MCD]. */
+	uint64_t trig                         : 1;  /**< See OCLA()_STATE_INT[TRIG]. */
 	uint64_t reserved_4_7                 : 4;
-	uint64_t ovfl                         : 4;  /**< See OCLA(0..4)_STATE_INT[OVFL]. */
+	uint64_t ovfl                         : 4;  /**< See OCLA()_STATE_INT[OVFL]. */
 #else
 	uint64_t ovfl                         : 4;
 	uint64_t reserved_4_7                 : 4;
@@ -1151,6 +1225,7 @@ union cvmx_oclax_state_set {
 #endif
 	} s;
 	struct cvmx_oclax_state_set_s         cn70xx;
+	struct cvmx_oclax_state_set_s         cn70xxp1;
 	struct cvmx_oclax_state_set_s         cn78xx;
 };
 typedef union cvmx_oclax_state_set cvmx_oclax_state_set_t;
@@ -1163,13 +1238,15 @@ union cvmx_oclax_time {
 	struct cvmx_oclax_time_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t cycle                        : 32; /**< Current time as free running counter. Loaded into captured control packets. */
+	uint64_t cycle                        : 32; /**< Current time as free running counter. Loaded into captured control packets.
+                                                         Unconditionally clocked, independent of OCLA()_SFT_RST. */
 #else
 	uint64_t cycle                        : 32;
 	uint64_t reserved_32_63               : 32;
 #endif
 	} s;
 	struct cvmx_oclax_time_s              cn70xx;
+	struct cvmx_oclax_time_s              cn70xxp1;
 	struct cvmx_oclax_time_s              cn78xx;
 };
 typedef union cvmx_oclax_time cvmx_oclax_time_t;

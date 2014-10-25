@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -348,7 +348,7 @@ static inline uint64_t CVMX_IPD_PORT_QOS_INTX(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0) || (offset == 4) || (offset == 5))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0) || (offset == 2) || (offset == 4) || (offset == 5))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 7))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0) || (offset == 2) || (offset == 3) || (offset == 4) || (offset == 5))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0) || (offset == 2) || (offset == 3) || (offset == 4))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0) || (offset == 2) || (offset == 4) || (offset == 5)))))
 		cvmx_warn("CVMX_IPD_PORT_QOS_INTX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00014F0000000808ull) + ((offset) & 7) * 8;
@@ -366,7 +366,7 @@ static inline uint64_t CVMX_IPD_PORT_QOS_INT_ENBX(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0) || (offset == 4) || (offset == 5))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0) || (offset == 2) || (offset == 4) || (offset == 5))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 7))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0) || (offset == 2) || (offset == 3) || (offset == 4) || (offset == 5))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0) || (offset == 2) || (offset == 3) || (offset == 4))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0) || (offset == 2) || (offset == 4) || (offset == 5)))))
 		cvmx_warn("CVMX_IPD_PORT_QOS_INT_ENBX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00014F0000000848ull) + ((offset) & 7) * 8;
@@ -632,6 +632,7 @@ union cvmx_ipd_1st_mbuff_skip {
 	struct cvmx_ipd_1st_mbuff_skip_s      cn68xx;
 	struct cvmx_ipd_1st_mbuff_skip_s      cn68xxp1;
 	struct cvmx_ipd_1st_mbuff_skip_s      cn70xx;
+	struct cvmx_ipd_1st_mbuff_skip_s      cn70xxp1;
 	struct cvmx_ipd_1st_mbuff_skip_s      cnf71xx;
 };
 typedef union cvmx_ipd_1st_mbuff_skip cvmx_ipd_1st_mbuff_skip_t;
@@ -671,6 +672,7 @@ union cvmx_ipd_1st_next_ptr_back {
 	struct cvmx_ipd_1st_next_ptr_back_s   cn68xx;
 	struct cvmx_ipd_1st_next_ptr_back_s   cn68xxp1;
 	struct cvmx_ipd_1st_next_ptr_back_s   cn70xx;
+	struct cvmx_ipd_1st_next_ptr_back_s   cn70xxp1;
 	struct cvmx_ipd_1st_next_ptr_back_s   cnf71xx;
 };
 typedef union cvmx_ipd_1st_next_ptr_back cvmx_ipd_1st_next_ptr_back_t;
@@ -710,6 +712,7 @@ union cvmx_ipd_2nd_next_ptr_back {
 	struct cvmx_ipd_2nd_next_ptr_back_s   cn68xx;
 	struct cvmx_ipd_2nd_next_ptr_back_s   cn68xxp1;
 	struct cvmx_ipd_2nd_next_ptr_back_s   cn70xx;
+	struct cvmx_ipd_2nd_next_ptr_back_s   cn70xxp1;
 	struct cvmx_ipd_2nd_next_ptr_back_s   cnf71xx;
 };
 typedef union cvmx_ipd_2nd_next_ptr_back cvmx_ipd_2nd_next_ptr_back_t;
@@ -873,6 +876,7 @@ union cvmx_ipd_bist_status {
 	struct cvmx_ipd_bist_status_s         cn68xx;
 	struct cvmx_ipd_bist_status_s         cn68xxp1;
 	struct cvmx_ipd_bist_status_cn52xx    cn70xx;
+	struct cvmx_ipd_bist_status_cn52xx    cn70xxp1;
 	struct cvmx_ipd_bist_status_cn52xx    cnf71xx;
 };
 typedef union cvmx_ipd_bist_status cvmx_ipd_bist_status_t;
@@ -956,6 +960,7 @@ union cvmx_ipd_bp_prt_red_end {
 	struct cvmx_ipd_bp_prt_red_end_cn63xx cn63xxp1;
 	struct cvmx_ipd_bp_prt_red_end_s      cn66xx;
 	struct cvmx_ipd_bp_prt_red_end_s      cn70xx;
+	struct cvmx_ipd_bp_prt_red_end_s      cn70xxp1;
 	struct cvmx_ipd_bp_prt_red_end_s      cnf71xx;
 };
 typedef union cvmx_ipd_bp_prt_red_end cvmx_ipd_bp_prt_red_end_t;
@@ -1052,6 +1057,7 @@ union cvmx_ipd_clk_count {
 	struct cvmx_ipd_clk_count_s           cn68xx;
 	struct cvmx_ipd_clk_count_s           cn68xxp1;
 	struct cvmx_ipd_clk_count_s           cn70xx;
+	struct cvmx_ipd_clk_count_s           cn70xxp1;
 	struct cvmx_ipd_clk_count_s           cnf71xx;
 };
 typedef union cvmx_ipd_clk_count cvmx_ipd_clk_count_t;
@@ -1575,6 +1581,7 @@ union cvmx_ipd_ctl_status {
 	struct cvmx_ipd_ctl_status_s          cn68xx;
 	struct cvmx_ipd_ctl_status_s          cn68xxp1;
 	struct cvmx_ipd_ctl_status_s          cn70xx;
+	struct cvmx_ipd_ctl_status_s          cn70xxp1;
 	struct cvmx_ipd_ctl_status_s          cnf71xx;
 };
 typedef union cvmx_ipd_ctl_status cvmx_ipd_ctl_status_t;
@@ -1938,6 +1945,7 @@ union cvmx_ipd_int_enb {
 	struct cvmx_ipd_int_enb_s             cn68xx;
 	struct cvmx_ipd_int_enb_s             cn68xxp1;
 	struct cvmx_ipd_int_enb_cn52xx        cn70xx;
+	struct cvmx_ipd_int_enb_cn52xx        cn70xxp1;
 	struct cvmx_ipd_int_enb_cn52xx        cnf71xx;
 };
 typedef union cvmx_ipd_int_enb cvmx_ipd_int_enb_t;
@@ -2143,6 +2151,7 @@ union cvmx_ipd_int_sum {
 	struct cvmx_ipd_int_sum_s             cn68xx;
 	struct cvmx_ipd_int_sum_s             cn68xxp1;
 	struct cvmx_ipd_int_sum_cn52xx        cn70xx;
+	struct cvmx_ipd_int_sum_cn52xx        cn70xxp1;
 	struct cvmx_ipd_int_sum_cn52xx        cnf71xx;
 };
 typedef union cvmx_ipd_int_sum cvmx_ipd_int_sum_t;
@@ -2235,6 +2244,7 @@ union cvmx_ipd_not_1st_mbuff_skip {
 	struct cvmx_ipd_not_1st_mbuff_skip_s  cn68xx;
 	struct cvmx_ipd_not_1st_mbuff_skip_s  cn68xxp1;
 	struct cvmx_ipd_not_1st_mbuff_skip_s  cn70xx;
+	struct cvmx_ipd_not_1st_mbuff_skip_s  cn70xxp1;
 	struct cvmx_ipd_not_1st_mbuff_skip_s  cnf71xx;
 };
 typedef union cvmx_ipd_not_1st_mbuff_skip cvmx_ipd_not_1st_mbuff_skip_t;
@@ -2314,6 +2324,7 @@ union cvmx_ipd_packet_mbuff_size {
 	struct cvmx_ipd_packet_mbuff_size_s   cn68xx;
 	struct cvmx_ipd_packet_mbuff_size_s   cn68xxp1;
 	struct cvmx_ipd_packet_mbuff_size_s   cn70xx;
+	struct cvmx_ipd_packet_mbuff_size_s   cn70xxp1;
 	struct cvmx_ipd_packet_mbuff_size_s   cnf71xx;
 };
 typedef union cvmx_ipd_packet_mbuff_size cvmx_ipd_packet_mbuff_size_t;
@@ -2377,6 +2388,7 @@ union cvmx_ipd_pkt_ptr_valid {
 	struct cvmx_ipd_pkt_ptr_valid_s       cn63xxp1;
 	struct cvmx_ipd_pkt_ptr_valid_s       cn66xx;
 	struct cvmx_ipd_pkt_ptr_valid_s       cn70xx;
+	struct cvmx_ipd_pkt_ptr_valid_s       cn70xxp1;
 	struct cvmx_ipd_pkt_ptr_valid_s       cnf71xx;
 };
 typedef union cvmx_ipd_pkt_ptr_valid cvmx_ipd_pkt_ptr_valid_t;
@@ -2424,6 +2436,7 @@ union cvmx_ipd_portx_bp_page_cnt {
 	struct cvmx_ipd_portx_bp_page_cnt_s   cn63xxp1;
 	struct cvmx_ipd_portx_bp_page_cnt_s   cn66xx;
 	struct cvmx_ipd_portx_bp_page_cnt_s   cn70xx;
+	struct cvmx_ipd_portx_bp_page_cnt_s   cn70xxp1;
 	struct cvmx_ipd_portx_bp_page_cnt_s   cnf71xx;
 };
 typedef union cvmx_ipd_portx_bp_page_cnt cvmx_ipd_portx_bp_page_cnt_t;
@@ -2465,6 +2478,7 @@ union cvmx_ipd_portx_bp_page_cnt2 {
 	struct cvmx_ipd_portx_bp_page_cnt2_s  cn63xxp1;
 	struct cvmx_ipd_portx_bp_page_cnt2_s  cn66xx;
 	struct cvmx_ipd_portx_bp_page_cnt2_s  cn70xx;
+	struct cvmx_ipd_portx_bp_page_cnt2_s  cn70xxp1;
 	struct cvmx_ipd_portx_bp_page_cnt2_s  cnf71xx;
 };
 typedef union cvmx_ipd_portx_bp_page_cnt2 cvmx_ipd_portx_bp_page_cnt2_t;
@@ -2502,6 +2516,7 @@ union cvmx_ipd_portx_bp_page_cnt3 {
 	struct cvmx_ipd_portx_bp_page_cnt3_s  cn63xxp1;
 	struct cvmx_ipd_portx_bp_page_cnt3_s  cn66xx;
 	struct cvmx_ipd_portx_bp_page_cnt3_s  cn70xx;
+	struct cvmx_ipd_portx_bp_page_cnt3_s  cn70xxp1;
 	struct cvmx_ipd_portx_bp_page_cnt3_s  cnf71xx;
 };
 typedef union cvmx_ipd_portx_bp_page_cnt3 cvmx_ipd_portx_bp_page_cnt3_t;
@@ -2533,6 +2548,7 @@ union cvmx_ipd_port_bp_counters2_pairx {
 	struct cvmx_ipd_port_bp_counters2_pairx_s cn63xxp1;
 	struct cvmx_ipd_port_bp_counters2_pairx_s cn66xx;
 	struct cvmx_ipd_port_bp_counters2_pairx_s cn70xx;
+	struct cvmx_ipd_port_bp_counters2_pairx_s cn70xxp1;
 	struct cvmx_ipd_port_bp_counters2_pairx_s cnf71xx;
 };
 typedef union cvmx_ipd_port_bp_counters2_pairx cvmx_ipd_port_bp_counters2_pairx_t;
@@ -2560,6 +2576,7 @@ union cvmx_ipd_port_bp_counters3_pairx {
 	struct cvmx_ipd_port_bp_counters3_pairx_s cn63xxp1;
 	struct cvmx_ipd_port_bp_counters3_pairx_s cn66xx;
 	struct cvmx_ipd_port_bp_counters3_pairx_s cn70xx;
+	struct cvmx_ipd_port_bp_counters3_pairx_s cn70xxp1;
 	struct cvmx_ipd_port_bp_counters3_pairx_s cnf71xx;
 };
 typedef union cvmx_ipd_port_bp_counters3_pairx cvmx_ipd_port_bp_counters3_pairx_t;
@@ -2585,6 +2602,7 @@ union cvmx_ipd_port_bp_counters4_pairx {
 	struct cvmx_ipd_port_bp_counters4_pairx_s cn61xx;
 	struct cvmx_ipd_port_bp_counters4_pairx_s cn66xx;
 	struct cvmx_ipd_port_bp_counters4_pairx_s cn70xx;
+	struct cvmx_ipd_port_bp_counters4_pairx_s cn70xxp1;
 	struct cvmx_ipd_port_bp_counters4_pairx_s cnf71xx;
 };
 typedef union cvmx_ipd_port_bp_counters4_pairx cvmx_ipd_port_bp_counters4_pairx_t;
@@ -2623,6 +2641,7 @@ union cvmx_ipd_port_bp_counters_pairx {
 	struct cvmx_ipd_port_bp_counters_pairx_s cn63xxp1;
 	struct cvmx_ipd_port_bp_counters_pairx_s cn66xx;
 	struct cvmx_ipd_port_bp_counters_pairx_s cn70xx;
+	struct cvmx_ipd_port_bp_counters_pairx_s cn70xxp1;
 	struct cvmx_ipd_port_bp_counters_pairx_s cnf71xx;
 };
 typedef union cvmx_ipd_port_bp_counters_pairx cvmx_ipd_port_bp_counters_pairx_t;
@@ -2701,6 +2720,7 @@ union cvmx_ipd_port_qos_x_cnt {
 	struct cvmx_ipd_port_qos_x_cnt_s      cn68xx;
 	struct cvmx_ipd_port_qos_x_cnt_s      cn68xxp1;
 	struct cvmx_ipd_port_qos_x_cnt_s      cn70xx;
+	struct cvmx_ipd_port_qos_x_cnt_s      cn70xxp1;
 	struct cvmx_ipd_port_qos_x_cnt_s      cnf71xx;
 };
 typedef union cvmx_ipd_port_qos_x_cnt cvmx_ipd_port_qos_x_cnt_t;
@@ -2734,6 +2754,7 @@ union cvmx_ipd_port_qos_intx {
 	struct cvmx_ipd_port_qos_intx_s       cn68xx;
 	struct cvmx_ipd_port_qos_intx_s       cn68xxp1;
 	struct cvmx_ipd_port_qos_intx_s       cn70xx;
+	struct cvmx_ipd_port_qos_intx_s       cn70xxp1;
 	struct cvmx_ipd_port_qos_intx_s       cnf71xx;
 };
 typedef union cvmx_ipd_port_qos_intx cvmx_ipd_port_qos_intx_t;
@@ -2764,6 +2785,7 @@ union cvmx_ipd_port_qos_int_enbx {
 	struct cvmx_ipd_port_qos_int_enbx_s   cn68xx;
 	struct cvmx_ipd_port_qos_int_enbx_s   cn68xxp1;
 	struct cvmx_ipd_port_qos_int_enbx_s   cn70xx;
+	struct cvmx_ipd_port_qos_int_enbx_s   cn70xxp1;
 	struct cvmx_ipd_port_qos_int_enbx_s   cnf71xx;
 };
 typedef union cvmx_ipd_port_qos_int_enbx cvmx_ipd_port_qos_int_enbx_t;
@@ -2841,6 +2863,7 @@ union cvmx_ipd_prc_hold_ptr_fifo_ctl {
 	struct cvmx_ipd_prc_hold_ptr_fifo_ctl_s cn63xxp1;
 	struct cvmx_ipd_prc_hold_ptr_fifo_ctl_s cn66xx;
 	struct cvmx_ipd_prc_hold_ptr_fifo_ctl_s cn70xx;
+	struct cvmx_ipd_prc_hold_ptr_fifo_ctl_s cn70xxp1;
 	struct cvmx_ipd_prc_hold_ptr_fifo_ctl_s cnf71xx;
 };
 typedef union cvmx_ipd_prc_hold_ptr_fifo_ctl cvmx_ipd_prc_hold_ptr_fifo_ctl_t;
@@ -2892,6 +2915,7 @@ union cvmx_ipd_prc_port_ptr_fifo_ctl {
 	struct cvmx_ipd_prc_port_ptr_fifo_ctl_s cn63xxp1;
 	struct cvmx_ipd_prc_port_ptr_fifo_ctl_s cn66xx;
 	struct cvmx_ipd_prc_port_ptr_fifo_ctl_s cn70xx;
+	struct cvmx_ipd_prc_port_ptr_fifo_ctl_s cn70xxp1;
 	struct cvmx_ipd_prc_port_ptr_fifo_ctl_s cnf71xx;
 };
 typedef union cvmx_ipd_prc_port_ptr_fifo_ctl cvmx_ipd_prc_port_ptr_fifo_ctl_t;
@@ -2952,6 +2976,7 @@ union cvmx_ipd_ptr_count {
 	struct cvmx_ipd_ptr_count_s           cn68xx;
 	struct cvmx_ipd_ptr_count_s           cn68xxp1;
 	struct cvmx_ipd_ptr_count_s           cn70xx;
+	struct cvmx_ipd_ptr_count_s           cn70xxp1;
 	struct cvmx_ipd_ptr_count_s           cnf71xx;
 };
 typedef union cvmx_ipd_ptr_count cvmx_ipd_ptr_count_t;
@@ -3012,6 +3037,7 @@ union cvmx_ipd_pwp_ptr_fifo_ctl {
 	struct cvmx_ipd_pwp_ptr_fifo_ctl_s    cn63xxp1;
 	struct cvmx_ipd_pwp_ptr_fifo_ctl_s    cn66xx;
 	struct cvmx_ipd_pwp_ptr_fifo_ctl_s    cn70xx;
+	struct cvmx_ipd_pwp_ptr_fifo_ctl_s    cn70xxp1;
 	struct cvmx_ipd_pwp_ptr_fifo_ctl_s    cnf71xx;
 };
 typedef union cvmx_ipd_pwp_ptr_fifo_ctl cvmx_ipd_pwp_ptr_fifo_ctl_t;
@@ -3054,6 +3080,7 @@ union cvmx_ipd_qosx_red_marks {
 	struct cvmx_ipd_qosx_red_marks_s      cn68xx;
 	struct cvmx_ipd_qosx_red_marks_s      cn68xxp1;
 	struct cvmx_ipd_qosx_red_marks_s      cn70xx;
+	struct cvmx_ipd_qosx_red_marks_s      cn70xxp1;
 	struct cvmx_ipd_qosx_red_marks_s      cnf71xx;
 };
 typedef union cvmx_ipd_qosx_red_marks cvmx_ipd_qosx_red_marks_t;
@@ -3093,6 +3120,7 @@ union cvmx_ipd_que0_free_page_cnt {
 	struct cvmx_ipd_que0_free_page_cnt_s  cn68xx;
 	struct cvmx_ipd_que0_free_page_cnt_s  cn68xxp1;
 	struct cvmx_ipd_que0_free_page_cnt_s  cn70xx;
+	struct cvmx_ipd_que0_free_page_cnt_s  cn70xxp1;
 	struct cvmx_ipd_que0_free_page_cnt_s  cnf71xx;
 };
 typedef union cvmx_ipd_que0_free_page_cnt cvmx_ipd_que0_free_page_cnt_t;
@@ -3202,6 +3230,7 @@ union cvmx_ipd_red_port_enable {
 	struct cvmx_ipd_red_port_enable_s     cn63xxp1;
 	struct cvmx_ipd_red_port_enable_s     cn66xx;
 	struct cvmx_ipd_red_port_enable_s     cn70xx;
+	struct cvmx_ipd_red_port_enable_s     cn70xxp1;
 	struct cvmx_ipd_red_port_enable_s     cnf71xx;
 };
 typedef union cvmx_ipd_red_port_enable cvmx_ipd_red_port_enable_t;
@@ -3254,6 +3283,7 @@ union cvmx_ipd_red_port_enable2 {
 	struct cvmx_ipd_red_port_enable2_cn63xx cn63xxp1;
 	struct cvmx_ipd_red_port_enable2_s    cn66xx;
 	struct cvmx_ipd_red_port_enable2_s    cn70xx;
+	struct cvmx_ipd_red_port_enable2_s    cn70xxp1;
 	struct cvmx_ipd_red_port_enable2_s    cnf71xx;
 };
 typedef union cvmx_ipd_red_port_enable2 cvmx_ipd_red_port_enable2_t;
@@ -3328,6 +3358,7 @@ union cvmx_ipd_red_quex_param {
 	struct cvmx_ipd_red_quex_param_s      cn68xx;
 	struct cvmx_ipd_red_quex_param_s      cn68xxp1;
 	struct cvmx_ipd_red_quex_param_s      cn70xx;
+	struct cvmx_ipd_red_quex_param_s      cn70xxp1;
 	struct cvmx_ipd_red_quex_param_s      cnf71xx;
 };
 typedef union cvmx_ipd_red_quex_param cvmx_ipd_red_quex_param_t;
@@ -3414,6 +3445,7 @@ union cvmx_ipd_sub_port_bp_page_cnt {
 	struct cvmx_ipd_sub_port_bp_page_cnt_s cn68xx;
 	struct cvmx_ipd_sub_port_bp_page_cnt_s cn68xxp1;
 	struct cvmx_ipd_sub_port_bp_page_cnt_s cn70xx;
+	struct cvmx_ipd_sub_port_bp_page_cnt_s cn70xxp1;
 	struct cvmx_ipd_sub_port_bp_page_cnt_s cnf71xx;
 };
 typedef union cvmx_ipd_sub_port_bp_page_cnt cvmx_ipd_sub_port_bp_page_cnt_t;
@@ -3479,6 +3511,7 @@ union cvmx_ipd_sub_port_fcs {
 	struct cvmx_ipd_sub_port_fcs_s        cn63xxp1;
 	struct cvmx_ipd_sub_port_fcs_s        cn66xx;
 	struct cvmx_ipd_sub_port_fcs_s        cn70xx;
+	struct cvmx_ipd_sub_port_fcs_s        cn70xxp1;
 	struct cvmx_ipd_sub_port_fcs_s        cnf71xx;
 };
 typedef union cvmx_ipd_sub_port_fcs cvmx_ipd_sub_port_fcs_t;
@@ -3515,6 +3548,7 @@ union cvmx_ipd_sub_port_qos_cnt {
 	struct cvmx_ipd_sub_port_qos_cnt_s    cn68xx;
 	struct cvmx_ipd_sub_port_qos_cnt_s    cn68xxp1;
 	struct cvmx_ipd_sub_port_qos_cnt_s    cn70xx;
+	struct cvmx_ipd_sub_port_qos_cnt_s    cn70xxp1;
 	struct cvmx_ipd_sub_port_qos_cnt_s    cnf71xx;
 };
 typedef union cvmx_ipd_sub_port_qos_cnt cvmx_ipd_sub_port_qos_cnt_t;
@@ -3556,6 +3590,7 @@ union cvmx_ipd_wqe_fpa_queue {
 	struct cvmx_ipd_wqe_fpa_queue_s       cn68xx;
 	struct cvmx_ipd_wqe_fpa_queue_s       cn68xxp1;
 	struct cvmx_ipd_wqe_fpa_queue_s       cn70xx;
+	struct cvmx_ipd_wqe_fpa_queue_s       cn70xxp1;
 	struct cvmx_ipd_wqe_fpa_queue_s       cnf71xx;
 };
 typedef union cvmx_ipd_wqe_fpa_queue cvmx_ipd_wqe_fpa_queue_t;
@@ -3594,6 +3629,7 @@ union cvmx_ipd_wqe_ptr_valid {
 	struct cvmx_ipd_wqe_ptr_valid_s       cn63xxp1;
 	struct cvmx_ipd_wqe_ptr_valid_s       cn66xx;
 	struct cvmx_ipd_wqe_ptr_valid_s       cn70xx;
+	struct cvmx_ipd_wqe_ptr_valid_s       cn70xxp1;
 	struct cvmx_ipd_wqe_ptr_valid_s       cnf71xx;
 };
 typedef union cvmx_ipd_wqe_ptr_valid cvmx_ipd_wqe_ptr_valid_t;

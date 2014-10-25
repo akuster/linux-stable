@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -180,6 +180,7 @@ union cvmx_ndf_bt_pg_info {
 	struct cvmx_ndf_bt_pg_info_s          cn68xx;
 	struct cvmx_ndf_bt_pg_info_s          cn68xxp1;
 	struct cvmx_ndf_bt_pg_info_s          cn70xx;
+	struct cvmx_ndf_bt_pg_info_s          cn70xxp1;
 };
 typedef union cvmx_ndf_bt_pg_info cvmx_ndf_bt_pg_info_t;
 
@@ -210,6 +211,7 @@ union cvmx_ndf_cmd {
 	struct cvmx_ndf_cmd_s                 cn68xx;
 	struct cvmx_ndf_cmd_s                 cn68xxp1;
 	struct cvmx_ndf_cmd_s                 cn70xx;
+	struct cvmx_ndf_cmd_s                 cn70xxp1;
 };
 typedef union cvmx_ndf_cmd cvmx_ndf_cmd_t;
 
@@ -262,6 +264,7 @@ union cvmx_ndf_drbell {
 	struct cvmx_ndf_drbell_s              cn68xx;
 	struct cvmx_ndf_drbell_s              cn68xxp1;
 	struct cvmx_ndf_drbell_s              cn70xx;
+	struct cvmx_ndf_drbell_s              cn70xxp1;
 };
 typedef union cvmx_ndf_drbell cvmx_ndf_drbell_t;
 
@@ -297,6 +300,7 @@ union cvmx_ndf_ecc_cnt {
 	struct cvmx_ndf_ecc_cnt_s             cn68xx;
 	struct cvmx_ndf_ecc_cnt_s             cn68xxp1;
 	struct cvmx_ndf_ecc_cnt_s             cn70xx;
+	struct cvmx_ndf_ecc_cnt_s             cn70xxp1;
 };
 typedef union cvmx_ndf_ecc_cnt cvmx_ndf_ecc_cnt_t;
 
@@ -340,6 +344,7 @@ union cvmx_ndf_int {
 	struct cvmx_ndf_int_s                 cn68xx;
 	struct cvmx_ndf_int_s                 cn68xxp1;
 	struct cvmx_ndf_int_s                 cn70xx;
+	struct cvmx_ndf_int_s                 cn70xxp1;
 };
 typedef union cvmx_ndf_int cvmx_ndf_int_t;
 
@@ -380,6 +385,7 @@ union cvmx_ndf_int_en {
 	struct cvmx_ndf_int_en_s              cn68xx;
 	struct cvmx_ndf_int_en_s              cn68xxp1;
 	struct cvmx_ndf_int_en_s              cn70xx;
+	struct cvmx_ndf_int_en_s              cn70xxp1;
 };
 typedef union cvmx_ndf_int_en cvmx_ndf_int_en_t;
 
@@ -509,6 +515,7 @@ union cvmx_ndf_misc {
 	struct cvmx_ndf_misc_s                cn68xx;
 	struct cvmx_ndf_misc_s                cn68xxp1;
 	struct cvmx_ndf_misc_s                cn70xx;
+	struct cvmx_ndf_misc_s                cn70xxp1;
 };
 typedef union cvmx_ndf_misc cvmx_ndf_misc_t;
 
@@ -551,6 +558,7 @@ union cvmx_ndf_st_reg {
 	struct cvmx_ndf_st_reg_s              cn68xx;
 	struct cvmx_ndf_st_reg_s              cn68xxp1;
 	struct cvmx_ndf_st_reg_s              cn70xx;
+	struct cvmx_ndf_st_reg_s              cn70xxp1;
 };
 typedef union cvmx_ndf_st_reg cvmx_ndf_st_reg_t;
 

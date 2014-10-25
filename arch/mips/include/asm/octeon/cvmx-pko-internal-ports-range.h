@@ -72,6 +72,8 @@ int cvmx_pko_internal_ports_free(int interface, int port);
  */
 void cvmx_pko_internal_ports_range_free_all(void);
 
+void cvmx_pko_internal_ports_range_show(void);
+
 extern int __cvmx_pko_internal_ports_range_init(void);
 
 #endif

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2010-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -55,7 +55,7 @@
 #include <asm/octeon/cvmx-helper-cfg.h>
 #include <asm/octeon/cvmx-ilk.h>
 #include <asm/octeon/cvmx-bootmem.h>
-#include <asm/octeon/cvmx-pko.h>
+#include <asm/octeon/cvmx-hwpko.h>
 #include <asm/octeon/cvmx-qlm.h>
 #include <asm/octeon/cvmx-ilk-defs.h>
 #else
@@ -65,25 +65,62 @@
 #include "cvmx-helper-cfg.h"
 #include "cvmx-ilk.h"
 #include "cvmx-bootmem.h"
-#include "cvmx-pko.h"
+#include "cvmx-hwpko.h"
 #include "cvmx-qlm.h"
 #endif
 
 
-int __cvmx_helper_ilk_enumerate(int interface)
+int __cvmx_helper_ilk_enumerate(int xiface)
 {
-	interface -= CVMX_ILK_GBL_BASE();
-	return cvmx_ilk_chans[interface];
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	xi.interface -= CVMX_ILK_GBL_BASE();
+	return cvmx_ilk_chans[xi.interface];
 }
 
 /**
  * @INTERNAL
- * Initialize all calendar entries to the xoff state. This
- * means no data is sent or received.
+ * Initialize all tx calendar entries to the xoff state.
+ * Initialize all rx calendar entries to the xon state. The rx calendar entries 
+ * must be in the xon state to allow new pko pipe assignments. If a calendar
+ * entry is assigned a different pko pipe while in the xoff state, the old pko 
+ * pipe will stay in the xoff state even when no longer used by ilk.
  *
  * @param interface Interface whose calendar are to be initialized.
  */
-void __cvmx_ilk_init_cal(int interface)
+void __cvmx_ilk_init_cal_cn78xx(int interface)
+{
+	cvmx_ilk_txx_cal_entryx_t	tx_entry;
+	cvmx_ilk_rxx_cal_entryx_t	rx_entry;
+	int				i;
+
+	/* Initialize all tx calendar entries to off */
+	tx_entry.u64 = 0;
+	tx_entry.s.ctl = XOFF;
+	for (i = 0; i < CVMX_ILK_MAX_CAL_IDX; i++) {
+		cvmx_write_csr(CVMX_ILK_TXX_CAL_ENTRYX(i, interface),
+			       tx_entry.u64);
+	}
+
+	/* Initialize all rx calendar entries to on */
+	rx_entry.u64 = 0;
+	rx_entry.s.ctl = XOFF;
+	for (i = 0; i < CVMX_ILK_MAX_CAL_IDX; i++) {
+		cvmx_write_csr(CVMX_ILK_RXX_CAL_ENTRYX(i, interface),
+			       rx_entry.u64);
+	}
+}
+
+/**
+ * @INTERNAL
+ * Initialize all tx calendar entries to the xoff state.
+ * Initialize all rx calendar entries to the xon state. The rx calendar entries 
+ * must be in the xon state to allow new pko pipe assignments. If a calendar
+ * entry is assigned a different pko pipe while in the xoff state, the old pko 
+ * pipe will stay in the xoff state even when no longer used by ilk.
+ *
+ * @param interface Interface whose calendar are to be initialized.
+ */
+void __cvmx_ilk_init_cal_cn68xx(int interface)
 {
 	cvmx_ilk_txx_idx_cal_t	tx_idx;
 	cvmx_ilk_txx_mem_cal0_t tx_cal0;
@@ -128,7 +165,7 @@ void __cvmx_ilk_init_cal(int interface)
 	rx_idx.s.inc = 1;
 	cvmx_write_csr(CVMX_ILK_RXX_IDX_CAL(interface), rx_idx.u64);
 
-	/* Set state to xoff for all entries */
+	/* Set state to xon for all entries */
 	rx_cal0.u64 = 0;
 	rx_cal0.s.entry_ctl0 = XON;
 	rx_cal0.s.entry_ctl1 = XON;
@@ -150,15 +187,21 @@ void __cvmx_ilk_init_cal(int interface)
 
 /**
  * @INTERNAL
- * Setup the channel's tx calendar entry.
+ * Initialize all calendar entries.
  *
- * @param interface Interface channel belongs to
- * @param channel Channel whose calendar entry is to be updated
- * @param bpid Bpid assigned to the channel
+ * @param interface Interface whose calendar is to be initialized.
  */
-void __cvmx_ilk_write_tx_cal_entry(int			interface,
-				   int			channel,
-				   unsigned char	bpid)
+void __cvmx_ilk_init_cal(int interface)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		__cvmx_ilk_init_cal_cn68xx(interface);
+	else if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		__cvmx_ilk_init_cal_cn78xx(interface);
+}
+
+void __cvmx_ilk_write_tx_cal_entry_cn68xx(int interface,
+					  int channel,
+					  unsigned char bpid)
 {
 	cvmx_ilk_txx_idx_cal_t	tx_idx;
 	cvmx_ilk_txx_mem_cal0_t	tx_cal0;
@@ -242,17 +285,71 @@ void __cvmx_ilk_write_tx_cal_entry(int			interface,
 	cvmx_write_csr(CVMX_ILK_TXX_MEM_CAL1(interface), tx_cal1.u64);
 }
 
+void __cvmx_ilk_write_tx_cal_entry_cn78xx(int interface,
+					  int channel,
+					  unsigned char bpid)
+{
+	cvmx_ilk_txx_cal_entryx_t tx_cal;
+	int calender_16_block = channel / 15;
+	int calender_16_index = channel % 15 + 1;
+	int index = calender_16_block * 16 + calender_16_index;
+
+	/* Program the link status on first channel */
+	if (calender_16_index == 1) {
+		tx_cal.u64 = 0;
+		tx_cal.s.ctl = 1;
+		cvmx_write_csr(CVMX_ILK_TXX_CAL_ENTRYX(index - 1, interface),
+				tx_cal.u64);
+	}
+	tx_cal.u64 = 0;
+	tx_cal.s.ctl = 0;
+	tx_cal.s.channel = channel;
+	cvmx_write_csr(CVMX_ILK_TXX_CAL_ENTRYX(index, interface), tx_cal.u64);
+}
+	
 /**
  * @INTERNAL
- * Setup the channel's rx calendar entry.
+ * Setup the channel's tx calendar entry.
  *
  * @param interface Interface channel belongs to
  * @param channel Channel whose calendar entry is to be updated
- * @param pipe PKO assigned to the channel
+ * @param bpid Bpid assigned to the channel
  */
-void __cvmx_ilk_write_rx_cal_entry(int			interface,
+void __cvmx_ilk_write_tx_cal_entry(int			interface,
 				   int			channel,
-				   unsigned char	pipe)
+				   unsigned char	bpid)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		__cvmx_ilk_write_tx_cal_entry_cn68xx(interface, channel, bpid);
+	else
+		__cvmx_ilk_write_tx_cal_entry_cn78xx(interface, channel, bpid);
+}
+
+void __cvmx_ilk_write_rx_cal_entry_cn78xx(int interface,
+					  int channel,
+					  unsigned char bpid)
+{
+	cvmx_ilk_rxx_cal_entryx_t rx_cal;
+	int calender_16_block = channel / 15;
+	int calender_16_index = channel % 15 + 1;
+	int index = calender_16_block * 16 + calender_16_index;
+
+	/* Program the link status on first channel */
+	if (calender_16_index == 1) {
+		rx_cal.u64 = 0;
+		rx_cal.s.ctl = 1;
+		cvmx_write_csr(CVMX_ILK_RXX_CAL_ENTRYX(index - 1, interface),
+				rx_cal.u64);
+	}
+	rx_cal.u64 = 0;
+	rx_cal.s.ctl = 0;
+	rx_cal.s.channel = channel;
+	cvmx_write_csr(CVMX_ILK_RXX_CAL_ENTRYX(index, interface), rx_cal.u64);
+}
+
+void __cvmx_ilk_write_rx_cal_entry_cn68xx(int interface,
+					  int channel,
+					  unsigned char pipe)
 {
 	cvmx_ilk_rxx_idx_cal_t	rx_idx;
 	cvmx_ilk_rxx_mem_cal0_t	rx_cal0;
@@ -338,6 +435,24 @@ void __cvmx_ilk_write_rx_cal_entry(int			interface,
 
 /**
  * @INTERNAL
+ * Setup the channel's rx calendar entry.
+ *
+ * @param interface Interface channel belongs to
+ * @param channel Channel whose calendar entry is to be updated
+ * @param pipe PKO assigned to the channel
+ */
+void __cvmx_ilk_write_rx_cal_entry(int			interface,
+				   int			channel,
+				   unsigned char	pipe)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		__cvmx_ilk_write_rx_cal_entry_cn68xx(interface, channel, pipe);
+	else
+		__cvmx_ilk_write_rx_cal_entry_cn78xx(interface, channel, pipe);
+}
+
+/**
+ * @INTERNAL
  * Probe a ILK interface and determine the number of ports
  * connected to it. The ILK interface should still be down
  * after this call.
@@ -346,15 +461,16 @@ void __cvmx_ilk_write_rx_cal_entry(int			interface,
  *
  * @return Number of ports on the interface. Zero to disable.
  */
-int __cvmx_helper_ilk_probe(int interface)
+int __cvmx_helper_ilk_probe(int xiface)
 {
 	int res = 0;
+	int interface;
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
-	interface -= CVMX_ILK_GBL_BASE();
+	interface = xi.interface - CVMX_ILK_GBL_BASE();
 	if (interface >= CVMX_NUM_ILK_INTF)
 		return 0;
 
@@ -367,12 +483,12 @@ int __cvmx_helper_ilk_probe(int interface)
 	if (res < 0)
 		return 0;
 
-	res = __cvmx_helper_ilk_enumerate(interface + CVMX_ILK_GBL_BASE());
+	res = __cvmx_helper_ilk_enumerate(xiface);
 
 	return res;
 }
 
-static int __cvmx_helper_ilk_init_port(int interface)
+static int __cvmx_helper_ilk_init_port(int xiface)
 {
 	int i, j, res = -1;
 	static int pipe_base = 0, pknd_base = 0;
@@ -380,25 +496,31 @@ static int __cvmx_helper_ilk_init_port(int interface)
 	static cvmx_ilk_chan_pknd_t *chpknd = NULL, *tmp1;
 	static cvmx_ilk_cal_entry_t *calent = NULL, *tmp2;
 	int enable_rx_cal = 1;
+	int interface;
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
 
-	interface -= CVMX_ILK_GBL_BASE();
+	interface = xi.interface - CVMX_ILK_GBL_BASE();
 	if (interface >= CVMX_NUM_ILK_INTF)
 		return 0;
+
+	/* set up channel to pkind mapping */
+	if (pknd_base == 0)
+		pknd_base = cvmx_helper_get_pknd(xiface, 0);
 
 	/* set up the group of pipes available to ilk */
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 		if (pipe_base == 0)
 			pipe_base = __cvmx_pko_get_pipe(interface + CVMX_ILK_GBL_BASE(), 0);
-	
+
 		if (pipe_base == -1) {
 			pipe_base = 0;
 			return 0;
 		}
-	
+
 		res = cvmx_ilk_set_pipe(interface, pipe_base, cvmx_ilk_chans[interface]);
 		if (res < 0)
 			return 0;
-	
+
 		/* set up pipe to channel mapping */
 		i = pipe_base;
 		if (pch == NULL) {
@@ -411,7 +533,7 @@ static int __cvmx_helper_ilk_init_port(int interface)
 			if (pch == NULL)
 				return 0;
 		}
-	
+
 		memset(pch, 0, CVMX_ILK_MAX_CHANS * sizeof(cvmx_ilk_pipe_chan_t));
 		tmp = pch;
 		for (j = 0; j < cvmx_ilk_chans[interface]; j++) {
@@ -425,20 +547,8 @@ static int __cvmx_helper_ilk_init_port(int interface)
 			goto err_free_pch;
 		}
 		pipe_base += cvmx_ilk_chans[interface];
-	}
-
-	/* set up channel to pkind mapping */
-	if (pknd_base == 0)
-		pknd_base = cvmx_helper_get_pknd(interface + CVMX_ILK_GBL_BASE(), 0);
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		/*
-		 * Must initialize pknd_base here until the pko initializion is
-		 * complete. This must be removed once the pko initialization is
-		 * working. TODO
-		 */
-		pknd_base = 0;
+	} else if (OCTEON_IS_MODEL(OCTEON_CN78XX))
 		pipe_base = pknd_base + cvmx_ilk_chans[interface];
-	}
 
 	i = pknd_base;
 	if (chpknd == NULL) {
@@ -567,12 +677,13 @@ out:
  *
  * @return Zero on success, negative on failure
  */
-int __cvmx_helper_ilk_enable(int interface)
+int __cvmx_helper_ilk_enable(int xiface)
 {
-	if (__cvmx_helper_ilk_init_port(interface) < 0)
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	if (__cvmx_helper_ilk_init_port(xiface) < 0)
 		return -1;
 
-	return cvmx_ilk_enable(interface - CVMX_ILK_GBL_BASE());
+	return cvmx_ilk_enable(xi.interface - CVMX_ILK_GBL_BASE());
 }
 
 /**
@@ -586,7 +697,9 @@ int __cvmx_helper_ilk_enable(int interface)
 cvmx_helper_link_info_t __cvmx_helper_ilk_link_get(int ipd_port)
 {
 	cvmx_helper_link_info_t result;
-	int interface = cvmx_helper_get_interface_num(ipd_port);
+	int xiface = cvmx_helper_get_interface_num(ipd_port);
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	int interface;
 	int retry_count = 0;
 	cvmx_ilk_rxx_cfg1_t ilk_rxx_cfg1;
 	cvmx_ilk_rxx_int_t ilk_rxx_int;
@@ -594,7 +707,7 @@ cvmx_helper_link_info_t __cvmx_helper_ilk_link_get(int ipd_port)
 	int i;
 
 	result.u64 = 0;
-	interface -= CVMX_ILK_GBL_BASE();
+	interface = xi.interface - CVMX_ILK_GBL_BASE();
 
 retry:
 	retry_count++;
@@ -612,7 +725,7 @@ retry:
 		cvmx_write_csr(CVMX_ILK_RXX_INT(interface), ilk_rxx_int.u64);
 
 		/* We need to start looking for word boundary lock */
-		ilk_rxx_cfg1.s.rx_bdry_lock_ena = cvmx_ilk_get_intf_ln_msk(interface);
+		ilk_rxx_cfg1.s.rx_bdry_lock_ena = cvmx_ilk_lane_mask[interface];
 		ilk_rxx_cfg1.s.rx_align_ena = 0;
 		cvmx_write_csr(CVMX_ILK_RXX_CFG1(interface), ilk_rxx_cfg1.u64);
 		//cvmx_dprintf("ILK%d: Looking for word boundary lock\n", interface);
@@ -653,12 +766,22 @@ retry:
 		ilk_rxx_cfg1.s.pkt_ena = ilk_txx_cfg1.s.pkt_ena;
 		cvmx_write_csr(CVMX_ILK_RXX_CFG1(interface), ilk_rxx_cfg1.u64);
 
-		/* Enable rxf_ctl_perr, rxf_lnk0_perr, rxf_lnk1_perr, pop_empty, push_full */
-		cvmx_write_csr(CVMX_ILK_GBL_INT_EN, 0x1f);
-		/* Enable bad_pipe, bad_seq, txf_err */
-		cvmx_write_csr(CVMX_ILK_TXX_INT_EN(interface), 0x7);
-		/* Enable crc24_err, lane_bad_word, pkt_drop_{rid,rxf,sop} */
-		cvmx_write_csr(CVMX_ILK_RXX_INT_EN(interface), 0x1e2);
+		if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+			/*
+			 * Enable rxf_ctl_perr, rxf_lnk0_perr, rxf_lnk1_perr,
+			 * pop_empty, push_full.
+			 */
+			cvmx_write_csr(CVMX_ILK_GBL_INT_EN, 0x1f);
+			/* Enable bad_pipe, bad_seq, txf_err */
+			cvmx_write_csr(CVMX_ILK_TXX_INT_EN(interface), 0x7);
+
+			/*
+			 * Enable crc24_err, lane_bad_word,
+			 * pkt_drop_{rid,rxf,sop}
+			 */
+			cvmx_write_csr(CVMX_ILK_RXX_INT_EN(interface), 0x1e2);
+		}
+		/* FIXME: Enable ILK interrupts for 78xx */
 
 		for (i = 0; i < CVMX_ILK_MAX_LANES(); i++) {
 			if ((1 << i) & lane_mask) {
@@ -666,7 +789,8 @@ retry:
 				cvmx_write_csr(CVMX_ILK_RX_LNEX_INT(i), 0x1ff);
 				/* Enable bad_64b67b, bdry_sync_loss, crc32_err, dskew_fifo_ovfl,
 				   scrm_sync_loss, serdes_lock_loss, stat_msg, ukwn_cntl_word */
-				cvmx_write_csr(CVMX_ILK_RX_LNEX_INT_EN(i), 0x1ff);
+				if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+					cvmx_write_csr(CVMX_ILK_RX_LNEX_INT_EN(i), 0x1ff);
 			}
 		}
 
@@ -675,7 +799,11 @@ retry:
 
 	result.s.link_up = 1;
 	result.s.full_duplex = 1;
-	result.s.speed = cvmx_qlm_get_gbaud_mhz(1 + interface) * 64 / 67;
+ 	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		int qlm = cvmx_qlm_interface(xiface);
+		result.s.speed = cvmx_qlm_get_gbaud_mhz(qlm) * 64 / 67;
+	} else
+		result.s.speed = cvmx_qlm_get_gbaud_mhz(1 + interface) * 64 / 67;
 	result.s.speed *= cvmx_pop(lane_mask);
 
 	return result;
@@ -692,7 +820,8 @@ fail:
 			   scrm_sync_loss, serdes_lock_loss, stat_msg, ukwn_cntl_word */
 			if ((1 << i) & lane_mask) {
 				cvmx_write_csr(CVMX_ILK_RX_LNEX_INT(i), 0x1ff);
-				cvmx_write_csr(CVMX_ILK_RX_LNEX_INT_EN(i), ~0x1ff);
+				if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+					cvmx_write_csr(CVMX_ILK_RX_LNEX_INT_EN(i), ~0x1ff);
 			}
 		}
 	}

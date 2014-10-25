@@ -61,7 +61,7 @@
 #endif
 
 
-int __cvmx_helper_agl_enumerate(int interface)
+int __cvmx_helper_agl_enumerate(int xiface)
 {
 	if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
 		union cvmx_agl_prtx_ctl agl_prtx_ctl;
@@ -79,10 +79,11 @@ int __cvmx_helper_agl_enumerate(int interface)
  * @param interface  Interface to probe
  * @return  The port corresponding to the interface
  */
-int cvmx_helper_agl_get_port(int interface)
+int cvmx_helper_agl_get_port(int xiface)
 {
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
 	if (OCTEON_IS_MODEL(OCTEON_CN70XX))
-		return interface - 4;
+		return xi.interface - 4;
 	return -1;
 }
 
@@ -143,8 +144,7 @@ int __cvmx_helper_agl_probe(int interface)
 		agl_prtx_ctl.s.clkrx_set =
 			cvmx_helper_get_agl_rx_clock_skew(interface, port);
 		agl_prtx_ctl.s.clkrx_byp =
-			cvmx_helper_get_agl_rx_clock_delay_bypass(interface,
-								  port);
+			cvmx_helper_get_agl_rx_clock_delay_bypass(interface, port);
 	}
 	cvmx_write_csr(CVMX_AGL_PRTX_CTL(port), agl_prtx_ctl.u64);
 	/* Force write out before wait */
@@ -231,7 +231,7 @@ int __cvmx_helper_agl_enable(int interface)
 		do_link_set = 0;
 #endif
 	if (do_link_set)
-		cvmx_agl_link_set(port, cvmx_agl_link_get(ipd_port), 1);
+		cvmx_agl_link_set(port, cvmx_agl_link_get(ipd_port));
 
 	return 0;
 }
@@ -269,5 +269,5 @@ int __cvmx_helper_agl_link_set(int ipd_port, cvmx_helper_link_info_t link_info)
 {
 	int interface = cvmx_helper_get_interface_num(ipd_port);
 	int port = cvmx_helper_agl_get_port(interface);
-	return cvmx_agl_link_set(port, link_info, 1);
+	return cvmx_agl_link_set(port, link_info);
 }

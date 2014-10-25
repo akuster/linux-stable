@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -133,12 +133,12 @@ union cvmx_mpi_cfg {
 	uint64_t clkdiv                       : 13; /**< Fspi_clk = Fsclk / (2 * CLKDIV)                    |          NS
                                                          CLKDIV = Fsclk / (2 * Fspi_clk) */
 	uint64_t csena3                       : 1;  /**< SPI_CS3_L enable:
-                                                         0=UART1_RTS_L/SPI_CS3_L pin is UART pin.
-                                                         1=UART1_RTS_L/SPI_CS3_L pin is MPI/SPI pin.
+                                                         0 = UART1_RTS_L/SPI_CS3_L pin is UART pin.
+                                                         1 = UART1_RTS_L/SPI_CS3_L pin is MPI/SPI pin.
                                                          SPI_CS3_L drives UART1_RTS_L/SPI_CS3_L. */
 	uint64_t csena2                       : 1;  /**< SPI_CS2_L enable:
-                                                         0=UART1_CTS_L/SPI_CS2_L pin is UART pin.
-                                                         1=UART1_CTS_L/SPI_CS2_L pin is MPI/SPI pin.
+                                                         0 = UART1_CTS_L/SPI_CS2_L pin is UART pin.
+                                                         1 = UART1_CTS_L/SPI_CS2_L pin is MPI/SPI pin.
                                                          SPI_CS2_L drives UART1_CTS_L/SPI_CS2_L. */
 	uint64_t csena1                       : 1;  /**< If 0, BOOT_CE_N<7>/SPI_CS1_L pin is BOOT pin       |          NS
                                                          1, BOOT_CE_N<7>/SPI_CS1_L pin is SPI pin
@@ -510,30 +510,31 @@ union cvmx_mpi_cfg {
 	uint64_t reserved_29_63               : 35;
 #endif
 	} cn70xx;
+	struct cvmx_mpi_cfg_cn70xx            cn70xxp1;
 	struct cvmx_mpi_cfg_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_29_63               : 35;
 	uint64_t clkdiv                       : 13; /**< Clock divisor.
-                                                         SPI_CK = coprocessor clock / (2 * CLKDIV)
-                                                         CLKDIV = coprocessor clock / (2 * SPI_CK) */
+                                                         _ SPI_CK = coprocessor clock / (2 * CLKDIV)
+                                                         _ CLKDIV = coprocessor clock / (2 * SPI_CK) */
 	uint64_t csena3                       : 1;  /**< SPI_CS3_L enable:
-                                                         0=UART1_RTS_L/SPI_CS3_L pin is UART pin.
-                                                         1=UART1_RTS_L/SPI_CS3_L pin is MPI/SPI pin.
+                                                         0 = UART1_RTS_L/SPI_CS3_L pin is UART pin.
+                                                         1 = UART1_RTS_L/SPI_CS3_L pin is MPI/SPI pin.
                                                          SPI_CS3_L drives UART1_RTS_L/SPI_CS3_L. */
 	uint64_t csena2                       : 1;  /**< SPI_CS2_L enable:
-                                                         0=UART1_CTS_L/SPI_CS2_L pin is UART pin.
-                                                         1=UART1_CTS_L/SPI_CS2_L pin is MPI/SPI pin.
+                                                         0 = UART1_CTS_L/SPI_CS2_L pin is UART pin.
+                                                         1 = UART1_CTS_L/SPI_CS2_L pin is MPI/SPI pin.
                                                          SPI_CS2_L drives UART1_CTS_L/SPI_CS2_L. */
 	uint64_t csena1                       : 1;  /**< SPI_CS1_L enable:
-                                                         0=BOOT_CE_N<7>/SPI_CS1_L pin is boot-bus pin.
-                                                         1=BOOT_CE_N<7>/SPI_CS1_L pin is MPI/SPI pin.
+                                                         0 = BOOT_CE_N<7>/SPI_CS1_L pin is boot-bus pin.
+                                                         1 = BOOT_CE_N<7>/SPI_CS1_L pin is MPI/SPI pin.
                                                          SPI_CS1_L drives BOOT_CE_N<7>/SPI_CS1_L. */
 	uint64_t csena0                       : 1;  /**< SPI_CS0_L enable:
-                                                         0=BOOT_CE_N<6>/SPI_CS0_L pin is boot-bus pin
-                                                         1=BOOT_CE_N<6>/SPI_CS0_L pin is MPI/SPI pin
+                                                         0 = BOOT_CE_N<6>/SPI_CS0_L pin is boot-bus pin.
+                                                         1 = BOOT_CE_N<6>/SPI_CS0_L pin is MPI/SPI pin.
                                                          SPI_CS0_L drives BOOT_CE_N<6>/SPI_CS0_L. */
 	uint64_t cslate                       : 1;  /**< SPI_CSn_L late.
-                                                         0 = SPI_CSn_L asserts 1/4 coprocessor-clock cycle before the transaction.
+                                                         0 = SPI_CSn_L asserts 1/2 coprocessor-clock cycle before the transaction.
                                                          1 = SPI_CSn_L asserts coincident with the transaction. */
 	uint64_t tritx                        : 1;  /**< Tristate TX. Used only when WIREOR = 1
                                                          0 = SPI_DO pin is driven when slave is not expected to be driving.
@@ -603,6 +604,7 @@ union cvmx_mpi_datx {
 	struct cvmx_mpi_datx_s                cn61xx;
 	struct cvmx_mpi_datx_s                cn66xx;
 	struct cvmx_mpi_datx_s                cn70xx;
+	struct cvmx_mpi_datx_s                cn70xxp1;
 	struct cvmx_mpi_datx_s                cn78xx;
 	struct cvmx_mpi_datx_s                cnf71xx;
 };
@@ -648,6 +650,7 @@ union cvmx_mpi_sts {
 	struct cvmx_mpi_sts_cn30xx            cn61xx;
 	struct cvmx_mpi_sts_cn30xx            cn66xx;
 	struct cvmx_mpi_sts_cn30xx            cn70xx;
+	struct cvmx_mpi_sts_cn30xx            cn70xxp1;
 	struct cvmx_mpi_sts_s                 cn78xx;
 	struct cvmx_mpi_sts_cn30xx            cnf71xx;
 };
@@ -724,6 +727,7 @@ union cvmx_mpi_tx {
 	} cn61xx;
 	struct cvmx_mpi_tx_s                  cn66xx;
 	struct cvmx_mpi_tx_s                  cn70xx;
+	struct cvmx_mpi_tx_s                  cn70xxp1;
 	struct cvmx_mpi_tx_s                  cn78xx;
 	struct cvmx_mpi_tx_cn61xx             cnf71xx;
 };
@@ -745,6 +749,7 @@ union cvmx_mpi_wide_dat {
 #endif
 	} s;
 	struct cvmx_mpi_wide_dat_s            cn70xx;
+	struct cvmx_mpi_wide_dat_s            cn70xxp1;
 	struct cvmx_mpi_wide_dat_s            cn78xx;
 };
 typedef union cvmx_mpi_wide_dat cvmx_mpi_wide_dat_t;

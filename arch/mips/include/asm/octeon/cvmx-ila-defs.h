@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -631,11 +631,11 @@ union cvmx_ila_lnex_trn_ld {
 	struct cvmx_ila_lnex_trn_ld_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_49_63               : 15;
-	uint64_t ld_cu_val                    : 1;  /**< Local device coefficient update field valid */
-	uint64_t ld_cu_dat                    : 16; /**< Local device coefficient update field data */
+	uint64_t ld_cu_val                    : 1;  /**< Local device coefficient update field valid. */
+	uint64_t ld_cu_dat                    : 16; /**< Local device coefficient update field data. */
 	uint64_t reserved_17_31               : 15;
-	uint64_t ld_sr_val                    : 1;  /**< Local device status report field valid */
-	uint64_t ld_sr_dat                    : 16; /**< Local device status report field data */
+	uint64_t ld_sr_val                    : 1;  /**< Local device status report field valid. */
+	uint64_t ld_sr_dat                    : 16; /**< Local device status report field data. */
 #else
 	uint64_t ld_sr_dat                    : 16;
 	uint64_t ld_sr_val                    : 1;
@@ -657,11 +657,11 @@ union cvmx_ila_lnex_trn_lp {
 	struct cvmx_ila_lnex_trn_lp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_49_63               : 15;
-	uint64_t lp_cu_val                    : 1;  /**< Link partner coefficient update field valid */
-	uint64_t lp_cu_dat                    : 16; /**< Link partner coefficient update field data */
+	uint64_t lp_cu_val                    : 1;  /**< Link partner coefficient update field valid. */
+	uint64_t lp_cu_dat                    : 16; /**< Link partner coefficient update field data. */
 	uint64_t reserved_17_31               : 15;
-	uint64_t lp_sr_val                    : 1;  /**< Link partner status report field valid */
-	uint64_t lp_sr_dat                    : 16; /**< Link partner status report field data */
+	uint64_t lp_sr_val                    : 1;  /**< Link partner status report field valid. */
+	uint64_t lp_sr_dat                    : 16; /**< Link partner status report field data. */
 #else
 	uint64_t lp_sr_dat                    : 16;
 	uint64_t lp_sr_val                    : 1;
@@ -754,7 +754,7 @@ union cvmx_ila_rxx_byte_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
 	uint64_t rx_bytes                     : 40; /**< Indicates the number of bytes received per channel. Wraps on overflow. On overflow, sets
-                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t rx_bytes                     : 40;
 	uint64_t reserved_40_63               : 24;
@@ -777,39 +777,39 @@ union cvmx_ila_rxx_cfg0 {
 	uint64_t reserved_60_61               : 2;
 	uint64_t lnk_stats_wrap               : 1;  /**< Enable that upon overflow, statistics should wrap instead of saturating. */
 	uint64_t reserved_56_58               : 3;
-	uint64_t lnk_stats_rdclr              : 1;  /**< Enable that a CSR read operation to ILA_RX(0)_STAT* clears the counter after returning its
-                                                         current value. */
+	uint64_t lnk_stats_rdclr              : 1;  /**< Enable that a CSR read operation to ILA_RX()_STAT0..ILA_RX()_STAT9 clears the counter
+                                                         after returning its current value. */
 	uint64_t lnk_stats_ena                : 1;  /**< Enable link-statistics counters. */
 	uint64_t reserved_52_53               : 2;
 	uint64_t mfrm_len                     : 13; /**< The quantity of data sent on each lane including one sync word, scrambler state,
                                                          diagnostic word, zero or more skip words, and the data payload. Must be larger than
-                                                         ILA_RX(0)_CFG1[SKIP_CNT] + 32.
+                                                         ILA_TX()_CFG1[SKIP_CNT] + 32.
                                                          Supported range:
-                                                         ILA_RX(0)_CFG1[SKIP_CNT] + 32 < MFRM_LEN <= 4096 */
+                                                         _ ILA_TX()_CFG1[SKIP_CNT] + 32 < MFRM_LEN <= 4096 */
 	uint64_t brst_shrt                    : 7;  /**< Minimum interval between burst control words, as a multiple of eight bytes. Supported
                                                          range from 8 to 512 bytes (i.e. 0 < BRST_SHRT <= 64).
-                                                         This field affects the ILA_RX(0)_STAT4[BRST_SHRT_ERR_CNT] counter. It does not affect
+                                                         This field affects the ILA_RX()_STAT4[BRST_SHRT_ERR_CNT] counter. It does not affect
                                                          correct operation of the link. */
 	uint64_t lane_rev                     : 1;  /**< Lane reversal. When enabled, lane destriping is performed from most-significant lane
                                                          enabled to least-significant lane enabled. LANE_ENA must be 0 before changing LANE_REV. */
 	uint64_t brst_max                     : 5;  /**< Maximum size of a data burst, as a multiple of 64-byte blocks. Supported range is from 64
                                                          to 1024 bytes
                                                          (i.e. 0 < BRST_MAX <= 16).
-                                                         This field affects the ILA_RX(0)_STAT2[BRST_NOT_FULL_CNT] and
-                                                         ILA_RX(0)_STAT3[BRST_MAX_ERR_CNT] counters. It does not affect correct operation of the
+                                                         This field affects the ILA_RX()_STAT2[BRST_NOT_FULL_CNT] and
+                                                         ILA_RX()_STAT3[BRST_MAX_ERR_CNT] counters. It does not affect correct operation of the
                                                          link. */
 	uint64_t reserved_8_25                : 18;
 	uint64_t lane_ena                     : 8;  /**< Lane enable mask. The link is enabled if any lane is enabled. The same lane should not be
                                                          enabled in multiple ILA_RXn_CFG0. Each bit of LANE_ENA maps to an RX lane (RLE) and a QLM
                                                          lane. Note that LANE_REV has no effect on this mapping.
-                                                         LANE_ENA[0] = RLE0 =  QLM2 lane 0
-                                                         LANE_ENA[1] = RLE1 =  QLM2 lane 1
-                                                         LANE_ENA[2] = RLE2 =  QLM2 lane 2
-                                                         LANE_ENA[3] = RLE3 =  QLM2 lane 3
-                                                         LANE_ENA[4] = RLE4 =  QLM3 lane 0
-                                                         LANE_ENA[5] = RLE5 =  QLM3 lane 1
-                                                         LANE_ENA[6] = RLE6 =  QLM3 lane 2
-                                                         LANE_ENA[7] = RLE7 =  QLM3 lane 3 */
+                                                         _ LANE_ENA[0] = RLE0 =  QLM2 lane 0
+                                                         _ LANE_ENA[1] = RLE1 =  QLM2 lane 1
+                                                         _ LANE_ENA[2] = RLE2 =  QLM2 lane 2
+                                                         _ LANE_ENA[3] = RLE3 =  QLM2 lane 3
+                                                         _ LANE_ENA[4] = RLE4 =  QLM3 lane 0
+                                                         _ LANE_ENA[5] = RLE5 =  QLM3 lane 1
+                                                         _ LANE_ENA[6] = RLE6 =  QLM3 lane 2
+                                                         _ LANE_ENA[7] = RLE7 =  QLM3 lane 3 */
 #else
 	uint64_t lane_ena                     : 8;
 	uint64_t reserved_8_25                : 18;
@@ -839,8 +839,8 @@ union cvmx_ila_rxx_cfg1 {
 	struct cvmx_ila_rxx_cfg1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_22_63               : 42;
-	uint64_t pkt_flush                    : 1;  /**< Packet receive flush. Setting this bit to1 causes all open packets to be error-out, just
-                                                         as though the link went down. */
+	uint64_t pkt_flush                    : 1;  /**< Packet receive flush. Setting this bit causes all open packets to be error-out, just as
+                                                         though the link went down. */
 	uint64_t pkt_ena                      : 1;  /**< Packet receive enable. When set to 0, any received SOP causes the entire packet to be dropped. */
 	uint64_t reserved_19_19               : 1;
 	uint64_t tx_link_fc                   : 1;  /**< Link flow-control status transmitted by the TX-link XON (=1) when RX_FIFO_CNT <=
@@ -904,9 +904,9 @@ union cvmx_ila_rxx_int {
 	uint64_t lane_align_done              : 1;  /**< Lane alignment successful. */
 	uint64_t word_sync_done               : 1;  /**< All enabled lanes have achieved word-boundary lock and scrambler synchronization. Lane
                                                          alignment may now be enabled. */
-	uint64_t crc24_err                    : 1;  /**< Burst CRC24 error.  All open packets receive an error. */
+	uint64_t crc24_err                    : 1;  /**< Burst CRC24 error. All open packets receive an error. */
 	uint64_t lane_align_fail              : 1;  /**< Lane alignment fails after four tries. Hardware repeats lane alignment until is succeeds
-                                                         or until ILA_RX(0)_CFG1[RX_ALIGN_ENA] = 0. */
+                                                         or until ILA_RX()_CFG1[RX_ALIGN_ENA] = 0. */
 #else
 	uint64_t lane_align_fail              : 1;
 	uint64_t crc24_err                    : 1;
@@ -930,7 +930,7 @@ union cvmx_ila_rxx_pkt_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_34_63               : 30;
 	uint64_t rx_pkt                       : 34; /**< Indicates the number of packets received per channel. Wraps on overflow. On overflow, sets
-                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t rx_pkt                       : 34;
 	uint64_t reserved_34_63               : 30;
@@ -949,8 +949,8 @@ union cvmx_ila_rxx_stat0 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_33_63               : 31;
 	uint64_t crc24_match_cnt              : 33; /**< Indicates the number of CRC24 matches received. Wraps on overflow if
-                                                         ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
+                                                         ILA_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc24_match_cnt              : 33;
 	uint64_t reserved_33_63               : 31;
@@ -969,8 +969,8 @@ union cvmx_ila_rxx_stat1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t crc24_err_cnt                : 18; /**< Indicates the number of bursts with a detected CRC error. Wraps on overflow if
-                                                         ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
+                                                         ILA_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc24_err_cnt                : 18;
 	uint64_t reserved_18_63               : 46;
@@ -989,12 +989,12 @@ union cvmx_ila_rxx_stat2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
 	uint64_t brst_not_full_cnt            : 16; /**< Indicates the number of bursts received that terminated without an EOP and contained fewer
-                                                         than BurstMax words. Wraps on overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         than BurstMax words. Wraps on overflow if ILA_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise,
+                                                         saturates. On overflow/saturate, sets ILA_RX()_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_28_31               : 4;
 	uint64_t brst_cnt                     : 28; /**< Indicates the number of bursts correctly received (i.e. good CRC24, not in violation of
-                                                         BurstMax or BurstShort). Wraps on overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         BurstMax or BurstShort). Wraps on overflow if ILA_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise,
+                                                         saturates. On overflow/saturate, sets ILA_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_cnt                     : 28;
 	uint64_t reserved_28_31               : 4;
@@ -1015,8 +1015,8 @@ union cvmx_ila_rxx_stat3 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t brst_max_err_cnt             : 16; /**< Indicates the number of bursts received longer than the BurstMax parameter. Wraps on
-                                                         overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate,
-                                                         sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         overflow if ILA_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate,
+                                                         sets ILA_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_max_err_cnt             : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1035,8 +1035,8 @@ union cvmx_ila_rxx_stat4 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t brst_shrt_err_cnt            : 16; /**< Indicates the number of bursts received that violate the BurstShort parameter. Wraps on
-                                                         overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate,
-                                                         sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         overflow if ILA_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate,
+                                                         sets ILA_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_shrt_err_cnt            : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1055,8 +1055,8 @@ union cvmx_ila_rxx_stat5 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_23_63               : 41;
 	uint64_t align_cnt                    : 23; /**< Indicates the number of alignment sequences received (i.e. those that do not violate the
-                                                         current alignment). Wraps on overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         current alignment). Wraps on overflow if ILA_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise,
+                                                         saturates. On overflow/saturate, sets ILA_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t align_cnt                    : 23;
 	uint64_t reserved_23_63               : 41;
@@ -1075,8 +1075,8 @@ union cvmx_ila_rxx_stat6 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t align_err_cnt                : 16; /**< Indicates the number of alignment sequences received in error (i.e. those that violate the
-                                                         current alignment). Wraps on overflow if ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         current alignment). Wraps on overflow if ILA_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise,
+                                                         saturates. On overflow/saturate, sets ILA_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t align_err_cnt                : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1095,8 +1095,8 @@ union cvmx_ila_rxx_stat7 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t bad_64b67b_cnt               : 16; /**< Indicates the number of bad 64B/67B code words. Wraps on overflow if
-                                                         ILA_RX(0)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILA_RX(0)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
+                                                         ILA_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bad_64b67b_cnt               : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1157,7 +1157,7 @@ union cvmx_ila_rx_lnex_cfg {
                                                          If the lane is in internal loopback mode, this field is ignored and skip words are always
                                                          discarded in the lane logic. */
 	uint64_t reserved_7_7                 : 1;
-	uint64_t rx_dis_disp_chk              : 1;  /**< Disable the RX disparity check, see ILA_RX_LNE(0..7)_INT[DISP_ERR]. */
+	uint64_t rx_dis_disp_chk              : 1;  /**< Disable the RX disparity check, see ILA_RX_LNE()_INT[DISP_ERR]. */
 	uint64_t rx_scrm_sync                 : 1;  /**< RX scrambler-synchronization status. A 1 means synchronization has been achieved. */
 	uint64_t rx_bdry_sync                 : 1;  /**< RX word-boundary-synchronization status. A 1 means synchronization has been achieved */
 	uint64_t rx_dis_ukwn                  : 1;  /**< Disable normal response to unknown words. Unknown words are still logged but do not cause
@@ -1191,22 +1191,22 @@ union cvmx_ila_rx_lnex_int {
 	struct cvmx_ila_rx_lnex_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
-	uint64_t disp_err                     : 1;  /**< RX disparity error encountered. Throws ILA_INTSN_E::ILA_RXLNE(0..7)_DISP_ERR. */
+	uint64_t disp_err                     : 1;  /**< RX disparity error encountered. Throws ILA_INTSN_E::ILA_RXLNE()_DISP_ERR. */
 	uint64_t bad_64b67b                   : 1;  /**< Bad 64B/67B code word encountered. Once the bad word reaches the burst-control unit (as
-                                                         indicated by ILA_RX(0)_INT[LANE_BAD_WORD]) it is discarded and all open packets receive an
-                                                         error. Throws ILA_INTSN_E::ILA_RXLNE(0..7)_BAD_64B67B. */
-	uint64_t stat_cnt_ovfl                : 1;  /**< RX-lane statistic counter overflow. Throws ILA_INTSN_E::ILA_RXLNE(0..7)_STAT_CNT_OVFL. */
+                                                         indicated by ILA_RX()_INT[LANE_BAD_WORD]) it is discarded and all open packets receive an
+                                                         error. Throws ILA_INTSN_E::ILA_RXLNE()_BAD_64B67B. */
+	uint64_t stat_cnt_ovfl                : 1;  /**< RX-lane statistic counter overflow. Throws ILA_INTSN_E::ILA_RXLNE()_STAT_CNT_OVFL. */
 	uint64_t stat_msg                     : 1;  /**< Indicates that status bits for the link or a lane transitioned from a 1 (healthy) to a 0
-                                                         (problem). Throws ILA_INTSN_E::ILA_RXLNE(0..7)_STAT_MSG. */
-	uint64_t dskew_fifo_ovfl              : 1;  /**< RX deskew-FIFO overflow occurred. Throws ILA_INTSN_E::ILA_RXLNE(0..7)_DSKEW_FIFO_OVFL. */
+                                                         (problem). Throws ILA_INTSN_E::ILA_RXLNE()_STAT_MSG. */
+	uint64_t dskew_fifo_ovfl              : 1;  /**< RX deskew-FIFO overflow occurred. Throws ILA_INTSN_E::ILA_RXLNE()_DSKEW_FIFO_OVFL. */
 	uint64_t scrm_sync_loss               : 1;  /**< Indicates that four consecutive bad sync words or three consecutive scramble-state
-                                                         mismatches occurred. Throws ILA_INTSN_E::ILA_RXLNE(0..7)_SCRM_SYNC_LOSS. */
+                                                         mismatches occurred. Throws ILA_INTSN_E::ILA_RXLNE()_SCRM_SYNC_LOSS. */
 	uint64_t ukwn_cntl_word               : 1;  /**< Unknown framing-control word. Block type does not match any of (SYNC,SCRAM,SKIP,DIAG).
-                                                         Throws ILA_INTSN_E::ILA_RXLNE(0..7)_UKWN_CNTL_WORD. */
-	uint64_t crc32_err                    : 1;  /**< Diagnostic CRC32 errors. Throws ILA_INTSN_E::ILA_RXLNE(0..7)_CRC32_ERR. */
+                                                         Throws ILA_INTSN_E::ILA_RXLNE()_UKWN_CNTL_WORD. */
+	uint64_t crc32_err                    : 1;  /**< Diagnostic CRC32 errors. Throws ILA_INTSN_E::ILA_RXLNE()_CRC32_ERR. */
 	uint64_t bdry_sync_loss               : 1;  /**< RX logic loses word-boundary sync (16 tries). Hardware automatically attempts to regain
-                                                         word-boundary sync. Throws ILA_INTSN_E::ILA_RXLNE(0..7)_BDRY_SYNC_LOSS. */
-	uint64_t serdes_lock_loss             : 1;  /**< RX SerDes loses lock. Throws ILA_INTSN_E::ILA_RXLNE(0..7)_SERDES_LOCK_LOSS. */
+                                                         word-boundary sync. Throws ILA_INTSN_E::ILA_RXLNE()_BDRY_SYNC_LOSS. */
+	uint64_t serdes_lock_loss             : 1;  /**< RX SerDes loses lock. Throws ILA_INTSN_E::ILA_RXLNE()_SERDES_LOCK_LOSS. */
 #else
 	uint64_t serdes_lock_loss             : 1;
 	uint64_t bdry_sync_loss               : 1;
@@ -1234,7 +1234,7 @@ union cvmx_ila_rx_lnex_stat0 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t ser_lock_loss_cnt            : 18; /**< Indicates the number of times the lane lost clock-data-recovery. On overflow, saturates
-                                                         and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         and sets ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t ser_lock_loss_cnt            : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1253,7 +1253,7 @@ union cvmx_ila_rx_lnex_stat1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t bdry_sync_loss_cnt           : 18; /**< Indicates the number of times a lane lost word-boundary synchronization. On overflow,
-                                                         saturates and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         saturates and sets ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bdry_sync_loss_cnt           : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1272,10 +1272,10 @@ union cvmx_ila_rx_lnex_stat10 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_43_63               : 21;
 	uint64_t prbs_bad                     : 11; /**< Indicates the number of training frames with bad PRBS. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_11_31               : 21;
 	uint64_t prbs_good                    : 11; /**< Indicates the number of training frames with correct PRBS. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t prbs_good                    : 11;
 	uint64_t reserved_11_31               : 21;
@@ -1296,10 +1296,10 @@ union cvmx_ila_rx_lnex_stat2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
 	uint64_t syncw_good_cnt               : 18; /**< Indicates the number of good synchronization words. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_18_31               : 14;
 	uint64_t syncw_bad_cnt                : 18; /**< Indicates the number of bad synchronization words. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t syncw_bad_cnt                : 18;
 	uint64_t reserved_18_31               : 14;
@@ -1320,7 +1320,7 @@ union cvmx_ila_rx_lnex_stat3 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t bad_64b67b_cnt               : 18; /**< Indicates the number of bad 64B/67B words, meaning bit <65> or bit <64> has been
-                                                         corrupted. On overflow, saturates and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         corrupted. On overflow, saturates and sets ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bad_64b67b_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1339,10 +1339,10 @@ union cvmx_ila_rx_lnex_stat4 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_59_63               : 5;
 	uint64_t cntl_word_cnt                : 27; /**< Indicates the number of control words received. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_27_31               : 5;
 	uint64_t data_word_cnt                : 27; /**< Indicates the number of data words received. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t data_word_cnt                : 27;
 	uint64_t reserved_27_31               : 5;
@@ -1363,7 +1363,7 @@ union cvmx_ila_rx_lnex_stat5 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t unkwn_word_cnt               : 18; /**< Indicates the number of unknown control words. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t unkwn_word_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1383,7 +1383,7 @@ union cvmx_ila_rx_lnex_stat6 {
 	uint64_t reserved_18_63               : 46;
 	uint64_t scrm_sync_loss_cnt           : 18; /**< Indicates the number of times scrambler synchronization was lost (due to either four
                                                          consecutive bad sync words or three consecutive scrambler-state mismatches). On overflow,
-                                                         saturates and sets ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         saturates and sets ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t scrm_sync_loss_cnt           : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1402,7 +1402,7 @@ union cvmx_ila_rx_lnex_stat7 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t scrm_match_cnt               : 18; /**< Indicates the number of scrambler-state matches received. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t scrm_match_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1421,7 +1421,7 @@ union cvmx_ila_rx_lnex_stat8 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t skipw_good_cnt               : 18; /**< Indicates the number of good skip words. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t skipw_good_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -1440,10 +1440,10 @@ union cvmx_ila_rx_lnex_stat9 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
 	uint64_t crc32_err_cnt                : 18; /**< Indicates the number of errors in the lane CRC. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_27_31               : 5;
 	uint64_t crc32_match_cnt              : 27; /**< Indicates the number of CRC32 matches received. On overflow, saturates and sets
-                                                         ILA_RX_LNE(0..7)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc32_match_cnt              : 27;
 	uint64_t reserved_27_31               : 5;
@@ -1500,7 +1500,7 @@ union cvmx_ila_txx_byte_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
 	uint64_t tx_bytes                     : 40; /**< Number of bytes transmitted per channel. Wraps on overflow. On overflow, sets
-                                                         ILA_TX(0)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_TX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t tx_bytes                     : 40;
 	uint64_t reserved_40_63               : 24;
@@ -1519,17 +1519,19 @@ union cvmx_ila_txx_cfg0 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_63_63               : 1;
 	uint64_t ext_lpbk                     : 1;  /**< Enable RX-TX data external loopback. Note that with differing transmit and receive clocks,
-                                                         skip word are inserted/deleted. */
+                                                         skip word are inserted/deleted. Must set ILA_TX()_CFG1[RX_LINK_FC_IGN] whenever enabling
+                                                         external loopback. */
 	uint64_t int_lpbk                     : 1;  /**< Enable TX-RX internal loopback. */
-	uint64_t reserved_56_60               : 5;
-	uint64_t lnk_stats_rdclr              : 1;  /**< CSR read to ILA_TXx_STAT* clears the counter after returning its current value. */
+	uint64_t txf_byp_dis                  : 1;  /**< Disable TXF bypass. */
+	uint64_t reserved_56_59               : 4;
+	uint64_t lnk_stats_rdclr              : 1;  /**< CSR read to ILA_TX(0)_STAT* clears the counter after returning its current value. */
 	uint64_t lnk_stats_ena                : 1;  /**< Enable link statistics counters */
 	uint64_t reserved_52_53               : 2;
 	uint64_t mfrm_len                     : 13; /**< The quantity of data sent on each lane including one sync word, scrambler state, diag
                                                          word, zero or more skip words, and the data payload. Must be larger than
-                                                         ILA_TX(0)_CFG1[SKIP_CNT] + 9.
+                                                         ILA_TX()_CFG1[SKIP_CNT] + 9.
                                                          Supported range:
-                                                         ILA_TX(0)_CFG1[SKIP_CNT] + 9 < MFRM_LEN <= 4096) */
+                                                         _ ILA_TX()_CFG1[SKIP_CNT] + 9 < MFRM_LEN <= 4096) */
 	uint64_t brst_shrt                    : 7;  /**< Minimum interval between burst control words, as a multiple of eight bytes. Supported
                                                          range from eight to 512 bytes
                                                          (i.e. 0 < BRST_SHRT <= 64). */
@@ -1540,16 +1542,16 @@ union cvmx_ila_txx_cfg0 {
                                                          (i.e. 0 < BRST_MAX <= 16). */
 	uint64_t reserved_8_25                : 18;
 	uint64_t lane_ena                     : 8;  /**< Lane enable mask. Link is enabled if any lane is enabled. The same lane should not be
-                                                         enabled in multiple ILA_TX(0)_CFG0. Each bit of LANE_ENA maps to a TX lane (TLE) and a QLM
+                                                         enabled in multiple ILA_TX()_CFG0. Each bit of LANE_ENA maps to a TX lane (TLE) and a QLM
                                                          lane. Note that LANE_REV has no effect on this mapping.
-                                                         LANE_ENA[0] = TLE0  =  QLM2 lane 0
-                                                         LANE_ENA[1] = TLE1  =  QLM2 lane 1
-                                                         LANE_ENA[2] = TLE2  =  QLM2 lane 2
-                                                         LANE_ENA[3] = TLE3  =  QLM2 lane 3
-                                                         LANE_ENA[4] = TLE4  =  QLM3 lane 0
-                                                         LANE_ENA[5] = TLE5  =  QLM3 lane 1
-                                                         LANE_ENA[6] = TLE6  =  QLM3 lane 2
-                                                         LANE_ENA[7] = TLE7  =  QLM3 lane 3 */
+                                                         _ LANE_ENA[0] = TLE0  =  QLM2 lane 0
+                                                         _ LANE_ENA[1] = TLE1  =  QLM2 lane 1
+                                                         _ LANE_ENA[2] = TLE2  =  QLM2 lane 2
+                                                         _ LANE_ENA[3] = TLE3  =  QLM2 lane 3
+                                                         _ LANE_ENA[4] = TLE4  =  QLM3 lane 0
+                                                         _ LANE_ENA[5] = TLE5  =  QLM3 lane 1
+                                                         _ LANE_ENA[6] = TLE6  =  QLM3 lane 2
+                                                         _ LANE_ENA[7] = TLE7  =  QLM3 lane 3 */
 #else
 	uint64_t lane_ena                     : 8;
 	uint64_t reserved_8_25                : 18;
@@ -1560,7 +1562,8 @@ union cvmx_ila_txx_cfg0 {
 	uint64_t reserved_52_53               : 2;
 	uint64_t lnk_stats_ena                : 1;
 	uint64_t lnk_stats_rdclr              : 1;
-	uint64_t reserved_56_60               : 5;
+	uint64_t reserved_56_59               : 4;
+	uint64_t txf_byp_dis                  : 1;
 	uint64_t int_lpbk                     : 1;
 	uint64_t ext_lpbk                     : 1;
 	uint64_t reserved_63_63               : 1;
@@ -1577,14 +1580,14 @@ union cvmx_ila_txx_cfg1 {
 	uint64_t u64;
 	struct cvmx_ila_txx_cfg1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_44_63               : 20;
-	uint64_t txf_byp_dis                  : 1;  /**< TX-FIFO bypass disable. */
+	uint64_t ser_low                      : 4;  /**< Reserved. */
+	uint64_t reserved_43_59               : 17;
 	uint64_t ser_limit                    : 10; /**< Reduce latency by limiting the amount of data in flight for each SerDes. If 0x0, hardware
                                                          will compute it. Otherwise, SER_LIMIT must be set as follows:
-                                                         SER_LIMIT >= 148 + (BAUD / SCLK) * (12 + NUM_LANES)
+                                                         _ SER_LIMIT >= 148 + (BAUD / SCLK) * (12 + NUM_LANES)
                                                          For instance, for SCLK=1.1GHz,BAUD=10.3125,NUM_LANES=8:
-                                                         SER_LIMIT >= 148 + (10.3125 / 1.1 * (12+ 8))
-                                                         SER_LIMIT >= 336 */
+                                                         _ SER_LIMIT >= 148 + (10.3125 / 1.1 * (12+ 8))
+                                                         _ SER_LIMIT >= 336 */
 	uint64_t pkt_busy                     : 1;  /**< TX-link is transmitting data. */
 	uint64_t reserved_26_31               : 6;
 	uint64_t skip_cnt                     : 4;  /**< Number of skip words to insert after the scrambler state. */
@@ -1592,21 +1595,30 @@ union cvmx_ila_txx_cfg1 {
                                                          Software should first write
                                                          PKT_ENA = 0 and wait for PKT_BUSY = 0. */
 	uint64_t pkt_ena                      : 1;  /**< Packet transmit enable. When zero, the TX-link stops transmitting packets, as per RX_LINK_FC_PKT. */
-	uint64_t reserved_9_19                : 11;
+	uint64_t la_mode                      : 1;  /**< Enable Interlaken look-aside traffic. Used to set the protocol type of idle words. */
+	uint64_t reserved_12_18               : 7;
+	uint64_t tx_link_fc_jam               : 1;  /**< Reserved. */
+	uint64_t rx_link_fc_pkt               : 1;  /**< Flow-control received in burst/idle control words cause TX-link to stop transmitting at
+                                                         the end of a packet instead of the end of a burst. */
+	uint64_t rx_link_fc_ign               : 1;  /**< Ignore flow-control status received in burst/idle control words. */
 	uint64_t rmatch                       : 1;  /**< Enable rate-matching circuitry. */
 	uint64_t reserved_0_7                 : 8;
 #else
 	uint64_t reserved_0_7                 : 8;
 	uint64_t rmatch                       : 1;
-	uint64_t reserved_9_19                : 11;
+	uint64_t rx_link_fc_ign               : 1;
+	uint64_t rx_link_fc_pkt               : 1;
+	uint64_t tx_link_fc_jam               : 1;
+	uint64_t reserved_12_18               : 7;
+	uint64_t la_mode                      : 1;
 	uint64_t pkt_ena                      : 1;
 	uint64_t pkt_flush                    : 1;
 	uint64_t skip_cnt                     : 4;
 	uint64_t reserved_26_31               : 6;
 	uint64_t pkt_busy                     : 1;
 	uint64_t ser_limit                    : 10;
-	uint64_t txf_byp_dis                  : 1;
-	uint64_t reserved_44_63               : 20;
+	uint64_t reserved_43_59               : 17;
+	uint64_t ser_low                      : 4;
 #endif
 	} s;
 	struct cvmx_ila_txx_cfg1_s            cn78xx;
@@ -1644,7 +1656,10 @@ union cvmx_ila_txx_dbg {
 	uint64_t u64;
 	struct cvmx_ila_txx_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_3_63                : 61;
+	uint64_t reserved_29_63               : 35;
+	uint64_t data_rate                    : 13; /**< Reserved. */
+	uint64_t low_delay                    : 6;  /**< Reserved. */
+	uint64_t reserved_3_9                 : 7;
 	uint64_t tx_bad_crc24                 : 1;  /**< Send a control word with bad CRC24. Hardware clears this field once the injection is performed. */
 	uint64_t tx_bad_ctlw2                 : 1;  /**< Send a control word without the control bit set. */
 	uint64_t tx_bad_ctlw1                 : 1;  /**< Send a data word with the control bit set. */
@@ -1652,7 +1667,10 @@ union cvmx_ila_txx_dbg {
 	uint64_t tx_bad_ctlw1                 : 1;
 	uint64_t tx_bad_ctlw2                 : 1;
 	uint64_t tx_bad_crc24                 : 1;
-	uint64_t reserved_3_63                : 61;
+	uint64_t reserved_3_9                 : 7;
+	uint64_t low_delay                    : 6;
+	uint64_t data_rate                    : 13;
+	uint64_t reserved_29_63               : 35;
 #endif
 	} s;
 	struct cvmx_ila_txx_dbg_s             cn78xx;
@@ -1690,11 +1708,11 @@ union cvmx_ila_txx_int {
 	struct cvmx_ila_txx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_6_63                : 58;
-	uint64_t txf_dbe                      : 1;  /**< TX FIFO double-bit error. Throws ILA_INTSN_E::ILA_TX(0..1)_TXF_DBE. See also
-                                                         ILA_TX(0..1)_TXF_ERR_ST. */
-	uint64_t txf_sbe                      : 1;  /**< TX FIFO single-bit error. Throws ILA_INTSN_E::ILA_TX(0..1)_TXF_SBE. See also
-                                                         ILA_TX(0..1)_TXF_ERR_ST. */
-	uint64_t stat_cnt_ovfl                : 1;  /**< Statistics counter overflow. Throws ILA_INTSN_E::ILA_TX(0..1)_STAT_CNT_OVFL. */
+	uint64_t txf_dbe                      : 1;  /**< TX FIFO double-bit error. Throws ILA_INTSN_E::ILA_TX()_TXF_DBE. See also
+                                                         ILA_TX()_ERR_CFG. */
+	uint64_t txf_sbe                      : 1;  /**< TX FIFO single-bit error. Throws ILA_INTSN_E::ILA_TX()_TXF_SBE. See also
+                                                         ILA_TX()_ERR_CFG. */
+	uint64_t stat_cnt_ovfl                : 1;  /**< Statistics counter overflow. Throws ILA_INTSN_E::ILA_TX()_STAT_CNT_OVFL. */
 	uint64_t reserved_0_2                 : 3;
 #else
 	uint64_t reserved_0_2                 : 3;
@@ -1717,7 +1735,7 @@ union cvmx_ila_txx_pkt_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_28_63               : 36;
 	uint64_t tx_pkt                       : 28; /**< Number of packets transmitted per channel. Wraps on overflow. On overflow, sets
-                                                         ILA_TX(0)_INT[STAT_CNT_OVFL]. */
+                                                         ILA_TX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t tx_pkt                       : 28;
 	uint64_t reserved_28_63               : 36;

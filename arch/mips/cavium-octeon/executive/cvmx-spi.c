@@ -42,7 +42,7 @@
  *
  * Support library for the SPI
  *
- * <hr>$Revision: 78972 $<hr>
+ * <hr>$Revision: 95258 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <linux/export.h>
@@ -51,13 +51,13 @@
 #include <asm/octeon/cvmx-spxx-defs.h>
 #include <asm/octeon/cvmx-stxx-defs.h>
 #include <asm/octeon/cvmx-srxx-defs.h>
-#include <asm/octeon/cvmx-pko.h>
+#include <asm/octeon/cvmx-hwpko.h>
 #include <asm/octeon/cvmx-spi.h>
 #include <asm/octeon/cvmx-clock.h>
 #else
 #include "cvmx.h"
 #include "cvmx-sysinfo.h"
-#include "cvmx-pko.h"
+#include "cvmx-hwpko.h"
 #include "cvmx-spi.h"
 #include "cvmx-clock.h"
 #endif

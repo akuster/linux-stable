@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -801,8 +801,8 @@ static inline uint64_t CVMX_PEMX_TLP_CREDITS(unsigned long block_id)
 /**
  * cvmx_pem#_bar1_index#
  *
- * Contains address index and control bits for access to memory ranges of BAR-1. Index is build
- * from supplied address [25:22].
+ * This register contains the address index and control bits for access to memory ranges of BAR1.
+ * The index is built from supplied address [25:22].
  */
 union cvmx_pemx_bar1_indexx {
 	uint64_t u64;
@@ -842,6 +842,7 @@ union cvmx_pemx_bar1_indexx {
 	struct cvmx_pemx_bar1_indexx_cn61xx   cn68xx;
 	struct cvmx_pemx_bar1_indexx_cn61xx   cn68xxp1;
 	struct cvmx_pemx_bar1_indexx_s        cn70xx;
+	struct cvmx_pemx_bar1_indexx_s        cn70xxp1;
 	struct cvmx_pemx_bar1_indexx_s        cn78xx;
 	struct cvmx_pemx_bar1_indexx_cn61xx   cnf71xx;
 };
@@ -850,8 +851,8 @@ typedef union cvmx_pemx_bar1_indexx cvmx_pemx_bar1_indexx_t;
 /**
  * cvmx_pem#_bar2_mask
  *
- * The mask pattern that is ANDED with the address from PCIe core for BAR2 hits.
- *
+ * This register contains the mask pattern that is ANDed with the address from the PCIe core for
+ * BAR2 hits.
  */
 union cvmx_pemx_bar2_mask {
 	uint64_t u64;
@@ -883,6 +884,7 @@ union cvmx_pemx_bar2_mask {
 	struct cvmx_pemx_bar2_mask_cn61xx     cn68xx;
 	struct cvmx_pemx_bar2_mask_cn61xx     cn68xxp1;
 	struct cvmx_pemx_bar2_mask_cn61xx     cn70xx;
+	struct cvmx_pemx_bar2_mask_cn61xx     cn70xxp1;
 	struct cvmx_pemx_bar2_mask_s          cn78xx;
 	struct cvmx_pemx_bar2_mask_cn61xx     cnf71xx;
 };
@@ -891,7 +893,7 @@ typedef union cvmx_pemx_bar2_mask cvmx_pemx_bar2_mask_t;
 /**
  * cvmx_pem#_bar_ctl
  *
- * Contains control for BAR accesses.
+ * This register contains control for BAR accesses.
  *
  */
 union cvmx_pemx_bar_ctl {
@@ -924,6 +926,7 @@ union cvmx_pemx_bar_ctl {
 	struct cvmx_pemx_bar_ctl_s            cn68xx;
 	struct cvmx_pemx_bar_ctl_s            cn68xxp1;
 	struct cvmx_pemx_bar_ctl_s            cn70xx;
+	struct cvmx_pemx_bar_ctl_s            cn70xxp1;
 	struct cvmx_pemx_bar_ctl_s            cn78xx;
 	struct cvmx_pemx_bar_ctl_s            cnf71xx;
 };
@@ -932,32 +935,32 @@ typedef union cvmx_pemx_bar_ctl cvmx_pemx_bar_ctl_t;
 /**
  * cvmx_pem#_bist_status
  *
- * "PEM#_BIST_STATUS2 = PEM BIST Status Register
- * Results from BIST runs of PEM's memories."
+ * This register contains results from BIST runs of PEM's memories.
+ *
  */
 union cvmx_pemx_bist_status {
 	uint64_t u64;
 	struct cvmx_pemx_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_26_63               : 38;
-	uint64_t retryc                       : 1;  /**< Retry Buffer Memory C */
+	uint64_t retryc                       : 1;  /**< Retry buffer memory C. */
 	uint64_t reserved_24_24               : 1;
-	uint64_t rqhdrb0                      : 1;  /**< Rx Queue Header Memory Buffer 0 */
-	uint64_t rqhdrb1                      : 1;  /**< Rx Queue Header Memory Buffer 1 */
-	uint64_t rqdatab0                     : 1;  /**< Rx Queue Data Buffer 0 */
-	uint64_t rqdatab1                     : 1;  /**< Rx Queue Data Buffer 1 */
-	uint64_t tlpan_d0                     : 1;  /**< BIST Status for the tlp_n_afifo_data0 */
-	uint64_t tlpan_d1                     : 1;  /**< BIST Status for the tlp_n_afifo_data1 */
-	uint64_t tlpan_ctl                    : 1;  /**< BIST Status for the tlp_n_afifo_ctl */
-	uint64_t tlpap_d0                     : 1;  /**< BIST Status for the tlp_p_afifo_data0 */
-	uint64_t tlpap_d1                     : 1;  /**< BIST Status for the tlp_p_afifo_data1 */
-	uint64_t tlpap_ctl                    : 1;  /**< BIST Status for the tlp_p_afifo_ctl */
-	uint64_t tlpac_d0                     : 1;  /**< BIST Status for the tlp_c_afifo_data0 */
-	uint64_t tlpac_d1                     : 1;  /**< BIST Status for the tlp_c_afifo_data1 */
-	uint64_t tlpac_ctl                    : 1;  /**< BIST Status for the tlp_c_afifo_ctl */
-	uint64_t peai_p2e                     : 1;  /**< BIST Status for the peai__pesc_fifo */
-	uint64_t tlpn_d0                      : 1;  /**< BIST Status for the tlp_n_fifo_data0 */
-	uint64_t tlpn_d1                      : 1;  /**< BIST Status for the tlp_n_fifo_data1 */
+	uint64_t rqhdrb0                      : 1;  /**< Rx queue header memory buffer 0. */
+	uint64_t rqhdrb1                      : 1;  /**< Rx queue header memory buffer 1. */
+	uint64_t rqdatab0                     : 1;  /**< Rx queue data buffer 0. */
+	uint64_t rqdatab1                     : 1;  /**< Rx queue data buffer 1. */
+	uint64_t tlpan_d0                     : 1;  /**< BIST Status for the tlp_n_afifo_data0. */
+	uint64_t tlpan_d1                     : 1;  /**< BIST Status for the tlp_n_afifo_data1. */
+	uint64_t tlpan_ctl                    : 1;  /**< BIST Status for the tlp_n_afifo_ctl. */
+	uint64_t tlpap_d0                     : 1;  /**< BIST Status for the tlp_p_afifo_data0. */
+	uint64_t tlpap_d1                     : 1;  /**< BIST Status for the tlp_p_afifo_data1. */
+	uint64_t tlpap_ctl                    : 1;  /**< BIST Status for the tlp_p_afifo_ctl. */
+	uint64_t tlpac_d0                     : 1;  /**< BIST Status for the tlp_c_afifo_data0. */
+	uint64_t tlpac_d1                     : 1;  /**< BIST Status for the tlp_c_afifo_data1. */
+	uint64_t tlpac_ctl                    : 1;  /**< BIST Status for the tlp_c_afifo_ctl. */
+	uint64_t peai_p2e                     : 1;  /**< BIST Status for the peai__pesc_fifo. */
+	uint64_t tlpn_d0                      : 1;  /**< BIST Status for the tlp_n_fifo_data0. */
+	uint64_t tlpn_d1                      : 1;  /**< BIST Status for the tlp_n_fifo_data1. */
 	uint64_t reserved_0_7                 : 8;
 #else
 	uint64_t reserved_0_7                 : 8;
@@ -1029,35 +1032,36 @@ union cvmx_pemx_bist_status {
 	uint64_t reserved_6_63                : 58;
 #endif
 	} cn70xx;
+	struct cvmx_pemx_bist_status_cn70xx   cn70xxp1;
 	struct cvmx_pemx_bist_status_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_26_63               : 38;
-	uint64_t retryc                       : 1;  /**< Retry Buffer Memory C */
-	uint64_t sot                          : 1;  /**< Start of Transfer Memory */
-	uint64_t rqhdrb0                      : 1;  /**< Rx Queue Header Memory Buffer 0 */
-	uint64_t rqhdrb1                      : 1;  /**< Rx Queue Header Memory Buffer 1 */
-	uint64_t rqdatab0                     : 1;  /**< Rx Queue Data Buffer 0 */
-	uint64_t rqdatab1                     : 1;  /**< Rx Queue Data Buffer 1 */
-	uint64_t tlpan_d0                     : 1;  /**< BIST Status for the tlp_n_afifo_data0 */
-	uint64_t tlpan_d1                     : 1;  /**< BIST Status for the tlp_n_afifo_data1 */
-	uint64_t tlpan_ctl                    : 1;  /**< BIST Status for the tlp_n_afifo_ctl */
-	uint64_t tlpap_d0                     : 1;  /**< BIST Status for the tlp_p_afifo_data0 */
-	uint64_t tlpap_d1                     : 1;  /**< BIST Status for the tlp_p_afifo_data1 */
-	uint64_t tlpap_ctl                    : 1;  /**< BIST Status for the tlp_p_afifo_ctl */
-	uint64_t tlpac_d0                     : 1;  /**< BIST Status for the tlp_c_afifo_data0 */
-	uint64_t tlpac_d1                     : 1;  /**< BIST Status for the tlp_c_afifo_data1 */
-	uint64_t tlpac_ctl                    : 1;  /**< BIST Status for the tlp_c_afifo_ctl */
-	uint64_t peai_p2e                     : 1;  /**< BIST Status for the peai__pesc_fifo */
-	uint64_t tlpn_d0                      : 1;  /**< BIST Status for the tlp_n_fifo_data0 */
-	uint64_t tlpn_d1                      : 1;  /**< BIST Status for the tlp_n_fifo_data1 */
-	uint64_t tlpn_ctl                     : 1;  /**< BIST Status for the tlp_n_fifo_ctl */
-	uint64_t tlpp_d0                      : 1;  /**< BIST Status for the tlp_p_fifo_data0 */
-	uint64_t tlpp_d1                      : 1;  /**< BIST Status for the tlp_p_fifo_data1 */
-	uint64_t tlpp_ctl                     : 1;  /**< BIST Status for the tlp_p_fifo_ctl */
-	uint64_t tlpc_d0                      : 1;  /**< BIST Status for the tlp_c_fifo_data0 */
-	uint64_t tlpc_d1                      : 1;  /**< BIST Status for the tlp_c_fifo_data1 */
-	uint64_t tlpc_ctl                     : 1;  /**< BIST Status for the tlp_c_fifo_ctl */
-	uint64_t m2s                          : 1;  /**< BIST Status for the m2s_fifo */
+	uint64_t retryc                       : 1;  /**< Retry buffer memory C. */
+	uint64_t sot                          : 1;  /**< Start of transfer memory. */
+	uint64_t rqhdrb0                      : 1;  /**< Rx queue header memory buffer 0. */
+	uint64_t rqhdrb1                      : 1;  /**< Rx queue header memory buffer 1. */
+	uint64_t rqdatab0                     : 1;  /**< Rx queue data buffer 0. */
+	uint64_t rqdatab1                     : 1;  /**< Rx queue data buffer 1. */
+	uint64_t tlpan_d0                     : 1;  /**< BIST Status for the tlp_n_afifo_data0. */
+	uint64_t tlpan_d1                     : 1;  /**< BIST Status for the tlp_n_afifo_data1. */
+	uint64_t tlpan_ctl                    : 1;  /**< BIST Status for the tlp_n_afifo_ctl. */
+	uint64_t tlpap_d0                     : 1;  /**< BIST Status for the tlp_p_afifo_data0. */
+	uint64_t tlpap_d1                     : 1;  /**< BIST Status for the tlp_p_afifo_data1. */
+	uint64_t tlpap_ctl                    : 1;  /**< BIST Status for the tlp_p_afifo_ctl. */
+	uint64_t tlpac_d0                     : 1;  /**< BIST Status for the tlp_c_afifo_data0. */
+	uint64_t tlpac_d1                     : 1;  /**< BIST Status for the tlp_c_afifo_data1. */
+	uint64_t tlpac_ctl                    : 1;  /**< BIST Status for the tlp_c_afifo_ctl. */
+	uint64_t peai_p2e                     : 1;  /**< BIST Status for the peai__pesc_fifo. */
+	uint64_t tlpn_d0                      : 1;  /**< BIST Status for the tlp_n_fifo_data0. */
+	uint64_t tlpn_d1                      : 1;  /**< BIST Status for the tlp_n_fifo_data1. */
+	uint64_t tlpn_ctl                     : 1;  /**< BIST Status for the tlp_n_fifo_ctl. */
+	uint64_t tlpp_d0                      : 1;  /**< BIST Status for the tlp_p_fifo_data0. */
+	uint64_t tlpp_d1                      : 1;  /**< BIST Status for the tlp_p_fifo_data1. */
+	uint64_t tlpp_ctl                     : 1;  /**< BIST Status for the tlp_p_fifo_ctl. */
+	uint64_t tlpc_d0                      : 1;  /**< BIST Status for the tlp_c_fifo_data0. */
+	uint64_t tlpc_d1                      : 1;  /**< BIST Status for the tlp_c_fifo_data1. */
+	uint64_t tlpc_ctl                     : 1;  /**< BIST Status for the tlp_c_fifo_ctl. */
+	uint64_t m2s                          : 1;  /**< BIST Status for the m2s_fifo. */
 #else
 	uint64_t m2s                          : 1;
 	uint64_t tlpc_ctl                     : 1;
@@ -1182,6 +1186,7 @@ union cvmx_pemx_bist_status2 {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} cn70xx;
+	struct cvmx_pemx_bist_status2_cn70xx  cn70xxp1;
 	struct cvmx_pemx_bist_status2_cn61xx  cnf71xx;
 };
 typedef union cvmx_pemx_bist_status2 cvmx_pemx_bist_status2_t;
@@ -1189,7 +1194,7 @@ typedef union cvmx_pemx_bist_status2 cvmx_pemx_bist_status2_t;
 /**
  * cvmx_pem#_cfg
  *
- * Configuration of the PCIe Application
+ * Configuration of the PCIe Application.
  *
  */
 union cvmx_pemx_cfg {
@@ -1197,15 +1202,18 @@ union cvmx_pemx_cfg {
 	struct cvmx_pemx_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
-	uint64_t laneswap                     : 1;  /**< This field will overwrite the pin setting for lane swapping.
-                                                         When set, lane swapping is performed to/from the SerDes.
-                                                         When clear, no lane swapping is performed. */
+	uint64_t laneswap                     : 1;  /**< This field enables overwriting the value for lane swapping. The reset value is captured on
+                                                         cold reset by the pin straps (see PEM()_STRAP[PILANESWAP]). When set, lane swapping is
+                                                         performed to/from the SerDes. When clear, no lane swapping is performed. */
 	uint64_t reserved_2_3                 : 2;
-	uint64_t md                           : 2;  /**< This field will overwrite the pin settings for speed.
-                                                         00 - EP Mode, Gen1 Speed
-                                                         01 - EP Mode, Gen2 Speed
-                                                         10 - EP Mode, Gen3 Speed
-                                                         11 - Rsvd */
+	uint64_t md                           : 2;  /**< This field enables overwriting the value for speed. The reset value is captured on cold
+                                                         reset by the pin straps (see PEM()_STRAP[PIMODE]). For a root complex configuration
+                                                         that is not running at Gen3 speed, the HOSTMD bit of this register must be set when this
+                                                         field is changed.
+                                                         0x0 = Gen1 speed.
+                                                         0x1 = Gen2 speed.
+                                                         0x2 = Gen3 speed.
+                                                         0x3 = Reserved. */
 #else
 	uint64_t md                           : 2;
 	uint64_t reserved_2_3                 : 2;
@@ -1246,28 +1254,33 @@ union cvmx_pemx_cfg {
 	uint64_t reserved_5_63                : 59;
 #endif
 	} cn70xx;
+	struct cvmx_pemx_cfg_cn70xx           cn70xxp1;
 	struct cvmx_pemx_cfg_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
-	uint64_t laneswap                     : 1;  /**< This field will overwrite the pin setting for lane swapping.
-                                                         When set, lane swapping is performed to/from the SerDes.
-                                                         When clear, no lane swapping is performed. */
-	uint64_t lanes8                       : 1;  /**< This field will overwrite the pin setting for number of lanes.
-                                                         When set, the PEM is configured for a maximum of 8-lanes,
-                                                         When clear, the PEM is configured for a maximum of 4-lanes.
-                                                         This value is used to set the Maximum Link Width field in the
-                                                         core's Link Capabilities Register (CFG031) to indicate the
-                                                         maximum number of lanes supported. Note that less lanes than
-                                                         the specified maximum can be configured for use via the core's
-                                                         Link Control Register (CFG032) Negotiated Link Width field. */
-	uint64_t hostmd                       : 1;  /**< This field will overwrite the pin settings for host mode.
-                                                         When set, the PEM is configured to be a Root Complex.
-                                                         When clear, the PEM is configured to be an End Point. */
-	uint64_t md                           : 2;  /**< This field will overwrite the pin settings for speed.
-                                                         00 - EP Mode, Gen1 Speed
-                                                         01 - EP Mode, Gen2 Speed
-                                                         10 - EP Mode, Gen3 Speed
-                                                         11 - Rsvd */
+	uint64_t laneswap                     : 1;  /**< This field enables overwriting the value for lane swapping. The reset value is captured on
+                                                         cold reset by the pin straps (see PEM()_STRAP[PILANESWAP]). When set, lane swapping is
+                                                         performed to/from the SerDes. When clear, no lane swapping is performed. */
+	uint64_t lanes8                       : 1;  /**< This field enables overwriting the value for the maximum number of lanes. The reset value
+                                                         is captured on cold reset by the pin straps (see PEM()_STRAP[PILANES8]). When set, the
+                                                         PEM is configured for a maximum of 8 lanes. When clear, the PEM is configured for a
+                                                         maximum of 4 lanes. This value is used to set the maximum link width field in the core's
+                                                         link capabilities register (CFG031) to indicate the maximum number of lanes
+                                                         supported. Note that less lanes than the specified maximum can be configured for use via
+                                                         the core's link control register (CFG032) negotiated link width field. */
+	uint64_t hostmd                       : 1;  /**< This field enables overwriting the value for host mode. The reset value is captured on
+                                                         cold reset by the pin straps. (See PEM()_STRAP[PIMODE]. The HOSTMD reset value is the
+                                                         bit-wise AND of the PIMODE straps.  As such, PEMs 0 and 2 are configurable and PEMs 1
+                                                         and 3 default to 0x1.)  When set, the PEM is configured to be a root complex. When clear,
+                                                         the PEM is configured to be an end point. */
+	uint64_t md                           : 2;  /**< This field enables overwriting the value for speed. The reset value is captured on cold
+                                                         reset by the pin straps (see PEM()_STRAP[PIMODE]). For a root complex configuration
+                                                         that is not running at Gen3 speed, the HOSTMD bit of this register must be set when this
+                                                         field is changed.
+                                                         0x0 = Gen1 speed.
+                                                         0x1 = Gen2 speed.
+                                                         0x2 = Gen3 speed.
+                                                         0x3 = Reserved. */
 #else
 	uint64_t md                           : 2;
 	uint64_t hostmd                       : 1;
@@ -1282,7 +1295,7 @@ typedef union cvmx_pemx_cfg cvmx_pemx_cfg_t;
 /**
  * cvmx_pem#_cfg_rd
  *
- * Allows read access to the configuration in the PCIe Core.
+ * This register allows read access to the configuration in the PCIe core.
  *
  */
 union cvmx_pemx_cfg_rd {
@@ -1304,6 +1317,7 @@ union cvmx_pemx_cfg_rd {
 	struct cvmx_pemx_cfg_rd_s             cn68xx;
 	struct cvmx_pemx_cfg_rd_s             cn68xxp1;
 	struct cvmx_pemx_cfg_rd_s             cn70xx;
+	struct cvmx_pemx_cfg_rd_s             cn70xxp1;
 	struct cvmx_pemx_cfg_rd_s             cn78xx;
 	struct cvmx_pemx_cfg_rd_s             cnf71xx;
 };
@@ -1312,7 +1326,7 @@ typedef union cvmx_pemx_cfg_rd cvmx_pemx_cfg_rd_t;
 /**
  * cvmx_pem#_cfg_wr
  *
- * Allows write access to the configuration in the PCIe Core.
+ * This register allows write access to the configuration in the PCIe core.
  *
  */
 union cvmx_pemx_cfg_wr {
@@ -1335,6 +1349,7 @@ union cvmx_pemx_cfg_wr {
 	struct cvmx_pemx_cfg_wr_s             cn68xx;
 	struct cvmx_pemx_cfg_wr_s             cn68xxp1;
 	struct cvmx_pemx_cfg_wr_s             cn70xx;
+	struct cvmx_pemx_cfg_wr_s             cn70xxp1;
 	struct cvmx_pemx_cfg_wr_s             cn78xx;
 	struct cvmx_pemx_cfg_wr_s             cnf71xx;
 };
@@ -1343,7 +1358,7 @@ typedef union cvmx_pemx_cfg_wr cvmx_pemx_cfg_wr_t;
 /**
  * cvmx_pem#_clk_en
  *
- * Clock Enable for ECLK and PCE_CLK
+ * This register contains the clock enable for ECLK and PCE_CLK.
  *
  */
 union cvmx_pemx_clk_en {
@@ -1351,10 +1366,8 @@ union cvmx_pemx_clk_en {
 	struct cvmx_pemx_clk_en_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
-	uint64_t pceclk_gate                  : 1;  /**< When set, pce_clk is gated off.
-                                                         When clear, pce_clk is enabled. */
-	uint64_t csclk_gate                   : 1;  /**< When set, eclk is gated off.
-                                                         When clear, eclk is enabled. */
+	uint64_t pceclk_gate                  : 1;  /**< When set, PCE_CLK is gated off. When clear, PCE_CLK is enabled. */
+	uint64_t csclk_gate                   : 1;  /**< When set, ECLK is gated off. When clear, ECLK is enabled. */
 #else
 	uint64_t csclk_gate                   : 1;
 	uint64_t pceclk_gate                  : 1;
@@ -1362,6 +1375,7 @@ union cvmx_pemx_clk_en {
 #endif
 	} s;
 	struct cvmx_pemx_clk_en_s             cn70xx;
+	struct cvmx_pemx_clk_en_s             cn70xxp1;
 	struct cvmx_pemx_clk_en_s             cn78xx;
 };
 typedef union cvmx_pemx_clk_en cvmx_pemx_clk_en_t;
@@ -1369,7 +1383,7 @@ typedef union cvmx_pemx_clk_en cvmx_pemx_clk_en_t;
 /**
  * cvmx_pem#_cpl_lut_valid
  *
- * Bit set for outstanding tag read.
+ * This register specifies the bit set for an outstanding tag read.
  *
  */
 union cvmx_pemx_cpl_lut_valid {
@@ -1398,6 +1412,7 @@ union cvmx_pemx_cpl_lut_valid {
 	struct cvmx_pemx_cpl_lut_valid_cn61xx cn68xx;
 	struct cvmx_pemx_cpl_lut_valid_cn61xx cn68xxp1;
 	struct cvmx_pemx_cpl_lut_valid_cn61xx cn70xx;
+	struct cvmx_pemx_cpl_lut_valid_cn61xx cn70xxp1;
 	struct cvmx_pemx_cpl_lut_valid_s      cn78xx;
 	struct cvmx_pemx_cpl_lut_valid_cn61xx cnf71xx;
 };
@@ -1406,7 +1421,7 @@ typedef union cvmx_pemx_cpl_lut_valid cvmx_pemx_cpl_lut_valid_t;
 /**
  * cvmx_pem#_ctl_status
  *
- * General control and status of the PEM.
+ * This is a general control and status register of the PEM.
  *
  */
 union cvmx_pemx_ctl_status {
@@ -1414,9 +1429,8 @@ union cvmx_pemx_ctl_status {
 	struct cvmx_pemx_ctl_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_51_63               : 13;
-	uint64_t inv_dpar                     : 1;  /**< Invert the generated parity to be written into the
-                                                         the most significant Data Queue Buffer ram block
-                                                         to force a parity error when it is later read. */
+	uint64_t inv_dpar                     : 1;  /**< Invert the generated parity to be written into the most significant data queue buffer RAM
+                                                         block to force a parity error when it is later read. */
 	uint64_t inv_hpar                     : 1;  /**< Invert the generated parity to be written into the
                                                          most significant Header Queue Buffer ram block
                                                          to force a parity error when it is later read. */
@@ -1541,45 +1555,36 @@ union cvmx_pemx_ctl_status {
 	struct cvmx_pemx_ctl_status_cn61xx    cn68xx;
 	struct cvmx_pemx_ctl_status_cn61xx    cn68xxp1;
 	struct cvmx_pemx_ctl_status_s         cn70xx;
+	struct cvmx_pemx_ctl_status_s         cn70xxp1;
 	struct cvmx_pemx_ctl_status_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_51_63               : 13;
-	uint64_t inv_dpar                     : 1;  /**< Invert the generated parity to be written into the
-                                                         the most significant Data Queue Buffer ram block
-                                                         to force a parity error when it is later read. */
+	uint64_t inv_dpar                     : 1;  /**< Invert the generated parity to be written into the most significant data queue buffer RAM
+                                                         block to force a parity error when it is later read. */
 	uint64_t reserved_48_49               : 2;
-	uint64_t auto_sd                      : 1;  /**< Link Hardware Autonomous Speed Disable. */
+	uint64_t auto_sd                      : 1;  /**< Link hardware autonomous speed disable. */
 	uint64_t dnum                         : 5;  /**< Primary bus device number. */
 	uint64_t pbus                         : 8;  /**< Primary bus number. */
 	uint64_t reserved_32_33               : 2;
-	uint64_t cfg_rtry                     : 16; /**< The time x 0x10000 in core clocks to wait for a
-                                                         CPL to a CFG RD that does not carry a Retry Status.
-                                                         Until such time that the timeout occurs and Retry
-                                                         Status is received for a CFG RD, the Read CFG Read
-                                                         will be resent. A value of 0 disables retries and
-                                                         treats a CPL Retry as a CPL UR.
-                                                         When enabled only one CFG RD may be issued until
+	uint64_t cfg_rtry                     : 16; /**< The time * 0x10000 in coprocessor clocks to wait for a CPL to a configuration read that
+                                                         does not carry a retry status. Until such time that the timeout occurs and retry status is
+                                                         received for a configuration read, the read will be resent. A value of 0 disables retries
+                                                         and treats a CPL Retry as a CPL UR. When enabled, only one CFG RD may be issued until
                                                          either successful completion or CPL UR. */
 	uint64_t reserved_12_15               : 4;
-	uint64_t pm_xtoff                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
-                                                         to the PCIe core pm_xmt_turnoff port. RC mode. */
-	uint64_t pm_xpme                      : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
-                                                         to the PCIe core pm_xmt_pme port. EP mode. */
-	uint64_t ob_p_cmd                     : 1;  /**< When WRITTEN with a '1' a single cycle pulse is
-                                                         to the PCIe core outband_pwrup_cmd port. EP mode. */
+	uint64_t pm_xtoff                     : 1;  /**< When written with one, a single cycle pulse is sent to the PCIe core pm_xmt_turnoff port. RC mode. */
+	uint64_t pm_xpme                      : 1;  /**< When written with one, a single cycle pulse is sent to the PCIe core pm_xmt_pme port. EP mode. */
+	uint64_t ob_p_cmd                     : 1;  /**< When written with one, a single cycle pulse is sent to the PCIe core outband_pwrup_cmd
+                                                         port. EP mode. */
 	uint64_t reserved_7_8                 : 2;
 	uint64_t nf_ecrc                      : 1;  /**< Do not forward peer-to-peer ECRC TLPs. */
-	uint64_t dly_one                      : 1;  /**< When set the output client state machines will
-                                                         wait one cycle before starting a new TLP out. */
-	uint64_t lnk_enb                      : 1;  /**< When set '1' the link is enabled when '0' the
-                                                         link is disabled. This bit only is active when in
-                                                         RC mode. */
-	uint64_t ro_ctlp                      : 1;  /**< When set '1' C-TLPs that have the RO bit set will
-                                                         not wait for P-TLPs that normaly would be sent
-                                                         first. */
-	uint64_t fast_lm                      : 1;  /**< When '1' forces fast link mode. */
-	uint64_t inv_ecrc                     : 1;  /**< When '1' causes the LSB of the ECRC to be inverted. */
-	uint64_t inv_lcrc                     : 1;  /**< When '1' causes the LSB of the LCRC to be inverted. */
+	uint64_t dly_one                      : 1;  /**< When set the output client state machines will wait one cycle before starting a new TLP out. */
+	uint64_t lnk_enb                      : 1;  /**< When set, the link is enabled; when clear (0) the link is disabled. This bit only is
+                                                         active when in RC mode. */
+	uint64_t ro_ctlp                      : 1;  /**< When set, C-TLPs that have the RO bit set will not wait for P-TLPs that are normally sent first. */
+	uint64_t fast_lm                      : 1;  /**< When set, forces fast link mode. */
+	uint64_t inv_ecrc                     : 1;  /**< When set, causes the LSB of the ECRC to be inverted. */
+	uint64_t inv_lcrc                     : 1;  /**< When set, causes the LSB of the LCRC to be inverted. */
 #else
 	uint64_t inv_lcrc                     : 1;
 	uint64_t inv_ecrc                     : 1;
@@ -1610,7 +1615,7 @@ typedef union cvmx_pemx_ctl_status cvmx_pemx_ctl_status_t;
 /**
  * cvmx_pem#_ctl_status2
  *
- * Additional general control and status of the PEM.
+ * This register contains additional general control and status of the PEM.
  *
  */
 union cvmx_pemx_ctl_status2 {
@@ -1618,16 +1623,12 @@ union cvmx_pemx_ctl_status2 {
 	struct cvmx_pemx_ctl_status2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t no_fwd_prg                   : 16; /**< The time x 0x10000 in core clocks to wait for the
-                                                         TLP FIFOs to be able to unload an entry. If there is
-                                                         no forward progress, such that the timeout occurs,
-                                                         credits will be returned to the SLI and an interrupt
-                                                         (if enabled) will be asserted. Any more TLPs received
-                                                         will be dropped on the floor and the credits
-                                                         associated with those TLPs will be returned, as well.
-                                                         Note that 0xFFFF is a reserved value that will put
-                                                         the PEM in the 'forward progress stopped' state immediately.
-                                                         This state will hold until a mac reset is received. */
+	uint64_t no_fwd_prg                   : 16; /**< The time * 0x10000 in core clocks to wait for the TLP FIFOs to be able to unload an entry.
+                                                         If there is no forward progress, such that the timeout occurs, credits are returned to the
+                                                         SLI and an interrupt (if enabled) is asserted. Any more TLPs received are dropped on the
+                                                         floor and the credits associated with those TLPs are returned as well. Note that 0xFFFF is
+                                                         a reserved value that will put the PEM in the 'forward progress stopped' state
+                                                         immediately. This state holds until a MAC reset is received. */
 #else
 	uint64_t no_fwd_prg                   : 16;
 	uint64_t reserved_16_63               : 48;
@@ -1640,27 +1641,27 @@ typedef union cvmx_pemx_ctl_status2 cvmx_pemx_ctl_status2_t;
 /**
  * cvmx_pem#_dbg_info
  *
- * "PEM#_DBG_INFO = PEM Debug Information
- * General debug info."
+ * This is a debug information register of the PEM.
+ *
  */
 union cvmx_pemx_dbg_info {
 	uint64_t u64;
 	struct cvmx_pemx_dbg_info_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_58_63               : 6;
-	uint64_t qhdr_b1_dbe                  : 1;  /**< Detected a Core Header Queue Bank1 double bit error */
-	uint64_t qhdr_b1_sbe                  : 1;  /**< Detected a Core Header Queue Bank1 single bit error */
-	uint64_t qhdr_b0_dbe                  : 1;  /**< Detected a Core Header Queue Bank0 double bit error */
-	uint64_t qhdr_b0_sbe                  : 1;  /**< Detected a Core Header Queue Bank0 single bit error */
-	uint64_t rtry_dbe                     : 1;  /**< Detected a Core Retry RAM double bit error */
-	uint64_t rtry_sbe                     : 1;  /**< Detected a Core Retry RAM single bit error */
+	uint64_t qhdr_b1_dbe                  : 1;  /**< Detected a core header queue bank1 double bit error. */
+	uint64_t qhdr_b1_sbe                  : 1;  /**< Detected a core header queue bank1 single bit error. */
+	uint64_t qhdr_b0_dbe                  : 1;  /**< Detected a core header queue bank0 double bit error. */
+	uint64_t qhdr_b0_sbe                  : 1;  /**< Detected a core header queue bank0 single bit error. */
+	uint64_t rtry_dbe                     : 1;  /**< Detected a core retry RAM double bit error. */
+	uint64_t rtry_sbe                     : 1;  /**< Detected a core retry RAM single bit error. */
 	uint64_t reserved_50_51               : 2;
-	uint64_t c_d1_dbe                     : 1;  /**< Detected a TLP CPL Fifo data1 double bit error */
-	uint64_t c_d1_sbe                     : 1;  /**< Detected a TLP CPL Fifo data1 single bit error */
-	uint64_t c_d0_dbe                     : 1;  /**< Detected a TLP CPL Fifo data0 double bit error */
-	uint64_t c_d0_sbe                     : 1;  /**< Detected a TLP CPL Fifo data0 single bit error */
+	uint64_t c_d1_dbe                     : 1;  /**< Detected a TLP CPL FIFO data1 double bit error. */
+	uint64_t c_d1_sbe                     : 1;  /**< Detected a TLP CPL FIFO data1 single bit error. */
+	uint64_t c_d0_dbe                     : 1;  /**< Detected a TLP CPL FIFO data0 double bit error. */
+	uint64_t c_d0_sbe                     : 1;  /**< Detected a TLP CPL FIFO data0 single bit error. */
 	uint64_t reserved_34_45               : 12;
-	uint64_t datq_pe                      : 1;  /**< Detected a Data Queue RAM parity error */
+	uint64_t datq_pe                      : 1;  /**< Detected a data queue RAM parity error. */
 	uint64_t hdrq_pe                      : 1;  /**< Detected a Header Queue RAM parity error */
 	uint64_t reserved_31_31               : 1;
 	uint64_t ecrc_e                       : 1;  /**< Received a ECRC error.
@@ -2000,8 +2001,7 @@ union cvmx_pemx_dbg_info {
                                                          this bit is set as well. */
 	uint64_t spoison                      : 1;  /**< Poisoned TLP sent
                                                          peai__client0_tlp_ep & peai__client0_tlp_hv
-                                                         peai__client1_tlp_ep & peai__client1_tlp_hv (atomic_op).
-                                                         Throws PEM_INTSN_E::PEM(0..2)_ERROR_SPOISON. */
+                                                         peai__client1_tlp_ep & peai__client1_tlp_hv (atomic_op). */
 #else
 	uint64_t spoison                      : 1;
 	uint64_t rtlpmal                      : 1;
@@ -2052,114 +2052,76 @@ union cvmx_pemx_dbg_info {
 	uint64_t reserved_46_63               : 18;
 #endif
 	} cn70xx;
+	struct cvmx_pemx_dbg_info_cn70xx      cn70xxp1;
 	struct cvmx_pemx_dbg_info_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_58_63               : 6;
-	uint64_t qhdr_b1_dbe                  : 1;  /**< Detected a Core Header Queue Bank1 double bit error */
-	uint64_t qhdr_b1_sbe                  : 1;  /**< Detected a Core Header Queue Bank1 single bit error */
-	uint64_t qhdr_b0_dbe                  : 1;  /**< Detected a Core Header Queue Bank0 double bit error */
-	uint64_t qhdr_b0_sbe                  : 1;  /**< Detected a Core Header Queue Bank0 single bit error */
-	uint64_t rtry_dbe                     : 1;  /**< Detected a Core Retry RAM double bit error */
-	uint64_t rtry_sbe                     : 1;  /**< Detected a Core Retry RAM single bit error */
-	uint64_t c_c_dbe                      : 1;  /**< Detected a TLP CPL Fifo ctrl double bit error */
-	uint64_t c_c_sbe                      : 1;  /**< Detected a TLP CPL Fifo ctrl single bit error */
-	uint64_t c_d1_dbe                     : 1;  /**< Detected a TLP CPL Fifo data1 double bit error */
-	uint64_t c_d1_sbe                     : 1;  /**< Detected a TLP CPL Fifo data1 single bit error */
-	uint64_t c_d0_dbe                     : 1;  /**< Detected a TLP CPL Fifo data0 double bit error */
-	uint64_t c_d0_sbe                     : 1;  /**< Detected a TLP CPL Fifo data0 single bit error */
-	uint64_t n_c_dbe                      : 1;  /**< Detected a TLP NP Fifo ctrl double bit error */
-	uint64_t n_c_sbe                      : 1;  /**< Detected a TLP NP Fifo ctrl single bit error */
-	uint64_t n_d1_dbe                     : 1;  /**< Detected a TLP NP Fifo data1 double bit error */
-	uint64_t n_d1_sbe                     : 1;  /**< Detected a TLP NP Fifo data1 single bit error */
-	uint64_t n_d0_dbe                     : 1;  /**< Detected a TLP NP Fifo data0 double bit error */
-	uint64_t n_d0_sbe                     : 1;  /**< Detected a TLP NP fifo data0 single bit error */
-	uint64_t p_c_dbe                      : 1;  /**< Detected a TLP Posted Fifo ctrl double bit error */
-	uint64_t p_c_sbe                      : 1;  /**< Detected a TLP Posted Fifo ctrl single bit error */
-	uint64_t p_d1_dbe                     : 1;  /**< Detected a TLP Posted Fifo data1 double bit error */
-	uint64_t p_d1_sbe                     : 1;  /**< Detected a TLP Posted Fifo data1 single bit error */
-	uint64_t p_d0_dbe                     : 1;  /**< Detected a TLP Posted Fifo data0 double bit error */
-	uint64_t p_d0_sbe                     : 1;  /**< Detected a TLP Posted Fifo data0 single bit error */
-	uint64_t datq_pe                      : 1;  /**< Detected a Data Queue RAM parity error */
+	uint64_t qhdr_b1_dbe                  : 1;  /**< Detected a core header queue bank1 double bit error. */
+	uint64_t qhdr_b1_sbe                  : 1;  /**< Detected a core header queue bank1 single bit error. */
+	uint64_t qhdr_b0_dbe                  : 1;  /**< Detected a core header queue bank0 double bit error. */
+	uint64_t qhdr_b0_sbe                  : 1;  /**< Detected a core header queue bank0 single bit error. */
+	uint64_t rtry_dbe                     : 1;  /**< Detected a core retry RAM double bit error. */
+	uint64_t rtry_sbe                     : 1;  /**< Detected a core retry RAM single bit error. */
+	uint64_t c_c_dbe                      : 1;  /**< Detected a TLP CPL FIFO control double bit error. */
+	uint64_t c_c_sbe                      : 1;  /**< Detected a TLP CPL FIFO control single bit error. */
+	uint64_t c_d1_dbe                     : 1;  /**< Detected a TLP CPL FIFO data1 double bit error. */
+	uint64_t c_d1_sbe                     : 1;  /**< Detected a TLP CPL FIFO data1 single bit error. */
+	uint64_t c_d0_dbe                     : 1;  /**< Detected a TLP CPL FIFO data0 double bit error. */
+	uint64_t c_d0_sbe                     : 1;  /**< Detected a TLP CPL FIFO data0 single bit error. */
+	uint64_t n_c_dbe                      : 1;  /**< Detected a TLP NP FIFO control double bit error. */
+	uint64_t n_c_sbe                      : 1;  /**< Detected a TLP NP FIFO control single bit error. */
+	uint64_t n_d1_dbe                     : 1;  /**< Detected a TLP NP FIFO data1 double bit error. */
+	uint64_t n_d1_sbe                     : 1;  /**< Detected a TLP NP FIFO data1 single bit error. */
+	uint64_t n_d0_dbe                     : 1;  /**< Detected a TLP NP FIFO data0 double bit error. */
+	uint64_t n_d0_sbe                     : 1;  /**< Detected a TLP NP FIFO data0 single bit error. */
+	uint64_t p_c_dbe                      : 1;  /**< Detected a TLP posted FIFO control double bit error. */
+	uint64_t p_c_sbe                      : 1;  /**< Detected a TLP posted FIFO control single bit error. */
+	uint64_t p_d1_dbe                     : 1;  /**< Detected a TLP posted FIFO data1 double bit error. */
+	uint64_t p_d1_sbe                     : 1;  /**< Detected a TLP posted FIFO data1 single bit error. */
+	uint64_t p_d0_dbe                     : 1;  /**< Detected a TLP posted FIFO data0 double bit error. */
+	uint64_t p_d0_sbe                     : 1;  /**< Detected a TLP posted FIFO data0 single bit error. */
+	uint64_t datq_pe                      : 1;  /**< Detected a data queue RAM parity error. */
 	uint64_t reserved_32_32               : 1;
-	uint64_t lofp                         : 1;  /**< Lack of Forward Progress at TLP FIFOs timeout occured. */
-	uint64_t ecrc_e                       : 1;  /**< Received a ECRC error.
-                                                         radm_ecrc_err */
-	uint64_t rawwpp                       : 1;  /**< Received a write with poisoned payload
-                                                         radm_rcvd_wreq_poisoned */
-	uint64_t racpp                        : 1;  /**< Received a completion with poisoned payload
-                                                         radm_rcvd_cpl_poisoned */
-	uint64_t ramtlp                       : 1;  /**< Received a malformed TLP
-                                                         radm_mlf_tlp_err */
-	uint64_t rarwdns                      : 1;  /**< Recieved a request which device does not support
-                                                         radm_rcvd_ur_req */
-	uint64_t caar                         : 1;  /**< Completer aborted a request
-                                                         radm_rcvd_ca_req
-                                                         This bit will never be set because Octeon does
-                                                         not generate Completer Aborts. */
-	uint64_t racca                        : 1;  /**< Received a completion with CA status
-                                                         radm_rcvd_cpl_ca */
-	uint64_t racur                        : 1;  /**< Received a completion with UR status
-                                                         radm_rcvd_cpl_ur */
-	uint64_t rauc                         : 1;  /**< Received an unexpected completion
-                                                         radm_unexp_cpl_err */
-	uint64_t rqo                          : 1;  /**< Receive queue overflow. Normally happens only when
-                                                         flow control advertisements are ignored
-                                                         radm_qoverflow */
-	uint64_t fcuv                         : 1;  /**< Flow Control Update Violation (opt. checks)
-                                                         int_xadm_fc_prot_err */
-	uint64_t rpe                          : 1;  /**< When the PHY reports 8B/10B decode error
-                                                         (RxStatus = 3b100) or disparity error
-                                                         (RxStatus = 3b111), the signal rmlh_rcvd_err will
-                                                         be asserted.
-                                                         rmlh_rcvd_err */
-	uint64_t fcpvwt                       : 1;  /**< Flow Control Protocol Violation (Watchdog Timer)
-                                                         rtlh_fc_prot_err */
-	uint64_t dpeoosd                      : 1;  /**< DLLP protocol error (out of sequence DLLP)
-                                                         rdlh_prot_err */
-	uint64_t rtwdle                       : 1;  /**< Received TLP with DataLink Layer Error
-                                                         rdlh_bad_tlp_err */
-	uint64_t rdwdle                       : 1;  /**< Received DLLP with DataLink Layer Error
-                                                         rdlh_bad_dllp_err */
-	uint64_t mre                          : 1;  /**< Max Retries Exceeded
-                                                         xdlh_replay_num_rlover_err */
-	uint64_t rte                          : 1;  /**< Replay Timer Expired
-                                                         xdlh_replay_timeout_err
-                                                         This bit is set when the REPLAY_TIMER expires in
-                                                         the PCIE core. The probability of this bit being
-                                                         set will increase with the traffic load. */
-	uint64_t acto                         : 1;  /**< A Completion Timeout Occured
-                                                         pedc_radm_cpl_timeout */
-	uint64_t rvdm                         : 1;  /**< Received Vendor-Defined Message
-                                                         pedc_radm_vendor_msg */
-	uint64_t rumep                        : 1;  /**< Received Unlock Message (EP Mode Only)
-                                                         pedc_radm_msg_unlock */
-	uint64_t rptamrc                      : 1;  /**< Received PME Turnoff Acknowledge Message
-                                                         (RC Mode only)
-                                                         pedc_radm_pm_to_ack */
-	uint64_t rpmerc                       : 1;  /**< Received PME Message (RC Mode only)
-                                                         pedc_radm_pm_pme */
-	uint64_t rfemrc                       : 1;  /**< Received Fatal Error Message (RC Mode only)
-                                                         pedc_radm_fatal_err
-                                                         Bit set when a message with ERR_FATAL is set. */
-	uint64_t rnfemrc                      : 1;  /**< Received Non-Fatal Error Message (RC Mode only)
-                                                         pedc_radm_nonfatal_err */
-	uint64_t rcemrc                       : 1;  /**< Received Correctable Error Message (RC Mode only)
-                                                         pedc_radm_correctable_err */
-	uint64_t rpoison                      : 1;  /**< Received Poisoned TLP
-                                                         pedc__radm_trgt1_poisoned & pedc__radm_trgt1_hv */
-	uint64_t recrce                       : 1;  /**< Received ECRC Error
-                                                         pedc_radm_trgt1_ecrc_err & pedc__radm_trgt1_eot */
-	uint64_t rtlplle                      : 1;  /**< Received TLP has link layer error
-                                                         pedc_radm_trgt1_dllp_abort & pedc__radm_trgt1_eot */
-	uint64_t rtlpmal                      : 1;  /**< Received TLP is malformed or a message.
-                                                         pedc_radm_trgt1_tlp_abort & pedc__radm_trgt1_eot
-                                                         If the core receives a MSG (or Vendor Message)
-                                                         or if a received AtomicOp viloates address/length rules,
-                                                         this bit is set as well. */
-	uint64_t spoison                      : 1;  /**< Poisoned TLP sent
-                                                         peai__client0_tlp_ep & peai__client0_tlp_hv
-                                                         peai__client1_tlp_ep & peai__client1_tlp_hv (atomic_op).
-                                                         Throws PEM_INTSN_E::PEM(0..3)_ERROR_SPOISON. */
+	uint64_t lofp                         : 1;  /**< Lack of forward progress at TLP FIFOs timeout occurred. */
+	uint64_t ecrc_e                       : 1;  /**< Received an ECRC error. */
+	uint64_t rawwpp                       : 1;  /**< Received a write with poisoned payload. radm_rcvd_wreq_poisoned */
+	uint64_t racpp                        : 1;  /**< Received a completion with poisoned payload. radm_rcvd_cpl_poisoned */
+	uint64_t ramtlp                       : 1;  /**< Received a malformed TLP. radm_mlf_tlp_err */
+	uint64_t rarwdns                      : 1;  /**< Received a request which device does not support. radm_rcvd_ur_req */
+	uint64_t caar                         : 1;  /**< Completer aborted a request. This bit is never set because CNXXXX does not generate
+                                                         completer aborts. */
+	uint64_t racca                        : 1;  /**< Received a completion with CA status. radm_rcvd_cpl_ca */
+	uint64_t racur                        : 1;  /**< Received a completion with UR status. radm_rcvd_cpl_ur */
+	uint64_t rauc                         : 1;  /**< Received an unexpected completion. radm_unexp_cpl_err */
+	uint64_t rqo                          : 1;  /**< Receive queue overflow. Normally happens only when flow control advertisements are
+                                                         ignored. radm_qoverflow */
+	uint64_t fcuv                         : 1;  /**< Flow control update violation. (opt. checks) int_xadm_fc_prot_err */
+	uint64_t rpe                          : 1;  /**< PHY reported an 8B/10B decode error (RxStatus = 3b100) or disparity error (RxStatus =
+                                                         3b111), the signal rmlh_rcvd_err will be asserted. rmlh_rcvd_err */
+	uint64_t fcpvwt                       : 1;  /**< Flow control protocol violation (watchdog timer). rtlh_fc_prot_err */
+	uint64_t dpeoosd                      : 1;  /**< DLLP protocol error (out of sequence DLLP). rdlh_prot_err */
+	uint64_t rtwdle                       : 1;  /**< Received TLP with datalink layer error. rdlh_bad_tlp_err */
+	uint64_t rdwdle                       : 1;  /**< Received DLLP with datalink layer error. rdlh_bad_dllp_err */
+	uint64_t mre                          : 1;  /**< Maximum number of retries exceeded. xdlh_replay_num_rlover_err */
+	uint64_t rte                          : 1;  /**< Replay timer expired. This bit is set when the REPLAY_TIMER expires in the PCIe core. The
+                                                         probability of this bit being set increases with the traffic load. xdlh_replay_timeout_err */
+	uint64_t acto                         : 1;  /**< A completion timeout occurred. pedc_radm_cpl_timeout */
+	uint64_t rvdm                         : 1;  /**< Received vendor-defined message. pedc_radm_vendor_msg */
+	uint64_t rumep                        : 1;  /**< Received unlock message (EP mode only). pedc_radm_msg_unlock */
+	uint64_t rptamrc                      : 1;  /**< Received PME turnoff acknowledge message (RC mode only). pedc_radm_pm_to_ack */
+	uint64_t rpmerc                       : 1;  /**< Received PME message (RC mode only). pedc_radm_pm_pme */
+	uint64_t rfemrc                       : 1;  /**< Received fatal-error message (RC mode only). This bit is set when a message with ERR_FATAL
+                                                         is set. pedc_radm_fatal_err */
+	uint64_t rnfemrc                      : 1;  /**< Received nonfatal error message (RC mode only). pedc_radm_nonfatal_err */
+	uint64_t rcemrc                       : 1;  /**< Received correctable error message (RC mode only). pedc_radm_correctable_err */
+	uint64_t rpoison                      : 1;  /**< Received poisoned TLP. pedc__radm_trgt1_poisoned & pedc__radm_trgt1_hv */
+	uint64_t recrce                       : 1;  /**< Received ECRC error. pedc_radm_trgt1_ecrc_err & pedc__radm_trgt1_eot */
+	uint64_t rtlplle                      : 1;  /**< Received TLP has link layer error. pedc_radm_trgt1_dllp_abort & pedc__radm_trgt1_eot */
+	uint64_t rtlpmal                      : 1;  /**< Received TLP is malformed or a message. If the core receives a MSG (or Vendor Message) or
+                                                         if a received AtomicOp viloates address/length rules, this bit is set as well.
+                                                         pedc_radm_trgt1_tlp_abort & pedc__radm_trgt1_eot */
+	uint64_t spoison                      : 1;  /**< Poisoned TLP sent. Throws PEM_INTSN_E::PEM(0..3)_ERROR_SPOISON. peai__client0_tlp_ep &
+                                                         peai__client0_tlp_hv or peai__client1_tlp_ep & peai__client1_tlp_hv (atomic_op). */
 #else
 	uint64_t spoison                      : 1;
 	uint64_t rtlpmal                      : 1;
@@ -2408,6 +2370,7 @@ union cvmx_pemx_dbg_info_en {
 	struct cvmx_pemx_dbg_info_en_cn61xx   cn68xx;
 	struct cvmx_pemx_dbg_info_en_cn61xx   cn68xxp1;
 	struct cvmx_pemx_dbg_info_en_s        cn70xx;
+	struct cvmx_pemx_dbg_info_en_s        cn70xxp1;
 	struct cvmx_pemx_dbg_info_en_cn61xx   cnf71xx;
 };
 typedef union cvmx_pemx_dbg_info_en cvmx_pemx_dbg_info_en_t;
@@ -2415,14 +2378,15 @@ typedef union cvmx_pemx_dbg_info_en cvmx_pemx_dbg_info_en_t;
 /**
  * cvmx_pem#_diag_status
  *
- * Selection control for the cores diagnostic bus.
+ * This register contains selection control for the core diagnostic bus.
  *
  */
 union cvmx_pemx_diag_status {
 	uint64_t u64;
 	struct cvmx_pemx_diag_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_6_63                : 58;
+	uint64_t reserved_9_63                : 55;
+	uint64_t pwrdwn                       : 3;  /**< Current mac_phy_powerdown state. */
 	uint64_t pm_dst                       : 3;  /**< Current power management DSTATE. */
 	uint64_t pm_stat                      : 1;  /**< Power Management Status. */
 	uint64_t pm_en                        : 1;  /**< Power Management Event Enable. */
@@ -2432,7 +2396,8 @@ union cvmx_pemx_diag_status {
 	uint64_t pm_en                        : 1;
 	uint64_t pm_stat                      : 1;
 	uint64_t pm_dst                       : 3;
-	uint64_t reserved_6_63                : 58;
+	uint64_t pwrdwn                       : 3;
+	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
 	struct cvmx_pemx_diag_status_cn61xx {
@@ -2455,7 +2420,22 @@ union cvmx_pemx_diag_status {
 	struct cvmx_pemx_diag_status_cn61xx   cn66xx;
 	struct cvmx_pemx_diag_status_cn61xx   cn68xx;
 	struct cvmx_pemx_diag_status_cn61xx   cn68xxp1;
-	struct cvmx_pemx_diag_status_s        cn70xx;
+	struct cvmx_pemx_diag_status_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_6_63                : 58;
+	uint64_t pm_dst                       : 3;  /**< Current power management DSTATE. */
+	uint64_t pm_stat                      : 1;  /**< Power Management Status. */
+	uint64_t pm_en                        : 1;  /**< Power Management Event Enable. */
+	uint64_t aux_en                       : 1;  /**< Auxilary Power Enable. */
+#else
+	uint64_t aux_en                       : 1;
+	uint64_t pm_en                        : 1;
+	uint64_t pm_stat                      : 1;
+	uint64_t pm_dst                       : 3;
+	uint64_t reserved_6_63                : 58;
+#endif
+	} cn70xx;
+	struct cvmx_pemx_diag_status_cn70xx   cn70xxp1;
 	struct cvmx_pemx_diag_status_s        cn78xx;
 	struct cvmx_pemx_diag_status_cn61xx   cnf71xx;
 };
@@ -2464,7 +2444,7 @@ typedef union cvmx_pemx_diag_status cvmx_pemx_diag_status_t;
 /**
  * cvmx_pem#_ecc_ena
  *
- * Contains enables for TLP FIFO ECC RAMs
+ * Contains enables for TLP FIFO ECC RAMs.
  *
  */
 union cvmx_pemx_ecc_ena {
@@ -2472,13 +2452,13 @@ union cvmx_pemx_ecc_ena {
 	struct cvmx_pemx_ecc_ena_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_35_63               : 29;
-	uint64_t qhdr_b1_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank1 RAM */
-	uint64_t qhdr_b0_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank0 RAM */
-	uint64_t rtry_ena                     : 1;  /**< ECC enable for Core's RETRY RAM */
+	uint64_t qhdr_b1_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank1 RAM. */
+	uint64_t qhdr_b0_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank0 RAM. */
+	uint64_t rtry_ena                     : 1;  /**< ECC enable for Core's RETRY RA. */
 	uint64_t reserved_9_31                : 23;
-	uint64_t c_c_ena                      : 1;  /**< ECC enable for TLP CPL ctl Fifo */
-	uint64_t c_d1_ena                     : 1;  /**< ECC enable for TLP CPL data1 Fifo */
-	uint64_t c_d0_ena                     : 1;  /**< ECC enable for TLP CPL data0 Fifo */
+	uint64_t c_c_ena                      : 1;  /**< ECC enable for TLP CPL control FIFO. */
+	uint64_t c_d1_ena                     : 1;  /**< ECC enable for TLP CPL data1 FIFO. */
+	uint64_t c_d0_ena                     : 1;  /**< ECC enable for TLP CPL data0 FIFO. */
 	uint64_t reserved_0_5                 : 6;
 #else
 	uint64_t reserved_0_5                 : 6;
@@ -2511,22 +2491,23 @@ union cvmx_pemx_ecc_ena {
 	uint64_t reserved_6_63                : 58;
 #endif
 	} cn70xx;
+	struct cvmx_pemx_ecc_ena_cn70xx       cn70xxp1;
 	struct cvmx_pemx_ecc_ena_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_35_63               : 29;
-	uint64_t qhdr_b1_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank1 RAM */
-	uint64_t qhdr_b0_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank0 RAM */
-	uint64_t rtry_ena                     : 1;  /**< ECC enable for Core's RETRY RAM */
+	uint64_t qhdr_b1_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank1 RAM. */
+	uint64_t qhdr_b0_ena                  : 1;  /**< ECC enable for Core's Q HDR Bank0 RAM. */
+	uint64_t rtry_ena                     : 1;  /**< ECC enable for Core's RETRY RA. */
 	uint64_t reserved_9_31                : 23;
-	uint64_t c_c_ena                      : 1;  /**< ECC enable for TLP CPL ctl Fifo */
-	uint64_t c_d1_ena                     : 1;  /**< ECC enable for TLP CPL data1 Fifo */
-	uint64_t c_d0_ena                     : 1;  /**< ECC enable for TLP CPL data0 Fifo */
-	uint64_t n_c_ena                      : 1;  /**< ECC enable for TLP NP ctl Fifo */
-	uint64_t n_d1_ena                     : 1;  /**< ECC enable for TLP NP data1 Fifo */
-	uint64_t n_d0_ena                     : 1;  /**< ECC enable for TLP NP data0 Fifo */
-	uint64_t p_c_ena                      : 1;  /**< ECC enable for TLP Posted ctl Fifo */
-	uint64_t p_d1_ena                     : 1;  /**< ECC enable for TLP Posted data1 Fifo */
-	uint64_t p_d0_ena                     : 1;  /**< ECC enable for TLP Posted data0 ifo */
+	uint64_t c_c_ena                      : 1;  /**< ECC enable for TLP CPL control FIFO. */
+	uint64_t c_d1_ena                     : 1;  /**< ECC enable for TLP CPL data1 FIFO. */
+	uint64_t c_d0_ena                     : 1;  /**< ECC enable for TLP CPL data0 FIFO. */
+	uint64_t n_c_ena                      : 1;  /**< ECC enable for TLP NP control FIFO. */
+	uint64_t n_d1_ena                     : 1;  /**< ECC enable for TLP NP data1 FIFO. */
+	uint64_t n_d0_ena                     : 1;  /**< ECC enable for TLP NP data0 FIFO. */
+	uint64_t p_c_ena                      : 1;  /**< ECC enable for TLP posted control FIFO. */
+	uint64_t p_d1_ena                     : 1;  /**< ECC enable for TLP posted data1 FIFO. */
+	uint64_t p_d0_ena                     : 1;  /**< ECC enable for TLP posted data0 FIFO. */
 #else
 	uint64_t p_d0_ena                     : 1;
 	uint64_t p_d1_ena                     : 1;
@@ -2550,21 +2531,21 @@ typedef union cvmx_pemx_ecc_ena cvmx_pemx_ecc_ena_t;
 /**
  * cvmx_pem#_ecc_synd_ctrl
  *
- * PEM_ECC_SYND_CTL
- * Contains Syndrome Control for TLP FIFO ECC RAMs
+ * This register contains syndrome control for TLP FIFO ECC RAMs.
+ *
  */
 union cvmx_pemx_ecc_synd_ctrl {
 	uint64_t u64;
 	struct cvmx_pemx_ecc_synd_ctrl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_38_63               : 26;
-	uint64_t qhdr_b1_syn                  : 2;  /**< Syndrome Flip bits for Core's Q HDR Bank1 RAM */
-	uint64_t qhdr_b0_syn                  : 2;  /**< Syndrome Flip bits for Core's Q HDR Bank0 RAM */
-	uint64_t rtry_syn                     : 2;  /**< Syndrome Flip bits for Core's RETRY RAM */
+	uint64_t qhdr_b1_syn                  : 2;  /**< Syndrome flip bits for Core's Q HDR Bank1 RAM. */
+	uint64_t qhdr_b0_syn                  : 2;  /**< Syndrome flip bits for Core's Q HDR Bank0 RAM. */
+	uint64_t rtry_syn                     : 2;  /**< Syndrome flip bits for Core's RETRY RAM. */
 	uint64_t reserved_18_31               : 14;
-	uint64_t c_c_syn                      : 2;  /**< Syndrome Flip bits for TLP CPL ctl Fifo */
-	uint64_t c_d1_syn                     : 2;  /**< Syndrome Flip bits for TLP CPL data1 Fifo */
-	uint64_t c_d0_syn                     : 2;  /**< Syndrome Flip bits for TLP CPL data0 Fifo */
+	uint64_t c_c_syn                      : 2;  /**< Syndrome flip bits for TLP CPL control FIFO. */
+	uint64_t c_d1_syn                     : 2;  /**< Syndrome flip bits for TLP CPL data1 FIFO. */
+	uint64_t c_d0_syn                     : 2;  /**< Syndrome flip bits for TLP CPL data0 FIFO. */
 	uint64_t reserved_0_11                : 12;
 #else
 	uint64_t reserved_0_11                : 12;
@@ -2597,22 +2578,23 @@ union cvmx_pemx_ecc_synd_ctrl {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} cn70xx;
+	struct cvmx_pemx_ecc_synd_ctrl_cn70xx cn70xxp1;
 	struct cvmx_pemx_ecc_synd_ctrl_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_38_63               : 26;
-	uint64_t qhdr_b1_syn                  : 2;  /**< Syndrome Flip bits for Core's Q HDR Bank1 RAM */
-	uint64_t qhdr_b0_syn                  : 2;  /**< Syndrome Flip bits for Core's Q HDR Bank0 RAM */
-	uint64_t rtry_syn                     : 2;  /**< Syndrome Flip bits for Core's RETRY RAM */
+	uint64_t qhdr_b1_syn                  : 2;  /**< Syndrome flip bits for Core's Q HDR Bank1 RAM. */
+	uint64_t qhdr_b0_syn                  : 2;  /**< Syndrome flip bits for Core's Q HDR Bank0 RAM. */
+	uint64_t rtry_syn                     : 2;  /**< Syndrome flip bits for Core's RETRY RAM. */
 	uint64_t reserved_18_31               : 14;
-	uint64_t c_c_syn                      : 2;  /**< Syndrome Flip bits for TLP CPL ctl Fifo */
-	uint64_t c_d1_syn                     : 2;  /**< Syndrome Flip bits for TLP CPL data1 Fifo */
-	uint64_t c_d0_syn                     : 2;  /**< Syndrome Flip bits for TLP CPL data0 Fifo */
-	uint64_t n_c_syn                      : 2;  /**< Syndrome Flip bits for TLP NP ctl Fifo */
-	uint64_t n_d1_syn                     : 2;  /**< Syndrome Flip bits for TLP NP data1 Fifo */
-	uint64_t n_d0_syn                     : 2;  /**< Syndrome Flip bits for TLP NP data0 Fifo */
-	uint64_t p_c_syn                      : 2;  /**< Syndrome Flip bits for TLP Posted ctl Fifo */
-	uint64_t p_d1_syn                     : 2;  /**< Syndrome Flip bits for TLP Posted data1 Fifo */
-	uint64_t p_d0_syn                     : 2;  /**< Syndrome Flip bits for TLP Posted data0 Fifo */
+	uint64_t c_c_syn                      : 2;  /**< Syndrome flip bits for TLP CPL control FIFO. */
+	uint64_t c_d1_syn                     : 2;  /**< Syndrome flip bits for TLP CPL data1 FIFO. */
+	uint64_t c_d0_syn                     : 2;  /**< Syndrome flip bits for TLP CPL data0 FIFO. */
+	uint64_t n_c_syn                      : 2;  /**< Syndrome flip bits for TLP NP control FIFO. */
+	uint64_t n_d1_syn                     : 2;  /**< Syndrome flip bits for TLP NP data1 FIFO. */
+	uint64_t n_d0_syn                     : 2;  /**< Syndrome flip bits for TLP NP data0 FIFO. */
+	uint64_t p_c_syn                      : 2;  /**< Syndrome flip bits for TLP posted control FIFO. */
+	uint64_t p_d1_syn                     : 2;  /**< Syndrome flip bits for TLP posted data1 FIFO. */
+	uint64_t p_d0_syn                     : 2;  /**< Syndrome flip bits for TLP posted data0 FIFO. */
 #else
 	uint64_t p_d0_syn                     : 2;
 	uint64_t p_d1_syn                     : 2;
@@ -2636,7 +2618,7 @@ typedef union cvmx_pemx_ecc_synd_ctrl cvmx_pemx_ecc_synd_ctrl_t;
 /**
  * cvmx_pem#_inb_read_credits
  *
- * The number of in flight reads from PCIe core to SLI
+ * This register contains the number of in-flight read operations from PCIe core to SLI.
  *
  */
 union cvmx_pemx_inb_read_credits {
@@ -2666,6 +2648,7 @@ union cvmx_pemx_inb_read_credits {
 	struct cvmx_pemx_inb_read_credits_cn61xx cn66xx;
 	struct cvmx_pemx_inb_read_credits_cn61xx cn68xx;
 	struct cvmx_pemx_inb_read_credits_cn61xx cn70xx;
+	struct cvmx_pemx_inb_read_credits_cn61xx cn70xxp1;
 	struct cvmx_pemx_inb_read_credits_s   cn78xx;
 	struct cvmx_pemx_inb_read_credits_cn61xx cnf71xx;
 };
@@ -2735,6 +2718,7 @@ union cvmx_pemx_int_enb {
 	struct cvmx_pemx_int_enb_s            cn68xx;
 	struct cvmx_pemx_int_enb_s            cn68xxp1;
 	struct cvmx_pemx_int_enb_s            cn70xx;
+	struct cvmx_pemx_int_enb_s            cn70xxp1;
 	struct cvmx_pemx_int_enb_s            cnf71xx;
 };
 typedef union cvmx_pemx_int_enb cvmx_pemx_int_enb_t;
@@ -2803,6 +2787,7 @@ union cvmx_pemx_int_enb_int {
 	struct cvmx_pemx_int_enb_int_s        cn68xx;
 	struct cvmx_pemx_int_enb_int_s        cn68xxp1;
 	struct cvmx_pemx_int_enb_int_s        cn70xx;
+	struct cvmx_pemx_int_enb_int_s        cn70xxp1;
 	struct cvmx_pemx_int_enb_int_s        cnf71xx;
 };
 typedef union cvmx_pemx_int_enb_int cvmx_pemx_int_enb_int_t;
@@ -2810,17 +2795,17 @@ typedef union cvmx_pemx_int_enb_int cvmx_pemx_int_enb_int_t;
 /**
  * cvmx_pem#_int_sum
  *
- * "PEM#_INT_SUM = PEM Interrupt Summary
- * Interrupt conditions for the PEM."
+ * This register contains the different interrupt summary bits of the PEM.
+ *
  */
 union cvmx_pemx_int_sum {
 	uint64_t u64;
 	struct cvmx_pemx_int_sum_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t intd                         : 1;  /**< The PCIe controller received an INTD. */
-	uint64_t intc                         : 1;  /**< The PCIe controller received an INTC. */
-	uint64_t intb                         : 1;  /**< The PCIe controller received an INTB. */
-	uint64_t inta                         : 1;  /**< The PCIe controller received an INTA. */
+	uint64_t intd                         : 1;  /**< The PCIe controller received an INTD. This is a level-sensitive interrupt. */
+	uint64_t intc                         : 1;  /**< The PCIe controller received an INTC. This is a level-sensitive interrupt. */
+	uint64_t intb                         : 1;  /**< The PCIe controller received an INTB. This is a level-sensitive interrupt. */
+	uint64_t inta                         : 1;  /**< The PCIe controller received an INTA. This is a level-sensitive interrupt. */
 	uint64_t reserved_14_59               : 46;
 	uint64_t crs_dr                       : 1;  /**< Had a CRS Timeout when Retries were disabled. */
 	uint64_t crs_er                       : 1;  /**< Had a CRS Timeout when Retries were enabled. */
@@ -2915,32 +2900,29 @@ union cvmx_pemx_int_sum {
 	struct cvmx_pemx_int_sum_cn61xx       cn68xx;
 	struct cvmx_pemx_int_sum_cn61xx       cn68xxp1;
 	struct cvmx_pemx_int_sum_cn61xx       cn70xx;
+	struct cvmx_pemx_int_sum_cn61xx       cn70xxp1;
 	struct cvmx_pemx_int_sum_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t intd                         : 1;  /**< The PCIe controller received an INTD. */
-	uint64_t intc                         : 1;  /**< The PCIe controller received an INTC. */
-	uint64_t intb                         : 1;  /**< The PCIe controller received an INTB. */
-	uint64_t inta                         : 1;  /**< The PCIe controller received an INTA. */
+	uint64_t intd                         : 1;  /**< The PCIe controller received an INTD. This is a level-sensitive interrupt. */
+	uint64_t intc                         : 1;  /**< The PCIe controller received an INTC. This is a level-sensitive interrupt. */
+	uint64_t intb                         : 1;  /**< The PCIe controller received an INTB. This is a level-sensitive interrupt. */
+	uint64_t inta                         : 1;  /**< The PCIe controller received an INTA. This is a level-sensitive interrupt. */
 	uint64_t reserved_14_59               : 46;
-	uint64_t crs_dr                       : 1;  /**< Had a CRS Timeout when Retries were disabled. */
-	uint64_t crs_er                       : 1;  /**< Had a CRS Timeout when Retries were enabled. */
-	uint64_t rdlk                         : 1;  /**< Received Read Lock TLP. */
+	uint64_t crs_dr                       : 1;  /**< Had a CRS timeout when retries were disabled. */
+	uint64_t crs_er                       : 1;  /**< Had a CRS timeout when retries were enabled. */
+	uint64_t rdlk                         : 1;  /**< Received read lock TLP. */
 	uint64_t reserved_10_10               : 1;
-	uint64_t un_bx                        : 1;  /**< Received N-TLP for an unknown Bar. */
-	uint64_t un_b2                        : 1;  /**< Received N-TLP for Bar2 when bar2 is disabled. */
-	uint64_t un_b1                        : 1;  /**< Received N-TLP for Bar1 when bar1 index valid
-                                                         is not set. */
-	uint64_t up_bx                        : 1;  /**< Received P-TLP for an unknown Bar. */
-	uint64_t up_b2                        : 1;  /**< Received P-TLP for Bar2 when bar2 is disabeld. */
-	uint64_t up_b1                        : 1;  /**< Received P-TLP for Bar1 when bar1 index valid
-                                                         is not set. */
+	uint64_t un_bx                        : 1;  /**< Received N-TLP for unknown BAR. */
+	uint64_t un_b2                        : 1;  /**< Received N-TLP for BAR2 when BAR2 is disabled. */
+	uint64_t un_b1                        : 1;  /**< Received N-TLP for BAR1 when BAR1 index valid is not set. */
+	uint64_t up_bx                        : 1;  /**< Received P-TLP for an unknown BAR. */
+	uint64_t up_b2                        : 1;  /**< Received P-TLP for BAR2 when BAR2 is disabled. */
+	uint64_t up_b1                        : 1;  /**< Received P-TLP for BAR1 when BAR1 index valid is not set. */
 	uint64_t reserved_3_3                 : 1;
-	uint64_t pmei                         : 1;  /**< PME Interrupt.
-                                                         (cfg_pme_int) */
-	uint64_t se                           : 1;  /**< System Error, RC DEode Only.
-                                                         (cfg_sys_err_rc) */
-	uint64_t aeri                         : 1;  /**< Advanced Error Reporting Interrupt, RC Mode Only.
-                                                         (cfg_aer_rc_err_int). */
+	uint64_t pmei                         : 1;  /**< PME interrupt (cfg_pme_int). This is a level-sensitive interrupt. */
+	uint64_t se                           : 1;  /**< System error, RC mode only.  (cfg_sys_err_rc) */
+	uint64_t aeri                         : 1;  /**< Advanced error reporting interrupt, RC mode only (cfg_aer_rc_err_int).
+                                                         This is a level-sensitive interrupt. */
 #else
 	uint64_t aeri                         : 1;
 	uint64_t se                           : 1;
@@ -2970,7 +2952,7 @@ typedef union cvmx_pemx_int_sum cvmx_pemx_int_sum_t;
 /**
  * cvmx_pem#_on
  *
- * PEM is configured and ready
+ * This register indicates that PEM is configured and ready.
  *
  */
 union cvmx_pemx_on {
@@ -2978,11 +2960,10 @@ union cvmx_pemx_on {
 	struct cvmx_pemx_on_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
-	uint64_t pemoor                       : 1;  /**< Indication to software that the PEM has been taken out of
-                                                         reset (ie bist is done) and it is safe to configure core CSRs. */
-	uint64_t pemon                        : 1;  /**< Indication to the QLM that the PEM is out of reset, configured
-                                                         and ready to send/receive traffic.  Setting this bit will take
-                                                         the configured PIPE out of reset. */
+	uint64_t pemoor                       : 1;  /**< Indication to software that the PEM has been taken out of reset (i.e. BIST is done) and it
+                                                         is safe to configure core CSRs. */
+	uint64_t pemon                        : 1;  /**< Indication to the QLM that the PEM is out of reset, configured, and ready to send/receive
+                                                         traffic. Setting this bit takes the configured PIPE out of reset. */
 #else
 	uint64_t pemon                        : 1;
 	uint64_t pemoor                       : 1;
@@ -2990,6 +2971,7 @@ union cvmx_pemx_on {
 #endif
 	} s;
 	struct cvmx_pemx_on_s                 cn70xx;
+	struct cvmx_pemx_on_s                 cn70xxp1;
 	struct cvmx_pemx_on_s                 cn78xx;
 };
 typedef union cvmx_pemx_on cvmx_pemx_on_t;
@@ -2997,8 +2979,8 @@ typedef union cvmx_pemx_on cvmx_pemx_on_t;
 /**
  * cvmx_pem#_p2n_bar0_start
  *
- * The starting address for addresses to forwarded to the SLI in RC Mode.
- *
+ * This register specifies the starting address for memory requests that are to be forwarded to
+ * the SLI in RC mode.
  */
 union cvmx_pemx_p2n_bar0_start {
 	uint64_t u64;
@@ -3019,6 +3001,7 @@ union cvmx_pemx_p2n_bar0_start {
 	struct cvmx_pemx_p2n_bar0_start_s     cn68xx;
 	struct cvmx_pemx_p2n_bar0_start_s     cn68xxp1;
 	struct cvmx_pemx_p2n_bar0_start_s     cn70xx;
+	struct cvmx_pemx_p2n_bar0_start_s     cn70xxp1;
 	struct cvmx_pemx_p2n_bar0_start_s     cn78xx;
 	struct cvmx_pemx_p2n_bar0_start_s     cnf71xx;
 };
@@ -3027,8 +3010,8 @@ typedef union cvmx_pemx_p2n_bar0_start cvmx_pemx_p2n_bar0_start_t;
 /**
  * cvmx_pem#_p2n_bar1_start
  *
- * The starting address for addresses to forwarded to the SLI in RC Mode.
- *
+ * This register specifies the starting address for memory requests that are to be forwarded to
+ * the SLI in RC mode.
  */
 union cvmx_pemx_p2n_bar1_start {
 	uint64_t u64;
@@ -3049,6 +3032,7 @@ union cvmx_pemx_p2n_bar1_start {
 	struct cvmx_pemx_p2n_bar1_start_s     cn68xx;
 	struct cvmx_pemx_p2n_bar1_start_s     cn68xxp1;
 	struct cvmx_pemx_p2n_bar1_start_s     cn70xx;
+	struct cvmx_pemx_p2n_bar1_start_s     cn70xxp1;
 	struct cvmx_pemx_p2n_bar1_start_s     cn78xx;
 	struct cvmx_pemx_p2n_bar1_start_s     cnf71xx;
 };
@@ -3057,8 +3041,8 @@ typedef union cvmx_pemx_p2n_bar1_start cvmx_pemx_p2n_bar1_start_t;
 /**
  * cvmx_pem#_p2n_bar2_start
  *
- * The starting address for addresses to forwarded to the SLI in RC Mode.
- *
+ * This register specifies the starting address for memory requests that are to be forwarded to
+ * the SLI in RC mode.
  */
 union cvmx_pemx_p2n_bar2_start {
 	uint64_t u64;
@@ -3085,10 +3069,10 @@ union cvmx_pemx_p2n_bar2_start {
 	struct cvmx_pemx_p2n_bar2_start_cn61xx cn68xx;
 	struct cvmx_pemx_p2n_bar2_start_cn61xx cn68xxp1;
 	struct cvmx_pemx_p2n_bar2_start_cn61xx cn70xx;
+	struct cvmx_pemx_p2n_bar2_start_cn61xx cn70xxp1;
 	struct cvmx_pemx_p2n_bar2_start_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t addr                         : 19; /**< The starting address of the 2^45 address space
-                                                         that is the BAR2 address space. */
+	uint64_t addr                         : 19; /**< The starting address of the 2^45 BAR2 address space. */
 	uint64_t reserved_0_44                : 45;
 #else
 	uint64_t reserved_0_44                : 45;
@@ -3102,16 +3086,15 @@ typedef union cvmx_pemx_p2n_bar2_start cvmx_pemx_p2n_bar2_start_t;
 /**
  * cvmx_pem#_p2p_bar#_end
  *
- * "PEM_P2P_BAR#_END = PEM Peer-To-Peer BAR0 End
- * The ending address for addresses to forwarded to the PCIe peer port."
+ * This register specifies the ending address for memory requests that are to be forwarded to the
+ * PCIe peer port.
  */
 union cvmx_pemx_p2p_barx_end {
 	uint64_t u64;
 	struct cvmx_pemx_p2p_barx_end_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t addr                         : 52; /**< The ending address of the address window created
-                                                         this field and the PEM_P2P_BAR0_START[63:12]
-                                                         field. The full 64-bits of address are created by:
+	uint64_t addr                         : 52; /**< The ending address of the address window created by this field and the
+                                                         PEM_P2P_BAR0_START[63:12] field. The full 64-bits of the address are created by:
                                                          [ADDR[63:12], 12'b0]. */
 	uint64_t reserved_0_11                : 12;
 #else
@@ -3131,22 +3114,20 @@ typedef union cvmx_pemx_p2p_barx_end cvmx_pemx_p2p_barx_end_t;
 /**
  * cvmx_pem#_p2p_bar#_start
  *
- * "PEM_P2P_BAR#_START = PEM Peer-To-Peer BAR0 Start
- * The starting address and enable for addresses to forwarded to the PCIe peer port."
+ * This register specifies the starting address for memory requests that are to be forwarded to
+ * the PCIe peer port.
  */
 union cvmx_pemx_p2p_barx_start {
 	uint64_t u64;
 	struct cvmx_pemx_p2p_barx_start_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t addr                         : 52; /**< The starting address of the address window created
-                                                         by this field and the PEM_P2P_BAR0_END[63:12]
-                                                         field. The full 64-bits of address are created by:
+	uint64_t addr                         : 52; /**< The starting address of the address window created by this field and the
+                                                         PEM_P2P_BAR0_END[63:12] field. The full 64-bits of the address are created by:
                                                          [ADDR[63:12], 12'b0]. */
 	uint64_t reserved_2_11                : 10;
-	uint64_t dst                          : 2;  /**< The destination peer of the address window created
-                                                         by this field and the PEM_P2P_BAR0_END[63:12]
-                                                         field. It is illegal to configure the destination peer
-                                                         to match the source. */
+	uint64_t dst                          : 2;  /**< The destination peer of the address window created by this field and the
+                                                         PEM_P2P_BAR0_END[63:12] field. It is illegal to configure the destination peer to match
+                                                         the source. */
 #else
 	uint64_t dst                          : 2;
 	uint64_t reserved_2_11                : 10;
@@ -3176,7 +3157,7 @@ typedef union cvmx_pemx_p2p_barx_start cvmx_pemx_p2p_barx_start_t;
 /**
  * cvmx_pem#_qlm
  *
- * Configuration of the PEM3 QLM
+ * This register configures the PEM3 QLM.
  *
  */
 union cvmx_pemx_qlm {
@@ -3184,12 +3165,11 @@ union cvmx_pemx_qlm {
 	struct cvmx_pemx_qlm_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t pem3qlm                      : 1;  /**< " When set, PEM3 is configured to send/receive traffic to QLM4.
-                                                         When clear, PEM3 is configured to send/receive traffic to QLM3.
-                                                         Note that this bit can only be set for PEM3, for all other
-                                                         PEMs it has no function.
-                                                         Note that this bit must only be set when the associated PHYs
-                                                         are in reset and PEM3 is receiving no clocks." */
+	uint64_t pem3qlm                      : 1;  /**< When set, PEM3 is configured to send/receive traffic to QLM4. When clear, PEM3 is
+                                                         configured to send/receive traffic to QLM3. Note that this bit can only be set for PEM3,
+                                                         for all other PEMs it has no function. Note that this bit must only be set when both the
+                                                         associated PHYs and PEM3 are in reset. These conditions can be assured by setting the
+                                                         PEM(3)_ON[PEMON] bit after setting this bit. */
 #else
 	uint64_t pem3qlm                      : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3210,10 +3190,10 @@ union cvmx_pemx_spi_ctl {
 	struct cvmx_pemx_spi_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_14_63               : 50;
-	uint64_t start_busy                   : 1;  /**< Start/Busy status. Starts SPI xctn when written, reads 1 when EEPROM busy, 0 when complete. */
+	uint64_t start_busy                   : 1;  /**< Start/Busy status. Starts SPI xctn when written; reads 1 when EEPROM busy, 0 when complete. */
 	uint64_t tvalid                       : 1;  /**< Reads 1 if at least one valid entry was read from EEPROM and written to a CSR. Write to
                                                          clear status. */
-	uint64_t cmd                          : 3;  /**< SPI commands; WREN(110), WRDI(100), READ(011), WRITE(010), RDSR(101), WRSR(001) */
+	uint64_t cmd                          : 3;  /**< SPI commands; WREN (110), WRDI (100), READ (011), WRITE (010), RDSR (101), WRSR (001) */
 	uint64_t adr                          : 9;  /**< EEPROM read/write address. */
 #else
 	uint64_t adr                          : 9;
@@ -3224,6 +3204,7 @@ union cvmx_pemx_spi_ctl {
 #endif
 	} s;
 	struct cvmx_pemx_spi_ctl_s            cn70xx;
+	struct cvmx_pemx_spi_ctl_s            cn70xxp1;
 	struct cvmx_pemx_spi_ctl_s            cn78xx;
 };
 typedef union cvmx_pemx_spi_ctl cvmx_pemx_spi_ctl_t;
@@ -3231,8 +3212,8 @@ typedef union cvmx_pemx_spi_ctl cvmx_pemx_spi_ctl_t;
 /**
  * cvmx_pem#_spi_data
  *
- * "PEM#_SPI read/write data register. Contains most recently read or written data and is
- * unpredictable upon power-up"
+ * This register contains the most recently read or written SPI data and is unpredictable upon
+ * power-up.
  */
 union cvmx_pemx_spi_data {
 	uint64_t u64;
@@ -3252,6 +3233,7 @@ union cvmx_pemx_spi_data {
 #endif
 	} s;
 	struct cvmx_pemx_spi_data_s           cn70xx;
+	struct cvmx_pemx_spi_data_s           cn70xxp1;
 	struct cvmx_pemx_spi_data_s           cn78xx;
 };
 typedef union cvmx_pemx_spi_data cvmx_pemx_spi_data_t;
@@ -3267,7 +3249,9 @@ union cvmx_pemx_strap {
 	struct cvmx_pemx_strap_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t pilaneswap                   : 1;  /**< The value of the pi_select_laneswap pin */
+	uint64_t pilaneswap                   : 1;  /**< The value of the pi_select_laneswap pin, which is captured on chip cold reset. It is not
+                                                         affected by any other reset.  When set, lane swapping is performed to/from the
+                                                         SerDes. When clear, no lane swapping is performed. */
 	uint64_t reserved_0_2                 : 3;
 #else
 	uint64_t reserved_0_2                 : 3;
@@ -3286,12 +3270,22 @@ union cvmx_pemx_strap {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} cn70xx;
+	struct cvmx_pemx_strap_cn70xx         cn70xxp1;
 	struct cvmx_pemx_strap_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t pilaneswap                   : 1;  /**< The value of the pi_select_laneswap pin */
-	uint64_t pilanes8                     : 1;  /**< The value of the pi_select_8lanes pin */
-	uint64_t pimode                       : 2;  /**< The value of the pi_select_mode[1:0] pins */
+	uint64_t pilaneswap                   : 1;  /**< The value of the pi_select_laneswap pin, which is captured on chip cold reset. It is not
+                                                         affected by any other reset.  When set, lane swapping is performed to/from the
+                                                         SerDes. When clear, no lane swapping is performed. */
+	uint64_t pilanes8                     : 1;  /**< The value of the pi_select_8lanes pin, which is captured on chip cold reset. It is not
+                                                         affected by any other reset.  When set, the PEM is configured for a maximum of
+                                                         8-lanes, When clear, the PEM is configured for a maximum of 4-lanes. */
+	uint64_t pimode                       : 2;  /**< The value of the pi_select_mode[1:0] pins, which are captured on chip cold reset. They are
+                                                         not affected by any other reset.
+                                                         0x0 = EP mode, Gen1 speed.
+                                                         0x1 = EP mode, Gen2 speed.
+                                                         0x2 = EP mode, Gen3 speed.
+                                                         0x3 = RC mode, defaults to Gen3 speed. */
 #else
 	uint64_t pimode                       : 2;
 	uint64_t pilanes8                     : 1;
@@ -3305,10 +3299,9 @@ typedef union cvmx_pemx_strap cvmx_pemx_strap_t;
 /**
  * cvmx_pem#_tlp_credits
  *
- * Specifies the number of credits the PEM for use in moving TLPs. When this register is written
- * the credit values are
- * reset to the register value. A write to this register should take place BEFORE traffic flow
- * starts.
+ * This register specifies the number of credits for use in moving TLPs. When this register is
+ * written, the credit values are reset to the register value. A write to this register should
+ * take place before traffic flow starts.
  */
 union cvmx_pemx_tlp_credits {
 	uint64_t u64;
@@ -3319,12 +3312,9 @@ union cvmx_pemx_tlp_credits {
                                                          The value in this register should not be changed.
                                                          Values other than 0x80 can lead to unpredictable
                                                          behavior */
-	uint64_t pem_cpl                      : 8;  /**< TLP 16B credits for Completion TLPs in the Peer.
-                                                         Legal values are 0x12 to 0x40. */
-	uint64_t pem_np                       : 8;  /**< TLP 16B credits for Non-Posted TLPs in the Peer.
-                                                         Legal values are 0x4 to 0x8. */
-	uint64_t pem_p                        : 8;  /**< TLP 16B credits for Posted TLPs in the Peer.
-                                                         Legal values are 0x12 to 0x40. */
+	uint64_t pem_cpl                      : 8;  /**< TLP 16B credits for completion TLPs in the peer. Legal values are 0x12 to 0x40. */
+	uint64_t pem_np                       : 8;  /**< TLP 16B credits for nonposted TLPs in the peer. Legal values are 0x4 to 0x8. */
+	uint64_t pem_p                        : 8;  /**< TLP 16B credits for posted TLPs in the peer. Legal values are 0x12 to 0x40. */
 	uint64_t sli_cpl                      : 8;  /**< TLP credits for Completion TLPs in the SLI.
                                                          Legal values are 0x24 to 0x80. */
 	uint64_t sli_np                       : 8;  /**< TLP credits for Non-Posted TLPs in the SLI.
@@ -3371,54 +3361,78 @@ union cvmx_pemx_tlp_credits {
 	struct cvmx_pemx_tlp_credits_s        cn68xx;
 	struct cvmx_pemx_tlp_credits_s        cn68xxp1;
 	struct cvmx_pemx_tlp_credits_cn61xx   cn70xx;
+	struct cvmx_pemx_tlp_credits_cn61xx   cn70xxp1;
 	struct cvmx_pemx_tlp_credits_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t pem_cpl                      : 8;  /**< TLP 16B credits for Completion TLPs in the Peer.
-                                                         Legal values are 0x12 to 0x40. */
-	uint64_t pem_np                       : 8;  /**< TLP 16B credits for Non-Posted TLPs in the Peer.
-                                                         Legal values are 0x4 to 0x8. */
-	uint64_t pem_p                        : 8;  /**< TLP 16B credits for Posted TLPs in the Peer.
-                                                         Legal values are 0x12 to 0x40. */
-	uint64_t sli_cpl                      : 8;  /**< TLP 8B credits for Completion TLPs in the SLI.
-                                                         Legal values are 0x24 to 0x80. When multiple PEMS
-                                                         are wire-OR'd together, the sum of all PEMs' SLI_CPL
-                                                         fields must not exceed 0x80. The reset value for this
-                                                         register is based on the pi_select_8lanes and the
-                                                         pi_select_mode straps. For EP mode PEMs, the 8lanes strap
-                                                         determines the credits reset value; 1'b0 = 4 lanes = 64
-                                                         credits, 1'b1 = 8 lanes = 128 credits. For RC mode PEMs,
-                                                         the credits are reset assuming a 4 lane configuration.
-                                                         SW can bump this value up in the case of 8 lane RC mode
-                                                         PEMS. SW may need to reprogram this register for performance
-                                                         reasons (configured as the only PEM, but as 4-lane - in
-                                                         this case, this PEM can take all of the credits). */
-	uint64_t sli_np                       : 8;  /**< TLP 8B credits for Non-Posted TLPs in the SLI.
-                                                         Legal values are 0x8 to 0x10. When multiple PEMS
-                                                         are wire-OR'd together, the sum of all PEMs' SLI_CPL
-                                                         fields must not exceed 0x80. The reset value for this
-                                                         register is based on the pi_select_8lanes and the
-                                                         pi_select_mode straps. For EP mode PEMs, the 8lanes strap
-                                                         determines the credits reset value; 1'b0 = 4 lanes = 8
-                                                         credits, 1'b1 = 8 lanes = 16 credits. For RC mode PEMs,
-                                                         the credits are reset assuming a 4 lane configuration.
-                                                         SW can bump this value up in the case of 8 lane RC mode
-                                                         PEMS. SW may need to reprogram this register for performance
-                                                         reasons (configured as the only PEM, but as 4-lane - in
-                                                         this case, this PEM can take all of the credits). */
-	uint64_t sli_p                        : 8;  /**< TLP 8B credits for Posted TLPs in the SLI.
-                                                         Legal values are 0x24 to 0x80. When multiple PEMS
-                                                         are wire-OR'd together, the sum of all PEMs' SLI_CPL
-                                                         fields must not exceed 0x80. The reset value for this
-                                                         register is based on the pi_select_8lanes and the
-                                                         pi_select_mode straps. For EP mode PEMs, the 8lanes strap
-                                                         determines the credits reset value; 1'b0 = 4 lanes = 64
-                                                         credits, 1'b1 = 8 lanes = 128 credits. For RC mode PEMs,
-                                                         the credits are reset assuming a 4 lane configuration.
-                                                         SW can bump this value up in the case of 8 lane RC mode
-                                                         PEMS. SW may need to reprogram this register for performance
-                                                         reasons (configured as the only PEM, but as 4-lane - in
-                                                         this case, this PEM can take all of the credits). */
+	uint64_t pem_cpl                      : 8;  /**< TLP 16B credits for completion TLPs in the peer. Legal values are 0x12 to 0x40. */
+	uint64_t pem_np                       : 8;  /**< TLP 16B credits for nonposted TLPs in the peer. Legal values are 0x4 to 0x8. */
+	uint64_t pem_p                        : 8;  /**< TLP 16B credits for posted TLPs in the peer. Legal values are 0x12 to 0x40. */
+	uint64_t sli_cpl                      : 8;  /**< TLP 8B credits for completion TLPs in the SLI. Legal values are 0x24 to
+                                                         0xFF. Pairs of PEMs share a single SLI interface. PEM(0) and PEM(1) share one
+                                                         SLI interface, while PEM(2) and PEM(3) share the other. When both PEMs of a pair
+                                                         are configured, the sum of both PEMs' SLI_CPL fields must not exceed 0x100. The
+                                                         reset value for this register assumes the minimum (e.g. 4-lane)
+                                                         configuration. This ensures that for configurations where the total number of
+                                                         lanes for a pair of PEMs exceeds 8, the total allocated credits does not
+                                                         oversubscribe the SLI.
+                                                         For configurations other than two 4-lane PEMs connected to a single SLI port,
+                                                         software may safely reprogram this register (i.e. increase the value) to achieve
+                                                         optimal performance.  See the following table of example configurations of PEM
+                                                         pairs for recommended credit values.
+                                                         <pre>
+                                                            Configuration  PEM  Lanes  Typical [SLI_CPL]
+                                                            --------------------------------------------
+                                                            1 8-ln PEM     n    8             0xFF
+                                                            2 4-ln PEMs    n    4             0x80
+                                                                          n+1   4             0x80
+                                                            1 4-ln PEM     n    4             0xFF
+                                                            1 8-ln PEM,    n    8             0xAA
+                                                            1 4-ln PEM    n+1   4             0x55
+                                                         </pre> */
+	uint64_t sli_np                       : 8;  /**< TLP 8B credits for nonposted TLPs in the SLI. Legal values are 0x4 to
+                                                         0x20. Pairs of PEMs share a single SLI interface. PEM(0) and PEM(1) share one
+                                                         SLI interface, while PEM(2) and PEM(3) share the other. When both PEMs of a pair
+                                                         are configured, the sum of both PEMs' SLI_NP fields must not exceed 0x20. The
+                                                         reset value for this register assumes the minimum (e.g. 4-lane)
+                                                         configuration. This ensures that for configurations where the total number of
+                                                         lanes for a pair of PEMs exceeds 8, the total allocated credits does not
+                                                         oversubscribe the SLI.
+                                                         For configurations other than two 4-lane PEMs connected to a single SLI port,
+                                                         software may safely reprogram this register (i.e. increase the value) to achieve
+                                                         optimal performance.  See the following table of example configurations of PEM
+                                                         pairs for recommended credit values.
+                                                         <pre>
+                                                            Configuration  PEM  Lanes  Typical [SLI_CPL]
+                                                            --------------------------------------------
+                                                            1 8-ln PEM     n    8             0x20
+                                                            2 4-ln PEMs    n    4             0x10
+                                                                          n+1   4             0x10
+                                                            1 4-ln PEM     n    4             0x20
+                                                            1 8-ln PEM,    n    8             0x15
+                                                            1 4-ln PEM    n+1   4             0x0B
+                                                         </pre> */
+	uint64_t sli_p                        : 8;  /**< TLP 8B credits for Posted TLPs in the SLI. Legal values are 0x24 to 0xFF. Pairs
+                                                         of PEMs share a single SLI interface. PEM(0) and PEM(1) share one SLI interface,
+                                                         while PEM(2) and PEM(3) share the other. When both PEMs of a pair are
+                                                         configured, the sum of both PEMs' SLI_P fields must not exceed 0x100. The reset
+                                                         value for this register assumes the minimum (e.g. 4-lane) configuration. This
+                                                         ensures that for configurations where the total number of lanes for a pair of
+                                                         PEMs exceeds 8, the total allocated credits does not oversubscribe the SLI.
+                                                         For configurations other than two 4-lane PEMs connected to a single SLI port,
+                                                         software may safely reprogram this register (i.e. increase the value) to achieve
+                                                         optimal performance.  See the following table of example configurations of PEM
+                                                         pairs for recommended credit values.
+                                                         <pre>
+                                                            Configuration  PEM  Lanes  Typical [SLI_CPL]
+                                                            --------------------------------------------
+                                                            1 8-ln PEM     n    8             0xFF
+                                                            2 4-ln PEMs    n    4             0x80
+                                                                          n+1   4             0x80
+                                                            1 4-ln PEM     n    4             0xFF
+                                                            1 8-ln PEM,    n    8             0xAA
+                                                            1 4-ln PEM    n+1   4             0x55
+                                                         </pre> */
 #else
 	uint64_t sli_p                        : 8;
 	uint64_t sli_np                       : 8;

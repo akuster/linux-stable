@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -83,8 +83,7 @@ static inline int CVMX_ILK_QLM_BASE(void) {
 typedef struct {
 	int intf_en:1;
 	int la_mode:1;
-	int reserved:2;		/* unused */
-	int lane_en_mask:12;
+	int reserved:14;		/* unused */
 	int lane_speed:16;
 	/* add more here */
 } cvmx_ilk_intf_t;
@@ -201,11 +200,6 @@ typedef struct cvmx_ilk_LA_mode_struct
 	int ilk_LA_mode_cal_ena;
 } cvmx_ilk_LA_mode_t;
 
-void cvmx_ilk_config_set_LA_mode(int interface, int mode);
-void cvmx_ilk_config_set_LA_mode_cal(int interface, int mode);
-void cvmx_ilk_config_set_max_channels(int interface, unsigned char channels);
-void cvmx_ilk_config_set_lane_mask(int interface, unsigned char mask);
-
 extern CVMX_SHARED cvmx_ilk_LA_mode_t cvmx_ilk_LA_mode[CVMX_NUM_ILK_INTF];
 extern int cvmx_ilk_use_la_mode(int interface, int channel);
 
@@ -217,9 +211,8 @@ extern int cvmx_ilk_rx_set_pknd(int interface, cvmx_ilk_chan_pknd_t * chpknd, un
 extern int cvmx_ilk_enable(int interface);
 extern int cvmx_ilk_disable(int interface);
 extern int cvmx_ilk_get_intf_ena(int interface);
-extern unsigned char cvmx_ilk_get_intf_ln_msk(int interface);
 extern int cvmx_ilk_get_chan_info(int interface, unsigned char **chans, unsigned char *num_chan);
-extern cvmx_ilk_la_nsp_compact_hdr_t cvmx_ilk_enable_la_header(int port, int mode);
+extern cvmx_ilk_la_nsp_compact_hdr_t cvmx_ilk_enable_la_header(int ipd_port, int mode);
 extern void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats);
 extern int cvmx_ilk_cal_setup_rx(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pent, int hi_wm, unsigned char cal_ena);
 extern int cvmx_ilk_cal_setup_tx(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pent, unsigned char cal_ena);

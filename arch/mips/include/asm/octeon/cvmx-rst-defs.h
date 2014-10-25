@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -189,7 +189,7 @@ union cvmx_rst_boot {
                                                          timer is specified by RST_CKILL[TIMER]. */
 	uint64_t jtcsrdis                     : 1;  /**< When set, internal CSR access via JTAG TAP controller is disabled This field resets to 1
                                                          in Authentik mode, else 0. */
-	uint64_t ejtagdis                     : 1;  /**< When set, external EJTAG access is disabled This field resets to 1 in Authentik mode, else 0. */
+	uint64_t ejtagdis                     : 1;  /**< When set, external EJTAG access is disabled. This field resets to 1 in Authentik mode, else 0. */
 	uint64_t romen                        : 1;  /**< When set, Authentik/eMMC boot ROM is visible in the boot bus address space. This field
                                                          resets to 1 in an Authentik part or when booting from eMMC. Else, resets to 0. */
 	uint64_t ckill_ppdis                  : 1;  /**< When set, cores other than 0 are disabled during a CHIPKILL.  Writes have no effect when
@@ -199,35 +199,34 @@ union cvmx_rst_boot {
                                                          automatically. */
 	uint64_t reserved_37_56               : 20;
 	uint64_t c_mul                        : 7;  /**< Core-clock multiplier. C_MUL = (core-clock speed) / (ref-clock speed). 'ref-clock speed'
-                                                         should always be 50MHz. */
+                                                         should always be 50MHz.
+                                                         INTERNAL:  C_MUL is set from the pi_pll_mul pins plus 6. */
 	uint64_t pnr_mul                      : 6;  /**< Coprocessor-clock multiplier. PNR_MUL = (coprocessor-clock speed) /(ref-clock speed).
                                                          'ref-clock speed' should always be 50MHz.
-                                                         For PCIe Gen1, the coprocessor-clock speed must be greater than 250MHz; for PCIe Gen2, the
-                                                         coprocessor-clock speed must be greater than 500MHz; for PCIe Gen3, the coprocessor-clock
-                                                         speed must be greater than 800MHz. */
+                                                         INTERNAL:  C_MUL is set from the pi_pnr_pll_mul pins plus 6. */
 	uint64_t reserved_21_23               : 3;
 	uint64_t lboot_oci                    : 3;  /**< Last boot cause mask; resets only with DCOK.
-                                                         <20> Warm reset due to OCI Link 2 going down.
-                                                         <19> Warm reset due to OCI Link 1 going down.
-                                                         <18> Warm reset due to OCI Link 0 going down. */
+                                                         <20> = Warm reset due to CCPI link 2 going down.
+                                                         <19> = Warm reset due to CCPI link 1 going down.
+                                                         <18> = Warm reset due to CCPI link 0 going down. */
 	uint64_t lboot_ext                    : 6;  /**< Last boot cause mask; resets only with DCOK.
-                                                         <17> Warm reset due to Cntl3 link-down or hot-reset.
-                                                         <16> Warm reset due to Cntl2 link-down or hot-reset.
-                                                         <15> Cntl3 reset due to PERST3_L pin.
-                                                         <14> Cntl2 reset due to PERST2_L pin.
-                                                         <13> Warm reset due to PERST3_L pin.
-                                                         <12> Warm reset due to PERST2_L pin. */
+                                                         <17> = Warm reset due to Cntl3 link-down or hot-reset.
+                                                         <16> = Warm reset due to Cntl2 link-down or hot-reset.
+                                                         <15> = Cntl3 reset due to PERST3_L pin.
+                                                         <14> = Cntl2 reset due to PERST2_L pin.
+                                                         <13> = Warm reset due to PERST3_L pin.
+                                                         <12> = Warm reset due to PERST2_L pin. */
 	uint64_t lboot                        : 10; /**< Last boot cause mask; resets only with DCOK.
-                                                         <11> Soft reset due to watchdog.
-                                                         <10> Soft reset due to RST_SOFT_RST write.
-                                                         <9> Warm reset due to Cntl0 link-down or hot-reset.
-                                                         <8> Warm reset due to Cntl1 link-down or hot-reset.
-                                                         <7> Cntl1 reset due to PERST1_L pin.
-                                                         <6> Cntl0 reset due to PERST0_L pin.
-                                                         <5> Warm reset due to PERST1_L pin.
-                                                         <4> Warm reset due to PERST0_L pin.
-                                                         <3> Warm reset due to CHIP_RESET_L pin.
-                                                         <2> Cold reset due to PLL_DC_OK pin. */
+                                                         <11> = Soft reset due to watchdog.
+                                                         <10> = Soft reset due to RST_SOFT_RST write.
+                                                         <9> = Warm reset due to Cntl1 link-down or hot-reset.
+                                                         <8> = Warm reset due to Cntl0 link-down or hot-reset.
+                                                         <7> = Cntl1 reset due to PERST1_L pin.
+                                                         <6> = Cntl0 reset due to PERST0_L pin.
+                                                         <5> = Warm reset due to PERST1_L pin.
+                                                         <4> = Warm reset due to PERST0_L pin.
+                                                         <3> = Warm reset due to CHIP_RESET_L pin.
+                                                         <2> = Cold reset due to PLL_DC_OK pin. */
 	uint64_t rboot                        : 1;  /**< Determines whether core 0 remains in reset after chip cold/warm/soft reset. */
 	uint64_t rboot_pin                    : 1;  /**< Read-only access to REMOTE_BOOT pin. */
 #else
@@ -250,6 +249,7 @@ union cvmx_rst_boot {
 #endif
 	} s;
 	struct cvmx_rst_boot_s                cn70xx;
+	struct cvmx_rst_boot_s                cn70xxp1;
 	struct cvmx_rst_boot_s                cn78xx;
 };
 typedef union cvmx_rst_boot cvmx_rst_boot_t;
@@ -278,6 +278,7 @@ union cvmx_rst_cfg {
 #endif
 	} s;
 	struct cvmx_rst_cfg_s                 cn70xx;
+	struct cvmx_rst_cfg_s                 cn70xxp1;
 	struct cvmx_rst_cfg_s                 cn78xx;
 };
 typedef union cvmx_rst_cfg cvmx_rst_cfg_t;
@@ -298,6 +299,7 @@ union cvmx_rst_ckill {
 #endif
 	} s;
 	struct cvmx_rst_ckill_s               cn70xx;
+	struct cvmx_rst_ckill_s               cn70xxp1;
 	struct cvmx_rst_ckill_s               cn78xx;
 };
 typedef union cvmx_rst_ckill cvmx_rst_ckill_t;
@@ -311,32 +313,33 @@ union cvmx_rst_ctlx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
 	uint64_t prst_link                    : 1;  /**< Controls whether corresponding controller link-down or hot-reset causes the assertion of
-                                                         RST_SOFT_PRST*[SOFT_PRST].
+                                                         RST_SOFT_PRST()[SOFT_PRST].
                                                          A warm/soft reset does not change this field. On cold reset, this field is initialized to
                                                          0. */
 	uint64_t rst_done                     : 1;  /**< Read-only access to controller reset status. RST_DONE is always zero (i.e. the controller
                                                          is held in reset) when:
-                                                         RST_SOFT_PRST*[SOFT_PRST] = 1, or
-                                                         RST_RCV = 1 and PERST*_L pin is asserted. */
+                                                         * RST_SOFT_PRST()[SOFT_PRST] = 1, or
+                                                         * RST_RCV = 1 and PERST*_L pin is asserted. */
 	uint64_t rst_link                     : 1;  /**< Reset link. Controls whether corresponding controller link-down reset or hot reset causes
                                                          a warm chip reset. On cold reset, this field is initialized as follows:
-                                                         0 when RST_CTL*[HOST_MODE] = 1
-                                                         1 when RST_CTL*[HOST_MODE] = 0
+                                                         _ 0 when RST_CTL()[HOST_MODE] = 1.
+                                                         _ 1 when RST_CTL()[HOST_MODE] = 0.
                                                          Note that a link-down or hot-reset event can never cause a warm chip reset when the
-                                                         controller is in reset (i.e. can never cause a warm reset when RST_DONE = 0). */
-	uint64_t host_mode                    : 1;  /**< Read-only access to the corresponding straps indicating PCIE*_MODE is host. For
-                                                         controllers 2 and 3 this field is always set. */
+                                                         controller is in reset (i.e. can never cause a warm reset when [RST_DONE] = 0). */
+	uint64_t host_mode                    : 1;  /**< Read-only access to the corresponding PEM()_CFG[HOSTMD] field indicating PEMn is root
+                                                         complex (host). For controllers 0 and 2  the initial value is determined by straps. For
+                                                         controllers 1 and 3 this field is initially set as host. */
 	uint64_t reserved_4_5                 : 2;
 	uint64_t rst_drv                      : 1;  /**< Controls whether PERST*_L is driven. A warm/soft reset does not change this field. On cold
                                                          reset, this field is initialized as follows:
-                                                         0 when RST_CTL*[HOST_MODE] = 0
-                                                         1 when RST_CTL*[HOST_MODE] = 1
-                                                         When set, CN78XX drives the corresponding PERST*_L pin. Otherwise, CN78XX does not drive
+                                                         _ 0 when RST_CTL()[HOST_MODE] = 0.
+                                                         _ 1 when RST_CTL()[HOST_MODE] = 1.
+                                                         When set, CNXXXX drives the corresponding PERST*_L pin. Otherwise, CNXXXX does not drive
                                                          the corresponding PERST*_L pin. */
 	uint64_t rst_rcv                      : 1;  /**< Controls whether PERST*_L is received. A warm/soft reset will not change this field. On
                                                          cold reset, this field is initialized as follows:
-                                                         0 when RST_CTL*[HOST_MODE] = 1
-                                                         1 when RST_CTL*[HOST_MODE] = 0
+                                                         _ 0 when RST_CTL()[HOST_MODE] = 1.
+                                                         _ 1 when RST_CTL()[HOST_MODE] = 0.
                                                          When RST_RCV is equal to 1, the PERST*_L value is received and may be used to reset the
                                                          controller and (optionally, based on RST_CHIP) warm reset the chip.
                                                          When RST_RCV is equal to 1 (and RST_CHIP = 0), RST_INT[PERST*] gets set when the PERST*_L
@@ -366,6 +369,7 @@ union cvmx_rst_ctlx {
 #endif
 	} s;
 	struct cvmx_rst_ctlx_s                cn70xx;
+	struct cvmx_rst_ctlx_s                cn70xxp1;
 	struct cvmx_rst_ctlx_s                cn78xx;
 };
 typedef union cvmx_rst_ctlx cvmx_rst_ctlx_t;
@@ -393,6 +397,7 @@ union cvmx_rst_delay {
 #endif
 	} s;
 	struct cvmx_rst_delay_s               cn70xx;
+	struct cvmx_rst_delay_s               cn70xxp1;
 	struct cvmx_rst_delay_s               cn78xx;
 };
 typedef union cvmx_rst_delay cvmx_rst_delay_t;
@@ -405,12 +410,11 @@ union cvmx_rst_int {
 	struct cvmx_rst_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t perst                        : 4;  /**< PERST*_L asserted while RST_CTL*[RST_RCV] = 1 and RST_CTL*[RST_CHIP] = 0. One bit
-                                                         corresponds to each controller. Throws RST_INTSN_E::RST_INT_PERST(0..3). */
+	uint64_t perst                        : 4;  /**< PERST*_L asserted while RST_CTL()[RST_RCV] = 1 and RST_CTL()[RST_CHIP] = 0. One bit
+                                                         corresponds to each controller. */
 	uint64_t reserved_4_7                 : 4;
-	uint64_t rst_link                     : 4;  /**< A controller link-down/hot-reset occurred while RST_CTL*[RST_LINK] = 0. Software must
-                                                         assert then deassert RST_SOFT_PRST*[SOFT_PRST]. One bit corresponds to each controller.
-                                                         Throws RST_INTSN_E::RST_INT_LINK(0..3). */
+	uint64_t rst_link                     : 4;  /**< A controller link-down/hot-reset occurred while RST_CTL()[RST_LINK] = 0. Software must
+                                                         assert then deassert RST_SOFT_PRST()[SOFT_PRST]. One bit corresponds to each controller. */
 #else
 	uint64_t rst_link                     : 4;
 	uint64_t reserved_4_7                 : 4;
@@ -421,12 +425,11 @@ union cvmx_rst_int {
 	struct cvmx_rst_int_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_11_63               : 53;
-	uint64_t perst                        : 3;  /**< PERST*_L asserted while RST_CTL*[RST_RCV] = 1 and RST_CTL*[RST_CHIP] = 0. One bit
-                                                         corresponds to each controller. Throws RST_INTSN_E::RST_INT_PERST(0..2). */
+	uint64_t perst                        : 3;  /**< PERST*_L asserted while RST_CTL()[RST_RCV] = 1 and RST_CTL()[RST_CHIP] = 0. One bit
+                                                         corresponds to each controller. */
 	uint64_t reserved_3_7                 : 5;
-	uint64_t rst_link                     : 3;  /**< A controller link-down/hot-reset occurred while RST_CTL*[RST_LINK] = 0. Software must
-                                                         assert then deassert RST_SOFT_PRST*[SOFT_PRST]. One bit corresponds to each controller.
-                                                         Throws RST_INTSN_E::RST_INT_LINK(0..2). */
+	uint64_t rst_link                     : 3;  /**< A controller link-down/hot-reset occurred while RST_CTL()[RST_LINK] = 0. Software must
+                                                         assert then deassert RST_SOFT_PRST()[SOFT_PRST]. One bit corresponds to each controller. */
 #else
 	uint64_t rst_link                     : 3;
 	uint64_t reserved_3_7                 : 5;
@@ -434,6 +437,7 @@ union cvmx_rst_int {
 	uint64_t reserved_11_63               : 53;
 #endif
 	} cn70xx;
+	struct cvmx_rst_int_cn70xx            cn70xxp1;
 	struct cvmx_rst_int_s                 cn78xx;
 };
 typedef union cvmx_rst_int cvmx_rst_int_t;
@@ -447,7 +451,9 @@ union cvmx_rst_ocx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
 	uint64_t rst_link                     : 3;  /**< Controls whether corresponding OCX link going down causes a chip reset. A warm/soft reset
-                                                         does not change this field. On cold reset, this field is initialized to 0. */
+                                                         does not change this field. On cold reset, this field is initialized to 0. See
+                                                         OCX_COM_LINK()_CTL for a description of what events can contribute to the link_down
+                                                         condition. */
 #else
 	uint64_t rst_link                     : 3;
 	uint64_t reserved_3_63                : 61;
@@ -486,10 +492,10 @@ union cvmx_rst_pp_power {
 	struct cvmx_rst_pp_power_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t gate                         : 48; /**< Powerdown enable. When both a bit and the corresponding CIU3_PP_RST bit are set, the core
+	uint64_t gate                         : 48; /**< Powerdown enable. When both a bit and the corresponding CIU_PP_RST bit are set, the core
                                                          has voltage removed to save power. In typical operation these bits are setup during
-                                                         initialization and PP resets are controlled through CIU3_PP_RST. These bits may only be
-                                                         changed when the corresponding core is in reset using CIU3_PP_RST. */
+                                                         initialization and PP resets are controlled through CIU_PP_RST. These bits may only be
+                                                         changed when the corresponding core is in reset using CIU_PP_RST. */
 #else
 	uint64_t gate                         : 48;
 	uint64_t reserved_48_63               : 16;
@@ -504,6 +510,7 @@ union cvmx_rst_pp_power {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} cn70xx;
+	struct cvmx_rst_pp_power_cn70xx       cn70xxp1;
 	struct cvmx_rst_pp_power_s            cn78xx;
 };
 typedef union cvmx_rst_pp_power cvmx_rst_pp_power_t;
@@ -518,16 +525,17 @@ union cvmx_rst_soft_prstx {
 	uint64_t reserved_1_63                : 63;
 	uint64_t soft_prst                    : 1;  /**< Resets the PCIe logic and corresponding common logic associated with the SLI controller in
                                                          all modes, not just RC mode.
-                                                         If the RST_CTL*[HOST_MODE] = 0, SOFT_PRST resets to 0.
-                                                         If the RST_CTL*[HOST_MODE] = 1, SOFT_PRST resets to 1.
-                                                         When CN78XX is configured to drive PERST*_L (i.e.
-                                                         RST_CTL(0..3)[RST_DRV] = 1), this controls the output value on PERST*_L. */
+                                                         * If the RST_CTL()[HOST_MODE] = 0, SOFT_PRST resets to 0.
+                                                         * If the RST_CTL()[HOST_MODE] = 1, SOFT_PRST resets to 1.
+                                                         When CNXXXX is configured to drive PERST*_L (i.e.
+                                                         RST_CTL()[RST_DRV] = 1), this controls the output value on PERST*_L. */
 #else
 	uint64_t soft_prst                    : 1;
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
 	struct cvmx_rst_soft_prstx_s          cn70xx;
+	struct cvmx_rst_soft_prstx_s          cn70xxp1;
 	struct cvmx_rst_soft_prstx_s          cn78xx;
 };
 typedef union cvmx_rst_soft_prstx cvmx_rst_soft_prstx_t;
@@ -540,7 +548,7 @@ union cvmx_rst_soft_rst {
 	struct cvmx_rst_soft_rst_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t soft_rst                     : 1;  /**< When set, resets the CN78XX core. When performing a soft reset from a remote PCIe host,
+	uint64_t soft_rst                     : 1;  /**< When set, resets the CNXXXX core. When performing a soft reset from a remote PCIe host,
                                                          always read this register and wait for the results before setting SOFT_RST to 1. */
 #else
 	uint64_t soft_rst                     : 1;
@@ -548,6 +556,7 @@ union cvmx_rst_soft_rst {
 #endif
 	} s;
 	struct cvmx_rst_soft_rst_s            cn70xx;
+	struct cvmx_rst_soft_rst_s            cn70xxp1;
 	struct cvmx_rst_soft_rst_s            cn78xx;
 };
 typedef union cvmx_rst_soft_rst cvmx_rst_soft_rst_t;

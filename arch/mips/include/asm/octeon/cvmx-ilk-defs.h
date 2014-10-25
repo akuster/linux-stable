@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -1616,9 +1616,9 @@ union cvmx_ilk_lnex_trn_ctl {
 	struct cvmx_ilk_lnex_trn_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t trn_lock                     : 1;  /**< Link training RX frame lock */
-	uint64_t trn_done                     : 1;  /**< Link training done */
-	uint64_t trn_ena                      : 1;  /**< Link training enable */
+	uint64_t trn_lock                     : 1;  /**< Link training RX frame lock. */
+	uint64_t trn_done                     : 1;  /**< Link training done. */
+	uint64_t trn_ena                      : 1;  /**< Link training enable. */
 	uint64_t eie_det                      : 1;  /**< Reserved. */
 #else
 	uint64_t eie_det                      : 1;
@@ -1640,11 +1640,11 @@ union cvmx_ilk_lnex_trn_ld {
 	struct cvmx_ilk_lnex_trn_ld_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_49_63               : 15;
-	uint64_t ld_cu_val                    : 1;  /**< Local device coefficient update field valid */
-	uint64_t ld_cu_dat                    : 16; /**< Local device coefficient update field data */
+	uint64_t ld_cu_val                    : 1;  /**< Local device coefficient update field valid. */
+	uint64_t ld_cu_dat                    : 16; /**< Local device coefficient update field data. */
 	uint64_t reserved_17_31               : 15;
-	uint64_t ld_sr_val                    : 1;  /**< Local device status report field valid */
-	uint64_t ld_sr_dat                    : 16; /**< Local device status report field data */
+	uint64_t ld_sr_val                    : 1;  /**< Local device status report field valid. */
+	uint64_t ld_sr_dat                    : 16; /**< Local device status report field data. */
 #else
 	uint64_t ld_sr_dat                    : 16;
 	uint64_t ld_sr_val                    : 1;
@@ -1666,11 +1666,11 @@ union cvmx_ilk_lnex_trn_lp {
 	struct cvmx_ilk_lnex_trn_lp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_49_63               : 15;
-	uint64_t lp_cu_val                    : 1;  /**< Link partner coefficient update field valid */
-	uint64_t lp_cu_dat                    : 16; /**< Link partner coefficient update field data */
+	uint64_t lp_cu_val                    : 1;  /**< Link partner coefficient update field valid. */
+	uint64_t lp_cu_dat                    : 16; /**< Link partner coefficient update field data. */
 	uint64_t reserved_17_31               : 15;
-	uint64_t lp_sr_val                    : 1;  /**< Link partner status report field valid */
-	uint64_t lp_sr_dat                    : 16; /**< Link partner status report field data */
+	uint64_t lp_sr_val                    : 1;  /**< Link partner status report field valid. */
+	uint64_t lp_sr_dat                    : 16; /**< Link partner status report field data. */
 #else
 	uint64_t lp_sr_dat                    : 16;
 	uint64_t lp_sr_val                    : 1;
@@ -1806,16 +1806,16 @@ union cvmx_ilk_rid_cfg {
 	uint64_t max_cnt                      : 7;  /**< Maximum number of reassembly IDs (RIDs) allowed for both links. If
                                                          an SOP arrives and the total number of RIDs already allocated to
                                                          both links is at least MAX_CNT, the packet is dropped.
-                                                         An SOP allocates a RID; an EOP frees a RID. ILK_RX(0..1)_RID can be used to further
+                                                         An SOP allocates a RID; an EOP frees a RID. ILK_RX()_RID can be used to further
                                                          restrict each link individually. */
 	uint64_t reserved_7_31                : 25;
 	uint64_t base                         : 7;  /**< The base RID for ILK. There is a shared pool of 96 RIDs for all MACs.
                                                          ILK can allocate any RID in the range of
-                                                         BASE -> (BASE+(MAX_CNT-1)).
+                                                         _ BASE -> (BASE+(MAX_CNT-1)).
                                                          BASE and MAX_CNT must be constrained such that:
-                                                         1) BASE >= 2.
-                                                         2) BASE + MAX_CNT <= 96.
-                                                         3) BASE..(BASE+(MAX_CNT-1)) does not overlap with any other MAC programming.
+                                                         _ 1) BASE >= 2.
+                                                         _ 2) BASE + MAX_CNT <= 96.
+                                                         _ 3) BASE..(BASE+(MAX_CNT-1)) does not overlap with any other MAC programming.
                                                          The reset value for this CSR has been chosen such that all these conditions are satisfied.
                                                          The reset value supports up to a total of 64 outstanding incomplete packets between ILK0
                                                          and ILK1.
@@ -1841,7 +1841,7 @@ union cvmx_ilk_rxx_byte_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
 	uint64_t rx_bytes                     : 40; /**< Number of bytes received per channel. Wraps on overflow. On overflow, sets
-                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t rx_bytes                     : 40;
 	uint64_t reserved_40_63               : 24;
@@ -1860,13 +1860,13 @@ union cvmx_ilk_rxx_cal_entryx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_34_63               : 30;
 	uint64_t ctl                          : 2;  /**< Select source of XON/XOFF for entry (IDX * 8) + 0.
-                                                         0 = PKO backpressure channel
-                                                         1 = link
-                                                         2 = XOFF
-                                                         3 = XON
+                                                         0 = PKO backpressure channel.
+                                                         1 = link.
+                                                         2 = XOFF.
+                                                         3 = XON.
                                                          This field applies to one of bits <55>, <47>, or <31> in the Interlaken control word. */
 	uint64_t reserved_8_31                : 24;
-	uint64_t channel                      : 8;  /**< PKO channel for the calendar table entry. Unused if CTL != 0x0. */
+	uint64_t channel                      : 8;  /**< PKO channel for the calendar table entry. Unused if CTL == 0x1. */
 #else
 	uint64_t channel                      : 8;
 	uint64_t reserved_8_31                : 24;
@@ -1894,49 +1894,49 @@ union cvmx_ilk_rxx_cfg0 {
 	uint64_t bcw_push                     : 1;  /**< Reserved. */
 	uint64_t mproto_ign                   : 1;  /**< Reserved. */
 	uint64_t ptrn_mode                    : 1;  /**< Reserved. */
-	uint64_t lnk_stats_rdclr              : 1;  /**< Enable that a CSR read operation to ILK_RX(0..1)_STAT* clears the counter after returning
-                                                         its current value. */
+	uint64_t lnk_stats_rdclr              : 1;  /**< Enable that a CSR read operation to ILK_RX()_STAT0..ILK_RX()_STAT9 clears the counter
+                                                         after returning its current value. */
 	uint64_t lnk_stats_ena                : 1;  /**< Enable link-statistics counters. */
 	uint64_t mltuse_fc_ena                : 1;  /**< Use multiuse field for calendar. */
 	uint64_t cal_ena                      : 1;  /**< Enable the RX calendar. When the calendar table is disabled, all port-pipes receive XON. */
 	uint64_t mfrm_len                     : 13; /**< The quantity of data sent on each lane including one sync word, scrambler state,
                                                          diagnostic word, zero or more skip words, and the data payload. Must be large than
-                                                         ILK_RX(0..1)_CFG1[SKIP_CNT] + 32.
+                                                         _ ILK_TX()_CFG1[SKIP_CNT] + 32.
                                                          Supported range:
-                                                         ILK_RX(0..1)_CFG1[SKIP_CNT] + 32 < MFRM_LEN <= 4096 */
+                                                         _ ILK_TX()_CFG1[SKIP_CNT] + 32 < MFRM_LEN <= 4096 */
 	uint64_t brst_shrt                    : 7;  /**< Minimum interval between burst control words, as a multiple of eight bytes. Supported
                                                          range from 8 to 512 bytes (i.e. 4 <= BRST_SHRT <= 64).
-                                                         This field affects the ILK_RX(0..1)_STAT4[BRST_SHRT_ERR_CNT] counter. It does not affect
+                                                         This field affects the ILK_RX()_STAT4[BRST_SHRT_ERR_CNT] counter. It does not affect
                                                          correct operation of the link. */
 	uint64_t lane_rev                     : 1;  /**< Lane reversal. When enabled, lane destriping is performed from most-significant lane
                                                          enabled to least-significant lane enabled. LANE_ENA must be 0 before changing LANE_REV. */
 	uint64_t brst_max                     : 5;  /**< Maximum size of a data burst, as a multiple of 64-byte blocks. Supported range is from 64
                                                          to 1024 bytes
                                                          (i.e. 0 < BRST_MAX <= 16).
-                                                         This field affects the ILK_RX(0..1)_STAT2[BRST_NOT_FULL_CNT] and
-                                                         ILK_RX(0..1)_STAT3[BRST_MAX_ERR_CNT] counters. It does not affect correct operation of the
+                                                         This field affects the ILK_RX()_STAT2[BRST_NOT_FULL_CNT] and
+                                                         ILK_RX()_STAT3[BRST_MAX_ERR_CNT] counters. It does not affect correct operation of the
                                                          link. */
 	uint64_t reserved_25_25               : 1;
 	uint64_t cal_depth                    : 9;  /**< Indicates the number of valid entries in the calendar.   Supported range from 1 to 288. */
 	uint64_t lane_ena                     : 16; /**< Lane-enable mask. The link is enabled if any lane is enabled. The same lane should not be
                                                          enabled in multiple ILK_RXn_CFG0. Each bit of LANE_ENA maps to an RX lane (RLE) and a QLM
                                                          lane. Note that LANE_REV has no effect on this mapping.
-                                                         LANE_ENA[0] = RLE0 =  QLM4 lane 0
-                                                         LANE_ENA[1] = RLE1 =  QLM4 lane 1
-                                                         LANE_ENA[2] = RLE2 =  QLM4 lane 2
-                                                         LANE_ENA[3] = RLE3 =  QLM4 lane 3
-                                                         LANE_ENA[4] = RLE4 =  QLM5 lane 0
-                                                         LANE_ENA[5] = RLE5 =  QLM5 lane 1
-                                                         LANE_ENA[6] = RLE6 =  QLM5 lane 2
-                                                         LANE_ENA[7] = RLE7 =  QLM5 lane 3
-                                                         LANE_ENA[8] = RLE8 =  QLM6 lane 0
-                                                         LANE_ENA[9] = RLE9 =  QLM6 lane 1
-                                                         LANE_ENA[10] = RLE10 =  QLM6 lane 2
-                                                         LANE_ENA[11] = RLE11 =  QLM6 lane 3
-                                                         LANE_ENA[12] = RLE12 =  QLM7 lane 0
-                                                         LANE_ENA[13] = RLE13 =  QLM7 lane 1
-                                                         LANE_ENA[14] = RLE14 =  QLM7 lane 2
-                                                         LANE_ENA[15] = RLE15 =  QLM7 lane 3 */
+                                                         _ LANE_ENA<0> = RLE0 = QLM4 lane 0.
+                                                         _ LANE_ENA<1> = RLE1 = QLM4 lane 1.
+                                                         _ LANE_ENA<2> = RLE2 = QLM4 lane 2.
+                                                         _ LANE_ENA<3> = RLE3 = QLM4 lane 3.
+                                                         _ LANE_ENA<4> = RLE4 = QLM5 lane 0.
+                                                         _ LANE_ENA<5> = RLE5 = QLM5 lane 1.
+                                                         _ LANE_ENA<6> = RLE6 = QLM5 lane 2.
+                                                         _ LANE_ENA<7> = RLE7 = QLM5 lane 3.
+                                                         _ LANE_ENA<8> = RLE8 = QLM6 lane 0.
+                                                         _ LANE_ENA<9> = RLE9 = QLM6 lane 1.
+                                                         _ LANE_ENA<10> = RLE10 = QLM6 lane 2.
+                                                         _ LANE_ENA<11> = RLE11 = QLM6 lane 3.
+                                                         _ LANE_ENA<12> = RLE12 = QLM7 lane 0.
+                                                         _ LANE_ENA<13> = RLE13 = QLM7 lane 1.
+                                                         _ LANE_ENA<14> = RLE14 = QLM7 lane 2.
+                                                         _ LANE_ENA<15> = RLE15 = QLM7 lane 3. */
 #else
 	uint64_t lane_ena                     : 16;
 	uint64_t cal_depth                    : 9;
@@ -2127,14 +2127,14 @@ union cvmx_ilk_rxx_cfg1 {
                                                          status from XON to XOFF. LSB must be zero. A typical single-link configuration should set
                                                          this to 2048. A typical multi-link configuration should set this to NL*128 where NL is the
                                                          number of lanes enabled for a given link.
-                                                         XON = RX_FIFO_CNT < RX_FIFO_HWM
-                                                         XOFF = RX_FIFO_CNT >= RX_FIFO_HWM. */
+                                                         _ XON = RX_FIFO_CNT < RX_FIFO_HWM
+                                                         _ XOFF = RX_FIFO_CNT >= RX_FIFO_HWM. */
 	uint64_t reserved_35_35               : 1;
 	uint64_t rx_fifo_max                  : 13; /**< Specifies the maximum number of 64-bit words consumed by this link in the RX FIFO. The sum
                                                          of all links should be equal to 4096 (32KB). LSB must be zero. Typically set to
                                                          RX_FIFO_HWM * 2. */
-	uint64_t pkt_flush                    : 1;  /**< Packet receive flush. Setting this bit to1 causes all open packets to be error-out, just
-                                                         as though the link went down. */
+	uint64_t pkt_flush                    : 1;  /**< Packet receive flush. Setting this bit causes all open packets to be error-out, just as
+                                                         though the link went down. */
 	uint64_t pkt_ena                      : 1;  /**< Packet receive enable. When set to 0, any received SOP causes the entire packet to be dropped. */
 	uint64_t la_mode                      : 1;  /**< Reserved. */
 	uint64_t tx_link_fc                   : 1;  /**< Link flow-control status transmitted by the TX-link XON (=1) when RX_FIFO_CNT <=
@@ -2246,10 +2246,10 @@ union cvmx_ilk_rxx_cha_xonx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t xon                          : 64; /**< Flow control status for channels 0-255, where a 0 indicates the presence of backpressure
                                                          (i.e. XOFF) and 1 indicates the absence of backpressure (i.e. XON).
-                                                         ILK_RX(0..1)_CHA_XON[0]--Channels 63-0
-                                                         ILK_RX(0..1)_CHA_XON[1]--Channels 127-64
-                                                         ILK_RX(0..1)_CHA_XON[2]--Channels 191-128
-                                                         ILK_RX(0..1)_CHA_XON[3]--Channels 255-192 */
+                                                         _ ILK_RX(0..1)_CHA_XON[0] -- Channels 63-0.
+                                                         _ ILK_RX(0..1)_CHA_XON[1] -- Channels 127-64.
+                                                         _ ILK_RX(0..1)_CHA_XON[2] -- Channels 191-128.
+                                                         _ ILK_RX(0..1)_CHA_XON[3] -- Channels 255-192. */
 #else
 	uint64_t xon                          : 64;
 #endif
@@ -2416,27 +2416,27 @@ union cvmx_ilk_rxx_int {
 	struct cvmx_ilk_rxx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_13_63               : 51;
-	uint64_t pmap_dbe                     : 1;  /**< Port-kind map double-bit error. Throws ILK_INTSN_E::ILK_RX(0..1)_PMAP_DBE. */
-	uint64_t pmap_sbe                     : 1;  /**< Port-kind map single-bit error. Throws ILK_INTSN_E::ILK_RX(0..1)_PMAP_SBE. */
-	uint64_t fwc_dbe                      : 1;  /**< Flow control calendar table double-bit error. Throws ILK_INTSN_E::ILK_RX(0..1)_FWC_DBE. */
-	uint64_t fwc_sbe                      : 1;  /**< Flow control calendar table single-bit error. Throws ILK_INTSN_E::ILK_RX(0..1)_FWC_SBE. */
+	uint64_t pmap_dbe                     : 1;  /**< Port-kind map double-bit error. Throws ILK_INTSN_E::ILK_RX()_PMAP_DBE. */
+	uint64_t pmap_sbe                     : 1;  /**< Port-kind map single-bit error. Throws ILK_INTSN_E::ILK_RX()_PMAP_SBE. */
+	uint64_t fwc_dbe                      : 1;  /**< Flow control calendar table double-bit error. Throws ILK_INTSN_E::ILK_RX()_FWC_DBE. */
+	uint64_t fwc_sbe                      : 1;  /**< Flow control calendar table single-bit error. Throws ILK_INTSN_E::ILK_RX()_FWC_SBE. */
 	uint64_t pkt_drop_sop                 : 1;  /**< Entire packet dropped due to RX_FIFO_CNT == RX_FIFO_MAX, lack of reassembly IDs or because
-                                                         ILK_RX(0..1)_CFG1[PKT_ENA]=0. Throws ILK_INTSN_E::ILK_RX(0..1)_PKT_DROP_SOP. */
+                                                         ILK_RX()_CFG1[PKT_ENA]=0. Throws ILK_INTSN_E::ILK_RX()_PKT_DROP_SOP. */
 	uint64_t pkt_drop_rid                 : 1;  /**< Entire packet dropped due to the lack of reassembly IDs or because
-                                                         ILK_RX(0..1)_CFG1[PKT_ENA]=0. Throws ILK_INTSN_E::ILK_RX(0..1)_PKT_DROP_RID. */
+                                                         ILK_RX()_CFG1[PKT_ENA]=0. Throws ILK_INTSN_E::ILK_RX()_PKT_DROP_RID. */
 	uint64_t pkt_drop_rxf                 : 1;  /**< Some/all of a packet dropped due to RX_FIFO_CNT == RX_FIFO_MAX. Throws
-                                                         ILK_INTSN_E::ILK_RX(0..1)_PKT_DROP_RXF. */
+                                                         ILK_INTSN_E::ILK_RX()_PKT_DROP_RXF. */
 	uint64_t lane_bad_word                : 1;  /**< A lane encountered either a bad 64B/67B codeword or an unknown control word type. Throws
-                                                         ILK_INTSN_E::ILK_RX(0..1)_LANE_BAD_WORD. */
-	uint64_t stat_cnt_ovfl                : 1;  /**< Statistics counter overflow. Throws ILK_INTSN_E::ILK_RX(0..1)_STAT_CNT_OVFL. */
-	uint64_t lane_align_done              : 1;  /**< Lane alignment successful. Throws ILK_INTSN_E::ILK_RX(0..1)_LANE_ALIGN_DONE. */
+                                                         ILK_INTSN_E::ILK_RX()_LANE_BAD_WORD. */
+	uint64_t stat_cnt_ovfl                : 1;  /**< Statistics counter overflow. Throws ILK_INTSN_E::ILK_RX()_STAT_CNT_OVFL. */
+	uint64_t lane_align_done              : 1;  /**< Lane alignment successful. Throws ILK_INTSN_E::ILK_RX()_LANE_ALIGN_DONE. */
 	uint64_t word_sync_done               : 1;  /**< All enabled lanes have achieved word boundary lock and scrambler synchronization. Lane
-                                                         alignment may now be enabled. Throws ILK_INTSN_E::ILK_RX(0..1)_WORD_SYNC_DONE. */
+                                                         alignment may now be enabled. Throws ILK_INTSN_E::ILK_RX()_WORD_SYNC_DONE. */
 	uint64_t crc24_err                    : 1;  /**< Burst CRC24 error. All open packets receive an error. Throws
-                                                         ILK_INTSN_E::ILK_RX(0..1)_CRC24_ERR. */
+                                                         ILK_INTSN_E::ILK_RX()_CRC24_ERR. */
 	uint64_t lane_align_fail              : 1;  /**< Lane Alignment fails (4 tries). Hardware repeats lane alignment until is succeeds or until
-                                                         ILK_RX(0..1)_CFG1[RX_ALIGN_ENA] is cleared. Throws
-                                                         ILK_INTSN_E::ILK_RX(0..1)_LANE_ALIGN_FAIL. */
+                                                         ILK_RX()_CFG1[RX_ALIGN_ENA] is cleared. Throws
+                                                         ILK_INTSN_E::ILK_RX()_LANE_ALIGN_FAIL. */
 #else
 	uint64_t lane_align_fail              : 1;
 	uint64_t crc24_err                    : 1;
@@ -2945,7 +2945,7 @@ union cvmx_ilk_rxx_pkt_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_34_63               : 30;
 	uint64_t rx_pkt                       : 34; /**< Number of packets received per channel. Wraps on overflow. On overflow, sets
-                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t rx_pkt                       : 34;
 	uint64_t reserved_34_63               : 30;
@@ -3000,8 +3000,8 @@ union cvmx_ilk_rxx_stat0 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_35_63               : 29;
 	uint64_t crc24_match_cnt              : 35; /**< Indicates the number of CRC24 matches received. Wraps on overflow if
-                                                         ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
+                                                         ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc24_match_cnt              : 35;
 	uint64_t reserved_35_63               : 29;
@@ -3040,8 +3040,8 @@ union cvmx_ilk_rxx_stat1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t crc24_err_cnt                : 20; /**< Indicates the number of bursts with a detected CRC error. Wraps on overflow if
-                                                         ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
+                                                         ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc24_err_cnt                : 20;
 	uint64_t reserved_20_63               : 44;
@@ -3071,12 +3071,12 @@ union cvmx_ilk_rxx_stat2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
 	uint64_t brst_not_full_cnt            : 18; /**< Indicates the number of bursts received that terminated without an EOP and contained fewer
-                                                         than BurstMax words. Wraps on overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         than BurstMax words. Wraps on overflow if ILK_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise,
+                                                         saturates. On overflow/saturate, sets ILK_RX()_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_30_31               : 2;
 	uint64_t brst_cnt                     : 30; /**< Indicates the number of bursts correctly received. (i.e. good CRC24, not in violation of
-                                                         BurstMax or BurstShort). Wraps on overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1.
-                                                         Otherwise, saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         BurstMax or BurstShort). Wraps on overflow if ILK_RX()_CFG0[LNK_STATS_WRAP]=1.
+                                                         Otherwise, saturates. On overflow/saturate, sets ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_cnt                     : 30;
 	uint64_t reserved_30_31               : 2;
@@ -3129,8 +3129,8 @@ union cvmx_ilk_rxx_stat3 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t brst_max_err_cnt             : 18; /**< Indicates the number of bursts received longer than the BurstMax parameter. Wraps on
-                                                         overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On
-                                                         overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         overflow if ILK_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On
+                                                         overflow/saturate, sets ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_max_err_cnt             : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3159,8 +3159,8 @@ union cvmx_ilk_rxx_stat4 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t brst_shrt_err_cnt            : 18; /**< Indicates the number of bursts received that violate the BurstShort parameter. Wraps on
-                                                         overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On
-                                                         overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         overflow if ILK_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On
+                                                         overflow/saturate, sets ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t brst_shrt_err_cnt            : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3191,8 +3191,8 @@ union cvmx_ilk_rxx_stat5 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
 	uint64_t align_cnt                    : 25; /**< Indicates the number of alignment sequences received (i.e. those that do not violate the
-                                                         current alignment). Wraps on overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         current alignment). Wraps on overflow if ILK_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise,
+                                                         saturates. On overflow/saturate, sets ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t align_cnt                    : 25;
 	uint64_t reserved_25_63               : 39;
@@ -3233,8 +3233,8 @@ union cvmx_ilk_rxx_stat6 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t align_err_cnt                : 18; /**< Indicates the number of alignment sequences received in error (i.e. those that violate the
-                                                         current alignment). Wraps on overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise,
-                                                         saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         current alignment). Wraps on overflow if ILK_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise,
+                                                         saturates. On overflow/saturate, sets ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t align_err_cnt                : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3265,8 +3265,8 @@ union cvmx_ilk_rxx_stat7 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t bad_64b67b_cnt               : 18; /**< Indicates the number of bad 64B/67B code words.Wraps on overflow if
-                                                         ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
-                                                         ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX()_CFG0[LNK_STATS_WRAP]=1. Otherwise, saturates. On overflow/saturate, sets
+                                                         ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bad_64b67b_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3296,11 +3296,11 @@ union cvmx_ilk_rxx_stat8 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
 	uint64_t pkt_drop_rid_cnt             : 16; /**< Indicates the number of packets dropped due to the lack of reassembly IDs or because
-                                                         ILK_RX(0..1)_CFG1[PKT_ENA] = 0. Wraps on overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1.
-                                                         Otherwise, saturates. On overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX()_CFG1[PKT_ENA] = 0. Wraps on overflow if ILK_RX()_CFG0[LNK_STATS_WRAP]=1.
+                                                         Otherwise, saturates. On overflow/saturate, sets ILK_RX()_INT[STAT_CNT_OVFL]. */
 	uint64_t pkt_drop_rxf_cnt             : 16; /**< Indicates the number of packets dropped due to RX_FIFO_CNT >= RX_FIFO_MAX. Wraps on
-                                                         overflow if ILK_RX(0..1)_CFG0[LNK_STATS_WRAP]=1.Otherwise, saturates. On
-                                                         overflow/saturate, sets ILK_RX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         overflow if ILK_RX()_CFG0[LNK_STATS_WRAP]=1.Otherwise, saturates. On
+                                                         overflow/saturate, sets ILK_RX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t pkt_drop_rxf_cnt             : 16;
 	uint64_t pkt_drop_rid_cnt             : 16;
@@ -3347,7 +3347,7 @@ union cvmx_ilk_rx_lnex_cfg {
                                                          If the lane is in internal loopback mode, this field is ignored and skip words are always
                                                          discarded in the lane logic. */
 	uint64_t reserved_7_7                 : 1;
-	uint64_t rx_dis_disp_chk              : 1;  /**< Disable the RX disparity check, see ILK_RX_LNE(0..15)_INT[DISP_ERR]. */
+	uint64_t rx_dis_disp_chk              : 1;  /**< Disable the RX disparity check, see ILK_RX_LNE()_INT[DISP_ERR]. */
 	uint64_t rx_scrm_sync                 : 1;  /**< RX scrambler-synchronization status. A 1 means synchronization has been achieved. */
 	uint64_t rx_bdry_sync                 : 1;  /**< RX word-boundary-synchronization status. A 1 means synchronization has been achieved */
 	uint64_t rx_dis_ukwn                  : 1;  /**< Disable normal response to unknown words. Unknown words are still logged but do not cause
@@ -3438,22 +3438,22 @@ union cvmx_ilk_rx_lnex_int {
 	struct cvmx_ilk_rx_lnex_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
-	uint64_t disp_err                     : 1;  /**< RX disparity error encountered. Throws ILK_INTSN_E::ILK_RXLNE(0..15)_DISP_ERR. */
+	uint64_t disp_err                     : 1;  /**< RX disparity error encountered. Throws ILK_INTSN_E::ILK_RXLNE()_DISP_ERR. */
 	uint64_t bad_64b67b                   : 1;  /**< Bad 64B/67B code word encountered. Once the bad word reaches the burst control unit (as
-                                                         denoted by ILK_RX(0..1)_INT[LANE_BAD_WORD]) it is discarded and all open packets receive
-                                                         an error. Throws ILK_INTSN_E::ILK_RXLNE(0..15)_BAD_64B67B. */
-	uint64_t stat_cnt_ovfl                : 1;  /**< Rx lane statistic counter overflow. Throws ILK_INTSN_E::ILK_RXLNE(0..15)_STAT_CNT_OVFL. */
+                                                         denoted by ILK_RX()_INT[LANE_BAD_WORD]) it is discarded and all open packets receive
+                                                         an error. Throws ILK_INTSN_E::ILK_RXLNE()_BAD_64B67B. */
+	uint64_t stat_cnt_ovfl                : 1;  /**< Rx lane statistic counter overflow. Throws ILK_INTSN_E::ILK_RXLNE()_STAT_CNT_OVFL. */
 	uint64_t stat_msg                     : 1;  /**< Status bits for the link or a lane transitioned from a 1 (healthy) to a 0 (problem).
-                                                         Throws ILK_INTSN_E::ILK_RXLNE(0..15)_STAT_MSG. */
-	uint64_t dskew_fifo_ovfl              : 1;  /**< RX deskew FIFO overflow occurred. Throws ILK_INTSN_E::ILK_RXLNE(0..15)_DSKEW_FIFO_OVFL. */
+                                                         Throws ILK_INTSN_E::ILK_RXLNE()_STAT_MSG. */
+	uint64_t dskew_fifo_ovfl              : 1;  /**< RX deskew FIFO overflow occurred. Throws ILK_INTSN_E::ILK_RXLNE()_DSKEW_FIFO_OVFL. */
 	uint64_t scrm_sync_loss               : 1;  /**< Four consecutive bad sync words or three consecutive scramble state mismatches. Throws
-                                                         ILK_INTSN_E::ILK_RXLNE(0..15)_SCRM_SYNC_LOSS. */
+                                                         ILK_INTSN_E::ILK_RXLNE()_SCRM_SYNC_LOSS. */
 	uint64_t ukwn_cntl_word               : 1;  /**< Unknown framing control word. Block type does not match any of (SYNC,SCRAM,SKIP,DIAG).
-                                                         Throws ILK_INTSN_E::ILK_RXLNE(0..15)_UKWN_CNTL_WORD. */
-	uint64_t crc32_err                    : 1;  /**< Diagnostic CRC32 errors. Throws ILK_INTSN_E::ILK_RXLNE(0..15)_CRC32_ERR. */
+                                                         Throws ILK_INTSN_E::ILK_RXLNE()_UKWN_CNTL_WORD. */
+	uint64_t crc32_err                    : 1;  /**< Diagnostic CRC32 errors. Throws ILK_INTSN_E::ILK_RXLNE()_CRC32_ERR. */
 	uint64_t bdry_sync_loss               : 1;  /**< RX logic loses word boundary sync (16 tries). Hardware will automatically attempt to
-                                                         regain word boundary sync. Throws ILK_INTSN_E::ILK_RXLNE(0..15)_BDRY_SYNC_LOSS. */
-	uint64_t serdes_lock_loss             : 1;  /**< RX SerDes loses lock. Throws ILK_INTSN_E::ILK_RXLNE(0..15)_SERDES_LOCK_LOSS. */
+                                                         regain word boundary sync. Throws ILK_INTSN_E::ILK_RXLNE()_BDRY_SYNC_LOSS. */
+	uint64_t serdes_lock_loss             : 1;  /**< RX SerDes loses lock. Throws ILK_INTSN_E::ILK_RXLNE()_SERDES_LOCK_LOSS. */
 #else
 	uint64_t serdes_lock_loss             : 1;
 	uint64_t bdry_sync_loss               : 1;
@@ -3556,7 +3556,7 @@ union cvmx_ilk_rx_lnex_stat0 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t ser_lock_loss_cnt            : 18; /**< Indicates the number of times the lane lost clock-data-recovery. On overflow, saturates
-                                                         and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         and sets ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t ser_lock_loss_cnt            : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3577,7 +3577,7 @@ union cvmx_ilk_rx_lnex_stat1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t bdry_sync_loss_cnt           : 18; /**< Indicates the number of times a lane lost word-boundary synchronization. On overflow,
-                                                         saturates and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         saturates and sets ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bdry_sync_loss_cnt           : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3598,10 +3598,10 @@ union cvmx_ilk_rx_lnex_stat10 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_43_63               : 21;
 	uint64_t prbs_bad                     : 11; /**< Indicates the number of training frames with bad PRBS. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_11_31               : 21;
 	uint64_t prbs_good                    : 11; /**< Indicates the number of training frames with correct PRBS. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t prbs_good                    : 11;
 	uint64_t reserved_11_31               : 21;
@@ -3622,10 +3622,10 @@ union cvmx_ilk_rx_lnex_stat2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
 	uint64_t syncw_good_cnt               : 18; /**< Indicates the number of good synchronization words. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_18_31               : 14;
 	uint64_t syncw_bad_cnt                : 18; /**< Indicates the number of bad synchronization words. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t syncw_bad_cnt                : 18;
 	uint64_t reserved_18_31               : 14;
@@ -3648,7 +3648,7 @@ union cvmx_ilk_rx_lnex_stat3 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t bad_64b67b_cnt               : 18; /**< Indicates the number of bad 64B/67B words, meaning bit <65> or bit <64> has been
-                                                         corrupted. On overflow, saturates and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         corrupted. On overflow, saturates and sets ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t bad_64b67b_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3669,10 +3669,10 @@ union cvmx_ilk_rx_lnex_stat4 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_59_63               : 5;
 	uint64_t cntl_word_cnt                : 27; /**< Indicates the number of control words received. SOn overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_27_31               : 5;
 	uint64_t data_word_cnt                : 27; /**< Indicates the number of data words received. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t data_word_cnt                : 27;
 	uint64_t reserved_27_31               : 5;
@@ -3695,7 +3695,7 @@ union cvmx_ilk_rx_lnex_stat5 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t unkwn_word_cnt               : 18; /**< Indicates the number of unknown control words.On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t unkwn_word_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3717,7 +3717,7 @@ union cvmx_ilk_rx_lnex_stat6 {
 	uint64_t reserved_18_63               : 46;
 	uint64_t scrm_sync_loss_cnt           : 18; /**< Indicates the number of times scrambler synchronization was lost (due to either four
                                                          consecutive bad sync words or three consecutive scrambler-state mismatches). On overflow,
-                                                         saturates and sets ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         saturates and sets ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t scrm_sync_loss_cnt           : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3738,7 +3738,7 @@ union cvmx_ilk_rx_lnex_stat7 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t scrm_match_cnt               : 18; /**< Indicates the number of scrambler-state matches received. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t scrm_match_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3759,7 +3759,7 @@ union cvmx_ilk_rx_lnex_stat8 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t skipw_good_cnt               : 18; /**< Indicates the number of good skip words. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t skipw_good_cnt               : 18;
 	uint64_t reserved_18_63               : 46;
@@ -3780,10 +3780,10 @@ union cvmx_ilk_rx_lnex_stat9 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
 	uint64_t crc32_err_cnt                : 18; /**< Indicates the number of errors in the lane CRC. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 	uint64_t reserved_27_31               : 5;
 	uint64_t crc32_match_cnt              : 27; /**< Indicates the number of CRC32 matches received. On overflow, saturates and sets
-                                                         ILK_RX_LNE(0..15)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_RX_LNE()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t crc32_match_cnt              : 27;
 	uint64_t reserved_27_31               : 5;
@@ -3851,44 +3851,44 @@ union cvmx_ilk_ser_cfg {
 	uint64_t reserved_57_63               : 7;
 	uint64_t ser_rxpol_auto               : 1;  /**< SerDes lane receive polarity auto detection mode. */
 	uint64_t ser_rxpol                    : 16; /**< SerDes lane receive polarity.
-                                                         0 = RX without inversion
-                                                         1 = RX with inversion
-                                                         SER_RXPOL[0]  = QLM4 lane 0
-                                                         SER_RXPOL[1]  = QLM4 lane 1
-                                                         SER_RXPOL[2]  = QLM4 lane 2
-                                                         SER_RXPOL[3]  = QLM4 lane 3
-                                                         SER_RXPOL[4]  = QLM5 lane 0
-                                                         SER_RXPOL[5]  = QLM5 lane 1
-                                                         SER_RXPOL[6]  = QLM5 lane 2
-                                                         SER_RXPOL[7]  = QLM5 lane 3
-                                                         SER_RXPOL[8]  = QLM6 lane 0
-                                                         SER_RXPOL[9]  = QLM6 lane 1
-                                                         SER_RXPOL[10] = QLM6 lane 2
-                                                         SER_RXPOL[11] = QLM6 lane 3
-                                                         SER_RXPOL[12] = QLM7 lane 0
-                                                         SER_RXPOL[13] = QLM7 lane 1
-                                                         SER_RXPOL[14] = QLM7 lane 2
-                                                         SER_RXPOL[15] = QLM7 lane 3 */
+                                                         0 = RX without inversion.
+                                                         1 = RX with inversion.
+                                                         _ SER_RXPOL<0>  = QLM4 lane 0.
+                                                         _ SER_RXPOL<1>  = QLM4 lane 1.
+                                                         _ SER_RXPOL<2>  = QLM4 lane 2.
+                                                         _ SER_RXPOL<3>  = QLM4 lane 3.
+                                                         _ SER_RXPOL<4>  = QLM5 lane 0.
+                                                         _ SER_RXPOL<5>  = QLM5 lane 1.
+                                                         _ SER_RXPOL<6>  = QLM5 lane 2.
+                                                         _ SER_RXPOL<7>  = QLM5 lane 3.
+                                                         _ SER_RXPOL<8>  = QLM6 lane 0.
+                                                         _ SER_RXPOL<9>  = QLM6 lane 1.
+                                                         _ SER_RXPOL<10> = QLM6 lane 2.
+                                                         _ SER_RXPOL<11> = QLM6 lane 3.
+                                                         _ SER_RXPOL<12> = QLM7 lane 0.
+                                                         _ SER_RXPOL<13> = QLM7 lane 1.
+                                                         _ SER_RXPOL<14> = QLM7 lane 2.
+                                                         _ SER_RXPOL<15> = QLM7 lane 3. */
 	uint64_t ser_txpol                    : 16; /**< SerDes lane transmit polarity.
                                                          0 = TX without inversion
                                                          1 = TX with inversion
-                                                         SER_TXPOL[0]  = QLM4 lane 0
-                                                         SER_TXPOL[1]  = QLM4 lane 1
-                                                         SER_TXPOL[2]  = QLM4 lane 2
-                                                         SER_TXPOL[3]  = QLM4 lane 3
-                                                         SER_TXPOL[4]  = QLM5 lane 0
-                                                         SER_TXPOL[5]  = QLM5 lane 1
-                                                         SER_TXPOL[6]  = QLM5 lane 2
-                                                         SER_TXPOL[7]  = QLM5 lane 3
-                                                         SER_TXPOL[8]  = QLM6 lane 0
-                                                         SER_TXPOL[9]  = QLM6 lane 1
-                                                         SER_TXPOL[10] = QLM6 lane 2
-                                                         SER_TXPOL[11] = QLM6 lane 3
-                                                         SER_TXPOL[12] = QLM7 lane 0
-                                                         SER_TXPOL[13] = QLM7 lane 1
-                                                         SER_TXPOL[14] = QLM7 lane 2
-                                                         SER_TXPOL[15] = QLM7 lane 3 */
-	uint64_t ser_reset_n                  : 16; /**< Reserved. */
+                                                         _ SER_TXPOL<0>  = QLM4 lane 0.
+                                                         _ SER_TXPOL<1>  = QLM4 lane 1.
+                                                         _ SER_TXPOL<2>  = QLM4 lane 2.
+                                                         _ SER_TXPOL<3>  = QLM4 lane 3.
+                                                         _ SER_TXPOL<4>  = QLM5 lane 0.
+                                                         _ SER_TXPOL<5>  = QLM5 lane 1.
+                                                         _ SER_TXPOL<6>  = QLM5 lane 2.
+                                                         _ SER_TXPOL<7>  = QLM5 lane 3.
+                                                         _ SER_TXPOL<8>  = QLM6 lane 0.
+                                                         _ SER_TXPOL<9>  = QLM6 lane 1.
+                                                         _ SER_TXPOL<10> = QLM6 lane 2.
+                                                         _ SER_TXPOL<11> = QLM6 lane 3.
+                                                         _ SER_TXPOL<12> = QLM7 lane 0.
+                                                         _ SER_TXPOL<13> = QLM7 lane 1.
+                                                         _ SER_TXPOL<14> = QLM7 lane 2.
+                                                         _ SER_TXPOL<15> = QLM7 lane 3. */
+	uint64_t ser_reset_n                  : 16; /**< SerDes lane reset. */
 	uint64_t ser_pwrup                    : 4;  /**< Reserved. */
 	uint64_t ser_haul                     : 4;  /**< Reserved. */
 #else
@@ -3948,7 +3948,7 @@ union cvmx_ilk_txx_byte_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
 	uint64_t tx_bytes                     : 40; /**< Number of bytes transmitted per channel. Wraps on overflow. On overflow, sets
-                                                         ILK_TX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_TX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t tx_bytes                     : 40;
 	uint64_t reserved_40_63               : 24;
@@ -3966,11 +3966,11 @@ union cvmx_ilk_txx_cal_entryx {
 	struct cvmx_ilk_txx_cal_entryx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_34_63               : 30;
-	uint64_t ctl                          : 2;  /**< Select source of XON/XOFF for entry (IDX * 8) + 0
-                                                         0 = PKI backpressure channel
-                                                         1 = Link
-                                                         2 = XOFF
-                                                         3 = XON
+	uint64_t ctl                          : 2;  /**< Select source of XON/XOFF for entry (IDX * 8) + 0:
+                                                         0 = PKI backpressure channel.
+                                                         1 = Link.
+                                                         2 = XOFF.
+                                                         3 = XON.
                                                          This field applies to one of bits <55>, <47>, or <31> in the Interlaken control word. */
 	uint64_t reserved_8_31                : 24;
 	uint64_t channel                      : 8;  /**< PKI channel for the calendar table entry. Unused if CTL != 0. */
@@ -4003,34 +4003,33 @@ union cvmx_ilk_txx_cfg0 {
                                                          current value. */
 	uint64_t lnk_stats_ena                : 1;  /**< Enable link statistics counters. */
 	uint64_t mltuse_fc_ena                : 1;  /**< When set, the multiuse field of control words contains flow-control status. Otherwise, the
-                                                         multiuse field contains ILK_TX(0..1)_CFG1[TX_MLTUSE] */
+                                                         multiuse field contains ILK_TX()_CFG1[TX_MLTUSE] */
 	uint64_t cal_ena                      : 1;  /**< Enable TX calendar. When not asserted, the default calendar is used:
                                                          First control word:
-                                                         entry 0 = link
-                                                         entry 1 = backpressure ID 0
-                                                         entry 2 = backpressure ID 1
-                                                         - ...
-                                                         entry 15 = backpressure ID 14
+                                                         _ entry 0 = link
+                                                         _ entry 1 = backpressure ID 0
+                                                         _ entry 2 = backpressure ID 1
+                                                         _ ...
+                                                         _ entry 15 = backpressure ID 14
                                                          Second control word:
-                                                         entry 16 = link
-                                                         entry 17 = backpressure ID 15
-                                                         entry 18 = backpressure ID 16
-                                                         - ...
+                                                         _ entry 16 = link
+                                                         _ entry 17 = backpressure ID 15
+                                                         _ entry 18 = backpressure ID 16
+                                                         _ ...
                                                          This continues until the calendar depth is reached.
-                                                         To disable backpressure completely, enable the calendar table
-                                                         and program each calendar table entry to transmit XON */
+                                                         To disable backpressure completely, enable the calendar table and program each calendar
+                                                         table entry to transmit XON. */
 	uint64_t mfrm_len                     : 13; /**< The quantity of data sent on each lane including one sync word, scrambler state, diag
                                                          word, zero or more skip words, and the data payload. Must be large than
-                                                         ILK_TX(0..1)_CFG1[SKIP_CNT] + 32.
+                                                         _ ILK_TX()_CFG1[SKIP_CNT] + 32.
                                                          Supported range:
-                                                         ILK_TX(0..1)_CFG1[SKIP_CNT] + 32 < MFRM_LEN <= 4096 */
+                                                         _ ILK_TX()_CFG1[SKIP_CNT] + 32 < MFRM_LEN <= 4096 */
 	uint64_t brst_shrt                    : 7;  /**< Minimum interval between burst control words, as a multiple of eight bytes. Supported
                                                          range from eight to 512 bytes (i.e. 0 < BRST_SHRT <= 64). */
 	uint64_t lane_rev                     : 1;  /**< Lane reversal. When enabled, lane striping is performed from most significant lane enabled
                                                          to least significant lane enabled. LANE_ENA must be zero before changing LANE_REV. */
 	uint64_t brst_max                     : 5;  /**< Maximum size of a data burst, as a multiple of 64-byte blocks. Supported range is from 64
-                                                         to 1024 bytes
-                                                         (i.e. 0 < BRST_MAX <= 16). */
+                                                         to 1024 bytes (i.e. 0 < BRST_MAX <= 16). */
 	uint64_t reserved_25_25               : 1;
 	uint64_t cal_depth                    : 9;  /**< Number of valid entries in the calendar. CAL_DEPTH[2:0] must be zero. Supported range is
                                                          from 0 to 288.
@@ -4040,22 +4039,22 @@ union cvmx_ilk_txx_cfg0 {
                                                          enabled in multiple
                                                          ILK_TX0/1_CFG0. Each bit of LANE_ENA maps to a TX lane (TLE) and a QLM lane. Note that
                                                          LANE_REV has no effect on this mapping.
-                                                         LANE_ENA[0] = TLE0  =  QLM4 lane 0
-                                                         LANE_ENA[1] = TLE1  =  QLM4 lane 1
-                                                         LANE_ENA[2] = TLE2  =  QLM4 lane 2
-                                                         LANE_ENA[3] = TLE3  =  QLM4 lane 3
-                                                         LANE_ENA[4] = TLE4  =  QLM5 lane 0
-                                                         LANE_ENA[5] = TLE5  =  QLM5 lane 1
-                                                         LANE_ENA[6] = TLE6  =  QLM5 lane 2
-                                                         LANE_ENA[7] = TLE7  =  QLM5 lane 3
-                                                         LANE_ENA[8] = TLE8  =  QLM6 lane 0
-                                                         LANE_ENA[9] = TLE9  =  QLM6 lane 1
-                                                         LANE_ENA[10] = TLE10  =  QLM6 lane 2
-                                                         LANE_ENA[11] = TLE11  =  QLM6 lane 3
-                                                         LANE_ENA[12] = TLE12  =  QLM7 lane 0
-                                                         LANE_ENA[13] = TLE13  =  QLM7 lane 1
-                                                         LANE_ENA[14] = TLE14  =  QLM7 lane 2
-                                                         LANE_ENA[15] = TLE15  =  QLM7 lane 3 */
+                                                         _ LANE_ENA<0> = TLE0  =  QLM4 lane 0.
+                                                         _ LANE_ENA<1> = TLE1  =  QLM4 lane 1.
+                                                         _ LANE_ENA<2> = TLE2  =  QLM4 lane 2.
+                                                         _ LANE_ENA<3> = TLE3  =  QLM4 lane 3.
+                                                         _ LANE_ENA<4> = TLE4  =  QLM5 lane 0.
+                                                         _ LANE_ENA<5> = TLE5  =  QLM5 lane 1.
+                                                         _ LANE_ENA<6> = TLE6  =  QLM5 lane 2.
+                                                         _ LANE_ENA<7> = TLE7  =  QLM5 lane 3.
+                                                         _ LANE_ENA<8> = TLE8  =  QLM6 lane 0.
+                                                         _ LANE_ENA<9> = TLE9  =  QLM6 lane 1.
+                                                         _ LANE_ENA<10> = TLE10  =  QLM6 lane 2.
+                                                         _ LANE_ENA<11> = TLE11  =  QLM6 lane 3.
+                                                         _ LANE_ENA<12> = TLE12  =  QLM7 lane 0.
+                                                         _ LANE_ENA<13> = TLE13  =  QLM7 lane 1.
+                                                         _ LANE_ENA<14> = TLE14  =  QLM7 lane 2.
+                                                         _ LANE_ENA<15> = TLE15  =  QLM7 lane 3. */
 #else
 	uint64_t lane_ena                     : 16;
 	uint64_t cal_depth                    : 9;
@@ -4177,17 +4176,18 @@ union cvmx_ilk_txx_cfg1 {
 	uint64_t u64;
 	struct cvmx_ilk_txx_cfg1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_53_63               : 11;
+	uint64_t ser_low                      : 4;  /**< Reserved. */
+	uint64_t reserved_53_59               : 7;
 	uint64_t brst_min                     : 5;  /**< Minimum size of a data burst, as a multiple of 32-byte blocks. 0 disables the scheduling
                                                          enhancement. When non-zero, must satisfy:
-                                                         (BRST_SHRT*8) <= (BRST_MIN*32) <= (BRST_MAX*64)/2. */
+                                                         _ (BRST_SHRT*8) <= (BRST_MIN*32) <= (BRST_MAX*64)/2. */
 	uint64_t reserved_43_47               : 5;
 	uint64_t ser_limit                    : 10; /**< Reduce latency by limiting the amount of data in flight for each SerDes. If 0x0, hardware
                                                          will compute it. Otherwise, SER_LIMIT must be set as follows:
-                                                         SER_LIMIT >= 148 + (BAUD / SCLK) * (12 + (NUM_LANES/2))
+                                                         _ SER_LIMIT >= 148 + (BAUD / SCLK) * (12 + (NUM_LANES/2))
                                                          For instance, for sclk=1.1GHz,BAUD=10.3125,NUM_LANES=16 :
-                                                         SER_LIMIT >= 148 + (10.3125 / 1.1 * (12 + (12/2))
-                                                         SER_LIMIT >= 317 */
+                                                         _ SER_LIMIT >= 148 + (10.3125 / 1.1 * (12 + (12/2))
+                                                         _ SER_LIMIT >= 317 */
 	uint64_t pkt_busy                     : 1;  /**< Packet busy. When set to 1, indicates the TX-link is transmitting data. */
 	uint64_t pipe_crd_dis                 : 1;  /**< Disable channel credits. Should be set to 1 when PKO is configured to ignore channel credits. */
 	uint64_t ptp_delay                    : 5;  /**< Reserved. */
@@ -4209,7 +4209,7 @@ union cvmx_ilk_txx_cfg1 {
                                                          the end of a burst. */
 	uint64_t rx_link_fc_ign               : 1;  /**< Ignore the link flow-control status received in burst/idle control words */
 	uint64_t rmatch                       : 1;  /**< Enable rate matching circuitry. */
-	uint64_t tx_mltuse                    : 8;  /**< Multiuse bits are used when ILK_TX(0..1)_CFG0[MLTUSE_FC_ENA] = 0. */
+	uint64_t tx_mltuse                    : 8;  /**< Multiuse bits are used when ILK_TX()_CFG0[MLTUSE_FC_ENA] = 0. */
 #else
 	uint64_t tx_mltuse                    : 8;
 	uint64_t rmatch                       : 1;
@@ -4229,7 +4229,8 @@ union cvmx_ilk_txx_cfg1 {
 	uint64_t ser_limit                    : 10;
 	uint64_t reserved_43_47               : 5;
 	uint64_t brst_min                     : 5;
-	uint64_t reserved_53_63               : 11;
+	uint64_t reserved_53_59               : 7;
+	uint64_t ser_low                      : 4;
 #endif
 	} s;
 	struct cvmx_ilk_txx_cfg1_cn68xx {
@@ -4348,10 +4349,10 @@ union cvmx_ilk_txx_cha_xonx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t status                       : 64; /**< PKI flow control status for backpressure ID 255-0, where a 0 indicates the presence of
                                                          backpressure (i.e. XOFF) and 1 indicates the absence of backpressure (i.e. XON).
-                                                         ILK_TX(0..1)_CHA_XON[0]--Channels 63-0
-                                                         ILK_TX(0..1)_CHA_XON[1]--Channels 127-64
-                                                         ILK_TX(0..1)_CHA_XON[2]--Channels 191-128
-                                                         ILK_TX(0..1)_CHA_XON[3]--Channels 255-192 */
+                                                         _ ILK_TX(0..1)_CHA_XON[0] -- Channels 63-0.
+                                                         _ ILK_TX(0..1)_CHA_XON[1] -- Channels 127-64.
+                                                         _ ILK_TX(0..1)_CHA_XON[2] -- Channels 191-128.
+                                                         _ ILK_TX(0..1)_CHA_XON[3] -- Channels 255-192. */
 #else
 	uint64_t status                       : 64;
 #endif
@@ -4367,7 +4368,10 @@ union cvmx_ilk_txx_dbg {
 	uint64_t u64;
 	struct cvmx_ilk_txx_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_3_63                : 61;
+	uint64_t reserved_29_63               : 35;
+	uint64_t data_rate                    : 13; /**< Reserved. */
+	uint64_t low_delay                    : 6;  /**< Reserved. */
+	uint64_t reserved_3_9                 : 7;
 	uint64_t tx_bad_crc24                 : 1;  /**< Send a control word with bad CRC24. Hardware clears this field once the injection is performed. */
 	uint64_t tx_bad_ctlw2                 : 1;  /**< Send a control word without the control bit set. */
 	uint64_t tx_bad_ctlw1                 : 1;  /**< Send a data word with the control bit set. */
@@ -4375,11 +4379,27 @@ union cvmx_ilk_txx_dbg {
 	uint64_t tx_bad_ctlw1                 : 1;
 	uint64_t tx_bad_ctlw2                 : 1;
 	uint64_t tx_bad_crc24                 : 1;
-	uint64_t reserved_3_63                : 61;
+	uint64_t reserved_3_9                 : 7;
+	uint64_t low_delay                    : 6;
+	uint64_t data_rate                    : 13;
+	uint64_t reserved_29_63               : 35;
 #endif
 	} s;
-	struct cvmx_ilk_txx_dbg_s             cn68xx;
-	struct cvmx_ilk_txx_dbg_s             cn68xxp1;
+	struct cvmx_ilk_txx_dbg_cn68xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_3_63                : 61;
+	uint64_t tx_bad_crc24                 : 1;  /**< Send a control word with bad CRC24.  Hardware will clear this
+                                                         field once the injection is performed. */
+	uint64_t tx_bad_ctlw2                 : 1;  /**< Send a control word without the control bit set */
+	uint64_t tx_bad_ctlw1                 : 1;  /**< Send a data word with the control bit set */
+#else
+	uint64_t tx_bad_ctlw1                 : 1;
+	uint64_t tx_bad_ctlw2                 : 1;
+	uint64_t tx_bad_crc24                 : 1;
+	uint64_t reserved_3_63                : 61;
+#endif
+	} cn68xx;
+	struct cvmx_ilk_txx_dbg_cn68xx        cn68xxp1;
 	struct cvmx_ilk_txx_dbg_s             cn78xx;
 };
 typedef union cvmx_ilk_txx_dbg cvmx_ilk_txx_dbg_t;
@@ -4570,14 +4590,14 @@ union cvmx_ilk_txx_int {
 	struct cvmx_ilk_txx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
-	uint64_t fwc_dbe                      : 1;  /**< Flow control calendar table double-bit error. Throws ILK_INTSN_E::ILK_TX(0..1)_FWC_DBE. */
-	uint64_t fwc_sbe                      : 1;  /**< Flow control calendar table single-bit error. Throws ILK_INTSN_E::ILK_TX(0..1)_FWC_SBE. */
-	uint64_t txf_dbe                      : 1;  /**< TX FIFO double-bit error. Throws ILK_INTSN_E::ILK_TX(0..1)_TXF_DBE. */
-	uint64_t txf_sbe                      : 1;  /**< TX FIFO single-bit error. Throws ILK_INTSN_E::ILK_TX(0..1)_TXF_SBE. */
-	uint64_t stat_cnt_ovfl                : 1;  /**< Statistics counter overflow. Throws ILK_INTSN_E::ILK_TX(0..1)_STAT_CNT_OVFL. */
+	uint64_t fwc_dbe                      : 1;  /**< Flow control calendar table double-bit error. Throws ILK_INTSN_E::ILK_TX()_FWC_DBE. */
+	uint64_t fwc_sbe                      : 1;  /**< Flow control calendar table single-bit error. Throws ILK_INTSN_E::ILK_TX()_FWC_SBE. */
+	uint64_t txf_dbe                      : 1;  /**< TX FIFO double-bit error. Throws ILK_INTSN_E::ILK_TX()_TXF_DBE. */
+	uint64_t txf_sbe                      : 1;  /**< TX FIFO single-bit error. Throws ILK_INTSN_E::ILK_TX()_TXF_SBE. */
+	uint64_t stat_cnt_ovfl                : 1;  /**< Statistics counter overflow. Throws ILK_INTSN_E::ILK_TX()_STAT_CNT_OVFL. */
 	uint64_t bad_pipe                     : 1;  /**< Reserved. */
 	uint64_t bad_seq                      : 1;  /**< Received sequence is not SOP followed by 0 or more data cycles followed by EOP. Throws
-                                                         ILK_INTSN_E::ILK_TX(0..1)_BAD_SEQ. */
+                                                         ILK_INTSN_E::ILK_TX()_BAD_SEQ. */
 	uint64_t txf_err                      : 1;  /**< Reserved. */
 #else
 	uint64_t txf_err                      : 1;
@@ -4920,7 +4940,7 @@ union cvmx_ilk_txx_pkt_cntx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_34_63               : 30;
 	uint64_t tx_pkt                       : 34; /**< Number of packets transmitted per channel. Wraps on overflow. On overflow, sets
-                                                         ILK_TX(0..1)_INT[STAT_CNT_OVFL]. */
+                                                         ILK_TX()_INT[STAT_CNT_OVFL]. */
 #else
 	uint64_t tx_pkt                       : 34;
 	uint64_t reserved_34_63               : 30;

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -51,6 +51,7 @@
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-lmcx-defs.h>
 #include <asm/octeon/cvmx-fpa-defs.h>
+#include <asm/octeon/cvmx-tim-defs.h>
 #else
 #include "cvmx.h"
 #endif
@@ -112,10 +113,13 @@ static inline uint64_t cvmx_clock_get_count(cvmx_clock_t clock)
 #endif
 		}
 	case CVMX_CLOCK_SCLK:
-	case CVMX_CLOCK_TIM:
 	case CVMX_CLOCK_IPD:
 		if (OCTEON_IS_MODEL(OCTEON_CN78XX))
 			return cvmx_read_csr(CVMX_FPA_CLK_COUNT);
+		return cvmx_read_csr(CVMX_IPD_CLK_COUNT);
+	case CVMX_CLOCK_TIM:
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+			return cvmx_read_csr(CVMX_TIM_FR_RN_CYCLES);
 		return cvmx_read_csr(CVMX_IPD_CLK_COUNT);
 
 	case CVMX_CLOCK_DDR:
@@ -144,6 +148,7 @@ static inline uint64_t cvmx_clock_get_rate(cvmx_clock_t clock)
 		return 0;
 	}
 }
+#define cvmx_clock_get_rate_node(a,b) cvmx_clock_get_rate(b)
 #else
 extern uint64_t cvmx_clock_get_rate(cvmx_clock_t clock);
 extern uint64_t cvmx_clock_get_rate_node(int node, cvmx_clock_t clock);

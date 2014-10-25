@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -425,17 +425,6 @@ static inline uint64_t CVMX_SSO_GRPX_INT_THR(unsigned long block_id)
 }
 #else
 #define CVMX_SSO_GRPX_INT_THR(block_id) (CVMX_ADD_IO_SEG(0x0001670020000500ull) + ((block_id) & 255) * 0x10000ull)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SSO_GRPX_PREF(unsigned long block_id)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 255)))))
-		cvmx_warn("CVMX_SSO_GRPX_PREF(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001670020000300ull) + ((block_id) & 255) * 0x10000ull;
-}
-#else
-#define CVMX_SSO_GRPX_PREF(block_id) (CVMX_ADD_IO_SEG(0x0001670020000300ull) + ((block_id) & 255) * 0x10000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SSO_GRPX_PRI(unsigned long block_id)
@@ -1320,7 +1309,7 @@ union cvmx_sso_aw_cfg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_9_63                : 55;
 	uint64_t ldt_short                    : 1;  /**< Use LDT to bypass L2 allocations when reading short form work. */
-	uint64_t reserved_7_7                 : 1;
+	uint64_t lol                          : 1;  /**< Reserved. */
 	uint64_t xaq_alloc_dis                : 1;  /**< Disable FPA alloc requests to fill the SSO page cache. Also all existing cached free
                                                          buffers will be returned to FPA and will not be cached. */
 	uint64_t ocla_bp                      : 1;  /**< OCLA backpressure enable. When OCLA FIFOs are near full, allow OCLA to backpressure AW pipeline. */
@@ -1328,8 +1317,8 @@ union cvmx_sso_aw_cfg {
 	uint64_t stt                          : 1;  /**< Use STT to bypass L2 allocation for XAQ store operations. */
 	uint64_t ldt                          : 1;  /**< Use LDT to bypass L2 allocation for XAQ load operations. */
 	uint64_t ldwb                         : 1;  /**< When reading XAQ cache lines, use LDWB transactions to invalidate the cache line. */
-	uint64_t rwen                         : 1;  /**< Enable XAQ operations. This bit should be set after SSO_XAQ(0..255)_HEAD_PTR and
-                                                         SSO_XAQ(0..255)_TAIL_PTR have been programmed. If cleared, all cached buffers will be
+	uint64_t rwen                         : 1;  /**< Enable XAQ operations. This bit should be set after SSO_XAQ()_HEAD_PTR and
+                                                         SSO_XAQ()_TAIL_PTR have been programmed. If cleared, all cached buffers will be
                                                          returned from the FPA as soon as possible, and TAQ arbitration is simplified. */
 #else
 	uint64_t rwen                         : 1;
@@ -1339,7 +1328,7 @@ union cvmx_sso_aw_cfg {
 	uint64_t xaq_byp_dis                  : 1;
 	uint64_t ocla_bp                      : 1;
 	uint64_t xaq_alloc_dis                : 1;
-	uint64_t reserved_7_7                 : 1;
+	uint64_t lol                          : 1;
 	uint64_t ldt_short                    : 1;
 	uint64_t reserved_9_63                : 55;
 #endif
@@ -1446,7 +1435,7 @@ union cvmx_sso_aw_we {
 	uint64_t reserved_29_63               : 35;
 	uint64_t rsvd_free                    : 13; /**< Number of free reserved entries. Used to ensure that each group can get a specific number
                                                          of entries. Must always be greater than or equal to the sum across all
-                                                         SSO_GRP(0..255)_IAQ_THR[RSVD_THR], and will generally be equal to that sum unless changes
+                                                         SSO_GRP()_IAQ_THR[RSVD_THR], and will generally be equal to that sum unless changes
                                                          to RSVD_THR are going to be made. To prevent races, software should not change this
                                                          register when SSO is being used; instead use SSO_AW_ADD[RSVD_FREE]. */
 	uint64_t reserved_13_15               : 3;
@@ -1581,16 +1570,16 @@ union cvmx_sso_bist_status0 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
 	uint64_t bist                         : 10; /**< Memory BIST status. 0 = pass, 1 = fail. INTERNAL:
-                                                         <9> = WES
-                                                         <8> = FFF
-                                                         <7> = XAQ
-                                                         <6> = QTC
-                                                         <5> = INP
-                                                         <4> = LLM
-                                                         <3> = TIAQ_HPTR
-                                                         <2> = TIAQ_TPTR
-                                                         <1> = TOAQ_HPTR
-                                                         <0> = TOAQ_TPTR */
+                                                         <9> = WES.
+                                                         <8> = FFF.
+                                                         <7> = XAQ.
+                                                         <6> = QTC.
+                                                         <5> = INP.
+                                                         <4> = LLM.
+                                                         <3> = TIAQ_HPTR.
+                                                         <2> = TIAQ_TPTR.
+                                                         <1> = TOAQ_HPTR.
+                                                         <0> = TOAQ_TPTR. */
 #else
 	uint64_t bist                         : 10;
 	uint64_t reserved_10_63               : 54;
@@ -1612,13 +1601,13 @@ union cvmx_sso_bist_status1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_7_63                : 57;
 	uint64_t bist                         : 7;  /**< Memory BIST status. 0 = pass, 1 = fail. INTERNAL:
-                                                         <6> = THRINT
-                                                         <5> = MASK
-                                                         <4> = GDW
-                                                         <3> = QIDX
-                                                         <2> = TPTR
-                                                         <1> = HPTR
-                                                         <0> = CNTR */
+                                                         <6> = THRINT.
+                                                         <5> = MASK.
+                                                         <4> = GDW.
+                                                         <3> = QIDX.
+                                                         <2> = TPTR.
+                                                         <1> = HPTR.
+                                                         <0> = CNTR. */
 #else
 	uint64_t bist                         : 7;
 	uint64_t reserved_7_63                : 57;
@@ -1640,15 +1629,15 @@ union cvmx_sso_bist_status2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_9_63                : 55;
 	uint64_t bist                         : 9;  /**< Memory BIST status. 0 = pass, 1 = fail. INTERNAL:
-                                                         <8> = PC_WS
-                                                         <7> = PC_WA
-                                                         <6> = PC_TS
-                                                         <5> = PC_DS
-                                                         <4> = NCB0
-                                                         <3> = PND
-                                                         <2> = OTH
-                                                         <1> = NIDX
-                                                         <0> = PIDX */
+                                                         <8> = PC_WS.
+                                                         <7> = PC_WA.
+                                                         <6> = PC_TS.
+                                                         <5> = PC_DS.
+                                                         <4> = NCB0.
+                                                         <3> = PND.
+                                                         <2> = OTH.
+                                                         <1> = NIDX.
+                                                         <0> = PIDX. */
 #else
 	uint64_t bist                         : 9;
 	uint64_t reserved_9_63                : 55;
@@ -2026,10 +2015,10 @@ union cvmx_sso_err0 {
 	uint64_t wes_sbe                      : 1;  /**< Single-bit error for WES RAM. Throws SSO_INTSN_E::SSO_ERR0_WES_SBE. */
 	uint64_t reserved_6_31                : 26;
 	uint64_t addwq_dropped                : 1;  /**< Add work dropped due to wrong command/DID requested. Throws
-                                                         SSO_INTSN_E::SSO_ERR0_ADD_WQDROPPED. */
+                                                         SSO_INTSN_E::SSO_ERR0_ADDWQ_DROPPED. */
 	uint64_t awempty                      : 1;  /**< Received add work with tag specified as EMPTY. Throws SSO_INTSN_E::SSO_ERR0_AWEMPTY. */
 	uint64_t grpdis                       : 1;  /**< Add work to disabled group. An ADDWQ was received and dropped to a group with
-                                                         SSO_GRP(0..255)_IAQ_THR[RSVD_THR] = 0. Throws SSO_INTSN_E::SSO_ERR0_GRPDIS. */
+                                                         SSO_GRP()_IAQ_THR[RSVD_THR] = 0. Throws SSO_INTSN_E::SSO_ERR0_GRPDIS. */
 	uint64_t bfp                          : 1;  /**< Bad-fill-packet error. The WAE VLD_CRC field was incorrect, or the XAQ next address was
                                                          zero. Throws SSO_INTSN_E::SSO_ERR0_BFP. */
 	uint64_t awe                          : 1;  /**< Out-of-memory error. (ADDWQ request is dropped.) Throws SSO_INTSN_E::SSO_ERR0_AWE. */
@@ -2142,22 +2131,19 @@ union cvmx_sso_err2 {
 	uint64_t iop                          : 13; /**< Illegal operation errors. Throws SSO_INTSN_E::SSO_ERR2_IOP<n>:
                                                          <12> = Received command before SSO_RESET[BUSY] cleared.
                                                          <11> = Received SWTAG/GET_WORK/etc from node other than the local node.
-                                                         <10> = Received SWTAG/SWTAG_FULL/SWTAG_DESCHED/UPD_WQP_GRP/ALLOC_WE/CLR_NSCHED/PREP_WORK
-                                                         from work slot with PREP_WORK pending
+                                                         <10> = Reserved.
                                                          <9> = Received illegal opcode.
-                                                         <8> = Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP_GRP/GET_WORK/PREP_WORK/ALLOC_WE
-                                                         from work slot with CLR_NSCHED pending.
+                                                         <8> = Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP_GRP/GET_WORK/ALLOC_WE from work
+                                                         slot with CLR_NSCHED pending.
                                                          <7> = Received CLR_NSCHED from work slot with SWTAG_DESCH/DESCH/CLR_NSCHED pending.
-                                                         <6> = Received
-                                                         SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP_GRP/GET_WORK/PREP_WORK/ALLOC_WE/CLR_NSCHED from
-                                                         work slot with ALLOC_WE pending.
-                                                         <5> = Received
-                                                         SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP_GRP/GET_WORK/PREP_WORK/ALLOC_WE/CLR_NSCHED from
-                                                         work slot with GET_WORK pending.
+                                                         <6> = Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP_GRP/GET_WORK/ALLOC_WE/CLR_NSCHED
+                                                         from work slot with ALLOC_WE pending.
+                                                         <5> = Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP_GRP/GET_WORK/ALLOC_WE/CLR_NSCHED
+                                                         from work slot with GET_WORK pending.
                                                          <4> = Received SWTAG_FULL/SWTAG_DESCH with tag specified as UNTAGGED.
                                                          <3> = Received SWTAG/SWTAG_FULL/SWTAG_DESCH with tag specified as EMPTY.
-                                                         <2> = Received SWTAG/SWTAG_FULL/SWTAG_DESCH/GET_WORK/PREP_WORK from work slot with pending
-                                                         tag switch to ORDERED or ATOMIC.
+                                                         <2> = Received SWTAG/SWTAG_FULL/SWTAG_DESCH/GET_WORK from work slot with pending tag
+                                                         switch to ORDERED or ATOMIC.
                                                          <1> = Received SWTAG/SWTAG_DESCH/DESCH/UPD_WQP_GRP from work slot in UNTAGGED state.
                                                          <0> = Received SWTAG/SWTAG_FULL/SWTAG_DESCH/DESCH/UPD_WQP_GRP from work slot in EMPTY
                                                          state. */
@@ -2345,7 +2331,7 @@ union cvmx_sso_grpx_aq_thr {
 	struct cvmx_sso_grpx_aq_thr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_33_63               : 31;
-	uint64_t aq_thr                       : 33; /**< Total admission queue entry threshold. Compared against SSO_GRP(0..255)_AQ_CNT for
+	uint64_t aq_thr                       : 33; /**< Total admission queue entry threshold. Compared against SSO_GRP()_AQ_CNT for
                                                          triggering AQ interrupts. */
 #else
 	uint64_t aq_thr                       : 33;
@@ -2445,27 +2431,27 @@ union cvmx_sso_grpx_int {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t exe_dis                      : 1;  /**< Executable interrupt temporary disable. Corresponding [EXE_INT] bit cannot be set due to
                                                          IAQ_CNT/IAQ_THR check when this bit is set. EXE_DIS is cleared by hardware whenever:
-                                                         SSO_GRP(0..255)_INT_CNT[IAQ_CNT] is zero, or
-                                                         SSO_GRP(0..255)_INT_CNT[TC_CNT] is equal to 1 when periodic counter SSO_WQ_INT_PC[PC] is
+                                                         * SSO_GRP()_INT_CNT[IAQ_CNT] is zero, or
+                                                         * SSO_GRP()_INT_CNT[TC_CNT] is equal to 1 when periodic counter SSO_WQ_INT_PC[PC] is
                                                          equal to 0. */
 	uint64_t reserved_2_62                : 61;
 	uint64_t exe_int                      : 1;  /**< Work-executable interrupt. Generally used to indicate work is waiting for software. Throws
-                                                         SSO_INTSN_E::SSO_GRP(0..255)_EXE. Set by hardware whenever:
-                                                         SSO_GRP(0..255)_INT_CNT[IAQ_CNT] >= SSO_GRP(0..255)_INT_THR [IAQ_THR] and [IAQ_THR] != 0
+                                                         SSO_INTSN_E::SSO_GRP()_EXE. Set by hardware whenever:
+                                                         * SSO_GRP()_INT_CNT[IAQ_CNT] >= SSO_GRP()_INT_THR [IAQ_THR] and [IAQ_THR] != 0
                                                          and EXE_DIS is clear.
-                                                         SSO_GRP(0..255)_INT_CNT[DS_CNT] >= SSO_GRP(0..255)_INT_THR[DS_THR] and [DS_THR] != 0 and
+                                                         * SSO_GRP()_INT_CNT[DS_CNT] >= SSO_GRP()_INT_THR[DS_THR] and [DS_THR] != 0 and
                                                          EXE_DIS is clear.
-                                                         SSO_GRP(0..255)_INT_CNT[CQ_CNT] >= SSO_GRP(0..255)_INT_THR[CQ_THR] and [CQ_THR] != 0 and
+                                                         * SSO_GRP()_INT_CNT[CQ_CNT] >= SSO_GRP()_INT_THR[CQ_THR] and [CQ_THR] != 0 and
                                                          EXE_DIS is clear.
-                                                         SSO_GRP(0..255)_INT_CNT[TC_CNT] is equal to 1 when periodic counter SSO_WQ_INT_PC[PC] is
-                                                         equal to 0 and SSO_GRP(0..255)_INT_THR[TC_EN] is set and at least one of the following is
+                                                         * SSO_GRP()_INT_CNT[TC_CNT] is equal to 1 when periodic counter SSO_WQ_INT_PC[PC] is
+                                                         equal to 0 and SSO_GRP()_INT_THR[TC_EN] is set and at least one of the following is
                                                          true:
-                                                         SSO_GRP(0..255)_INT_CNT[IAQ_CNT] > 0
-                                                         SSO_GRP(0..255)_INT_CNT[DS_CNT] > 0
-                                                         SSO_GRP(0..255)_INT_CNT[CQ_CNT] > 0 */
-	uint64_t aq_int                       : 1;  /**< External group queue threshold interrupt. Set if SSO_GRP(0..255)_AQ_CNT changes, and the
-                                                         resulting value is equal to SSO_GRP(0..255)_AQ_THR. Throws
-                                                         SSO_INTSN_E::SSO_GRP(0..255)_AQ. */
+                                                         _ SSO_GRP()_INT_CNT[IAQ_CNT] > 0
+                                                         _ SSO_GRP()_INT_CNT[DS_CNT] > 0
+                                                         _ SSO_GRP()_INT_CNT[CQ_CNT] > 0 */
+	uint64_t aq_int                       : 1;  /**< External group queue threshold interrupt. Set if SSO_GRP()_AQ_CNT changes, and the
+                                                         resulting value is equal to SSO_GRP()_AQ_THR. Throws
+                                                         SSO_INTSN_E::SSO_GRP()_AQ. */
 #else
 	uint64_t aq_int                       : 1;
 	uint64_t exe_int                      : 1;
@@ -2489,14 +2475,14 @@ union cvmx_sso_grpx_int_cnt {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_61_63               : 3;
 	uint64_t tc_cnt                       : 13; /**< Time counter current value for this group. Hardware sets this field to the value of
-                                                         SSO_GRP(0..255)_INT_THR[TC_THR] whenever:
-                                                         Corresponding SSO_GRP(0..255)_INT_CNT[IAQ_CNT, DS_CNT and CQ_CNT] are all equal to 0.
-                                                         Corresponding SSO_GRP(0..255)_INT[EXE_INT] is written with a one to clear by software.
-                                                         Corresponding SSO_GRP(0..255)_INT[EXE_DIS] is written with a one to clear by software.
-                                                         Corresponding SSO_GRP(0..255)_INT_THR is written by software.
-                                                         TC_CNT is equal to 1 and periodic counter SSO_WQ_INT_PC[PC] is equal to 0.
+                                                         SSO_GRP()_INT_THR[TC_THR] whenever:
+                                                         * Corresponding SSO_GRP()_INT_CNT[IAQ_CNT, DS_CNT and CQ_CNT] are all equal to 0.
+                                                         * Corresponding SSO_GRP()_INT[EXE_INT] is written with a one to clear by software.
+                                                         * Corresponding SSO_GRP()_INT[EXE_DIS] is written with a one to clear by software.
+                                                         * Corresponding SSO_GRP()_INT_THR is written by software.
+                                                         * TC_CNT is equal to 1 and periodic counter SSO_WQ_INT_PC[PC] is equal to 0.
                                                          Otherwise, hardware decrements this field whenever the periodic counter SSO_WQ_INT_PC[PC]
-                                                         is equal to 0. This field is 0 whenever SSO_GRP(0..255)_INT_THR[TC_THR] is equal to 0. */
+                                                         is equal to 0. This field is 0 whenever SSO_GRP()_INT_THR[TC_THR] is equal to 0. */
 	uint64_t reserved_45_47               : 3;
 	uint64_t cq_cnt                       : 13; /**< Conflicted queue executable count for this group. */
 	uint64_t reserved_29_31               : 3;
@@ -2531,19 +2517,19 @@ union cvmx_sso_grpx_int_thr {
 	uint64_t tc_en                        : 1;  /**< Time counter interrupt enable for this group. This field must be zero when [TC_THR] is 0. */
 	uint64_t reserved_61_62               : 2;
 	uint64_t tc_thr                       : 13; /**< Time counter interrupt threshold for this group. Compared against
-                                                         SSO_GRP(0..255)_INT_CNT[TC_CNT]. When this field is equal to 0,
-                                                         SSO_GRP(0..255)_INT_CNT[TC_CNT] is zero. */
+                                                         SSO_GRP()_INT_CNT[TC_CNT]. When this field is equal to 0,
+                                                         SSO_GRP()_INT_CNT[TC_CNT] is zero. */
 	uint64_t reserved_45_47               : 3;
 	uint64_t cq_thr                       : 13; /**< Conflicted queue count threshold for this group. Compared against
-                                                         SSO_GRP(0..255)_INT_CNT[CQ_CNT]. When this field is 0, the threshold interrupt is
+                                                         SSO_GRP()_INT_CNT[CQ_CNT]. When this field is 0, the threshold interrupt is
                                                          disabled. */
 	uint64_t reserved_29_31               : 3;
 	uint64_t ds_thr                       : 13; /**< Deschedule count threshold for this group. Compared against
-                                                         SSO_GRP(0..255)_INT_CNT[DS_CNT]. When this field is 0, the threshold interrupt is
+                                                         SSO_GRP()_INT_CNT[DS_CNT]. When this field is 0, the threshold interrupt is
                                                          disabled. */
 	uint64_t reserved_13_15               : 3;
 	uint64_t iaq_thr                      : 13; /**< In-unit admission queue threshold for this group. Compared against
-                                                         SSO_GRP(0..255)_INT_CNT[IAQ_CNT]. When this field is 0, the threshold interrupt is
+                                                         SSO_GRP()_INT_CNT[IAQ_CNT]. When this field is 0, the threshold interrupt is
                                                          disabled. */
 #else
 	uint64_t iaq_thr                      : 13;
@@ -2562,28 +2548,6 @@ union cvmx_sso_grpx_int_thr {
 typedef union cvmx_sso_grpx_int_thr cvmx_sso_grpx_int_thr_t;
 
 /**
- * cvmx_sso_grp#_pref
- *
- * Controls the prefetching for each group.
- *
- */
-union cvmx_sso_grpx_pref {
-	uint64_t u64;
-	struct cvmx_sso_grpx_pref_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_4_63                : 60;
-	uint64_t clines                       : 4;  /**< Number of cache lines starting at the work queue pointer to prefetch into L1 Dcache, when
-                                                         work is fetched with PREP_WORK. Zero disables prefetching. */
-#else
-	uint64_t clines                       : 4;
-	uint64_t reserved_4_63                : 60;
-#endif
-	} s;
-	struct cvmx_sso_grpx_pref_s           cn78xx;
-};
-typedef union cvmx_sso_grpx_pref cvmx_sso_grpx_pref_t;
-
-/**
  * cvmx_sso_grp#_pri
  *
  * Controls the priority and group affinity arbitration for each group.
@@ -2596,14 +2560,16 @@ union cvmx_sso_grpx_pri {
 	uint64_t reserved_30_63               : 34;
 	uint64_t wgt_left                     : 6;  /**< Cross-group arbitration credits remaining on this group. */
 	uint64_t reserved_22_23               : 2;
-	uint64_t weight                       : 6;  /**< Cross-group arbitration weight to apply to this group. Must be non-zero. */
+	uint64_t weight                       : 6;  /**< Cross-group arbitration weight to apply to this group. Must be >= 0x2. */
 	uint64_t reserved_12_15               : 4;
-	uint64_t affinity                     : 4;  /**< Processor affinity arbitration weight to apply to this group. If zero, affinity is disabled. */
+	uint64_t affinity                     : 4;  /**< Processor affinity arbitration weight to apply to this group. If zero, affinity
+                                                         is disabled. A change to AFFINITY will not take effect until the old AFFINITY's
+                                                         value loaded into SSO_PP()_ARB[AFF_LEFT] has drained to zero. */
 	uint64_t reserved_3_7                 : 5;
 	uint64_t pri                          : 3;  /**< Priority for this group relative to other groups. To prevent a core from receiving work on
-                                                         a group use SSO_PP(0..47)_S(0..1)_GRPMSK(0..3).
-                                                         0x0: highest priority.
-                                                         0x7: lowest priority.
+                                                         a group use SSO_PP()_S()_GRPMSK().
+                                                         0x0 = highest priority.
+                                                         0x7 = lowest priority.
                                                          Changing priority while GET_WORKs are in flight may result in a GET_WORK using either the
                                                          old or new priority, or a mix thereof. */
 #else
@@ -2826,16 +2792,16 @@ union cvmx_sso_gwe_random {
                                                          at. Changes on each work search, even if unsuccessful or retried. For diagnostic use only,
                                                          must not be zero. INTERNAL: Uses 16, 15, 13, 4 tap LFSR (this choice is important to
                                                          insure even group probabilities) with the formula:
-                                                         grp_to_start_arb_at = RND[7:0];
-                                                         RND_next[15:8] = RND[7:0];
-                                                         RND_next[7] = ^(RND[15:0] & 0xd008);
-                                                         RND_next[6] = ^(RND[15:0] & 0x6804);
-                                                         RND_next[5] = ^(RND[15:0] & 0x3402);
-                                                         RND_next[4] = ^(RND[15:0] & 0x1a01);
-                                                         RND_next[3] = ^(RND[15:0] & 0xdd08);
-                                                         RND_next[2] = ^(RND[15:0] & 0x6e84);
-                                                         RND_next[1] = ^(RND[15:0] & 0x3742);
-                                                         RND_next[0] = ^(RND[15:0] & 0x1ba1); */
+                                                         _ grp_to_start_arb_at = RND[7:0];
+                                                         _ RND_next[15:8] = RND[7:0];
+                                                         _ RND_next[7] = ^(RND[15:0] & 0xd008);
+                                                         _ RND_next[6] = ^(RND[15:0] & 0x6804);
+                                                         _ RND_next[5] = ^(RND[15:0] & 0x3402);
+                                                         _ RND_next[4] = ^(RND[15:0] & 0x1a01);
+                                                         _ RND_next[3] = ^(RND[15:0] & 0xdd08);
+                                                         _ RND_next[2] = ^(RND[15:0] & 0x6e84);
+                                                         _ RND_next[1] = ^(RND[15:0] & 0x3742);
+                                                         _ RND_next[0] = ^(RND[15:0] & 0x1ba1); */
 #else
 	uint64_t rnd                          : 16;
 	uint64_t reserved_16_63               : 48;
@@ -2942,7 +2908,7 @@ union cvmx_sso_ientx_pendtag {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_38_63               : 26;
 	uint64_t pend_switch                  : 1;  /**< Set when there is a pending non-UNTAGGED SWTAG or SWTAG_FULL and the SSO entry has not
-                                                         left the list for the original tag */
+                                                         left the list for the original tag. */
 	uint64_t reserved_34_36               : 3;
 	uint64_t pend_tt                      : 2;  /**< The next tag type for the new tag list when PEND_SWITCH is set. Enumerated by SSO_TT_E. */
 	uint64_t pend_tag                     : 32; /**< The next tag for the new tag list when PEND_SWITCH is set. */
@@ -3023,8 +2989,8 @@ union cvmx_sso_ientx_wqpgrp {
 	uint64_t head                         : 1;  /**< SSO entry is at the head of a tag chain that is descheduled. */
 	uint64_t nosched                      : 1;  /**< The nosched bit for the SSO entry. */
 	uint64_t reserved_58_59               : 2;
-	uint64_t grp                          : 10; /**< Group of the SSO entry. The upper bits are not stored in the RAM, but rather indicate the
-                                                         OCI node number. */
+	uint64_t grp                          : 10; /**< Group of the SSO entry.
+                                                         The upper bits are not stored in the RAM, but rather indicate the CCPI node number. */
 	uint64_t reserved_42_47               : 6;
 	uint64_t wqp                          : 42; /**< Work queue pointer held in the SSO entry. */
 #else
@@ -3045,7 +3011,7 @@ typedef union cvmx_sso_ientx_wqpgrp cvmx_sso_ientx_wqpgrp_t;
  * cvmx_sso_ipl_conf#
  *
  * Returns list status for the conflicted list indexed by group; see Debug Visibility.  Register
- * fields are identical to those in SSO_IPL_IAQ(0..255) above.
+ * fields are identical to those in SSO_IPL_IAQ() above.
  */
 union cvmx_sso_ipl_confx {
 	uint64_t u64;
@@ -3076,7 +3042,7 @@ typedef union cvmx_sso_ipl_confx cvmx_sso_ipl_confx_t;
  * cvmx_sso_ipl_desched#
  *
  * Returns list status for the deschedule list indexed by group; see Debug Visibility.  Register
- * fields are identical to those in SSO_IPL_IAQ(0..255) above.
+ * fields are identical to those in SSO_IPL_IAQ() above.
  */
 union cvmx_sso_ipl_deschedx {
 	uint64_t u64;
@@ -3338,10 +3304,10 @@ union cvmx_sso_nw_tim {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
 	uint64_t nw_tim                       : 10; /**< New-work-timer period.
-                                                         0x0 = 1024 clock cycles
-                                                         0x1 = 2048 clock cycles
-                                                         0x2 = 3072 clock cycles
-                                                         ... etc. */
+                                                         0x0 = 1024 clock cycles.
+                                                         0x1 = 2048 clock cycles.
+                                                         0x2 = 3072 clock cycles.
+                                                         _ ... etc. */
 #else
 	uint64_t nw_tim                       : 10;
 	uint64_t reserved_10_63               : 54;
@@ -3647,12 +3613,12 @@ union cvmx_sso_ppx_sx_grpmskx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t grp_msk                      : 64; /**< Core group mask. A one in any bit position sets the core's membership in the corresponding
                                                          group:
-                                                         GRPMSK(0) for groups <63:0>
-                                                         GRPMSK(1) for groups <127:64>
-                                                         GRPMSK(2) for groups <191:128>
-                                                         GRPMSK(3) for groups <255:192>
-                                                         A value of 0x0 in each GRPMSK(0..3) for a given core prevents the core from receiving new
-                                                         work. Cores that will never receive work should use GRPMSK(0..3)=0x0; while this setting
+                                                         _ GRPMSK(0) for groups <63:0>.
+                                                         _ GRPMSK(1) for groups <127:64>.
+                                                         _ GRPMSK(2) for groups <191:128>.
+                                                         _ GRPMSK(3) for groups <255:192>.
+                                                         A value of 0x0 in each GRPMSK() for a given core prevents the core from receiving new
+                                                         work. Cores that will never receive work should use GRPMSK()=0x0; while this setting
                                                          is not special in SSO, for backward and forward compatibility this may enable reallocation
                                                          of internal resources to the remaining (non-zero-mask) cores. */
 #else
@@ -3822,7 +3788,7 @@ union cvmx_sso_reset {
                                                          structures are initialized. This bit must read as zero before any configuration may be
                                                          done. */
 	uint64_t reserved_1_62                : 62;
-	uint64_t reset                        : 1;  /**< Reset the SSO */
+	uint64_t reset                        : 1;  /**< Reset the SSO. */
 #else
 	uint64_t reset                        : 1;
 	uint64_t reserved_1_62                : 62;
@@ -3997,15 +3963,17 @@ union cvmx_sso_sl_ppx_links {
 	uint64_t reserved_60_62               : 3;
 	uint64_t index                        : 12; /**< The SSO entry attached to the core. */
 	uint64_t reserved_38_47               : 10;
-	uint64_t grp                          : 10; /**< The group attached to the core (updated when new tag list entered on SWTAG_FULL). The
-                                                         upper two bits are hardcoded to the node number. */
+	uint64_t grp                          : 10; /**< The group attached to the core (updated when new tag list entered on SWTAG_FULL).
+                                                         The upper two bits are hardcoded to the node number. */
 	uint64_t head                         : 1;  /**< Set when this SSO entry is at the head of its tag list, or when in the UNTAGGED or EMPTY state. */
 	uint64_t tail                         : 1;  /**< Set when this SSO entry is at the tail of its tag list, or when in the UNTAGGED or EMPTY state. */
 	uint64_t reserved_25_25               : 1;
-	uint64_t revlink_index                : 12; /**< Prior SSO entry in the tag list when HEAD==0 and TT is not UNTAGGED nor EMPTY, otherwise
+	uint64_t revlink_index                : 12; /**< Prior SSO entry in the tag list when HEAD=0 and TT is not UNTAGGED nor EMPTY, otherwise
                                                          unpredictable. */
-	uint64_t link_index_vld               : 1;  /**< LINK_INDEX is valid when TAIL==1 and TT is ATOMIC, otherwise unpredictable. */
-	uint64_t link_index                   : 12; /**< Next SSO entry in the tag list when TAILC==0 and TT is ATOMIC, otherwise unpredictable. */
+	uint64_t link_index_vld               : 1;  /**< Indicates LINK_INDEX is valid. LINK_INDEX_VLD is itself valid when TAIL=1 and TT=ATOMIC,
+                                                         otherwise unpredictable. */
+	uint64_t link_index                   : 12; /**< Next SSO entry in the tag list when LINK_INDEX_VLD=1, TAILC=0 and TT=ATOMIC,
+                                                         otherwise unpredictable. */
 #else
 	uint64_t link_index                   : 12;
 	uint64_t link_index_vld               : 1;
@@ -4043,21 +4011,13 @@ union cvmx_sso_sl_ppx_pendtag {
 	uint64_t pend_nosched_clr             : 1;  /**< Set when there is a pending CLR_NSCHED. */
 	uint64_t pend_desched                 : 1;  /**< Set when there is a pending DESCHED or SWTAG_DESCHED. */
 	uint64_t pend_alloc_we                : 1;  /**< Set when there is a pending ALLOC_WE. */
-	uint64_t reserved_56_56               : 1;
-	uint64_t prep_index                   : 12; /**< The index when PREPPED is set. */
-	uint64_t prepped                      : 1;  /**< Set when there is PREP_WORK available. */
-	uint64_t pend_prep                    : 1;  /**< Set when there is a PREP_WORK pending. */
-	uint64_t reserved_34_41               : 8;
+	uint64_t reserved_34_56               : 23;
 	uint64_t pend_tt                      : 2;  /**< The tag type when PEND_SWITCH is set. */
 	uint64_t pend_tag                     : 32; /**< The tag when PEND_SWITCH is set. */
 #else
 	uint64_t pend_tag                     : 32;
 	uint64_t pend_tt                      : 2;
-	uint64_t reserved_34_41               : 8;
-	uint64_t pend_prep                    : 1;
-	uint64_t prepped                      : 1;
-	uint64_t prep_index                   : 12;
-	uint64_t reserved_56_56               : 1;
+	uint64_t reserved_34_56               : 23;
 	uint64_t pend_alloc_we                : 1;
 	uint64_t pend_desched                 : 1;
 	uint64_t pend_nosched_clr             : 1;
@@ -4127,8 +4087,8 @@ union cvmx_sso_sl_ppx_tag {
 	uint64_t reserved_60_62               : 3;
 	uint64_t index                        : 12; /**< The SSO entry attached to the core. */
 	uint64_t reserved_46_47               : 2;
-	uint64_t grp                          : 10; /**< The group attached to the core (updated when new tag list entered on SWTAG_FULL). The
-                                                         upper two bits are hardcoded to the node number. */
+	uint64_t grp                          : 10; /**< The group attached to the core (updated when new tag list entered on SWTAG_FULL).
+                                                         The upper two bits are hardcoded to the node number. */
 	uint64_t head                         : 1;  /**< Set when this SSO entry is at the head of its tag list, or when in the UNTAGGED or EMPTY state. */
 	uint64_t tail                         : 1;  /**< Set when this SSO entry is at the tail of its tag list, or when in the UNTAGGED or EMPTY state. */
 	uint64_t tt                           : 2;  /**< The tag type attached to the core (updated when new tag list entered on SWTAG, SWTAG_FULL,
@@ -4162,8 +4122,8 @@ union cvmx_sso_sl_ppx_wqp {
 	struct cvmx_sso_sl_ppx_wqp_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_58_63               : 6;
-	uint64_t grp                          : 10; /**< The group attached to the core (updated when new tag list entered on SWTAG_FULL). The
-                                                         upper two bits are hardcoded to the node number. */
+	uint64_t grp                          : 10; /**< The group attached to the core (updated when new tag list entered on SWTAG_FULL).
+                                                         The upper two bits are hardcoded to the node number. */
 	uint64_t reserved_42_47               : 6;
 	uint64_t wqp                          : 42; /**< The WQP attached to the core (updated when new tag list entered on SWTAG_FULL.) */
 #else
@@ -4273,7 +4233,7 @@ union cvmx_sso_taq_cnt {
 	uint64_t reserved_27_63               : 37;
 	uint64_t rsvd_free                    : 11; /**< Number of free reserved buffers. Used to insure each group may get a specific number of
                                                          buffers. Must always be greater than or equal to the sum across all
-                                                         SSO_GRP(0..255)_TAQ_THR[RSVD_THR], and will generally be equal to that sum unless changes
+                                                         SSO_GRP()_TAQ_THR[RSVD_THR], and will generally be equal to that sum unless changes
                                                          to RSVD_THR are going to be made. To prevent races, software should not change this
                                                          register when SSO is being used; instead use SSO_TAQ_ADD[RSVD_FREE]. */
 	uint64_t reserved_11_15               : 5;
@@ -4300,17 +4260,17 @@ union cvmx_sso_tiaqx_status {
 	struct cvmx_sso_tiaqx_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t wae_head                     : 4;  /**< Head's WAE number within current cache line, 0-12. This provides the second index into
-                                                         SSO_TAQ(0..1279)_WAE(0..12)_TAG and SSO_TAQ(0..1279)_WAE(0..12)_WQP. */
+                                                         SSO_TAQ()_WAE()_TAG and SSO_TAQ()_WAE()_WQP. */
 	uint64_t wae_tail                     : 4;  /**< Tail's WAE number within current cache line, 0-12. This provides the second index into
-                                                         SSO_TAQ(0..1279)_WAE(0..12)_TAG and SSO_TAQ(0..1279)_WAE(0..12)_WQP. */
+                                                         SSO_TAQ()_WAE()_TAG and SSO_TAQ()_WAE()_WQP. */
 	uint64_t reserved_47_55               : 9;
 	uint64_t wae_used                     : 15; /**< Number of WAEs in use. */
 	uint64_t reserved_23_31               : 9;
-	uint64_t ent_head                     : 11; /**< Head's entry number. This provides the first index into SSO_TAQ(0..1279)_WAE(0..12)_TAG
-                                                         and SSO_TAQ(0..1279)_WAE(0..12)_WQP. */
+	uint64_t ent_head                     : 11; /**< Head's entry number. This provides the first index into SSO_TAQ()_WAE()_TAG
+                                                         and SSO_TAQ()_WAE()_WQP. */
 	uint64_t reserved_11_11               : 1;
-	uint64_t ent_tail                     : 11; /**< Tail's entry number. This provides the first index into SSO_TAQ(0..1279)_WAE(0..12)_TAG
-                                                         and SSO_TAQ(0..1279)_WAE(0..12)_WQP. */
+	uint64_t ent_tail                     : 11; /**< Tail's entry number. This provides the first index into SSO_TAQ()_WAE()_TAG
+                                                         and SSO_TAQ()_WAE()_WQP. */
 #else
 	uint64_t ent_tail                     : 11;
 	uint64_t reserved_11_11               : 1;
@@ -4340,15 +4300,15 @@ union cvmx_sso_toaqx_status {
 	uint64_t ext_vld                      : 1;  /**< External queuing is in use on this group. */
 	uint64_t partial                      : 1;  /**< Partial cache line is allocated to tail of queue. */
 	uint64_t wae_tail                     : 4;  /**< If PARTIAL is set, tail's WAE number within current cache line, 0-12. This provides the
-                                                         second index into SSO_TAQ(0..1279)_WAE(0..12)_TAG and SSO_TAQ(0..1279)_WAE(0..12)_WQP. */
+                                                         second index into SSO_TAQ()_WAE()_TAG and SSO_TAQ()_WAE()_WQP. */
 	uint64_t reserved_43_55               : 13;
 	uint64_t cl_used                      : 11; /**< Number of cache lines in use. */
 	uint64_t reserved_23_31               : 9;
-	uint64_t ent_head                     : 11; /**< Head's entry number. This provides the first index into SSO_TAQ(0..1279)_WAE(0..12)_TAG
-                                                         and SSO_TAQ(0..1279)_WAE(0..12)_WQP. */
+	uint64_t ent_head                     : 11; /**< Head's entry number. This provides the first index into SSO_TAQ()_WAE()_TAG
+                                                         and SSO_TAQ()_WAE()_WQP. */
 	uint64_t reserved_11_11               : 1;
-	uint64_t ent_tail                     : 11; /**< Tail's entry number. This provides the first index into SSO_TAQ(0..1279)_WAE(0..12)_TAG
-                                                         and SSO_TAQ(0..1279)_WAE(0..12)_WQP. */
+	uint64_t ent_tail                     : 11; /**< Tail's entry number. This provides the first index into SSO_TAQ()_WAE()_TAG
+                                                         and SSO_TAQ()_WAE()_WQP. */
 #else
 	uint64_t ent_tail                     : 11;
 	uint64_t reserved_11_11               : 1;
@@ -4646,15 +4606,16 @@ union cvmx_sso_ws_cfg {
 	uint64_t reserved_56_63               : 8;
 	uint64_t ocla_bp                      : 8;  /**< Enable OCLA backpressure stalls. For diagnostic use only.
                                                          INTERNAL:
-                                                         <55> NCBB input fifo stall (ncbo.)
-                                                         <54> Work-slot response. (arbrsp.)
-                                                         <53> Work-slot switching of descheduled work entries. (arbx.)
-                                                         <52> Work-slot SWTAG response. (arbs.)
-                                                         <51> Work-slot access to get-work engine. (arbgw.)
-                                                         <50> Work-slot CAM access. (arbc.)
-                                                         <49> Work-slot RAM access. (arbr.)
-                                                         <48> Work-slot pushes to AQ, CQ, DQ. (arbq.) */
-	uint64_t reserved_4_47                : 44;
+                                                         <55> = NCBB input fifo stall (ncbo).
+                                                         <54> = Work-slot response. (arbrsp).
+                                                         <53> = Work-slot switching of descheduled work entries. (arbx).
+                                                         <52> = Work-slot SWTAG response. (arbs).
+                                                         <51> = Work-slot access to get-work engine. (arbgw).
+                                                         <50> = Work-slot CAM access. (arbc).
+                                                         <49> = Work-slot RAM access. (arbr).
+                                                         <48> = Work-slot pushes to AQ, CQ, DQ. (arbq). */
+	uint64_t reserved_5_47                : 43;
+	uint64_t disable_pw                   : 1;  /**< Reserved. */
 	uint64_t arbc_step_en                 : 1;  /**< Enable single-stepping WS CAM arbiter, twice per 16 clocks. For diagnostic use only. */
 	uint64_t ncbo_step_en                 : 1;  /**< Enable single-stepping commands from NCBO, once per 32 clocks. For diagnostic use only. */
 	uint64_t soc_ccam_dis                 : 1;  /**< Disable power saving SOC conditional CAM. */
@@ -4664,7 +4625,8 @@ union cvmx_sso_ws_cfg {
 	uint64_t soc_ccam_dis                 : 1;
 	uint64_t ncbo_step_en                 : 1;
 	uint64_t arbc_step_en                 : 1;
-	uint64_t reserved_4_47                : 44;
+	uint64_t disable_pw                   : 1;
+	uint64_t reserved_5_47                : 43;
 	uint64_t ocla_bp                      : 8;
 	uint64_t reserved_56_63               : 8;
 #endif
@@ -4709,7 +4671,8 @@ union cvmx_sso_xaqx_head_next {
 	struct cvmx_sso_xaqx_head_next_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t ptr                          : 35; /**< Pointer. For peak performance, all XAQ buffers should reside on the local node's memory. */
+	uint64_t ptr                          : 35; /**< Pointer, divided by 128 bytes. For peak performance, all XAQ buffers should reside on the
+                                                         local node's memory. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -4726,15 +4689,16 @@ typedef union cvmx_sso_xaqx_head_next cvmx_sso_xaqx_head_next_t;
  *
  * These registers contain the pointer to the first entry of the external linked list(s) for a
  * particular group. Software must initialize the external linked list(s) by programming
- * SSO_XAQ(0..255)_HEAD_PTR, SSO_XAQ(0..255)_HEAD_NEXT, SSO_XAQ(0..255)_TAIL_PTR and
- * SSO_XAQ(0..255)_TAIL_NEXT to identical values.
+ * SSO_XAQ()_HEAD_PTR, SSO_XAQ()_HEAD_NEXT, SSO_XAQ()_TAIL_PTR and
+ * SSO_XAQ()_TAIL_NEXT to identical values.
  */
 union cvmx_sso_xaqx_head_ptr {
 	uint64_t u64;
 	struct cvmx_sso_xaqx_head_ptr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t ptr                          : 35; /**< Pointer. For peak performance, all XAQ buffers should reside on the local node's memory. */
+	uint64_t ptr                          : 35; /**< Pointer, divided by 128 bytes. For peak performance, all XAQ buffers should reside on the
+                                                         local node's memory. */
 	uint64_t reserved_5_6                 : 2;
 	uint64_t cl                           : 5;  /**< Cache line number in buffer. Cache line zero contains the next pointer. */
 #else
@@ -4753,14 +4717,15 @@ typedef union cvmx_sso_xaqx_head_ptr cvmx_sso_xaqx_head_ptr_t;
  *
  * These registers contain the pointer to the next buffer to become the tail when the final cache
  * line in this buffer is written.  Register fields are identical to those in
- * SSO_XAQ(0..255)_HEAD_NEXT above.
+ * SSO_XAQ()_HEAD_NEXT above.
  */
 union cvmx_sso_xaqx_tail_next {
 	uint64_t u64;
 	struct cvmx_sso_xaqx_tail_next_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t ptr                          : 35; /**< Pointer. For peak performance, all XAQ buffers should reside on the local node's memory. */
+	uint64_t ptr                          : 35; /**< Pointer, divided by 128 bytes. For peak performance, all XAQ buffers should reside on the
+                                                         local node's memory. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -4776,14 +4741,15 @@ typedef union cvmx_sso_xaqx_tail_next cvmx_sso_xaqx_tail_next_t;
  * cvmx_sso_xaq#_tail_ptr
  *
  * These registers contain the pointer to the last entry of the external linked list(s) for a
- * particular group.  Register fields are identical to those in SSO_XAQ(0..255)_HEAD_PTR above.
+ * particular group.  Register fields are identical to those in SSO_XAQ()_HEAD_PTR above.
  */
 union cvmx_sso_xaqx_tail_ptr {
 	uint64_t u64;
 	struct cvmx_sso_xaqx_tail_ptr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t ptr                          : 35; /**< Pointer. For peak performance, all XAQ buffers should reside on the local node's memory. */
+	uint64_t ptr                          : 35; /**< Pointer, divided by 128 bytes. For peak performance, all XAQ buffers should reside on the
+                                                         local node's memory. */
 	uint64_t reserved_5_6                 : 2;
 	uint64_t cl                           : 5;  /**< Cache line number in buffer. Cache line zero contains the next pointer. */
 #else
@@ -4806,7 +4772,9 @@ union cvmx_sso_xaq_aura {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
 	uint64_t node                         : 2;  /**< Node number of current chip, to ensure that the aura is on the local node. */
-	uint64_t laura                        : 10; /**< FPA local-node aura to use for SSO XAQ allocations and frees. */
+	uint64_t laura                        : 10; /**< FPA local-node aura to use for SSO XAQ allocations and frees. The FPA aura selected by
+                                                         LAURA must select a pool with FPA_POOL()_CFG[NAT_ALIGN]=1, and
+                                                         (FPA_POOL()_CFG[BUF_SIZE] - FPA_POOL()_CFG[BUF_OFFSET]) >= 4 KB / 128. */
 #else
 	uint64_t laura                        : 10;
 	uint64_t node                         : 2;

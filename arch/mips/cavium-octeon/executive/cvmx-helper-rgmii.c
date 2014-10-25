@@ -43,11 +43,11 @@
  * Functions for RGMII/GMII/MII initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 86586 $<hr>
+ * <hr>$Revision: 96596 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
-#include <asm/octeon/cvmx-pko.h>
+#include <asm/octeon/cvmx-hwpko.h>
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-board.h>
 #include <asm/octeon/cvmx-asxx-defs.h>
@@ -61,7 +61,7 @@
 #include "cvmx.h"
 #include "cvmx-sysinfo.h"
 #include "cvmx-mdio.h"
-#include "cvmx-pko.h"
+#include "cvmx-hwpko.h"
 #include "cvmx-helper.h"
 #include "cvmx-helper-board.h"
 #endif
@@ -75,11 +75,12 @@
  *
  * @return Number of RGMII/GMII/MII ports (0-4).
  */
-int __cvmx_helper_rgmii_probe(int interface)
+int __cvmx_helper_rgmii_probe(int xiface)
 {
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
 	int num_ports = 0;
 	union cvmx_gmxx_inf_mode mode;
-	mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
+	mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(xi.interface));
 
 	if (mode.s.type) {
 		if (OCTEON_IS_MODEL(OCTEON_CN38XX) ||
@@ -150,8 +151,10 @@ void cvmx_helper_rgmii_internal_loopback(int port)
  *
  * @return Zero on success
  */
-int __cvmx_helper_rgmii_enable(int interface)
+int __cvmx_helper_rgmii_enable(int xiface)
 {
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	int interface = xi.interface;
 	int num_ports = cvmx_helper_ports_on_interface(interface);
 	int port;
 	union cvmx_gmxx_inf_mode mode;

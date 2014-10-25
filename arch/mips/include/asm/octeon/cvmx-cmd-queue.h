@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -46,7 +46,7 @@
  * The common command queue infrastructure abstracts out the
  * software necessary for adding to Octeon's chained queue
  * structures. These structures are used for commands to the
- * PKO, ZIP, DFA, RAID, and DMA engine blocks. Although each
+ * PKO, ZIP, DFA, RAID, HNA, and DMA engine blocks. Although each
  * hardware unit takes commands and CSRs of different types,
  * they all use basic linked command buffers to store the
  * pending request. In general, users of the CVMX API don't
@@ -82,13 +82,11 @@
  * internal cycle counter to completely eliminate any causes of
  * bus traffic.
  *
- * <hr> $Revision: 90195 $ <hr>
+ * <hr> $Revision: 103822 $ <hr>
  */
 
 #ifndef __CVMX_CMD_QUEUE_H__
 #define __CVMX_CMD_QUEUE_H__
-
-#include "cvmx-fpa.h"
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
@@ -122,7 +120,8 @@ typedef enum {
 #define CVMX_CMD_QUEUE_DMA(queue) ((cvmx_cmd_queue_id_t)(CVMX_CMD_QUEUE_DMA_BASE + (0xffff&(queue))))
 	CVMX_CMD_QUEUE_BCH = 0x50000,
 #define CVMX_CMD_QUEUE_BCH(queue) ((cvmx_cmd_queue_id_t)(CVMX_CMD_QUEUE_BCH + (0xffff&(queue))))
-	CVMX_CMD_QUEUE_END = 0x60000,
+	CVMX_CMD_QUEUE_HNA = 0x60000,
+	CVMX_CMD_QUEUE_END = 0x70000,
 } cvmx_cmd_queue_id_t;
 
 /**
@@ -258,6 +257,7 @@ static inline int __cvmx_cmd_queue_get_index(cvmx_cmd_queue_id_t queue_id)
 static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id,
 					 __cvmx_cmd_queue_state_t * qptr)
 {
+#ifndef __U_BOOT__
 	extern CVMX_SHARED __cvmx_cmd_queue_all_state_t *__cvmx_cmd_queue_state_ptr;
 	int tmp;
 	int my_ticket;
@@ -290,6 +290,7 @@ static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id,
 		      : [ticket_ptr] "=m"(__cvmx_cmd_queue_state_ptr->ticket[__cvmx_cmd_queue_get_index(queue_id)]),
 		      [now_serving] "=m"(qptr->now_serving),[ticket] "=&r"(tmp),[my_ticket] "=&r"(my_ticket)
 	    );
+#endif
 }
 
 /**
@@ -300,12 +301,14 @@ static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id,
  */
 static inline void __cvmx_cmd_queue_unlock(__cvmx_cmd_queue_state_t * qptr)
 {
+#ifndef __U_BOOT__
 	uint32_t ns;
 
 	ns = qptr->now_serving + 1;
 	CVMX_SYNCWS;		/* Order queue manipulation with respect to the unlock.  */
 	qptr->now_serving = ns;
 	CVMX_SYNCWS;		/* nudge out the unlock. */
+#endif
 }
 
 /**
@@ -327,6 +330,13 @@ __cvmx_cmd_queue_get_state(cvmx_cmd_queue_id_t queue_id)
 			return NULL;
 	}
 	return &__cvmx_cmd_queue_state_ptr->state[__cvmx_cmd_queue_get_index(queue_id)];
+}
+
+static inline uint64_t *__cvmx_cmd_queue_alloc_buffer(int pool)
+{
+	uint64_t *new_buffer;
+	new_buffer = cvmx_fpa_alloc(pool);
+	return new_buffer;
 }
 
 /**
@@ -385,7 +395,7 @@ cvmx_cmd_queue_write(cvmx_cmd_queue_id_t queue_id, int use_locking,
 		uint64_t *ptr;
 		int count;
 		/* We need a new command buffer. Fail if there isn't one available */
-		uint64_t *new_buffer = (uint64_t *) cvmx_fpa_alloc(qptr->fpa_pool);
+		uint64_t *new_buffer = __cvmx_cmd_queue_alloc_buffer(qptr->fpa_pool);
 		if (cvmx_unlikely(new_buffer == NULL)) {
 			if (cvmx_likely(use_locking))
 				__cvmx_cmd_queue_unlock(qptr);
@@ -414,6 +424,9 @@ cvmx_cmd_queue_write(cvmx_cmd_queue_id_t queue_id, int use_locking,
 	/* All updates are complete. Release the lock and return */
 	if (cvmx_likely(use_locking))
 		__cvmx_cmd_queue_unlock(qptr);
+#ifdef __U_BOOT__
+	CVMX_SYNCWS;
+#endif
 	return CVMX_CMD_QUEUE_SUCCESS;
 }
 
@@ -470,7 +483,7 @@ cvmx_cmd_queue_write2(cvmx_cmd_queue_id_t queue_id, int use_locking,
 		   location will be needed for the next buffer pointer */
 		int count = qptr->pool_size_m1 - qptr->index;
 		/* We need a new command buffer. Fail if there isn't one available */
-		uint64_t *new_buffer = (uint64_t *) cvmx_fpa_alloc(qptr->fpa_pool);
+		uint64_t *new_buffer = __cvmx_cmd_queue_alloc_buffer(qptr->fpa_pool);
 		if (cvmx_unlikely(new_buffer == NULL)) {
 			if (cvmx_likely(use_locking))
 				__cvmx_cmd_queue_unlock(qptr);
@@ -555,7 +568,7 @@ cvmx_cmd_queue_write3(cvmx_cmd_queue_id_t queue_id, int use_locking,
 		 */
 		int count = qptr->pool_size_m1 - qptr->index;
 		/* We need a new command buffer. Fail if there isn't one available */
-		uint64_t *new_buffer = (uint64_t *) cvmx_fpa_alloc(qptr->fpa_pool);
+		uint64_t *new_buffer = __cvmx_cmd_queue_alloc_buffer(qptr->fpa_pool);
 		if (cvmx_unlikely(new_buffer == NULL)) {
 			if (cvmx_likely(use_locking))
 				__cvmx_cmd_queue_unlock(qptr);

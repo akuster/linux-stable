@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -136,7 +136,13 @@ void __init octeon_feature_init(void)
 	OCTEON_FEATURE_SET(OCTEON_FEATURE_CN78XX_WQE);
 	OCTEON_FEATURE_SET(OCTEON_FEATURE_SPI);
 	OCTEON_FEATURE_SET(OCTEON_FEATURE_BCH);
-
+	OCTEON_FEATURE_SET(OCTEON_FEATURE_PKI);
+	OCTEON_FEATURE_SET(OCTEON_FEATURE_OCLA);
+	OCTEON_FEATURE_SET(OCTEON_FEATURE_FAU);
+	OCTEON_FEATURE_SET(OCTEON_FEATURE_PKO3);
+	OCTEON_FEATURE_SET(OCTEON_FEATURE_HNA);
+	OCTEON_FEATURE_SET(OCTEON_FEATURE_BGX_MIX);
+	OCTEON_FEATURE_SET(OCTEON_FEATURE_OCX);
 	val = OCTEON_FEATURE_SUCCESS;
 
 feature_check:

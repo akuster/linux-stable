@@ -42,7 +42,7 @@
  *
  * Packet buffer defines.
  *
- * <hr>$Revision: 83289 $<hr>
+ * <hr>$Revision: 95816 $<hr>
  *
  */
 
@@ -54,6 +54,21 @@
 extern "C" {
 /* *INDENT-ON* */
 #endif
+
+union cvmx_buf_ptr_pki {
+	uint64_t u64;
+	struct {
+		CVMX_BITFIELD_FIELD(uint64_t size:16,
+		/**< The size of the segment pointed to by addr (in bytes) */
+		CVMX_BITFIELD_FIELD(uint64_t packet_outside_wqe:1,
+		/**< sets is packet is not stored in same buffer as WQE*/
+		CVMX_BITFIELD_FIELD(uint64_t rsvd0:5,
+		CVMX_BITFIELD_FIELD(uint64_t addr:42,	/**< Pointer to the first byte of the data, NOT buffer */
+		))));
+	};
+};
+
+typedef union cvmx_buf_ptr_pki cvmx_buf_ptr_pki_t;
 
 /**
  * This structure defines a buffer pointer on Octeon
@@ -82,22 +97,6 @@ union cvmx_buf_ptr {
 		uint64_t i:1;
 #endif
 	} s;
-	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		uint64_t size:16;
-		/**< The size of the segment pointed to by addr (in bytes) */
-		uint64_t packet_outside_wqe:1;
-		/**< sets is packet is not stored in same buffer as WQE*/
-		uint64_t rsvd0:5;
-		uint64_t addr:42;
-		/**< Pointer to the first byte of the data, NOT buffer */
-#else
-		uint64_t addr:42;
-		uint64_t rsvd0:5;
-		uint64_t packet_outside_wqe:1;
-		uint64_t size:16;
-#endif
-	} s_cn78xx;
 };
 
 typedef union cvmx_buf_ptr cvmx_buf_ptr_t;

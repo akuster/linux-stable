@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 88161 $<hr>
+ * <hr>$Revision: 102522 $<hr>
  */
 
 #ifndef __CVMX_PCIE_H__
@@ -56,12 +56,16 @@ extern "C" {
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
+#elif defined(__U_BOOT__)
+#include <asm/arch/cvmx.h>
 #else
 #include <cvmx.h>
 #endif
 
-#define CVMX_PCIE_MAX_PORTS	3
-#define CVMX_PCIE_PORTS		(OCTEON_IS_OCTEON3() ? CVMX_PCIE_MAX_PORTS : 2)
+#define CVMX_PCIE_MAX_PORTS	4
+#define CVMX_PCIE_PORTS		(OCTEON_IS_MODEL(OCTEON_CN78XX) 	\
+				  ? CVMX_PCIE_MAX_PORTS 		\
+				   : (OCTEON_IS_MODEL(OCTEON_CN70XX) ? 3 : 2))
 
 /*
  * The physical memory base mapped by BAR1.  256MB at the end of the
@@ -299,6 +303,7 @@ void cvmx_pcie_config_write32(int pcie_port, int bus, int dev, int fn, int reg, 
  * @return Value read
  */
 uint32_t cvmx_pcie_cfgx_read(int pcie_port, uint32_t cfg_offset);
+uint32_t cvmx_pcie_cfgx_read_node(int node, int pcie_port, uint32_t cfg_offset);
 
 /**
  * Write a PCIe config space register indirectly. This is used for
@@ -309,6 +314,7 @@ uint32_t cvmx_pcie_cfgx_read(int pcie_port, uint32_t cfg_offset);
  * @param val        Value to write
  */
 void cvmx_pcie_cfgx_write(int pcie_port, uint32_t cfg_offset, uint32_t val);
+void cvmx_pcie_cfgx_write_node(int node, int pcie_port, uint32_t cfg_offset, uint32_t val);
 
 /**
  * Write a 32bit value to the Octeon NPEI register space
@@ -351,6 +357,15 @@ int cvmx_pcie_ep_initialize(int pcie_port);
  * @param pcie_port PCIe port to wait for
  */
 void cvmx_pcie_wait_for_pending(int pcie_port);
+
+/**
+ * Returns if a PCIe port is in host or target mode.
+ *
+ * @param pcie_port PCIe port number (PEM number)
+ *
+ * @return 0 if PCIe port is in target mode, !0 if in host mode.
+ */
+int cvmx_pcie_is_host_mode(int pcie_port);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

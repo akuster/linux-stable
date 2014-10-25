@@ -49,6 +49,7 @@
 #include <asm/octeon/cvmx-clock.h>
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-board.h>
+#include <asm/octeon/cvmx-helper-cfg.h>
 #include <asm/octeon/cvmx-agl-defs.h>
 #include <asm/octeon/cvmx-agl.h>
 #else
@@ -56,6 +57,7 @@
 #include "cvmx-agl.h"
 #include "cvmx-helper-board.h"
 #include "cvmx-agl-defs.h"
+#include "cvmx-helper-cfg.h"
 #endif
 /*
  * @param port port to enable
@@ -92,12 +94,29 @@ int cvmx_agl_enable(int port)
 cvmx_helper_link_info_t cvmx_agl_link_get(int port)
 {
 	cvmx_helper_link_info_t result;
+	int interface, port_index;
 
-	/* Simulator does not have PHY, use some defaults. */
+	/* For simulator also set the link up */
 	if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM) {
+		result.u64 = 0;
 		result.s.full_duplex = 1;
 		result.s.link_up = 1;
 		result.s.speed = 100;
+		return result;
+	}
+
+	/* Fake IPD port is used on some older models. */
+	if (port < 0)
+		return __cvmx_helper_board_link_get(port);
+
+	/* Simulator does not have PHY, use some defaults. */
+	interface = cvmx_helper_get_interface_num(port);
+	port_index = cvmx_helper_get_interface_index_num(port);
+	if (cvmx_helper_get_port_force_link_up(interface, port_index)) {
+		result.u64 = 0;
+		result.s.full_duplex = 1;
+		result.s.link_up = 1;
+		result.s.speed = 1000;
 		return result;
 	}
 
@@ -109,11 +128,10 @@ cvmx_helper_link_info_t cvmx_agl_link_get(int port)
  *
  * @param port   interface port to set the link.
  * @param link_info  Link status
- * @param mode   0 = MII, 1 = RGMII mode
  *
  * @return       0 on success and 1 on failure
  */
-int cvmx_agl_link_set(int port, cvmx_helper_link_info_t link_info, int mode)
+int cvmx_agl_link_set(int port, cvmx_helper_link_info_t link_info)
 {
 	cvmx_agl_gmx_prtx_cfg_t agl_gmx_prtx;
 
@@ -189,11 +207,13 @@ int cvmx_agl_link_set(int port, cvmx_helper_link_info_t link_info, int mode)
 
 	if (OCTEON_IS_MODEL(OCTEON_CN6XXX) || OCTEON_IS_OCTEON3()) {
 		cvmx_agl_gmx_txx_clk_t agl_clk;
+		cvmx_agl_prtx_ctl_t prt_ctl;
+		prt_ctl.u64 = cvmx_read_csr(CVMX_AGL_PRTX_CTL(port));
 		agl_clk.u64 = cvmx_read_csr(CVMX_AGL_GMX_TXX_CLK(port));
 		/* MII (both speeds) and RGMII 1000 setting */
 		agl_clk.s.clk_cnt = 1;
 		/* Check other speeds for RGMII mode */
-		if ((mode == CVMX_MGMT_PORT_RGMII_MODE) || OCTEON_IS_OCTEON3()) {
+		if ((prt_ctl.s.mode == 0) || OCTEON_IS_OCTEON3()) {
 			if (link_info.s.speed == 10)
 				agl_clk.s.clk_cnt = 50;
 			else if (link_info.s.speed == 100)

@@ -43,11 +43,14 @@
 
 extern int  cvmx_range_init(uint64_t range_addr, int size);
 extern int  cvmx_range_alloc(uint64_t range_addr, uint64_t owner, uint64_t cnt, int align);
+extern int  cvmx_range_alloc_ordered(uint64_t range_addr, uint64_t owner,
+				     uint64_t cnt, int align, int reverse);
 extern int  cvmx_range_alloc_non_contiguos(uint64_t range_addr, uint64_t owner, uint64_t cnt,
 					   int elements[]);
 extern int  cvmx_range_reserve(uint64_t range_addr, uint64_t owner, uint64_t base, uint64_t cnt);
 extern int  cvmx_range_free_with_base(uint64_t range_addr, int base, int cnt);
 extern int  cvmx_range_free_with_owner(uint64_t range_addr, uint64_t owner);
+extern uint64_t cvmx_range_get_owner(uint64_t range_addr, uint64_t base);
 extern void cvmx_range_show(uint64_t range_addr);
 extern int  cvmx_range_memory_size(int nelements);
 extern int cvmx_range_free_mutiple(uint64_t range_addr, int bases[], int count);

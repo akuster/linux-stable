@@ -57,7 +57,9 @@
 # include "cvmx-asm.h"
 #endif
 
-#define OCTEON_BOOT_MOVEABLE_MAGIC	0xDB00110ad358eace
+/* Currently only used by u-boot.  Applications use the value in
+ * cvmx-boot-vector.h */
+#define OCTEON_BOOT_MOVEABLE_MAGIC 0xdb00110ad358eace
 
 /** Offset of magic number in the boot bus moveable region */
 #define OCTEON_BOOT_MOVEABLE_MAGIC_OFFSET	0x70
@@ -65,6 +67,8 @@
 /** Offset within the boot bus moveable region for the boot vector table */
 #define OCTEON_BOOT_VECTOR_MOVEABLE_OFFSET	0x78
 
+/** Each per-node boot vector table also has a name */
+#define	OCTEON_BOOT_VECTOR_LOCATOR_NAME	"__cvmx_boot_vector_"
 
 #ifndef __ASSEMBLY__
 
@@ -118,8 +122,10 @@ typedef struct  boot_init_vector boot_init_vector_t;
 #undef GD_TMP_STR_SIZE
 #define GD_TMP_STR_SIZE 32
 
+/* FIXME: This structure is not endianness-neutral */
+/* This structure is deprecated, use sysinfo instead */
 struct linux_app_global_data {
-#ifdef __U_BOOT__
+#if	_MIPS_SZPTR == 32
 	uint32_t pad0;
 #endif
 	bd_t *bd;
@@ -144,11 +150,11 @@ struct linux_app_global_data {
 	octeon_eeprom_clock_desc_t clock_desc;
 	octeon_eeprom_mac_addr_t mac_desc;
 
-#ifdef __U_BOOT__
+#if	_MIPS_SZPTR == 32
 	uint32_t pad1;
 #endif
 	void **jt;		/* jump table, not used */
-#ifdef __U_BOOT__
+#if	_MIPS_SZPTR == 32
 	uint32_t pad2;
 #endif
 	char *err_msg;		/* pointer to error message to save

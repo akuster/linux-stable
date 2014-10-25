@@ -63,7 +63,7 @@
  * Support functions for managing command queues used for
  * various hardware blocks.
  *
- * <hr>$Revision: 91009 $<hr>
+ * <hr>$Revision: 103822 $<hr>
  */
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
@@ -168,7 +168,7 @@ cvmx_cmd_queue_result_t cvmx_cmd_queue_initialize(cvmx_cmd_queue_id_t queue_id,
 	} else if (max_depth != 0)
 		return CVMX_CMD_QUEUE_INVALID_PARAM;
 
-	if ((fpa_pool < 0) || (fpa_pool > 7))
+	if ((fpa_pool < 0) || (fpa_pool >= CVMX_FPA_NUM_POOLS))
 		return CVMX_CMD_QUEUE_INVALID_PARAM;
 	if ((pool_size < 128) || (pool_size > 65536))
 		return CVMX_CMD_QUEUE_INVALID_PARAM;
@@ -204,7 +204,7 @@ cvmx_cmd_queue_result_t cvmx_cmd_queue_initialize(cvmx_cmd_queue_id_t queue_id,
 				return CVMX_CMD_QUEUE_NO_MEMORY;
 			}
 		}
-		buffer = cvmx_fpa_alloc(fpa_pool);
+		buffer = __cvmx_cmd_queue_alloc_buffer(fpa_pool);
 		if (buffer == NULL) {
 			cvmx_dprintf("ERROR: cvmx_cmd_queue_initialize: Unable to allocate initial buffer.\n");
 			return CVMX_CMD_QUEUE_NO_MEMORY;
@@ -224,6 +224,7 @@ cvmx_cmd_queue_result_t cvmx_cmd_queue_initialize(cvmx_cmd_queue_id_t queue_id,
 		return CVMX_CMD_QUEUE_SUCCESS;
 	}
 }
+EXPORT_SYMBOL(cvmx_cmd_queue_initialize);
 
 /**
  * Shutdown a queue a free it's command buffers to the FPA. The
@@ -249,14 +250,16 @@ cvmx_cmd_queue_result_t cvmx_cmd_queue_shutdown(cvmx_cmd_queue_id_t queue_id)
 
 	__cvmx_cmd_queue_lock(queue_id, qptr);
 	if (qptr->base_ptr_div128) {
-		cvmx_fpa_free(cvmx_phys_to_ptr((uint64_t) qptr->base_ptr_div128 << 7),
-			      qptr->fpa_pool, 0);
+		cvmx_fpa_free(cvmx_phys_to_ptr(
+				       (uint64_t) qptr->base_ptr_div128 << 7),
+				       qptr->fpa_pool, 0);
 		qptr->base_ptr_div128 = 0;
 	}
 	__cvmx_cmd_queue_unlock(qptr);
 
 	return CVMX_CMD_QUEUE_SUCCESS;
 }
+EXPORT_SYMBOL(cvmx_cmd_queue_shutdown);
 
 /**
  * Return the number of command words pending in the queue. This
@@ -300,6 +303,7 @@ int cvmx_cmd_queue_length(cvmx_cmd_queue_id_t queue_id)
 		}
 	case CVMX_CMD_QUEUE_ZIP:
 	case CVMX_CMD_QUEUE_DFA:
+	case CVMX_CMD_QUEUE_HNA:
 	case CVMX_CMD_QUEUE_RAID:
 		/* FIXME: Implement other lengths */
 		return 0;
@@ -340,3 +344,4 @@ void *cvmx_cmd_queue_buffer(cvmx_cmd_queue_id_t queue_id)
 	else
 		return NULL;
 }
+EXPORT_SYMBOL(cvmx_cmd_queue_buffer);

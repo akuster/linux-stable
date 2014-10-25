@@ -4,13 +4,14 @@
 #define CVMX_GLOBAL_RESOURCES_DATA_NAME "cvmx-global-resources"
 
 /*In macros below abbreviation GR stands for global resources. */
+#define CVMX_GR_TAG_INVALID cvmx_get_gr_tag('i','n','v','a','l','i','d','.','.','.','.','.','.','.','.','.')
 /*Tag for pko que table range. */
 #define CVMX_GR_TAG_PKO_QUEUES cvmx_get_gr_tag('c','v','m','_','p','k','o','_','q','u','e','u','s','.','.','.')
 /*Tag for a pko internal ports range */
 #define CVMX_GR_TAG_PKO_IPORTS cvmx_get_gr_tag('c','v','m','_','p','k','o','_','i','p','o','r','t','.','.','.')
 #define CVMX_GR_TAG_FPA        cvmx_get_gr_tag('c','v','m','_','f','p','a','.','.','.','.','.','.','.','.','.')
 #define CVMX_GR_TAG_FAU        cvmx_get_gr_tag('c','v','m','_','f','a','u','.','.','.','.','.','.','.','.','.')
-#define CVMX_GR_TAG_FPA        cvmx_get_gr_tag('c','v','m','_','f','p','a','.','.','.','.','.','.','.','.','.')
+#define CVMX_GR_TAG_TIM(n)     cvmx_get_gr_tag('c','v','m','_','t','i','m','_',(n)+'0','.','.','.','.','.','.','.')
 #define CVMX_GR_TAG_CLUSTERS(x)	    cvmx_get_gr_tag('c','v','m','_','c','l','u','s','t','e','r','_',(x+'0'),'.','.','.')
 #define CVMX_GR_TAG_CLUSTER_GRP(x)  cvmx_get_gr_tag('c','v','m','_','c','l','g','r','p','_',(x+'0'),'.','.','.','.','.')
 #define CVMX_GR_TAG_STYLE(x)        cvmx_get_gr_tag('c','v','m','_','s','t','y','l','e','_',(x+'0'),'.','.','.','.','.')
@@ -26,7 +27,6 @@
 #define CVMX_GR_TAG_CIU3_SWINTSN(_n) \
 	cvmx_get_gr_tag('c','v','m','_','c','i','u','3','_', ((_n) + '0'),'_','s','w','i','s','n')
 
-
 #define TAG_INIT_PART(A,B,C,D,E,F,G,H) ( \
 	(((uint64_t)(A) & 0xff) << 56) | (((uint64_t)(B) & 0xff) << 48) | (((uint64_t)(C) & 0xff) << 40)  | (((uint64_t)(D) & 0xff) << 32) | \
 	(((uint64_t)(E) & 0xff) << 24) | (((uint64_t)(F) & 0xff) << 16) | (((uint64_t)(G) & 0xff) << 8)   | (((uint64_t)(H) & 0xff)))
@@ -35,6 +35,12 @@ struct global_resource_tag
 {
 	uint64_t lo;
 	uint64_t hi;
+};
+
+enum cvmx_resource_err
+{
+	CVMX_RESOURCE_ALLOC_FAILED = -1,
+	CVMX_RESOURCE_ALREADY_RESERVED = -2
 };
 
 /*
@@ -95,6 +101,7 @@ int cvmx_resource_alloc_many(struct global_resource_tag tag,
 			     uint64_t owner,
 			     int nelements,
 			     int allocated_elements[]);
+int cvmx_resource_alloc_reverse(struct global_resource_tag, uint64_t owner);
 /*
  * @INTERNAL
  * Reserve nelements starting from base in the global resource range with the
@@ -153,6 +160,8 @@ int cvmx_free_global_resource_range_with_owner(struct global_resource_tag tag,
  */
 int free_global_resources(void);
 
+uint64_t cvmx_get_global_resource_owner(struct global_resource_tag tag,
+					int base);
 /*
  * @INTERNAL
  * Shows the global resource range with the specified tag. Use mainly for debug.
@@ -165,6 +174,8 @@ void  cvmx_show_global_resource_range(struct global_resource_tag tag);
  */
 void cvmx_global_resources_show(void);
 
+uint64_t cvmx_allocate_app_id(void);
+uint64_t cvmx_get_app_id(void);
 
 #endif
 

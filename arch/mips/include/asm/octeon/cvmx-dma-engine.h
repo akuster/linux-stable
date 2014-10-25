@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -43,7 +43,7 @@
  * Interface to the PCI / PCIe DMA engines. These are only avialable
  * on chips with PCI / PCIe.
  *
- * <hr>$Revision: 79788 $<hr>
+ * <hr>$Revision: 103822 $<hr>
  */
 
 #ifndef __CVMX_DMA_ENGINES_H__
@@ -179,7 +179,141 @@ typedef union {
                                                 case.
                                                 When PTR = 0x0, the hardware performs no operation after the PCI DMA
                                                 operation is complete. */
+	} cn38xx;
+	struct {
+		uint64_t reserved_62_63:2;
+					    /**< Must be zero */
+		uint64_t lport:2;	    /**< Last port. LPort indicates the physical MAC port used for the
+                                                MAC memory space pointers in the LAST POINTERS block in the
+                                                OUTBOUND, INBOUND, and EXTERNAL-ONLY cases. Must be zero in the
+                                                INTERNAL-ONLY case. */
+		uint64_t reserved_58_59:2;
+		uint64_t fport:2;	    /**< First port. FPort indicates the physical MAC port used for the
+                                                MAC memory space pointers in the FIRST POINTERS block in the
+                                                EXTERNAL-ONLY case. Must be zero in the OUTBOUND, INBOUND and
+                                                INTERNAL-ONLY cases. Must be zero on chips with PCI */
+		uint64_t reserved_54_55:2;
+		cvmx_dma_engine_transfer_t type:2;
+					      /**< Type � A given DMA transfer is either OUTBOUND (read from L2/DRAM,
+                                                write into MAC memory space), INBOUND (read from MAC memory space, write
+                                                into L2/DRAM), INTERNAL-ONLY (read from L2/DRAM, write into L2/DRAM), or
+                                                EXTERNAL-ONLY (read from PCIe memory space, write into PCIe memory space). */
+		uint64_t csel:1;	      /**< CSEL � Counter. 1 = use counter 1, 0 = use counter 0.
+                                                The CSEL bit selects between the two counters (SLI_DMA(0..1)_CNT[CNT])
+                                                that DPI can optionally be updated after an OUTBOUND or EXTERNAL-ONLY
+                                                transfer, and also selects between the two forced-interrupt bits
+                                                (SLI_DMA(0..1)_CNT[CNT] that can optionally be set after an
+                                                OUTBOUND or EXTERNAL-ONLY transfer. C must be zero for INBOUND or
+                                                INTERNAL-ONLY transfers. */
+		uint64_t ca:1;		    /**< CA � Counter add.
+                                                When CA = 1, DPI updated the selected counter after it completed the
+                                                DMA OUTBOUND or EXTERNAL-ONLY Instruction.
+                                                    - If C = 0, DPI updated SLI_DMA0_CNT[CNT]
+                                                    - If C = 1, DPI updated SLI_DMA1_CNT[CNT]
+                                                Note that this update may indirectly cause
+                                                SLI_INT_SUM[DCNT,DTIME] to become set (depending
+                                                on the SLI_DMA(0..1)_INT_LEVEL settings), so may cause
+						interrupts to occur on a remote MAC host.
+                                                    - If DPI_DMA_CONTROL[O_ADD1] = 1, the counter is updated by 1.
+                                                    - If DPI_DMA_CONTROL[O_ADD1] = 0, the counter is updated by the total
+                                                    bytes in the transfer.
+                                                When CA = 0, DPI does not update any counters.
+                                                For an INBOUND or INTERNAL-ONLY DMA transfer, CA must never be
+                                                set, and DPI never adds to the counters. */
+		uint64_t fi:1;		    /**< FI � Force interrupt.
+                                                When FI is set for an OUTBOUND or EXTERNAL-ONLY transfer, the hardware
+                                                sets a forced interrupt bit after it completes the PCI DMA Instruction. If C = 0,
+                                                SLI_INT_SUM[DMAFI] is set, else SLI_INT_SUMn[DMA1FI] is set. For
+                                                an INBOUND or INTERNAL-ONLY DMA operation, FI must never be set,
+                                                and DPI never generates interrupts. */
+		uint64_t ii:1;		    /**< II� Ignore the I bit (i.e. the I bit of the DPI DMA instruction local pointer).
+                                                For OUTBOUND transfers when II = 1, ignore the I bit and the FL bit in the
+                                                DMA HDR alone determines whether the hardware frees any/all of the local
+                                                buffers in the FIRST POINTERS area:
+                                                    - when FL = 1, the hardware frees the local buffer when II=1.
+                                                    - when FL = 0, the hardware does not free the local buffer when II=1.
+                                                For OUTBOUND transfers when II = 0, the I bit in the local pointer selects
+                                                whether local buffers are freed on a pointer-by-pointer basis:
+                                                    - when (FL  I) is true, the hardware frees the local buffer when II=0.
+                                                For INBOUND, INTERNAL-ONLY, and EXTERNAL-ONLY PCI DMA transfers,
+                                                II must never be set, and local buffers are never freed. */
+		uint64_t fl:1;		    /**< FL � Free local buffer.
+                                                When FL = 1, for an OUTBOUND operation, it indicates that the local buffers in
+                                                the FIRST BUFFERS area should be freed.
+                                                If II = 1, the FL bit alone indicates whether the local buffer should be freed:
+                                                    - when FL = 1, DPI frees the local buffer when II=1.
+                                                    - when FL = 0, DPI does not free the local buffer when II=1.
+                                                If II = 0, the I bit in the local pointer (refer to Section 9.5.2) determines whether
+                                                the local buffer is freed:
+                                                    - when (FL  I) is true, DPI frees the local buffer when II=0.
+                                                For an INBOUND, INTERNAL-ONLY, or EXTERNAL-ONLY PCI DMA transfer,
+                                                FL must never be set, and local buffers are never freed. */
+		uint64_t reserved_46:1;
+		uint64_t pt:2;		    /**< PT � Pointer Type.
+						- 0 = PTR<41:0> is byte address for ZBW with cache allocate.
+						- 1 = PTR<41:0> is byte address for ZBW with no cache allocate.
+						- 2 = PTR<41:0> is QW address for SSO PTR
+						- 3 = PTR<5:0> is CNT(0..47) to increment */
+		uint64_t dealloce:1;	    /**< DEALLOCE � Deallocation value enable. When set, use the
+						DEALLOCV to decrement the aura count on the instructions final pointer return. */
+		uint64_t reserved_48:1;	    /**< Must be zero */
+		uint64_t nlst:4;	    /**< NLST � Number Last pointers.
+                                                The number of pointers in the LAST POINTERS area.
+                                                In the INBOUND, OUTBOUND, and EXTERNAL-ONLY cases, the LAST
+                                                POINTERS area contains DPI components, and the number of 64-bit words
+                                                required in the LAST POINTERS area is:
+                                                    - HDR.NLST + ((HDR.NLST + 3)/4) where the division removes the fraction.
+                                                In the INTERNAL-ONLY case, the LAST POINTERS area contains local
+                                                pointers, and the number of 64-bit words required in the LAST POINTERS area is:
+                                                    - HDR.NLST
+                                                Note that the sum of the number of 64-bit words in the LAST POINTERS and
+                                                FIRST POINTERS area must never exceed 31. */
+		uint64_t reserved_36_37:2;
+		uint64_t nfst:4;	    /**< NFST � Number First pointers.
+                                                The number of pointers in the FIRST POINTERS area.
+                                                In the INBOUND, OUTBOUND, and INTERNAL-ONLY cases, the FIRST
+                                                POINTERS area contains local pointers, and the number of 64-bit words required
+                                                in the FIRST POINTERS area is:
+                                                    - HDR.NFST
+                                                In the EXTERNAL-ONLY case, the FIRST POINTERS area contains PCI
+                                                components, and the number of 64-bit words required in the FIRST POINTERS
+                                                area is:
+                                                    - HDR.NFST + ((HDR.NFST + 3)/4) where the division removes the fraction. */
+		uint64_t reserved_28_31:4;
+		uint64_t grp:10;	    /**< GRP � Group. */
+		uint64_t tt:2;		    /**< TT � SSO Tag Type. Sent to SSO upon instruction completion if
+						PT == DPI_HDR_PT_WQP. */
+		uint64_t reserved_12_15:4;
+		uint64_t aura:12;	    /**< AURA � Aura to free to, including FPA node number. */
+	} cn78xx;
+} cvmx_dma_engine_header_word0_t;
+
+
+typedef union {
+	uint64_t u64;
+	struct {
+		uint64_t deallocv:16;	    /**< DEALLOCV � Deallocation value to decrement the aura count
+						on the instruction's final pointer return. */
+		uint64_t reserved_42_47:6;
+		uint64_t ptr:42;	    /**< PTR � Pointer, 
+                                                When PT = 2 and PTR != 0x0, DPI inserts the work-queue entry
+                                                indicated by PTR into a SSO input queue after the DMA operation is
+                                                complete. (Section 5.4 describes the work queue entry requirements in this
+                                                case.) When WQP = 1, PTR<2:0> must be 0x0.
+                                                When PT = 0 and PTR != 0x0, DPI writes the single byte in local
+                                                memory indicated by PTR to 0x0 after the DMA operation is complete.
+                                                NPI_DMA_CONTROL[B0_LEND] selects the endian-ness of PTR in this
+                                                case.
+                                                When PT = 3 and PTR != 0x0, PTR < 48, DPI increments the
+						DPI_DMA_PPn_CNT[CNT], where the value for core n is PTR<5:0>-1.
+                                                When PTR = 0x0, DPI performs no operation after the DMA
+                                                operation is complete. */
 	} s;
+} cvmx_dma_engine_header_word1_t;
+
+typedef struct cvmx_dma_engine_header {
+	cvmx_dma_engine_header_word0_t word0;
+	cvmx_dma_engine_header_word1_t word1;
 } cvmx_dma_engine_header_t;
 
 typedef union {
@@ -239,6 +373,44 @@ typedef union {
                                                 pointer when L is clear, a little-endian byte pointer when L is set. */
 	} internal;
 	struct {
+		uint64_t i:1;		    /**< I � Invert free.
+                                                This bit gives the software the ability to free buffers independently for an
+                                                OUTBOUND DMA transfer. I is not used by DPI when II is set. I
+                                                must not be set, and buffers are never freed, for INBOUND, INTERNAL-ONLY,
+                                                and EXTERNAL-ONLY DMA transfers. */
+		uint64_t f:1;		    /**< F � Full-block writes are allowed.
+                                                When set, the hardware is permitted to write all the bytes in the cache blocks
+                                                covered by ptr, ptr + Size - 1. This can improve memory system performance
+                                                when the write misses in the L2 cache.
+                                                F can only be set for local pointers that can be written to:
+                                                    - The local pointers in the FIRST POINTERS area that are write pointers for
+                                                    INBOUND transfers.
+                                                    - The local pointers in the LAST POINTERS area that are always write
+                                                    pointers (when present for INTERNAL-ONLY transfers).
+                                                F must not be set for local pointers that are not written to:
+                                                    - The local pointers in the FIRST POINTERS area for OUTBOUND and
+                                                    INTERNAL-ONLY transfers. */
+		uint64_t ac:1;		    /**< AC � Allocate L2.
+                                                This is a hint to DPI that the cache blocks should be allocated in the L2
+                                                cache (if they were not already). */
+		uint64_t size:13;	    /**< Size � Size in bytes of the contiguous space specified by ptr. A Size value of 0 is
+                                                illegal. Note that the sum of the sizes in the FIRST POINTERS area must always
+                                                exactly equal the sum of the sizes/lengths in the LAST POINTERS area:
+                                                    - In the OUTBOUND and INBOUND cases, the HDR.NFST size fields in the
+                                                    local pointers in the FIRST POINTERS area must exactly equal the lengths
+                                                    of the HDR.NLST fragments in the PCI components in the LAST POINTERS
+                                                    area.
+                                                    - In the INTERNAL-ONLY case, the HDR.NFST size fields in the local
+                                                    pointers in the FIRST POINTERS area must equal the HDR.NLST size
+                                                    fields in the local pointers in the LAST POINTERS area. */
+		uint64_t l:1;		    /**< L � Little-endian.
+                                                When L is set, the data at ptr is in little-endian format rather than big-endian. */
+		uint64_t reserved_42_46:5;
+		uint64_t addr:42;	    /**< L2/DRAM byte pointer. Points to where the packet data starts.
+                                                Ptr can be any byte alignment. Note that ptr is interpreted as a big-endian byte
+                                                pointer when L is clear, a little-endian byte pointer when L is set. */
+	} internal_cn78xx;
+	struct {
 		uint64_t len0:16;	    /**< Length of PCI / PCIe memory for address 0 */
 		uint64_t len1:16;	    /**< Length of PCI / PCIe memory for address 1 */
 		uint64_t len2:16;	    /**< Length of PCI / PCIe memory for address 2 */
@@ -253,7 +425,7 @@ typedef union {
 typedef struct
 {
 	cvmx_fpa_pool_config_t command_queue_pool;
-}cvmx_dma_config_t;
+} cvmx_dma_config_t;
 
 extern CVMX_SHARED cvmx_dma_config_t dma_config;
 
@@ -366,8 +538,13 @@ int cvmx_dma_engine_transfer(int engine, cvmx_dma_engine_header_t header, uint64
 static inline int cvmx_dma_engine_memcpy(int engine, void *dest, void *source, int length)
 {
 	cvmx_dma_engine_header_t header;
-	header.u64 = 0;
-	header.s.type = CVMX_DMA_ENGINE_TRANSFER_INTERNAL;
+	header.word0.u64 = 0;
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		header.word1.u64 = 0;
+		header.word0.cn78xx.type = CVMX_DMA_ENGINE_TRANSFER_INTERNAL;
+		header.word0.cn78xx.aura = cvmx_fpa_get_dma_pool(); /* FIXME: get aura from resources */
+	} else
+		header.word0.cn38xx.type = CVMX_DMA_ENGINE_TRANSFER_INTERNAL;
 	return cvmx_dma_engine_transfer(engine, header, cvmx_ptr_to_phys(source), cvmx_ptr_to_phys(dest), length);
 }
 
@@ -390,16 +567,20 @@ static inline int cvmx_dma_engine_memcpy(int engine, void *dest, void *source, i
  */ static inline int cvmx_dma_engine_memcpy_zero_byte(int engine, void *dest, void *source, int length, int core)
 {
 	cvmx_dma_engine_header_t header;
-	header.u64 = 0;
-	header.s.type = CVMX_DMA_ENGINE_TRANSFER_INTERNAL;
+	header.word0.u64 = 0;
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		header.word1.u64 = 0;
+		header.word0.cn78xx.type = CVMX_DMA_ENGINE_TRANSFER_INTERNAL;
+	} else
+		header.word0.cn38xx.type = CVMX_DMA_ENGINE_TRANSFER_INTERNAL;
 	/* If dici_mode is set, DPI increments the DPI_DMA_PPn_CNT[CNT], where the
 	   value of core n is PTR<5:0>-1 when WQP=0 and PTR != 0 && PTR < 64. */
 	if (octeon_has_feature(OCTEON_FEATURE_DICI_MODE)) {
 		cvmx_dpi_dma_control_t dma_control;
 		dma_control.u64 = cvmx_read_csr(CVMX_DPI_DMA_CONTROL);
 		if (dma_control.s.dici_mode) {
-			header.s.wqp = 0;	// local memory pointer
-			header.s.addr = core + 1;
+			header.word0.cn38xx.wqp = 0;	// local memory pointer
+			header.word0.cn38xx.addr = core + 1;
 		}
 	}
 	return cvmx_dma_engine_transfer(engine, header, cvmx_ptr_to_phys(source), cvmx_ptr_to_phys(dest), length);

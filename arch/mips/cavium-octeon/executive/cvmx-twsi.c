@@ -42,16 +42,19 @@
  *
  * Interface to the TWSI / I2C bus
  *
- * <hr>$Revision: 78551 $<hr>
+ * <hr>$Revision: 96709 $<hr>
  *
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+
 #include <linux/export.h>
 #include <linux/i2c.h>
 
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-twsi.h>
-#else
+
+#else /* #ifdef CVMX_BUILD_FOR_LINUX_KERNEL */
+
 #include "cvmx.h"
 #include "cvmx-twsi.h"
 #include "cvmx-csr-db.h"
@@ -65,7 +68,11 @@
 #define twsi_printf(...)
 #define cvmx_csr_db_decode(...)
 #endif /*PRINT_TWSI_CONFIG */
-#endif
+
+#define node_bus_to_i2c_bus(node,bus)	((node << 1) | bus)
+#define i2c_bus_to_node(i2c_bus)	((i2c_bus >> 1) & 0x3)
+
+#endif /* #ifdef CVMX_BUILD_FOR_LINUX_KERNEL */
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 struct i2c_adapter *__cvmx_twsix_get_adapter(int twsi_id)
@@ -96,29 +103,36 @@ int cvmx_twsix_unblock(int twsi_id)
 	int i;
 
 	/* Put the bus in low-level mode */
-	old_sw_twsi = cvmx_read_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id));
+	old_sw_twsi = cvmx_read_csr_node(i2c_bus_to_node(twsi_id), 
+					 CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1));
 	sw_twsi.u64 = 0;
 	sw_twsi.s.v = 1;
 	sw_twsi.s.op = 6;
 	sw_twsi.s.eop_ia = TWSI_CTL;
 	sw_twsi.s.d = 0x40;	/* ENAB !CE !AAK */
-	cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi.u64);
+	cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+			    CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi.u64);
 	cvmx_wait_usec(10);
-	tws_int.u64 = cvmx_read_csr(CVMX_MIO_TWSX_INT(twsi_id));
+	tws_int.u64 = cvmx_read_csr_node(i2c_bus_to_node(twsi_id), 
+					 CVMX_MIO_TWSX_INT(twsi_id & 1));
 	cvmx_wait_usec(10);
 	tws_int.s.scl_ovr = 0;
-	cvmx_write_csr(CVMX_MIO_TWSX_INT(twsi_id), tws_int.u64);
+	cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+			    CVMX_MIO_TWSX_INT(twsi_id & 1), tws_int.u64);
 	cvmx_wait_usec(10);
 	for (i = 0; i < 9; i++) {
 		tws_int.s.scl_ovr = 1;
-		cvmx_write_csr(CVMX_MIO_TWSX_INT(twsi_id), tws_int.u64);
+		cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+				    CVMX_MIO_TWSX_INT(twsi_id & 1), tws_int.u64);
 		cvmx_wait_usec(10);
 		tws_int.s.scl_ovr = 0;
-		cvmx_write_csr(CVMX_MIO_TWSX_INT(twsi_id), tws_int.u64);
+		cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+				    CVMX_MIO_TWSX_INT(twsi_id & 1), tws_int.u64);
 		cvmx_wait_usec(10);
 	}
 	/* Restore back to high level mode */
-	cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id), old_sw_twsi);
+	cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+			    CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), old_sw_twsi);
 	cvmx_wait_usec(10);
 	return 0;
 }
@@ -141,7 +155,8 @@ int cvmx_twsix_unblock(int twsi_id)
  *         Number of bytes read on success
  *         -1 on failure
  */
-int cvmx_twsix_read_ia(int twsi_id, uint8_t dev_addr, uint16_t internal_addr, int num_bytes, int ia_width_bytes, uint64_t * data)
+int cvmx_twsix_read_ia(int twsi_id, uint8_t dev_addr, uint16_t internal_addr, 
+		       int num_bytes, int ia_width_bytes, uint64_t * data)
 {
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 	struct i2c_adapter *adapter;
@@ -193,7 +208,8 @@ int cvmx_twsix_read_ia(int twsi_id, uint8_t dev_addr, uint16_t internal_addr, in
 	int retry_limit = 5;
 	int count = TWSI_TIMEOUT;
 
-	if (num_bytes < 1 || num_bytes > 8 || !data || ia_width_bytes < 0 || ia_width_bytes > 2)
+	if (num_bytes < 1 || num_bytes > 8 || !data 
+		|| ia_width_bytes < 0 || ia_width_bytes > 2)
 		return -1;
 retry:
 	twsi_ext.u64 = 0;
@@ -212,13 +228,18 @@ retry:
 	if (ia_width_bytes == 2) {
 		sw_twsi_val.s.eia = 1;
 		twsi_ext.s.ia = internal_addr >> 8;
-		cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id), twsi_ext.u64);
+		cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+				    CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id & 1), 
+				    twsi_ext.u64);
 	}
 
-	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
-	cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
+	cvmx_csr_db_decode(cvmx_get_proc_id(), 
+			   CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
+	cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+			    CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
 	while ((((cvmx_mio_twsx_sw_twsi_t)
-		(sw_twsi_val.u64 = cvmx_read_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id)))).s.v)
+		(sw_twsi_val.u64 = cvmx_read_csr_node(i2c_bus_to_node(twsi_id), 
+				     CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1)))).s.v)
 	       && --count > 0)
 		cvmx_wait_usec(10);
 	if (count <= 0) {
@@ -230,7 +251,8 @@ retry:
 		return -1;
 	}
 	twsi_printf("Results:\n");
-	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
+	cvmx_csr_db_decode(cvmx_get_proc_id(), 
+			   CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
 	if (!sw_twsi_val.s.r) {
 		/* Check the reason for the failure.  We may need to retry to handle multi-master
 		 ** configurations.
@@ -242,7 +264,11 @@ retry:
 		    || sw_twsi_val.s.d == 0xB0
 		    || sw_twsi_val.s.d == 0x78
 		    || sw_twsi_val.s.d == 0x80
-		    || sw_twsi_val.s.d == 0x88 || sw_twsi_val.s.d == 0xA0 || sw_twsi_val.s.d == 0xA8 || sw_twsi_val.s.d == 0xB8 || sw_twsi_val.s.d == 0xC8) {
+		    || sw_twsi_val.s.d == 0x88 
+		    || sw_twsi_val.s.d == 0xA0 
+		    || sw_twsi_val.s.d == 0xA8 
+		    || sw_twsi_val.s.d == 0xB8 
+		    || sw_twsi_val.s.d == 0xC8) {
 			if (retry_limit-- > 0) {
 				cvmx_wait_usec(100);
 				goto retry;
@@ -255,7 +281,8 @@ retry:
 
 	if (num_bytes > 4) {
 		*data = (sw_twsi_val.s.d & 0xFFFFFFFF);
-		twsi_ext.u64 = cvmx_read_csr(CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id));
+		twsi_ext.u64 = cvmx_read_csr_node(i2c_bus_to_node(twsi_id), 
+						  CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id & 1));
 		*data |= ((unsigned long long)(twsi_ext.s.d & (0xFFFFFFFF >> (32 - (num_bytes-4) * 8))) << 32);
 	} else {
 		*data = (sw_twsi_val.s.d & (0xFFFFFFFF >> (32 - num_bytes * 8)));
@@ -328,10 +355,13 @@ retry:
 	sw_twsi_val.s.sovr = 1;
 	sw_twsi_val.s.size = num_bytes - 1;
 
-	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
-	cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
+	cvmx_csr_db_decode(cvmx_get_proc_id(), 
+			   CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
+	cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+			    CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
 	while (((cvmx_mio_twsx_sw_twsi_t)
-		(sw_twsi_val.u64 = cvmx_read_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id)))).s.v
+		(sw_twsi_val.u64 = cvmx_read_csr_node(i2c_bus_to_node(twsi_id), 
+						      CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1)))).s.v
 	       && --count > 0)
 		cvmx_wait_usec(10);
 	if (count <= 0) {
@@ -343,7 +373,8 @@ retry:
 		return -1;
 	}
 	twsi_printf("Results:\n");
-	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
+	cvmx_csr_db_decode(cvmx_get_proc_id(), 
+			   CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
 	if (!sw_twsi_val.s.r)
 		if (!sw_twsi_val.s.r) {
 			/* Check the reason for the failure.  We may need to retry to handle multi-master
@@ -356,7 +387,11 @@ retry:
 			    || sw_twsi_val.s.d == 0xB0
 			    || sw_twsi_val.s.d == 0x78
 			    || sw_twsi_val.s.d == 0x80
-			    || sw_twsi_val.s.d == 0x88 || sw_twsi_val.s.d == 0xA0 || sw_twsi_val.s.d == 0xA8 || sw_twsi_val.s.d == 0xB8 || sw_twsi_val.s.d == 0xC8) {
+			    || sw_twsi_val.s.d == 0x88 
+			    || sw_twsi_val.s.d == 0xA0 
+			    || sw_twsi_val.s.d == 0xA8 
+			    || sw_twsi_val.s.d == 0xB8 
+			    || sw_twsi_val.s.d == 0xC8) {
 				if (retry_limit-- > 0) {
 					cvmx_wait_usec(100);
 					goto retry;
@@ -368,7 +403,8 @@ retry:
 
 	if (num_bytes > 4) {
 		*data = (sw_twsi_val.s.d & 0xFFFFFFFF);
-		twsi_ext.u64 = cvmx_read_csr(CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id));
+		twsi_ext.u64 = cvmx_read_csr_node(i2c_bus_to_node(twsi_id), 
+						  CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id & 1));
 		*data |= ((unsigned long long)(twsi_ext.s.d & (0xFFFFFFFF >> (32 - (num_bytes-4) * 8))) << 32);
 	} else {
 		*data = (sw_twsi_val.s.d & (0xFFFFFFFF >> (32 - num_bytes * 8)));
@@ -446,11 +482,16 @@ retry:
 		cvmx_mio_twsx_sw_twsi_ext_t twsi_ext;
 		twsi_ext.u64 = 0;
 		twsi_ext.s.d = data >> 32;
-		cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id), twsi_ext.u64);
+		cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+				    CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id & 1), twsi_ext.u64);
 	}
-	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
-	cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
-	while (((cvmx_mio_twsx_sw_twsi_t) (sw_twsi_val.u64 = cvmx_read_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id)))).s.v
+	cvmx_csr_db_decode(cvmx_get_proc_id(), 
+			   CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
+	cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+			    CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
+	while (((cvmx_mio_twsx_sw_twsi_t) 
+		(sw_twsi_val.u64 = cvmx_read_csr_node(i2c_bus_to_node(twsi_id), 
+						      CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1)))).s.v
 	       && --count > 0)
 		cvmx_wait_usec(10);
 	if (count <= 0) {
@@ -458,7 +499,8 @@ retry:
 		goto retry;
 	}
 	twsi_printf("Results:\n");
-	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
+	cvmx_csr_db_decode(cvmx_get_proc_id(), 
+			   CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
 	if (!sw_twsi_val.s.r)
 		return -1;
 
@@ -483,7 +525,8 @@ retry:
  * @return Number of bytes read on success,
  *         -1 on error
  */
-int cvmx_twsix_write_ia(int twsi_id, uint8_t dev_addr, uint16_t internal_addr, int num_bytes, int ia_width_bytes, uint64_t data)
+int cvmx_twsix_write_ia(int twsi_id, uint8_t dev_addr, uint16_t internal_addr, 
+			int num_bytes, int ia_width_bytes, uint64_t data)
 {
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 	struct i2c_adapter *adapter;
@@ -567,14 +610,21 @@ retry:
 	if (num_bytes > 4)
 		twsi_ext.s.d = data >> 32;
 
-	twsi_printf("%s: twsi_id=%x, dev_addr=%x, internal_addr=%x\n\tnum_bytes=%d, ia_width_bytes=%d, data=%lx\n",
-		    __func__, twsi_id, dev_addr, internal_addr, num_bytes, ia_width_bytes, data);
-	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id), twsi_ext.u64);
-	cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id), twsi_ext.u64);
-	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
-	cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
+	twsi_printf("%s: twsi_id=%x, dev_addr=%x, internal_addr=%x\n"
+			"\tnum_bytes=%d, ia_width_bytes=%d, data=%lx\n",
+			__func__, twsi_id, dev_addr, internal_addr, 
+			num_bytes, ia_width_bytes, data);
+	cvmx_csr_db_decode(cvmx_get_proc_id(), 
+			   CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id & 1), twsi_ext.u64);
+	cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+			    CVMX_MIO_TWSX_SW_TWSI_EXT(twsi_id & 1), twsi_ext.u64);
+	cvmx_csr_db_decode(cvmx_get_proc_id(), 
+			   CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
+	cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+			    CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
 	while (((cvmx_mio_twsx_sw_twsi_t)
-	        (sw_twsi_val.u64 = cvmx_read_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id)))).s.v
+	        (sw_twsi_val.u64 = cvmx_read_csr_node(i2c_bus_to_node(twsi_id), 
+						      CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1)))).s.v
 	       && --count > 0)
 		cvmx_wait_usec(10);
 	if (count <= 0) {
@@ -587,8 +637,9 @@ retry:
 	}
 
 	twsi_printf("Results:\n");
-	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
-	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
+	cvmx_csr_db_decode(cvmx_get_proc_id(), 
+			   CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
+/*	cvmx_csr_db_decode(cvmx_get_proc_id(), CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64); */
 	if (!sw_twsi_val.s.r) {
 		/* Check the reason for the failure.  We may need to retry to handle multi-master
 		 ** configurations.
@@ -600,7 +651,11 @@ retry:
 		    || sw_twsi_val.s.d == 0xB0
 		    || sw_twsi_val.s.d == 0x78
 		    || sw_twsi_val.s.d == 0x80
-		    || sw_twsi_val.s.d == 0x88 || sw_twsi_val.s.d == 0xA0 || sw_twsi_val.s.d == 0xA8 || sw_twsi_val.s.d == 0xB8 || sw_twsi_val.s.d == 0xC8) {
+		    || sw_twsi_val.s.d == 0x88 
+		    || sw_twsi_val.s.d == 0xA0 
+		    || sw_twsi_val.s.d == 0xA8 
+		    || sw_twsi_val.s.d == 0xB8 
+		    || sw_twsi_val.s.d == 0xC8) {
 			if (retry_limit-- > 0) {
 				cvmx_wait_usec(100);
 				goto retry;
@@ -660,10 +715,12 @@ static void cvmx_twsix_write_llc_reg(int twsi_id, uint8_t eop_reg, uint8_t data)
 	sw_twsi_val.s.op = 6;
 	sw_twsi_val.s.eop_ia = eop_reg;
 	sw_twsi_val.s.d = data;
-	cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
+	cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+			    CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
 
 	do {
-		tmp.u64 = cvmx_read_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id));
+		tmp.u64 = cvmx_read_csr_node(i2c_bus_to_node(twsi_id), 
+					     CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1));
 	} while (tmp.s.v != 0);
 }
 
@@ -676,10 +733,12 @@ static uint8_t cvmx_twsix_read_llc_reg(int twsi_id, uint8_t eop_reg)
 	sw_twsi_val.s.op = 6;
 	sw_twsi_val.s.eop_ia = eop_reg;
 	sw_twsi_val.s.r = 1;
-	cvmx_write_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id), sw_twsi_val.u64);
+	cvmx_write_csr_node(i2c_bus_to_node(twsi_id), 
+			    CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1), sw_twsi_val.u64);
 
 	do {
-		tmp.u64 = cvmx_read_csr(CVMX_MIO_TWSX_SW_TWSI(twsi_id));
+		tmp.u64 = cvmx_read_csr_node(i2c_bus_to_node(twsi_id), 
+					     CVMX_MIO_TWSX_SW_TWSI(twsi_id & 1));
 	} while (tmp.s.v != 0);
 
 	return tmp.s.d & 0xff;

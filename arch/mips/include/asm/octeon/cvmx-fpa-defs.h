@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -197,11 +197,11 @@ static inline uint64_t CVMX_FPA_BIST_STATUS_FUNC(void)
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -224,11 +224,11 @@ static inline uint64_t CVMX_FPA_BIST_STATUS_FUNC(void)
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -755,7 +755,7 @@ static inline uint64_t CVMX_FPA_WQE_THRESHOLD_FUNC(void)
 /**
  * cvmx_fpa_addr_range_error
  *
- * When any FPA_POOL(0..63)_INT[RANGE] error occurs, this register is latched with additional
+ * When any FPA_POOL()_INT[RANGE] error occurs, this register is latched with additional
  * error information.
  */
 union cvmx_fpa_addr_range_error {
@@ -782,6 +782,7 @@ union cvmx_fpa_addr_range_error {
 	struct cvmx_fpa_addr_range_error_cn61xx cn68xx;
 	struct cvmx_fpa_addr_range_error_cn61xx cn68xxp1;
 	struct cvmx_fpa_addr_range_error_cn61xx cn70xx;
+	struct cvmx_fpa_addr_range_error_cn61xx cn70xxp1;
 	struct cvmx_fpa_addr_range_error_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_54_63               : 10;
@@ -802,7 +803,7 @@ typedef union cvmx_fpa_addr_range_error cvmx_fpa_addr_range_error_t;
 /**
  * cvmx_fpa_aura#_cfg
  *
- * This register configures aura backpressure, etc; see Aura Limits.
+ * This register configures aura backpressure, etc.
  *
  */
 union cvmx_fpa_aurax_cfg {
@@ -811,14 +812,20 @@ union cvmx_fpa_aurax_cfg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
 	uint64_t ptr_dis                      : 1;  /**< Disable aura tracking pointer allocates/returns.
-                                                         0 = When FPA allocates a pointer from this aura, increment the count. When a pointer is
-                                                         returned to FPA for this aura, decrement the count.
-                                                         1 = Pointer allocations/returns will not change the count. */
+                                                         0 = When FPA allocates a pointer from this aura (including coprocessor or core requests),
+                                                         increment the count. When a pointer is returned to FPA for this aura (including
+                                                         coprocessor or core requests), decrement the count. Note that PKI may prefetch buffers it
+                                                         later returns, this may result in the count intermittently being higher than the number of
+                                                         buffers actually in use by packets visible to software.
+                                                         1 = Pointer allocations/returns will not automatically change the count.
+                                                         Note specific requests to change the count, including FPA_AURA()_CNT_ADD,
+                                                         PKO_SEND_AURA_S, or PKI_AURA()_CFG[PKT_ADD] will be applied regardless of the
+                                                         setting of this bit. */
 	uint64_t avg_con                      : 9;  /**< This value controls how much of each present average resource level is used to calculate
                                                          the new resource level. The value is a number from 0 to 256, which represents AVG_CON/256
                                                          of the average resource level that will be used in the calculation:
-                                                         next_LEVEL = (AVG_CON/256) * prev_LEVEL
-                                                         + (1-(AVG_CON/256)) * count
+                                                         _  next_LEVEL = (AVG_CON/256) * prev_LEVEL
+                                                         _  + (1-(AVG_CON/256)) * count
                                                          Note setting this value to zero will disable averaging, and always use the most immediate
                                                          levels. FPA_GEN_CFG[AVG_EN] must be set and FPA_GEN_CFG[LVL_DLY] must be nonzero to
                                                          globally enable averaging. FPA_RED_DELAY[AVG_DLY] controls the periodicity of the level
@@ -841,7 +848,7 @@ union cvmx_fpa_aurax_cnt {
 	struct cvmx_fpa_aurax_cnt_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
-	uint64_t cnt                          : 40; /**< The current aura count. See Aura Counts. */
+	uint64_t cnt                          : 40; /**< The current aura count. */
 #else
 	uint64_t cnt                          : 40;
 	uint64_t reserved_40_63               : 24;
@@ -859,9 +866,13 @@ union cvmx_fpa_aurax_cnt_add {
 	struct cvmx_fpa_aurax_cnt_add_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
-	uint64_t cnt                          : 40; /**< The value to be added to FPA_AURA(0..1023)_CNT. The value may alternatively be a 2's
+	uint64_t cnt                          : 40; /**< The value to be added to FPA_AURA()_CNT. The value may alternatively be a 2's
                                                          complement of a value to be subtracted. Subtraction or addition that results in overflow
-                                                         will zero the count, not roll-around. See Aura Quality of Service. */
+                                                         will zero the count, not roll-around, and set either FPA_ERR_INT[CNT_ADD] or
+                                                         FPA_ERR_INT[CNT_SUB].
+                                                         This register is intended for use when FPA_AURA()_CFG[PTR_DIS] is set.  If
+                                                         FPA_AURA()_CFG[PTR_DIS] is clear, this register would typically only be used if buffers
+                                                         are being re-provisioned. */
 #else
 	uint64_t cnt                          : 40;
 	uint64_t reserved_40_63               : 24;
@@ -878,16 +889,34 @@ union cvmx_fpa_aurax_cnt_levels {
 	uint64_t u64;
 	struct cvmx_fpa_aurax_cnt_levels_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_40_63               : 24;
-	uint64_t bp_ena                       : 1;  /**< Enable backpressure based on [BP] level. If set FPA_GEN_CFG[LVL_DLY] must be nonzero. */
-	uint64_t red_ena                      : 1;  /**< Enable RED based on [DROP] and [PASS] levels. If set FPA_GEN_CFG[LVL_DLY] must be nonzero. */
-	uint64_t shift                        : 6;  /**< Right shift to apply to FPA_AURA(0..1023)_CNT to result in a 8-bit relative depth to be
-                                                         used for [DROP/PASS/LEVEL]. See Aura Counts. */
-	uint64_t bp                           : 8;  /**< Backpressure will be applied if the immediate shifted level is equal to or greater than this value. */
-	uint64_t drop                         : 8;  /**< Packet will be dropped if the average shifted level is equal to or greater than this value. */
-	uint64_t pass                         : 8;  /**< Packet will be passed if the average shifted level is less than this value. */
-	uint64_t level                        : 8;  /**< Current shifted level, averaged with FPA_AURA(0..1023)_CNT.
-                                                         CNT levels track usage; the lower the level the more free resources. */
+	uint64_t reserved_41_63               : 23;
+	uint64_t drop_dis                     : 1;  /**< Reserved. */
+	uint64_t bp_ena                       : 1;  /**< Enable backpressure based on [BP] level. If set FPA_GEN_CFG[LVL_DLY] must be nonzero.
+                                                         PKI_AURA()_CFG[ENA_BP] must also be set for backpressure to propagate through PKI. */
+	uint64_t red_ena                      : 1;  /**< Enable aura RED based on [DROP] and [PASS] levels. If set FPA_GEN_CFG[LVL_DLY] must be
+                                                         nonzero.
+                                                         If set, aura RED is performed on core requests with
+                                                         FPA_ALLOC_LD_S/FPA_ALLOC_IOBDMA_S[RED] set, and also may be performed on the
+                                                         first PKI allocation request for a packet (depends on PKI style and aura
+                                                         configuration). */
+	uint64_t shift                        : 6;  /**< Right shift to FPA_AURA()_CNT[CNT] to create a narrower depth for aura QOS and
+                                                         backpressure calculations. PKI saturates the shifted FPA_AURA()_CNT[CNT] to
+                                                         8-bits, and compares this 8-bit shifted and saturated depth directly to
+                                                         [DROP/BP]. PKI also creates [LEVEL], which is a moving average of the 8-bit
+                                                         shifted and saturated depth of the aura, for comparison to [DROP/PASS] in RED
+                                                         calculations. */
+	uint64_t bp                           : 8;  /**< Backpressure can assert if the current 8-bit shifted and saturated FPA_AURA()_CNT[CNT] is
+                                                         equal to or greater than this value. */
+	uint64_t drop                         : 8;  /**< If [RED_ENA]==1 and RED processing is requested, the packet will be dropped if
+                                                         [LEVEL] is equal to or greater than this value.
+                                                         If DROP processing is requested, the packet will be dropped if the current 8-bit
+                                                         shifted and saturated FPA_AURA()_CNT[CNT] is equal to or greater than this
+                                                         value. */
+	uint64_t pass                         : 8;  /**< Aura RED processing will not drop an allocation request if [LEVEL] is less than this value. */
+	uint64_t level                        : 8;  /**< Current moving average of the 8-bit shifted and saturated FPA_AURA()_CNT[CNT].
+                                                         The lower [LEVEL] is, the more free resources. The highest [LEVEL]'s indicate buffer
+                                                         exhaustion.
+                                                         See [SHIFT]. */
 #else
 	uint64_t level                        : 8;
 	uint64_t pass                         : 8;
@@ -896,7 +925,8 @@ union cvmx_fpa_aurax_cnt_levels {
 	uint64_t shift                        : 6;
 	uint64_t red_ena                      : 1;
 	uint64_t bp_ena                       : 1;
-	uint64_t reserved_40_63               : 24;
+	uint64_t drop_dis                     : 1;
+	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
 	struct cvmx_fpa_aurax_cnt_levels_s    cn78xx;
@@ -911,7 +941,7 @@ union cvmx_fpa_aurax_cnt_limit {
 	struct cvmx_fpa_aurax_cnt_limit_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
-	uint64_t limit                        : 40; /**< When FPA_AURA(0..1023)_CNT is equal to or greater than this value, any allocations using
+	uint64_t limit                        : 40; /**< When FPA_AURA()_CNT is equal to or greater than this value, any allocations using
                                                          this aura will fail. This allows a hard resource division between multiple auras sharing a
                                                          common pool. */
 #else
@@ -931,10 +961,9 @@ union cvmx_fpa_aurax_cnt_threshold {
 	struct cvmx_fpa_aurax_cnt_threshold_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_40_63               : 24;
-	uint64_t thresh                       : 40; /**< When FPA_AURA(0..1023)_CNT, after being modified, is equal to or crosses this value (i.e.
+	uint64_t thresh                       : 40; /**< When FPA_AURA()_CNT, after being modified, is equal to or crosses this value (i.e.
                                                          value was greater than, then becomes less than, or the value was less than and becomes
-                                                         greater than) the corresponding bit in FPA_AURA(0..1023)_INT is set. See Aura Quality of
-                                                         Service. */
+                                                         greater than) the corresponding bit in FPA_AURA()_INT is set. */
 #else
 	uint64_t thresh                       : 40;
 	uint64_t reserved_40_63               : 24;
@@ -952,10 +981,10 @@ union cvmx_fpa_aurax_int {
 	struct cvmx_fpa_aurax_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t thresh                       : 1;  /**< Watermark interrupt pending. Set and throws FPA_INTSN_E::FPA_AURA(0..1024)_THRESH when
-                                                         FPA_AURA(0..1023)_INT, after being modified, is equal to or crosses
-                                                         FPA_AURA(0..1023)_CNT_THRESHOLD (i.e. value was greater than, then becomes less then, or
-                                                         value was less than, and becomes greater than). See Aura Count Threshold Interrupts */
+	uint64_t thresh                       : 1;  /**< Watermark interrupt pending. Set and throws FPA_INTSN_E::FPA_AURA()_THRESH when
+                                                         FPA_AURA()_INT, after being modified, is equal to or crosses
+                                                         FPA_AURA()_CNT_THRESHOLD (i.e. value was greater than, then becomes less then, or
+                                                         value was less than, and becomes greater than). */
 #else
 	uint64_t thresh                       : 1;
 	uint64_t reserved_1_63                : 63;
@@ -993,17 +1022,40 @@ union cvmx_fpa_aurax_pool_levels {
 	uint64_t u64;
 	struct cvmx_fpa_aurax_pool_levels_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_40_63               : 24;
-	uint64_t bp_ena                       : 1;  /**< Enable backpressure based on [BP] level. If set FPA_GEN_CFG[LVL_DLY] must be nonzero. */
-	uint64_t red_ena                      : 1;  /**< Enable RED based on [DROP] and [PASS] levels. If set FPA_GEN_CFG[LVL_DLY] must be nonzero. */
-	uint64_t shift                        : 6;  /**< Right shift to apply to FPA_POOL(0..63)_AVAILABLE to result in a 8-bit relative depth to
-                                                         be used for [DROP/PASS/LEVEL]. See Aura Counts. */
-	uint64_t bp                           : 8;  /**< Backpressure will be indicated if the average shifted level is equal to or less than this
-                                                         value. (It may be desirable to configure fast or no averaging when using backpressure.) */
-	uint64_t drop                         : 8;  /**< Packet will be dropped if the average shifted level is equal to or less than this value. */
-	uint64_t pass                         : 8;  /**< Packet will be passed if the average shifted level is larger than this value. */
-	uint64_t level                        : 8;  /**< Current shifted level, averaged with FPA_POOL(0..63)_AVAILABLE[AVG_CON].
-                                                         FPA levels track availability; the higher the level the more free resources. */
+	uint64_t reserved_41_63               : 23;
+	uint64_t drop_dis                     : 1;  /**< Reserved. */
+	uint64_t bp_ena                       : 1;  /**< Enable aura-unique pool backpressure based on [BP] level. If set FPA_GEN_CFG[LVL_DLY] must
+                                                         be nonzero. */
+	uint64_t red_ena                      : 1;  /**< Enable aura-unique pool RED based on [DROP] and [PASS] levels. If set FPA_GEN_CFG[LVL_DLY]
+                                                         must be nonzero.
+                                                         If set, aura-unique pool RED is performed on core requests with
+                                                         FPA_ALLOC_LD_S/FPA_ALLOC_IOBDMA_S[RED] set, and also may be performed on the first PKI
+                                                         allocation request for a packet (depending on PKI style and aura configuration). */
+	uint64_t shift                        : 6;  /**< Right shift to FPA_POOL()_AVAILABLE[COUNT] used to create a narrower depth for
+                                                         aura-unique pool QOS and backpressure calculations. PKI saturates the shifted
+                                                         FPA_POOL()_AVAILABLE[COUNT] to 8-bits for the aura, and compares this 8-bit
+                                                         shifted and saturated depth directly to [DROP/BP]. PKI also creates [LEVEL],
+                                                         which is a moving average of the 8-bit shifted and saturated depth for the aura,
+                                                         for comparison to [DROP/PASS] in aura-unique pool RED calculations.
+                                                         Though [SHIFT] may differ amongst the auras sharing a given pool, they may most
+                                                         commonly be the same (i.e. the 8-bit shifted and saturated depth and [LEVEL] may
+                                                         typically be the same for all auras sharing a pool), with the [DROP/PASS/BP]
+                                                         configuration providing aura-uniqueness in aura-unique pool RED/DROP/BP
+                                                         processing. */
+	uint64_t bp                           : 8;  /**< Backpressure can assert if the current 8-bit shifted and saturated
+                                                         FPA_POOL()_AVAILABLE[COUNT] for the aura is equal to or less than this value. */
+	uint64_t drop                         : 8;  /**< If [RED_ENA]==1 and RED processing is requested, the packet will be dropped if
+                                                         [LEVEL] is equal to or less than this value.
+                                                         If DROP processing is requested, the packet will be dropped if the current 8-bit
+                                                         shifted and saturated FPA_POOL()_AVAILABLE[COUNT] for the aura is equal to or
+                                                         less than this value. */
+	uint64_t pass                         : 8;  /**< Aura-unique pool RED processing will not drop an allocation request if [LEVEL] is larger
+                                                         than this value. */
+	uint64_t level                        : 8;  /**< Current moving average of the 8-bit shifted and saturated FPA_POOL()_AVAILABLE[COUNT] for
+                                                         the aura.
+                                                         The higher [LEVEL] is, the more free resources. The lowest [LEVEL]'s indicate buffer
+                                                         exhaustion.
+                                                         See [SHIFT]. */
 #else
 	uint64_t level                        : 8;
 	uint64_t pass                         : 8;
@@ -1012,7 +1064,8 @@ union cvmx_fpa_aurax_pool_levels {
 	uint64_t shift                        : 6;
 	uint64_t red_ena                      : 1;
 	uint64_t bp_ena                       : 1;
-	uint64_t reserved_40_63               : 24;
+	uint64_t drop_dis                     : 1;
+	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
 	struct cvmx_fpa_aurax_pool_levels_s   cn78xx;
@@ -1068,10 +1121,11 @@ union cvmx_fpa_bist_status {
 	struct cvmx_fpa_bist_status_cn30xx    cn68xx;
 	struct cvmx_fpa_bist_status_cn30xx    cn68xxp1;
 	struct cvmx_fpa_bist_status_cn30xx    cn70xx;
+	struct cvmx_fpa_bist_status_cn30xx    cn70xxp1;
 	struct cvmx_fpa_bist_status_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_38_63               : 26;
-	uint64_t status                       : 38; /**< Memory BIST status */
+	uint64_t status                       : 38; /**< Memory BIST status. */
 #else
 	uint64_t status                       : 38;
 	uint64_t reserved_38_63               : 26;
@@ -1191,6 +1245,7 @@ union cvmx_fpa_ctl_status {
 	struct cvmx_fpa_ctl_status_s          cn68xx;
 	struct cvmx_fpa_ctl_status_s          cn68xxp1;
 	struct cvmx_fpa_ctl_status_s          cn70xx;
+	struct cvmx_fpa_ctl_status_s          cn70xxp1;
 	struct cvmx_fpa_ctl_status_s          cnf71xx;
 };
 typedef union cvmx_fpa_ctl_status cvmx_fpa_ctl_status_t;
@@ -1237,11 +1292,11 @@ union cvmx_fpa_ecc_int {
 	struct cvmx_fpa_ecc_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_52_63               : 12;
-	uint64_t ram_dbe                      : 20; /**< Set when a single-bit error is detected in the corresponding ram. Throws
-                                                         FPA_INTSN_E::FPA_ECC_RAM_DBE. */
+	uint64_t ram_dbe                      : 20; /**< Set when a double-bit error is detected in the corresponding RAM. Throws
+                                                         FPA_INTSN_E::FPA_ERR_RAM_DBE. */
 	uint64_t reserved_20_31               : 12;
-	uint64_t ram_sbe                      : 20; /**< Set when a double-bit error is detected in the corresponding ram. Throws
-                                                         FPA_INTSN_E::FPA_ECC_RAM_SBE. */
+	uint64_t ram_sbe                      : 20; /**< Set when a single-bit error is detected in the corresponding RAM. Throws
+                                                         FPA_INTSN_E::FPA_ERR_RAM_SBE. */
 #else
 	uint64_t ram_sbe                      : 20;
 	uint64_t reserved_20_31               : 12;
@@ -1264,14 +1319,14 @@ union cvmx_fpa_err_int {
 	struct cvmx_fpa_err_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t hw_sub                       : 1;  /**< Set when hardware does a subtract to the count that causes the counter to wrap. Throws
+	uint64_t hw_sub                       : 1;  /**< Set when hardware does a subtract to the count that caused the counter to wrap. Throws
                                                          FPA_INTSN_E::FPA_ERR_HW_SUB. */
-	uint64_t hw_add                       : 1;  /**< Set when hardware does an add to the count that causes the counter to wrap. Throws
+	uint64_t hw_add                       : 1;  /**< Set when hardware does an add to the count that caused the counter to wrap. Throws
                                                          FPA_INTSN_E::FPA_ERR_HW_ADD. */
-	uint64_t cnt_sub                      : 1;  /**< Set when a write to FPA_AURA(0..1023)_CNT_ADD does a subtract to the count that causes the
-                                                         counter to wrap. Throws FPA_INTSN_E::FPA_ERR_CNT_SUB. */
-	uint64_t cnt_add                      : 1;  /**< Set when a write to FPA_AURA(0..1023)_CNT_ADD does an add to the count that causes the
-                                                         counter to wrap. Throws FPA_INTSN_E::FPA_ERR_CNT_ADD. */
+	uint64_t cnt_sub                      : 1;  /**< Set when a write to FPA_AURA()_CNT_ADD does a subtract to the count that would have
+                                                         caused the counter to wrap, so the count was zeroed. Throws FPA_INTSN_E::FPA_ERR_CNT_SUB. */
+	uint64_t cnt_add                      : 1;  /**< Set when a write to FPA_AURA()_CNT_ADD does an add to the count that would have
+                                                         caused the counter to wrap, so the count was zeroed. Throws FPA_INTSN_E::FPA_ERR_CNT_ADD. */
 #else
 	uint64_t cnt_add                      : 1;
 	uint64_t cnt_sub                      : 1;
@@ -1329,6 +1384,7 @@ union cvmx_fpa_fpfx_marks {
 	struct cvmx_fpa_fpfx_marks_s          cn68xx;
 	struct cvmx_fpa_fpfx_marks_s          cn68xxp1;
 	struct cvmx_fpa_fpfx_marks_s          cn70xx;
+	struct cvmx_fpa_fpfx_marks_s          cn70xxp1;
 	struct cvmx_fpa_fpfx_marks_s          cnf71xx;
 };
 typedef union cvmx_fpa_fpfx_marks cvmx_fpa_fpfx_marks_t;
@@ -1375,6 +1431,7 @@ union cvmx_fpa_fpfx_size {
 	struct cvmx_fpa_fpfx_size_s           cn68xx;
 	struct cvmx_fpa_fpfx_size_s           cn68xxp1;
 	struct cvmx_fpa_fpfx_size_s           cn70xx;
+	struct cvmx_fpa_fpfx_size_s           cn70xxp1;
 	struct cvmx_fpa_fpfx_size_s           cnf71xx;
 };
 typedef union cvmx_fpa_fpfx_size cvmx_fpa_fpfx_size_t;
@@ -1424,6 +1481,7 @@ union cvmx_fpa_fpf0_marks {
 	struct cvmx_fpa_fpf0_marks_s          cn68xx;
 	struct cvmx_fpa_fpf0_marks_s          cn68xxp1;
 	struct cvmx_fpa_fpf0_marks_s          cn70xx;
+	struct cvmx_fpa_fpf0_marks_s          cn70xxp1;
 	struct cvmx_fpa_fpf0_marks_s          cnf71xx;
 };
 typedef union cvmx_fpa_fpf0_marks cvmx_fpa_fpf0_marks_t;
@@ -1469,6 +1527,7 @@ union cvmx_fpa_fpf0_size {
 	struct cvmx_fpa_fpf0_size_s           cn68xx;
 	struct cvmx_fpa_fpf0_size_s           cn68xxp1;
 	struct cvmx_fpa_fpf0_size_s           cn70xx;
+	struct cvmx_fpa_fpf0_size_s           cn70xxp1;
 	struct cvmx_fpa_fpf0_size_s           cnf71xx;
 };
 typedef union cvmx_fpa_fpf0_size cvmx_fpa_fpf0_size_t;
@@ -1561,23 +1620,23 @@ union cvmx_fpa_gen_cfg {
 	uint64_t halfrate                     : 1;  /**< Half rate. Limit peak alloc/free rate to half of peak to insure all alloc/frees are
                                                          visible to OCLA. */
 	uint64_t ocla_bp                      : 1;  /**< OCLA backpressure enable. When OCLA FIFOs are near full, allow OCLA to backpressure
-                                                         alloc/frees. See also HALFRATE. */
+                                                         alloc/frees. See also [HALFRATE]. */
 	uint64_t lvl_dly                      : 6;  /**< Levelizer delay. Number of cycles between level computations for backpressure and RED.
                                                          Increasing values decrease power and leave additional bandwidth for allocate/deallocates.
                                                          Zero disables, one indicates a level computation every other cycle, etc. Once set to
                                                          nonzero must not be later set to zero without resetting FPA. */
 	uint64_t pools                        : 2;  /**< Number of pools. Each halving of the number of pools doubles the buffering available to
                                                          the remaining pools, leading to some improvement in memory bandwidth. Value must not be
-                                                         changed if FPA_POOL(0..63)_CFG[ENA] is set for any pool.
+                                                         changed if FPA_POOL()_CFG[ENA] is set for any pool.
                                                          0x0 = 64 pools, 320 FPF entries per pool.
                                                          0x1 = 32 pools, 640 FPF entries per pool.
                                                          0x2 = 16 pools, 1280 FPF entries per pool.
-                                                         0x3 = Reserved */
+                                                         0x3 = Reserved. */
 	uint64_t avg_en                       : 1;  /**< QoS averaging enable. When set, compute average buffer levels, and [LVL_DLY] must be non-
                                                          zero. When clear, do not compute averages and save a few mW of power. */
-	uint64_t reserved_0_0                 : 1;
+	uint64_t clk_override                 : 1;  /**< Conditional clock override. */
 #else
-	uint64_t reserved_0_0                 : 1;
+	uint64_t clk_override                 : 1;
 	uint64_t avg_en                       : 1;
 	uint64_t pools                        : 2;
 	uint64_t lvl_dly                      : 6;
@@ -2499,6 +2558,7 @@ union cvmx_fpa_int_enb {
 	} cn68xx;
 	struct cvmx_fpa_int_enb_cn68xx        cn68xxp1;
 	struct cvmx_fpa_int_enb_cn61xx        cn70xx;
+	struct cvmx_fpa_int_enb_cn61xx        cn70xxp1;
 	struct cvmx_fpa_int_enb_cn61xx        cnf71xx;
 };
 typedef union cvmx_fpa_int_enb cvmx_fpa_int_enb_t;
@@ -3076,6 +3136,7 @@ union cvmx_fpa_int_sum {
 	struct cvmx_fpa_int_sum_s             cn68xx;
 	struct cvmx_fpa_int_sum_s             cn68xxp1;
 	struct cvmx_fpa_int_sum_cn61xx        cn70xx;
+	struct cvmx_fpa_int_sum_cn61xx        cn70xxp1;
 	struct cvmx_fpa_int_sum_cn61xx        cnf71xx;
 };
 typedef union cvmx_fpa_int_sum cvmx_fpa_int_sum_t;
@@ -3106,6 +3167,7 @@ union cvmx_fpa_packet_threshold {
 	struct cvmx_fpa_packet_threshold_s    cn68xx;
 	struct cvmx_fpa_packet_threshold_s    cn68xxp1;
 	struct cvmx_fpa_packet_threshold_s    cn70xx;
+	struct cvmx_fpa_packet_threshold_s    cn70xxp1;
 	struct cvmx_fpa_packet_threshold_s    cnf71xx;
 };
 typedef union cvmx_fpa_packet_threshold cvmx_fpa_packet_threshold_t;
@@ -3119,7 +3181,7 @@ union cvmx_fpa_poolx_available {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_36_63               : 28;
 	uint64_t count                        : 36; /**< The number of free pages available in this pool. INTERNAL: Sized for 41 bit address - 7
-                                                         bit cache line */
+                                                         bit cache line. */
 #else
 	uint64_t count                        : 36;
 	uint64_t reserved_36_63               : 28;
@@ -3137,21 +3199,28 @@ union cvmx_fpa_poolx_cfg {
 	struct cvmx_fpa_poolx_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_43_63               : 21;
-	uint64_t buf_size                     : 11; /**< Buffer size in cache lines. Only required if [NAT_ALIGN] is set. */
+	uint64_t buf_size                     : 11; /**< Buffer size in 128-byte cache lines. Must be zero if [NAT_ALIGN] is clear. Buffer sizes
+                                                         are supported that are any multiple of 128 bytes in the range of 128 bytes to 128 KB. */
 	uint64_t reserved_31_31               : 1;
-	uint64_t buf_offset                   : 15; /**< Number of cache lines to adjust returning pointers by. This field is sign extended so that
-                                                         two's complement numbers may be used to do subtractions. See Buffer Alignment. */
+	uint64_t buf_offset                   : 15; /**< Number of 128-byte cache lines to offset the stored pointer. This field is sign extended
+                                                         so that two's complement numbers may be used to do subtractions.
+                                                         If [NAT_ALIGN] is clear, the pointer stored in the pool is normally the freed pointer
+                                                         adjusted by [BUF_OFFSET]. [BUF_OFFSET] will normally be zero or negative to adjust the
+                                                         pointer back to the beginning of the buffer.)
+                                                         If [NAT_ALIGN] is set, the pointer stored in the pool is normally [BUF_OFFSET] from the
+                                                         beginning of the buffer. [BUF_OFFSET] will normally be zero or positive to adjust the
+                                                         pointer into the buffer. */
 	uint64_t reserved_5_15                : 11;
 	uint64_t l_type                       : 2;  /**< Type of load to send to L2.
-                                                         0x0 = LDD
-                                                         0x1 = LDT
-                                                         0x2 = Load with DWB
-                                                         0x3 = Reserved */
+                                                         0x0 = LDD.
+                                                         0x1 = LDT.
+                                                         0x2 = Load with DWB.
+                                                         0x3 = Reserved. */
 	uint64_t s_type                       : 1;  /**< Type of store to use when sending pages to L2:
-                                                         0 = use STF
-                                                         1 = use STT */
+                                                         0 = use STF.
+                                                         1 = use STT. */
 	uint64_t nat_align                    : 1;  /**< Returning buffers should be rounded to the nearest natural alignment specified with
-                                                         [BUF_SIZE]. See Buffer Alignment. */
+                                                         [BUF_SIZE]. */
 	uint64_t ena                          : 1;  /**< Enable. Must be set after writing pool configuration, if clear any allocations will fail
                                                          and returns will be dropped. If any pool configuration is changed after writing this bit,
                                                          the FPA may operate incorrectly. */
@@ -3199,10 +3268,11 @@ union cvmx_fpa_poolx_end_addr {
 	struct cvmx_fpa_poolx_end_addr_cn61xx cn68xx;
 	struct cvmx_fpa_poolx_end_addr_cn61xx cn68xxp1;
 	struct cvmx_fpa_poolx_end_addr_cn61xx cn70xx;
+	struct cvmx_fpa_poolx_end_addr_cn61xx cn70xxp1;
 	struct cvmx_fpa_poolx_end_addr_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t addr                         : 35; /**< Address */
+	uint64_t addr                         : 35; /**< Address. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -3228,9 +3298,8 @@ union cvmx_fpa_poolx_fpf_marks {
 	uint64_t fpf_rd                       : 11; /**< When the number of free-page pointers in a pool drops below this value and there are free-
                                                          page pointers in DRAM, the FPA reads one page of pointers from DRAM. The recommended value
                                                          for this field is:
-                                                         fpf_sz * 0.75
-                                                         where,
-                                                         fpf_sz = 320*(2^FPA_GEN_CFG[POOLS]).
+                                                         _  fpf_sz * 0.75
+                                                         _  where, fpf_sz = 320 * 2^FPA_GEN_CFG[POOLS].
                                                          The maximum value is fpf_sz - 48.
                                                          It is recommended that software APIs represent this value as a percentage of fpf_sz, as
                                                          fpf_sz may vary between products.
@@ -3260,16 +3329,16 @@ union cvmx_fpa_poolx_int {
 	struct cvmx_fpa_poolx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t thresh                       : 1;  /**< Set and throws FPA_INTSN_E::FPA_POOL(0..63)_THRESH when FPA_POOL(0..63)_AVAILABLE is equal
-                                                         to FPA_POOL(0..63)_THRESHOLD and a pointer is allocated or deallocated. */
-	uint64_t range                        : 1;  /**< Set and throws FPA_INTSN_E::FPA_POOL(0..63)_RANGE when a pointer address does not fall in
-                                                         the address range for that pool specified by FPA_POOL(0..63)_START_ADDR and
-                                                         FPA_POOL(0..63)_END_ADDR. */
-	uint64_t crcerr                       : 1;  /**< Set and throws FPA_INTSN_E::FPA_POOL(0..63)_CRCERR when a page read from the DRAM contains
+	uint64_t thresh                       : 1;  /**< Set and throws FPA_INTSN_E::FPA_POOL()_THRESH when FPA_POOL()_AVAILABLE is equal
+                                                         to FPA_POOL()_THRESHOLD and a pointer is allocated or deallocated. */
+	uint64_t range                        : 1;  /**< Set and throws FPA_INTSN_E::FPA_POOL()_RANGE when a pointer address does not fall in
+                                                         the address range for that pool specified by FPA_POOL()_START_ADDR and
+                                                         FPA_POOL()_END_ADDR. */
+	uint64_t crcerr                       : 1;  /**< Set and throws FPA_INTSN_E::FPA_POOL()_CRCERR when a page read from the DRAM contains
                                                          inconsistent data (FPA ownership CRC does not match what FPA wrote). Most likely indicates
                                                          the stack has been fatally corrupted. */
-	uint64_t ovfls                        : 1;  /**< Set and throws FPA_INTSN_E::FPA_POOL(0..63)_OVFLS on stack overflow; when
-                                                         FPA_POOL(0..63)_STACK_ADDR would exceed FPA_POOL(0..63)_STACK_END. */
+	uint64_t ovfls                        : 1;  /**< Set and throws FPA_INTSN_E::FPA_POOL()_OVFLS on stack overflow; when
+                                                         FPA_POOL()_STACK_ADDR would exceed FPA_POOL()_STACK_END. */
 #else
 	uint64_t ovfls                        : 1;
 	uint64_t crcerr                       : 1;
@@ -3289,7 +3358,7 @@ union cvmx_fpa_poolx_op_pc {
 	uint64_t u64;
 	struct cvmx_fpa_poolx_op_pc_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t count                        : 64; /**< Number of allocations or returns performed to this pool, including those that fail due to RED. */
+	uint64_t count                        : 64; /**< Number of allocations or returns performed to this pool, including those that fail due to RED/DROP. */
 #else
 	uint64_t count                        : 64;
 #endif
@@ -3307,7 +3376,7 @@ union cvmx_fpa_poolx_stack_addr {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
 	uint64_t addr                         : 35; /**< Next address. The address of the next stack write. Must be initialized to
-                                                         FPA_POOL(0..63)_STACK_BASE when stack is createdFPA_POOL(0..63)_STACK_BASE. */
+                                                         FPA_POOL()_STACK_BASE[ADDR] when stack is created. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -3348,7 +3417,7 @@ union cvmx_fpa_poolx_stack_end {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
 	uint64_t addr                         : 35; /**< Stack ending address plus one line; hardware will never write this address. If
-                                                         FPA_POOL(0..63)_STACK_ADDR is equal to this value, the stack is full. */
+                                                         FPA_POOL()_STACK_ADDR is equal to this value, the stack is full. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -3388,6 +3457,7 @@ union cvmx_fpa_poolx_start_addr {
 	struct cvmx_fpa_poolx_start_addr_cn61xx cn68xx;
 	struct cvmx_fpa_poolx_start_addr_cn61xx cn68xxp1;
 	struct cvmx_fpa_poolx_start_addr_cn61xx cn70xx;
+	struct cvmx_fpa_poolx_start_addr_cn61xx cn70xxp1;
 	struct cvmx_fpa_poolx_start_addr_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
@@ -3444,6 +3514,7 @@ union cvmx_fpa_poolx_threshold {
 	} cn68xx;
 	struct cvmx_fpa_poolx_threshold_cn68xx cn68xxp1;
 	struct cvmx_fpa_poolx_threshold_cn61xx cn70xx;
+	struct cvmx_fpa_poolx_threshold_cn61xx cn70xxp1;
 	struct cvmx_fpa_poolx_threshold_s     cn78xx;
 	struct cvmx_fpa_poolx_threshold_cn61xx cnf71xx;
 };
@@ -3493,6 +3564,7 @@ union cvmx_fpa_quex_available {
 	struct cvmx_fpa_quex_available_s      cn68xx;
 	struct cvmx_fpa_quex_available_s      cn68xxp1;
 	struct cvmx_fpa_quex_available_cn30xx cn70xx;
+	struct cvmx_fpa_quex_available_cn30xx cn70xxp1;
 	struct cvmx_fpa_quex_available_cn30xx cnf71xx;
 };
 typedef union cvmx_fpa_quex_available cvmx_fpa_quex_available_t;
@@ -3533,6 +3605,7 @@ union cvmx_fpa_quex_page_index {
 	struct cvmx_fpa_quex_page_index_s     cn68xx;
 	struct cvmx_fpa_quex_page_index_s     cn68xxp1;
 	struct cvmx_fpa_quex_page_index_s     cn70xx;
+	struct cvmx_fpa_quex_page_index_s     cn70xxp1;
 	struct cvmx_fpa_quex_page_index_s     cnf71xx;
 };
 typedef union cvmx_fpa_quex_page_index cvmx_fpa_quex_page_index_t;
@@ -3600,6 +3673,7 @@ union cvmx_fpa_que_act {
 	struct cvmx_fpa_que_act_s             cn68xx;
 	struct cvmx_fpa_que_act_s             cn68xxp1;
 	struct cvmx_fpa_que_act_s             cn70xx;
+	struct cvmx_fpa_que_act_s             cn70xxp1;
 	struct cvmx_fpa_que_act_s             cnf71xx;
 };
 typedef union cvmx_fpa_que_act cvmx_fpa_que_act_t;
@@ -3641,6 +3715,7 @@ union cvmx_fpa_que_exp {
 	struct cvmx_fpa_que_exp_s             cn68xx;
 	struct cvmx_fpa_que_exp_s             cn68xxp1;
 	struct cvmx_fpa_que_exp_s             cn70xx;
+	struct cvmx_fpa_que_exp_s             cn70xxp1;
 	struct cvmx_fpa_que_exp_s             cnf71xx;
 };
 typedef union cvmx_fpa_que_exp cvmx_fpa_que_exp_t;
@@ -3689,12 +3764,13 @@ union cvmx_fpa_red_delay {
 	uint64_t avg_dly                      : 14; /**< Average-queue-size delay. The number of levelizer-clock cycles to wait (1024 *
                                                          ([AVG_DLY]+1) * (FPA_GEN_CFG[LVL_DLY]+1)) coprocessor clocks) between calculating the
                                                          moving average for each aura level. Note the minimum value of 2048 cycles implies that at
-                                                         100 M packets/sec, approximately 160 packets may arrive between average calculations.
+                                                         100 M packets/sec, 1.2 GHz coprocessor clock, approximately 160 packets may arrive between
+                                                         average calculations.
                                                          Larger FPA_GEN_CFG[LVL_DLY] values cause the backpressure indications and moving averages
                                                          of all aura levels to track changes in the actual free space more slowly. Larger AVG_DLY
                                                          also causes the moving averages of all aura levels to track changes in the actual free
                                                          space more slowly, but does not affect backpressure. Larger
-                                                         FPA_AURA(0..1023)_CFG[AVG_CON]) values causes a specific aura to track more slowly, but
+                                                         FPA_AURA()_CFG[AVG_CON]) values causes a specific aura to track more slowly, but
                                                          only affects an individual aura level, rather than all. */
 #else
 	uint64_t avg_dly                      : 14;
@@ -3822,6 +3898,7 @@ union cvmx_fpa_wqe_threshold {
 	struct cvmx_fpa_wqe_threshold_s       cn68xx;
 	struct cvmx_fpa_wqe_threshold_s       cn68xxp1;
 	struct cvmx_fpa_wqe_threshold_s       cn70xx;
+	struct cvmx_fpa_wqe_threshold_s       cn70xxp1;
 	struct cvmx_fpa_wqe_threshold_s       cnf71xx;
 };
 typedef union cvmx_fpa_wqe_threshold cvmx_fpa_wqe_threshold_t;

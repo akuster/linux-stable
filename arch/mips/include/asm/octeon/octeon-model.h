@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -43,7 +43,7 @@
  * File defining different Octeon model IDs and macros to
  * compare them.
  *
- * <hr>$Revision: 88111 $<hr>
+ * <hr>$Revision: 103698 $<hr>
  */
 
 #ifndef __OCTEON_MODEL_H__
@@ -100,17 +100,26 @@ extern "C" {
  */
 
 #define OCTEON_CN70XX_PASS1_0   0x000d9600
+#define OCTEON_CN70XX_PASS1_1   0x000d9601
+#define OCTEON_CN70XX_PASS1_2   0x000d9602
+
+#define OCTEON_CN70XX_PASS2_0   0x000d9608
 
 #define OCTEON_CN70XX           (OCTEON_CN70XX_PASS1_0 | OM_IGNORE_REVISION)
 #define OCTEON_CN70XX_PASS1_X   (OCTEON_CN70XX_PASS1_0 | OM_IGNORE_MINOR_REVISION)
+#define OCTEON_CN70XX_PASS2_X   (OCTEON_CN70XX_PASS2_0 | OM_IGNORE_MINOR_REVISION)
 
-#define OCTOEN_CN71XX		OCTEON_CN70XX
-#define OCTOEN_CN71XX_PASS1_X	OCTEON_CN70XX_PASS1_X
+#define OCTEON_CN71XX		OCTEON_CN70XX
 
 #define OCTEON_CN78XX_PASS1_0   0x000d9500
+#define OCTEON_CN78XX_PASS1_1   0x000d9501
+#define OCTEON_CN78XX_PASS2_0   0x000d9508
 
 #define OCTEON_CN78XX           (OCTEON_CN78XX_PASS1_0 | OM_IGNORE_REVISION)
 #define OCTEON_CN78XX_PASS1_X   (OCTEON_CN78XX_PASS1_0 | OM_IGNORE_MINOR_REVISION)
+#define OCTEON_CN78XX_PASS2_X   (OCTEON_CN78XX_PASS2_0 | OM_IGNORE_MINOR_REVISION)
+
+#define OCTEON_CN76XX		  (0x000d9540 | OM_CHECK_SUBMODEL)
 
 /*
  * CNF7XXX models with new revision encoding
@@ -177,7 +186,7 @@ extern "C" {
 #define OCTEON_CN58XX_PASS2_2   0x000d030a
 #define OCTEON_CN58XX_PASS2_3   0x000d030b
 
-#define OCTEON_CN58XX           (OCTEON_CN58XX_PASS1_0 | OM_IGNORE_REVISION)
+#define OCTEON_CN58XX           (OCTEON_CN58XX_PASS2_0 | OM_IGNORE_REVISION)
 #define OCTEON_CN58XX_PASS1_X   (OCTEON_CN58XX_PASS1_0 | OM_IGNORE_MINOR_REVISION)
 #define OCTEON_CN58XX_PASS2_X   (OCTEON_CN58XX_PASS2_0 | OM_IGNORE_MINOR_REVISION)
 #define OCTEON_CN58XX_PASS1     OCTEON_CN58XX_PASS1_X
@@ -278,7 +287,7 @@ extern "C" {
 **     <4>:   alternate package
 **     <3:0>: revision
 **
-** CN5XXX:
+** CN5XXX and older models:
 **
 **     bits
 **     <7>:   reserved (0)
@@ -297,9 +306,9 @@ extern "C" {
 /* CN5XXX and later use different layout of bits in the revision ID field */
 #define OCTEON_58XX_FAMILY_MASK      OCTEON_38XX_FAMILY_MASK
 #define OCTEON_58XX_FAMILY_REV_MASK  0x00ffff3f
-#define OCTEON_58XX_MODEL_MASK       0x00ffffc0
+#define OCTEON_58XX_MODEL_MASK       0x00ffff40
 #define OCTEON_58XX_MODEL_REV_MASK   (OCTEON_58XX_FAMILY_REV_MASK | OCTEON_58XX_MODEL_MASK)
-#define OCTEON_58XX_MODEL_MINOR_REV_MASK (OCTEON_58XX_MODEL_REV_MASK & 0x00fffff8)
+#define OCTEON_58XX_MODEL_MINOR_REV_MASK (OCTEON_58XX_MODEL_REV_MASK & 0x00ffff38)
 #define OCTEON_5XXX_MODEL_MASK       0x00ff0fc0
 
 #define __OCTEON_MATCH_MASK__(x,y,z) (((x) & (z)) == ((y) & (z)))
@@ -331,10 +340,10 @@ extern "C" {
        && __OCTEON_MATCH_MASK__((chip_model), (arg_model), OCTEON_58XX_FAMILY_REV_MASK)) || \
      ((((arg_model) & (OM_FLAG_MASK)) == OM_IGNORE_MINOR_REVISION) \
        && __OCTEON_MATCH_MASK__((chip_model), (arg_model), OCTEON_58XX_MODEL_MINOR_REV_MASK)) || \
+     ((((arg_model) & (OM_FLAG_MASK)) == OM_CHECK_SUBMODEL) \
+       && __OCTEON_MATCH_MASK__((chip_model), (arg_model), OCTEON_58XX_MODEL_MASK)) || \
      ((((arg_model) & (OM_FLAG_MASK)) == OM_IGNORE_REVISION) \
        && __OCTEON_MATCH_MASK__((chip_model), (arg_model), OCTEON_58XX_FAMILY_MASK)) || \
-     ((((arg_model) & (OM_FLAG_MASK)) == OM_CHECK_SUBMODEL) \
-       && __OCTEON_MATCH_MASK__((chip_model), (arg_model), OCTEON_58XX_MODEL_REV_MASK)) || \
      ((((arg_model) & (OM_MATCH_5XXX_FAMILY_MODELS)) == OM_MATCH_5XXX_FAMILY_MODELS) \
        && ((chip_model & OCTEON_PRID_MASK) >= OCTEON_CN58XX_PASS1_0) && ((chip_model & OCTEON_PRID_MASK) < OCTEON_CN63XX_PASS1_0)) || \
      ((((arg_model) & (OM_MATCH_6XXX_FAMILY_MODELS)) == OM_MATCH_6XXX_FAMILY_MODELS) \

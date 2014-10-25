@@ -46,148 +46,263 @@
 #include "cvmx.h"
 #include "cvmx-fpa.h"
 #include "cvmx-global-resources.h"
+#include "cvmx-sysinfo.h"
 #endif
 
-/** Allocates the pool from global resources and reserves them
-  * @param pool	    FPA pool to allocate/reserve. If -1 it
-  *                 finds the empty pool to allocate.
-  * @return         Allocated pool number OR -1 if fails to allocate
-                    the pool
-  */
-int cvmx_fpa_alloc_pool(int pool)
+static struct global_resource_tag
+get_fpa1_resource_tag(void)
 {
-	if (cvmx_create_global_resource_range(CVMX_GR_TAG_FPA, CVMX_FPA_NUM_POOLS)) {
-		cvmx_dprintf("\nFailed to create FPA global resource");
-		return -1;
-	}
-
-	if (pool >= 0)
-		pool = cvmx_reserve_global_resource_range(CVMX_GR_TAG_FPA, pool, pool, 1);
-	else
-		/* Find an empty pool */
-		pool = cvmx_allocate_global_resource_range(CVMX_GR_TAG_FPA,(uint64_t)pool, 1, 1);
-	if (pool == -1) {
-		cvmx_dprintf("Error: FPA pool is not available to use\n");
-		return -1;
-	}
-	//cvmx_dprintf("Error: FPA pool %d is free to use\n", pool);
-	return pool;
-}
-EXPORT_SYMBOL(cvmx_fpa_alloc_pool);
-
-static inline struct global_resource_tag get_fpa_resourse_tag(int node)
-{
-	switch(node) {
-	case 0:
 		return CVMX_GR_TAG_FPA;
-	case 1:
-		return cvmx_get_gr_tag('c','v','m','_','f','p','a','_','0','1','.','.','.','.','.','.');
-	case 2:
-		return cvmx_get_gr_tag('c','v','m','_','f','p','a','_','0','2','.','.','.','.','.','.');
-	case 3:
-		return cvmx_get_gr_tag('c','v','m','_','f','p','a','_','0','3','.','.','.','.','.','.');
-	default:
-		/* Add a panic?? */
-		return cvmx_get_gr_tag('i','n','v','a','l','i','d','.','.','.','.','.','.','.','.','.'); 
-	}
 }
 
-
-static inline struct global_resource_tag get_aura_resourse_tag(int node)
+static struct global_resource_tag
+get_fpa3_aura_resource_tag(int node)
 {
-	switch(node) {
-	case 0:
-		return cvmx_get_gr_tag('c','v','m','_','a','u','r','a','_','0','_','0','.','.','.','.');
-	case 1:
-		return cvmx_get_gr_tag('c','v','m','_','a','u','r','a','_','0','_','1','.','.','.','.');
-	case 2:
-		return cvmx_get_gr_tag('c','v','m','_','a','u','r','a','_','0','_','2','.','.','.','.');
-	case 3:
-		return cvmx_get_gr_tag('c','v','m','_','a','u','r','a','_','0','_','3','.','.','.','.');
-	default:
-		/* Add a panic?? */
-		return cvmx_get_gr_tag('i','n','v','a','l','i','d','.','.','.','.','.','.','.','.','.'); 
-	}
+	return cvmx_get_gr_tag('c', 'v', 'm', '_', 'a', 'u', 'r', 'a', '_',
+		node+'0', '.', '.', '.', '.', '.', '.');
 }
 
+
+static struct global_resource_tag
+get_fpa3_pool_resource_tag(int node)
+{
+	return cvmx_get_gr_tag('c', 'v', 'm', '_', 'p', 'o', 'o', 'l', '_',
+		node+'0', '.', '.', '.', '.', '.', '.');
+}
+
+int cvmx_fpa_get_max_pools(void)
+{
+	if (octeon_has_feature(OCTEON_FEATURE_FPA3))
+		return CVMX_FPA3_NUM_AURAS;
+	else if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		/* 68xx pool 8 is not available via API */
+		return  CVMX_FPA1_NUM_POOLS;
+	else
+		return  CVMX_FPA1_NUM_POOLS;
+}
+
+uint64_t cvmx_fpa3_get_aura_owner(cvmx_fpa3_gaura_t aura)
+{
+	return cvmx_get_global_resource_owner(
+		get_fpa3_aura_resource_tag(aura.node),
+		aura.laura);
+}
+
+uint64_t cvmx_fpa1_get_pool_owner(cvmx_fpa1_pool_t pool)
+{
+	return cvmx_get_global_resource_owner(
+		get_fpa1_resource_tag(), pool);
+}
+
+uint64_t cvmx_fpa_get_pool_owner(int pool_num)
+{
+	if (octeon_has_feature(OCTEON_FEATURE_FPA3))
+		return cvmx_fpa3_get_aura_owner(
+			cvmx_fpa1_pool_to_fpa3_aura(pool_num));
+	else
+		return cvmx_fpa1_get_pool_owner(pool_num);
+}
 
 /**
- * This will allocate count number of FPA pools on the specified node to the
- * calling application. These pools will be for exclusive use of the application
- * until they are freed.
- * @param pools_allocated is an array of length count allocated by the application
- * before invoking the cvmx_allocate_fpa_pool call. On return it will contain the
- * index numbers of the pools allocated.
- * @return 0 on success and -1 on failure.
  */
-int cvmx_fpa_allocate_fpa_pools(int node, int pools_allocated[], int count)
+cvmx_fpa3_gaura_t
+cvmx_fpa3_reserve_aura(int node, int desired_aura_num)
 {
-	int num_pools = CVMX_FPA_NUM_POOLS;
-	uint64_t owner = 0;
-	int rv;
-	struct global_resource_tag tag = get_fpa_resourse_tag(node);
+	uint64_t owner = cvmx_get_app_id();
+	int rv = 0;
+	struct global_resource_tag tag;
+	cvmx_fpa3_gaura_t aura;
 
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		num_pools = CVMX_FPA_NUM_POOLS_78XX;
+	if (node == -1)
+		node = cvmx_get_node_num();
+
+	tag = get_fpa3_aura_resource_tag(node);
+
+	if (cvmx_create_global_resource_range(tag, CVMX_FPA3_NUM_AURAS) != 0) {
+		cvmx_printf("ERROR: %s: global resource create node=%u\n",
+			__func__, node);
+		return CVMX_FPA3_INVALID_GAURA;
 	}
 
-	if (cvmx_create_global_resource_range(tag, num_pools) != 0) {
-		cvmx_dprintf("ERROR: failed to create FPA global resource for"
-			     " node=%d\n", node);
+	if (desired_aura_num >= 0)
+		rv = cvmx_reserve_global_resource_range(
+			tag, owner, desired_aura_num, 1);
+	else
+		rv = cvmx_resource_alloc_reverse(tag, owner);
+
+	if (rv < 0) {
+		cvmx_printf("ERROR: %s: node=%u desired aura=%d\n",
+			__func__, node, desired_aura_num);
+		return CVMX_FPA3_INVALID_GAURA;
+	}
+
+	aura = __cvmx_fpa3_gaura(node, rv);
+
+	return aura;
+}
+
+int cvmx_fpa3_release_aura(cvmx_fpa3_gaura_t aura)
+{
+	struct global_resource_tag tag = get_fpa3_aura_resource_tag(aura.node);
+	int laura = aura.laura;
+
+	if (!__cvmx_fpa3_aura_valid(aura))
+		return -1;
+
+	return
+		cvmx_free_global_resource_range_multiple(tag, &laura, 1);
+}
+
+/**
+ */
+cvmx_fpa3_pool_t
+cvmx_fpa3_reserve_pool(int node, int desired_pool_num)
+{
+	uint64_t owner = cvmx_get_app_id();
+	int rv = 0;
+	struct global_resource_tag tag;
+	cvmx_fpa3_pool_t pool;
+
+	if (node == -1) node = cvmx_get_node_num();
+
+	tag = get_fpa3_pool_resource_tag(node);
+
+	if (cvmx_create_global_resource_range(tag, CVMX_FPA3_NUM_POOLX) != 0) {
+		cvmx_printf("ERROR: %s: global resource create node=%u\n",
+			__func__, node);
+		return CVMX_FPA3_INVALID_POOL;
+	}
+
+	if (desired_pool_num >= 0)
+		rv = cvmx_reserve_global_resource_range(
+			tag, owner, desired_pool_num, 1);
+	else
+		rv = cvmx_resource_alloc_reverse(tag, owner);
+
+	if (rv < 0) {
+		cvmx_printf("ERROR: %s: node=%u desired_pool=%d\n",
+			__func__, node, desired_pool_num);
+		return CVMX_FPA3_INVALID_POOL;
+	}
+
+	pool = __cvmx_fpa3_pool(node, rv);
+
+	return pool;
+}
+
+int cvmx_fpa3_release_pool(cvmx_fpa3_pool_t pool)
+{
+	struct global_resource_tag tag = get_fpa3_pool_resource_tag(pool.node);
+	int lpool = pool.lpool;
+
+	if (!__cvmx_fpa3_pool_valid(pool))
+		return -1;
+
+	return
+		cvmx_free_global_resource_range_multiple(tag, &lpool, 1);
+}
+
+cvmx_fpa1_pool_t
+cvmx_fpa1_reserve_pool(int desired_pool_num)
+{
+	uint64_t owner = cvmx_get_app_id();
+	struct global_resource_tag tag;
+	int rv;
+
+	tag = get_fpa1_resource_tag();
+
+	if (cvmx_create_global_resource_range(tag, CVMX_FPA1_NUM_POOLS) != 0) {
+		cvmx_printf("ERROR: %s: global resource not created\n",
+			__func__);
 		return -1;
 	}
-	rv = cvmx_resource_alloc_many(tag, owner,
-				      count,
-				      pools_allocated);
-	return rv;
-}
 
-
-/** Release/Frees the specified pool
-  * @param pool	    Pool to free
-  * @return         0 for success -1 failure
-  */
-int cvmx_fpa_release_pool(int pool)
-{
-	if (cvmx_free_global_resource_range_with_base(CVMX_GR_TAG_FPA, pool, 1) == -1) {
-		cvmx_dprintf("\nERROR Failed to release FPA pool %d", (int)pool);
-		return -1;
-	}
-	return 0;
-}
-
-int cvmx_fpa_allocate_auras(int node, int auras_allocated[], int count)
-{
-	int num_aura = CVMX_FPA_AURA_NUM;
-	uint64_t owner = 0;
-	int rv;
-	struct global_resource_tag tag = get_aura_resourse_tag(node);
-
-	if (!OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		cvmx_dprintf("ERROR :  Aura allocation not supported "
-			     "on this model\n");
+	if (desired_pool_num >= 0) {
+		rv = cvmx_reserve_global_resource_range(
+			tag, owner, desired_pool_num, 1);
+	} else {
+		rv = cvmx_resource_alloc_reverse(tag, owner);
 	}
 
-	if (cvmx_create_global_resource_range(tag, num_aura) != 0) {
-		cvmx_dprintf("ERROR: failed to create aura global resource for"
-			     " node=%d\n", node);
-		return -1;
+	if (rv <  0) {
+		cvmx_printf("ERROR: %s: FPA_POOL %d unavailable\n",
+			__func__, desired_pool_num);
+		return CVMX_RESOURCE_ALREADY_RESERVED;
 	}
-	rv = cvmx_resource_alloc_many(tag, owner,
-				      count,
-				      auras_allocated);
-	return rv;
-
+	return (cvmx_fpa1_pool_t) rv;
 }
 
-int cvmx_fpa_free_auras(int node, int *pools_allocated, int count)
+int cvmx_fpa1_release_pool(cvmx_fpa1_pool_t pool)
 {
-	int rv;
-	struct global_resource_tag tag = get_aura_resourse_tag(node);
+	struct global_resource_tag tag;
 
-	rv = cvmx_free_global_resource_range_multiple(tag, pools_allocated,
-						      count);
-	return rv;
+	tag = get_fpa1_resource_tag();
+
+	return
+		cvmx_free_global_resource_range_multiple(tag, &pool, 1);
 }
 
-EXPORT_SYMBOL(cvmx_fpa_release_pool);
+/* 
+ * FIXME:
+ * An easier way to acheive the same would be to
+ * query the block size of a "pool"
+ */
+int cvmx_fpa1_is_pool_available(cvmx_fpa1_pool_t pool)
+{
+	if (cvmx_fpa1_reserve_pool(pool) == -1)
+		return 0;
+	cvmx_fpa1_release_pool(pool);
+	return 1;
+}
+
+int cvmx_fpa3_is_pool_available(int node, int lpool)
+{
+	cvmx_fpa3_pool_t pool;
+	if (lpool < 0)
+		return 1;
+
+	pool = cvmx_fpa3_reserve_pool(node, lpool);
+
+	if (!__cvmx_fpa3_pool_valid(pool))
+		return 0;
+
+	cvmx_fpa3_release_pool(pool);
+	return 1;
+}
+
+int cvmx_fpa3_is_aura_available(int node, int laura)
+{
+	cvmx_fpa3_gaura_t aura;
+
+	if (laura < 0)
+		return 1;
+
+	aura = cvmx_fpa3_reserve_aura(node, laura);
+
+	if (!__cvmx_fpa3_aura_valid(aura))
+		return 0;
+
+	cvmx_fpa3_release_aura(aura);
+	return 1;
+}
+
+/**
+ * Return if aura/pool is already reserved
+ * @param node - node of fpa to check, -1 for current node
+ * @param pool_num - pool to check (aura for o78+)
+ * @return 0 if reserved, 1 if available
+ */
+int cvmx_fpa_is_pool_available(int pool_num)
+{
+	if (octeon_has_feature(OCTEON_FEATURE_FPA3))
+		return cvmx_fpa3_is_aura_available(0, pool_num);
+	else
+		return cvmx_fpa1_is_pool_available(pool_num);
+}
+
+EXPORT_SYMBOL(cvmx_fpa3_reserve_aura);
+EXPORT_SYMBOL(cvmx_fpa3_release_aura);
+EXPORT_SYMBOL(cvmx_fpa3_reserve_pool);
+EXPORT_SYMBOL(cvmx_fpa3_release_pool);
+EXPORT_SYMBOL(cvmx_fpa1_reserve_pool);
+EXPORT_SYMBOL(cvmx_fpa1_release_pool);

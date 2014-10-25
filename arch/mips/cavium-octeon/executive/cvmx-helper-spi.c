@@ -43,7 +43,7 @@
  * Functions for SPI initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 78551 $<hr>
+ * <hr>$Revision: 96176 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <linux/export.h>
@@ -61,10 +61,11 @@
 #include "cvmx-helper.h"
 #endif
 
-int __cvmx_helper_spi_enumerate(int interface)
+int __cvmx_helper_spi_enumerate(int xiface)
 {
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
 	if ((cvmx_sysinfo_get()->board_type != CVMX_BOARD_TYPE_SIM) &&
-	    cvmx_spi4000_is_present(interface))
+	    cvmx_spi4000_is_present(xi.interface))
 		return 10;
 	else
 		return 16;

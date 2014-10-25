@@ -74,8 +74,9 @@
  *
  * @return Number of ports on the interface. Zero to disable.
  */
-int __cvmx_helper_srio_probe(int interface)
+int __cvmx_helper_srio_probe(int xiface)
 {
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
 	cvmx_sriox_status_reg_t srio0_status_reg;
 	cvmx_sriox_status_reg_t srio1_status_reg;
 
@@ -85,7 +86,7 @@ int __cvmx_helper_srio_probe(int interface)
 	/* Read MIO_QLMX_CFG CSRs to find SRIO mode. */
 	if (OCTEON_IS_MODEL(OCTEON_CN66XX)) {
 		enum cvmx_qlm_mode mode = cvmx_qlm_get_mode(0);
-		int srio_port = interface - 4;
+		int srio_port = xi.interface - 4;
 		switch (srio_port) {
 		case 0:	/* 1x4 lane */
 			if (mode == CVMX_QLM_MODE_SRIO_1X4 ||
@@ -126,8 +127,10 @@ int __cvmx_helper_srio_probe(int interface)
  *
  * @return Zero on success, negative on failure
  */
-int __cvmx_helper_srio_enable(int interface)
+int __cvmx_helper_srio_enable(int xiface)
 {
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	int interface = xi.interface;
 	int num_ports = cvmx_helper_ports_on_interface(interface);
 	int index;
 	cvmx_sriomaintx_core_enables_t sriomaintx_core_enables;

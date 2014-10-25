@@ -59,10 +59,6 @@
  * @return Number of ports on the interface. Zero to disable.
  */
 extern int __cvmx_helper_srio_probe(int interface);
-static inline int __cvmx_helper_srio_enumerate(int interface)
-{
-	return __cvmx_helper_srio_probe(interface);
-}
 
 /**
  * @INTERNAL

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -141,6 +141,7 @@ union cvmx_bch_bist_result {
 #endif
 	} s;
 	struct cvmx_bch_bist_result_s         cn70xx;
+	struct cvmx_bch_bist_result_s         cn70xxp1;
 };
 typedef union cvmx_bch_bist_result cvmx_bch_bist_result_t;
 
@@ -168,6 +169,7 @@ union cvmx_bch_cmd_buf {
 #endif
 	} s;
 	struct cvmx_bch_cmd_buf_s             cn70xx;
+	struct cvmx_bch_cmd_buf_s             cn70xxp1;
 };
 typedef union cvmx_bch_cmd_buf cvmx_bch_cmd_buf_t;
 
@@ -206,6 +208,7 @@ union cvmx_bch_ctl {
 #endif
 	} s;
 	struct cvmx_bch_ctl_s                 cn70xx;
+	struct cvmx_bch_ctl_s                 cn70xxp1;
 };
 typedef union cvmx_bch_ctl cvmx_bch_ctl_t;
 
@@ -229,6 +232,7 @@ union cvmx_bch_err_cfg {
 #endif
 	} s;
 	struct cvmx_bch_err_cfg_s             cn70xx;
+	struct cvmx_bch_err_cfg_s             cn70xxp1;
 };
 typedef union cvmx_bch_err_cfg cvmx_bch_err_cfg_t;
 
@@ -251,6 +255,7 @@ union cvmx_bch_gen_int {
 #endif
 	} s;
 	struct cvmx_bch_gen_int_s             cn70xx;
+	struct cvmx_bch_gen_int_s             cn70xxp1;
 };
 typedef union cvmx_bch_gen_int cvmx_bch_gen_int_t;
 
@@ -276,6 +281,7 @@ union cvmx_bch_gen_int_en {
 #endif
 	} s;
 	struct cvmx_bch_gen_int_en_s          cn70xx;
+	struct cvmx_bch_gen_int_en_s          cn70xxp1;
 };
 typedef union cvmx_bch_gen_int_en cvmx_bch_gen_int_en_t;
 

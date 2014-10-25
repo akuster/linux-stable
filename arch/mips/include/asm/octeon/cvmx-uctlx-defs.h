@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -392,10 +392,8 @@ static inline uint64_t CVMX_UCTLX_UPHY_PORTX_CTL_STATUS(unsigned long offset, un
 /**
  * cvmx_uctl#_bist_status
  *
- * Accessible by: always
- * Reset by: IOI reset (srst_n)
- * Results from BIST runs of USBH's memories.
- * Wait for NDONE==0, then look at defect indication.
+ * This register indicates the results from the built-in self-test (BIST) runs of USBH memories.
+ * A 0 indicates pass or never run, a 1 indicates fail. This register can be reset by IOI reset.
  */
 union cvmx_uctlx_bist_status {
 	uint64_t u64;
@@ -629,9 +627,9 @@ typedef union cvmx_uctlx_clk_rst_ctl cvmx_uctlx_clk_rst_ctl_t;
 /**
  * cvmx_uctl#_ctl
  *
- * Accessible by: always
- * Reset by: IOI reset (srst_n)
- * This register controls clocks, resets, power, and BIST for the USB.
+ * This register controls clocks, resets, power, and BIST.
+ *
+ * This register can be reset by IOI reset.
  */
 union cvmx_uctlx_ctl {
 	uint64_t u64;
@@ -639,48 +637,48 @@ union cvmx_uctlx_ctl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t clear_bist                   : 1;  /**< BIST fast-clear mode select. A BIST run with this bit set clears all entries in USBH RAMs
                                                          to 0x0.
-                                                         There are 2 major modes of BIST: full and clear. Full BIST is run by the BIST state
+                                                         There are two major modes of BIST: full and clear. Full BIST is run by the BIST state
                                                          machine when CLEAR_BIST is deasserted during BIST. Clear BIST is run if CLEAR_BIST is
                                                          asserted during BIST.
                                                          To avoid race conditions, software must first perform a CSR write operation that puts the
                                                          CLEAR_BIST setting into the correct state and then perform another CSR write operation to
                                                          set the BIST trigger (keeping the CLEAR_BIST state constant).
-                                                         CLEAR BIST completion is indicated by UCTL(0)_BIST_STATUS[NDONE]. A BIST clear operation
-                                                         takes almost 2,000 host-controller-clock cycles for the largest RAM. */
+                                                         CLEAR BIST completion is indicated by UCTL()_BIST_STATUS. A BIST clear operation
+                                                         takes almost 2,000 controller-clock cycles for the largest RAM. */
 	uint64_t start_bist                   : 1;  /**< Rising edge starts BIST on the memories in USBH.
-                                                         To run BIST, both the host-controller clock must be configured and enabled, and should be
+                                                         To run BIST, the controller clock must be both configured and enabled, and should be
                                                          configured to the maximum available frequency given the available coprocessor clock and
                                                          dividers.
                                                          Also, the UCTL, UAHC, and UPHY should be held in software- initiated reset (using
                                                          UPHY_RST, UAHC_RST, UCTL_RST) until BIST is complete.
                                                          BIST defect status can be checked after FULL BIST completion, both of which are indicated
-                                                         in UCTL(0)_BIST_STATUS. The full BIST run takes almost 80,000 host-controller-clock cycles
-                                                         for the largest RAM. */
-	uint64_t ref_clk_sel                  : 2;  /**< Reference clock select. Choose reference clock source for the SuperSpeed and HighSpeed PLL
-                                                         blocks.
+                                                         in UCTL()_BIST_STATUS. The full BIST run takes almost 80,000 controller-clock cycles for
+                                                         the largest RAM. */
+	uint64_t ref_clk_sel                  : 2;  /**< Reference clock select. Choose reference-clock source for the SuperSpeed and high-speed
+                                                         PLL blocks.
                                                          0x0 = Reference clock source for both PLLs come from the USB pads.
-                                                         0x1 = Reserved
+                                                         0x1 = Reserved.
                                                          0x2 = Reserved.
                                                          0x3 = Reserved.
                                                          This value can be changed only during UPHY_RST.
-                                                         Note: If REF_CLK_SEL = 0x0, then the reference clock input cannot be spread-spectrum.
+                                                         If REF_CLK_SEL = 0x0, then the reference clock input cannot be spread-spectrum.
                                                          INTERNAL: For the 0x1 selection, reference clock source for SuperSpeed PLL is from the USB
                                                          pads, reference clock source for HighSpeed PLL is PLL_REF_CLK. But in 78xx, PLL_REF_CLK
                                                          cannot be routed to USB without violating jitter requirements */
-	uint64_t ssc_en                       : 1;  /**< Enables spread-spectrum clock production in the SuperSpeed function.
-                                                         If the input reference clock for the SuperSpeed PLL is already spread-spectrum,
-                                                         then do not enable this function. The clocks sourced to the SuperSpeed function
-                                                         must have spread-spectrum to be compliant with the USB specification.
-                                                         The HighSpeed PLL cannot support a spread-spectrum input, so REF_CLK_SEL = 0x0
-                                                         must enable this feature.
+	uint64_t ssc_en                       : 1;  /**< Spread-spectrum clock enable. Enables spread-spectrum clock production in the SuperSpeed
+                                                         function. If the input reference clock for the SuperSpeed PLL is already spread-spectrum,
+                                                         then do not enable this feature. The clocks sourced to the SuperSpeed function must have
+                                                         spread-spectrum to be compliant with the USB specification.
+                                                         The high-speed PLL cannot support a spread-spectrum input, so REF_CLK_SEL = 0x0 must
+                                                         enable this feature.
                                                          This value may only be changed during UPHY_RST. */
 	uint64_t ssc_range                    : 3;  /**< Spread-spectrum clock range. Selects the range of spread-spectrum modulation when SSC_EN
                                                          is asserted and the PHY is spreading the SuperSpeed transmit clocks.
                                                          Applies a fixed offset to the phase accumulator.
-                                                         0x0 = -4980 ppm downspread of clock
-                                                         0x1 = -4492 ppm
-                                                         0x2 = -4003 ppm
-                                                         0x3-0x7 = reserved
+                                                         0x0 = -4980 ppm downspread of clock.
+                                                         0x1 = -4492 ppm.
+                                                         0x2 = -4003 ppm.
+                                                         0x3-0x7 = reserved.
                                                          All of these settings are within the USB 3.0 specification. The amount of EMI emission
                                                          reduction might decrease as the SSC_RANGE increases; therefore, the SSC_RANGE settings can
                                                          be registered to enable the amount of spreading to be adjusted on a per-application basis.
@@ -691,66 +689,67 @@ union cvmx_uctlx_ctl {
                                                          [52:47]: 2's complement push amount
                                                          Must leave at reset value of 0x0.
                                                          This value may only be changed during UPHY_RST. */
-	uint64_t mpll_multiplier              : 7;  /**< Multiplies the reference clock to a frequency suitable for intended operating speed.
-                                                         Must leave at reset value of 0x0.
-                                                         This value may only be changed during UPHY_RST.
-                                                         This value is superceded by the REF_CLK_FSEL<5:3> selection. */
+	uint64_t mpll_multiplier              : 7;  /**< Multiplies the reference clock to a frequency suitable for intended operating speed. Must
+                                                         leave at reset value of 0x0. This value may only be changed during UPHY_RST.
+                                                         This value is superseded by the REF_CLK_FSEL<5:3> selection. */
 	uint64_t ref_ssp_en                   : 1;  /**< Enables reference clock to the prescaler for SuperSpeed function. This should always be
-                                                         enabled since this output clock is used to drive the UAHC suspend-mode clock during low-
-                                                         power states.
+                                                         enabled since this output clock is used to drive the UAHC suspend-mode clock during
+                                                         low-power states.
                                                          This value can be changed only during UPHY_RST or during low-power states.
                                                          The reference clock must be running and stable before UPHY_RST is deasserted and before
                                                          REF_SSP_EN is asserted. */
-	uint64_t ref_clk_div2                 : 1;  /**< Divides the reference clock by 2 before feeding it into the REF_CLK_FSEL divider.
-                                                         Must leave at reset value of 0x0.
+	uint64_t ref_clk_div2                 : 1;  /**< Divides the reference clock by 2 before feeding it into the REF_CLK_FSEL divider. Must
+                                                         leave at reset value of 0x0.
                                                          This value can be changed only during UPHY_RST. */
-	uint64_t ref_clk_fsel                 : 6;  /**< Selects the reference clock frequency for the SuperSpeed and HighSpeed PLL blocks. The
+	uint64_t ref_clk_fsel                 : 6;  /**< Selects the reference clock frequency for the SuperSpeed and high-speed PLL blocks. The
                                                          legal values are as follows:
-                                                         0x27 = External reference clock 100 MHz
-                                                         0x2A = External reference clock 24 MHz
-                                                         0x31 = External reference clock 20 MHz
-                                                         0x38 = External reference clock 19.2 MHz
+                                                         0x27 = External reference clock 100 MHz.
                                                          All other values are reserved.
-                                                         This value may only be changed during UPHY_RST. */
+                                                         This value may only be changed during UPHY_RST.
+                                                         INTERNAL: 0x2A = External reference clock 24 MHz.
+                                                         0x31 = External reference clock 20 MHz.
+                                                         0x38 = External reference clock 19.2 MHz. */
 	uint64_t reserved_31_31               : 1;
-	uint64_t h_clk_en                     : 1;  /**< Host-controller-clock enable. When set to 1, the host-controller clock is generated. This
-                                                         also enables access to UCTL registers 0x30-0xF8. */
-	uint64_t h_clk_byp_sel                : 1;  /**< Select the bypass input to the host-controller-clock divider.
-                                                         0 = Use the divided coprocessor clock from the H_CLKDIV divider
-                                                         1 = Use the bypass clock from the GPIO pins
-                                                         This signal is just a multiplexer-select signal; it does not enable the host-controller
-                                                         clock. You must still set H_CLKDIV_EN separately. H_CLK_BYP_SEL select should not be
-                                                         changed unless H_CLKDIV_EN is disabled.
-                                                         The bypass clock can be selected and running even if the host-controller-clock dividers
-                                                         are not running.
+	uint64_t h_clk_en                     : 1;  /**< Controller-clock enable. When set to 1, the controller clock is generated. This also
+                                                         enables access to UCTL registers 0x30-0xF8. */
+	uint64_t h_clk_byp_sel                : 1;  /**< Select the bypass input to the controller-clock divider.
+                                                         0 = Use the divided coprocessor clock from the H_CLKDIV divider.
+                                                         1 = Use the bypass clock from the GPIO pins.
+                                                         This signal is just a multiplexer-select signal; it does not enable the controller clock.
+                                                         You must still set H_CLK_EN separately. H_CLK_BYP_SEL select should not be changed
+                                                         unless H_CLK_EN is disabled.
+                                                         The bypass clock can be selected and running even if the controller-clock dividers are not
+                                                         running.
                                                          INTERNAL: Generally bypass is only used for scan purposes. */
-	uint64_t h_clkdiv_rst                 : 1;  /**< Host-controller-clock divider reset. Divided clocks are not generated while the divider is
+	uint64_t h_clkdiv_rst                 : 1;  /**< Controller-clock divider reset. Divided clocks are not generated while the divider is
                                                          being reset.
                                                          This also resets the suspend-clock divider. */
 	uint64_t reserved_27_27               : 1;
-	uint64_t h_clkdiv_sel                 : 3;  /**< The hclk frequency is sclk frequency divided by H_CLKDIV_SEL.
-                                                         The host-controller-clock frequency must be at or below 300MHz.
-                                                         The host-controller-clock frequency must be at or above 150MHz for full-rate USB3
-                                                         operation.
-                                                         The host-controller-clock frequency must be at or above 125MHz for any USB3
-                                                         functionality.
-                                                         The host-controller-clock frequency must be at or above 90MHz for full-rate USB2
-                                                         operation
-                                                         The host-controller-clock frequency must be at or above 62.5MHz for any USB2 operation.
-                                                         This field can be changed only when H_CLKDIV_RST = 1.
+	uint64_t h_clkdiv_sel                 : 3;  /**< Controller clock-frequency-divider select. The controller-clock frequency is the
+                                                         coprocessor-clock frequency divided by H_CLKDIV_SEL and must be at or below 300 MHz.
                                                          The divider values are the following:
-                                                         0x0 = divide by 1 0x4 = divide by 8
-                                                         0x1 = divide by 2 0x5 = divide by 16
-                                                         0x2 = divide by 4 0x6 = divide by 24
-                                                         0x3 = divide by 6 0x7 = divide by 32
-                                                         INTERNAL: 150MHz is from the maximum of:
-                                                         INTERNAL:   Synopsys DWC_usb3 Databook v2.50a, table A-16, row 1, col 12.
-                                                         INTERNAL:   Synopsys DWC_usb3 Databook v2.50a, table A-17, row 7, col 9.
-                                                         INTERNAL:   Synopsys DWC_usb3 Databook v2.50a, table A-16, row 7, col 9.
-                                                         INTERNAL: HOST2>62.5MHz in HOST mode is from Synopsys DWC_usb3 Databook v2.50a,
-                                                         INTERNAL:   section A.12.5, 3rd bullet in Note on page 894.
-                                                         INTERNAL: HOST2>90MHz was arrived at from some math: 62.5MHz +
-                                                         INTERNAL:   (diff between row 1 and 2, col 12 of table A-16). */
+                                                         0x0 = divide by 1.
+                                                         0x1 = divide by 2.
+                                                         0x2 = divide by 4.
+                                                         0x3 = divide by 6.
+                                                         0x4 = divide by 8.
+                                                         0x5 = divide by 16.
+                                                         0x6 = divide by 24.
+                                                         0x7 = divide by 32.
+                                                         For USB3:
+                                                         * The controller-clock frequency must be at or above 125 MHz for any USB3 operation.
+                                                         * The controller-clock frequency must be at or above
+                                                         150 MHz for full-rate USB3 operation.
+                                                         For USB2:
+                                                         * The controller-clock frequency must be at or above 62.5 MHz for any USB2 operation.
+                                                         * The controller-clock frequency must be at or above
+                                                         90 MHz for full-rate USB2 operation.
+                                                         This field can be changed only when H_CLKDIV_RST = 1.
+                                                         INTERNAL: 150MHz is from the maximum of Synopsys DWC_usb3 Databook v2.50a, table A-16, row
+                                                         1, col 12. Synopsys DWC_usb3 Databook v2.50a, table A-17, row 7, col 9. Synopsys DWC_usb3
+                                                         Databook v2.50a, table A-16, row 7, col 9. HOST2>62.5MHz in HOST mode is from Synopsys
+                                                         DWC_usb3 Databook v2.50a, section A.12.5, 3rd bullet in Note on page 894. HOST2>90MHz was
+                                                         arrived at from some math: 62.5MHz + (diff between row 1 and 2, col 12 of table A-16). */
 	uint64_t reserved_22_23               : 2;
 	uint64_t usb3_port_perm_attach        : 1;  /**< Indicates this port is permanently attached. This is a strap signal; it should be modified
                                                          only when UPHY_RST is asserted. */
@@ -761,14 +760,14 @@ union cvmx_uctlx_ctl {
                                                          reporting connect/disconnect events on the port and keeps the port in disabled state. This
                                                          could be used for security reasons where hardware can disable a port regardless of whether
                                                          xHCI driver enables a port or not.
-                                                         UAHC(0)_HCSPARAMS1[MAXPORTS] is not affected by this signal.
+                                                         UAHC()_HCSPARAMS1[MAXPORTS] is not affected by this signal.
                                                          This is a strap signal; it should be modified only when UPHY_RST is asserted. */
 	uint64_t reserved_17_17               : 1;
-	uint64_t usb2_port_disable            : 1;  /**< Disables USB2 (HighSpeed/FullSpeed/LowSpeed) portion of this PHY. When set to 1, this
+	uint64_t usb2_port_disable            : 1;  /**< Disables USB2 (high-speed/full-speed/low-speed) portion of this PHY. When set to 1, this
                                                          signal stops reporting connect/disconnect events on the port and keeps the port in
                                                          disabled state. This could be used for security reasons where hardware can disable a port
                                                          regardless of whether xHCI driver enables a port or not.
-                                                         UAHC(0)_HCSPARAMS1[MAXPORTS] is not affected by this signal.
+                                                         UAHC()_HCSPARAMS1[MAXPORTS] is not affected by this signal.
                                                          This is a strap signal; it should only be modified when UPHY_RST is asserted.
                                                          If Port0 is required to be disabled, ensure that the utmi_clk[0] is running at the normal
                                                          speed. Also, all the enabled USB2.0 ports should have the same clock frequency as Port0. */
@@ -776,7 +775,7 @@ union cvmx_uctlx_ctl {
 	uint64_t ss_power_en                  : 1;  /**< PHY SuperSpeed block power enable.
                                                          This is a strap signal; it should only be modified when UPHY_RST is asserted. */
 	uint64_t reserved_13_13               : 1;
-	uint64_t hs_power_en                  : 1;  /**< PHY HighSpeed block power enable
+	uint64_t hs_power_en                  : 1;  /**< PHY high-speed block power enable.
                                                          This is a strap signal; it should only be modified when UPHY_RST is asserted. */
 	uint64_t reserved_5_11                : 7;
 	uint64_t csclk_en                     : 1;  /**< Turns on the USB UCTL interface clock (coprocessor clock). This enables access to UAHC
@@ -789,8 +788,8 @@ union cvmx_uctlx_ctl {
 	uint64_t uctl_rst                     : 1;  /**< Software reset; resets UCTL; active-high.
                                                          Resets UAHC DMA and register shims. Resets UCTL RSL registers 0x30-0xF8.
                                                          Does not reset UCTL RSL registers 0x0-0x28.
-                                                         UCTL RSL registers starting from 0x30 can be accessed only after the host-controller clock
-                                                         is active and UCTL_RST is deasserted.
+                                                         UCTL RSL registers starting from 0x30 can be accessed only after the controller clock is
+                                                         active and UCTL_RST is deasserted.
                                                          INTERNAL: Note that soft-resetting the UCTL while it is active may cause violations of
                                                          RSL, NCB, and CIB protocols. */
 #else
@@ -836,21 +835,25 @@ typedef union cvmx_uctlx_ctl cvmx_uctlx_ctl_t;
 /**
  * cvmx_uctl#_ecc
  *
- * Accessible by: only when H_CLKDIV_EN
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
  * This register can be used to disable ECC correction, insert ECC errors, and debug ECC
  * failures.
- * The ECC_ERR* fields are captured when there are no outstanding ECC errors indicated in INTSTAT
- * and a new ECC error arrives. Prioritization for multiple events occurring on the same cycle is
- * indicated by the ECC_ERR_SOURCE enumeration: highest encoded value has highest priority.
- * The *ECC_*_DIS fields disable ECC correction; SBE and DBE errors are still reported. If
+ * * The ECC_ERR* fields are captured when there are no outstanding ECC errors indicated in
+ * INTSTAT and a new ECC error arrives. Prioritization for multiple events occurring on the same
+ * cycle is indicated by the ECC_ERR_SOURCE enumeration: highest encoded value has highest
+ * priority.
+ * * The *ECC_*_DIS fields disable ECC correction; SBE and DBE errors are still reported. If
  * *ECC_*_DIS = 0x1, then no data-correction occurs.
- * The *ECC_FLIP_SYND fields flip the syndrome<1:0> bits to generate single-bit/double-bit error
- * for testing.
- * 0x0 = normal operation
- * 0x1 = SBE on bit[0]
- * 0x2 = SBE on bit[1]
- * 0x3 = DBE on bit[1:0]
+ * * The *ECC_FLIP_SYND fields flip the syndrome<1:0> bits to generate single-bit/double-bit
+ * error for testing.
+ *
+ * 0x0 = normal operation.
+ * 0x1 = SBE on bit[0].
+ * 0x2 = SBE on bit[1].
+ * 0x3 = DBE on bit[1:0].
+ *
+ * This register is accessible only when UCTL()_CTL[H_CLK_EN] = 1.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UCTL_RST].
  */
 union cvmx_uctlx_ecc {
 	uint64_t u64;
@@ -1051,11 +1054,12 @@ typedef union cvmx_uctlx_erto_ctl cvmx_uctlx_erto_ctl_t;
 /**
  * cvmx_uctl#_host_cfg
  *
- * Accessible by: only when H_CLKDIV_EN
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
- * This register allows configuration of various host controller (UAHC) features.
- * Most of these are strap signals and should only be modified while the controller is not
- * running.
+ * This register allows configuration of various host controller (UAHC) features. Most of these
+ * are strap signals and should be modified only while the controller is not running.
+ *
+ * This register is accessible only when UCTL()_CTL[H_CLK_EN] = 1.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UCTL_RST].
  */
 union cvmx_uctlx_host_cfg {
 	uint64_t u64;
@@ -1065,13 +1069,13 @@ union cvmx_uctlx_host_cfg {
 	uint64_t host_current_belt            : 12; /**< This signal indicates the minimum value of all received BELT values and the BELT that is
                                                          set by the Set LTV command. */
 	uint64_t reserved_38_47               : 10;
-	uint64_t fla                          : 6;  /**< HighSpeed jitter adjustment. Indicates the correction required to accommodate mac3 clock
-                                                         and utmi clock jitter to measure 125us duration. With FLA tied to 0x0, the HighSpeed
+	uint64_t fla                          : 6;  /**< High-speed jitter adjustment. Indicates the correction required to accommodate mac3 clock
+                                                         and utmi clock jitter to measure 125us duration. With FLA tied to 0x0, the high-speed
                                                          125us micro-frame is counted for 123933ns. The value needs to be programmed in terms of
-                                                         HighSpeed bit times in a 30 MHz cycle. Default value that needs to be driven is 0x20
+                                                         high-speed bit times in a 30 MHz cycle. Default value that needs to be driven is 0x20
                                                          (assuming 30 MHz perfect clock).
                                                          FLA connects to the FLADJ register defined in the xHCI spec in the PCI configuration
-                                                         space. Each count is equal to 16 HighSpeed bit times. By default when this register is
+                                                         space. Each count is equal to 16 high-speed bit times. By default when this register is
                                                          set to 0x20, it gives 125us interval. Now, based on the clock accuracy, you can decrement
                                                          the count or increment the count to get the 125 us uSOF window.
                                                          This is a strap signal; it should only be modified when UAHC is in reset (soft-reset
@@ -1086,25 +1090,25 @@ union cvmx_uctlx_host_cfg {
                                                          OCI_ACTIVE_HIGH_EN.
                                                          This is a strap signal; it should only be modified when UAHC is in reset (soft-reset
                                                          okay). */
-	uint64_t oci_active_high_en           : 1;  /**< Overcurrent sense selection. The off-chip sense (high/low) is converted to match the host-
+	uint64_t oci_active_high_en           : 1;  /**< Overcurrent sense selection. The off-chip sense (high/low) is converted to match the
                                                          controller's active-high sense.
-                                                         1 = Overcurrent indication from off-chip source is active-high.
                                                          0 = Overcurrent indication from off-chip source is active-low.
+                                                         1 = Overcurrent indication from off-chip source is active-high.
                                                          This is a strap signal; it should only be modified when UAHC is in reset (soft-reset
                                                          okay). */
 	uint64_t ppc_en                       : 1;  /**< Port-power-control enable.
-                                                         0 = UAHC(0)_HCCPARAMS[PPC] report port-power-control feature is unavailable.
-                                                         1 = UAHC(0)_HCCPARAMS[PPC] reports port-power-control feature is available. PPC output
+                                                         0 = UAHC()_HCCPARAMS[PPC] report port-power-control feature is unavailable.
+                                                         1 = UAHC()_HCCPARAMS[PPC] reports port-power-control feature is available. PPC output
                                                          from UAHC is taken to the GPIO signals and sense-converted based on PPC_ACTIVE_HIGH_EN.
                                                          The MIO GPIO multiplexer must be programmed accordingly.
-                                                         This is a strap signal; it should only be modified when UAHC is in reset (soft-reset
-                                                         okay). */
+                                                         This is a strap signal; it should only be modified when either the UCTL_CTL[UAHC] or
+                                                         UAHC_GCTL[CoreSoftReset] is asserted. */
 	uint64_t ppc_active_high_en           : 1;  /**< Port power control sense selection. The active-high port-power-control output to off-chip
                                                          source is converted to match the off-chip sense.
-                                                         1 = Port-power control to off-chip source is active-high.
                                                          0 = Port-power control to off-chip source is active-low.
-                                                         This is a strap signal; it should only be modified when UAHC is in reset (soft reset
-                                                         okay). */
+                                                         1 = Port-power control to off-chip source is active-high.
+                                                         This is a strap signal; it should only be modified when either the UCTL_CTL[UAHC] or
+                                                         UAHC_GCTL[CoreSoftReset] is asserted. */
 	uint64_t reserved_0_23                : 24;
 #else
 	uint64_t reserved_0_23                : 24;
@@ -1243,50 +1247,37 @@ typedef union cvmx_uctlx_int_reg cvmx_uctlx_int_reg_t;
 /**
  * cvmx_uctl#_intstat
  *
- * Accessible by: always
- * Reset by: IOI reset (srst_n)
  * This register provides a summary of different bits of RSL interrupts. DBEs are detected and
- * SBE are corrected. For debugging output for ECC DBEs/SBEs, see UCTL(0)_ECC.
+ * SBE are corrected. For debugging output for ECC DBEs/SBEs, see UCTL()_ECC. This register can
+ * be reset by IOI reset.
  */
 union cvmx_uctlx_intstat {
 	uint64_t u64;
 	struct cvmx_uctlx_intstat_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_30_63               : 34;
-	uint64_t xm_r_dbe                     : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. Throws
-                                                         UCTL_INTSN_E::UCTL(0)_INTSTAT_XM_R_DBE. */
-	uint64_t xm_r_sbe                     : 1;  /**< Detected single-bit error on the UCTL AxiMaster read-data FIFO. Throws
-                                                         UCTL_INTSN_E::UCTL(0)_INTSTAT_XM_R_SBE. */
-	uint64_t xm_w_dbe                     : 1;  /**< Detected double-bit error on the UCTL AxiMaster write-data FIFO. Throws
-                                                         UCTL_INTSN_E::UCTL(0)_INTSTAT_XM_W_DBE. */
-	uint64_t xm_w_sbe                     : 1;  /**< Detected single-bit error on the UCTL AxiMaster write-data FIFO. Throws
-                                                         UCTL_INTSN_E::UCTL(0)_INTSTAT_XM_W_SBE. */
+	uint64_t xm_r_dbe                     : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t xm_r_sbe                     : 1;  /**< Detected single-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t xm_w_dbe                     : 1;  /**< Detected double-bit error on the UCTL AxiMaster write-data FIFO. */
+	uint64_t xm_w_sbe                     : 1;  /**< Detected single-bit error on the UCTL AxiMaster write-data FIFO. */
 	uint64_t reserved_22_25               : 4;
-	uint64_t ram2_dbe                     : 1;  /**< Detected double-bit error on the UAHC RxFIFO RAMs (RAM2). Throws
-                                                         UCTL_INTSN_E::UCTL(0)_INTSTAT_RAM2_DBE. */
-	uint64_t ram2_sbe                     : 1;  /**< Detected single-bit error on the UAHC RxFIFO RAMs (RAM2). Throws
-                                                         UCTL_INTSN_E::UCTL(0)_INTSTAT_RAM2_SBE. */
-	uint64_t ram1_dbe                     : 1;  /**< Detected double-bit error on the UAHC TxFIFO RAMs (RAM1). Throws
-                                                         UCTL_INTSN_E::UCTL(0)_INTSTAT_RAM1_DBE. */
-	uint64_t ram1_sbe                     : 1;  /**< Detected single-bit error on the UAHC TxFIFO RAMs (RAM1). Throws
-                                                         UCTL_INTSN_E::UCTL(0)_INTSTAT_RAM2_SBE. */
-	uint64_t ram0_dbe                     : 1;  /**< Detected double-bit error on the UAHC Desc/Reg Cache (RAM0). Throws
-                                                         UCTL_INTSN_E::UCTL(0)_INTSTAT_RAM0_DBE. */
-	uint64_t ram0_sbe                     : 1;  /**< Detected single-bit error on the UAHC Desc/Reg Cache (RAM0). Throws
-                                                         UCTL_INTSN_E::UCTL(0)_INTSTAT_RAM0_SBE. */
+	uint64_t ram2_dbe                     : 1;  /**< Detected double-bit error on the UAHC RxFIFO RAMs (RAM2). */
+	uint64_t ram2_sbe                     : 1;  /**< Detected single-bit error on the UAHC RxFIFO RAMs (RAM2). */
+	uint64_t ram1_dbe                     : 1;  /**< Detected double-bit error on the UAHC TxFIFO RAMs (RAM1). */
+	uint64_t ram1_sbe                     : 1;  /**< Detected single-bit error on the UAHC TxFIFO RAMs (RAM1). */
+	uint64_t ram0_dbe                     : 1;  /**< Detected double-bit error on the UAHC Desc/Reg Cache (RAM0). */
+	uint64_t ram0_sbe                     : 1;  /**< Detected single-bit error on the UAHC Desc/Reg Cache (RAM0). */
 	uint64_t reserved_3_15                : 13;
 	uint64_t xm_bad_dma                   : 1;  /**< Detected bad DMA access from UAHC to IOI. Error information is logged in
-                                                         UCTL(0)_SHIM_CFG[XM_BAD_DMA_*]. Received a DMA request from UAHC that violates the
+                                                         UCTL()_SHIM_CFG[XM_BAD_DMA_*]. Received a DMA request from UAHC that violates the
                                                          assumptions made by the AXI-to-IOI shim. Such scenarios include: illegal length/size
                                                          combinations and address out-of-bounds.
                                                          For more information on exact failures, see the description in
-                                                         UCTL(0)_SHIM_CFG[XM_BAD_DMA_TYPE]. The hardware does not translate the request correctly
-                                                         and results may violate IOI protocols.
-                                                         Throws UCTL_INTSN_E::UCTL(0)_INTSTAT_XM_BAD_DMA. */
+                                                         UCTL()_SHIM_CFG[XM_BAD_DMA_TYPE]. The hardware does not translate the request correctly
+                                                         and results may violate IOI protocols. */
 	uint64_t xs_ncb_oob                   : 1;  /**< Detected out-of-bound register access to UAHC over IOI. The UAHC defines 1MB of register
                                                          space, starting at offset 0x0. Any accesses outside of this register space cause this bit
-                                                         to be set to 1. Error information is logged in UCTL(0)_SHIM_CFG[XS_NCB_OOB_*].
-                                                         Throws UCTL_INTSN_E::UCTL(0)_INTSTAT_XS_NCB_OOB. */
+                                                         to be set to 1. Error information is logged in UCTL()_SHIM_CFG[XS_NCB_OOB_*]. */
 	uint64_t reserved_0_0                 : 1;
 #else
 	uint64_t reserved_0_0                 : 1;
@@ -1410,10 +1401,13 @@ typedef union cvmx_uctlx_orto_ctl cvmx_uctlx_orto_ctl_t;
 /**
  * cvmx_uctl#_port#_cfg_hs
  *
- * Accessible by: only when H_CLKDIV_EN
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
- * This register controls configuration and test controls for the portX PHY.
- * INTERNAL: All these settings are for HS functionality, connect on DVDD power domain.
+ * This register controls configuration and test controls for the high-speed port 0 PHY.
+ *
+ * This register is accessible only when UCTL()_CTL[H_CLK_EN] = 1.
+ *
+ * This register can be reset by IOI reset or UCTL()_CTL[UCTL_RST].
+ *
+ * INTERNAL: All these settings are for high-speed functionality, connect on DVDD power domain.
  */
 union cvmx_uctlx_portx_cfg_hs {
 	uint64_t u64;
@@ -1426,76 +1420,76 @@ union cvmx_uctlx_portx_cfg_hs {
                                                          threshold voltage level, while a negative binary bit setting change results in a -1.5%
                                                          incremental change in the threshold voltage level. */
 	uint64_t sq_rx_tune                   : 3;  /**< Squelch threshold adjustment. Adjusts the voltage level for the threshold used to detect
-                                                         valid HighSpeed data.
+                                                         valid high-speed data.
                                                          A positive binary bit setting change results in a -5% incremental change in threshold
                                                          voltage level, while a negative binary bit setting change results in a +5% incremental
                                                          change in threshold voltage level. */
-	uint64_t tx_fsls_tune                 : 4;  /**< FullSpeed/LowSpeed source impedance adjustment. Adjusts the LowSpeed and FullSpeed single-
-                                                         ended source
-                                                         impedance while driving high. This parameter control is encoded in thermometer code.
+	uint64_t tx_fsls_tune                 : 4;  /**< Low-speed/full-speed source impedance adjustment. Adjusts the low- and full-speed single-
+                                                         ended source impedance while driving high. This parameter control is encoded in
+                                                         thermometer code.
                                                          A positive thermometer code change results in a -2.5% incremental change in source
                                                          impedance. A negative thermometer code change results in +2.5% incremental change in
                                                          source impedance. Any non-thermometer code setting (that is, 0x9) is not supported and
                                                          reserved. */
 	uint64_t reserved_46_47               : 2;
-	uint64_t tx_hs_xv_tune                : 2;  /**< Transmitter HighSpeed crossover adjustment. This bus adjusts the voltage at which the DP0
-                                                         and DM0 signals cross while transmitting in HighSpeed mode.
-                                                         11 = default setting
-                                                         10 = +15 mV
-                                                         01 = -15 mV
-                                                         00 = reserved */
-	uint64_t tx_preemp_amp_tune           : 2;  /**< HighSpeed transmitter pre-emphasis current control. Controls the amount of current
-                                                         sourced to DP0 and DM0 after a J-to-K or K-to-J transition. The HighSpeed transmitter
-                                                         pre-emphasis current is defined in terms of unit amounts. One unit amount is approximately
-                                                         600 A and is defined as 1* pre-emphasis current.
-                                                         0x3 = HighSpeed TX pre-emphasis circuit sources 3* pre-emphasis current.
-                                                         0x2 = HighSpeed TX pre-emphasis circuit sources 2* pre-emphasis current.
-                                                         0x1 = HighSpeed TX pre-emphasis circuit sources 1* pre-emphasis current.
-                                                         0x0 = HighSpeed TX pre-emphasis is disabled.
+	uint64_t tx_hs_xv_tune                : 2;  /**< Transmitter high-speed crossover adjustment. This bus adjusts the voltage at which the DP0
+                                                         and DM0 signals cross while transmitting in high-speed mode.
+                                                         0x0 = reserved.
+                                                         0x1 = -15 mV.
+                                                         0x2 = +15 mV.
+                                                         0x3 = default setting. */
+	uint64_t tx_preemp_amp_tune           : 2;  /**< High-speed transmitter pre-emphasis current control. Controls the amount of current
+                                                         sourced to DP0 and DM0 after a J-to-K or K-to-J transition. The high-speed transmitter
+                                                         preemphasis current is defined in terms of unit amounts. One unit amount is approximately
+                                                         600 A and is defined as 1* preemphasis current.
+                                                         0x0 = High-speed TX preemphasis is disabled.
+                                                         0x1 = High-speed TX preemphasis circuit sources 1* preemphasis current.
+                                                         0x2 = High-speed TX preemphasis circuit sources 2* preemphasis current.
+                                                         0x3 = High-speed TX preemphasis circuit sources 3* preemphasis current.
                                                          If these signals are not used, set them to 0x0. */
 	uint64_t reserved_41_41               : 1;
-	uint64_t tx_preemp_pulse_tune         : 1;  /**< HighSpeed transmitter pre-emphasis duration control. Controls the duration for which the
-                                                         HighSpeed pre-emphasis current is sourced onto DP0 or DM0. The HighSpeed transmitter
-                                                         pre-emphasis duration is defined in terms of unit amounts. One unit of pre-emphasis
-                                                         duration is approximately 580 ps and is defined as 1* pre-emphasis duration. This signal
-                                                         is valid only if either TX_PREEMP_AMP_TUNE0[1] or TX_PREEMP_AMP_TUNE0[0] is set to 1.
-                                                         1 = 1*, short pre-emphasis current duration
-                                                         0 = 2*, long pre-emphasis current duration (design default)
+	uint64_t tx_preemp_pulse_tune         : 1;  /**< High-speed transmitter preemphasis duration control. Controls the duration for which the
+                                                         high-speed preemphasis current is sourced onto DP0 or DM0. The high-speed transmitter
+                                                         preemphasis duration is defined in terms of unit amounts. One unit of preemphasis duration
+                                                         is approximately 580 ps and is defined as 1* preemphasis duration. This signal is valid
+                                                         only if either TX_PREEMP_AMP_TUNE0[1] or TX_PREEMP_AMP_TUNE0[0] is set to 1.
+                                                         0 = 2*, long preemphasis current duration (design default)
+                                                         1 = 1*, short preemphasis current duration
                                                          If this signal is not used, set it to 0. */
 	uint64_t tx_res_tune                  : 2;  /**< USB source-impedance adjustment. Some applications require additional devices to be added
                                                          on the USB, such as a series switch, which can add significant series resistance. This bus
                                                          adjusts the driver source impedance to compensate for added series resistance on the USB.
-                                                         0x3 = source impedance is decreased by approximately 4 ohm.
-                                                         0x2 = source impedance is decreased by approximately 2 ohm.
-                                                         0x1 = design default.
                                                          0x0 = source impedance is decreased by approximately 1.5 ohm.
+                                                         0x1 = design default.
+                                                         0x2 = source impedance is decreased by approximately 2 ohm.
+                                                         0x3 = source impedance is decreased by approximately 4 ohm.
                                                          Any setting other than the default can result in source-impedance variation across
                                                          process, voltage, and temperature conditions that does not meet USB 2.0 specification
                                                          limits. If this bus is not used, leave it at the default setting. */
-	uint64_t tx_rise_tune                 : 2;  /**< HighSpeed transmitter rise-/fall-time adjustment. Adjusts the rise/fall times of the
-                                                         HighSpeed waveform. A positive binary bit setting change results in a -4% incremental
-                                                         change in the HighSpeed rise/fall time. A negative binary bit setting change results in a
-                                                         +4% incremental change in the HighSpeed rise/fall time. */
-	uint64_t tx_vref_tune                 : 4;  /**< HighSpeed DC voltage-level adjustment. Adjusts the HighSpeed DC level voltage.
-                                                         A positive binary bit setting change results in a +1.25% incremental change in HighSpeed
-                                                         DC voltage level, while a negative binary bit setting change results in a -1.25%
-                                                         incremental change in HighSpeed DC voltage level.
+	uint64_t tx_rise_tune                 : 2;  /**< High-speed transmitter rise-/fall-time adjustment. Adjusts the rise/fall times of the
+                                                         high-speed waveform. A positive binary bit setting change results in a -4% incremental
+                                                         change in the high-speed rise/fall time. A negative binary bit setting change results in a
+                                                         +4% incremental change in the high-speed rise/fall time. */
+	uint64_t tx_vref_tune                 : 4;  /**< High-speed DC voltage-level adjustment. Adjusts the high-speed DC level voltage.
+                                                         A positive binary-bit-setting change results in a +1.25% incremental change in high-speed
+                                                         DC voltage level, while a negative binary-bit-setting change results in a -1.25%
+                                                         incremental change in high-speed DC voltage level.
                                                          The default bit setting is intended to create a HighSpeed transmit
                                                          DC level of approximately 400mV. */
 	uint64_t reserved_4_31                : 28;
 	uint64_t vatest_enable                : 2;  /**< Analog test-pin select. Enables analog test voltages to be placed on the ID0 pin.
-                                                         0x0 = test functionality disabled
-                                                         0x1 = test functionality enabled
-                                                         0x2, 0x3 = reserved, invalid settings
+                                                         0x0 = test functionality disabled.
+                                                         0x1 = test functionality enabled.
+                                                         0x2, 0x3 = reserved, invalid settings.
                                                          See also the PHY databook for details on how to select which analog test voltage. */
-	uint64_t loopback_enable              : 1;  /**< Places the HighSpeed PHY in loopback mode, which concurrently enables HighSpeed receive
+	uint64_t loopback_enable              : 1;  /**< Places the high-speed PHY in loopback mode, which concurrently enables high-speed receive
                                                          and transmit logic. */
 	uint64_t atereset                     : 1;  /**< Per-PHY ATE reset. When the USB core is powered up (not in suspend mode), an automatic
                                                          tester can use this to disable PHYCLOCK and FREECLK, then re-enable them with an aligned
                                                          phase.
-                                                         1 = PHYCLOCK and FREECLK outputs are disabled.
                                                          0 = PHYCLOCK and FREECLK are available within a specific period after ATERESET is
-                                                         deasserted. */
+                                                         deasserted.
+                                                         1 = PHYCLOCK and FREECLK outputs are disabled. */
 #else
 	uint64_t atereset                     : 1;
 	uint64_t loopback_enable              : 1;
@@ -1522,10 +1516,13 @@ typedef union cvmx_uctlx_portx_cfg_hs cvmx_uctlx_portx_cfg_hs_t;
 /**
  * cvmx_uctl#_port#_cfg_ss
  *
- * Accessible by: only when H_CLKDIV_EN
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
- * This register controls configuration and test controls for the portX PHY.
- * INTERNAL: All these settings are for HS functionality, connect on DVDD power domain.
+ * This register controls configuration and test controls for the SS port 0 PHY.
+ *
+ * This register is accessible only when UCTL()_CTL[H_CLK_EN] = 1.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UCTL_RST].
+ *
+ * INTERNAL: All these settings are for high-speed functionality, connect on DVDD power domain.
  */
 union cvmx_uctlx_portx_cfg_ss {
 	uint64_t u64;
@@ -1533,27 +1530,27 @@ union cvmx_uctlx_portx_cfg_ss {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t tx_vboost_lvl                : 3;  /**< TX voltage-boost level. Sets the boosted transmit launch amplitude (mVppd). The default
                                                          bit setting is intended to set the launch amplitude to approximately 1,008 mVppd. A
-                                                         single, positive binary bit setting change results in a +156 mVppd change in the Tx launch
+                                                         single, positive binary bit setting change results in a +156 mVppd change in the TX launch
                                                          amplitude.
-                                                         A single, negative binary bit setting change results in a -156 mVppd change in the Tx
+                                                         A single, negative binary bit setting change results in a -156 mVppd change in the TX
                                                          launch amplitude. All settings more than one binary bit change should not be used.
-                                                         0x3 = 0.844 V launch amplitude
-                                                         0x4 = 1.008 V launch amplitude
-                                                         0x5 = 1.156 V launch amplitude
+                                                         0x3 = 0.844 V launch amplitude.
+                                                         0x4 = 1.008 V launch amplitude.
+                                                         0x5 = 1.156 V launch amplitude.
                                                          All others values are invalid. */
 	uint64_t los_bias                     : 3;  /**< Loss-of-signal detector threshold-level control. A positive, binary bit setting change
                                                          results in a +15 mVp incremental change in the LOS threshold.
                                                          A negative binary bit setting change results in a -15 mVp incremental change in the LOS
                                                          threshold. The 0x0 setting is reserved and must not be used. The default 0x5 setting
                                                          corresponds to approximately 105 mVp.
-                                                         0x0 = invalid
-                                                         0x1 = 45 mV
-                                                         0x2 = 60 mV
-                                                         0x3 = 75 mV
-                                                         0x4 = 90 mV
-                                                         0x5 = 105 mV (default)
-                                                         0x6 = 120 mV
-                                                         0x7 = 135 mV */
+                                                         0x0 = invalid.
+                                                         0x1 = 45 mV.
+                                                         0x2 = 60 mV.
+                                                         0x3 = 75 mV.
+                                                         0x4 = 90 mV.
+                                                         0x5 = 105 mV (default).
+                                                         0x6 = 120 mV.
+                                                         0x7 = 135 mV. */
 	uint64_t lane0_ext_pclk_req           : 1;  /**< When asserted, this signal enables the pipe0_pclk output regardless of power state (along
                                                          with the associated increase in power consumption). You can use this input to enable
                                                          pipe0_pclk in the P3 state without going through a complete boot sequence. */
@@ -1565,47 +1562,47 @@ union cvmx_uctlx_portx_cfg_ss {
                                                          clock cycles equal to the value of pcs_rx_los_mask_val<9:0>. This control filters out
                                                          short, non-compliant LFPS glitches sent by a noncompliant host.
                                                          For normal operation, set to a targeted mask interval of 10us (value = 10us / Tref_clk).
-                                                         If the UCTL(0)_CTL[REF_CLK_DIV2] is used, then (value = 10us / (2 * Tref_clk)).
-                                                         These equations are based on the SuperSpeed reference clock frequency.
-                                                         The value of PCS_RX_LOS_MASK_VAL should be as follows:
-                                                             Frequency DIV2 LOS_MASK
-                                                              200  MHz    1    0x3E8
-                                                              125  MHz    0    0x4E2
-                                                              104  MHz    0    0x410
-                                                              100  MHz    0    0x3E8
-                                                               96  MHz    0    0x3C0
-                                                               76.8MHz    1    0x180
-                                                               52  MHz    0    0x208
-                                                               50  MHz    0    0x1F4
-                                                               48  MHz    0    0x1E0
-                                                               40  MHz    1    0x0C8
-                                                               38.4MHz    0    0x180
-                                                               26  MHz    0    0x104
-                                                               25  MHz    0    0x0FA
-                                                               24  MHz    0    0x0F0
-                                                               20  MHz    0    0x0C8
-                                                               19.2MHz    0    0x0C0
-                                                         Setting this bus to 0x0 disables masking.
-                                                         The value should be defined when the PHY is in reset. Changing this value during operation
-                                                         might disrupt normal operation of the link. */
-	uint64_t pcs_tx_deemph_3p5db          : 6;  /**< Fine-tune transmitter driver de-emphasis when set to 3.5db.
-                                                         This static value sets the Tx driver de-emphasis value when pipeP_tx_deemph[1:0] is set to
-                                                         0x1 (according to the PIPE3 specification). The values for transmit de-emphasis are
-                                                         derived from the following equation:
-                                                         TX de-emphasis (db) =
-                                                         20 * log_base_10((128 - 2 * pcs_tx_deemph)/128)
+                                                         If the UCTL()_CTL[REF_CLK_DIV2] is used, then
+                                                         (value = 10us / (2 * Tref_clk)). These equations are based on the SuperSpeed reference
+                                                         clock frequency. The value of PCS_RX_LOS_MASK_VAL should be as follows:
+                                                         <pre>
+                                                              Frequency   DIV2  LOS_MASK
+                                                              ---------    ---  --------
+                                                              200   MHz      1     0x3E8
+                                                              125   MHz      0     0x4E2
+                                                              104   MHz      0     0x410
+                                                              100   MHz      0     0x3E8
+                                                               96   MHz      0     0x3C0
+                                                               76.8 MHz      1     0x180
+                                                               52   MHz      0     0x208
+                                                               50   MHz      0     0x1F4
+                                                               48   MHz      0     0x1E0
+                                                               40   MHz      1     0x0C8
+                                                               38.4 MHz      0     0x180
+                                                               26   MHz      0     0x104
+                                                               25   MHz      0     0x0FA
+                                                               24   MHz      0     0x0F0
+                                                               20   MHz      0     0x0C8
+                                                               19.2 MHz      0     0x0C0
+                                                         </pre>
+                                                         Setting this bus to 0x0 disables masking. The value should be defined when the PHY is in
+                                                         reset. Changing this value during operation might disrupt normal operation of the link. */
+	uint64_t pcs_tx_deemph_3p5db          : 6;  /**< Fine-tune transmitter driver deemphasis when set to 3.5db.
+                                                         This static value sets the TX driver deemphasis value when pipeP_tx_deemph[1:0] is set to
+                                                         0x1 (according to the PIPE3 specification). The values for transmit deemphasis are derived
+                                                         from the following equation:
+                                                         _ TX de-emphasis (db) = 20 * log_base_10((128 - 2 * pcs_tx_deemph)/128)
                                                          In general, the parameter controls are static signals to be set prior to taking the PHY
                                                          out of reset. However, you can dynamically change these values on-the-fly for test
                                                          purposes. In this case, changes to the transmitter to reflect the current value occur only
                                                          after the pipeP_tx_deemph[1:0] input changes.
                                                          INTERNAL: Default value is package dependant. */
-	uint64_t pcs_tx_deemph_6db            : 6;  /**< Fine-tune transmitter driver de-emphasis when set to 6db.
-                                                         This static value sets the Tx driver de-emphasis value when pipeP_tx_deemph[1:0] is set to
+	uint64_t pcs_tx_deemph_6db            : 6;  /**< Fine-tune transmitter driver deemphasis when set to 6db.
+                                                         This static value sets the TX driver deemphasis value when pipeP_tx_deemph[1:0] is set to
                                                          0x2 (according to the PIPE3 specification). This bus is provided for completeness and as a
-                                                         second potential launch amplitude. The values for transmit de-emphasis are derived from
-                                                         the following equation:
-                                                         TX de-emphasis (db) =
-                                                         20 * log_base_10((128 - 2 * pcs_tx_deemph)/128)
+                                                         second potential launch amplitude. The values for transmit deemphasis are derived from the
+                                                         following equation:
+                                                         _ TX de-emphasis (db) = 20 * log_base_10((128 - 2 * pcs_tx_deemph)/128)
                                                          In general, the parameter controls are static signals to be set prior to taking the PHY
                                                          out of reset. However, you can dynamically change these values on-the-fly for test
                                                          purposes. In this case, changes to the transmitter to reflect the current value occur only
@@ -1652,10 +1649,14 @@ typedef union cvmx_uctlx_portx_cfg_ss cvmx_uctlx_portx_cfg_ss_t;
 /**
  * cvmx_uctl#_port#_cr_dbg_cfg
  *
- * Accessible by: only when H_CLKDIV_EN
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
- * This register allows indirect access to the configuration and test controls for the portX PHY.
+ * This register allows indirect access to the configuration and test controls for the port 0
+ * PHY.
  *
+ * This register is accessible only when UCTL()_CTL[H_CLK_EN] = 1.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UCTL_RST].
+ *
+ * INTERNAL: (In body of HRM)
  * To access the PHY registers indirectly through the CR interface, the HCLK must be running,
  * UCTL_RST must be deasserted, and UPHY_RST must be deasserted. Software is responsible for
  * ensuring that only one indirect access is ongoing at a time.
@@ -1738,10 +1739,12 @@ typedef union cvmx_uctlx_portx_cr_dbg_cfg cvmx_uctlx_portx_cr_dbg_cfg_t;
 /**
  * cvmx_uctl#_port#_cr_dbg_status
  *
- * Accessible by: only when H_CLKDIV_EN
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
- * This register allows indirect access to the configuration and test controls for the portX PHY.
- * For usage, see above description in CR_DBG_CFG.
+ * This register allows indirect access to the configuration and test controls for the port 0
+ * PHY.
+ *
+ * This register is accessible only when UCTL()_CTL[H_CLK_EN] = 1.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UCTL_RST].
  */
 union cvmx_uctlx_portx_cr_dbg_status {
 	uint64_t u64;
@@ -1792,28 +1795,28 @@ typedef union cvmx_uctlx_ppaf_wm cvmx_uctlx_ppaf_wm_t;
 /**
  * cvmx_uctl#_shim_cfg
  *
- * Accessible by: only when H_CLKDIV_EN
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
  * This register allows configuration of various shim (UCTL) features. The fields XS_NCB_OOB_*
  * are captured when there are no outstanding OOB errors indicated in INTSTAT and a new OOB error
  * arrives. The fields XS_BAD_DMA_* are captured when there are no outstanding DMA errors
  * indicated in INTSTAT and a new DMA error arrives.
+ *
+ * This register is accessible only when UCTL()_CTL[H_CLK_EN] = 1.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UCTL_RST].
  */
 union cvmx_uctlx_shim_cfg {
 	uint64_t u64;
 	struct cvmx_uctlx_shim_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t xs_ncb_oob_wrn               : 1;  /**< Read/write error log for out-of-bound UAHC register access.
-                                                         0 = read, 1 = write */
+                                                         0 = read, 1 = write. */
 	uint64_t reserved_60_62               : 3;
 	uint64_t xs_ncb_oob_osrc              : 12; /**< SRCID error log for out-of-bound UAHC register access. The IOI outbound SRCID for the OOB
                                                          error.
-                                                         CSR bits Field bits Description
-                                                         [59:58] [11:10] chipID
-                                                         [57] [9] request source: 0 = core, 1 = IOI-device
-                                                         [56:51] [8:3] core/IOI-device number. Note that for
-                                                         IOI devices, [56]/[8] is always 0.
-                                                         [50:48] [2:0] SubID */
+                                                         <59:58> = chipID.
+                                                         <57> = Request source: 0 = core, 1 = IOI-device.
+                                                         <56:51> = Core/IOI-device number. Note that for IOI devices, <56> is always 0.
+                                                         <50:48> = SubID. */
 	uint64_t xm_bad_dma_wrn               : 1;  /**< Read/write error log for bad DMA access from UAHC.
                                                          0 = read error log, 1 = write error log */
 	uint64_t reserved_44_46               : 3;
@@ -1850,9 +1853,8 @@ typedef union cvmx_uctlx_shim_cfg cvmx_uctlx_shim_cfg_t;
 /**
  * cvmx_uctl#_spare0
  *
- * Accessible by: always
- * Reset by: IOI reset (srst_n)
- * This register is spare.
+ * This register is a spare register. This register can be reset by IOI reset.
+ *
  */
 union cvmx_uctlx_spare0 {
 	uint64_t u64;
@@ -1870,9 +1872,9 @@ typedef union cvmx_uctlx_spare0 cvmx_uctlx_spare0_t;
 /**
  * cvmx_uctl#_spare1
  *
- * Accessible by: only when H_CLKDIV_EN
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UCTL_RST]
- * This register is spare.
+ * This register is accessible only when UCTL()_CTL[H_CLK_EN] = 1.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UCTL_RST].
  */
 union cvmx_uctlx_spare1 {
 	uint64_t u64;

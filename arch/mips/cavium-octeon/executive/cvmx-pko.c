@@ -1,4 +1,5 @@
-/***********************license start*************** * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+/***********************license start*************** 
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -41,16 +42,17 @@
  *
  * Support library for the hardware Packet Output unit.
  *
- * <hr>$Revision: 84412 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <linux/export.h>
 #include <asm/octeon/cvmx.h>
-#include <asm/octeon/cvmx-pko.h>
+#include <asm/octeon/cvmx-hwpko.h>
+#include <asm/octeon/cvmx-pko3.h>
+#include <asm/octeon/cvmx-pko3-queue.h>
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-cfg.h>
 #include <asm/octeon/cvmx-helper-util.h>
-#include <asm/octeon/cvmx-fpa.h>
+#include <asm/octeon/cvmx-fpa1.h>
 #include <asm/octeon/cvmx-clock.h>
 #else
 #include "cvmx.h"
@@ -59,15 +61,18 @@
 #include "cvmx-helper.h"
 #include "cvmx-helper-cfg.h"
 #include "cvmx-helper-util.h"
-#include "cvmx-fpa.h"
+#include "cvmx-fpa1.h"
 #ifndef __U_BOOT__
 #include "cvmx-error.h"
 #endif
 #endif
 
-/* #define PKO_DEBUG */
-
 #define CVMX_PKO_NQ_PER_PORT_MAX	32
+
+static cvmx_pko_return_value_t cvmx_pko2_config_port(short ipd_port,
+	int base_queue, int num_queues, const uint8_t priority[]);
+
+static const int debug = 0;
 
 /**
  * Internal state of packet output
@@ -75,26 +80,13 @@
 
 /*
  * PKO port iterator
+ * XXX this macro only works for 68XX
  */
 
 #define pko_for_each_port(__p)					\
     for (__p = 0; __p < CVMX_HELPER_CFG_MAX_PKO_PORT; __p++)	\
 	if (__cvmx_helper_cfg_pko_queue_base(__p) != CVMX_HELPER_CFG_INVALID_VALUE)
 
-CVMX_SHARED cvmx_fpa_pool_config_t pko_fpa_config = {2,1024,0};
-void cvmx_pko_set_cmd_que_pool_config(int64_t pool, uint64_t buffer_size,
-				    uint64_t buffer_count)
-{
-	pko_fpa_config.pool_num = pool;
-	pko_fpa_config.buffer_size = buffer_size;
-	pko_fpa_config.buffer_count = buffer_count;
-}
-EXPORT_SYMBOL(cvmx_pko_set_cmd_que_pool_config);
-
-void cvmx_pko_get_cmd_que_pool_config(cvmx_fpa_pool_config_t *pko_pool)
-{
-	*pko_pool = pko_fpa_config;
-}
 
 /*
  * @INTERNAL
@@ -104,6 +96,8 @@ void cvmx_pko_get_cmd_que_pool_config(cvmx_fpa_pool_config_t *pko_pool)
  * @param interface
  * @param index
  * @return the INT value on success and -1 on error
+ *
+ * This function is only for CN68XX.
  */
 static int __cvmx_pko_int(int interface, int index)
 {
@@ -145,7 +139,9 @@ static int __cvmx_pko_int(int interface, int index)
 
 int cvmx_pko_get_base_pko_port(int interface, int index)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_PKND))
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
+		return cvmx_helper_get_ipd_port(interface, index);
+	else if (octeon_has_feature(OCTEON_FEATURE_PKND))
 		return __cvmx_helper_cfg_pko_port_base(interface, index);
 	else
 		return cvmx_helper_get_ipd_port(interface, index);
@@ -154,6 +150,8 @@ EXPORT_SYMBOL(cvmx_pko_get_base_pko_port);
 
 int cvmx_pko_get_num_pko_ports(int interface, int index)
 {
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
+		return 1;
 	if (octeon_has_feature(OCTEON_FEATURE_PKND))
 		return __cvmx_helper_cfg_pko_port_num(interface, index);
 	else
@@ -163,7 +161,9 @@ EXPORT_SYMBOL(cvmx_pko_get_num_pko_ports);
 
 int cvmx_pko_get_base_queue(int port)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
+		return cvmx_pko3_get_queue_base(port);
+	else if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
 		return __cvmx_helper_cfg_pko_queue_base(cvmx_helper_cfg_ipd2pko_port_base(port));
 	} else {
 		if (port < 48)
@@ -183,6 +183,8 @@ EXPORT_SYMBOL(cvmx_pko_get_base_queue);
  */
 int cvmx_pko_get_base_queue_pkoid(int pko_port)
 {
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
+		return cvmx_pko3_get_queue_base(pko_port);
 	return __cvmx_helper_cfg_pko_queue_base(pko_port);
 }
 
@@ -195,12 +197,16 @@ int cvmx_pko_get_base_queue_pkoid(int pko_port)
  */
 int cvmx_pko_get_num_queues_pkoid(int pko_port)
 {
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
+		return cvmx_pko3_get_queue_num(pko_port);
 	return __cvmx_helper_cfg_pko_queue_num(pko_port);
 }
 
 int cvmx_pko_get_num_queues(int port)
 {
-	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
+		return cvmx_pko3_get_queue_num(port);
+	else if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
 		return __cvmx_helper_cfg_pko_queue_num(cvmx_helper_cfg_ipd2pko_port_base(port));
 	} else {
 		if (port < 48)
@@ -210,198 +216,41 @@ int cvmx_pko_get_num_queues(int port)
 }
 EXPORT_SYMBOL(cvmx_pko_get_num_queues);
 
-#ifdef PKO_DEBUG
 /**
  * Show queues for the internal ports
  */
 void cvmx_pko_show_queue_map(void)
 {
-	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_dprintf("%s: not supported on this chip\n",__FUNCTION__);
+		return;
+	} else if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
 		int port;
 		pko_for_each_port(port) {
 			cvmx_dprintf("pko_port %d (interface%d index%d) has %d queues (queue base = %d)\n",
-				     port,
-				     __cvmx_helper_cfg_pko_port_interface(port),
-				     __cvmx_helper_cfg_pko_port_index(port), __cvmx_helper_cfg_pko_queue_num(port), __cvmx_helper_cfg_pko_queue_base(port));
+				port,
+				__cvmx_helper_cfg_pko_port_interface(port),
+				__cvmx_helper_cfg_pko_port_index(port),
+				__cvmx_helper_cfg_pko_queue_num(port),
+				__cvmx_helper_cfg_pko_queue_base(port));
 		}
 	} else {
 		int port;
 		int pko_output_ports;
-		pko_output_ports = 36;
+		pko_output_ports = 40;
 		cvmx_dprintf("pko queue info \n");
 		for (port = 0; port < pko_output_ports; port++) {
-			cvmx_dprintf("%3d=%3d ", port, cvmx_pko_get_base_queue(port));
-			if (((port+1) % 8) == 0)
+			cvmx_dprintf("%3d=%3d-%3d ",
+				port,
+				cvmx_pko_get_base_queue(port),
+				cvmx_pko_get_base_queue(port)+
+					cvmx_pko_get_num_queues(port)-1
+				);
+			if (((port+1) % 4) == 0)
 				cvmx_dprintf("\n");
 		}
 		cvmx_dprintf("\n");
 	}
-}
-#endif /* PKO_DEBUG */
-
-/*
- * Configure queues for an internal port.
- * @INTERNAL
- * @param pko_port PKO internal port number
- * Note: o68 only
- */
-static void __cvmx_pko_iport_config(int pko_port)
-{
-	int queue, base_queue, num_queues;
-	int static_priority_base;
-	int static_priority_end;
-	union cvmx_pko_mem_iqueue_ptrs config;
-	uint64_t *buf_ptr = NULL;
-	uint64_t priorities[CVMX_PKO_NQ_PER_PORT_MAX] = {
-		[0 ... CVMX_PKO_NQ_PER_PORT_MAX - 1] = 8
-	};
-	int outputbuffer_pool = (int)cvmx_fpa_get_pko_pool();
-	uint64_t outputbuffer_pool_size = cvmx_fpa_get_pko_pool_block_size();
-
-	static_priority_base = -1;
-	static_priority_end = -1;
-	base_queue = __cvmx_helper_cfg_pko_queue_base(pko_port);
-	num_queues = __cvmx_helper_cfg_pko_queue_num(pko_port);
-
-	/*
-	 * Give the user a chance to override the per queue priorities.
-	 */
-	if (cvmx_override_pko_queue_priority)
-		cvmx_override_pko_queue_priority(pko_port, &priorities[0]);
-
-	/*
-	 * static queue priority validation
-	 */
-	for (queue = 0; queue < num_queues; queue++) {
-		if (static_priority_base == -1 && priorities[queue] == CVMX_PKO_QUEUE_STATIC_PRIORITY)
-			static_priority_base = queue;
-
-		if (static_priority_base != -1 && static_priority_end == -1 && priorities[queue] != CVMX_PKO_QUEUE_STATIC_PRIORITY && queue)
-			static_priority_end = queue - 1;
-		else if (static_priority_base != -1 && static_priority_end == -1 && queue == num_queues - 1)
-			static_priority_end = queue;	/* all queues are static priority */
-
-		/*
-		 * Check to make sure all static priority queues are contiguous.
-		 * Also catches some cases of static priorites not starting from
-		 * queue 0.
-		 */
-		if (static_priority_end != -1 && (int)queue > static_priority_end && priorities[queue] == CVMX_PKO_QUEUE_STATIC_PRIORITY) {
-			cvmx_dprintf("ERROR: __cvmx_pko_iport_config: Static priority "
-				     "queues aren't contiguous or don't start at base queue. " "q: %d, eq: %d\n", (int)queue, static_priority_end);
-		}
-		if (static_priority_base > 0) {
-			cvmx_dprintf("ERROR: __cvmx_pko_iport_config: Static priority " "queues don't start at base queue. sq: %d\n", static_priority_base);
-		}
-	}
-
-	/*
-	 * main loop to set the fields of CVMX_PKO_MEM_IQUEUE_PTRS for
-	 * each queue
-	 */
-	for (queue = 0; queue < num_queues; queue++) {
-		config.u64 = 0;
-		config.s.index = queue;
-		config.s.qid = base_queue + queue;
-		config.s.ipid = pko_port;
-		config.s.tail = (queue == (num_queues - 1));
-		config.s.s_tail = (queue == static_priority_end);
-		config.s.static_p = (static_priority_base >= 0);
-		config.s.static_q = (queue <= static_priority_end);
-
-		/*
-		 * Convert the priority into an enable bit field.
-		 * Try to space the bits out evenly so the packet
-		 * don't get grouped up.
-		 */
-		switch ((int)priorities[queue]) {
-		case 0:
-			config.s.qos_mask = 0x00;
-			break;
-		case 1:
-			config.s.qos_mask = 0x01;
-			break;
-		case 2:
-			config.s.qos_mask = 0x11;
-			break;
-		case 3:
-			config.s.qos_mask = 0x49;
-			break;
-		case 4:
-			config.s.qos_mask = 0x55;
-			break;
-		case 5:
-			config.s.qos_mask = 0x57;
-			break;
-		case 6:
-			config.s.qos_mask = 0x77;
-			break;
-		case 7:
-			config.s.qos_mask = 0x7f;
-			break;
-		case 8:
-			config.s.qos_mask = 0xff;
-			break;
-		case CVMX_PKO_QUEUE_STATIC_PRIORITY:
-			config.s.qos_mask = 0xff;
-			break;
-		default:
-			cvmx_dprintf("ERROR: __cvmx_pko_iport_config: " "Invalid priority %llu\n",
-				     (unsigned long long)priorities[queue]);
-			config.s.qos_mask = 0xff;
-			break;
-		}
-
-		/*
-		 * The command queues
-		 */
-		{
-			cvmx_cmd_queue_result_t cmd_res;
-
-			cmd_res = cvmx_cmd_queue_initialize(CVMX_CMD_QUEUE_PKO(base_queue + queue),
-							    CVMX_PKO_MAX_QUEUE_DEPTH,
-							    outputbuffer_pool,
-							    (outputbuffer_pool_size - CVMX_PKO_COMMAND_BUFFER_SIZE_ADJUST * 8));
-
-			if (cmd_res != CVMX_CMD_QUEUE_SUCCESS) {
-				switch (cmd_res) {
-				case CVMX_CMD_QUEUE_NO_MEMORY:
-					cvmx_dprintf("ERROR: __cvmx_pko_iport_config: Unable to allocate output buffer.");
-					break;
-				case CVMX_CMD_QUEUE_ALREADY_SETUP:
-					cvmx_dprintf("ERROR: __cvmx_pko_iport_config: Port already setup");
-					break;
-				case CVMX_CMD_QUEUE_INVALID_PARAM:
-				default:
-					cvmx_dprintf("ERROR: __cvmx_pko_iport_config: Command queue initialization failed.");
-					break;
-				}
-				cvmx_dprintf(" pko_port%d base_queue%d num_queues%d queue%d.\n",
-					     pko_port, base_queue, num_queues, queue);
-			}
-
-			buf_ptr = (uint64_t *) cvmx_cmd_queue_buffer(CVMX_CMD_QUEUE_PKO(base_queue + queue));
-			config.s.buf_ptr = cvmx_ptr_to_phys(buf_ptr) >> 7;
-		}
-
-		CVMX_SYNCWS;
-		cvmx_write_csr(CVMX_PKO_MEM_IQUEUE_PTRS, config.u64);
-	}
-}
-
-/*
- * Allocate queues for the PKO internal ports.
- * @INTERNAL
- *
- */
-static void __cvmx_pko_queue_alloc_o68(void)
-{
-	int port;
-
-	pko_for_each_port(port) {
-		__cvmx_pko_iport_config(port);
-	}
-
 }
 
 /*
@@ -437,10 +286,10 @@ static int __cvmx_pko_memory_per_engine_o68(int engine)
 }
 
 /*
- * Setup one-to-one mapping between PKO iport and eport.
+ * Setup one-to-one mapping between PKO2 iport and eport.
  * @INTERNAL
  */
-static void __cvmx_pko_port_map_o68(void)
+static void __cvmx_pko2_chip_init(void)
 {
 	int i;
 	int interface, index, port;
@@ -450,9 +299,9 @@ static void __cvmx_pko_port_map_o68(void)
 	/*
 	 * Initialize every iport with the invalid eid.
 	 */
-#define CVMX_O68_PKO_INVALID_EID	31
+#define CVMX_O68_PKO2_INVALID_EID	31
 	config.u64 = 0;
-	config.s.eid = CVMX_O68_PKO_INVALID_EID;
+	config.s.eid = CVMX_O68_PKO2_INVALID_EID;
 	for (i = 0; i < CVMX_HELPER_CFG_MAX_PKO_PORT; i++) {
 		config.s.ipid = i;
 		cvmx_write_csr(CVMX_PKO_MEM_IPORT_PTRS, config.u64);
@@ -489,22 +338,30 @@ int __cvmx_pko_get_pipe(int interface, int index)
 	return cvmx_helper_get_pko_port(interface, index);
 }
 
-/*
- * chip-specific setup
- * @INTERNAL
- */
-static void __cvmx_pko_chip_init(void)
+static void __cvmx_pko1_chip_init(void)
 {
-	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
-		__cvmx_pko_port_map_o68();
-		__cvmx_pko_queue_alloc_o68();
-	} else {
-		int i;
-		uint64_t priority = 8;
+	int queue;
+	union cvmx_pko_mem_queue_ptrs config;
+	union cvmx_pko_reg_queue_ptrs1 config1;
+	const int port = CVMX_PKO_MEM_QUEUE_PTRS_ILLEGAL_PID;
 
-		/*Initialize queues. */
-		for (i = 0; i < CVMX_PKO_MAX_OUTPUT_QUEUES; i++)
-			cvmx_pko_config_port(CVMX_PKO_MEM_QUEUE_PTRS_ILLEGAL_PID, i, 1, &priority);
+	/* Initialize all queues to connect to port 63 (ILLEGAL_PID) */
+	for (queue = 0; queue < CVMX_PKO_MAX_OUTPUT_QUEUES; queue++) {
+		config1.u64 = 0;
+		config1.s.idx3 = 0;
+		config1.s.qid7 = queue >> 7;
+
+		config.u64 = 0;
+		config.s.tail = 1;
+		config.s.index = 0;
+		config.s.port = port;
+		config.s.queue = queue;
+		config.s.buf_ptr = 0;
+
+		if (!OCTEON_IS_MODEL(OCTEON_CN3XXX)) {
+			cvmx_write_csr(CVMX_PKO_REG_QUEUE_PTRS1, config1.u64);
+		}
+		cvmx_write_csr(CVMX_PKO_MEM_QUEUE_PTRS, config.u64);
 	}
 }
 
@@ -513,40 +370,54 @@ static void __cvmx_pko_chip_init(void)
  * output system.  This does chip global config, and should only be
  * done by one core.
  */
-
-void cvmx_pko_initialize_global(void)
+void cvmx_pko_hw_init(uint8_t pool, unsigned bufsize)
 {
 	union cvmx_pko_reg_cmd_buf config;
+	union cvmx_iob_fau_timeout fau_to;
 	int i;
-    	int outputbuffer_pool = (int)cvmx_fpa_get_pko_pool();
-    	uint64_t outputbuffer_pool_size = cvmx_fpa_get_pko_pool_block_size();
-	uint64_t outputbuffer_pool_count;
 
-	outputbuffer_pool_count = cvmx_fpa_get_pko_pool_buffer_count();
-	/** It allocate pools for pko command queues */
-#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-	cvmx_fpa_global_initialize();
-	if(outputbuffer_pool_count != 0)
-		__cvmx_helper_initialize_fpa_pool(outputbuffer_pool, outputbuffer_pool_size,
-			outputbuffer_pool_count, "Pko Cmd Buffers");
-#endif
+	if (debug)
+		cvmx_dprintf("%s: pool=%u bufsz=%u\n", __func__, pool, bufsize);
 
-#ifdef CVMX_BUILD_FOR_STANDALONE
-	__cvmx_install_gmx_error_handler_for_xaui();
-#endif
-	__cvmx_helper_init_port_config_data();
+	/* chip-specific setup. */
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+		__cvmx_pko2_chip_init();
+	} else {
+		__cvmx_pko1_chip_init();
+	}
+
 	/*
 	 * Set the size of the PKO command buffers to an odd number of
 	 * 64bit words. This allows the normal two word send to stay
 	 * aligned and never span a command word buffer.
 	 */
 	config.u64 = 0;
-	config.s.pool = outputbuffer_pool;
-	config.s.size = outputbuffer_pool_size / 8 - 1;
+	config.s.pool = pool;
+	config.s.size = bufsize / 8 - 1;
 	cvmx_write_csr(CVMX_PKO_REG_CMD_BUF, config.u64);
 
-	/* chip-specific setup. */
-	__cvmx_pko_chip_init();
+	/*
+	 * Disable tagwait FAU timeout. This needs to be done before
+	 * anyone might start packet output using tags.
+	 */
+	fau_to.u64 = 0;
+	fau_to.s.tout_val = 0xfff;
+	fau_to.s.tout_enb = 0;
+	cvmx_write_csr(CVMX_IOB_FAU_TIMEOUT, fau_to.u64);
+
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+		union cvmx_pko_reg_min_pkt min_pkt;
+
+		min_pkt.u64 = 0;
+		min_pkt.s.size1 = 59;
+		min_pkt.s.size2 = 59;
+		min_pkt.s.size3 = 59;
+		min_pkt.s.size4 = 59;
+		min_pkt.s.size5 = 59;
+		min_pkt.s.size6 = 59;
+		min_pkt.s.size7 = 59;
+		cvmx_write_csr(CVMX_PKO_REG_MIN_PKT, min_pkt.u64);
+	}
 
 	/*
 	 * If we aren't using all of the queues optimize PKO's
@@ -603,20 +474,6 @@ void cvmx_pko_initialize_global(void)
 			}
 		}
 	}
-}
-
-/**
- * This function does per-core initialization required by the PKO routines.
- * This must be called on all cores that will do packet output, and must
- * be called after the FPA has been initialized and filled with pages.
- *
- * @return 0 on success
- *         !0 on failure
- */
-int cvmx_pko_initialize_local(void)
-{
-	/* Nothing to do */
-	return 0;
 }
 
 /**
@@ -704,6 +561,7 @@ void cvmx_pko_shutdown(void)
 	}
 
 	__cvmx_pko_reset();
+	cvmx_pko_queue_free_all();
 }
 
 /**
@@ -723,12 +581,12 @@ void cvmx_pko_shutdown(void)
  *                   queues have higher priority than higher numbered queues.
  *                   There must be num_queues elements in the array.
  */
-cvmx_pko_return_value_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
-				       uint64_t num_queues,
-				       const uint64_t priority[])
+cvmx_pko_return_value_t cvmx_pko_config_port(int port, int base_queue,
+				       int num_queues,
+				       const uint8_t priority[])
 {
 	cvmx_pko_return_value_t result_code;
-	uint64_t queue;
+	int queue;
 	union cvmx_pko_mem_queue_ptrs config;
 	union cvmx_pko_reg_queue_ptrs1 config1;
 	int static_priority_base = -1;
@@ -736,19 +594,34 @@ cvmx_pko_return_value_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 	int outputbuffer_pool = (int)cvmx_fpa_get_pko_pool();
 	uint64_t outputbuffer_pool_size = cvmx_fpa_get_pko_pool_block_size();
 
+	/* This function is not used for CN68XX */
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
-		return CVMX_PKO_SUCCESS;
+		return  cvmx_pko2_config_port(port, base_queue, num_queues, priority);
+
+	if (debug)
+		cvmx_dprintf("%s: port=%d queue=%d-%d pri %#x %#x %#x %#x\n",
+			__func__,
+			port, base_queue, (base_queue+num_queues-1),
+			priority[0],priority[1], priority[2], priority[3]);
+
+	/* FIXME: the need to handle ILLEGAL_PID port argument
+	 * is obsolete now, the code here can be simplified.
+	 */
 
 	if ((port >= CVMX_PKO_NUM_OUTPUT_PORTS) &&
 	    (port != CVMX_PKO_MEM_QUEUE_PTRS_ILLEGAL_PID)) {
-		cvmx_dprintf("ERROR: cvmx_pko_config_port: Invalid port %llu\n",
+		cvmx_dprintf("ERROR: %s: Invalid port %llu\n", __func__,
 			     (unsigned long long)port);
 		return CVMX_PKO_INVALID_PORT;
 	}
 
 	if (base_queue + num_queues > CVMX_PKO_MAX_OUTPUT_QUEUES) {
-		cvmx_dprintf("ERROR: cvmx_pko_config_port: Invalid queue range port = %lld base=%llu numques=%lld\n",
-			     (unsigned long long) port, (unsigned long long) base_queue, (unsigned long long) num_queues);
+		cvmx_dprintf("ERROR: %s: "
+			"Invalid queue range port = %lld base=%llu numques=%lld\n",
+			__func__,
+			(unsigned long long) port,
+			(unsigned long long) base_queue,
+			(unsigned long long) num_queues);
 		return CVMX_PKO_INVALID_QUEUE;
 	}
 
@@ -760,12 +633,13 @@ cvmx_pko_return_value_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 		 */
 		for (queue = 0; queue < num_queues; queue++) {
 			/* Find first queue of static priority */
-			if (static_priority_base == -1 && priority[queue] == CVMX_PKO_QUEUE_STATIC_PRIORITY)
+			int p_queue = queue % 16;
+			if (static_priority_base == -1 && priority[p_queue] == CVMX_PKO_QUEUE_STATIC_PRIORITY)
 				static_priority_base = queue;
 			/* Find last queue of static priority */
 			if (static_priority_base != -1 &&
 			    static_priority_end == -1 &&
-			    priority[queue] != CVMX_PKO_QUEUE_STATIC_PRIORITY &&
+			    priority[p_queue] != CVMX_PKO_QUEUE_STATIC_PRIORITY &&
 			    queue)
 				static_priority_end = queue - 1;
 			else if (static_priority_base != -1 &&
@@ -782,7 +656,7 @@ cvmx_pko_return_value_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 			 */
 			if (static_priority_end != -1 &&
 			    (int)queue > static_priority_end &&
-			    priority[queue] == CVMX_PKO_QUEUE_STATIC_PRIORITY) {
+			    priority[p_queue] == CVMX_PKO_QUEUE_STATIC_PRIORITY) {
 				cvmx_dprintf("ERROR: cvmx_pko_config_port: Static priority queues aren't contiguous or don't start at base queue. q: %d, eq: %d\n",
 					     (int)queue, static_priority_end);
 				return CVMX_PKO_INVALID_PRIORITY;
@@ -804,6 +678,7 @@ cvmx_pko_return_value_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 
 	for (queue = 0; queue < num_queues; queue++) {
 		uint64_t *buf_ptr = NULL;
+		int p_queue = queue % 16;
 
 		config1.u64 = 0;
 		config1.s.idx3 = queue >> 3;
@@ -823,7 +698,7 @@ cvmx_pko_return_value_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 		 * to space the bits out evenly so the packet don't
 		 * get grouped up.
 		 */
-		switch ((int)priority[queue]) {
+		switch ((int)priority[p_queue]) {
 		case 0:
 			config.s.qos_mask = 0x00;
 			break;
@@ -855,7 +730,7 @@ cvmx_pko_return_value_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 			config.s.qos_mask = 0xff;
 			break;
 		default:
-			cvmx_dprintf("ERROR: cvmx_pko_config_port: Invalid priority %llu\n", (unsigned long long)priority[queue]);
+			cvmx_dprintf("ERROR: cvmx_pko_config_port: Invalid priority %llu\n", (unsigned long long)priority[p_queue]);
 			config.s.qos_mask = 0xff;
 			result_code = CVMX_PKO_INVALID_PRIORITY;
 			break;
@@ -870,14 +745,20 @@ cvmx_pko_return_value_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 			if (cmd_res != CVMX_CMD_QUEUE_SUCCESS) {
 				switch (cmd_res) {
 				case CVMX_CMD_QUEUE_NO_MEMORY:
-					cvmx_dprintf("ERROR: cvmx_pko_config_port: " "Unable to allocate output buffer.\n");
+					cvmx_dprintf("ERROR: %s: "
+					"Unable to allocate output buffer\n",
+					__func__);
 					return (CVMX_PKO_NO_MEMORY);
 				case CVMX_CMD_QUEUE_ALREADY_SETUP:
-					cvmx_dprintf("ERROR: cvmx_pko_config_port: " "Port already setup. port=%d \n", (int) port);
+					cvmx_dprintf("ERROR: %s: "
+					"Port already setup. port=%d \n",
+					__func__, (int) port);
 					return (CVMX_PKO_PORT_ALREADY_SETUP);
 				case CVMX_CMD_QUEUE_INVALID_PARAM:
 				default:
-					cvmx_dprintf("ERROR: cvmx_pko_config_port: " "Command queue initialization failed.\n");
+					cvmx_dprintf("ERROR: %s: "
+					"Command queue initialization failed.\n",
+					__func__);
 					return (CVMX_PKO_CMD_QUEUE_INIT_ERROR);
 				}
 			}
@@ -897,6 +778,162 @@ cvmx_pko_return_value_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 	}
 
 	return result_code;
+}
+
+/*
+ * Configure queues for an internal port.
+ * @INTERNAL
+ * @param pko_port PKO internal port number
+ * FIXME: for PKO2 only, equivalent to cvmx_pko_config_port()
+ */
+static cvmx_pko_return_value_t cvmx_pko2_config_port(short ipd_port, int base_queue,
+				       int num_queues,
+				       const uint8_t priority[])
+{
+	int queue, pko_port;
+	int static_priority_base;
+	int static_priority_end;
+	union cvmx_pko_mem_iqueue_ptrs config;
+	uint64_t *buf_ptr = NULL;
+	int outputbuffer_pool = (int)cvmx_fpa_get_pko_pool();
+	uint64_t outputbuffer_pool_size = cvmx_fpa_get_pko_pool_block_size();
+
+	pko_port = cvmx_helper_cfg_ipd2pko_port_base(ipd_port);
+
+	if (debug)
+		cvmx_dprintf("%s: ipd_port %d pko_iport %d qbase %d qnum %d\n",
+		__func__, ipd_port, pko_port, base_queue, num_queues );
+
+	static_priority_base = -1;
+	static_priority_end = -1;
+
+	/*
+	 * static queue priority validation
+	 */
+	for (queue = 0; queue < num_queues; queue++) {
+		int p_queue = queue % 16;
+		if (static_priority_base == -1 && priority[p_queue] == CVMX_PKO_QUEUE_STATIC_PRIORITY)
+			static_priority_base = queue;
+
+		if (static_priority_base != -1 && static_priority_end == -1 && priority[p_queue] != CVMX_PKO_QUEUE_STATIC_PRIORITY && queue)
+			static_priority_end = queue - 1;
+		else if (static_priority_base != -1 && static_priority_end == -1 && queue == num_queues - 1)
+			static_priority_end = queue;	/* all queues are static priority */
+
+		/*
+		 * Check to make sure all static priority queues are contiguous.
+		 * Also catches some cases of static priorites not starting from
+		 * queue 0.
+		 */
+		if (static_priority_end != -1 && (int)queue > static_priority_end && priority[p_queue] == CVMX_PKO_QUEUE_STATIC_PRIORITY) {
+			cvmx_dprintf("ERROR: %s: Static priority "
+			     "queues aren't contiguous or don't start at base queue. "
+		"q: %d, eq: %d\n", __func__, (int)queue, static_priority_end);
+		}
+		if (static_priority_base > 0) {
+			cvmx_dprintf("ERROR: %s: Static priority " "queues don't start at base queue. sq: %d\n", __func__, static_priority_base);
+		}
+	}
+
+	/*
+	 * main loop to set the fields of CVMX_PKO_MEM_IQUEUE_PTRS for
+	 * each queue
+	 */
+	for (queue = 0; queue < num_queues; queue++) {
+		int p_queue = queue % 8;
+		config.u64 = 0;
+		config.s.index = queue;
+		config.s.qid = base_queue + queue;
+		config.s.ipid = pko_port;
+		config.s.tail = (queue == (num_queues - 1));
+		config.s.s_tail = (queue == static_priority_end);
+		config.s.static_p = (static_priority_base >= 0);
+		config.s.static_q = (queue <= static_priority_end);
+
+		/*
+		 * Convert the priority into an enable bit field.
+		 * Try to space the bits out evenly so the packet
+		 * don't get grouped up.
+		 */
+		switch ((int)priority[p_queue]) {
+		case 0:
+			config.s.qos_mask = 0x00;
+			break;
+		case 1:
+			config.s.qos_mask = 0x01;
+			break;
+		case 2:
+			config.s.qos_mask = 0x11;
+			break;
+		case 3:
+			config.s.qos_mask = 0x49;
+			break;
+		case 4:
+			config.s.qos_mask = 0x55;
+			break;
+		case 5:
+			config.s.qos_mask = 0x57;
+			break;
+		case 6:
+			config.s.qos_mask = 0x77;
+			break;
+		case 7:
+			config.s.qos_mask = 0x7f;
+			break;
+		case 8:
+			config.s.qos_mask = 0xff;
+			break;
+		case CVMX_PKO_QUEUE_STATIC_PRIORITY:
+			config.s.qos_mask = 0xff;
+			break;
+		default:
+			cvmx_dprintf("ERROR: %s: " "Invalid priority %llu\n",
+				__func__,
+				     (unsigned long long)priority[p_queue]);
+			config.s.qos_mask = 0xff;
+			break;
+		}
+
+		/*
+		 * The command queues
+		 */
+		{
+			cvmx_cmd_queue_result_t cmd_res;
+
+			cmd_res = cvmx_cmd_queue_initialize(CVMX_CMD_QUEUE_PKO(base_queue + queue),
+							    CVMX_PKO_MAX_QUEUE_DEPTH,
+							    outputbuffer_pool,
+							    (outputbuffer_pool_size - CVMX_PKO_COMMAND_BUFFER_SIZE_ADJUST * 8));
+
+			if (cmd_res != CVMX_CMD_QUEUE_SUCCESS) {
+				switch (cmd_res) {
+				case CVMX_CMD_QUEUE_NO_MEMORY:
+					cvmx_dprintf("ERROR: %s: Unable to allocate output buffer\n",__func__);
+					break;
+				case CVMX_CMD_QUEUE_ALREADY_SETUP:
+					cvmx_dprintf("ERROR: %s: Port already setup\n",__func__);
+					break;
+				case CVMX_CMD_QUEUE_INVALID_PARAM:
+				default:
+					cvmx_dprintf("ERROR: %s: "
+					"Command queue initialization failed.",
+					__func__);
+					break;
+				}
+				cvmx_dprintf(" pko_port%d base_queue%d num_queues%d queue%d.\n",
+					     pko_port, base_queue, num_queues, queue);
+			}
+
+			buf_ptr = (uint64_t *) cvmx_cmd_queue_buffer(CVMX_CMD_QUEUE_PKO(base_queue + queue));
+			config.s.buf_ptr = cvmx_ptr_to_phys(buf_ptr) >> 7;
+		}
+
+		CVMX_SYNCWS;
+		cvmx_write_csr(CVMX_PKO_MEM_IQUEUE_PTRS, config.u64);
+	}
+
+// FIXME: detect errors
+	return 0;
 }
 
 /**
@@ -967,4 +1004,114 @@ int cvmx_pko_rate_limit_bits(int port, uint64_t bits_s, int burst)
 	cvmx_write_csr(CVMX_PKO_MEM_PORT_RATE0, pko_mem_port_rate0.u64);
 	cvmx_write_csr(CVMX_PKO_MEM_PORT_RATE1, pko_mem_port_rate1.u64);
 	return 0;
+}
+
+/**
+ * Get the status counters for a port.
+ *
+ * @param ipd_port Port number (ipd_port) to get statistics for.
+ * @param clear    Set to 1 to clear the counters after they are read
+ * @param status   Where to put the results.
+ *
+ * Note:
+ *     - Only the doorbell for the base queue of the ipd_port is
+ *       collected.
+ *     - Retrieving the stats involves writing the index through
+ *       CVMX_PKO_REG_READ_IDX and reading the stat CSRs, in that
+ *       order. It is not MP-safe and caller should guarantee
+ *       atomicity.
+ */
+void cvmx_pko_get_port_status(uint64_t ipd_port, uint64_t clear, cvmx_pko_port_status_t * status)
+{
+	cvmx_pko_reg_read_idx_t pko_reg_read_idx;
+	cvmx_pko_mem_count0_t pko_mem_count0;
+	cvmx_pko_mem_count1_t pko_mem_count1;
+	int pko_port, port_base, port_limit;
+
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_pko3_get_legacy_port_stats(ipd_port, clear, status);
+		return;
+	} else if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
+		int interface = cvmx_helper_get_interface_num(ipd_port);
+		int index = cvmx_helper_get_interface_index_num(ipd_port);
+		port_base = cvmx_helper_get_pko_port(interface, index);
+		if (port_base == -1)
+			cvmx_dprintf("Warning: Invalid port_base\n");
+		port_limit = port_base + cvmx_pko_get_num_pko_ports(interface, index);
+	} else {
+		port_base = ipd_port;
+		port_limit = port_base + 1;
+	}
+
+	/*
+	 * status->packets and status->octets
+	 */
+	status->packets = 0;
+	status->octets = 0;
+	pko_reg_read_idx.u64 = 0;
+
+	for (pko_port = port_base; pko_port < port_limit; pko_port++) {
+
+		/*
+		 * In theory, one doesn't need to write the index csr every
+		 * time as he can set pko_reg_read_idx.s.inc to increment
+		 * the index automatically. Need to find out exactly how XXX.
+		 */
+		pko_reg_read_idx.s.index = pko_port;
+		cvmx_write_csr(CVMX_PKO_REG_READ_IDX, pko_reg_read_idx.u64);
+
+		pko_mem_count0.u64 = cvmx_read_csr(CVMX_PKO_MEM_COUNT0);
+		status->packets += pko_mem_count0.s.count;
+		if (clear) {
+			pko_mem_count0.s.count = pko_port;
+			cvmx_write_csr(CVMX_PKO_MEM_COUNT0, pko_mem_count0.u64);
+		}
+
+		pko_mem_count1.u64 = cvmx_read_csr(CVMX_PKO_MEM_COUNT1);
+		status->octets += pko_mem_count1.s.count;
+		if (clear) {
+			pko_mem_count1.s.count = pko_port;
+			cvmx_write_csr(CVMX_PKO_MEM_COUNT1, pko_mem_count1.u64);
+		}
+	}
+
+	/*
+	 * status->doorbell
+	 */
+	if (OCTEON_IS_MODEL(OCTEON_CN3XXX)) {
+		cvmx_pko_mem_debug9_t debug9;
+		pko_reg_read_idx.s.index = cvmx_pko_get_base_queue(ipd_port);
+		cvmx_write_csr(CVMX_PKO_REG_READ_IDX, pko_reg_read_idx.u64);
+		debug9.u64 = cvmx_read_csr(CVMX_PKO_MEM_DEBUG9);
+		status->doorbell = debug9.cn38xx.doorbell;
+	} else {
+		cvmx_pko_mem_debug8_t debug8;
+		pko_reg_read_idx.s.index = cvmx_pko_get_base_queue(ipd_port);
+		cvmx_write_csr(CVMX_PKO_REG_READ_IDX, pko_reg_read_idx.u64);
+		debug8.u64 = cvmx_read_csr(CVMX_PKO_MEM_DEBUG8);
+		if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+			status->doorbell = debug8.cn68xx.doorbell;
+		else
+			status->doorbell = debug8.cn58xx.doorbell;
+	}
+}
+EXPORT_SYMBOL(cvmx_pko_get_port_status);
+
+/*
+ * Obtain the number of PKO commands pending in a queue
+ *
+ * @param queue is the queue identifier to be queried
+ * @return the number of commands pending transmission or -1 on error
+ */
+int cvmx_pko_queue_pend_count( cvmx_cmd_queue_id_t queue)
+{
+	int count;
+
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		int node = cvmx_get_node_num();
+		count = cvmx_pko3_dq_query(node,queue);
+	} else {
+		count = cvmx_cmd_queue_length(CVMX_CMD_QUEUE_PKO(queue));
+	}
+	return count;
 }

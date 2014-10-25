@@ -62,6 +62,12 @@
 #ifndef __CVMX_HELPER_CFG_H__
 #define __CVMX_HELPER_CFG_H__
 
+#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+#include <asm/octeon/cvmx-helper-util.h>
+#else
+#include "cvmx-helper-util.h"
+#endif
+
 #define CVMX_HELPER_CFG_MAX_PKO_PORT		128
 #define CVMX_HELPER_CFG_MAX_PIP_BPID       	64
 #define CVMX_HELPER_CFG_MAX_PIP_PKND       	64
@@ -113,19 +119,29 @@ enum cvmx_helper_cfg_option {
 };
 typedef enum cvmx_helper_cfg_option cvmx_helper_cfg_option_t;
 
+struct cvmx_phy_info;
+
 /*
  * Per physical port
+ * Note: This struct is passed between linux and SE apps.
  */
 struct cvmx_cfg_port_param {
+	int port_fdt_node;		/** Node offset in FDT of node */
+	int phy_fdt_node;		/** Node offset in FDT of PHY */
+	struct cvmx_phy_info *phy_info;	/** Data structure with PHY information */
 	int8_t ccpp_pknd;
 	int8_t ccpp_bpid;
 	int8_t ccpp_pko_port_base;
 	int8_t ccpp_pko_num_ports;
-	bool valid;			/** 1 = port valid, 0 = invalid */
-	bool sgmii_phy_mode;		/** 1 = port in PHY mode, 0 = MAC mode */
-	bool sgmii_1000x_mode;		/** 1 = 1000Base-X mode, 0 = SGMII mode */
-	bool agl_rx_clk_delay_bypass;	/** 1 = use rx clock delay bypass for AGL mode */
 	uint8_t agl_rx_clk_skew;	/** AGL rx clock skew setting (default 0) */
+	bool valid:1;			/** 1 = port valid, 0 = invalid */
+	bool sgmii_phy_mode:1;		/** 1 = port in PHY mode, 0 = MAC mode */
+	bool sgmii_1000x_mode:1;	/** 1 = 1000Base-X mode, 0 = SGMII mode */
+	bool agl_rx_clk_delay_bypass:1;	/** 1 = use rx clock delay bypass for AGL mode */
+	bool force_link_up:1;		/** Ignore PHY and always report link up */
+	bool disable_an:1;		/** true to disable autonegotiation */
+	bool link_down_pwr_dn:1;	/** Power PCS off when link is down */
+	bool phy_present:1;		/** true if PHY is present */
 };
 
 /*
@@ -160,23 +176,28 @@ typedef union cvmx_user_static_pko_queue_config
 {
 	struct
 	{
-		int pko_queues_per_port_interface[5];
-		int pko_queues_per_port_loop;
-		int pko_queues_per_port_pci;
+		struct pko_queues_cfg {
+			unsigned
+				queues_per_port:5,
+				qos_enable:1,
+				pfc_enable:1;
+		} pko_cfg_iface[6];
+		struct pko_queues_cfg pko_cfg_loop;
+		struct pko_queues_cfg pko_cfg_npi;
 	} pknd;
 	struct
 	{
-		int max_ports_per_interface[2];
-		int pko_queues_per_port_interface[2];
-		int pko_queues_per_port_loop;
-		int pko_queues_per_port_pci;
-		int pko_queues_per_port_srio[4];
+		uint8_t pko_ports_per_interface[2];
+		uint8_t pko_queues_per_port_interface[2];
+		uint8_t pko_queues_per_port_loop;
+		uint8_t pko_queues_per_port_pci;
+		uint8_t pko_queues_per_port_srio[4];
 	} non_pknd;
 } cvmx_user_static_pko_queue_config_t;
 
 extern CVMX_SHARED cvmx_user_static_pko_queue_config_t __cvmx_pko_queue_static_config;
 extern CVMX_SHARED struct cvmx_cfg_pko_port_map cvmx_cfg_pko_port_map[CVMX_HELPER_CFG_MAX_PKO_PORT];
-extern CVMX_SHARED struct cvmx_cfg_port_param cvmx_cfg_port [][CVMX_HELPER_CFG_MAX_PORT_PER_IFACE];
+extern CVMX_SHARED struct cvmx_cfg_port_param cvmx_cfg_port [CVMX_MAX_NODES][CVMX_HELPER_MAX_IFACE][CVMX_HELPER_CFG_MAX_PORT_PER_IFACE];
 extern CVMX_SHARED struct cvmx_cfg_pko_port_param cvmx_pko_queue_table[];
 extern CVMX_SHARED int cvmx_enable_helper_flag;
 /*
@@ -292,6 +313,8 @@ extern int __cvmx_helper_cfg_pko_max_engine(void);
  *
  * @param opt is the config option.
  * @return the value set for the option
+ *
+ * LR: only used for DWB in NPI, POW, PKO1
  */
 extern uint64_t cvmx_helper_cfg_opt_get(cvmx_helper_cfg_option_t opt);
 
@@ -305,6 +328,8 @@ extern uint64_t cvmx_helper_cfg_opt_get(cvmx_helper_cfg_option_t opt);
  * Note an option here is a config-time parameter and this means that
  * it has to be set before calling the corresponding setup functions
  * that actually sets the option in hw.
+ *
+ * LR: Not used.
  */
 extern int cvmx_helper_cfg_opt_set(cvmx_helper_cfg_option_t opt, uint64_t val);
 
@@ -380,20 +405,11 @@ extern void cvmx_helper_cfg_store_short_packets_in_wqe(void);
  *
  * @return  0 on success
  *         -1 on failure
+ *
+ * LR: Called ONLY from comfig-parse!
  */
  int cvmx_pko_alloc_iport_and_queues(int interface, int port, int port_cnt,
 				     int queue_cnt);
-
-/*
- * Allocated a block of queues for the specified port.
- *
- * @param  port   the internal port for which the queues are requested
- * @param  count  the number of queues requested
- *
- * @return  0 on success
- *         -1 on failure
- */
-int cvmx_pko_queue_alloc(uint64_t port, uint64_t count);
 
 /*
  * Free the queues that are associated with the specified port
@@ -473,6 +489,28 @@ extern void cvmx_helper_set_agl_rx_clock_delay_bypass(int interface, int index,
 
 /**
  * @INTERNAL
+ * Forces a link to always return that it is up ignoring the PHY (if present)
+ *
+ * @param interface the interface number
+ * @param index the port's index
+ */
+extern bool cvmx_helper_get_port_force_link_up(int interface, int index);
+extern void cvmx_helper_set_port_force_link_up(int interface, int index,
+					       bool value);
+
+/**
+ * @INTERNAL
+ * Return true if PHY is present to the passed xiface
+ *
+ * @param interface the interface number
+ * @param index the port's index
+ */
+extern bool cvmx_helper_get_port_phy_present(int xiface, int index);
+extern void cvmx_helper_set_port_phy_present(int xiface, int index,
+					     bool value);
+
+/**
+ * @INTERNAL
  * Return the AGL port rx clock skew, only used
  * if agl_rx_clock_delay_bypass is set.
  *
@@ -482,6 +520,95 @@ extern void cvmx_helper_set_agl_rx_clock_delay_bypass(int interface, int index,
 extern uint8_t cvmx_helper_get_agl_rx_clock_skew(int interface, int index);
 extern void cvmx_helper_set_agl_rx_clock_skew(int interface, int index,
 					      uint8_t value);
+
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+/**
+ * @INTERNAL
+ * Store the FDT node offset in the device tree of a port
+ *
+ * @param xiface	node and interface
+ * @param index		port index
+ * @param node_offset	node offset to store
+ */
+extern void cvmx_helper_set_port_fdt_node_offset(int xiface, int index,
+						 int node_offset);
+
+/**
+ * @INTERNAL
+ * Return the FDT node offset in the device tree of a port
+ *
+ * @param xiface	node and interface
+ * @param index		port index
+ * @return		node offset of port or -1 if invalid
+ */
+extern int cvmx_helper_get_port_fdt_node_offset(int xiface, int index);
+
+/**
+ * @INTERNAL
+ * Store the FDT node offset in the device tree of a phy
+ *
+ * @param xiface	node and interface
+ * @param index		port index
+ * @param node_offset	node offset to store
+ */
+extern void cvmx_helper_set_phy_fdt_node_offset(int xiface, int index,
+						int node_offset);
+
+/**
+ * @INTERNAL
+ * Return the FDT node offset in the device tree of a phy
+ *
+ * @param xiface	node and interface
+ * @param index		port index
+ * @return		node offset of phy or -1 if invalid
+ */
+extern int cvmx_helper_get_phy_fdt_node_offset(int xiface, int index);
+#endif /* !CVMX_BUILD_FOR_LINUX_KERNEL */
+
+/**
+ * @INTERNAL
+ * Override default autonegotiation for a port
+ *
+ * @param xiface	node and interface
+ * @param index		port index
+ * @param enable	true to enable autonegotiation, false to force full
+ *			duplex, full speed.
+ */
+extern void cvmx_helper_set_port_autonegotiation(int xiface, int index,
+						 bool enable);
+
+/**
+ * @INTERNAL
+ * Returns if autonegotiation is enabled or not.
+ *
+ * @param xiface	node and interface
+ * @param index		port index
+ *
+ * @return 0 if autonegotiation is disabled, 1 if enabled.
+ */
+extern bool cvmx_helper_get_port_autonegotiation(int xiface, int index);
+
+/**
+ * @INTERNAL
+ * Sets the PHY info data structure
+ *
+ * @param xiface	node and interface
+ * @param index		port index
+ * @param[in] phy_info	phy information data structure pointer
+ */
+extern void cvmx_helper_set_port_phy_info(int xiface, int index,
+					  struct cvmx_phy_info *phy_info);
+/**
+ * @INTERNAL
+ * Returns the PHY information data structure for a port
+ *
+ * @param xiface	node and interface
+ * @param index		port index
+ *
+ * @return pointer to PHY information data structure or NULL if not set
+ */
+extern struct cvmx_phy_info *cvmx_helper_get_port_phy_info(int xiface, int index);
+
 /*
  * Initializes cvmx with user specified config info.
  */

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -1563,17 +1563,19 @@ typedef union cvmx_uahcx_caplength cvmx_uahcx_caplength_t;
 /**
  * cvmx_uahc#_config
  *
- * See xHCI specification v1.0 section 5.4.7.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or
- * UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.4.7.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_config {
 	uint32_t u32;
 	struct cvmx_uahcx_config_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_8_31                : 24;
-	uint32_t maxslotsen                   : 8;  /**< Maximum device slots enabled */
+	uint32_t maxslotsen                   : 8;  /**< Maximum device slots enabled. */
 #else
 	uint32_t maxslotsen                   : 8;
 	uint32_t reserved_8_31                : 24;
@@ -1586,10 +1588,12 @@ typedef union cvmx_uahcx_config cvmx_uahcx_config_t;
 /**
  * cvmx_uahc#_crcr
  *
- * See xHCI specification v1.0 section 5.4.5.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or
- * UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.4.5.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_crcr {
 	uint64_t u64;
@@ -1617,11 +1621,14 @@ typedef union cvmx_uahcx_crcr cvmx_uahcx_crcr_t;
 /**
  * cvmx_uahc#_db#
  *
- * See xHCI specification v1.0 section 5.6.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or
- * UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
- * INTERNAL: xHCI spec, page 32: there are UAHC(0)_HCSPARAMS1[MAXSLOTS]+1 doorbell registers.
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.6.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
+ *
+ * INTERNAL: xHCI spec, page 32: there are UAHC()_HCSPARAMS1[MAXSLOTS]+1 doorbell registers.
  */
 union cvmx_uahcx_dbx {
 	uint32_t u32;
@@ -1664,10 +1671,12 @@ typedef union cvmx_uahcx_dboff cvmx_uahcx_dboff_t;
 /**
  * cvmx_uahc#_dcbaap
  *
- * See xHCI specification v1.0 section 5.4.6.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or
- * UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.4.6.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_dcbaap {
 	uint64_t u64;
@@ -1687,10 +1696,12 @@ typedef union cvmx_uahcx_dcbaap cvmx_uahcx_dcbaap_t;
 /**
  * cvmx_uahc#_dnctrl
  *
- * See xHCI specification v1.0 section 5.4.4.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or
- * UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.4.4.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_dnctrl {
 	uint32_t u32;
@@ -2678,16 +2689,18 @@ typedef union cvmx_uahcx_ehci_usbsts cvmx_uahcx_ehci_usbsts_t;
 /**
  * cvmx_uahc#_erdp#
  *
- * See xHCI specification v1.0 section 5.5.2.3.3.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or
- * UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.5.2.3.3.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_erdpx {
 	uint64_t u64;
 	struct cvmx_uahcx_erdpx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t erdp                         : 60; /**< Event ring dequeue pointer bits<31:4>. */
+	uint64_t erdp                         : 60; /**< Event ring dequeue pointer bits <63:4>. */
 	uint64_t ehb                          : 1;  /**< Event handler busy */
 	uint64_t desi                         : 3;  /**< Dequeue ERST segment index. */
 #else
@@ -2703,16 +2716,18 @@ typedef union cvmx_uahcx_erdpx cvmx_uahcx_erdpx_t;
 /**
  * cvmx_uahc#_erstba#
  *
- * See xHCI specification v1.0 section 5.5.2.3.2.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or
- * UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.5.2.3.2.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_erstbax {
 	uint64_t u64;
 	struct cvmx_uahcx_erstbax_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t erstba                       : 58; /**< Event-ring segment-table base-address. */
+	uint64_t erstba                       : 58; /**< Event-ring segment-table base-address bits<63:6>. */
 	uint64_t reserved_0_5                 : 6;
 #else
 	uint64_t reserved_0_5                 : 6;
@@ -2726,9 +2741,12 @@ typedef union cvmx_uahcx_erstbax cvmx_uahcx_erstbax_t;
 /**
  * cvmx_uahc#_erstsz#
  *
- * See xHCI specification v1.0 section 5.5.2.3.1.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.5.2.3.1.
+ *
+ * This register can be reset by NCB reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_erstszx {
 	uint32_t u32;
@@ -2750,24 +2768,27 @@ typedef union cvmx_uahcx_erstszx cvmx_uahcx_erstszx_t;
  *
  * When the AXI Master Bus returns Error response, the SoC Bus Error is generated. In the host
  * mode, the host_system_err port indicates this condition. In addition, it is also indicated in
- * UAHC(0)_USBSTS[HSE]. Due to the nature of AXI, it is possible that multiple AXI transactions
- * are active at a time. The Host Controller does not keep track of the start address of all
+ * UAHC()_USBSTS[HSE]. Due to the nature of AXI, it is possible that multiple AXI transactions
+ * are active at a time. The host controller does not keep track of the start address of all
  * outstanding transactions. Instead, it keeps track of the start address of the DMA transfer
- * associated with all active transactions. It is this address that is reported in the
- * GBUSERRADDR when a bus error occurs. For example, if the host controller initiates a DMA
+ * associated with all active transactions. It is this address that is reported in
+ * UAHC()_GBUSERRADDR when a bus error occurs. For example, if the host controller initiates a
+ * DMA
  * transfer to write 1k of packet data starting at buffer address 0xABCD0000, and this DMA is
  * broken up into multiple 256B bursts on the AXI, then if a bus error occurs on any of these
- * associated AXI transfers, the GBUSERRADDR reflects the DMA start address of 0xABCD0000
+ * associated AXI transfers, UAHC()_GBUSERRADDR reflects the DMA start address of 0xABCD0000
  * regardless of which AXI transaction received the error.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.12.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gbuserraddr {
 	uint64_t u64;
 	struct cvmx_uahcx_gbuserraddr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t busaddr                      : 64; /**< Bus address. Contains the first bus address that encountered an SoC bus error. It is valid
-                                                         when the UAHC(0)_GSTS[BUSERRADDRVLD] = 1. It can only be cleared by resetting the core. */
+                                                         when the UAHC()_GSTS[BUSERRADDRVLD] = 1. It can only be cleared by resetting the core. */
 #else
 	uint64_t busaddr                      : 64;
 #endif
@@ -2779,8 +2800,9 @@ typedef union cvmx_uahcx_gbuserraddr cvmx_uahcx_gbuserraddr_t;
 /**
  * cvmx_uahc#_gctl
  *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.5.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gctl {
 	uint32_t u32;
@@ -2800,9 +2822,9 @@ union cvmx_uahcx_gctl {
                                                          accuracy = 18 ms (Range is 12 ms - 18 ms)
                                                          100 ms + 0~+50% accuracy = 150 ms (Range is 100 ms - 150 ms).
                                                          The suspend clock accuracy requirement is:
-                                                         (12,000/62.5) * (GCTL[31:19]) * actual suspend_clk_period should be between 12,000 and
+                                                         _ (12,000/62.5) * (GCTL[31:19]) * actual suspend_clk_period should be between 12,000 and
                                                          18,000
-                                                         (100,000/62.5) * (GCTL[31:19]) * actual suspend_clk_period should be between 100,000 and
+                                                         _ (100,000/62.5) * (GCTL[31:19]) * actual suspend_clk_period should be between 100,000 and
                                                          150,000
                                                          For example, if your suspend_clk frequency varies from 7.5 MHz to 10.5MHz, then the value
                                                          needs to programmed is: Power Down Scale = 10500/16 = 657 (rounded up; and fastest
@@ -2810,26 +2832,25 @@ union cvmx_uahcx_gctl {
 	uint32_t masterfiltbypass             : 1;  /**< Master filter bypass. Not relevant for Cavium's configuration. */
 	uint32_t reserved_16_17               : 2;
 	uint32_t frmscldwn                    : 2;  /**< Frame scale down. Scales down device view of a SOF/USOF/ITP duration.
-                                                         For SS/HS mode:
-                                                         0x3 = Interval is 15.625 us
-                                                         0x2 = Interval is 31.25 us
-                                                         0x1 = Interval is 62.5 us
-                                                         0x0 = Interval is 125 us
-                                                         For FS mode, the scale-down value is multiplied by 8. */
+                                                         For SuperSpeed/high-speed mode:
+                                                         0x0 = Interval is 125 us.
+                                                         0x1 = Interval is 62.5 us.
+                                                         0x2 = Interval is 31.25 us.
+                                                         0x3 = Interval is 15.625 us.
+                                                         For full-speed mode, the scale-down value is multiplied by 8. */
 	uint32_t prtcapdir                    : 2;  /**< Port capability direction. Always keep set to 0x1. */
 	uint32_t coresoftreset                : 1;  /**< Core soft reset: 1 = soft reset to core, 0 = no soft reset.
-                                                         Clears the interrupts and all the UAHC(0)_* CSRs except the
-                                                         following registers: UAHC(0)_GCTL, UAHC(0)_GUCTL, UAHC(0)_GSTS,
-                                                         UAHC(0)_GRLSID, UAHC(0)_GGPIO, UAHC(0)_GUID, UAHC(0)_GUSB2PHYCFG[*],
-                                                         UAHC(0)_GUSB3PIPECTL[*].
-                                                         When you reset PHYs (using UAHC(0)_GUBS3PHYCFG or UAHC(0)_GUSB3PIPECTL
-                                                         registers), you must keep the core in reset state until PHY
-                                                         clocks are stable. This controls the bus, ram, and mac domain
-                                                         resets.
+                                                         Clears the interrupts and all the UAHC()_* CSRs except the
+                                                         following registers: UAHC()_GCTL, UAHC()_GUCTL, UAHC()_GSTS,
+                                                         UAHC()_GRLSID, UAHC()_GGPIO, UAHC()_GUID, UAHC()_GUSB2PHYCFG(),
+                                                         UAHC()_GUSB3PIPECTL().
+                                                         When you reset PHYs (using UAHC()_GUSB2PHYCFG() or UAHC()_GUSB3PIPECTL()), you must keep
+                                                         the
+                                                         core in reset state until PHY clocks are stable. This controls the bus, RAM, and MAC
+                                                         domain resets.
                                                          INTERNAL: Refer to Reset Generation on Synopsys Databook page 250.
-                                                         Note: Under soft reset, accesses to UAHC(0)_* CSRs other than UAHC(0)_GCTL
-                                                         may fail (Timeout).
-                                                         Note: This bit is for debug purposes only. Use USBCMD.HCRESET for soft reset. */
+                                                         Under soft reset, accesses to UAHC()_* CSRs other than UAHC()_GCTL may fail (timeout).
+                                                         This bit is for debug purposes only. Use UAHC()_USBCMD[HCRST] for soft reset. */
 	uint32_t sofitpsync                   : 1;  /**< Synchronize ITP to reference clock. In host mode, if this bit is set to:
                                                          0 = The core keeps the UTMI/ULPI PHY on the first port in non-suspended state whenever
                                                          there is a SuperSpeed port that is not in Rx.Detect, SS.Disable, and U3 state.
@@ -2838,52 +2859,48 @@ union cvmx_uahcx_gctl {
                                                          This feature is useful because it saves power by suspending UTMI/ULPI when SuperSpeed only
                                                          is active and it helps resolve when the PHY does not transmit a host resume unless it is
                                                          placed in suspend state.
-                                                         This bit must be programmed as a part of initialization at power-on reset, and must not be
-                                                         dynamically changed afterwards.
-                                                         Note: UAHC(0)_USB2PHYCFG[*][SUSPHY] eventually decides to put the UTMI/ULPI PHY in to
-                                                         suspend state. In addition, when this bit is set to 1, the core generates ITP off of the
-                                                         REF_CLK-based counter. Otherwise, ITP and SOF are generated off of UTMI/ULPI_CLK[0] based
-                                                         counter. To program the reference clock period inside the core, refer to
-                                                         UAHC(0)_GUCTL[REFCLKPER].
-                                                         INTERNAL: If you do not plan to ever use this feature or the
-                                                         UAHC(0)_GFLADJ[GFLADJ_REFCLK_LPM_SEL] feature, the minimum frequence for the ref_clk can
-                                                         be as low as 32KHz. You can connect the SUSPEND_CLK (as low as 32 KHz) to REF_CLK.
-                                                         Note: If you plan to enable hardware-based LPM (PORTPMSC.HLE = 1), this feature cannot be
-                                                         used. Turn off this feature by setting this bit to zero and use the
-                                                         UAHC(0)_GFLADJ[GFLADJ_REFCLK_LPM_SEL] feature.
-                                                         Note: If you set this bit to 1, the UAHC(0)_GUSB2PHYCFG[U2_FREECLK_EXISTS] bit must be set
-                                                         to zero. */
-	uint32_t u1u2timerscale               : 1;  /**< Disable U1/U2 timer scaledown. If set to 1, along with SCALEDOWN =0x1, disables the scale
+                                                         UAHC()_GUSB2PHYCFG()[SUSPHY] eventually decides to put the UTMI/ULPI PHY in to suspend
+                                                         state. In addition, when this bit is set to 1, the core generates ITP off of the REF_CLK-
+                                                         based counter. Otherwise, ITP and SOF are generated off of UTMI/ULPI_CLK[0] based counter.
+                                                         To program the reference clock period inside the core, refer to UAHC()_GUCTL[REFCLKPER].
+                                                         If you do not plan to ever use this feature or the UAHC()_GFLADJ[GFLADJ_REFCLK_LPM_SEL]
+                                                         feature, the minimum frequency for the ref_clk can be as low as 32KHz. You can connect the
+                                                         SUSPEND_CLK (as low as 32 KHz) to REF_CLK.
+                                                         If you plan to enable hardware-based LPM (PORTPMSC[HLE] = 1), this feature cannot be used.
+                                                         Turn off this feature by setting this bit to zero and use the
+                                                         UAHC()_GFLADJ[GFLADJ_REFCLK_LPM_SEL] feature.
+                                                         If you set this bit to 1, the UAHC()_GUSB2PHYCFG() [U2_FREECLK_EXISTS] bit must be set to
+                                                         0. */
+	uint32_t u1u2timerscale               : 1;  /**< Disable U1/U2 timer scaledown. If set to 1, along with SCALEDOWN = 0x1, disables the scale
                                                          down of U1/U2 inactive timer values.
                                                          This is for simulation mode only. */
 	uint32_t debugattach                  : 1;  /**< Debug attach. When this bit is set:
-                                                         SS link proceeds directly to the polling-link state (after RUN/STOP in the DCTL register
-                                                         is asserted) without checking remote termination.
-                                                         Link LFPS polling timeout is infinite
-                                                         Polling timeout during TS1 is infinite (in case link is waiting for TXEQ to finish). */
+                                                         * SuperSpeed link proceeds directly to the polling-link state (UAHC()_DCTL[RS] = 1)
+                                                         without checking remote termination.
+                                                         * Link LFPS polling timeout is infinite
+                                                         * Polling timeout during TS1 is infinite (in case link is waiting for TXEQ to finish). */
 	uint32_t ramclksel                    : 2;  /**< RAM clock select. Always keep set to 0x0. */
 	uint32_t scaledown                    : 2;  /**< Scale-down mode. When scale-down mode is enabled for simulation, the core uses scaled-down
                                                          timing values, resulting in faster simulations. When scale-down mode is disabled, actual
                                                          timing values are used. This is required for hardware operation.
-                                                         HS/FS/LS modes:
-                                                         0x0 = disables all scale-downs. Actual timing values are used.
-                                                         0x1 = enables scale-down of all timing values. These include:
-                                                         speed enumeration
-                                                         HNP/SRP
-                                                         suspend and resume
+                                                         High-speed/full-speed/low-speed modes:
+                                                         0x0 = Disables all scale-downs. Actual timing values are used.
+                                                         0x1 = Enables scale-down of all timing values. These include:
+                                                         * Speed enumeration
+                                                         * HNP/SRP
+                                                         * Suspend and resume
                                                          0x2 = N/A
-                                                         0x3 = enables bits <0> and <1> scale-down timing values.
-                                                         SS mode:
-                                                         0x0 = disables all scale-downs. Actual timing values are used.
-                                                         0x1 = enables scaled down SS timing and repeat values including:
-                                                         number of TxEq training sequences reduce to eight
-                                                         LFPS polling burst time reduce to 100 ns
-                                                         LFPS warm reset receive reduce to 30 us.
+                                                         0x3 = Enables bits <0> and <1> scale-down timing values.
+                                                         SuperSpeed mode:
+                                                         0x0 = Disables all scale-downs. Actual timing values are used.
+                                                         0x1 = Enables scaled down SuperSpeed timing and repeat values including:
+                                                         * Number of TxEq training sequences reduce to eight
+                                                         * LFPS polling burst time reduce to 100 ns
+                                                         * LFPS warm reset receive reduce to 30 us.
                                                          INTERNAL: Refer to the rtl_vip_scaledown_mapping.xls file under <workspace>/sim/SoC_sim
-                                                         directory
-                                                         for the complete list.
-                                                         0x2 = no TxEq training sequences are sent. Overrides bit<4>.
-                                                         0x3 = enables bits<0> and <1> scale-down timing values. */
+                                                         directory for the complete list.
+                                                         0x2 = No TxEq training sequences are sent. Overrides bit<4>.
+                                                         0x3 = Enables bits<0> and <1> scale-down timing values. */
 	uint32_t disscramble                  : 1;  /**< Disable scrambling. Transmit request to link partner on next transition to recovery or polling. */
 	uint32_t u2exit_lfps                  : 1;  /**< LFPS U2 exit.
                                                          0 = The link treats 248ns LFPS as a valid U2 exit.
@@ -2922,8 +2939,10 @@ typedef union cvmx_uahcx_gctl cvmx_uahcx_gctl_t;
 /**
  * cvmx_uahc#_gdbgbmu
  *
- * See description in DBGFIFOSPACE.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
+ * See description in UAHC()_GDBGFIFOSPACE.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.4.5.
  */
 union cvmx_uahcx_gdbgbmu {
@@ -2946,10 +2965,9 @@ typedef union cvmx_uahcx_gdbgbmu cvmx_uahcx_gdbgbmu_t;
 /**
  * cvmx_uahc#_gdbgepinfo
  *
- * See description in DBGFIFOSPACE.
- * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.4.8.
- * INTERNAL: This register is for Synopsys internal use only.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
+ * See description in UAHC()_GDBGFIFOSPACE.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
  */
 union cvmx_uahcx_gdbgepinfo {
 	uint64_t u64;
@@ -2967,15 +2985,16 @@ typedef union cvmx_uahcx_gdbgepinfo cvmx_uahcx_gdbgepinfo_t;
 /**
  * cvmx_uahc#_gdbgfifospace
  *
- * These registers are for debug purposes. They provide debug information on the internal status
- * and state machines.
- * Global Debug Registers have design-specific information, and are used by for
- * debugging purposes. These registers are not intended to be used by the customer. If any
- * debug assistance is needed for the silicon, contact Customer Support with a dump
- * of these registers.
+ * This register is for debug purposes. It provides debug information on the internal status and
+ * state machines. Global debug registers have design-specific information, and are used by state
+ * machines. Global debug registers have design-specific information, and are used for debugging
+ * purposes. These registers are not intended to be used by the customer. If any debug assistance
+ * is needed for the silicon, contact customer support with a dump of these registers.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.4.2.
  * INTERNAL: Contact Synopsys directly.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gdbgfifospace {
 	uint32_t u32;
@@ -2987,15 +3006,15 @@ union cvmx_uahcx_gdbgfifospace {
                                                          FIFO/queue select: <7:5> indicates the FIFO/queue type; <4:0> indicates the FIFO/queue
                                                          number.
                                                          For example, 0x21 refers to RxFIFO_1, and 0x5E refers to TxReqQ_30.
-                                                         0x1F-0x0: TxFIFO_31 to TxFIFO_0
-                                                         0x3F-0x20: RxFIFO_31 to RxFIFO_0
-                                                         0x5F-0x40: TxReqQ_31 to TxReqQ_0
-                                                         0x7F-0x60: RxReqQ_31 to RxReqQ_0
-                                                         0x9F-0x80: RxInfoQ_31 to RxInfoQ_0
-                                                         0xA0: DescFetchQ
-                                                         0xA1: EventQ
-                                                         0xA2: ProtocolStatusQ
-                                                         Port-select: <3:0> selects the port-number when accessing UAHC(0)_GDBGLTSSM. */
+                                                         0x1F-0x0: TxFIFO_31 to TxFIFO_0.
+                                                         0x3F-0x20: RxFIFO_31 to RxFIFO_0.
+                                                         0x5F-0x40: TxReqQ_31 to TxReqQ_0.
+                                                         0x7F-0x60: RxReqQ_31 to RxReqQ_0.
+                                                         0x9F-0x80: RxInfoQ_31 to RxInfoQ_0.
+                                                         0xA0: DescFetchQ.
+                                                         0xA1: EventQ.
+                                                         0xA2: ProtocolStatusQ.
+                                                         Port-select: <3:0> selects the port-number when accessing UAHC()_GDBGLTSSM. */
 #else
 	uint32_t select                       : 8;
 	uint32_t reserved_8_15                : 8;
@@ -3009,8 +3028,10 @@ typedef union cvmx_uahcx_gdbgfifospace cvmx_uahcx_gdbgfifospace_t;
 /**
  * cvmx_uahc#_gdbglnmcc
  *
- * See description in DBGFIFOSPACE.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
+ * See description in UAHC()_GDBGFIFOSPACE.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.4.4.
  */
 union cvmx_uahcx_gdbglnmcc {
@@ -3019,7 +3040,7 @@ union cvmx_uahcx_gdbglnmcc {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_9_31                : 23;
 	uint32_t lnmcc_berc                   : 9;  /**< This field indicates the bit-error-rate information for the port selected in
-                                                         UAHC(0)_GDBGFIFOSPACE[SELECT] (port-select).
+                                                         UAHC()_GDBGFIFOSPACE[SELECT] (port-select).
                                                          This field is for debug purposes only. */
 #else
 	uint32_t lnmcc_berc                   : 9;
@@ -3033,10 +3054,9 @@ typedef union cvmx_uahcx_gdbglnmcc cvmx_uahcx_gdbglnmcc_t;
 /**
  * cvmx_uahc#_gdbglsp
  *
- * See description in DBGFIFOSPACE.
- * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.4.7.
- * INTERNAL: This register is for Synopsys internal use only.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
+ * See description in UAHC()_GDBGFIFOSPACE.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
  */
 union cvmx_uahcx_gdbglsp {
 	uint32_t u32;
@@ -3054,10 +3074,12 @@ typedef union cvmx_uahcx_gdbglsp cvmx_uahcx_gdbglsp_t;
 /**
  * cvmx_uahc#_gdbglspmux
  *
- * See description in DBGFIFOSPACE.
+ * See description in UAHC()_GDBGFIFOSPACE.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.4.6.
  * INTERNAL: This register is for Synopsys internal use only.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gdbglspmux {
 	uint32_t u32;
@@ -3069,11 +3091,11 @@ union cvmx_uahcx_gdbglspmux {
                                                          A value of 0x3F drives 0s on the logic_analyzer_trace signal. If you plan to OR (instead
                                                          using a mux) this signal with other trace signals in your system to generate a common
                                                          trace signal, you can use this feature. */
-	uint32_t endbc                        : 1;  /**< Enable debugging of the Debug Capability LSP. Use HOSTSELECT to select the DbC LSP debug
+	uint32_t endbc                        : 1;  /**< Enable debugging of the debug capability LSP. Use HOSTSELECT to select the DbC LSP debug
                                                          information presented in the GDBGLSP register.
                                                          INTERNAL: Note this can only be used if DebugCapabaility was enabled at compile. */
 	uint32_t reserved_14_14               : 1;
-	uint32_t hostselect                   : 14; /**< Host select. Selects the LSP debug information presented in UAHC(0)_GDBGLSP. */
+	uint32_t hostselect                   : 14; /**< Host select. Selects the LSP debug information presented in UAHC()_GDBGLSP. */
 #else
 	uint32_t hostselect                   : 14;
 	uint32_t reserved_14_14               : 1;
@@ -3090,9 +3112,11 @@ typedef union cvmx_uahcx_gdbglspmux cvmx_uahcx_gdbglspmux_t;
  * cvmx_uahc#_gdbgltssm
  *
  * In multiport host configuration, the port number is defined by
- * UAHC(0)_GDBGFIFOSPACE[SELECT]<3:0>. Value of this register may change immediately after reset.
- * See description in DBGFIFOSPACE.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
+ * UAHC()_GDBGFIFOSPACE[SELECT]<3:0>. Value of this register may change immediately after reset.
+ * See description in UAHC()_GDBGFIFOSPACE.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.4.3.
  */
 union cvmx_uahcx_gdbgltssm {
@@ -3103,31 +3127,31 @@ union cvmx_uahcx_gdbgltssm {
 	uint32_t ltdbtimeout                  : 1;  /**< LTDB timeout. */
 	uint32_t ltdblinkstate                : 4;  /**< LTDB link state. */
 	uint32_t ltdbsubstate                 : 4;  /**< LTDB substate. */
-	uint32_t debugpipestatus              : 18; /**< Debug PIPE Status.
-                                                         <17> Elastic Buffer Mode
-                                                         <16> Tx Elec Idle
-                                                         <15> Rx Polarity
-                                                         <14> Tx Detect Rx/Loopback
-                                                         <13:11> LTSSM PHY command State
-                                                         0x0: PHY_IDLE (PHY command state is in IDLE. No PHY request pending)
-                                                         0x1: PHY_DET (Request to start Receiver detection)
-                                                         0x2: PHY_DET_3 (Wait for Phy_Status (Receiver detection))
-                                                         0x3: PHY_PWR_DLY (Delay Pipe3_PowerDown P0 -> P1/P2/P3 request)
-                                                         0x4: PHY_PWR_A (Delay for internal logic)
-                                                         0x5: PHY_PWR_B (Wait for Phy_Status(Power state change request))
-                                                         <10:9> Power Down
-                                                         <8> RxEq Train
-                                                         <7:6> Tx Deemphasis
-                                                         <5:3> LTSSM Clock State
-                                                         0x0: CLK_NORM (PHY is in non-P3 state and PCLK is running)
-                                                         0x1: CLK_TO_P3 (P3 entry request to PHY)
-                                                         0x2: CLK_WAIT1 (Wait for Phy_Status (P3 request))
-                                                         0x3: CLK_P3 (PHY is in P3 and PCLK is not running)
-                                                         0x4: CLK_TO_P0 (P3 exit request to PHY)
-                                                         0x5: CLK_WAIT2 (Wait for Phy_Status (P3 exit request))
-                                                         <2> Tx Swing
-                                                         <1> Rx Termination
-                                                         <0> Tx Ones/Zeros */
+	uint32_t debugpipestatus              : 18; /**< Debug PIPE status.
+                                                         _ <17> Elastic buffer mode.
+                                                         _ <16> TX elec idle.
+                                                         _ <15> RX polarity.
+                                                         _ <14> TX Detect RX/loopback.
+                                                         _ <13:11> LTSSM PHY command state.
+                                                         _ 0x0 = PHY_IDLE (PHY command state is in IDLE. No PHY request is pending.)
+                                                         _ 0x1 = PHY_DET (Request to start receiver detection).
+                                                         _ 0x2 = PHY_DET_3 (Wait for Phy_Status (receiver detection)).
+                                                         _ 0x3 = PHY_PWR_DLY (delay Pipe3_PowerDown P0 -> P1/P2/P3 request).
+                                                         _ 0x4 = PHY_PWR_A (delay for internal logic).
+                                                         _ 0x5 = PHY_PWR_B (wait for Phy_Status(Power-state change request)).
+                                                         _ <10:9> Power down.
+                                                         _ <8> RxEq train.
+                                                         _ <7:6> TX de-emphasis.
+                                                         _ <5:3> LTSSM clock state.
+                                                         _ 0x0 = CLK_NORM (PHY is in non-P3 state and PCLK is running).
+                                                         _ 0x1 = CLK_TO_P3 (P3 entry request to PHY).
+                                                         _ 0x2 = CLK_WAIT1 (wait for Phy_Status (P3 request)).
+                                                         _ 0x3 = CLK_P3 (PHY is in P3 and PCLK is not running).
+                                                         _ 0x4 = CLK_TO_P0 (P3 exit request to PHY).
+                                                         _ 0x5 = CLK_WAIT2 (Wait for Phy_Status (P3 exit request)).
+                                                         _ <2> TX swing.
+                                                         _ <1> RX termination.
+                                                         _ <0> TX 1s/0s. */
 #else
 	uint32_t debugpipestatus              : 18;
 	uint32_t ltdbsubstate                 : 4;
@@ -3144,19 +3168,27 @@ typedef union cvmx_uahcx_gdbgltssm cvmx_uahcx_gdbgltssm_t;
  * cvmx_uahc#_gdmahlratio
  *
  * This register specifies the relative priority of the SuperSpeed FIFOs with respect to the
- * HighSpeed/FullSpeed/LowSpeed FIFOs. The DMA arbiter prioritizes the
- * HighSpeed/FullSpeed/LowSpeed round-robin arbiter group every DMA high-low priority ratio
- * grants as indicated in the register separately for TX and RX. To illustrate, consider that all
- * FIFOs are requesting access simultaneously, and the ratio is 4. SuperSpeed gets priority for 4
- * packets, HighSpeed/FullSpeed/LowSpeed gets priority for 1 packet, SuperSpeed gets priority for
- * 4 packets, HighSpeed/FullSpeed/LowSpeed gets priority for 1 packet, and so on.
- * If FIFOs from both speed groups are not requesting access simultaneously then,
- * If SuperSpeed got grants 4 out of the last 4 times, then HighSpeed/FullSpeed/LowSpeed get the
- * priority on any future request.
- * If HighSpeed/FullSpeed/LowSpeed got the grant last time, SuperSpeed gets the priority on the
- * next request.
- * If there is a valid request on either SuperSpeed or HighSpeed/FullSpeed/LowSpeed, a grant is
- * always awarded; there is no idle.
+ * high-speed/full-speed/low-speed FIFOs. The DMA arbiter prioritizes the high-speed/full-speed
+ * /low-speed round-robin arbiter group every DMA high-low priority ratio grants as indicated in
+ * the register separately for TX and RX.
+ *
+ * To illustrate, consider that all FIFOs are requesting access simultaneously, and the ratio is
+ * 4. SuperSpeed gets priority for four packets, high-speed/full-speed/low-speed gets priority
+ * for one packet, SuperSpeed gets priority for four packets, high-speed/full-speed/low-speed
+ * gets priority for one packet, and so on.
+ *
+ * If FIFOs from both speed groups are not requesting access simultaneously then:
+ * * If SuperSpeed got grants four out of the last four times, then high-speed/full-speed/
+ * low-speed get the priority on any future request.
+ * * If high-speed/full-speed/low-speed got the grant last time, SuperSpeed gets the priority on
+ * the next request.
+ *
+ * If there is a valid request on either SuperSpeed or high-speed/full-speed/low-speed, a grant
+ * is always awarded; there is no idle.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
+ * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.9.5.
  */
 union cvmx_uahcx_gdmahlratio {
 	uint32_t u32;
@@ -3186,8 +3218,10 @@ typedef union cvmx_uahcx_gdmahlratio cvmx_uahcx_gdmahlratio_t;
  * addition, it enables running SOF or ITP frame timer counters completely off of the REF_CLK.
  * This facilitates hardware LPM in host mode with the SOF or ITP counters being run off of the
  * REF_CLK signal.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.9.6.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gfladj {
 	uint32_t u32;
@@ -3196,74 +3230,73 @@ union cvmx_uahcx_gfladj {
 	uint32_t gfladj_refclk_240mhzdecr_pls1 : 1; /**< This field indicates that the decrement value that the controller applies for each REF_CLK
                                                          must be GFLADJ_REFCLK_240MHZ_DECR and GFLADJ_REFCLK_240MHZ_DECR +1 alternatively on each
                                                          REF_CLK. Set this bit to 1 only if GFLADJ_REFCLK_LPM_SEL is set to 1 and the fractional
-                                                         component of 240/ref_frequency is greater than or equal to 0.5. Example:
+                                                         component of 240/ref_frequency is greater than or equal to 0.5.
+                                                         Example:
                                                          If the REF_CLK is 19.2 MHz then,
-                                                         GUCTL.REF_CLK_PERIOD = 52
-                                                         GFLADJ.GFLADJ_REFCLK_240MHZ_DECR = (240/19.2) = 12.5
-                                                         GFLADJ.GFLADJ_REFCLK_240MHZDECR_PLS1 = 1
+                                                         * UAHC()_GUCTL[REFCLKPER] = 52.
+                                                         * GFLADJ_REFCLK_240MHZ_DECR = (240/19.2) = 12.5.
+                                                         * GFLADJ_REFCLK_240MHZDECR_PLS1 = 1.
                                                          If the REF_CLK is 24 MHz then,
-                                                         GUCTL.REF_CLK_PERIOD = 41
-                                                         GFLADJ.GFLADJ_REFCLK_240MHZ_DECR = (240/24) = 10
-                                                         GFLADJ.GFLADJ_REFCLK_240MHZDECR_PLS1 = 0 */
+                                                         * UAHC()_GUCTL[REFCLKPER] = 41.
+                                                         * GFLADJ_REFCLK_240MHZ_DECR = (240/24) = 10.
+                                                         * GFLADJ_REFCLK_240MHZDECR_PLS1 = 0. */
 	uint32_t gfladj_refclk_240mhz_decr    : 7;  /**< This field indicates the decrement value that the controller applies for each REF_CLK in
                                                          order to derive a frame timer in terms of a 240-MHz clock. This field must be programmed
                                                          to a non-zero value only if GFLADJ_REFCLK_LPM_SEL is set to 1.
                                                          The value is derived as follows:
-                                                         GFLADJ_REFCLK_240MHZ_DECR = 240/ref_clk_frequency
+                                                         _ GFLADJ_REFCLK_240MHZ_DECR = 240/ref_clk_frequency
                                                          Examples:
                                                          If the REF_CLK is 24 MHz then,
-                                                         GUCTL.REF_CLK_PERIOD = 41
-                                                         GFLADJ.GFLADJ_REFCLK_240MHZ_DECR = 240/24 = 10
+                                                         * UAHC()_GUCTL[REFCLKPER] = 41.
+                                                         * GFLADJ_REFCLK_240MHZ_DECR = 240/24 = 10.
                                                          If the REF_CLK is 48 MHz then,
-                                                         GUCTL.REF_CLK_PERIOD = 20
-                                                         GFLADJ.GFLADJ_REFCLK_240MHZ_DECR = 240/48 = 5
+                                                         * UAHC()_GUCTL[REFCLKPER] = 20.
+                                                         * GFLADJ_REFCLK_240MHZ_DECR = 240/48 = 5.
                                                          If the REF_CLK is 17 MHz then,
-                                                         GUCTL.REF_CLK_PERIOD = 58
-                                                         GFLADJ.GFLADJ_REFCLK_240MHZ_DECR = 240/17 = 14 */
-	uint32_t gfladj_refclk_lpm_sel        : 1;  /**< This bit enables the functionality of running SOF/ITP counters on the REF_CLK. This bit
-                                                         must not be set to 1 if UAHC(0)_GCTL[SOFITPSYNC] bit is set to 1. Similarly, if
-                                                         GFLADJ_REFCLK_LPM_SEL set to 1, UAHC(0)_GCTL[SOFITPSYNC] must not be set to 1. When
-                                                         GFLADJ_REFCLK_LPM_SEL is set to 1 the overloading of the suspend control of the USB 2.0
-                                                         first port PHY (UTMI) with USB 3.0 port states is removed. Note that the REF_CLK
-                                                         frequencies supported in this mode are 16/17/19.2/20/24/39.7/40 MHz.
+                                                         * UAHC()_GUCTL[REFCLKPER] = 58.
+                                                         * GFLADJ_REFCLK_240MHZ_DECR = 240/17 = 14. */
+	uint32_t gfladj_refclk_lpm_sel        : 1;  /**< This bit enables the functionality of running SOF/ITP counters on the REF_CLK.
+                                                         This bit must not be set to 1 if UAHC()_GCTL[SOFITPSYNC] = 1. Similarly, if
+                                                         GFLADJ_REFCLK_LPM_SEL = 1, UAHC()_GCTL[SOFITPSYNC] must not be set to 1.
+                                                         When GFLADJ_REFCLK_LPM_SEL = 1 the overloading of the suspend control of the USB 2.0 first
+                                                         port PHY (UTMI) with USB 3.0 port states is removed. Note that the REF_CLK frequencies
+                                                         supported in this mode are 16/17/19.2/20/24/39.7/40 MHz.
                                                          INTERNAL: The utmi_clk[0] signal of the core must be connected to the FREECLK of the PHY.
-                                                         If you set this bit to 1, the GUSB2PHYCFG.U2_FREECLK_EXISTS bit must be set to 0. */
+                                                         If you set this bit to 1, UAHC()_GUSB2PHYCFG()[U2_FREECLK_EXISTS] must be set to 0. */
 	uint32_t reserved_22_22               : 1;
 	uint32_t gfladj_refclk_fladj          : 14; /**< This field indicates the frame length adjustment to be applied when SOF/ITP counter is
-                                                         running off of the REF_CLK. This register value is used to adjust:
-                                                         ITP interval when GCTL[SOFITPSYNC] is set to 1
-                                                         both SOF and ITP interval when GLADJ.GFLADJ_REFCLK_LPM_SEL is set to 1.
-                                                         This field must be programmed to a non-zero value only if GFLADJ_REFCLK_LPM_SEL is set to
-                                                         1 or GCTL.SOFITPSYNC is set to 1.
+                                                         running off of the REF_CLK. This register value is used to adjust:.
+                                                         * ITP interval when UAHC()_GCTL[SOFITPSYNC] = 1
+                                                         * both SOF and ITP interval when GFLADJ_REFCLK_LPM_SEL = 1.
+                                                         This field must be programmed to a non-zero value only if GFLADJ_REFCLK_LPM_SEL = 1 or
+                                                         UAHC()_GCTL[SOFITPSYNC] = 1.
                                                          The value is derived as below:
-                                                         FLADJ_REF_CLK_FLADJ = ((125000/ref_clk_period_integer) - (125000/ref_clk_period)) *
+                                                         _ FLADJ_REF_CLK_FLADJ = ((125000/ref_clk_period_integer) - (125000/ref_clk_period)) *
                                                          ref_clk_period
                                                          where,
-                                                         the ref_clk_period_integer is the integer value of the REF_CLK period got by truncating
-                                                         the decimal (fractional) value that is programmed in the GUCTL.REF_CLK_PERIOD field
-                                                         the ref_clk_period is the REF_CLK period including the fractional value.
+                                                         * the ref_clk_period_integer is the integer value of the REF_CLK period got by truncating
+                                                         the decimal (fractional) value that is programmed in UAHC()_GUCTL[REFCLKPER].
+                                                         * the ref_clk_period is the REF_CLK period including the fractional value.
                                                          Examples:
                                                          If the REF_CLK is 24 MHz then,
-                                                         GUCTL.REF_CLK_PERIOD = 41
-                                                         GFLADJ.GLADJ_REFCLK_FLADJ = ((125000/41) -(125000/41.6666))*41.6666 = 2032 (ignoring the
-                                                         fractional value)
+                                                         * UAHC()_GUCTL[REFCLKPER] = 41.
+                                                         * GLADJ_REFCLK_FLADJ = ((125000/41) -
+                                                         (125000/41.6666)) * 41.6666 = 2032 (ignoring the fractional value).
                                                          If the REF_CLK is 48 MHz then,
-                                                         GUCTL.REF_CLK_PERIOD = 20
-                                                         GFLADJ.GLADJ_REFCLK_FLADJ = ((125000/20) -(125000/20.8333))*20.8333 = 5208 (ignoring the
-                                                         fractional value) */
-	uint32_t gfladj_30mhz_reg_sel         : 1;  /**< This field selects whether to use the input signal fladj_30mhz_reg or the
-                                                         GFLADJ.GFLADJ_30MHZ to adjust the frame length for the SOF/ITP. When this bit is set to,
-                                                         1, the controller uses the register field GFLADJ.GFLADJ_30MHZ value 0, the controller uses
-                                                         the input signal fladj_30mhz_reg value */
+                                                         * UAHC()_GUCTL[REFCLKPER] = 20.
+                                                         * GLADJ_REFCLK_FLADJ = ((125000/20) -
+                                                         (125000/20.8333)) * 20.8333 = 5208 (ignoring the fractional value). */
+	uint32_t gfladj_30mhz_reg_sel         : 1;  /**< This field selects whether to use the input signal fladj_30mhz_reg or the GFLADJ_30MHZ to
+                                                         adjust the frame length for the SOF/ITP. When this bit is set to, 1, the controller uses
+                                                         GFLADJ_30MHZ value 0x0, the controller uses the input signal fladj_30mhz_reg value. */
 	uint32_t reserved_6_6                 : 1;
 	uint32_t gfladj_30mhz                 : 6;  /**< This field indicates the value that is used for frame length adjustment instead of
                                                          considering from the sideband input signal fladj_30mhz_reg. This enables post-silicon
                                                          frame length adjustment in case the input signal fladj_30mhz_reg is connected to a wrong
-                                                         value or is not valid. The controller uses this value if GFLADJ.GFLADJ_30MHZ_REG_SEL is
-                                                         set to 1 and the SOF/ITP counters are running off of UTMI(ULPI) clock
-                                                         (GFLADJ_REFCLK_LPM_SEL is 0 and GCTL.SOFITPSYNC is 1 or 0). For details on how to set this
-                                                         value, refer to section 5.2.4 Frame Length Adjustment Register (FLADJ) of the xHCI
-                                                         Specification. */
+                                                         value or is not valid. The controller uses this value if GFLADJ_30MHZ_REG_SEL = 1 and the
+                                                         SOF/ITP counters are running off of UTMI(ULPI) clock (GFLADJ_REFCLK_LPM_SEL = 0 and
+                                                         UAHC()_GCTL[SOFITPSYNC] is 1 or 0). For details on how to set this value, refer to
+                                                         section 5.2.4 Frame Length Adjustment Register (FLADJ) of the xHCI Specification. */
 #else
 	uint32_t gfladj_30mhz                 : 6;
 	uint32_t reserved_6_6                 : 1;
@@ -3284,8 +3317,10 @@ typedef union cvmx_uahcx_gfladj cvmx_uahcx_gfladj_t;
  *
  * The application can use this register for general purpose input and output ports or for
  * debugging.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.9.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_ggpio {
 	uint32_t u32;
@@ -3305,7 +3340,7 @@ typedef union cvmx_uahcx_ggpio cvmx_uahcx_ggpio_t;
 /**
  * cvmx_uahc#_ghwparams0
  *
- * These registers contain the hardware configuration options selected at compile-time.
+ * This register contains the hardware configuration options selected at compile-time.
  * INTERNAL: Register field names refer to Synopsys DWC_USB3_* parameters of the same suffix.
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.3.1.
  */
@@ -3335,7 +3370,7 @@ typedef union cvmx_uahcx_ghwparams0 cvmx_uahcx_ghwparams0_t;
 /**
  * cvmx_uahc#_ghwparams1
  *
- * These registers contain the hardware configuration options selected at compile-time.
+ * This register contains the hardware configuration options selected at compile-time.
  * INTERNAL: Register field names refer to Synopsys DWC_USB3_* parameters of the same suffix.
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.3.2.
  */
@@ -3346,16 +3381,16 @@ union cvmx_uahcx_ghwparams1 {
 	uint32_t en_dbc                       : 1;  /**< Enable debug capability. */
 	uint32_t rm_opt_features              : 1;  /**< Remove optional features. */
 	uint32_t sync_rst                     : 1;  /**< Synchronous reset coding. */
-	uint32_t ram_bus_clks_sync            : 1;  /**< RAM_CLK and BUS_CLK are synchronous.
-                                                         INTERNAL: (appears to be orthogonal from the RAM_CLK_TO_BUS_CLK parameter) */
+	uint32_t ram_bus_clks_sync            : 1;  /**< RAM_CLK and BUS_CLK are synchronous. INTERNAL: (appears to be orthogonal from the
+                                                         RAM_CLK_TO_BUS_CLK parameter) */
 	uint32_t mac_ram_clks_sync            : 1;  /**< MAC3_CLK and RAM_CLK are synchronous. */
 	uint32_t mac_phy_clks_sync            : 1;  /**< MAC3_CLK and PHY_CLK are synchronous. */
-	uint32_t en_pwropt                    : 2;  /**< Power optimization mode.
-                                                         Bit <0>: clock-gating feature available.
-                                                         Bit <1>: hibernation feature available. */
+	uint32_t en_pwropt                    : 2;  /**< Power optimization mode:
+                                                         bit<0> = Clock-gating feature available.
+                                                         bit<1> = Hibernation feature available. */
 	uint32_t spram_typ                    : 1;  /**< SRAM type: one-port RAMs. */
 	uint32_t num_rams                     : 2;  /**< Number of RAMs. */
-	uint32_t device_num_int               : 6;  /**< Number of event buffers (and interrupts) in device-mode. */
+	uint32_t device_num_int               : 6;  /**< Number of event buffers (and interrupts) in device-mode (unsupported). */
 	uint32_t aspacewidth                  : 3;  /**< Native interface address-space port width. */
 	uint32_t reqinfowidth                 : 3;  /**< Native interface request/response-info port width. */
 	uint32_t datainfowidth                : 3;  /**< Native interface data-info port width. */
@@ -3386,7 +3421,7 @@ typedef union cvmx_uahcx_ghwparams1 cvmx_uahcx_ghwparams1_t;
 /**
  * cvmx_uahc#_ghwparams2
  *
- * These registers contain the hardware configuration options selected at compile-time.
+ * This register contains the hardware configuration options selected at compile-time.
  * INTERNAL: Register field names refer to Synopsys DWC_USB3_* parameters of the same suffix.
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.3.3.
  */
@@ -3406,7 +3441,8 @@ typedef union cvmx_uahcx_ghwparams2 cvmx_uahcx_ghwparams2_t;
 /**
  * cvmx_uahc#_ghwparams3
  *
- * These registers contain the hardware configuration options selected at compile-time.
+ * This register contains the hardware configuration options selected at compile-time.
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.3.4.
  */
 union cvmx_uahcx_ghwparams3 {
@@ -3415,14 +3451,14 @@ union cvmx_uahcx_ghwparams3 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_31_31               : 1;
 	uint32_t cache_total_xfer_resources   : 8;  /**< Maximum number of transfer resources in the core. */
-	uint32_t num_in_eps                   : 5;  /**< Maximum number of device-mode IN endpoints active. */
-	uint32_t num_eps                      : 6;  /**< Number of device-mode single-directional endpoints. */
+	uint32_t num_in_eps                   : 5;  /**< Maximum number of device-mode (unsupported) IN endpoints active. */
+	uint32_t num_eps                      : 6;  /**< Number of device-mode (unsupported) single-directional endpoints. */
 	uint32_t ulpi_carkit                  : 1;  /**< ULPI Carkit is not supported. */
 	uint32_t vendor_ctl_interface         : 1;  /**< UTMI+ PHY vendor control interface enabled. */
 	uint32_t reserved_8_9                 : 2;
 	uint32_t hsphy_dwidth                 : 2;  /**< Data width of the UTMI+ PHY interface: 0x2 = 8-or-16 bits. */
 	uint32_t fsphy_interface              : 2;  /**< USB 1.1 full-speed serial transceiver interface. */
-	uint32_t hsphy_interface              : 2;  /**< High-Speed PHY interface: 0x1 = UTMI+. */
+	uint32_t hsphy_interface              : 2;  /**< High-speed PHY interface: 0x1 = UTMI+. */
 	uint32_t ssphy_interface              : 2;  /**< SuperSpeed PHY interface: 0x1 = PIPE3. */
 #else
 	uint32_t ssphy_interface              : 2;
@@ -3445,7 +3481,7 @@ typedef union cvmx_uahcx_ghwparams3 cvmx_uahcx_ghwparams3_t;
 /**
  * cvmx_uahc#_ghwparams4
  *
- * These registers contain the hardware configuration options selected at compile-time.
+ * This register contains the hardware configuration options selected at compile-time.
  * INTERNAL: Register field names refer to Synopsys DWC_USB3_* parameters of the same suffix.
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.3.5.
  */
@@ -3457,8 +3493,8 @@ union cvmx_uahcx_ghwparams4 {
 	uint32_t bmu_ptl_depth_m1             : 4;  /**< Depth of the BMU-PTL source/sink buffers minus 1. */
 	uint32_t en_isoc_supt                 : 1;  /**< Isochronous support enabled. */
 	uint32_t reserved_22_22               : 1;
-	uint32_t ext_buff_control             : 1;  /**< Enables device external buffer control sideband controls */
-	uint32_t num_ss_usb_instances         : 4;  /**< Number of SS bus instances. */
+	uint32_t ext_buff_control             : 1;  /**< Enables device external buffer control sideband controls. */
+	uint32_t num_ss_usb_instances         : 4;  /**< Number of SuperSpeed bus instances. */
 	uint32_t hiber_scratchbufs            : 4;  /**< Number of hibernation scratchpad buffers. */
 	uint32_t reserved_6_12                : 7;
 	uint32_t cache_trbs_per_transfer      : 6;  /**< Number of TRBs per transfer that can be cached. */
@@ -3481,7 +3517,7 @@ typedef union cvmx_uahcx_ghwparams4 cvmx_uahcx_ghwparams4_t;
 /**
  * cvmx_uahc#_ghwparams5
  *
- * These registers contain the hardware configuration options selected at compile-time.
+ * This register contains the hardware configuration options selected at compile-time.
  * INTERNAL: Register field names refer to Synopsys DWC_USB3_* parameters of the same suffix.
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.3.6.
  */
@@ -3492,8 +3528,8 @@ union cvmx_uahcx_ghwparams5 {
 	uint32_t reserved_28_31               : 4;
 	uint32_t dfq_fifo_depth               : 6;  /**< Size of the BMU descriptor fetch-request queue. */
 	uint32_t dwq_fifo_depth               : 6;  /**< Size of the BMU descriptor write queue. */
-	uint32_t txq_fifo_depth               : 6;  /**< Size of the BMU Tx request queue. */
-	uint32_t rxq_fifo_depth               : 6;  /**< Size of the BMU Rx request queue. */
+	uint32_t txq_fifo_depth               : 6;  /**< Size of the BMU TX request queue. */
+	uint32_t rxq_fifo_depth               : 6;  /**< Size of the BMU RX request queue. */
 	uint32_t bmu_busgm_depth              : 4;  /**< Depth of the BMU-BUSGM source/sink buffers. */
 #else
 	uint32_t bmu_busgm_depth              : 4;
@@ -3511,7 +3547,7 @@ typedef union cvmx_uahcx_ghwparams5 cvmx_uahcx_ghwparams5_t;
 /**
  * cvmx_uahc#_ghwparams6
  *
- * These registers contain the hardware configuration options selected at compile-time.
+ * This register contains the hardware configuration options selected at compile-time.
  * INTERNAL: Register field names refer to Synopsys DWC_USB3_* parameters of the same suffix.
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.3.7.
  */
@@ -3520,15 +3556,15 @@ union cvmx_uahcx_ghwparams6 {
 	struct cvmx_uahcx_ghwparams6_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t ram0_depth                   : 16; /**< RAM0 Depth. */
-	uint32_t en_bus_filters               : 1;  /**< VBus filters support. */
-	uint32_t en_bc                        : 1;  /**< Battery-charging support. */
-	uint32_t en_otg_ss                    : 1;  /**< OTG SuperSpeed support. */
-	uint32_t en_adp                       : 1;  /**< ADP support. */
+	uint32_t en_bus_filters               : 1;  /**< Enable VBus filters support. */
+	uint32_t en_bc                        : 1;  /**< Enable battery-charging support. */
+	uint32_t en_otg_ss                    : 1;  /**< Enable OTG SuperSpeed support. */
+	uint32_t en_adp                       : 1;  /**< Enable ADP support. */
 	uint32_t hnp_support                  : 1;  /**< HNP support. */
 	uint32_t srp_support                  : 1;  /**< SRP support. */
 	uint32_t reserved_8_9                 : 2;
-	uint32_t en_fpga                      : 1;  /**< FPGA implementation. */
-	uint32_t en_dbg_ports                 : 1;  /**< Debug ports for FGPA. */
+	uint32_t en_fpga                      : 1;  /**< Enable FPGA implementation. */
+	uint32_t en_dbg_ports                 : 1;  /**< Enable Debug ports for FGPA. */
 	uint32_t psq_fifo_depth               : 6;  /**< Size of the BMU-protocol status queue. */
 #else
 	uint32_t psq_fifo_depth               : 6;
@@ -3551,7 +3587,7 @@ typedef union cvmx_uahcx_ghwparams6 cvmx_uahcx_ghwparams6_t;
 /**
  * cvmx_uahc#_ghwparams7
  *
- * These registers contain the hardware configuration options selected at compile-time.
+ * This register contains the hardware configuration options selected at compile-time.
  * INTERNAL: Register field names refer to Synopsys DWC_USB3_* parameters of the same suffix.
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.3.8.
  */
@@ -3573,7 +3609,7 @@ typedef union cvmx_uahcx_ghwparams7 cvmx_uahcx_ghwparams7_t;
 /**
  * cvmx_uahc#_ghwparams8
  *
- * These registers contain the hardware configuration options selected at compile-time.
+ * This register contains the hardware configuration options selected at compile-time.
  * INTERNAL: Register field names refer to Synopsys DWC_USB3_* parameters of the same suffix.
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.20a, section 6.2.3.9.
  */
@@ -3595,12 +3631,14 @@ typedef union cvmx_uahcx_ghwparams8 cvmx_uahcx_ghwparams8_t;
  *
  * This debug register gives information on which event caused the hibernation exit. These
  * registers are for debug purposes. They provide debug information on the internal status and
- * state machines. Global Debug Registers have design-specific information, and are used by for
+ * state machines. Global debug registers have design-specific information, and are used by for
  * debugging purposes. These registers are not intended to be used by the customer. If any debug
  * assistance is needed for the silicon, contact Customer Support with a dump of these registers.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.4.1.
  * INTERNAL: Contact Synopsys directly.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gpmsts {
 	uint32_t u32;
@@ -3609,23 +3647,23 @@ union cvmx_uahcx_gpmsts {
 	uint32_t portsel                      : 4;  /**< This field selects the port number. Always 0x0. */
 	uint32_t reserved_17_27               : 11;
 	uint32_t u3wakeup                     : 5;  /**< This field gives the USB 3.0 port wakeup conditions.
-                                                         Bit<12>: Overcurrent detected
-                                                         Bit<13>: Resume detected
-                                                         Bit<14>: Connect detected
-                                                         Bit<15>: Disconnect detected
-                                                         Bit<16>: Last connection state */
+                                                         bit<12> = Overcurrent detected.
+                                                         bit<13> = Resume detected.
+                                                         bit<14> = Connect detected.
+                                                         bit<15> = Disconnect detected.
+                                                         bit<16> = Last connection state. */
 	uint32_t reserved_10_11               : 2;
 	uint32_t u2wakeup                     : 10; /**< This field indicates the USB 2.0 port wakeup conditions.
-                                                         Bit<0>: Overcurrent detected
-                                                         Bit<1>: Resume detected
-                                                         Bit<2>: Connect detected
-                                                         Bit<3>: Disconnect detected
-                                                         Bit<4>: Last connection state
-                                                         Bit<5>: ID change detected
-                                                         Bit<6>: SRP request detected
-                                                         Bit<7>: ULPI interrupt detected
-                                                         Bit<8>: USB reset detected
-                                                         Bit<9>: Resume detected changed */
+                                                         bit<0> = Overcurrent detected.
+                                                         bit<1> = Resume detected.
+                                                         bit<2> = Connect detected.
+                                                         bit<3> = Disconnect detected.
+                                                         bit<4> = Last connection state.
+                                                         bit<5> = ID change detected.
+                                                         bit<6> = SRP request detected.
+                                                         bit<7> = ULPI interrupt detected.
+                                                         bit<8> = USB reset detected.
+                                                         bit<9> = Resume detected changed. */
 #else
 	uint32_t u2wakeup                     : 10;
 	uint32_t reserved_10_11               : 2;
@@ -3646,15 +3684,17 @@ typedef union cvmx_uahcx_gpmsts cvmx_uahcx_gpmsts_t;
  * instances. Software can program this register to specify how USB 3.0 ports are connected to
  * SuperSpeed USB instances. The UAHC only implements one SuperSpeed bus-instance, so this
  * register should always be 0.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.2.1.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gprtbimap {
 	uint64_t u64;
 	struct cvmx_uahcx_gprtbimap_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t binum1                       : 4;  /**< SS USB instance number for port 1 */
+	uint64_t binum1                       : 4;  /**< SuperSpeed USB instance number for port 1. */
 #else
 	uint64_t binum1                       : 4;
 	uint64_t reserved_4_63                : 60;
@@ -3667,22 +3707,22 @@ typedef union cvmx_uahcx_gprtbimap cvmx_uahcx_gprtbimap_t;
 /**
  * cvmx_uahc#_gprtbimap_fs
  *
- * This register specifies the FullSpeed/LowSpeed USB instance number to which each USB 1.1 port
- * is connected. By default, USB 1.1 ports are evenly distributed among all FullSpeed/LowSpeed
- * USB instances.
- * Software can program this register to specify how USB 1.1 ports are connected to
- * FullSpeed/LowSpeed USB instances.
- * The UAHC only implements one FullSpeed/LowSpeed bus-instance, so this register should always
- * be 0.
+ * This register specifies the full-speed/low-speed USB instance number to which each USB 1.1
+ * port is connected. By default, USB 1.1 ports are evenly distributed among all full-speed/
+ * low-speed USB instances. Software can program this register to specify how USB 1.1 ports are
+ * connected to full-speed/low-speed USB instances. The UAHC only implements one full-speed/
+ * low-speed bus-instance, so this register should always be 0x0.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.20a, section 6.2.2.3.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gprtbimap_fs {
 	uint64_t u64;
 	struct cvmx_uahcx_gprtbimap_fs_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t binum1                       : 4;  /**< FullSpeed USB instance number for port 1. */
+	uint64_t binum1                       : 4;  /**< Full-speed USB instance number for port 1. */
 #else
 	uint64_t binum1                       : 4;
 	uint64_t reserved_4_63                : 60;
@@ -3695,20 +3735,22 @@ typedef union cvmx_uahcx_gprtbimap_fs cvmx_uahcx_gprtbimap_fs_t;
 /**
  * cvmx_uahc#_gprtbimap_hs
  *
- * This register specifies the HighSpeed USB instance number to which each USB 2.0 port is
- * connected. By default, USB 2.0 ports are evenly distributed among all HighSpeed USB
- * instances. Software can program this register to specify how USB 2.0 ports are connected
- * to HighSpeed USB instances.
- * The UAHC only implements one HighSpeed bus-instance, so this register should always be 0.
+ * This register specifies the high-speed USB instance number to which each USB 2.0 port is
+ * connected. By default, USB 2.0 ports are evenly distributed among all high-speed USB
+ * instances. Software can program this register to specify how USB 2.0 ports are connected to
+ * high-speed USB instances. The UAHC only implements one high-speed bus-instance, so this
+ * register should always be 0.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.20a, section 6.2.2.2.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gprtbimap_hs {
 	uint64_t u64;
 	struct cvmx_uahcx_gprtbimap_hs_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t binum1                       : 4;  /**< HighSpeed USB instance number for port 1. */
+	uint64_t binum1                       : 4;  /**< High-speed USB instance number for port 1. */
 #else
 	uint64_t binum1                       : 4;
 	uint64_t reserved_4_63                : 60;
@@ -3721,8 +3763,8 @@ typedef union cvmx_uahcx_gprtbimap_hs cvmx_uahcx_gprtbimap_hs_t;
 /**
  * cvmx_uahc#_grlsid
  *
- * INTERNAL: Original name: GSNPSID = Synopsys ID
  * This is a read-only register that contains the release number of the core.
+ * INTERNAL: Original name: GSNPSID = Synopsys ID.
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.8.
  */
 union cvmx_uahcx_grlsid {
@@ -3731,9 +3773,9 @@ union cvmx_uahcx_grlsid {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t releaseid                    : 32; /**< Software can use this register to configure release-specific features in the driver.
                                                          INTERNAL: Synopsys ID
-                                                         INTERNAL:   * SynopsysID[31:16] indicates Core Identification Number. 0x5533 is ASCII for
+                                                          * SynopsysID[31:16] indicates Core Identification Number. 0x5533 is ASCII for
                                                          U3 (DWC_usb3).
-                                                         INTERNAL:   * SynopsysID[15:0] indicates the release number. Current Release is 2.50a. */
+                                                          * SynopsysID[15:0] indicates the release number. Current Release is 2.50a. */
 #else
 	uint32_t releaseid                    : 32;
 #endif
@@ -3746,30 +3788,36 @@ typedef union cvmx_uahcx_grlsid cvmx_uahcx_grlsid_t;
  * cvmx_uahc#_grxfifoprihst
  *
  * This register specifies the relative DMA priority level among the host RXFIFOs (one per USB
- * bus instance) within the associated speed group (SuperSpeed or HighSpeed/FullSpeed/LowSpeed).
- * When multiple RXFIFOs compete for DMA service at a given time, the RXDMA arbiter grants access
- * on a packet-basis in the following manner:
- * Among the FIFOs in the same speed group (SuperSpeed or HighSpeed/FullSpeed/LowSpeed):
- * High-priority RXFIFOs are granted access using round-robin arbitration
- * Low-priority RXFIFOs are granted access using round-robin arbitration only after high-priority
+ * bus instance) within the associated speed group (SuperSpeed or high-speed/full-speed
+ * /low-speed). When multiple RXFIFOs compete for DMA service at a given time, the RXDMA arbiter
+ * grants access on a packet-basis in the following manner:
+ *
+ * Among the FIFOs in the same speed group (SuperSpeed or high-speed/full-speed/low-speed):
+ * * High-priority RXFIFOs are granted access using round-robin arbitration.
+ * * Low-priority RXFIFOs are granted access using round-robin arbitration only after high-
+ * priority
  * RXFIFOs have no further processing to do (i.e., either the RXQs are empty or the corresponding
  * RXFIFOs do not have the required data).
- * The RX DMA arbiter prioritizes the SuperSpeed group or HighSpeed/FullSpeed/LowSpeed group
- * according to the ratio programmed in the UAHC(0)_GDMAHLRATIO register.
+ *
+ * The RX DMA arbiter prioritizes the SuperSpeed group or high-speed/full-speed/low-speed group
+ * according to the ratio programmed in
+ * UAHC()_GDMAHLRATIO.
+ *
  * For scatter-gather packets, the arbiter grants successive DMA requests to the same FIFO until
  * the entire packet is completed. The register size corresponds to the number of configured USB
  * bus instances; for example, in the default configuration, there are 3 USB bus instances (1
- * SuperSpeed, 1 HighSpeed, and 1 FullSpeed/LowSpeed).
+ * SuperSpeed, 1 high-speed, and 1 full-speed/low-speed).
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.9.3.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_grxfifoprihst {
 	uint32_t u32;
 	struct cvmx_uahcx_grxfifoprihst_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_3_31                : 29;
-	uint32_t rx_priority                  : 3;  /**< Each register bit n controls the priority (1: high, 0: low) of RX FIFO<n> within a speed
-                                                         group. */
+	uint32_t rx_priority                  : 3;  /**< Each register bit[n] controls the priority (1 = high, 0 = low) of RXFIFO[n] within a speed group. */
 #else
 	uint32_t rx_priority                  : 3;
 	uint32_t reserved_3_31                : 29;
@@ -3785,20 +3833,23 @@ typedef union cvmx_uahcx_grxfifoprihst cvmx_uahcx_grxfifoprihst_t;
  * The application can program the internal RAM start address/depth of the each RxFIFO as shown
  * below. It is recommended that software use the default value. In Host mode, per-port registers
  * are implemented. One register per FIFO.
+ *
+ * Reset values = 0:[0x0000_0084] 1:[0x0084_0104] 2:[0x0188_0180].
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.20a, section 6.2.6.2.
  * INTERNAL: For more information, see the BMU section in Block Descriptions on Synopsys Databook
  * page 238.
- * reset values = 0:[0x0000_0084] 1:[0x0084_0104] 2:[0x0188_0180]
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_grxfifosizx {
 	uint32_t u32;
 	struct cvmx_uahcx_grxfifosizx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t rxfstaddr                    : 16; /**< RxFIFOn RAM start address.  This field contains the memory start address for RxFIFOn. The
+	uint32_t rxfstaddr                    : 16; /**< RxFIFOn RAM start address. This field contains the memory start address for RxFIFOn. The
                                                          reset value is derived from configuration parameters. */
 	uint32_t rxfdep                       : 16; /**< RxFIFOn depth. This value is in terms of RX RAM Data width.
-                                                         minimum value = 0x20, maximum value = 0x4000
+                                                         minimum value = 0x20, maximum value = 0x4000.
                                                          INTERNAL: For more information, see the Hardware Integration chapter of the Synopsys
                                                          Databook.
                                                          The reset value is derived from configuration parameters. */
@@ -3820,16 +3871,21 @@ typedef union cvmx_uahcx_grxfifosizx cvmx_uahcx_grxfifosizx_t;
  * 1024-byte packet, then starting a burst on 1-packet condition leads to an early abort of the
  * burst causing unnecessary performance reduction. This register allows the configuration of
  * threshold and burst size control. This feature is enabled by USBRXPKTCNTSEL.
+ *
  * Receive Path:
- * The RX threshold is controlled by USBRXPKTCNT and the RX burst size is controlled by
+ * * The RX threshold is controlled by USBRXPKTCNT and the RX burst size is controlled by
  * USBMAXRXBURSTSIZE.
- * Selecting optimal RX FIFO size, RX Threshold, and RX burst size avoids RX burst aborts due to
- * overrun if the system bus is slower than USB. Once in a while overrun is OK, and there is no
- * functional issue.
- * Some devices do not support terminating ACK retry. With these devices, host cannot set ACK=0
+ * * Selecting optimal RX FIFO size, RX Threshold, and RX burst size avoids RX burst aborts due
+ * to overrun if the system bus is slower than USB. Once in a while overrun is OK, and there is
+ * no functional issue.
+ * * Some devices do not support terminating ACK retry. With these devices, host cannot set ACK=0
  * and Retry=0 and do retry later and you have to retry immediately. For such devices, minimize
  * retry due to underrun. Setting threshold and burst size guarantees this.
  * A larger RX threshold affects the performance since the scheduler is idle during this time.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
+ * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.4.
  */
 union cvmx_uahcx_grxthrcfg {
 	uint32_t u32;
@@ -3844,12 +3900,14 @@ union cvmx_uahcx_grxthrcfg {
                                                          USBRXPKTCNT amount of packets.
                                                          This mode is only used for SuperSpeed. */
 	uint32_t reserved_28_28               : 1;
-	uint32_t usbrxpktcnt                  : 4;  /**< USB receive-packet count. Specifies space (in number of packets) that must be available in
-                                                         the RX FIFO before the core can start the corresponding USB RX transaction (burst).
+	uint32_t usbrxpktcnt                  : 4;  /**< USB receive-packet count. In host-mode, specifies space (in number of packets) that must
+                                                         be available in the RX FIFO before the core can start the corresponding USB RX transaction
+                                                         (burst).
                                                          This field is only valid when USBRXPKTCNTSEL = 1. The valid values are from 0x1 to 0xF.
-                                                         Note: This field must be less than or equal to the USBMAXRXBURSTSIZE field. */
-	uint32_t usbmaxrxburstsize            : 5;  /**< USB maximum receive-burst size. Specifies the maximum bulk IN burst the core should do.
-                                                         When the system bus is slower than the USB, RX FIFO can overrun during a long burst.
+                                                         This field must be <= USBMAXRXBURSTSIZE. */
+	uint32_t usbmaxrxburstsize            : 5;  /**< USB maximum receive-burst size. In host-mode, specifies the maximum bulk IN burst the core
+                                                         should do. When the system bus is slower than the USB, RX FIFO can overrun during a long
+                                                         burst.
                                                          Program a smaller value to this field to limit the RX burst size that the core can do. It
                                                          only applies to SuperSpeed Bulk, Isochronous, and Interrupt IN endpoints in the host mode.
                                                          This field is only valid when USBRXPKTCNTSEL = 1. The valid values are from 0x1 to 0x10. */
@@ -3874,11 +3932,13 @@ typedef union cvmx_uahcx_grxthrcfg cvmx_uahcx_grxthrcfg_t;
  * operation. This register mainly contains AXI system-related configuration parameters. Do not
  * change this register after the initial programming. The application must program this register
  * before starting any transactions on AXI. When INCRBRSTENA is enabled, it has the highest
- * priority over other burst lengths. The core always perform the largest burst when enabled.
+ * priority over other burst lengths. The core always performs the largest burst when enabled.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: The AXI cache signals are not connected in Cavium's hookup, so the *REQINFO fields
  * can be ignored.
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.1.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gsbuscfg0 {
 	uint32_t u32;
@@ -3890,9 +3950,9 @@ union cvmx_uahcx_gsbuscfg0 {
 	uint32_t deswrreqinfo                 : 4;  /**< AXI-cache for descriptor-write operations. Always set to 0x0. */
 	uint32_t reserved_12_15               : 4;
 	uint32_t datbigend                    : 1;  /**< Data access is big-endian. Keep this set to 0 (little-endian) and use the
-                                                         UCTL(0)_SHIM_CFG[DMA_ENDIAN_MODE] setting instead. */
+                                                         UCTL()_SHIM_CFG[DMA_ENDIAN_MODE] setting instead. */
 	uint32_t descbigend                   : 1;  /**< Descriptor access is big-endian. Keep this set to 0 (little-endian) and use the
-                                                         UCTL(0)_SHIM_CFG[DMA_ENDIAN_MODE] setting instead. */
+                                                         UCTL()_SHIM_CFG[DMA_ENDIAN_MODE] setting instead. */
 	uint32_t reserved_8_9                 : 2;
 	uint32_t incr256brstena               : 1;  /**< INCR256 burst-type enable. Always set to 0. */
 	uint32_t incr128brstena               : 1;  /**< INCR128 burst-type enable. Always set to 0. */
@@ -3904,8 +3964,8 @@ union cvmx_uahcx_gsbuscfg0 {
 	uint32_t incrbrstena                  : 1;  /**< Undefined-length INCR burst-type enable.
                                                          This bit determines the set of burst lengths to be utilized by the master interface. It
                                                          works in conjunction with the GSBUSCFG0[7:1] enables (INCR*BRSTENA).
-                                                         If disabled, the AXI master will use only the following burst lengths:
-                                                         1, 4, 8, 16 (assuming the INCR*BRSTENA are set to their reset values)
+                                                         If disabled, the AXI master will use only the burst lengths
+                                                         1, 4, 8, 16 (assuming the INCR*BRSTENA are set to their reset values).
                                                          If enabled, the AXI master uses any length less than or equal to the largest-enabled burst
                                                          length based on the INCR*BRSTENA fields. */
 #else
@@ -3938,8 +3998,10 @@ typedef union cvmx_uahcx_gsbuscfg0 cvmx_uahcx_gsbuscfg0_t;
  * operation. This register mainly contains AXI system-related configuration parameters. Do not
  * change this register after the initial programming. The application must program this register
  * before starting any transactions on AXI.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.2.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gsbuscfg1 {
 	uint32_t u32;
@@ -3947,20 +4009,20 @@ union cvmx_uahcx_gsbuscfg1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_13_31               : 19;
 	uint32_t en1kpage                     : 1;  /**< 1K page-boundary enable.
-                                                         0 = AXI breaks transfers at the 4K page boundary (default)
-                                                         1 = AXI breaks transfers at the 1K page boundary */
+                                                         0 = Break transfers at the 4K page boundary (default).
+                                                         1 = Break transfers at the 1K page boundary. */
 	uint32_t pipetranslimit               : 4;  /**< AXI pipelined transfers burst-request limit. Controls the number of outstanding pipelined
                                                          transfers requests the AXI master will push to the AXI slave. Once the AXI master reaches
                                                          this limit, it does not make more requests on the AXI ARADDR and AWADDR buses until the
                                                          associated data phases complete. This field is encoded as follows:
-                                                         0x0 = 1 request 0x8 = 9 requests
-                                                         0x1 = 2 requests 0x9 = 10 requests
-                                                         0x2 = 3 requests 0xA = 11 requests
-                                                         0x3 = 4 requests 0xB = 12 requests
-                                                         0x4 = 5 requests 0xC = 13 requests
-                                                         0x5 = 6 requests 0xD = 14 requests
-                                                         0x6 = 7 requests 0xE = 15 requests
-                                                         0x7 = 8 requests 0xF = 16 requests */
+                                                         0x0 = 1 request. 0x8 = 9 requests.
+                                                         0x1 = 2 requests. 0x9 = 10 requests.
+                                                         0x2 = 3 requests. 0xA = 11 requests.
+                                                         0x3 = 4 requests. 0xB = 12 requests.
+                                                         0x4 = 5 requests. 0xC = 13 requests.
+                                                         0x5 = 6 requests. 0xD = 14 requests.
+                                                         0x6 = 7 requests. 0xE = 15 requests.
+                                                         0x7 = 8 requests. 0xF = 16 requests. */
 	uint32_t reserved_0_7                 : 8;
 #else
 	uint32_t reserved_0_7                 : 8;
@@ -3976,26 +4038,27 @@ typedef union cvmx_uahcx_gsbuscfg1 cvmx_uahcx_gsbuscfg1_t;
 /**
  * cvmx_uahc#_gsts
  *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.6.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gsts {
 	uint32_t u32;
 	struct cvmx_uahcx_gsts_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t cbelt                        : 12; /**< Current BELT value. In host mode, indicates the minimum value of all received device BELT
-                                                         values and the BELT value that is set by the Set Latency Tolerance Value command. */
+                                                         values and the BELT value that is set by the set latency tolerance value command. */
 	uint32_t reserved_8_19                : 12;
 	uint32_t host_ip                      : 1;  /**< Host interrupt pending. Indicates that there is a pending interrupt pertaining to xHC in
                                                          the host-event queue. */
 	uint32_t reserved_6_6                 : 1;
 	uint32_t csrtimeout                   : 1;  /**< CSR timeout. When set to 1, indicates that software performed a write or read operation to
-                                                         a core register that could not be completed within 0xFFFF host-controller clock cycles. */
-	uint32_t buserraddrvld                : 1;  /**< Bus-error address valid. Indicates that UAHC(0)_GBUSERRADDR_* is valid and reports the
+                                                         a core register that could not be completed within 0xFFFF controller-clock cycles. */
+	uint32_t buserraddrvld                : 1;  /**< Bus-error address valid. Indicates that UAHC()_GBUSERRADDR is valid and reports the
                                                          first bus address that encounters a bus error. */
 	uint32_t reserved_2_3                 : 2;
-	uint32_t curmod                       : 2;  /**< Current mode of operation. Always 0x1.
-                                                         INTERNAL: May vary from 0x1 if you write UAHC(0)_GCTL[PRTCAPDIR]!=0x1. */
+	uint32_t curmod                       : 2;  /**< Current mode of operation. Always 0x1. INTERNAL: May vary from 0x1 if you write
+                                                         UAHC()_GCTL[PRTCAPDIR]!=0x1. */
 #else
 	uint32_t curmod                       : 2;
 	uint32_t reserved_2_3                 : 2;
@@ -4015,22 +4078,30 @@ typedef union cvmx_uahcx_gsts cvmx_uahcx_gsts_t;
  * cvmx_uahc#_gtxfifoprihst
  *
  * This register specifies the relative DMA priority level among the host TXFIFOs (one per USB
- * bus instance) within the associated speed group (SuperSpeed or HighSpeed/FullSpeed/LowSpeed).
- * When multiple TXFIFOs compete for DMA service at a given time, the TXDMA arbiter grants access
- * on a packet-basis in the following manner:
- * Among the FIFOs in the same speed group (SuperSpeed or HighSpeed/FullSpeed/LowSpeed):
- * High-priority TXFIFOs are granted access using round-robin arbitration
- * Low-priority TXFIFOs are granted access using round-robin arbitration only after high-priority
+ * bus instance) within the associated speed group (SuperSpeed or high-speed/full-speed
+ * /low-speed). When multiple TXFIFOs compete for DMA service at a given time, the TXDMA arbiter
+ * grants access on a packet-basis in the following manner:
+ *
+ * Among the FIFOs in the same speed group (SuperSpeed or high-speed/full-speed/low-speed):
+ *
+ * * High-priority TXFIFOs are granted access using round-robin arbitration.
+ * * Low-priority TXFIFOs are granted access using round-robin arbitration only after high-
+ * priority
  * TXFIFOs have no further processing to do (i.e., either the TXQs are empty or the corresponding
  * TXFIFOs do not have the required data).
- * The TX DMA arbiter prioritizes the SuperSpeed group or HighSpeed/FullSpeed/LowSpeed group
- * according to the ratio programmed in the UAHC(0)_GDMAHLRATIO register.
+ *
+ * The TX DMA arbiter prioritizes the SuperSpeed group or high-speed/full-speed/low-speed group
+ * according to the ratio programmed in
+ * UAHC()_GDMAHLRATIO.
+ *
  * For scatter-gather packets, the arbiter grants successive DMA requests to the same FIFO until
  * the entire packet is completed. The register size corresponds to the number of configured USB
  * bus instances; for example, in the default configuration, there are 3 USB bus instances (1
- * SuperSpeed, 1 HighSpeed, and 1 FullSpeed/LowSpeed).
+ * SuperSpeed, 1 high-speed, and 1 full-speed/low-speed).
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.9.2.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gtxfifoprihst {
 	uint32_t u32;
@@ -4053,13 +4124,16 @@ typedef union cvmx_uahcx_gtxfifoprihst cvmx_uahcx_gtxfifoprihst_t;
  *
  * This register holds the internal RAM start address/depth of each TxFIFO implemented. Unless
  * packet size/buffer size for each endpoint is different and application-specific, it is
- * recommended that the software use the default value. One register per FIFO.
- * One register per FIFO.
+ * recommended that the software use the default value. One register per FIFO. One register per
+ * FIFO.
+ *
+ * Reset values = 0:[0x0000_0082] 1:[0x0082_0103] 2:[0x0185_0205].
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.20a, section 6.2.6.1.
  * INTERNAL: For more information, refer to the BMU section in Block Descriptions on Synopsys
  * Databook page 238.
- * reset values = 0:[0x0000_0082] 1:[0x0082_0103] 2:[0x0185_0205]
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gtxfifosizx {
 	uint32_t u32;
@@ -4090,16 +4164,18 @@ typedef union cvmx_uahcx_gtxfifosizx cvmx_uahcx_gtxfifosizx_t;
  * 1024-byte packet, then starting a burst on 1-packet condition leads to an early abort of the
  * burst causing unnecessary performance reduction. This register allows the configuration of
  * threshold and burst size control. This feature is enabled by [USBTXPKTCNTSEL].
+ *
  * Transmit Path:
- *   * The Tx Threshold is controlled by [USBTXPKTCNT], and the Tx burst size is
- *     controlled by [USBMAXTXBURSTSIZE].
- *   * Selecting optimal Tx FIFO size, Tx Threshold, and Tx burst size avoids Tx burst aborts due
- *     to an underrun if the system bus is slower than USB. Once in a while an underrun is OK,
- *     and there is no functional issue.
- *   * A larger threshold will affect the performance, since the scheduler is idle during this
- *     time.
+ * * The TX Threshold is controlled by [USBTXPKTCNT], and the TX burst size is controlled by
+ * [USBMAXTXBURSTSIZE].
+ * * Selecting optimal TX FIFO size, TX Threshold, and TX burst size avoids TX burst aborts due
+ * to an underrun if the system bus is slower than USB. Once in a while an underrun is OK, and
+ * there is no functional issue.
+ * * A larger threshold affects the performance, since the scheduler is idle during this time.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.3.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gtxthrcfg {
 	uint32_t u32;
@@ -4119,7 +4195,7 @@ union cvmx_uahcx_gtxthrcfg {
 	uint32_t usbtxpktcnt                  : 4;  /**< USB transmit-packet count. Specifies the number of packets that must be in the TXFIFO
                                                          before the core can start transmission for the corresponding USB transaction (burst). This
                                                          field is only valid when USBTXPKTCNTSEL = 1. Valid values are from 0x1 to 0xF.
-                                                         Note: This field must be less than or equal to the USBMAXTXBURSTSIZE field. */
+                                                         This field must be <= USBMAXTXBURSTSIZE. */
 	uint32_t usbmaxtxburstsize            : 8;  /**< USB maximum TX burst size. When USBTXPKTCNTSEL = 1, this field specifies the maximum bulk
                                                          OUT burst the core should do. When the system bus is slower than the USB, TX FIFO can
                                                          underrun during a long burst. Program a smaller value to this field to limit the TX burst
@@ -4142,11 +4218,12 @@ typedef union cvmx_uahcx_gtxthrcfg cvmx_uahcx_gtxthrcfg_t;
 /**
  * cvmx_uahc#_guctl
  *
- * This register provides a few options for the software to control the core behavior in the Host
- * mode.
- * Most of the options are used to improve host inter-operability with different devices.
+ * This register provides a few options for the software to control the core behavior in the host
+ * mode. Most of the options are used to improve host inter-operability with different devices.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.11.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_guctl {
 	uint32_t u32;
@@ -4154,17 +4231,18 @@ union cvmx_uahcx_guctl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t refclkper                    : 10; /**< Reference-clock period. Indicates (in terms of ns) the period of REF_CLK. The default
                                                          value is set to 0x8
-                                                         (8 ns/125 MHz). This field must be updated during power on initialization if UAHC(0)_GCTL
-                                                         [SOFITPSYNC] = 1 or UAHC(0)_GFLADJ [GFLADJ_REFCLK_LPM_SEL] = 1. The programmable maximum
-                                                         value 62 ns, and the minimum value is 8 ns. You use a reference clock with a period that
-                                                         is a integer multiple, so that ITP can meet the jitter margin of 32 ns. The allowable
-                                                         REF_CLK frequencies whose period is not integer multiples are 16/17/19.2/24/39.7 MHz.
+                                                         (8 ns/125 MHz). This field must be updated during power on initialization if
+                                                         UAHC()_GCTL[SOFITPSYNC] = 1 or UAHC()_GFLADJ [GFLADJ_REFCLK_LPM_SEL] = 1. The
+                                                         programmable maximum value 62 ns, and the minimum value is 8 ns. You use a reference clock
+                                                         with a period that is a integer multiple, so that ITP can meet the jitter margin of 32 ns.
+                                                         The allowable REF_CLK frequencies whose period is not integer multiples are
+                                                         16/17/19.2/24/39.7 MHz.
                                                          This field should not be set to 0x0 at any time. If you do not plan to use this feature,
                                                          then you need to set this field to 0x8, the default value. */
 	uint32_t noextrdl                     : 1;  /**< No extra delay between SOF and the first packet.
-                                                         Some HS devices misbehave when the host sends a packet immediately after an SOF. However,
-                                                         adding an extra delay between an SOF and the first packet can reduce the USB data rate and
-                                                         performance.
+                                                         Some high-speed devices misbehave when the host sends a packet immediately after an SOF.
+                                                         However, adding an extra delay between an SOF and the first packet can reduce the USB data
+                                                         rate and performance.
                                                          This bit is used to control whether the host should wait for 2 us before it sends the
                                                          first packet after a SOF, or not. You can set this bit to 1 to improve the performance if
                                                          those problematic devices are not a concern in your host environment.
@@ -4177,9 +4255,9 @@ union cvmx_uahcx_guctl {
                                                          transfers. Scheduling multiple transactions in one microframe/frame can cause these
                                                          devices to misbehave. If this bit is set to 1, the host controller schedules transactions
                                                          for a control transfer in different microframes/frames. */
-	uint32_t resbwhseps                   : 1;  /**< Reserving 85% bandwidth for HS periodic EPs. By default, host controller reserves 80% of
-                                                         the bandwidth for periodic EPs. If this bit is set, the bandwidth is relaxed to 85% to
-                                                         accommodate two high-speed, high-bandwidth ISOC EPs.
+	uint32_t resbwhseps                   : 1;  /**< Reserving 85% bandwidth for high-speed periodic EPs. By default, host controller reserves
+                                                         80% of the bandwidth for periodic EPs. If this bit is set, the bandwidth is relaxed to 85%
+                                                         to accommodate two high-speed, high-bandwidth ISOC EPs.
                                                          USB 2.0 required 80% bandwidth allocated for ISOC traffic. If two high bandwidth ISOC
                                                          devices (HD webcams) are connected, and if each requires 1024-bytes * 3 packets per
                                                          microframe, then the bandwidth required is around 82%. If this bit is set to 1, it is
@@ -4187,8 +4265,8 @@ union cvmx_uahcx_guctl {
                                                          you may have to reduce the resolution of the webcams. */
 	uint32_t cmdevaddr                    : 1;  /**< Compliance mode for device address. When set to 1, slot ID can have different value than
                                                          device address if max_slot_enabled < 128.
-                                                         1 = increment device address on each address device command.
-                                                         0 = device address is equal to slot ID.
+                                                         0 = Device address is equal to slot ID.
+                                                         1 = Increment device address on each address device command.
                                                          The xHCI compliance requires this bit to be set to 1. The 0 mode is for debug purpose
                                                          only. This allows you to easily identify a device connected to a port in the Lecroy or
                                                          Eliisys trace during hardware debug. */
@@ -4199,50 +4277,50 @@ union cvmx_uahcx_guctl {
                                                          If the auto-retry feature is disabled (default), the core responds with a terminating
                                                          retry ACK (i.e. an ACK transaction packet with Retry = 1 and NumP = 0). */
 	uint32_t enoverlapchk                 : 1;  /**< Enable check for LFPS overlap during remote Ux Exit. If this bit is set to:
-                                                         - 1: The SuperSpeed link, when exiting U1/U2/U3, waits for either the remote link LFPS or
-                                                          TS1/TS2 training symbols before it confirms that the LFPS handshake is complete. This is
-                                                          done to handle the case where the LFPS glitch causes the link to start exiting from the
-                                                          low power state. Looking for the LFPS overlap makes sure that the link partner also sees
-                                                          the LFPS.
-                                                         - 0: When the link exists U1/U2/U3 because of a remote exit, it does not look for an LFPS
-                                                          overlap. */
-	uint32_t extcapsupten                 : 1;  /**< External extended capability support enable. If disabled, a read UAHC(0)_SUPTPRT3_DW0
-                                                         [NEXTCAPPTR] returns 0 in the Next Capability Pointer field. This indicates there are no
-                                                         more capabilities. If enabled, a read to UAHC(0)_SUPTPRT3_DW0[NEXTCAPPTR] returns 4 in the
-                                                         Next Capability Pointer field.
+                                                         0 = When the link exists U1/U2/U3 because of a remote exit, it does not look for an LFPS
+                                                         overlap.
+                                                         1 = The SuperSpeed link, when exiting U1/U2/U3, waits for either the remote link LFPS or
+                                                         TS1/TS2 training symbols before it confirms that the LFPS handshake is complete. This is
+                                                         done to handle the case where the LFPS glitch causes the link to start exiting from the
+                                                         low power state. Looking for the LFPS overlap makes sure that the link partner also sees
+                                                         the LFPS. */
+	uint32_t extcapsupten                 : 1;  /**< External extended capability support enable. If disabled, a read UAHC()_SUPTPRT3_DW0
+                                                         [NEXTCAPPTR] returns 0 in the next capability pointer field. This indicates there are no
+                                                         more capabilities. If enabled, a read to UAHC()_SUPTPRT3_DW0[NEXTCAPPTR] returns 4 in the
+                                                         next capability pointer field.
                                                          Always set to 0x0. */
-	uint32_t insrtextrfsbodi              : 1;  /**< Insert extra delay between FS bulk OUT transactions. Some FS devices are slow to receive
-                                                         bulk OUT data and can get stuck when there are consecutive bulk OUT transactions with
-                                                         short inter-transaction delays. This bit is used to control whether the host inserts extra
-                                                         delay between consecutive bulk OUT transactions to a FS endpoint.
-                                                         1 = host inserts about 12us extra delay between consecutive bulk OUT transactions to an FS
-                                                         endpoint to work around the device issue.
-                                                         0 = host does not insert extra delay.
-                                                         Setting this bit to 1 reduces the bulk OUT transfer performance for most of the FS
-                                                         devices. */
+	uint32_t insrtextrfsbodi              : 1;  /**< Insert extra delay between full-speed bulk OUT transactions. Some full-speed devices are
+                                                         slow to receive bulk OUT data and can get stuck when there are consecutive bulk OUT
+                                                         transactions with short inter-transaction delays. This bit is used to control whether the
+                                                         host inserts extra delay between consecutive bulk OUT transactions to a full-speed
+                                                         endpoint.
+                                                         0 = Host does not insert extra delay.
+                                                         Setting this bit to 1 reduces the bulk OUT transfer performance for most of the full-speed
+                                                         devices.
+                                                         1 = Host inserts about 12 us extra delay between consecutive bulk OUT transactions to an
+                                                         full-speed endpoint to work around the device issue. */
 	uint32_t dtct                         : 2;  /**< Device timeout coarse tuning. This field determines how long the host waits for a response
                                                          from device before considering a timeout.
                                                          The core first checks the DTCT value. If it is 0, then the timeout value is defined by the
                                                          DTFT. If it is non-zero, then it uses the following timeout values:
-                                                         0x0 = 0 us; use DTFT value instead
-                                                         0x1 = 500 us
-                                                         0x2 = 1.5 ms
-                                                         0x3 = 6.5 ms */
+                                                         0x0 = 0 us; use DTFT value instead.
+                                                         0x1 = 500 us.
+                                                         0x2 = 1.5 ms.
+                                                         0x3 = 6.5 ms. */
 	uint32_t dtft                         : 9;  /**< Device timeout fine tuning. This field determines how long the host waits for a response
                                                          from a device before considering a timeout. For DTFT to take effect, DTCT must be set to
                                                          0x0.
                                                          The DTFT value specifies the number of 125MHz clock cycles * 256 to count before
                                                          considering a device timeout. For the 125 MHz clock cycles (8 ns period), this is
                                                          calculated as follows:
-                                                         [DTFT value] * 256 * 8 (ns)
-                                                         DTFT Value Calculation Timeout
-                                                         0x2 2 * 256 * 8 4 us
-                                                         0x5 5 * 256 * 8 10 us
-                                                         0xA 10 * 256 * 8 20 us
-                                                         0x10 16 * 256 * 8 32 us
-                                                         0x19 25 * 256 * 8 51 us
-                                                         0x31 49 * 256 * 8 100 us
-                                                         0x62 98 * 256 * 8 200 us */
+                                                         _ [DTFT value] * 256 * 8 (ns)
+                                                         0x2 = 2 * 256 * 8 -> 4 us.
+                                                         0x5 = 5 * 256 * 8 -> 10 us.
+                                                         0xA = 10 * 256 * 8 -> 20 us.
+                                                         0x10 = 16 * 256 * 8 -> 32 us.
+                                                         0x19 = 25 * 256 * 8 -> 51 us.
+                                                         0x31 = 49 * 256 * 8 -> 100 us.
+                                                         0x62 = 98 * 256 * 8 -> 200 us. */
 #else
 	uint32_t dtft                         : 9;
 	uint32_t dtct                         : 2;
@@ -4265,8 +4343,9 @@ typedef union cvmx_uahcx_guctl cvmx_uahcx_guctl_t;
 /**
  * cvmx_uahc#_guctl1
  *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.7.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_guctl1 {
 	uint32_t u32;
@@ -4293,11 +4372,13 @@ typedef union cvmx_uahcx_guctl1 cvmx_uahcx_guctl1_t;
  * This is a read/write register containing the User ID. The power-on value for this register is
  * specified as the User Identification Register. This register can be used in the following
  * ways:
- *   * To store the version or revision of your system
- *   * To store hardware configurations that are outside the core
- *   * As a scratch register
+ * * To store the version or revision of your system.
+ * * To store hardware configurations that are outside of the core.
+ * * As a scratch register.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.50a, section 6.2.1.10.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_guid {
 	uint32_t u32;
@@ -4315,9 +4396,11 @@ typedef union cvmx_uahcx_guid cvmx_uahcx_guid_t;
 /**
  * cvmx_uahc#_gusb2i2cctl#
  *
- * Reserved for future use.
+ * This register is reserved for future use.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UAHC_RST].
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.20a, section 6.2.5.2.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
  */
 union cvmx_uahcx_gusb2i2cctlx {
 	uint32_t u32;
@@ -4339,9 +4422,11 @@ typedef union cvmx_uahcx_gusb2i2cctlx cvmx_uahcx_gusb2i2cctlx_t;
  * PHY-related configuration parameters. The application must program this register before
  * starting any transactions on either the SoC bus or the USB. Per-port registers are
  * implemented.
- * Note: Do not make changes to this register after the initial programming.
+ *
+ * Do not make changes to this register after the initial programming.
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.20a, section 6.2.5.1.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
+ * Reset by: IOI reset or UCTL()_CTL[UAHC_RST].
  */
 union cvmx_uahcx_gusb2phycfgx {
 	uint32_t u32;
@@ -4349,14 +4434,14 @@ union cvmx_uahcx_gusb2phycfgx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t physoftrst                   : 1;  /**< PHY soft reset. Causes the usb2phy_reset signal to be asserted to reset a UTMI PHY. */
 	uint32_t u2_freeclk_exists            : 1;  /**< Specifies whether your USB 2.0 PHY provides a free-running PHY clock, which is active when
-                                                          the clock control input is active. If your USB 2.0 PHY provides a free-running PHY clock,
-                                                          it must be connected to the utmi_clk[0] input. The remaining utmi_clk[n] must be connected
-                                                          to the respective port clocks. The core uses the Port-0 clock for generating the internal
-                                                          mac2 clock.
-                                                         - 0: USB 2.0 free clock does not exist
-                                                         - 1: USB 2.0 free clock exists
-                                                          Note: This field must be set to zero if you enable ITP generation based on the REF_CLK
-                                                          counter, GCTL.SOFITPSYNC=1, or GFLADJ. GFLADJ_REFCLK_LPM_SEL=1. */
+                                                         the clock control input is active. If your USB 2.0 PHY provides a free-running PHY clock,
+                                                         it must be connected to the utmi_clk[0] input. The remaining utmi_clk[n] must be connected
+                                                         to the respective port clocks. The core uses the Port-0 clock for generating the internal
+                                                         mac2 clock.
+                                                         0 = USB 2.0 free clock does not exist.
+                                                         1 = USB 2.0 free clock exists.
+                                                         This field must be set to zero if you enable ITP generation based on the REF_CLK
+                                                         counter, UAHC()_GCTL[SOFITPSYNC] = 1, or UAHC()_GFLADJ [GFLADJ_REFCLK_LPM_SEL] = 1. */
 	uint32_t ulpi_lpm_with_opmode_chk     : 1;  /**< Support the LPM over ULPI without NOPID token to the ULPI PHY. Always 0x0. */
 	uint32_t reserved_19_28               : 10;
 	uint32_t ulpiextvbusindicator         : 1;  /**< Reserved (unused in this configuration). */
@@ -4373,14 +4458,14 @@ union cvmx_uahcx_gusb2phycfgx {
 	uint32_t reserved_9_9                 : 1;
 	uint32_t enblslpm                     : 1;  /**< Enable utmi_sleep_n and utmi_l1_suspend_n. The application uses this field to control
                                                          utmi_sleep_n and utmi_l1_suspend_n assertion to the PHY in the L1 state.
-                                                         1 = utmi_sleep_n and utmi_l1_suspend_n assertion from the core is transferred to the
-                                                         external PHY.
                                                          0 = utmi_sleep_n and utmi_l1_suspend_n assertion from the core is not transferred to the
                                                          external PHY.
+                                                         1 = utmi_sleep_n and utmi_l1_suspend_n assertion from the core is transferred to the
+                                                         external PHY.
                                                          When hardware LPM is enabled, this bit should be set high for Port0. */
-	uint32_t physel                       : 1;  /**< USB 2.0 HS PHY or USB 1.1 FS Serial Transceiver Select */
-	uint32_t susphy                       : 1;  /**< Suspend USB2.0 HS/FS/LS PHY. When set, USB2.0 PHY enters suspend mode if suspend
-                                                         conditions are valid. */
+	uint32_t physel                       : 1;  /**< USB 2.0 high-speed PHY or USB 1.1 full-speed serial transceiver select. */
+	uint32_t susphy                       : 1;  /**< Suspend USB2.0 high-speed/full-speed/low-speed PHY. When set, USB2.0 PHY enters suspend
+                                                         mode if suspend conditions are valid. */
 	uint32_t fsintf                       : 1;  /**< Full-speed serial-interface select. Always reads as 0x0. */
 	uint32_t ulpi_utmi_sel                : 1;  /**< ULPI or UTMI+ select. Always reads as 0x0, indicating UTMI+. */
 	uint32_t phyif                        : 1;  /**< PHY interface width: 1 = 16-bit, 0 = 8-bit.
@@ -4389,7 +4474,7 @@ union cvmx_uahcx_gusb2phycfgx {
                                                          The UTMI 8-bit and 16-bit modes cannot be used together for different ports at the same
                                                          time (i.e., all the ports should be in 8-bit mode, or all of them should be in 16-bit
                                                          mode). */
-	uint32_t toutcal                      : 3;  /**< HS/FS timeout calibration.
+	uint32_t toutcal                      : 3;  /**< High-speed/full-speed timeout calibration.
                                                          The number of PHY clock cycles, as indicated by the application in this field, is
                                                          multiplied by a bit-time factor; this factor is added to the high-speed/full-speed
                                                          interpacket timeout duration in the core to account for additional delays introduced by
@@ -4399,13 +4484,13 @@ union cvmx_uahcx_gusb2phycfgx {
                                                          times. The USB standard timeout value for full-speed operation is 16 to 18 (inclusive) bit
                                                          times. The application must program this field based on the speed of connection.
                                                          The number of bit times added per PHY clock are:
-                                                         high-speed operation:
-                                                         - one 30-MHz PHY clock = 16 bit times
-                                                         - one 60-MHz PHY clock = 8 bit times
-                                                         full-speed operation:
-                                                         - one 30-MHz PHY clock = 0.4 bit times
-                                                         - one 60-MHz PHY clock = 0.2 bit times
-                                                         - one 48-MHz PHY clock = 0.25 bit times */
+                                                         * High-speed operation:
+                                                         - one 30-MHz PHY clock = 16 bit times.
+                                                         - one 60-MHz PHY clock = 8 bit times.
+                                                         * Full-speed operation:
+                                                         - one 30-MHz PHY clock = 0.4 bit times.
+                                                         - one 60-MHz PHY clock = 0.2 bit times.
+                                                         - one 48-MHz PHY clock = 0.25 bit times. */
 #else
 	uint32_t toutcal                      : 3;
 	uint32_t phyif                        : 1;
@@ -4436,11 +4521,13 @@ typedef union cvmx_uahcx_gusb2phycfgx cvmx_uahcx_gusb2phycfgx_t;
  *
  * This register is used to configure the core after power-on. It contains USB 3.0 and USB 3.0
  * PHY-related configuration parameters. The application must program this register before
- * starting any transactions on either the SoC bus or the USB.
- * Per-port registers are implemented.
- * Note: Do not make changes to this register after the initial programming.
+ * starting any transactions on either the SoC bus or the USB. Per-port registers are
+ * implemented.
+ *
+ * Do not make changes to this register after the initial programming.
+ *
  * INTERNAL: See Synopsys DWC_usb3 Databook v2.20a, section 6.2.5.4.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET].
+ * Reset by: IOI reset or UCTL()_CTL[UAHC_RST].
  */
 union cvmx_uahcx_gusb3pipectlx {
 	uint32_t u32;
@@ -4448,50 +4535,51 @@ union cvmx_uahcx_gusb3pipectlx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t physoftrst                   : 1;  /**< USB3 PHY soft reset (PHYSoftRst). When set to 1, initiates a PHY soft reset. After setting
                                                          this bit to 1, the software needs to clear this bit. */
-	uint32_t hstprtcmpl                   : 1;  /**< Host port compliance. Setting this bit to 1 enables placing the SS port link into a
-                                                         compliance state, which allows testing of the PIPE PHY compliance patterns without having
-                                                         to have a test fixture on the USB 3.0 cable. By default, this bit should be set to 0.
-                                                         In compliance-lab testing, the SS port link enters compliance after failing the first
-                                                         polling sequence after power on. Set this bit to 0, when you run compliance tests.
+	uint32_t hstprtcmpl                   : 1;  /**< Host port compliance. Setting this bit to 1 enables placing the SuperSpeed port link into
+                                                         a compliance state, which allows testing of the PIPE PHY compliance patterns without
+                                                         having to have a test fixture on the USB 3.0 cable. By default, this bit should be set to
+                                                         0.
+                                                         In compliance-lab testing, the SuperSpeed port link enters compliance after failing the
+                                                         first polling sequence after power on. Set this bit to 0 when you run compliance tests.
                                                          The sequence for using this functionality is as follows:
-                                                         Disconnect any plugged in devices.
-                                                         Set UAHC_USBCMD[HCRST] = 1 or power-on-chip reset.
-                                                         Set UAHC_PORTSC[PP] = 0.
-                                                         Set HSTPRTCMPL = 1. This places the link into compliance state.
+                                                         * Disconnect any plugged-in devices.
+                                                         * Set UAHC()_USBCMD[HCRST] = 1 or power-on-chip reset.
+                                                         * Set UAHC()_PORTSC()[PP] = 0.
+                                                         * Set HSTPRTCMPL = 1. This places the link into compliance state.
                                                          To advance the compliance pattern, follow this sequence (toggle HSTPRTCMPL):
-                                                         Set HSTPRTCMPL = 0.
-                                                         Set HSTPRTCMPL = 1. This advances the link to the next compliance pattern.
-                                                         To exit from the compliance state, set UAHC_USBCMD[HCRST = 1 or power-on-chip reset. */
-	uint32_t u2ssinactp3ok                : 1;  /**< P3 OK for U2/SSInactive:
-                                                         1 = during link state U2/SS.Inactive, put PHY in P3
-                                                         0 = during link state U2/SS.Inactive, put PHY in P2 (Default) */
+                                                         * Set HSTPRTCMPL = 0.
+                                                         * Set HSTPRTCMPL = 1. This advances the link to the next compliance pattern.
+                                                         To exit from the compliance state, set UAHC()_USBCMD[HCRST] = 1 or power-on-chip reset. */
+	uint32_t u2ssinactp3ok                : 1;  /**< P3 OK for U2/SS.Inactive:
+                                                         0 = During link state U2/SS.Inactive, put PHY in P2 (default).
+                                                         1 = During link state U2/SS.Inactive, put PHY in P3. */
 	uint32_t disrxdetp3                   : 1;  /**< Disables receiver detection in P3. If PHY is in P3 and the core needs to perform receiver
                                                          detection:
-                                                         1 = core changes the PHY power state to P2 and then performs receiver detection. After
-                                                         receiver detection, core changes PHY power state to P3.
-                                                         0 = core performs receiver detection in P3 (default) */
+                                                         0 = Core performs receiver detection in P3 (default).
+                                                         1 = Core changes the PHY power state to P2 and then performs receiver detection. After
+                                                         receiver detection, core changes PHY power state to P3. */
 	uint32_t ux_exit_in_px                : 1;  /**< UX exit in Px:
-                                                         1 = the core does U1/U2/U3 exit in PHY power state P1/P2/P3 respectively
-                                                         0 = the core does U1/U2/U3 exit in PHY power state P0 (default behavior)
-                                                         This bit is added for SS PHY workaround where SS PHY injects a glitch on pipe3_RxElecIdle
-                                                         while receiving Ux exit LFPS, and pipe3_PowerDown change is in progress.
-                                                         INTERNAL: Note: This bit is used by third-party SuperSpeed PHY. It should be set to '0'
-                                                         for Synopsys PHY. */
+                                                         0 = Core does U1/U2/U3 exit in PHY power state P0 (default behavior).
+                                                         1 = Core does U1/U2/U3 exit in PHY power state P1/P2/P3 respectively.
+                                                         This bit is added for SuperSpeed PHY workaround where SuperSpeed PHY injects a glitch on
+                                                         pipe3_RxElecIdle while receiving Ux exit LFPS, and pipe3_PowerDown change is in progress.
+                                                         INTERNAL: Note: This bit is used by third-party SuperSpeed PHY. It should be set to 0 for
+                                                         Synopsys PHY. */
 	uint32_t ping_enchance_en             : 1;  /**< Ping enhancement enable. When set to 1, the downstream-port U1-ping-receive timeout
                                                          becomes 500 ms instead of 300 ms. Minimum Ping.LFPS receive duration is 8 ns (one mac3_clk
                                                          cycle). This field is valid for the downstream port only.
-                                                         INTERNAL: Note: This bit is used by third-party SuperSpeed PHY. It should be set to '0'
-                                                         for Synopsys PHY. */
+                                                         INTERNAL: Note: This bit is used by third-party SuperSpeed PHY. It should be set to 0 for
+                                                         Synopsys PHY. */
 	uint32_t u1u2exitfail_to_recov        : 1;  /**< U1U2exit fail to recovery. When set to 1, and U1/U2 LFPS handshake fails, the LTSSM
-                                                         transitions from U1/U2 to recovery instead of SS inactive.
+                                                         transitions from U1/U2 to recovery instead of SS.inactive.
                                                          If recovery fails, then the LTSSM can enter SS.Inactive. This is an enhancement only. It
                                                          prevents interoperability issue if the remote link does not do the proper handshake. */
 	uint32_t request_p1p2p3               : 1;  /**< Always request P1/P2/P3 for U1/U2/U3.
-                                                         1 = the core always requests PHY power change from P0 to P1/P2/P3 during U0 to U1/U2/U3
-                                                         transition.
                                                          0 = if immediate Ux exit (remotely initiated, or locally initiated) happens, the core does
                                                          not request P1/P2/P3 power state change.
-                                                         INTERNAL: Note: This bit should be set to '1' for Synopsys PHY. For third-party SuperSpeed
+                                                         1 = the core always requests PHY power change from P0 to P1/P2/P3 during U0 to U1/U2/U3
+                                                         transition.
+                                                         INTERNAL: Note: This bit should be set to 1 for Synopsys PHY. For third-party SuperSpeed
                                                          PHY, check with your PHY vendor. */
 	uint32_t startrxdetu3rxdet            : 1;  /**< Start receiver detection in U3/Rx.Detect.
                                                          If DISRXDETU3RXDET is set to 1 during reset, and the link is in U3 or Rx.Detect state, the
@@ -4511,19 +4599,19 @@ union cvmx_uahcx_gusb3pipectlx {
                                                          INTERNAL: Should always be 0x1 for a Synopsys PHY. */
 	uint32_t delaypxtransenterux          : 1;  /**< Delay PHY power change from P0 to P1/P2/P3 when link state changing from U0 to U1/U2/U3
                                                          respectively.
-                                                         1 = when entering U1/U2/U3, delay the transition to P1/P2/P3 until the pipe3 signals,
-                                                         Pipe3_RxElecIlde is 1 and pipe3_RxValid is 0
                                                          0 = when entering U1/U2/U3, transition to P1/P2/P3 without checking for Pipe3_RxElecIlde
                                                          and pipe3_RxValid.
+                                                         1 = when entering U1/U2/U3, delay the transition to P1/P2/P3 until the pipe3 signals,
+                                                         Pipe3_RxElecIlde is 1 and pipe3_RxValid is 0.
                                                          INTERNAL: Note: This bit should be set to '1' for Synopsys PHY. It is also used by third-
                                                          party SuperSpeed PHY. */
 	uint32_t suspend_en                   : 1;  /**< Suspend USB3.0 SuperSpeed PHY (Suspend_en). When set to 1, and if suspend conditions are
                                                          valid, the USB 3.0 PHY enters suspend mode. */
 	uint32_t datwidth                     : 2;  /**< PIPE data width.
-                                                         0x0 = 32 bits
-                                                         0x1 = 16 bits
-                                                         0x2 = 8 bits
-                                                         0x3 = reserved
+                                                         0x0 = 32 bits.
+                                                         0x1 = 16 bits.
+                                                         0x2 = 8 bits.
+                                                         0x3 = reserved.
                                                          One clock cycle after reset, these bits receive the value seen on the pipe3_DataBusWidth.
                                                          This will always be 0x0.
                                                          INTERNAL: The simulation testbench uses the coreConsultant parameter to configure the VIP.
@@ -4532,42 +4620,42 @@ union cvmx_uahcx_gusb3pipectlx {
 	uint32_t abortrxdetinu2               : 1;  /**< Abort RX Detect in U2. When set to 1, and the link state is U2, the core aborts receiver
                                                          detection if it receives U2 exit LFPS from the remote link partner.
                                                          This bit is for downstream port only.
-                                                         INTERNAL: Note: This bit is used by third-party SuperSpeed PHY. It should be set to '0'
-                                                         for Synopsys PHY. */
+                                                         INTERNAL: Note: This bit is used by third-party SuperSpeed PHY. It should be set to 0 for
+                                                         Synopsys PHY. */
 	uint32_t skiprxdet                    : 1;  /**< Skip RX detect. When set to 1, the core skips RX detection if pipe3_RxElecIdle is low.
                                                          Skip is defined as waiting for the appropriate timeout, then repeating the operation. */
 	uint32_t lfpsp0algn                   : 1;  /**< LFPS P0 align. When set to 1:
-                                                         the core deasserts LFPS transmission on the clock edge that it requests Phy power state 0
-                                                         when exiting U1, U2, or U3 low power states. Otherwise, LFPS transmission is asserted one
-                                                         clock earlier.
-                                                         the core requests symbol transmission two pipe3_rx_pclks periods after the PHY asserts
+                                                         * the core deasserts LFPS transmission on the clock edge that it requests Phy power state
+                                                         0 when exiting U1, U2, or U3 low power states. Otherwise, LFPS transmission is asserted
+                                                         one clock earlier.
+                                                         * the core requests symbol transmission two pipe3_rx_pclks periods after the PHY asserts
                                                          PhyStatus as a result of the PHY switching from P1 or P2 state to P0 state.
                                                          For USB 3.0 host, this is not required. */
 	uint32_t p3p2tranok                   : 1;  /**< P3 P2 transitions OK.
-                                                         1 = the core transitions directly from Phy power state P2 to P3 or from state P3 to P2.
                                                          0 = P0 is always entered as an intermediate state during transitions between P2 and P3, as
                                                          defined in the PIPE3 specification.
+                                                         1 = the core transitions directly from Phy power state P2 to P3 or from state P3 to P2.
                                                          According to PIPE3 specification, any direct transition between P3 and P2 is illegal.
                                                          INTERNAL: This bit is used only for some non-Synopsys PHYs that cannot do LFPS in P3.
-                                                         INTERNAL: Note: This bit is used by third-party SuperSpeed PHY. It should be set to '0'
-                                                         for Synopsys PHY. */
+                                                         INTERNAL: Note: This bit is used by third-party SuperSpeed PHY. It should be set to 0 for
+                                                         Synopsys PHY. */
 	uint32_t p3exsigp2                    : 1;  /**< P3 exit signal in P2. When set to 1, the core always changes the PHY power state to P2,
                                                          before attempting a U3 exit handshake.
-                                                         INTERNAL: Note: This bit is used by third-party SuperSpeed PHY. It should be set to '0'
-                                                         for Synopsys PHY. */
+                                                         INTERNAL: Note: This bit is used by third-party SuperSpeed PHY. It should be set to 0 for
+                                                         Synopsys PHY. */
 	uint32_t lfpsfilt                     : 1;  /**< LFPS filter. When set to 1, filter LFPS reception with pipe3_RxValid in PHY power state
                                                          P0, ignore LFPS reception from the PHY unless both pipe3_Rxelecidle and pipe3_RxValid are
                                                          deasserted. */
 	uint32_t rxdet2polllfpsctrl           : 1;  /**< RX_DETECT to Polling.
-                                                         0 = Enables a 400us delay to start polling LFPS after RX_DETECT. This allows VCM offset to
-                                                         settle to a proper level.
-                                                         1 = Disables the 400us delay to start polling LFPS after RX_DETECT. */
+                                                         0 = Enables a 400 us delay to start polling LFPS after RX_DETECT. This allows VCM offset
+                                                         to settle to a proper level.
+                                                         1 = Disables the 400 us delay to start polling LFPS after RX_DETECT. */
 	uint32_t reserved_7_7                 : 1;
-	uint32_t txswing                      : 1;  /**< Tx swing. Refer to the PIPE3 specificiation. */
-	uint32_t txmargin                     : 3;  /**< Tx margin. Refer to the PIPE3 specificiation, table 5-3. */
-	uint32_t txdeemphasis                 : 2;  /**< Tx de-emphasis. The value driven to the PHY is controlled by the LTSSM during USB3
-                                                         compliance mode. Refer to the PIPE3 specificiation, table 5-3. */
-	uint32_t elasticbuffermode            : 1;  /**< Elastic buffer mode. Refer to the PIPE3 specificiation, table 5-3. */
+	uint32_t txswing                      : 1;  /**< TX swing. Refer to the PIPE3 specification. */
+	uint32_t txmargin                     : 3;  /**< TX margin. Refer to the PIPE3 specification, table 5-3. */
+	uint32_t txdeemphasis                 : 2;  /**< TX de-emphasis. The value driven to the PHY is controlled by the LTSSM during USB3
+                                                         compliance mode. Refer to the PIPE3 specification, table 5-3. */
+	uint32_t elasticbuffermode            : 1;  /**< Elastic buffer mode. Refer to the PIPE3 specification, table 5-3. */
 #else
 	uint32_t elasticbuffermode            : 1;
 	uint32_t txdeemphasis                 : 2;
@@ -4619,7 +4707,7 @@ union cvmx_uahcx_hccparams {
 	uint32_t ltc                          : 1;  /**< Latency tolerance messaging capability. */
 	uint32_t lhrc                         : 1;  /**< Light HC reset capability. */
 	uint32_t pind                         : 1;  /**< Port indicators. */
-	uint32_t ppc                          : 1;  /**< Port power control. Value is based on UCTL(0)_HOST_CFG[PPC_EN]. */
+	uint32_t ppc                          : 1;  /**< Port power control. Value is based on UCTL()_HOST_CFG[PPC_EN]. */
 	uint32_t csz                          : 1;  /**< Context size. */
 	uint32_t bnc                          : 1;  /**< BW negotiation capability. */
 	uint32_t ac64                         : 1;  /**< 64-bit addressing capability. */
@@ -4722,9 +4810,12 @@ typedef union cvmx_uahcx_hcsparams3 cvmx_uahcx_hcsparams3_t;
 /**
  * cvmx_uahc#_iman#
  *
- * See xHCI specification v1.0 section 5.5.2.1.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.5.2.1.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_imanx {
 	uint32_t u32;
@@ -4732,7 +4823,7 @@ union cvmx_uahcx_imanx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_2_31                : 30;
 	uint32_t ie                           : 1;  /**< Interrupt enable. */
-	uint32_t ip                           : 1;  /**< Interrupt pending. Throws UCTL_INTSN_E::UCTL(0)_UAHC_IMAN(0)_IP. */
+	uint32_t ip                           : 1;  /**< Interrupt pending. */
 #else
 	uint32_t ip                           : 1;
 	uint32_t ie                           : 1;
@@ -4746,9 +4837,12 @@ typedef union cvmx_uahcx_imanx cvmx_uahcx_imanx_t;
 /**
  * cvmx_uahc#_imod#
  *
- * See xHCI specification v1.0 section 5.5.2.2.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.5.2.2.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_imodx {
 	uint32_t u32;
@@ -4768,9 +4862,12 @@ typedef union cvmx_uahcx_imodx cvmx_uahcx_imodx_t;
 /**
  * cvmx_uahc#_mfindex
  *
- * See xHCI specification v1.0 section 5.5.1.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.5.1.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_mfindex {
 	uint32_t u32;
@@ -5995,18 +6092,31 @@ typedef union cvmx_uahcx_pagesize cvmx_uahcx_pagesize_t;
 /**
  * cvmx_uahc#_porthlpmc_20#
  *
- * See xHCI specification v1.? section ?.
- * INTERNAL: TODO (new unreleased xHCI errata!)
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST].
+ * For information on this register, refer to the xHCI Specification, v1.1, section 5.4.11.2.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_porthlpmc_20x {
 	uint32_t u32;
 	struct cvmx_uahcx_porthlpmc_20x_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_14_31               : 18;
-	uint32_t hirdd                        : 4;  /**< TODO unreleased xHCI errata */
-	uint32_t l1_timeout                   : 8;  /**< TODO: unreleased xHCI errata */
+	uint32_t hirdd                        : 4;  /**< See section 5.4.11.2 of the XHCI Spec 1.1.
+                                                         If UAHC()_SUPTPRT2_DW2[BLC] = 0, then HIRD timing is applied to this field.
+                                                         If UAHC()_SUPTPRT2_DW2[BLC] = 1, then BESL timing is applied to this field. */
+	uint32_t l1_timeout                   : 8;  /**< Timeout value for the L1 inactivity timer (LPM Timer). This field is set to 0x0 by the
+                                                         assertion of PR to 1. Refer to section 4.23.5.1.1.1 (in XHCI spec 1.1) for more
+                                                         information on L1 Timeout operation.
+                                                         The following are permissible values:
+                                                         0x0 =  128 us. (default).
+                                                         0x1 =  256 us.
+                                                         0x2 =  512 us.
+                                                         0x3 =  768 us.
+                                                         _ ...
+                                                         0xFF =  65280 us. */
 	uint32_t hirdm                        : 2;  /**< Host-initiated resume-duration mode. */
 #else
 	uint32_t hirdm                        : 2;
@@ -6022,10 +6132,13 @@ typedef union cvmx_uahcx_porthlpmc_20x cvmx_uahcx_porthlpmc_20x_t;
 /**
  * cvmx_uahc#_porthlpmc_ss#
  *
- * See xHCI specification v1.? section ?.
- * INTERNAL: TODO: (new unreleased xHCI errata!)
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST].
+ * The USB3 Port Hardware LPM Control register is reserved and shall be treated as RsvdP by
+ * software. See xHCI specification v1.1 section 5.4.11.1.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST].
  */
 union cvmx_uahcx_porthlpmc_ssx {
 	uint32_t u32;
@@ -6083,9 +6196,12 @@ typedef union cvmx_uahcx_portli_ssx cvmx_uahcx_portli_ssx_t;
 /**
  * cvmx_uahc#_portpmsc_20#
  *
- * See xHCI specification v1.0 section 5.4.9.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.4.9.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST].
  */
 union cvmx_uahcx_portpmsc_20x {
 	uint32_t u32;
@@ -6115,9 +6231,12 @@ typedef union cvmx_uahcx_portpmsc_20x cvmx_uahcx_portpmsc_20x_t;
 /**
  * cvmx_uahc#_portpmsc_ss#
  *
- * See xHCI specification v1.0 section 5.4.9.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.4.9.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST].
  */
 union cvmx_uahcx_portpmsc_ssx {
 	uint32_t u32;
@@ -6141,10 +6260,13 @@ typedef union cvmx_uahcx_portpmsc_ssx cvmx_uahcx_portpmsc_ssx_t;
 /**
  * cvmx_uahc#_portsc#
  *
- * See xHCI specification v1.0 section 5.4.8.
- * Port 1 is USB3.0 SuperSpeed link. Port 0 is USB2.0 HighSpeed/FullSpeed/LowSpeed link.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.4.8. Port 1
+ * is USB3.0 SuperSpeed link, Port 0 is USB2.0 high-speed/full-speed/low-speed link.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST].
  */
 union cvmx_uahcx_portscx {
 	uint32_t u32;
@@ -6308,8 +6430,8 @@ typedef union cvmx_uahcx_suptprt2_dw2 cvmx_uahcx_suptprt2_dw2_t;
 /**
  * cvmx_uahc#_suptprt2_dw3
  *
- * See xHCI specification v1.? section 7.2.
- * INTERNAL: TODO (new unreleased xHCI errata!)
+ * For information on this register, refer to the xHCI Specification, v1.1, section 7.2.
+ *
  */
 union cvmx_uahcx_suptprt2_dw3 {
 	uint32_t u32;
@@ -6338,9 +6460,8 @@ union cvmx_uahcx_suptprt3_dw0 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t majorrev                     : 8;  /**< Major revision. */
 	uint32_t minorrev                     : 8;  /**< Minor revision. */
-	uint32_t nextcapptr                   : 8;  /**< Next capability pointer
-                                                         Value depends on UAHC(0)_GUCTL[EXTCAPSUPTEN].
-                                                         If EXTCAPSUPTEN = 0, value is 0x0. If = 1, value is 0x4. */
+	uint32_t nextcapptr                   : 8;  /**< Next capability pointer. Value depends on UAHC()_GUCTL[EXTCAPSUPTEN]. If EXTCAPSUPTEN =
+                                                         0, value is 0x0. If EXTCAPSUPTEN = 1, value is 0x4. */
 	uint32_t capid                        : 8;  /**< Capability ID = supported protocol. */
 #else
 	uint32_t capid                        : 8;
@@ -6400,8 +6521,8 @@ typedef union cvmx_uahcx_suptprt3_dw2 cvmx_uahcx_suptprt3_dw2_t;
 /**
  * cvmx_uahc#_suptprt3_dw3
  *
- * See xHCI specification v1.? section 7.2.
- * INTERNAL: TODO (new unreleased xHCI errata!)
+ * For information on this register, refer to the xHCI Specification, v1.1, section 7.2.
+ *
  */
 union cvmx_uahcx_suptprt3_dw3 {
 	uint32_t u32;
@@ -6421,9 +6542,12 @@ typedef union cvmx_uahcx_suptprt3_dw3 cvmx_uahcx_suptprt3_dw3_t;
 /**
  * cvmx_uahc#_usbcmd
  *
- * See xHCI specification v1.0 section 5.4.1.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.4.1.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_usbcmd {
 	uint32_t u32;
@@ -6461,10 +6585,13 @@ typedef union cvmx_uahcx_usbcmd cvmx_uahcx_usbcmd_t;
 /**
  * cvmx_uahc#_usblegctlsts
  *
- * See xHCI specification v1.0 section 7.1.2.
- * Note that the SMI interrupts are not connected to anything in an Octeon configuration.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 7.1.2. Note
+ * that the SMI interrupts are not connected to anything in a CNXXXX configuration.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_usblegctlsts {
 	uint32_t u32;
@@ -6473,14 +6600,16 @@ union cvmx_uahcx_usblegctlsts {
 	uint32_t smi_on_bar                   : 1;  /**< System management interrupt on BAR. Never generated. */
 	uint32_t smi_on_pci_command           : 1;  /**< System management interrupt on PCI command. Never generated. */
 	uint32_t smi_on_os_ownership          : 1;  /**< System management interrupt on OS ownership change. This bit is set to 1 whenever
-                                                         UAHC_USBLEGSUP[HC_OS_OWNED_SEMAPHORES] transitions. */
+                                                         UAHC()_USBLEGSUP[HC_OS_OWNED_SEMAPHORES] transitions. */
 	uint32_t reserved_21_28               : 8;
-	uint32_t smi_on_hostsystemerr         : 1;  /**< System-management interrupt on host-system error. Shadow bit of UAHC_USBSTS[HSE]. Refer to
+	uint32_t smi_on_hostsystemerr         : 1;  /**< System-management interrupt on host-system error. Shadow bit of UAHC()_USBSTS[HSE]. Refer
+                                                         to
                                                          xHCI Section 5.4.2 for definition and effects of the events associated with this bit being
                                                          set to 1.
-                                                         To clear this bit to a 0, system software must write a 1 to UAHC_USBSTS[HSE]. */
+                                                         To clear this bit to a 0, system software must write a 1 to UAHC()_USBSTS[HSE]. */
 	uint32_t reserved_17_19               : 3;
-	uint32_t smi_on_event_interrupt       : 1;  /**< System-management interrupt on event interrupt. Shadow bit of UAHC_USBSTS[EINT]. Refer to
+	uint32_t smi_on_event_interrupt       : 1;  /**< System-management interrupt on event interrupt. Shadow bit of UAHC()_USBSTS[EINT]. Refer
+                                                         to
                                                          xHCI Section 5.4.2 for definition. This bit automatically clears when [EINT] clears and
                                                          sets when [EINT] sets. */
 	uint32_t smi_on_bar_en                : 1;  /**< System-management interrupt on BAR enable. */
@@ -6514,9 +6643,12 @@ typedef union cvmx_uahcx_usblegctlsts cvmx_uahcx_usblegctlsts_t;
 /**
  * cvmx_uahc#_usblegsup
  *
- * See xHCI specification v1.0 section 7.1.1.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 7.1.1.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_usblegsup {
 	uint32_t u32;
@@ -6544,9 +6676,12 @@ typedef union cvmx_uahcx_usblegsup cvmx_uahcx_usblegsup_t;
 /**
  * cvmx_uahc#_usbsts
  *
- * See xHCI specification v1.0 section 5.4.2.
- * Reset by: IOI reset (srst_n) or UCTL(0)_CTL[UAHC_RESET] or UAHC(0)_GCTL[CORESOFTRESET] or
- * UAHC(0)_USBCMD[HCRST] or UAHC(0)_USBCMD[LHCRST].
+ * For information on this register, refer to the xHCI Specification, v1.0, section 5.4.2.
+ *
+ * This register can be reset by IOI reset,
+ * or UCTL()_CTL[UAHC_RST],
+ * or UAHC()_GCTL[CORESOFTRESET],
+ * or UAHC()_USBCMD[HCRST], or UAHC()_USBCMD[LHCRST].
  */
 union cvmx_uahcx_usbsts {
 	uint32_t u32;
@@ -6561,8 +6696,7 @@ union cvmx_uahcx_usbsts {
 	uint32_t reserved_5_7                 : 3;
 	uint32_t pcd                          : 1;  /**< Port-change detect. */
 	uint32_t eint                         : 1;  /**< Event interrupt. */
-	uint32_t hse                          : 1;  /**< Host-system error. The typical software response to an HSE is to reset the core.
-                                                         Throws UCTL_INTSN_E::USBH_UAHC_USBSTS_HSE. */
+	uint32_t hse                          : 1;  /**< Host-system error. The typical software response to an HSE is to reset the core. */
 	uint32_t reserved_1_1                 : 1;
 	uint32_t hch                          : 1;  /**< HC halted. */
 #else

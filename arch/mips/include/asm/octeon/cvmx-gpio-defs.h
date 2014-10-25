@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -61,11 +61,11 @@ static inline uint64_t CVMX_GPIO_BIT_CFGX(unsigned long offset)
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -89,11 +89,11 @@ static inline uint64_t CVMX_GPIO_BIT_CFGX(unsigned long offset)
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -451,30 +451,8 @@ union cvmx_gpio_bit_cfgx {
 	uint64_t reserved_21_63               : 43;
 #endif
 	} cn70xx;
-	struct cvmx_gpio_bit_cfgx_cn78xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_21_63               : 43;
-	uint64_t output_sel                   : 5;  /**< Selects GPIO output. When [TX_OE] is set, selects what output data is driven. Enumerated
-                                                         by GPIO_OUTSEL_E. */
-	uint64_t reserved_12_15               : 4;
-	uint64_t fil_sel                      : 4;  /**< Filter select. Global counter bit-select (controls sample rate). */
-	uint64_t fil_cnt                      : 4;  /**< Filter count. Specifies the number of consecutive samples to change state. */
-	uint64_t int_type                     : 1;  /**< Type of interrupt when pin is an input. When set, rising edge interrupt, else level interrupt. */
-	uint64_t reserved_2_2                 : 1;
-	uint64_t rx_xor                       : 1;  /**< Receive inversion. When set to 1, inverts the received GPIO signal. */
-	uint64_t tx_oe                        : 1;  /**< Transmit output enable. When set to 1, the GPIO pin is driven as an output pin. */
-#else
-	uint64_t tx_oe                        : 1;
-	uint64_t rx_xor                       : 1;
-	uint64_t reserved_2_2                 : 1;
-	uint64_t int_type                     : 1;
-	uint64_t fil_cnt                      : 4;
-	uint64_t fil_sel                      : 4;
-	uint64_t reserved_12_15               : 4;
-	uint64_t output_sel                   : 5;
-	uint64_t reserved_21_63               : 43;
-#endif
-	} cn78xx;
+	struct cvmx_gpio_bit_cfgx_cn70xx      cn70xxp1;
+	struct cvmx_gpio_bit_cfgx_cn70xx      cn78xx;
 	struct cvmx_gpio_bit_cfgx_cn61xx      cnf71xx;
 };
 typedef union cvmx_gpio_bit_cfgx cvmx_gpio_bit_cfgx_t;
@@ -530,6 +508,7 @@ union cvmx_gpio_clk_genx {
 	struct cvmx_gpio_clk_genx_s           cn68xx;
 	struct cvmx_gpio_clk_genx_s           cn68xxp1;
 	struct cvmx_gpio_clk_genx_s           cn70xx;
+	struct cvmx_gpio_clk_genx_s           cn70xxp1;
 	struct cvmx_gpio_clk_genx_s           cn78xx;
 	struct cvmx_gpio_clk_genx_s           cnf71xx;
 };
@@ -631,19 +610,22 @@ typedef union cvmx_gpio_clk_qlmx cvmx_gpio_clk_qlmx_t;
 /**
  * cvmx_gpio_clk_synce#
  *
- * A QLM can be configured as a clock source. The following table shows the clock speed output
- * for different modes.
+ * A QLM can be configured as a clock source. The GPIO block can support up to two unique clocks
+ * to send out any GPIO pin as configured by GPIO_BIT_CFG()[SYNCE_SEL]. The clock can be
+ * divided by 20, 40, 80 or 160 of the selected RX lane clock.
  */
 union cvmx_gpio_clk_syncex {
 	uint64_t u64;
 	struct cvmx_gpio_clk_syncex_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t div                          : 2;  /**< Internal clock divider. 0 = DIV2, 1 = DIV4, 2 = DIV8, 3 = DIV16. */
-	uint64_t lane_sel                     : 2;  /**< Selects which RX lane clock from QLMx to use as the GPIO internal QLMx clock. The GPIO
-                                                         block can support up to two unique clocks to send out any GPIO pin as configured by
-                                                         GPIO_BIT_CFG(0..19)[SYNCE_SEL]. The clock can be divided by 2, 4, 8 or 16 of the selected
-                                                         RX lane clock. */
+	uint64_t div                          : 2;  /**< GPIO internal clock divider setting relative to QLM SERDES CLOCK_SYNCE. The maximum
+                                                         supported GPIO output frequency is 125 MHz.
+                                                         0x0 = Divide by 20.
+                                                         0x1 = Divide by 40.
+                                                         0x2 = Divide by 80.
+                                                         0x3 = Divide by 160. */
+	uint64_t lane_sel                     : 2;  /**< Selects which RX lane clock from QLMx to use as the GPIO internal QLMx clock. */
 #else
 	uint64_t lane_sel                     : 2;
 	uint64_t div                          : 2;
@@ -659,9 +641,16 @@ union cvmx_gpio_clk_syncex {
                                                          10 = DLM1
                                                          11 = DLM2 */
 	uint64_t reserved_3_7                 : 5;
-	uint64_t div                          : 1;  /**< Internal clock divider
-                                                         0=DIV2
-                                                         1=DIV4 */
+	uint64_t div                          : 1;  /**< GPIO internal clock divider setting relative to QLM SERDES CLOCK_SYNCE. The maximum
+                                                         supported GPIO output frequency is 125 MHz.
+                                                         0x0 = Divide by 20.
+                                                         0x1 = Divide by 40.
+                                                         Speed    DIV20   DIV40
+                                                         [GHz]    [MHz]   [MHz]
+                                                         1.2500   62.50   31.25
+                                                         2.5000   125.00  62.50
+                                                         3.1250    ---    78.13
+                                                         5.0000    ---    125.00 */
 	uint64_t reserved_1_1                 : 1;
 	uint64_t lane_sel                     : 1;  /**< Selects which RX lane clock from DLMx to use as
                                                          the GPIO internal DLMx clock.  The GPIO block can
@@ -679,16 +668,19 @@ union cvmx_gpio_clk_syncex {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} cn70xx;
+	struct cvmx_gpio_clk_syncex_cn70xx    cn70xxp1;
 	struct cvmx_gpio_clk_syncex_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
 	uint64_t qlm_sel                      : 4;  /**< Selects which QLM(0..7) to select from. */
 	uint64_t reserved_4_7                 : 4;
-	uint64_t div                          : 2;  /**< Internal clock divider. 0 = DIV2, 1 = DIV4, 2 = DIV8, 3 = DIV16. */
-	uint64_t lane_sel                     : 2;  /**< Selects which RX lane clock from QLMx to use as the GPIO internal QLMx clock. The GPIO
-                                                         block can support up to two unique clocks to send out any GPIO pin as configured by
-                                                         GPIO_BIT_CFG(0..19)[SYNCE_SEL]. The clock can be divided by 2, 4, 8 or 16 of the selected
-                                                         RX lane clock. */
+	uint64_t div                          : 2;  /**< GPIO internal clock divider setting relative to QLM SERDES CLOCK_SYNCE. The maximum
+                                                         supported GPIO output frequency is 125 MHz.
+                                                         0x0 = Divide by 20.
+                                                         0x1 = Divide by 40.
+                                                         0x2 = Divide by 80.
+                                                         0x3 = Divide by 160. */
+	uint64_t lane_sel                     : 2;  /**< Selects which RX lane clock from QLMx to use as the GPIO internal QLMx clock. */
 #else
 	uint64_t lane_sel                     : 2;
 	uint64_t div                          : 2;
@@ -783,6 +775,7 @@ union cvmx_gpio_int_clr {
 	struct cvmx_gpio_int_clr_s            cn68xx;
 	struct cvmx_gpio_int_clr_s            cn68xxp1;
 	struct cvmx_gpio_int_clr_s            cn70xx;
+	struct cvmx_gpio_int_clr_s            cn70xxp1;
 	struct cvmx_gpio_int_clr_s            cnf71xx;
 };
 typedef union cvmx_gpio_int_clr cvmx_gpio_int_clr_t;
@@ -799,7 +792,7 @@ union cvmx_gpio_intrx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
 	uint64_t intr                         : 1;  /**< GPIO signalled interrupt. If interrupts are edge sensitive, write one to clear, otherwise
-                                                         will clear automatically when GPIO pin de-asserts. Throws GPIO_INTSN_E::GPIO_INTR(0..15). */
+                                                         will clear automatically when GPIO pin de-asserts. Throws GPIO_INTSN_E::GPIO_INTR(5). */
 #else
 	uint64_t intr                         : 1;
 	uint64_t reserved_1_63                : 63;
@@ -823,7 +816,7 @@ union cvmx_gpio_mc_intrx {
 	uint64_t intr                         : 48; /**< GPIO interrupt for each core. When corresponding GPIO4-7 is edge-triggered and MILTI_CAST
                                                          is enabled, a GPIO assertion will set all 48 bits. Each bit is expected to be routed to
                                                          interrupt a different core using the CIU, and each core will then write one to clear its
-                                                         corresponding bit in this register. Throws GPIO_INTSN_E::GPIO_MC_INTR(4..7)_PP(0..47). */
+                                                         corresponding bit in this register. Throws GPIO_INTSN_E::GPIO_MC_INTR()_PP(). */
 #else
 	uint64_t intr                         : 48;
 	uint64_t reserved_48_63               : 16;
@@ -858,6 +851,7 @@ union cvmx_gpio_multi_cast {
 	} s;
 	struct cvmx_gpio_multi_cast_s         cn61xx;
 	struct cvmx_gpio_multi_cast_s         cn70xx;
+	struct cvmx_gpio_multi_cast_s         cn70xxp1;
 	struct cvmx_gpio_multi_cast_s         cn78xx;
 	struct cvmx_gpio_multi_cast_s         cnf71xx;
 };
@@ -871,7 +865,7 @@ union cvmx_gpio_ocla_exten_trig {
 	struct cvmx_gpio_ocla_exten_trig_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_6_63                : 58;
-	uint64_t m_trig                       : 1;  /**< Manual Trigger. Used only when SEL=0x1F. */
+	uint64_t m_trig                       : 1;  /**< Manual trigger. Used only when SEL=0x1F. */
 	uint64_t sel                          : 5;  /**< Selects the GPIO(0..19) input pin to use, or 0x1F for manual trigger, to use in the OCLA
                                                          coprocessor for GPIO-based triggering. */
 #else
@@ -881,6 +875,7 @@ union cvmx_gpio_ocla_exten_trig {
 #endif
 	} s;
 	struct cvmx_gpio_ocla_exten_trig_s    cn70xx;
+	struct cvmx_gpio_ocla_exten_trig_s    cn70xxp1;
 	struct cvmx_gpio_ocla_exten_trig_s    cn78xx;
 };
 typedef union cvmx_gpio_ocla_exten_trig cvmx_gpio_ocla_exten_trig_t;
@@ -965,6 +960,7 @@ union cvmx_gpio_rx_dat {
 	struct cvmx_gpio_rx_dat_cn38xx        cn68xx;
 	struct cvmx_gpio_rx_dat_cn38xx        cn68xxp1;
 	struct cvmx_gpio_rx_dat_cn61xx        cn70xx;
+	struct cvmx_gpio_rx_dat_cn61xx        cn70xxp1;
 	struct cvmx_gpio_rx_dat_cn61xx        cn78xx;
 	struct cvmx_gpio_rx_dat_cn61xx        cnf71xx;
 };
@@ -1006,6 +1002,7 @@ union cvmx_gpio_sata_ctl {
 #endif
 	} s;
 	struct cvmx_gpio_sata_ctl_s           cn70xx;
+	struct cvmx_gpio_sata_ctl_s           cn70xxp1;
 };
 typedef union cvmx_gpio_sata_ctl cvmx_gpio_sata_ctl_t;
 
@@ -1089,6 +1086,7 @@ union cvmx_gpio_tx_clr {
 	struct cvmx_gpio_tx_clr_cn38xx        cn68xx;
 	struct cvmx_gpio_tx_clr_cn38xx        cn68xxp1;
 	struct cvmx_gpio_tx_clr_cn61xx        cn70xx;
+	struct cvmx_gpio_tx_clr_cn61xx        cn70xxp1;
 	struct cvmx_gpio_tx_clr_cn61xx        cn78xx;
 	struct cvmx_gpio_tx_clr_cn61xx        cnf71xx;
 };
@@ -1146,6 +1144,7 @@ union cvmx_gpio_tx_set {
 	struct cvmx_gpio_tx_set_cn38xx        cn68xx;
 	struct cvmx_gpio_tx_set_cn38xx        cn68xxp1;
 	struct cvmx_gpio_tx_set_cn61xx        cn70xx;
+	struct cvmx_gpio_tx_set_cn61xx        cn70xxp1;
 	struct cvmx_gpio_tx_set_cn61xx        cn78xx;
 	struct cvmx_gpio_tx_set_cn61xx        cnf71xx;
 };
@@ -1183,6 +1182,7 @@ union cvmx_gpio_usbh_ctl {
 	uint64_t reserved_13_63               : 51;
 #endif
 	} cn70xx;
+	struct cvmx_gpio_usbh_ctl_cn70xx      cn70xxp1;
 	struct cvmx_gpio_usbh_ctl_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
@@ -1322,6 +1322,7 @@ union cvmx_gpio_xbit_cfgx {
 	uint64_t reserved_21_63               : 43;
 #endif
 	} cn70xx;
+	struct cvmx_gpio_xbit_cfgx_cn70xx     cn70xxp1;
 	struct cvmx_gpio_xbit_cfgx_cn61xx     cnf71xx;
 };
 typedef union cvmx_gpio_xbit_cfgx cvmx_gpio_xbit_cfgx_t;

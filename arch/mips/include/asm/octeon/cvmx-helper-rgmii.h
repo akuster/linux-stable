@@ -43,7 +43,7 @@
  * Functions for RGMII/GMII/MII initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 86586 $<hr>
+ * <hr>$Revision: 96176 $<hr>
  */
 #ifndef __CVMX_HELPER_RGMII_H__
 #define __CVMX_HELPER_RGMII_H__
@@ -56,11 +56,7 @@
  *
  * @return Number of RGMII/GMII/MII ports (0-4).
  */
-extern int __cvmx_helper_rgmii_probe(int interface);
-static inline int __cvmx_helper_rgmii_enumerate(int interface)
-{
-	return __cvmx_helper_rgmii_probe(interface);
-}
+extern int __cvmx_helper_rgmii_probe(int xiface);
 
 /**
  * Put an RGMII interface in loopback mode. Internal packets sent

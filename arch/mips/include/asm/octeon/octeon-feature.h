@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -156,12 +156,26 @@ typedef enum {
 				/**<  Octeon has FPA first seen on 78XX */
 	OCTEON_FEATURE_CN78XX_WQE,
 				/**<  CN78XX has different fields in word0 - word2 */
+	OCTEON_FEATURE_PKO3,
+  				/**< Octeon has enhanced PKO block */
 	OCTEON_FEATURE_SPI,
 				/**< Octeon supports SPI interfaces */
 	OCTEON_FEATURE_ZIP3,
 				/**<  Octeon has zip first seen on 78XX */
  	OCTEON_FEATURE_BCH,
   				/**< Octeon supports BCH ECC */
+	OCTEON_FEATURE_PKI,
+  				/**< Octeon has PKI block */
+	OCTEON_FEATURE_OCLA,
+				/**<  Octeon has OCLA */
+	OCTEON_FEATURE_FAU,
+				/**<  Octeon has FAU */
+	OCTEON_FEATURE_BGX_MIX,
+				/**<  Octeon has FAU */
+	OCTEON_FEATURE_HNA,
+				/**<  Octeon has HNA */
+	OCTEON_FEATURE_OCX,
+				/**<  Octeon has OCX */
 	OCTEON_MAX_FEATURE
 } octeon_feature_t;
 
@@ -173,8 +187,8 @@ static inline int octeon_has_feature_OCTEON_FEATURE_SAAD(void)
 static inline int octeon_has_feature_OCTEON_FEATURE_ZIP(void)
 {
 	if (OCTEON_IS_MODEL(OCTEON_CN30XX) || OCTEON_IS_MODEL(OCTEON_CN50XX)
-	    || OCTEON_IS_MODEL(OCTEON_CN52XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)
-	    || OCTEON_IS_MODEL(OCTEON_CN70XX))
+	     || OCTEON_IS_MODEL(OCTEON_CN52XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)
+	     || OCTEON_IS_MODEL(OCTEON_CN70XX))
 		return 0;
 	else
 		return !cvmx_fuse_read(121);
@@ -187,7 +201,7 @@ static inline int octeon_has_feature_OCTEON_FEATURE_ZIP3(void)
 
 static inline int octeon_has_feature_OCTEON_FEATURE_BCH(void)
 {
-	return OCTEON_IS_OCTEON3();
+	return OCTEON_IS_MODEL(OCTEON_CN70XX);
 }
 
 static inline int octeon_has_feature_OCTEON_FEATURE_CRYPTO(void)
@@ -254,7 +268,8 @@ static inline int octeon_has_feature_OCTEON_FEATURE_LED_CONTROLLER(void)
 
 static inline int octeon_has_feature_OCTEON_FEATURE_TRA(void)
 {
-	return !(OCTEON_IS_MODEL(OCTEON_CN30XX) || OCTEON_IS_MODEL(OCTEON_CN50XX)
+	return !(OCTEON_IS_MODEL(OCTEON_CN30XX)
+		 || OCTEON_IS_MODEL(OCTEON_CN50XX)
 		 || OCTEON_IS_OCTEON3());
 }
 
@@ -267,8 +282,10 @@ static inline int octeon_has_feature_OCTEON_FEATURE_MGMT_PORT(void)
 
 static inline int octeon_has_feature_OCTEON_FEATURE_RAID(void)
 {
-	return OCTEON_IS_MODEL(OCTEON_CN56XX) || OCTEON_IS_MODEL(OCTEON_CN52XX)
-	       || !OCTEON_IS_OCTEON1PLUS();	/* OCTEON II or later */
+	return OCTEON_IS_MODEL(OCTEON_CN56XX)
+		|| OCTEON_IS_MODEL(OCTEON_CN52XX)
+		|| OCTEON_IS_OCTEON2()
+		|| OCTEON_IS_OCTEON3();
 }
 
 static inline int octeon_has_feature_OCTEON_FEATURE_USB(void)
@@ -304,6 +321,14 @@ static inline int octeon_has_feature_OCTEON_FEATURE_HFA(void)
 		return !cvmx_fuse_read(90);
 }
 
+static inline int octeon_has_feature_OCTEON_FEATURE_HNA(void)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return !cvmx_fuse_read(134);
+	else
+		return 0;
+}
+
 static inline int octeon_has_feature_OCTEON_FEATURE_DFM(void)
 {
 	if (!(OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX)))
@@ -325,8 +350,8 @@ static inline int octeon_has_feature_OCTEON_FEATURE_NPEI(void)
 
 static inline int octeon_has_feature_OCTEON_FEATURE_PKND(void)
 {
-	return (OCTEON_IS_MODEL(OCTEON_CN68XX) ||
-		OCTEON_IS_MODEL(OCTEON_CN78XX));
+	return OCTEON_IS_MODEL(OCTEON_CN68XX)
+		|| OCTEON_IS_MODEL(OCTEON_CN78XX);
 }
 
 static inline int octeon_has_feature_OCTEON_FEATURE_CN68XX_WQE(void)
@@ -378,7 +403,7 @@ static inline int octeon_has_feature_OCTEON_FEATURE_MMC(void)
 {
 	return (OCTEON_IS_MODEL(OCTEON_CN61XX)
 		|| OCTEON_IS_MODEL(OCTEON_CNF71XX)
-		|| OCTEON_IS_MODEL(OCTEON_CN70XX));
+		|| OCTEON_IS_OCTEON3());
 }
 
 static inline int octeon_has_feature_OCTEON_FEATURE_ROM(void)
@@ -427,8 +452,37 @@ static inline int octeon_has_feature_OCTEON_FEATURE_SPI(void)
 		|| OCTEON_IS_MODEL(OCTEON_CN66XX)
 		|| OCTEON_IS_MODEL(OCTEON_CN61XX)
 		|| OCTEON_IS_MODEL(OCTEON_CNF71XX)
-		|| OCTEON_IS_MODEL(OCTEON_CN70XX)
-		|| OCTEON_IS_MODEL(OCTEON_CN78XX));
+		|| OCTEON_IS_OCTEON3());
+}
+
+static inline int octeon_has_feature_OCTEON_FEATURE_PKI(void)
+{
+	return OCTEON_IS_MODEL(OCTEON_CN78XX);
+}
+
+static inline int octeon_has_feature_OCTEON_FEATURE_PKO3(void)
+{
+	return OCTEON_IS_MODEL(OCTEON_CN78XX);
+}
+
+static inline int octeon_has_feature_OCTEON_FEATURE_OCLA(void)
+{
+	return OCTEON_IS_OCTEON3();
+}
+
+static inline int octeon_has_feature_OCTEON_FEATURE_FAU(void)
+{
+	return !OCTEON_IS_MODEL(OCTEON_CN78XX);
+}
+
+static inline int octeon_has_feature_OCTEON_FEATURE_BGX_MIX(void)
+{
+	return OCTEON_IS_MODEL(OCTEON_CN78XX);
+}
+
+static inline int octeon_has_feature_OCTEON_FEATURE_OCX(void)
+{
+	return OCTEON_IS_MODEL(OCTEON_CN78XX) && !OCTEON_IS_MODEL(OCTEON_CN76XX);
 }
 /*
  * bit map for octeon features

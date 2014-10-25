@@ -89,13 +89,14 @@ int __cvmx_pko_internal_ports_range_init(void)
 }
 
 
-int cvmx_pko_internal_ports_alloc(int interface, int port, uint64_t count)
+int cvmx_pko_internal_ports_alloc(int xiface, int port, uint64_t count)
 {
 	int ret_val = -1;
 	union interface_port inf_port;
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
 
 	__cvmx_pko_internal_ports_range_init();
-	inf_port.s.interface = interface;
+	inf_port.s.interface = xi.interface;
 	inf_port.s.port = port;
 	ret_val = cvmx_allocate_global_resource_range(CVMX_GR_TAG_PKO_IPORTS, inf_port.u64, count, 1);
 	if (dbg)
@@ -103,8 +104,8 @@ int cvmx_pko_internal_ports_alloc(int interface, int port, uint64_t count)
 			     (int) port, ret_val, (int) count);
 	if (ret_val == -1)
 		return ret_val;
-	cvmx_cfg_port[interface][port].ccpp_pko_port_base = ret_val;
-	cvmx_cfg_port[interface][port].ccpp_pko_num_ports  = count;
+	cvmx_cfg_port[xi.node][xi.interface][port].ccpp_pko_port_base = ret_val;
+	cvmx_cfg_port[xi.node][xi.interface][port].ccpp_pko_num_ports  = count;
 	return 0;
 }
 
@@ -116,18 +117,19 @@ int cvmx_pko_internal_ports_alloc(int interface, int port, uint64_t count)
  * @return  0 on success
  *         -1 on failure
  */
-int cvmx_pko_internal_ports_free(int interface, int port)
+int cvmx_pko_internal_ports_free(int xiface, int port)
 {
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
 	int ret_val = -1;
 
 	__cvmx_pko_internal_ports_range_init();
 	ret_val = cvmx_free_global_resource_range_with_base(CVMX_GR_TAG_PKO_IPORTS,
-						    cvmx_cfg_port[interface][port].ccpp_pko_port_base,
-						    cvmx_cfg_port[interface][port].ccpp_pko_num_ports);
+						    cvmx_cfg_port[xi.node][xi.interface][port].ccpp_pko_port_base,
+						    cvmx_cfg_port[xi.node][xi.interface][port].ccpp_pko_num_ports);
 	if (ret_val != 0)
 		return ret_val;
-	cvmx_cfg_port[interface][port].ccpp_pko_port_base = CVMX_HELPER_CFG_INVALID_VALUE;
-	cvmx_cfg_port[interface][port].ccpp_pko_num_ports  =  CVMX_HELPER_CFG_INVALID_VALUE;
+	cvmx_cfg_port[xi.node][xi.interface][port].ccpp_pko_port_base = CVMX_HELPER_CFG_INVALID_VALUE;
+	cvmx_cfg_port[xi.node][xi.interface][port].ccpp_pko_num_ports  =  CVMX_HELPER_CFG_INVALID_VALUE;
 
 
 	return 0;
@@ -141,7 +143,7 @@ void cvmx_pko_internal_ports_range_free_all(void)
 	for(interface = 0; interface < CVMX_HELPER_MAX_IFACE; interface++)
 		for (port = 0; port < CVMX_HELPER_CFG_MAX_PORT_PER_IFACE;
 			     port++) {
-			if (cvmx_cfg_port[interface][port].ccpp_pko_port_base !=
+			if (cvmx_cfg_port[0][interface][port].ccpp_pko_port_base !=
 				    CVMX_HELPER_CFG_INVALID_VALUE)
 				cvmx_pko_internal_ports_free(interface, port);
 		}
@@ -158,11 +160,11 @@ void cvmx_pko_internal_ports_range_show(void)
 	for(interface = 0; interface < CVMX_HELPER_MAX_IFACE; interface++)
 		for (port = 0; port < CVMX_HELPER_CFG_MAX_PORT_PER_IFACE;
 				port ++) {
-			if (cvmx_cfg_port[interface][port].ccpp_pko_port_base !=
+			if (cvmx_cfg_port[0][interface][port].ccpp_pko_port_base !=
 				    CVMX_HELPER_CFG_INVALID_VALUE)
 				cvmx_dprintf("interface=%d port=%d port_base=%d port_cnt=%d\n",
 				     interface, port,
-				     (int)cvmx_cfg_port[interface][port].ccpp_pko_port_base,
-				     (int)cvmx_cfg_port[interface][port].ccpp_pko_num_ports);
+				     (int)cvmx_cfg_port[0][interface][port].ccpp_pko_port_base,
+				     (int)cvmx_cfg_port[0][interface][port].ccpp_pko_num_ports);
 		}
 }

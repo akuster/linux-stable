@@ -91,7 +91,7 @@ void __cvmx_ilk_write_rx_cal_entry(int interface, int channel,
  *
  * @return Number of ports on the interface. Zero to disable.
  */
-extern int __cvmx_helper_ilk_probe(int interface);
+extern int __cvmx_helper_ilk_probe(int xiface);
 
 /**
  * @INTERNAL
@@ -103,7 +103,7 @@ extern int __cvmx_helper_ilk_probe(int interface);
  *
  * @return Zero on success, negative on failure
  */
-extern int __cvmx_helper_ilk_enable(int interface);
+extern int __cvmx_helper_ilk_enable(int xiface);
 
 /**
  * @INTERNAL
