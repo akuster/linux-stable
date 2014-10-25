@@ -61,15 +61,6 @@ extern "C" {
 /* *INDENT-ON* */
 #endif
 
-/**
- * Enum of MIX interface modes
- */
-typedef enum {
-	CVMX_MGMT_PORT_NONE = 0,
-	CVMX_MGMT_PORT_MII_MODE,
-	CVMX_MGMT_PORT_RGMII_MODE,
-} cvmx_mgmt_port_mode_t;
-
 /*
  * @param port port to enable
  *
@@ -84,12 +75,10 @@ extern cvmx_helper_link_info_t cvmx_agl_link_get(int port);
  *
  * @param port   interface port to set the link.
  * @param link_info  Link status
- * @param mode   0 = MII, 1 = RGMII mode
  *
  * @return       0 on success and 1 on failure
  */
-extern int cvmx_agl_link_set(int port, cvmx_helper_link_info_t link_info,
-			     int mode);
+extern int cvmx_agl_link_set(int port, cvmx_helper_link_info_t link_info);
 
 /**
  * Disables the sending of flow control (pause) frames on the specified

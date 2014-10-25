@@ -54,11 +54,16 @@
 #include <asm/octeon/cvmx-dbg-defs.h>
 #include <asm/octeon/cvmx-rst-defs.h>
 #elif defined(CVMX_BUILD_FOR_UBOOT)
+#include <common.h>
 #include <asm/arch/cvmx.h>
 #include <asm/arch/cvmx-access.h>
 #else
 #include "cvmx.h"
 #include "cvmx-access.h"
+#endif
+
+#ifdef CVMX_BUILD_FOR_UBOOT
+DECLARE_GLOBAL_DATA_PTR;
 #endif
 
 #ifndef CVMX_BUILD_FOR_UBOOT
@@ -76,13 +81,8 @@ static uint64_t rate_dclk = 0;
  */
 uint64_t cvmx_clock_get_rate_node(int node, cvmx_clock_t clock)
 {
+#ifndef CVMX_BUILD_FOR_UBOOT
 	const uint64_t REF_CLOCK = 50000000;
-
-#ifdef CVMX_BUILD_FOR_UBOOT
-	uint64_t rate_eclk = 0;
-	uint64_t rate_sclk = 0;
-	uint64_t rate_dclk = 0;
-#endif
 
 	if (cvmx_unlikely(!rate_eclk)) {
 		/* Note: The order of these checks is important.
@@ -113,8 +113,9 @@ uint64_t cvmx_clock_get_rate_node(int node, cvmx_clock_t clock)
 
 	switch (clock) {
 	case CVMX_CLOCK_SCLK:
-	case CVMX_CLOCK_TIM:
 	case CVMX_CLOCK_IPD:
+		return rate_sclk;
+	case CVMX_CLOCK_TIM:
 		return rate_sclk;
 
 	case CVMX_CLOCK_RCLK:
@@ -122,14 +123,26 @@ uint64_t cvmx_clock_get_rate_node(int node, cvmx_clock_t clock)
 		return rate_eclk;
 
 	case CVMX_CLOCK_DDR:
-#if !defined(CVMX_BUILD_FOR_LINUX_HOST) && !defined(CVMX_BUILD_FOR_TOOLCHAIN)
+# if !defined(CVMX_BUILD_FOR_LINUX_HOST) && !defined(CVMX_BUILD_FOR_TOOLCHAIN)
 		if (cvmx_unlikely(!rate_dclk))
 			rate_dclk = cvmx_sysinfo_get()->dram_data_rate_hz;
-#endif
+# endif
 		return rate_dclk;
 	}
-
-	cvmx_dprintf("cvmx_clock_get_rate: Unknown clock type\n");
+#else
+	switch (clock) {
+	case CVMX_CLOCK_SCLK:
+	case CVMX_CLOCK_TIM:
+	case CVMX_CLOCK_IPD:
+		return gd->bus_clk;
+	case CVMX_CLOCK_RCLK:
+	case CVMX_CLOCK_CORE:
+		return gd->cpu_clk;
+	case CVMX_CLOCK_DDR:
+		return gd->mem_clk * 1000000;
+	}
+#endif
+	cvmx_dprintf("cvmx_clock_get_rate: Unknown clock type %d\n", clock);
 	return 0;
 }
 

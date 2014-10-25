@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -617,13 +617,15 @@ typedef union cvmx_ase_config cvmx_ase_config_t;
  * cvmx_ase_ecc_ctl
  *
  * This register can be used to disable ECC checks, insert ECC errors.
+ *
  * Fields *ECC_DIS disable SBE detection/correction and DBE detection. If ECC_DIS is 0x1, then no
  * errors are detected.
+ *
  * Fields *ECC_FLIP_SYND flip the syndrome<1:0> bits to generate 1-bit/2-bits error for testing.
- * 0x0 = normal operation
- * 0x1 = SBE on bit<0>
- * 0x2 = SBE on bit<1>
- * 0x3 = DBE on bit<1:0>
+ * _ 0x0 = normal operation.
+ * _ 0x1 = SBE on bit<0>.
+ * _ 0x2 = SBE on bit<1>.
+ * _ 0x3 = DBE on bit<1:0>.
  */
 union cvmx_ase_ecc_ctl {
 	uint64_t u64;
@@ -697,6 +699,7 @@ typedef union cvmx_ase_ecc_ctl cvmx_ase_ecc_ctl_t;
  * LUE_KDT_*, any request that generates an error has its response marked as errored. The
  * LUE_KDT_DBE error is not indicated in the response packet; the only indication of this error
  * is the interrupt mechanism.
+ *
  * For all the LUE* errors below, additional information can be obtained by reading the
  * ASE_LUE_ERROR_LOG. For all the LIP* /LOP* errors below, additional information can be obtained
  * by reading ASE_LUF_ERROR_LOG.
@@ -726,8 +729,8 @@ union cvmx_ase_ecc_int {
 	uint64_t lue_kdb_dbe                  : 1;  /**< Detected double-bit error on LUE KRQ key data buffer. */
 	uint64_t lue_kdb_sbe                  : 1;  /**< Detected and corrected single-bit error on LUE KRQ key data buffer. */
 	uint64_t reserved_18_31               : 14;
-	uint64_t lop_txb_dbe                  : 1;  /**< Detected double-bit error on LOP's TXBUFF RAM read. */
-	uint64_t lop_txb_sbe                  : 1;  /**< Detected and corrected single-bit error on LOP's TXBUFF RAM read. */
+	uint64_t lop_txb_dbe                  : 1;  /**< Detected double-bit error on LOP's TXBUFF RAM read operation. */
+	uint64_t lop_txb_sbe                  : 1;  /**< Detected and corrected single-bit error on LOP's TXBUFF RAM read operation. */
 	uint64_t reserved_8_15                : 8;
 	uint64_t lip_newq_dbe                 : 1;  /**< Detected double-bit error on LIP's new queue. */
 	uint64_t lip_newq_sbe                 : 1;  /**< Detected and corrected single-bit error on LIP's new queue. */
@@ -777,6 +780,7 @@ typedef union cvmx_ase_ecc_int cvmx_ase_ecc_int_t;
  *
  * This register contains the interrupt status for general ASE interrupts. Errors reported in bit
  * positions <39:32>, <7:2>, and <0> are most likely due to software programming errors.
+ *
  * In all LUE* cases below, any request that generates an error has its response marked as
  * errored. These LUE* interrupts are for diagnostic use, not for error handling. For all the
  * LUE* errors below, additional information can be obtained by reading ASE_LUE_ERROR_LOG.
@@ -806,10 +810,10 @@ union cvmx_ase_gen_int {
 	uint64_t lip_tbf_missing_eop          : 1;  /**< The incoming TBL command did not indicate EOP on the correct beat, or the incoming lookup
                                                          command did not indicate EOP before the 12th beat. The request will be marked FATAL. */
 	uint64_t lip_tbf_early_eop            : 1;  /**< The incoming TBL write command did not have enough write data beats to match the command.
-                                                         The write is marked FATAL. */
+                                                         The write operation is marked FATAL. */
 	uint64_t lip_obf_missing_eop          : 1;  /**< The incoming OSM command did not indicate EOP on the correct beat. The request is marked FATAL. */
 	uint64_t lip_obf_early_eop            : 1;  /**< The incoming OSM Write command did not have enough write data beats to match the command.
-                                                         The write is marked FATAL. */
+                                                         The write operation is marked FATAL. */
 	uint64_t lip_obf_drop_unkn_cmd        : 1;  /**< The incoming control word at LIP OSM bypass splitter does not decode to a valid command.
                                                          The packet is dropped since we can't trust the command to figure out what kind of response
                                                          to send to LAP. We depend on LAP timeouts to inform software. */
@@ -818,7 +822,7 @@ union cvmx_ase_gen_int {
 	uint64_t lip_obf_drop_cmd_dbe         : 1;  /**< LIP OSM bypass splitter sees the incoming control word is marked as having a double-bit
                                                          error. The packet is dropped since we can't trust the LID to send even an error response
                                                          to LAP. We depend on LAP timeouts to inform software. */
-	uint64_t lip_isf_drop_full            : 1;  /**< LIP Input Skid FIFO dropped a beat because it was full. This only happens if LAP issues
+	uint64_t lip_isf_drop_full            : 1;  /**< LIP input skid FIFO dropped a beat because it was full. This only happens if LAP issues
                                                          request beats but has no ase__lap1_credit<0>s to do so; this indicates LAP credits are
                                                          misprogrammed. If this interrupt fires, the software has to reset LAP1 and ASE to recover,
                                                          as the credits are out of sync. */
@@ -908,10 +912,10 @@ union cvmx_ase_lop_config {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
 	uint64_t rsp_pri                      : 4;  /**< Response output priority as follows:
-                                                         <7> LUE key response
-                                                         <6> LUF table response
-                                                         <5> LUE table response
-                                                         <4> OSM write/read response
+                                                         <7> = LUE key response.
+                                                         <6> = LUF table response.
+                                                         <5> = LUE table response.
+                                                         <4> = OSM write/read response.
                                                          There are two priority levels per response type: 1 = higher priority;
                                                          0 = lower priority. Round robin is used among the responses with higher priority to send
                                                          back to the LAP or CSR. When there is no response with higher priority left, round robin
@@ -964,15 +968,15 @@ union cvmx_ase_lue_config {
 	uint64_t pfcache_en                   : 1;  /**< Enable bucket entry PFLEN caching. When clear, if PFLEN < OSM-line, PFLEN BE caching is
                                                          disabled, and a BEREQ is made for each PFLEN group of BEs processed. When set, if PFLEN <
                                                          OSM-line, only a single BEREQ is made for the OSM-line which caches all of the BEs. */
-	uint64_t pfab_en                      : 1;  /**< Enable bucket entry prefetch phase A/B request scheme. When clear, each Bucket Walk Engine
+	uint64_t pfab_en                      : 1;  /**< Enable bucket entry prefetch phase A/B request scheme. When clear, each bucket walk engine
                                                          is allowed to have a maximum of 8 outstanding rule read requests in progress at a time.
-                                                         When set, each Bucket Walk Engine is allowed to have a maximum of 16 outstanding rule read
-                                                         requests in progress at a time, split in to two groups of 8 (Phases A and B). After the
+                                                         When set, each bucket walk engine is allowed to have a maximum of 16 outstanding rule read
+                                                         requests in progress at a time, split into two groups of 8 (Phases A and B). After the
                                                          initial 8 bucket entries, the next set of [up to] 8 bucket entries are speculatively read
-                                                         and submitted to the Rule Walk Engine. Subsequent speculative reads are performed once all
-                                                         outstanding requests for a phase have completed. */
+                                                         and submitted to the rule walk engine. Subsequent speculative read operations are
+                                                         performed once all outstanding requests for a phase have completed. */
 	uint64_t reserved_20_31               : 12;
-	uint64_t twc_strspsta_rr              : 1;  /**< Within the TWC block, configures the arbiter which selects between Pending TWE or BWE
+	uint64_t twc_strspsta_rr              : 1;  /**< Within the TWC block, configures the arbiter which selects between pending TWE or BWE
                                                          STRSPs. When clear, fixed priority arbitration is selected, which gives BWEs higher
                                                          priority over TWEs. When set, round robin arbitration is selected which ensures fairness
                                                          across the TWE and BWE STRSPs. */
@@ -983,7 +987,7 @@ union cvmx_ase_lue_config {
                                                          requests and lookup requests. When configured for fixed priority, host accesses have
                                                          higher priority. If enabled, use round-robin. If disabled, use fixed priority. */
 	uint64_t reserved_4_16                : 13;
-	uint64_t rme_enable                   : 4;  /**< Each bit, when set, enables rule processing by a local Rule Match Engine. */
+	uint64_t rme_enable                   : 4;  /**< Each bit, when set, enables rule processing by a local rule match engine. */
 #else
 	uint64_t rme_enable                   : 4;
 	uint64_t reserved_4_16                : 13;
@@ -1004,9 +1008,9 @@ typedef union cvmx_ase_lue_config cvmx_ase_lue_config_t;
  * cvmx_ase_lue_dbg_ctl0
  *
  * We are not rewiring the NSP's 16-bit debug bus. Instead we are duplicating that mux 4 times to
- * give OCTEON better observability.
+ * give CNXXXX better observability.
  * LUE DBGCTX is a DOR daisy-chained through the TWE and BWE engines, it can't be moved to a
- * straight OCTEON-style debug bus without rewriting the whole thing.
+ * straight CNXXXX debug bus without rewriting the whole thing.
  * This register selects engines for debug observations for the LUE's four 16-bit debug muxes and
  * selects context for observation.
  */
@@ -1025,9 +1029,9 @@ union cvmx_ase_lue_dbg_ctl0 {
 	uint64_t reserved_20_31               : 12;
 	uint64_t ctx_col_dbg                  : 4;  /**< Context column debug. 32-bit column of context information to display in the ASE_LUE_CTX
                                                          debug field.
-                                                         TWE: Valid column values 0-12.
-                                                         BWE: Valid column values 0-2.
-                                                         RWE: Valid column values 0-8. */
+                                                         _ TWE: Valid column values 0-12.
+                                                         _ BWE: Valid column values 0-2.
+                                                         _ RWE: Valid column values 0-8. */
 	uint64_t reserved_13_15               : 3;
 	uint64_t ctx_eng_dbg                  : 5;  /**< Engine ID from which context information will be made available in the ASE_LUE_CTX debug
                                                          field. Must be 0 to 19. */
@@ -1064,7 +1068,7 @@ typedef union cvmx_ase_lue_dbg_ctl0 cvmx_ase_lue_dbg_ctl0_t;
  *
  * The per-engine filtering from NSP is not really worth moving to DTX-style addressing.
  * We are not rewiring the NSP's 16-bit debug bus. Instead we are duplicating that mux 4 times to
- * give OCTEON better observability.
+ * give CNXXXX better observability.
  * This register selects engines for debug observations for the LUE's four 16-bit debug muxes.
  */
 union cvmx_ase_lue_dbg_ctl1 {
@@ -1131,6 +1135,7 @@ typedef union cvmx_ase_lue_dbg_ctl1 cvmx_ase_lue_dbg_ctl1_t;
  * ASE_*_INT[LUE*]. The contents of this register are retained until all the bits in the
  * ASE_*_INT[LUE*] are cleared, or an error occurs that is of higher-priority than the error for
  * which information is currently logged by this CSR.
+ *
  * The priority of the error is encoded by the enumerated values in ASE_LUE_ERROR_ID_E. The
  * highest priority error is KDT_DBE, the lowest is RFT_SBE. For RFT errors, if multiple errors
  * of equal weight are reported during a clock cycle, the error on the local RFT is reported with
@@ -1150,16 +1155,16 @@ union cvmx_ase_lue_error_log {
 	uint64_t data                         : 48; /**< Error logging information. The information in this field takes on different meanings
                                                          depending on the type of error that is latched in the ASE_*_INT[LUE*] fields. Decode this
                                                          field based on ERROR_ID and HR_ERR_ID:
-                                                         TIC_MISS or TIC_MULTI_HIT, see ASE_LUE_ERROR_LOG_TIC_S.
-                                                         TIC_BAD_WRITE, see ASE_LUE_ERROR_LOG_TIC_BAD_WRITE_S.
-                                                         INVALID_TBL_ACC, see ASE_LUE_ERROR_LOG_INVTBLACC_S.
-                                                         INVALID_REQ, see ASE_LUE_ERROR_LOG_INVREQ_S.
-                                                         RME_FATAL, see ASE_LUE_ERROR_LOG_RME_FATAL_S.
-                                                         KDB_*BE, see ASE_LUE_ERROR_LOG_KDB_ECC_S.
-                                                         TAT_*BE, see ASE_LUE_ERROR_LOG_TAT_ECC_S.
-                                                         RFT_*BE: see ASE_LUE_ERROR_LOG_RFT_ECC_S.
-                                                         RUL_*BE, see ASE_LUE_ERROR_LOG_RUL_ECC_S.
-                                                         KDT_*BE, see ASE_LUE_ERROR_LOG_KDT_ECC_S. */
+                                                         _ TIC_MISS or TIC_MULTI_HIT, see ASE_LUE_ERROR_LOG_TIC_S.
+                                                         _ TIC_BAD_WRITE, see ASE_LUE_ERROR_LOG_TIC_BAD_WRITE_S.
+                                                         _ INVALID_TBL_ACC, see ASE_LUE_ERROR_LOG_INVTBLACC_S.
+                                                         _ INVALID_REQ, see ASE_LUE_ERROR_LOG_INVREQ_S.
+                                                         _ RME_FATAL, see ASE_LUE_ERROR_LOG_RME_FATAL_S.
+                                                         _ KDB_*BE, see ASE_LUE_ERROR_LOG_KDB_ECC_S.
+                                                         _ TAT_*BE, see ASE_LUE_ERROR_LOG_TAT_ECC_S.
+                                                         _ RFT_*BE: see ASE_LUE_ERROR_LOG_RFT_ECC_S.
+                                                         _ RUL_*BE, see ASE_LUE_ERROR_LOG_RUL_ECC_S.
+                                                         _ KDT_*BE, see ASE_LUE_ERROR_LOG_KDT_ECC_S. */
 #else
 	uint64_t data                         : 48;
 	uint64_t hr_err_id                    : 6;
@@ -1248,7 +1253,7 @@ union cvmx_ase_lue_perf_filt {
 	uint64_t hst_rft_kftidx               : 6;  /**< Lookups to the RFT in the HST module will trigger a performance event if the lookup is for
                                                          the KFTIDX value indicated in this field. */
 	uint64_t reserved_26_31               : 6;
-	uint64_t sel_all_perf                 : 1;  /**< Disable Filtering. When set, overrides the setting of SEL_ID_PERF for some performance
+	uint64_t sel_all_perf                 : 1;  /**< Disable filtering. When set, overrides the setting of SEL_ID_PERF for some performance
                                                          counter events. This field is used by the TWC, BWC, and STR modules. */
 	uint64_t sel_id_perf                  : 1;  /**< Selects how the value in the ENG_KID_ID_PERF field is interpreted. This field is used by
                                                          the TWC, BWC, and STR modules. */
@@ -1288,8 +1293,8 @@ typedef union cvmx_ase_lue_perf_filt cvmx_ase_lue_perf_filt_t;
 /**
  * cvmx_ase_lue_performance_control#
  *
- * A write to LUE_PERFORMANCE_CONTROL*, which sets the ENABLE field to 0x1 must not change the
- * values of any other fields in the CSR.
+ * A write operation to LUE_PERFORMANCE_CONTROL*, which sets the ENABLE field to 0x1
+ * must not change the values of any other fields in the CSR.
  */
 union cvmx_ase_lue_performance_controlx {
 	uint64_t u64;
@@ -1298,7 +1303,7 @@ union cvmx_ase_lue_performance_controlx {
 	uint64_t reserved_32_63               : 32;
 	uint64_t frozen                       : 1;  /**< Indicates that the counter is frozen (i.e one shot event occurred) and remains frozen
                                                          until the clear bit written. */
-	uint64_t clear                        : 1;  /**< Writing 1 to this bit generates a hardware pulse that clears the LUE_PERFOMANCE_COUNTER
+	uint64_t clear                        : 1;  /**< Writing 1 to this bit generates a hardware pulse that clears the LUE_PERFORMANCE_COUNTER
                                                          and field FROZEN of this register. */
 	uint64_t enable                       : 1;  /**< Enable the counter. This bit is set to 1 to use the corresponding counter. */
 	uint64_t reserved_27_28               : 2;
@@ -1336,8 +1341,8 @@ typedef union cvmx_ase_lue_performance_controlx cvmx_ase_lue_performance_control
 /**
  * cvmx_ase_lue_performance_control0
  *
- * A write to LUE_PERFORMANCE_CONTROL*, which sets the ENABLE field to 0x1 must not change the
- * values of any other fields in the CSR.
+ * A write operation to LUE_PERFORMANCE_CONTROL*, which sets the ENABLE field to 0x1
+ * must not change the values of any other fields in the CSR.
  */
 union cvmx_ase_lue_performance_control0 {
 	uint64_t u64;
@@ -1346,7 +1351,7 @@ union cvmx_ase_lue_performance_control0 {
 	uint64_t reserved_32_63               : 32;
 	uint64_t frozen                       : 1;  /**< Indicates that the counter is frozen (i.e one shot event occurred) and remains frozen
                                                          until the clear bit written. */
-	uint64_t clear                        : 1;  /**< Writing 1 to this bit generates a hardware pulse that clears the LUE_PERFOMANCE_COUNTER
+	uint64_t clear                        : 1;  /**< Writing 1 to this bit generates a hardware pulse that clears the LUE_PERFORMANCE_COUNTER
                                                          and field FROZEN of this register. */
 	uint64_t enable                       : 1;  /**< Enable the counter. This bit is set to 1 to use the corresponding counter. */
 	uint64_t global_stop                  : 1;  /**< Writing a 1 to this bit stops all the counters in the group of eight counters. This bit is
@@ -1357,8 +1362,8 @@ union cvmx_ase_lue_performance_control0 {
                                                          1 = Event counted SEL0.
                                                          0 = Event counted SEL0 & SEL1 & SEL2.
                                                          Bits<26:25>:
-                                                         0x0 = Pos Edge.
-                                                         0x1 = Neg Edge.
+                                                         0x0 = Pos edge.
+                                                         0x1 = Neg edge.
                                                          0x2 = Level.
                                                          0x3 = One shot. */
 	uint64_t sel2                         : 8;  /**< Performance counter event select, third mux.
@@ -1387,8 +1392,9 @@ typedef union cvmx_ase_lue_performance_control0 cvmx_ase_lue_performance_control
 /**
  * cvmx_ase_lue_performance_control1
  *
- * A write to LUE_PERFORMANCE_CONTROL*, which sets the ENABLE or GLOBAL_ENABLE fields to 0x1 must
- * not change the values of any other fields in the CSR.
+ * A write operation to LUE_PERFORMANCE_CONTROL*, which sets the ENABLE or
+ * GLOBAL_ENABLE fields to 0x1 must not change the values of any other fields in the
+ * CSR.
  */
 union cvmx_ase_lue_performance_control1 {
 	uint64_t u64;
@@ -1397,7 +1403,7 @@ union cvmx_ase_lue_performance_control1 {
 	uint64_t reserved_32_63               : 32;
 	uint64_t frozen                       : 1;  /**< Indicates that the counter is frozen (i.e one shot event occurred) and remains frozen
                                                          until the clear bit written. */
-	uint64_t clear                        : 1;  /**< Writing 1 to this bit generates a hardware pulse that clears the LUE_PERFOMANCE_COUNTER
+	uint64_t clear                        : 1;  /**< Writing 1 to this bit generates a hardware pulse that clears the LUE_PERFORMANCE_COUNTER
                                                          and field FROZEN of this register. */
 	uint64_t enable                       : 1;  /**< Enable the counter. This bit is set to 1 to use the corresponding counter. */
 	uint64_t global_enable                : 1;  /**< Writing a 1 to this bit starts all the counters in the group of eight counters. This bit

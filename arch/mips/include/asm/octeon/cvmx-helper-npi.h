@@ -43,7 +43,7 @@
  * Functions for NPI initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 73842 $<hr>
+ * <hr>$Revision: 96176 $<hr>
  */
 #ifndef __CVMX_HELPER_NPI_H__
 #define __CVMX_HELPER_NPI_H__
@@ -59,10 +59,6 @@
  * @return Number of ports on the interface. Zero to disable.
  */
 extern int __cvmx_helper_npi_probe(int interface);
-static inline int __cvmx_helper_npi_enumerate(int interface)
-{
-	return __cvmx_helper_npi_probe(interface);
-}
 
 /**
  * @INTERNAL
@@ -75,5 +71,11 @@ static inline int __cvmx_helper_npi_enumerate(int interface)
  * @return Zero on success, negative on failure
  */
 extern int __cvmx_helper_npi_enable(int interface);
+
+/**
+ * Sets the number of pipe used by SLI packet output in the variable,
+ * which then later used for setting it up in HW
+ */
+void cvmx_npi_config_set_num_pipes(int num_pipes);
 
 #endif

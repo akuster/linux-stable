@@ -967,7 +967,7 @@ int _cvmx_srio_config_read32(int srio_port, int srcid_index, int destid, int is1
 				cvmx_dprintf("SRIO%d: Remote read [id=0x%04x hop=%3d offset=0x%06x] <= ", srio_port, destid, hopcount, (unsigned int)offset);
 
 			/* Finally do the maintenance read to complete the config request */
-#ifdef __LITTLE_ENDIAN
+#if defined(CVMX_BUILD_FOR_LINUX_KERNEL) &&  defined(__LITTLE_ENDIAN)
 			/*
 			 * When running in little endian mode, the cpu xor's bit
 			 * 2 of the address. We need to xor it here to cancel it
@@ -1158,7 +1158,7 @@ int _cvmx_srio_config_write32(int srio_port, int srcid_index, int destid, int is
 					     (unsigned int)data);
 
 			/* Finally do the maintenance write to complete the config request */
-#ifdef __LITTLE_ENDIAN
+#if defined(CVMX_BUILD_FOR_LINUX_KERNEL) &&  defined(__LITTLE_ENDIAN)
 			/*
 			 * When running in little endian mode, the cpu xor's bit
 			 * 2 of the address. We need to xor it here to cancel it
@@ -1557,7 +1557,8 @@ int cvmx_srio_physical_unmap(uint64_t physical_address, uint64_t size)
 	   Type[1] is mapped to the No Snoop
 	   Type[2] is mapped directly to bit 50 of the SLI address
 	   Type[3] is mapped directly to bit 59 of the SLI address */
-	read_s2m_type = ((subid.cn63xx.ba >> (50 - 34)) & 1 << 2) | ((subid.cn63xx.ba >> (59 - 34)) & 1 << 3);
+	read_s2m_type = (((subid.cn63xx.ba >> (50 - 34)) & 1) << 2) | 
+		(((subid.cn63xx.ba >> (59 - 34)) & 1) << 3);
 	read_s2m_type |= subid.s.rtype;
 	__cvmx_srio_free_subid(mem_index);
 	__cvmx_srio_free_s2m(subid.s.port, read_s2m_type);

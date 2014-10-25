@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -14,6 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
+
 
  *   * Neither the name of Cavium Inc. nor the names of
  *     its contributors may be used to endorse or promote products
@@ -42,9 +43,10 @@
  * Simple allocate only memory allocator.  Used to allocate memory at
  * application start time.
  *
- * <hr>$Revision: 84899 $<hr>
+ * <hr>$Revision: 104081 $<hr>
  *
  */
+
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <linux/export.h>
 #include <asm/octeon/cvmx.h>
@@ -56,11 +58,17 @@
 #include <sys/mman.h>
 #endif
 
+#if defined(CVMX_BUILD_FOR_UBOOT)
+#include <common.h>
+#endif
+
 #include "cvmx.h"
 #include "cvmx-bootmem.h"
 #endif
 
-/* #define DEBUG */
+#if defined(CVMX_BUILD_FOR_UBOOT)
+	DECLARE_GLOBAL_DATA_PTR;
+#endif
 
 #undef	MAX
 #define MAX(a, b)  (((a) > (b)) ? (a) : (b))
@@ -435,7 +443,16 @@ static int __cvmx_validate_mem_range(uint64_t *min_addr_ptr,
 				     uint64_t *max_addr_ptr)
 {
 
-#if defined(__linux__) && defined(CVMX_ABI_N32)
+#ifdef CVMX_BUILD_FOR_UBOOT
+	{
+		uint64_t max_phys = (1ull << 29) - 0x10;	/* KSEG0 */
+		*min_addr_ptr = MIN(MAX(*min_addr_ptr, 0x0), max_phys);
+		if (!*max_addr_ptr)
+			*max_addr_ptr = max_phys;
+		else
+			*max_addr_ptr = MAX(MIN(*max_addr_ptr, max_phys), 0x0);
+	}
+#elif defined(__linux__) && defined(CVMX_ABI_N32)
 	{
 		extern uint64_t linux_mem32_min;
 		extern uint64_t linux_mem32_max;
@@ -459,7 +476,7 @@ static int __cvmx_validate_mem_range(uint64_t *min_addr_ptr,
 #elif defined(CVMX_ABI_N32)
 	{
 		/* Max physical address when 1-1 mappings not used */
-		uint32_t max_phys = 0x7FFFFFFF;
+		uint32_t max_phys = 0x1FFFFFFF; /* 512 MB */
 
 		/* We are are running standalone simple executive, so we need
 		 * to limit the range that we allocate from
@@ -527,6 +544,14 @@ void *cvmx_bootmem_alloc_address(uint64_t size, uint64_t address,
 	return cvmx_bootmem_alloc_range(size, alignment, address,
 					address + size);
 }
+
+void *cvmx_bootmem_alloc_node(uint64_t node, uint64_t size, uint64_t alignment)
+{
+	return cvmx_bootmem_alloc_range(size, alignment,
+					node << CVMX_NODE_MEM_SHIFT,
+					((node + 1) << CVMX_NODE_MEM_SHIFT) - 1);
+}
+EXPORT_SYMBOL(cvmx_bootmem_alloc_node);
 
 void *cvmx_bootmem_alloc(uint64_t size, uint64_t alignment)
 {
@@ -678,56 +703,59 @@ int64_t cvmx_bootmem_phy_alloc(uint64_t req_size, uint64_t address_min,
 			       uint32_t flags)
 {
 
-	uint64_t head_addr;
-	uint64_t ent_addr;
-	/* points to previous list entry, NULL current entry is head of list */
-	uint64_t prev_addr = 0;
-	uint64_t new_ent_addr = 0;
-	uint64_t desired_min_addr;
-	uint64_t alignment_mask = ~(alignment - 1);
+	uint64_t head_addr, ent_addr, ent_size;
+	uint64_t target_ent_addr = 0, target_prev_addr = 0;
+	uint64_t target_size = ~0ull;
+	uint64_t free_start, free_end;
+	uint64_t next_addr, prev_addr = 0;
+	uint64_t new_ent_addr = 0, new_ent_size;
+	uint64_t desired_min_addr, usable_max;
+	uint64_t align, align_mask;
 
 #ifdef DEBUG
-	cvmx_dprintf("cvmx_bootmem_phy_alloc: req_size: 0x%llx, min_addr: "
+	cvmx_dprintf("%s: req_size: 0x%llx, min_addr: "
 		     "0x%llx, max_addr: 0x%llx, align: 0x%llx\n",
+		     __func__,
 		     CAST_ULL(req_size), CAST_ULL(address_min),
 		     CAST_ULL(address_max), CAST_ULL(alignment));
 #endif
 
 	if (__cvmx_bootmem_check_version(0))
-		goto error_out;
+		return -1;
 
 	/*
 	 * Do a variety of checks to validate the arguments.  The
-	 * allocator code will later assume * that these checks have
+	 * allocator code will later assume that these checks have
 	 * been made.  We validate that the requested constraints are
-	 * not * self-contradictory before we look through the list of
+	 * not self-contradictory before we look through the list of
 	 * available memory
 	 */
 
 	/* 0 is not a valid req_size for this allocator */
 	if (!req_size)
-		goto error_out;
+		return -1;
 
-	/* Round req_size up to mult of minimum alignment bytes */
+	/* Round req_size up to multiple of minimum alignment bytes */
 	req_size = (req_size + (CVMX_BOOTMEM_ALIGNMENT_SIZE - 1)) &
 		   ~(CVMX_BOOTMEM_ALIGNMENT_SIZE - 1);
 
-	/*
-	 * Enforce minimum alignment (this also keeps the minimum free block
-	 * req_size the same as the alignment req_size
-	 */
-	if (alignment < CVMX_BOOTMEM_ALIGNMENT_SIZE)
-		alignment = CVMX_BOOTMEM_ALIGNMENT_SIZE;
+	/* Make sure alignment is power of 2, and at least the minimum */
+	for (align = CVMX_BOOTMEM_ALIGNMENT_SIZE;
+	    align < (1ull<<48);
+	    align <<= 1) {
+		if (align >= alignment)
+			break;
+	}
 
-	alignment_mask = ~(alignment - 1);
+	align_mask = ~(align - 1);
 
 	/*
 	 * Adjust address minimum based on requested alignment (round
 	 * up to meet alignment).  Do this here so we can reject
 	 * impossible requests up front. (NOP for address_min == 0)
 	 */
-	if (alignment)
-		address_min = (address_min + (alignment - 1)) & ~(alignment - 1);
+	address_min = (address_min + (align - 1)) & align_mask;
+
 	/*
 	 * Convert !0 address_min and 0 address_max to special case of
 	 * range that specifies an exact memory block to allocate.  Do
@@ -737,7 +765,7 @@ int64_t cvmx_bootmem_phy_alloc(uint64_t req_size, uint64_t address_min,
 	if (address_min && !address_max)
 		address_max = address_min + req_size;
 	else if (!address_min && !address_max)
-		address_max = ~0ull;	/* If no limits given, use max limits */
+		address_max = ~0ull;	/* If no limits given, use max */
 
 	/*
 	 * Reject inconsistent args.  We have adjusted these, so this
@@ -745,130 +773,154 @@ int64_t cvmx_bootmem_phy_alloc(uint64_t req_size, uint64_t address_min,
 	 * would pass for the values the user supplied.
 	 */
 	if (req_size > address_max - address_min)
-		goto error_out;
-
-	/* Walk through the list entries - first fit found is returned */
+		return -1;
 
 	__cvmx_bootmem_lock(flags);
-	head_addr = CVMX_BOOTMEM_DESC_GET_FIELD(head_addr);
-	ent_addr = head_addr;
-	while (ent_addr) {
-		uint64_t usable_base, usable_max;
-		uint64_t ent_size = cvmx_bootmem_phy_get_size(ent_addr);
 
-		if (cvmx_bootmem_phy_get_next(ent_addr)
-		    && ent_addr > cvmx_bootmem_phy_get_next(ent_addr)) {
-			cvmx_dprintf("Internal bootmem_alloc() error: ent: "
-				     "0x%llx, next: 0x%llx\n",
-				     CAST_ULL(ent_addr),
-				     CAST_ULL(cvmx_bootmem_phy_get_next(ent_addr)));
+	/* Walk through the list entries to find the right fit */
+	head_addr = CVMX_BOOTMEM_DESC_GET_FIELD(head_addr);
+
+	for (ent_addr = head_addr;
+		ent_addr != 0ULL && ent_addr < address_max;
+		prev_addr = ent_addr,
+		ent_addr = cvmx_bootmem_phy_get_next(ent_addr)) {
+
+		/* Raw free block size */
+		ent_size = cvmx_bootmem_phy_get_size(ent_addr);
+		next_addr = cvmx_bootmem_phy_get_next(ent_addr);
+
+		/* Validate the free list ascending order */
+		if (ent_size < CVMX_BOOTMEM_ALIGNMENT_SIZE ||
+		    (next_addr && ent_addr > next_addr)) {
+			cvmx_dprintf("ERROR: %s: bad free list ent: %#llx, next: %#llx\n",
+				__func__, CAST_ULL(ent_addr),
+				CAST_ULL(next_addr));
 			goto error_out;
 		}
 
-		/*
-		 * Determine if this is an entry that can satisify the
-		 * request Check to make sure entry is large enough to
-		 * satisfy request
-		 */
-		usable_base = ALIGN_ADDR_UP(MAX(address_min, ent_addr),
-					    alignment_mask);
-		usable_max = MIN(address_max, ent_addr + ent_size);
-		/* We should be able to allocate block at address usable_base */
+		/* adjust free block edges for alignment */
+		free_start = (ent_addr + align - 1) & align_mask;
+		free_end = (ent_addr + ent_size) &  align_mask;
 
-		desired_min_addr = usable_base;
+		/* check that free block is large enough */
+		if ((free_start + req_size) > free_end)
+			continue;
 
-		/*
-		 * Determine if request can be satisfied from the
-		 * current entry
-		 */
-		if (((ent_addr + ent_size) > usable_base
-		     && ent_addr < address_max)
-		    && req_size <= usable_max - usable_base) {
-			/*
-			 * We have found an entry that has room to satisfy the
-			 * request, so allocate it from this entry
-			 *
-			 * If end CVMX_BOOTMEM_FLAG_END_ALLOC set, then allocate
-			 * from the end of this block rather than the beginning
-			 */
-			if (flags & CVMX_BOOTMEM_FLAG_END_ALLOC) {
-				desired_min_addr = usable_max - req_size;
-				/*
-				 * Align desired address down to required
-				 * alignment
-				 */
-				desired_min_addr &= alignment_mask;
-			}
+		/* check that desired start is within the free block */
+		if (free_end < address_min || free_start > address_max)
+			continue;
+		if ((free_end - address_min) < req_size)
+			continue;
+		if ((address_max - free_start) < req_size)
+			continue;
 
-			/* Match at start of entry */
-			if (desired_min_addr == ent_addr) {
-				if (req_size < ent_size) {
-					/*
-					 * big enough to create a new block from
-					 * top portion of block
-					 */
-					new_ent_addr = ent_addr + req_size;
-					cvmx_bootmem_phy_set_next(new_ent_addr,
-						cvmx_bootmem_phy_get_next(ent_addr));
-					cvmx_bootmem_phy_set_size(new_ent_addr,
-							ent_size - req_size);
+		/* Found usebale free block */
+		target_ent_addr = ent_addr;
+		target_prev_addr = prev_addr;
+		target_size = ent_size;
 
-					/*
-					 * Adjust next pointer as
-					 * following code uses this.
-					 */
-					cvmx_bootmem_phy_set_next(ent_addr,
-								  new_ent_addr);
-				}
-
-				/*
-				 * adjust prev ptr or head to remove this entry
-				 * from list
-				 */
-				if (prev_addr) {
-					cvmx_bootmem_phy_set_next(prev_addr,
-						cvmx_bootmem_phy_get_next(ent_addr));
-				} else {
-					/* head of list being returned, so update head ptr */
-					CVMX_BOOTMEM_DESC_SET_FIELD(head_addr,
-						cvmx_bootmem_phy_get_next(ent_addr));
-				}
-				__cvmx_bootmem_unlock(flags);
-#ifdef DEBUG
-				cvmx_dprintf("cvmx_bootmem_phy_alloc: req_size:"
-					     " 0x%llx, addr: 0x%llx\n",
-					     CAST_ULL(req_size),
-					     CAST_ULL(desired_min_addr));
-#endif
-				return desired_min_addr;
-			}
-
-			/* block returned doesn't start at beginning of entry,
-			 * so we know that we will be splitting a block off the
-			 * front of this one.  Create a new block from the
-			 * beginning, add to list, and go to top of loop again.
-			 *
-			 * create a new block from the high portion of the
-			 * block so that the top block starts at the desired
-			 * addr
-			 */
-			new_ent_addr = desired_min_addr;
-			cvmx_bootmem_phy_set_next(new_ent_addr,
-					cvmx_bootmem_phy_get_next(ent_addr));
-			cvmx_bootmem_phy_set_size(new_ent_addr,
-					cvmx_bootmem_phy_get_size(ent_addr) -
-					 (desired_min_addr - ent_addr));
-			cvmx_bootmem_phy_set_size(ent_addr,
-						  desired_min_addr - ent_addr);
-			cvmx_bootmem_phy_set_next(ent_addr, new_ent_addr);
-			/* Loop again to handle actual alloc from new block */
-		}
-
-		prev_addr = ent_addr;
-		ent_addr = cvmx_bootmem_phy_get_next(ent_addr);
+		/* Continue looking for highest/best block that fits */
 	}
+
+	/* Bail if the search has resulted in no eligible free blocks */
+	if (target_ent_addr == 0) {
+#ifdef DEBUG
+		cvmx_dprintf("%s: eligible free block not found\n", __func__);
+#endif
+		goto error_out;
+	}
+
+	/* Found the free block to allocate from */
+	ent_addr = target_ent_addr;
+	prev_addr = target_prev_addr;
+	ent_size = target_size;
+
+#ifdef DEBUG
+	cvmx_dprintf("%s: using free block at %#010llx size %#llx\n",
+		__func__, CAST_ULL(ent_addr), CAST_ULL(ent_size));
+#endif
+
+	/* Always allocate from the end of a free block */
+	usable_max = MIN(address_max, ent_addr + ent_size);
+	desired_min_addr = usable_max - req_size;
+	desired_min_addr &= align_mask;
+
+	/* Split current free block into up to 3 free blocks */
+
+	/* Check for head room */
+	if (desired_min_addr > ent_addr) {
+		/* Create a new free block at the allocation address */
+		new_ent_addr = desired_min_addr;
+		new_ent_size = ent_size - (desired_min_addr - ent_addr);
+
+		cvmx_bootmem_phy_set_next(new_ent_addr,
+				cvmx_bootmem_phy_get_next(ent_addr));
+		cvmx_bootmem_phy_set_size(new_ent_addr, new_ent_size);
+
+		/* Split out head room into a new free block */
+		ent_size -= new_ent_size;
+		cvmx_bootmem_phy_set_next(ent_addr, new_ent_addr);
+		cvmx_bootmem_phy_set_size(ent_addr, ent_size);
+
+#ifdef DEBUG
+		cvmx_dprintf("%s: splitting head, addr %#llx size %#llx\n",
+		__func__, CAST_ULL(ent_addr), CAST_ULL(ent_size));
+#endif
+		/* Make the allocation target the current free block */
+		prev_addr = ent_addr;
+		ent_addr = new_ent_addr;
+		ent_size = new_ent_size;
+	}
+
+	/* Check for tail room */
+	if ((desired_min_addr + req_size) < (ent_addr + ent_size)) {
+		new_ent_addr = ent_addr + req_size;
+		new_ent_size = ent_size - req_size;
+
+		/* Create a new free block from tail room */
+		cvmx_bootmem_phy_set_next(new_ent_addr,
+				cvmx_bootmem_phy_get_next(ent_addr));
+		cvmx_bootmem_phy_set_size(new_ent_addr, new_ent_size);
+
+#ifdef DEBUG
+		cvmx_dprintf("%s: splitting tail, addr %#llx size %#llx\n",
+		__func__, CAST_ULL(new_ent_addr), CAST_ULL(new_ent_size));
+#endif
+
+		/* Adjust the current block to exclude tail room */
+		ent_size = ent_size - new_ent_size;
+		cvmx_bootmem_phy_set_next(ent_addr, new_ent_addr);
+		cvmx_bootmem_phy_set_size(ent_addr, ent_size);
+	}
+
+	/* The current free block IS the allocation target */
+	if (desired_min_addr != ent_addr || ent_size != req_size)
+		cvmx_dprintf("ERROR: %s: internal error - addr %#llx %#llx size %#llx %#llx\n",
+		__func__,
+		CAST_ULL(desired_min_addr),  CAST_ULL(ent_addr),
+		CAST_ULL(ent_size), CAST_ULL(req_size));
+
+	/* Remove the current free block from list */
+	if (prev_addr) {
+		cvmx_bootmem_phy_set_next(prev_addr,
+				cvmx_bootmem_phy_get_next(ent_addr));
+	} else {
+		/* head of list being returned, so update head ptr */
+		CVMX_BOOTMEM_DESC_SET_FIELD(head_addr,
+				cvmx_bootmem_phy_get_next(ent_addr));
+	}
+
+	__cvmx_bootmem_unlock(flags);
+#ifdef DEBUG
+	cvmx_dprintf("%s: allocated size: %#llx, at addr: %#010llx\n",
+			__func__,
+			CAST_ULL(req_size),
+			CAST_ULL(desired_min_addr));
+#endif
+	return desired_min_addr;
+
 error_out:
-	/* We didn't find anything, so return error */
+	/* Requested memory not found or argument error */
 	__cvmx_bootmem_unlock(flags);
 	return -1;
 }
@@ -880,15 +932,19 @@ int __cvmx_bootmem_phy_free(uint64_t phy_addr, uint64_t size, uint32_t flags)
 	int retval = 0;
 
 #ifdef DEBUG
-	cvmx_dprintf("__cvmx_bootmem_phy_free addr: 0x%llx, size: 0x%llx\n",
+	cvmx_dprintf("%s addr: %#llx, size: %#llx\n", __func__,
 		     CAST_ULL(phy_addr), CAST_ULL(size));
 #endif
 	if (__cvmx_bootmem_check_version(0))
 		return 0;
 
 	/* 0 is not a valid size for this allocator */
-	if (!size)
+	if (!size || !phy_addr)
 		return 0;
+
+	/* Round size up to mult of minimum alignment bytes */
+	size = (size + (CVMX_BOOTMEM_ALIGNMENT_SIZE - 1)) &
+		   ~(CVMX_BOOTMEM_ALIGNMENT_SIZE - 1);
 
 	__cvmx_bootmem_lock(flags);
 	cur_addr = CVMX_BOOTMEM_DESC_GET_FIELD(head_addr);
@@ -984,26 +1040,24 @@ void cvmx_bootmem_phy_list_print(void)
 	uint64_t addr;
 
 	addr = CVMX_BOOTMEM_DESC_GET_FIELD(head_addr);
-	cvmx_dprintf("\n\n\nPrinting bootmem block list, descriptor: 0x%llx,  "
-		     "head is 0x%llx\n",
-		     CAST_ULL(cvmx_bootmem_desc_addr), CAST_ULL(addr));
-	cvmx_dprintf("Descriptor version: %d.%d\n",
-		     (int)CVMX_BOOTMEM_DESC_GET_FIELD(major_version),
-		     (int)CVMX_BOOTMEM_DESC_GET_FIELD(minor_version));
+	cvmx_printf("\n\n\nPrinting bootmem block list, descriptor: 0x%llx, head is 0x%llx\n",
+		    CAST_ULL(cvmx_bootmem_desc_addr), CAST_ULL(addr));
+	cvmx_printf("Descriptor version: %d.%d\n",
+		    (int)CVMX_BOOTMEM_DESC_GET_FIELD(major_version),
+		    (int)CVMX_BOOTMEM_DESC_GET_FIELD(minor_version));
 	if (CVMX_BOOTMEM_DESC_GET_FIELD(major_version) > 3)
 		cvmx_dprintf("Warning: Bootmem descriptor version is newer than expected\n");
 
 	if (!addr)
-		cvmx_dprintf("mem list is empty!\n");
+		cvmx_printf("mem list is empty!\n");
 
 	while (addr) {
-		cvmx_dprintf("Block address: 0x%08llx, size: 0x%08llx, next: "
-			     "0x%08llx\n", CAST_ULL(addr),
-			     CAST_ULL(cvmx_bootmem_phy_get_size(addr)),
-			     CAST_ULL(cvmx_bootmem_phy_get_next(addr)));
+		cvmx_printf("Block address: 0x%08llx, size: 0x%08llx, next: 0x%08llx\n", CAST_ULL(addr),
+			    CAST_ULL(cvmx_bootmem_phy_get_size(addr)),
+			    CAST_ULL(cvmx_bootmem_phy_get_next(addr)));
 		addr = cvmx_bootmem_phy_get_next(addr);
 	}
-	cvmx_dprintf("\n\n");
+	cvmx_printf("\n\n");
 }
 
 uint64_t cvmx_bootmem_phy_available_mem(uint64_t min_block_size)
@@ -1182,7 +1236,7 @@ void cvmx_bootmem_phy_named_block_print(void)
 #endif
 	if (__cvmx_bootmem_check_version(3))
 		return;
-	cvmx_dprintf("List of currently allocated named bootmem blocks:\n");
+	cvmx_printf("List of currently allocated named bootmem blocks:\n");
 	for (i = 0; i < num_blocks; i++) {
 		uint64_t named_size =
 			CVMX_BOOTMEM_NAMED_GET_FIELD(named_block_addr, size);
@@ -1194,16 +1248,16 @@ void cvmx_bootmem_phy_named_block_print(void)
 			CVMX_BOOTMEM_NAMED_GET_NAME(named_block_addr, name_tmp,
 						    name_length);
 			printed++;
-			cvmx_dprintf("Name: %s, address: 0x%08llx, size: "
-				     "0x%08llx, index: %d\n", name_tmp,
+			cvmx_printf("Name: %s, address: 0x%08llx, size: 0x%08llx, index: %d\n", name_tmp,
 				     CAST_ULL(named_addr),
 				     CAST_ULL(named_size), i);
 		}
 		named_block_addr += sizeof(cvmx_bootmem_named_block_desc_t);
 	}
 	if (!printed)
-		cvmx_dprintf("No named bootmem blocks exist.\n");
+		cvmx_printf("No named bootmem blocks exist.\n");
 }
+
 
 int64_t cvmx_bootmem_phy_mem_list_init(uint64_t mem_size,
 				       uint32_t low_reserved_bytes,
@@ -1312,6 +1366,142 @@ frees_done:
 	return 1;
 }
 
+
+
+int64_t cvmx_bootmem_phy_mem_list_init_multi(uint8_t node_mask,
+					     uint32_t mem_sizes[],
+					     uint32_t low_reserved_bytes,
+					     cvmx_bootmem_desc_t *desc_buffer)
+{
+	uint64_t cur_block_addr;
+	uint64_t mem_size;
+	int64_t addr;
+	int i;
+	int node;
+	uint64_t node_base;	/* Make u64 to reduce type casting */
+
+#if defined(CVMX_BUILD_FOR_UBOOT)
+	mem_sizes[0] = gd->ram_size / (1024 * 1024);
+#endif
+#ifdef DEBUG
+	cvmx_dprintf("cvmx_bootmem_phy_mem_list_init (arg desc ptr: %p, "
+		     "cvmx_bootmem_desc: 0x%llx)\n",
+		     desc_buffer, CAST_ULL(cvmx_bootmem_desc_addr));
+#endif
+	/*
+	 * Descriptor buffer needs to be in 32 bit addressable space to be
+	 * compatible with 32 bit applications
+	 */
+	if (!desc_buffer) {
+		cvmx_dprintf("ERROR: no memory for cvmx_bootmem descriptor provided\n");
+		return 0;
+	}
+	cvmx_coremask_for_each_node(node, node_mask) {
+		if ((mem_sizes[node] * (1024*1024)) > OCTEON_MAX_PHY_MEM_SIZE) {
+			mem_sizes[node] = OCTEON_MAX_PHY_MEM_SIZE / (1024*1024);
+			cvmx_dprintf("ERROR node#%lld: requested memory size too large, truncating to maximum size\n",
+				     CAST_ULL(node));
+		}
+	}
+
+	if (cvmx_bootmem_desc_addr)
+		return 1;
+
+	/* Initialize cvmx pointer to descriptor */
+#ifndef CVMX_BUILD_FOR_LINUX_HOST
+	cvmx_bootmem_init(cvmx_ptr_to_phys(desc_buffer));
+#else
+	cvmx_bootmem_init((unsigned long)desc_buffer);
+#endif
+
+	/* Fill the bootmem descriptor */
+	CVMX_BOOTMEM_DESC_SET_FIELD(lock, 0);
+	CVMX_BOOTMEM_DESC_SET_FIELD(flags, 0);
+	CVMX_BOOTMEM_DESC_SET_FIELD(head_addr, 0);
+	CVMX_BOOTMEM_DESC_SET_FIELD(major_version, CVMX_BOOTMEM_DESC_MAJ_VER);
+	CVMX_BOOTMEM_DESC_SET_FIELD(minor_version, CVMX_BOOTMEM_DESC_MIN_VER);
+	CVMX_BOOTMEM_DESC_SET_FIELD(app_data_addr, 0);
+	CVMX_BOOTMEM_DESC_SET_FIELD(app_data_size, 0);
+
+	cvmx_coremask_for_each_node(node, node_mask) {
+		if (node != 0)	/* do not reserve memory on remote nodes */
+			low_reserved_bytes = 0;
+		mem_size = (uint64_t)mem_sizes[node] * (1024*1024);	/* MBytes */
+		/*
+		* Set up global pointer to start of list, exclude low 64k for exception
+		* vectors, space for global descriptor
+		*/
+
+		node_base = (uint64_t)node << CVMX_NODE_MEM_SHIFT;
+		cur_block_addr = (OCTEON_DDR0_BASE + low_reserved_bytes) |
+				  node_base;
+
+		if (mem_size <= OCTEON_DDR0_SIZE) {
+			__cvmx_bootmem_phy_free(cur_block_addr,
+						mem_size - low_reserved_bytes,
+						0);
+			continue;
+		}
+
+		__cvmx_bootmem_phy_free(cur_block_addr,
+					OCTEON_DDR0_SIZE - low_reserved_bytes,
+					0);
+
+		mem_size -= OCTEON_DDR0_SIZE;
+
+		/* Add DDR2 block next if present */
+		if (mem_size > OCTEON_DDR1_SIZE) {
+			__cvmx_bootmem_phy_free(OCTEON_DDR1_BASE |
+						node_base,
+						OCTEON_DDR1_SIZE, 0);
+			__cvmx_bootmem_phy_free(OCTEON_DDR2_BASE |
+						node_base,
+						mem_size - OCTEON_DDR1_SIZE, 0);
+		} else {
+			__cvmx_bootmem_phy_free(OCTEON_DDR1_BASE |
+						node_base,
+						mem_size, 0);
+		}
+	}
+
+#ifdef DEBUG
+	cvmx_dprintf("%s: Initialize the named block\n", __func__);
+#endif
+	/* Initialize the named block structure */
+	CVMX_BOOTMEM_DESC_SET_FIELD(named_block_name_len, CVMX_BOOTMEM_NAME_LEN);
+	CVMX_BOOTMEM_DESC_SET_FIELD(named_block_num_blocks,
+				    CVMX_BOOTMEM_NUM_NAMED_BLOCKS);
+	CVMX_BOOTMEM_DESC_SET_FIELD(named_block_array_addr, 0);
+
+	/* Allocate this near the top of the low 256 MBytes of memory */
+	addr = cvmx_bootmem_phy_alloc(CVMX_BOOTMEM_NUM_NAMED_BLOCKS *
+				      sizeof(cvmx_bootmem_named_block_desc_t),
+				      0, 0x10000000, 0,
+				      CVMX_BOOTMEM_FLAG_END_ALLOC);
+	if (addr >= 0)
+		CVMX_BOOTMEM_DESC_SET_FIELD(named_block_array_addr, addr);
+
+#ifdef DEBUG
+	cvmx_dprintf("cvmx_bootmem_phy_mem_list_init: named_block_array_addr:"
+		     "0x%llx)\n", CAST_ULL(addr));
+#endif
+	if (!addr) {
+		cvmx_dprintf("FATAL ERROR: unable to allocate memory for "
+			     "bootmem descriptor!\n");
+		return 0;
+	}
+	for (i = 0; i < CVMX_BOOTMEM_NUM_NAMED_BLOCKS; i++) {
+		CVMX_BOOTMEM_NAMED_SET_FIELD(addr, base_addr, 0);
+		CVMX_BOOTMEM_NAMED_SET_FIELD(addr, size, 0);
+		addr += sizeof(cvmx_bootmem_named_block_desc_t);
+	}
+
+#ifdef DEBUG
+	cvmx_bootmem_phy_list_print();
+#endif
+	return 1;
+}
+
 int cvmx_bootmem_reserve_memory(uint64_t start_addr, uint64_t size,
 				const char *name, uint32_t flags)
 {
@@ -1321,11 +1511,9 @@ int cvmx_bootmem_reserve_memory(uint64_t start_addr, uint64_t size,
 	char block_name[CVMX_BOOTMEM_NAME_LEN];
 
 #ifdef DEBUG
-	cvmx_dprintf("%s (start_addr: 0x%llx, size: 0x%llx, name: %s, flags:"
-		     "0x%x)\n", __func__, CAST_ULL(start_addr), CAST_ULL(size),
-		     name, flags);
-#else
-  (void)flags;
+	cvmx_dprintf("%s: start %#llx, size: %#llx, name: %s, flags:%#x)\n",
+		__func__, CAST_ULL(start_addr), CAST_ULL(size),
+		name, (unsigned) flags);
 #endif
 
 	if (__cvmx_bootmem_check_version(3))
@@ -1352,21 +1540,18 @@ int cvmx_bootmem_reserve_memory(uint64_t start_addr, uint64_t size,
 		}
 		if (reserve_size) {
 			snprintf(block_name, sizeof(block_name),
-				 "%.100s_%016llx_%u",
+				 "%.32s_%012llx_%u",
 				 name, (unsigned long long)start_addr,
 				 (unsigned int)block_num);
 #ifdef DEBUG
-			cvmx_dprintf("%s: Reserving 0x%llx bytes at address"
-				     " 0x%llx with name %s\n",
+			cvmx_dprintf("%s: Reserving 0x%llx bytes at address 0x%llx with name %s\n",
 				     __func__, CAST_ULL(reserve_size),
 				     CAST_ULL(addr), block_name);
 #endif
-			if (CAST_ULL(cvmx_bootmem_phy_named_block_alloc(reserve_size,
-									addr, 0, 0,
-									block_name, 0))
-			    == -1ull) {
-				cvmx_dprintf("%s: Failed to reserve 0x%llx "
-					     "bytes at address 0x%llx\n",
+			if (cvmx_bootmem_phy_named_block_alloc(
+				reserve_size, addr, 0, 0, block_name, flags
+				) == -1) {
+				cvmx_dprintf("%s: Failed to reserve 0x%llx bytes at address 0x%llx\n",
 					     __func__, CAST_ULL(reserve_size),
 					    (unsigned long long)addr);
 				rc = 0;
@@ -1374,8 +1559,7 @@ int cvmx_bootmem_reserve_memory(uint64_t start_addr, uint64_t size,
 			}
 #ifdef DEBUG
 			else
-				cvmx_dprintf("%s: Reserved 0x%llx bytes at "
-					     "address 0x%llx with name %s\n",
+				cvmx_dprintf("%s: Reserved 0x%llx bytes at address 0x%llx with name %s\n",
 					     __func__, CAST_ULL(reserve_size),
 					     CAST_ULL(addr), block_name);
 #endif

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -592,8 +592,8 @@ static inline uint64_t CVMX_DPI_SWA_Q_VMID_FUNC(void)
 /**
  * cvmx_dpi_bist_status
  *
- * This is the built-in self-test (BIST) status register.
- *
+ * This is the built-in self-test (BIST) status register. Each bit is the BIST result of an
+ * individual memory (per bit, 0 = pass and 1 = fail).
  */
 union cvmx_dpi_bist_status {
 	uint64_t u64;
@@ -645,6 +645,7 @@ union cvmx_dpi_bist_status {
 	struct cvmx_dpi_bist_status_cn63xx    cn68xx;
 	struct cvmx_dpi_bist_status_cn63xx    cn68xxp1;
 	struct cvmx_dpi_bist_status_cn61xx    cn70xx;
+	struct cvmx_dpi_bist_status_cn61xx    cn70xxp1;
 	struct cvmx_dpi_bist_status_s         cn78xx;
 	struct cvmx_dpi_bist_status_cn61xx    cnf71xx;
 };
@@ -684,6 +685,7 @@ union cvmx_dpi_ctl {
 	struct cvmx_dpi_ctl_s                 cn68xx;
 	struct cvmx_dpi_ctl_s                 cn68xxp1;
 	struct cvmx_dpi_ctl_cn61xx            cn70xx;
+	struct cvmx_dpi_ctl_cn61xx            cn70xxp1;
 	struct cvmx_dpi_ctl_cn61xx            cn78xx;
 	struct cvmx_dpi_ctl_cn61xx            cnf71xx;
 };
@@ -716,6 +718,7 @@ union cvmx_dpi_dmax_counts {
 	struct cvmx_dpi_dmax_counts_s         cn68xx;
 	struct cvmx_dpi_dmax_counts_s         cn68xxp1;
 	struct cvmx_dpi_dmax_counts_s         cn70xx;
+	struct cvmx_dpi_dmax_counts_s         cn70xxp1;
 	struct cvmx_dpi_dmax_counts_s         cn78xx;
 	struct cvmx_dpi_dmax_counts_s         cnf71xx;
 };
@@ -747,6 +750,7 @@ union cvmx_dpi_dmax_dbell {
 	struct cvmx_dpi_dmax_dbell_s          cn68xx;
 	struct cvmx_dpi_dmax_dbell_s          cn68xxp1;
 	struct cvmx_dpi_dmax_dbell_s          cn70xx;
+	struct cvmx_dpi_dmax_dbell_s          cn70xxp1;
 	struct cvmx_dpi_dmax_dbell_s          cn78xx;
 	struct cvmx_dpi_dmax_dbell_s          cnf71xx;
 };
@@ -778,6 +782,7 @@ union cvmx_dpi_dmax_err_rsp_status {
 	struct cvmx_dpi_dmax_err_rsp_status_s cn68xx;
 	struct cvmx_dpi_dmax_err_rsp_status_s cn68xxp1;
 	struct cvmx_dpi_dmax_err_rsp_status_s cn70xx;
+	struct cvmx_dpi_dmax_err_rsp_status_s cn70xxp1;
 	struct cvmx_dpi_dmax_err_rsp_status_s cn78xx;
 	struct cvmx_dpi_dmax_err_rsp_status_s cnf71xx;
 };
@@ -866,6 +871,7 @@ union cvmx_dpi_dmax_ibuff_saddr {
 	} cn68xx;
 	struct cvmx_dpi_dmax_ibuff_saddr_cn68xx cn68xxp1;
 	struct cvmx_dpi_dmax_ibuff_saddr_cn61xx cn70xx;
+	struct cvmx_dpi_dmax_ibuff_saddr_cn61xx cn70xxp1;
 	struct cvmx_dpi_dmax_ibuff_saddr_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t idle                         : 1;  /**< DMA request queue is idle. When asserted, the associated request queue is idle. */
@@ -877,8 +883,8 @@ union cvmx_dpi_dmax_ibuff_saddr {
 	uint64_t saddr                        : 35; /**< Starting address. The 128-byte aligned starting or chunk address. SADDR is address bit
                                                          <41:7> of the starting instructions address. When new chunks are fetched by the hardware,
                                                          SADDR is updated to reflect the address of the current chunk. A write to SADDR resets both
-                                                         the queue's doorbell (DPI_DMA(0..7)_COUNTS[DBELL) and its tail pointer
-                                                         (DPI_DMA(0..7)_NADDR[ADDR]). */
+                                                         the queue's doorbell (DPI_DMA()_COUNTS[DBELL) and its tail pointer
+                                                         (DPI_DMA()_NADDR[ADDR]). */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -914,6 +920,7 @@ union cvmx_dpi_dmax_iflight {
 	struct cvmx_dpi_dmax_iflight_s        cn68xx;
 	struct cvmx_dpi_dmax_iflight_s        cn68xxp1;
 	struct cvmx_dpi_dmax_iflight_s        cn70xx;
+	struct cvmx_dpi_dmax_iflight_s        cn70xxp1;
 	struct cvmx_dpi_dmax_iflight_s        cn78xx;
 	struct cvmx_dpi_dmax_iflight_s        cnf71xx;
 };
@@ -962,6 +969,7 @@ union cvmx_dpi_dmax_naddr {
 	} cn68xx;
 	struct cvmx_dpi_dmax_naddr_cn68xx     cn68xxp1;
 	struct cvmx_dpi_dmax_naddr_cn61xx     cn70xx;
+	struct cvmx_dpi_dmax_naddr_cn61xx     cn70xxp1;
 	struct cvmx_dpi_dmax_naddr_s          cn78xx;
 	struct cvmx_dpi_dmax_naddr_cn61xx     cnf71xx;
 };
@@ -989,6 +997,7 @@ union cvmx_dpi_dmax_reqbnk0 {
 	struct cvmx_dpi_dmax_reqbnk0_s        cn68xx;
 	struct cvmx_dpi_dmax_reqbnk0_s        cn68xxp1;
 	struct cvmx_dpi_dmax_reqbnk0_s        cn70xx;
+	struct cvmx_dpi_dmax_reqbnk0_s        cn70xxp1;
 	struct cvmx_dpi_dmax_reqbnk0_s        cn78xx;
 	struct cvmx_dpi_dmax_reqbnk0_s        cnf71xx;
 };
@@ -1016,6 +1025,7 @@ union cvmx_dpi_dmax_reqbnk1 {
 	struct cvmx_dpi_dmax_reqbnk1_s        cn68xx;
 	struct cvmx_dpi_dmax_reqbnk1_s        cn68xxp1;
 	struct cvmx_dpi_dmax_reqbnk1_s        cn70xx;
+	struct cvmx_dpi_dmax_reqbnk1_s        cn70xxp1;
 	struct cvmx_dpi_dmax_reqbnk1_s        cn78xx;
 	struct cvmx_dpi_dmax_reqbnk1_s        cnf71xx;
 };
@@ -1039,10 +1049,10 @@ union cvmx_dpi_dmax_reqq_ctl {
 	uint64_t reserved_2_7                 : 6;
 	uint64_t ld_cmd                       : 2;  /**< When DPI issues a load command to the L2C that is to be cached, this field select the type
                                                          of load command to use:
-                                                         0 = LDD.
-                                                         1 = LDI.
-                                                         2 = LDE.
-                                                         3 = LDY. */
+                                                         0x0 = LDD.
+                                                         0x1 = LDI.
+                                                         0x2 = LDE.
+                                                         0x3 = LDY. */
 #else
 	uint64_t ld_cmd                       : 2;
 	uint64_t reserved_2_7                 : 6;
@@ -1082,23 +1092,23 @@ union cvmx_dpi_dma_control {
                                                          fairness. */
 	uint64_t commit_mode                  : 1;  /**< DMA Engine Commit Mode
 
-                                                         When COMMIT_MODE=0, DPI considers an instruction
+                                                         When COMMIT_MODE=1, DPI considers an instruction
                                                          complete when the HW internally generates the
                                                          final write for the current instruction.
 
-                                                         When COMMIT_MODE=1, DPI additionally waits for
+                                                         When COMMIT_MODE=0, DPI additionally waits for
                                                          the final write to reach the interface coherency
                                                          point to declare the instructions complete.
 
-                                                         Please note: when COMMIT_MODE == 0, DPI may not
+                                                         Please note: when COMMIT_MODE == 1, DPI may not
                                                          follow the HRM ordering rules.
 
                                                          DPI hardware performance may be better with
-                                                         COMMIT_MODE == 0 than with COMMIT_MODE == 1 due
+                                                         COMMIT_MODE == 1 than with COMMIT_MODE == 0 due
                                                          to the relaxed ordering rules.
 
                                                          If the HRM ordering rules are required, set
-                                                         COMMIT_MODE == 1. */
+                                                         COMMIT_MODE == 0. */
 	uint64_t pkt_hp                       : 1;  /**< High-Priority Mode for Packet Interface.
                                                          This mode has been deprecated. */
 	uint64_t pkt_en                       : 1;  /**< Enables 1st the packet interface.
@@ -1112,7 +1122,8 @@ union cvmx_dpi_dma_control {
                                                          not be disabled while processing instructions.
                                                          When PKT_EN=1,  then DMA_ENB<5>=0.
                                                          When PKT_EN1=1, then DMA_ENB<4>=0. */
-	uint64_t reserved_34_47               : 14;
+	uint64_t reserved_35_47               : 13;
+	uint64_t ncb_tag                      : 1;  /**< Reserved. */
 	uint64_t b0_lend                      : 1;  /**< When set '1' and the DPI is in the mode to write
                                                          0 to L2C memory when a DMA is done, the address
                                                          to be written to will be treated as a Little
@@ -1142,7 +1153,8 @@ union cvmx_dpi_dma_control {
 	uint64_t o_add1                       : 1;
 	uint64_t reserved_20_32               : 13;
 	uint64_t b0_lend                      : 1;
-	uint64_t reserved_34_47               : 14;
+	uint64_t ncb_tag                      : 1;
+	uint64_t reserved_35_47               : 13;
 	uint64_t dma_enb                      : 6;
 	uint64_t reserved_54_55               : 2;
 	uint64_t pkt_en                       : 1;
@@ -1174,23 +1186,23 @@ union cvmx_dpi_dma_control {
                                                          fairness. */
 	uint64_t commit_mode                  : 1;  /**< DMA Engine Commit Mode
 
-                                                         When COMMIT_MODE=0, DPI considers an instruction
+                                                         When COMMIT_MODE=1, DPI considers an instruction
                                                          complete when the HW internally generates the
                                                          final write for the current instruction.
 
-                                                         When COMMIT_MODE=1, DPI additionally waits for
+                                                         When COMMIT_MODE=0, DPI additionally waits for
                                                          the final write to reach the interface coherency
                                                          point to declare the instructions complete.
 
-                                                         Please note: when COMMIT_MODE == 0, DPI may not
+                                                         Please note: when COMMIT_MODE == 1, DPI may not
                                                          follow the HRM ordering rules.
 
                                                          DPI hardware performance may be better with
-                                                         COMMIT_MODE == 0 than with COMMIT_MODE == 1 due
+                                                         COMMIT_MODE == 1 than with COMMIT_MODE == 0 due
                                                          to the relaxed ordering rules.
 
                                                          If the HRM ordering rules are required, set
-                                                         COMMIT_MODE == 1. */
+                                                         COMMIT_MODE == 0. */
 	uint64_t pkt_hp                       : 1;  /**< High-Priority Mode for Packet Interface.
                                                          This mode has been deprecated. */
 	uint64_t pkt_en                       : 1;  /**< Enables 1st the packet interface.
@@ -1356,23 +1368,23 @@ union cvmx_dpi_dma_control {
 	uint64_t reserved_59_63               : 5;
 	uint64_t commit_mode                  : 1;  /**< DMA Engine Commit Mode
 
-                                                         When COMMIT_MODE=0, DPI considers an instruction
+                                                         When COMMIT_MODE=1, DPI considers an instruction
                                                          complete when the HW internally generates the
                                                          final write for the current instruction.
 
-                                                         When COMMIT_MODE=1, DPI additionally waits for
+                                                         When COMMIT_MODE=0, DPI additionally waits for
                                                          the final write to reach the interface coherency
                                                          point to declare the instructions complete.
 
-                                                         Please note: when COMMIT_MODE == 0, DPI may not
+                                                         Please note: when COMMIT_MODE == 1, DPI may not
                                                          follow the HRM ordering rules.
 
                                                          DPI hardware performance may be better with
-                                                         COMMIT_MODE == 0 than with COMMIT_MODE == 1 due
+                                                         COMMIT_MODE == 1 than with COMMIT_MODE == 0 due
                                                          to the relaxed ordering rules.
 
                                                          If the HRM ordering rules are required, set
-                                                         COMMIT_MODE == 1. */
+                                                         COMMIT_MODE == 0. */
 	uint64_t pkt_hp                       : 1;  /**< High-Priority Mode for Packet Interface.
                                                          Engine 5 will be serviced more frequently to
                                                          deliver more bandwidth to packet interface.
@@ -1438,6 +1450,7 @@ union cvmx_dpi_dma_control {
 	struct cvmx_dpi_dma_control_cn61xx    cn68xx;
 	struct cvmx_dpi_dma_control_cn63xx    cn68xxp1;
 	struct cvmx_dpi_dma_control_cn61xx    cn70xx;
+	struct cvmx_dpi_dma_control_cn61xx    cn70xxp1;
 	struct cvmx_dpi_dma_control_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
@@ -1445,13 +1458,13 @@ union cvmx_dpi_dma_control {
                                                          hardware detects that particular engines are not able to make requests to an interface,
                                                          the hardware will periodically trade-off throughput for fairness. */
 	uint64_t commit_mode                  : 1;  /**< DMA engine commit mode.
-                                                         When COMMIT_MODE=0, DPI considers an instruction complete when the hardware internally
+                                                         When COMMIT_MODE=1, DPI considers an instruction complete when the hardware internally
                                                          generates the final write for the current instruction.
-                                                         When COMMIT_MODE=1, DPI additionally waits for the final write to reach the interface
+                                                         When COMMIT_MODE=0, DPI additionally waits for the final write to reach the interface
                                                          coherency point to declare the instructions complete.
-                                                         Please note: when COMMIT_MODE == 0, DPI may not follow the HRM ordering rules. DPI
-                                                         hardware performance may be better with COMMIT_MODE == 0 than with COMMIT_MODE == 1 due to
-                                                         the relaxed ordering rules. If the HRM ordering rules are required, set COMMIT_MODE == 1. */
+                                                         When COMMIT_MODE=1, DPI may not follow the HRM ordering rules. DPI
+                                                         hardware performance may be better with COMMIT_MODE=1 than with COMMIT_MODE=0 due to
+                                                         the relaxed ordering rules. If the HRM ordering rules are required, set COMMIT_MODE=0. */
 	uint64_t reserved_57_57               : 1;
 	uint64_t pkt_en                       : 1;  /**< Enables the packet interface. When the packet interface is enabled, engines 4 and 5 are
                                                          used for packets and are not available for DMA. When PKT_EN=1, then DMA_ENB<5>=0 and
@@ -1460,26 +1473,26 @@ union cvmx_dpi_dma_control {
 	uint64_t dma_enb                      : 6;  /**< DMA engine enable. Enables the operation of the DMA engine. After being enabled an engine
                                                          should not be disabled while processing instructions.
                                                          When PKT_EN=1, then DMA_ENB<5>=0 and DMA_ENB<4>=0. */
-	uint64_t reserved_34_47               : 14;
+	uint64_t reserved_35_47               : 13;
+	uint64_t ncb_tag                      : 1;  /**< Reserved. */
 	uint64_t b0_lend                      : 1;  /**< Little-endian. When set to 1 and the DPI is in the mode to write 0 to L2C when a DMA
                                                          transaction is done, the address to be written is treated as a little-endian address. */
-	uint64_t ldwb                         : 1;  /**< Load Dont Write Back
-                                                         When set, the HW will be able to issue LDWB commands to the cache.  As
-                                                         a result the line will not be written back when replaced.  When clear,
-                                                         the HW will issue regular load commands to the cache which will cause
-                                                         the line to be written back before being replaced. */
-	uint64_t aura_ichk                    : 12; /**< The AURA that the Instruction Chunk for DMA operations page will be
-                                                         returned to when freed. */
+	uint64_t ldwb                         : 1;  /**< Load don't write back. When set, the hardware is able to issue LDWB commands to the cache.
+                                                         As a result, the line will not be written back when replaced. When clear, the hardware
+                                                         issues regular load commands to the cache which cause the line to be written back before
+                                                         being replaced. */
+	uint64_t aura_ichk                    : 12; /**< AURA instruction chunk. The AURA that the instruction chunk for DMA operations page will
+                                                         be returned to when freed. */
 	uint64_t o_add1                       : 1;  /**< Add one.
-                                                         1 = add 1 to the SLI SLI_DMA*_CNT DMA counters
-                                                         0 = the number of bytes in the DMA transfer is added to SLI_DMA*_CNT. */
+                                                         0 = The number of bytes in the DMA transfer is added to SLI_DMA()_CNT.
+                                                         1 = Add 1 to the SLI_DMA()_CNT DMA counters. */
 	uint64_t o_ro                         : 1;  /**< Relaxed ordering mode for DMA transactions */
 	uint64_t o_ns                         : 1;  /**< No snoop. */
 	uint64_t o_es                         : 2;  /**< Endian swap mode for DMA.
-                                                         0 = pass-through mode (no swap)
-                                                         1 = 64-bit byte-swap mode [ABCD_EFGH] -> [HGFE_DCBA]
-                                                         2 = 32-bit byte-swap mode [ABCD_EFGH] -> [DCBA_HGFE]
-                                                         3 = 32-bit exchange mode [ABCD_EFGH] -> [EFGH_ABCD] */
+                                                         0 = pass-through mode (no swap).
+                                                         1 = 64-bit byte-swap mode [ABCD_EFGH] -> [HGFE_DCBA].
+                                                         2 = 32-bit byte-swap mode [ABCD_EFGH] -> [DCBA_HGFE].
+                                                         3 = 32-bit exchange mode [ABCD_EFGH] -> [EFGH_ABCD]. */
 	uint64_t o_mode                       : 1;  /**< Select PCI_POINTER mode.
                                                          0 = DPTR format 1 is used. Use register values for address; use pointer values for ES, NS,
                                                          RO.
@@ -1496,7 +1509,8 @@ union cvmx_dpi_dma_control {
 	uint64_t aura_ichk                    : 12;
 	uint64_t ldwb                         : 1;
 	uint64_t b0_lend                      : 1;
-	uint64_t reserved_34_47               : 14;
+	uint64_t ncb_tag                      : 1;
+	uint64_t reserved_35_47               : 13;
 	uint64_t dma_enb                      : 6;
 	uint64_t reserved_54_55               : 2;
 	uint64_t pkt_en                       : 1;
@@ -1540,6 +1554,7 @@ union cvmx_dpi_dma_engx_en {
 	struct cvmx_dpi_dma_engx_en_s         cn68xx;
 	struct cvmx_dpi_dma_engx_en_s         cn68xxp1;
 	struct cvmx_dpi_dma_engx_en_s         cn70xx;
+	struct cvmx_dpi_dma_engx_en_s         cn70xxp1;
 	struct cvmx_dpi_dma_engx_en_s         cn78xx;
 	struct cvmx_dpi_dma_engx_en_s         cnf71xx;
 };
@@ -1573,6 +1588,7 @@ union cvmx_dpi_dma_ppx_cnt {
 	struct cvmx_dpi_dma_ppx_cnt_s         cn61xx;
 	struct cvmx_dpi_dma_ppx_cnt_s         cn68xx;
 	struct cvmx_dpi_dma_ppx_cnt_s         cn70xx;
+	struct cvmx_dpi_dma_ppx_cnt_s         cn70xxp1;
 	struct cvmx_dpi_dma_ppx_cnt_s         cn78xx;
 	struct cvmx_dpi_dma_ppx_cnt_s         cnf71xx;
 };
@@ -1586,7 +1602,7 @@ union cvmx_dpi_dma_pp_int {
 	struct cvmx_dpi_dma_pp_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t complete                     : 48; /**< DPI DMA per-core instruction completion interrupt.  See DPI_DMA_PP(0..47)_CNT. */
+	uint64_t complete                     : 48; /**< DPI DMA per-core instruction completion interrupt. See DPI_DMA_PP()_CNT. */
 #else
 	uint64_t complete                     : 48;
 	uint64_t reserved_48_63               : 16;
@@ -1609,10 +1625,10 @@ union cvmx_dpi_ecc_ctl {
 	uint64_t reserved_33_63               : 31;
 	uint64_t ram_cdis                     : 1;  /**< RDB RAM ECC correction disable. Each bit corresponds to a different RAM. */
 	uint64_t reserved_17_31               : 15;
-	uint64_t ram_flip1                    : 1;  /**< Flip syndrome bits on write. Flip syndrome bits <1> on writes to the corresponding RDB ram
+	uint64_t ram_flip1                    : 1;  /**< Flip syndrome bits on write. Flip syndrome bits <1> on writes to the corresponding RDB RAM
                                                          to test single-bit or double-bit error handling. */
 	uint64_t reserved_1_15                : 15;
-	uint64_t ram_flip0                    : 1;  /**< Flip syndrome bits on write. Flip syndrome bits <0> on writes to the corresponding RDB ram
+	uint64_t ram_flip0                    : 1;  /**< Flip syndrome bits on write. Flip syndrome bits <0> on writes to the corresponding RDB RAM
                                                          to test single-bit or double-bit error handling. */
 #else
 	uint64_t ram_flip0                    : 1;
@@ -1631,18 +1647,49 @@ typedef union cvmx_dpi_ecc_ctl cvmx_dpi_ecc_ctl_t;
  * cvmx_dpi_ecc_int
  *
  * This register contains ECC error interrupt summary bits.
- *
+ * INTERNAL:
+ * RAM[14] = dpi.pnl.pkt.sli_pkt_msix.msix_vfaddr
+ * RAM[13] = dpi.pnl.pkt.sli_pkt_msix.msix_vfdata
+ * RAM[12] = dpi.pnl.pkt.sli_pkt_csr.pcsr_in_done
+ * RAM[11] = dpi.pnl.pkt.sli_pkt_csr.pcsr_instr_mem
+ * RAM[10] = dpi.pnl.pkt.sli_pkt_csr.pcsr_pout_size
+ * RAM[ 9] = dpi.pnl.pkt.sli_pkt_csr.pcsr_slist
+ * RAM[ 8] = dpi.pnl.pkt.sli_pkt_csr.pout_int
+ * RAM[ 7] = dpi.pnl.pkt.sli_pkt_csr.pout_signal
+ * RAM[ 6] = dpi.pnl.pkt.sli_pkt_pof.sli_pkt_poi.poi_fifo
+ * RAM[ 5] = dpi.pnl.pkt.sli_pkt_pof.sli_pkt_psf.psf_fifo
+ * RAM[ 4] = dpi.pnl.pkt.sli_pkt_pof.sli_pkt_pdf.pdf_fifo
+ * RAM[ 3] = dpi.pnl.pkt.sli_pkt_pop.sli_pkt_pbn.pbn_fifo
+ * RAM[ 2] = dpi.pnl.pkt.sli_pkt_pop.sli_pkt_pfp.pfp_fifo
+ * RAM[ 1] = dpi.pnl.pkt.sli_pkt_pop.pop_fifos.pop_mem1
+ * RAM[ 1] = dpi.pnl.pkt.sli_pkt_pop.pop_fifos.pop_mem0
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk0a
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk0b
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk1a
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk1b
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk3a
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk3b
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk4a
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk4b
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk6a
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk6b
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk7a
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk7b
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk9a
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk9b
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk10a
+ * RAM[ 0] = dpi.dma.rdb.buff.bnk10b
  */
 union cvmx_dpi_ecc_int {
 	uint64_t u64;
 	struct cvmx_dpi_ecc_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_47_63               : 17;
-	uint64_t ram_sbe                      : 15; /**< Set when a single-bit error is detected in the corresponding ram. Throws
-                                                         DPI_INTSN_E::DPI_ERR_RAM_SBE. */
+	uint64_t ram_sbe                      : 15; /**< Set when a single-bit error is detected in the corresponding RAM. Throws
+                                                         DPI_INTSN_E::DPI_ERR_RAM_SBE(). */
 	uint64_t reserved_15_31               : 17;
-	uint64_t ram_dbe                      : 15; /**< Set when a double-bit error is detected in the corresponding ram. Throws
-                                                         DPI_INTSN_E::DPI_ERR_RAM_DBE. */
+	uint64_t ram_dbe                      : 15; /**< Set when a double-bit error is detected in the corresponding RAM. Throws
+                                                         DPI_INTSN_E::DPI_ERR_RAM_DBE(). */
 #else
 	uint64_t ram_dbe                      : 15;
 	uint64_t reserved_15_31               : 17;
@@ -1664,6 +1711,33 @@ typedef union cvmx_dpi_ecc_int cvmx_dpi_ecc_int_t;
 union cvmx_dpi_engx_buf {
 	uint64_t u64;
 	struct cvmx_dpi_engx_buf_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_38_63               : 26;
+	uint64_t compblks                     : 6;  /**< Computed engine block size */
+	uint64_t reserved_10_31               : 22;
+	uint64_t base                         : 6;  /**< The base address in 512B blocks of the engine fifo */
+	uint64_t blks                         : 4;  /**< The size of the engine fifo
+                                                         Legal values are 0-10.
+                                                         0  = Engine is disabled
+                                                         1  = 0.5KB buffer
+                                                         2  = 1.0KB buffer
+                                                         3  = 1.5KB buffer
+                                                         4  = 2.0KB buffer
+                                                         5  = 2.5KB buffer
+                                                         6  = 3.0KB buffer
+                                                         7  = 3.5KB buffer
+                                                         8  = 4.0KB buffer
+                                                         9  = 6.0KB buffer
+                                                         10 = 8.0KB buffer */
+#else
+	uint64_t blks                         : 4;
+	uint64_t base                         : 6;
+	uint64_t reserved_10_31               : 22;
+	uint64_t compblks                     : 6;
+	uint64_t reserved_38_63               : 26;
+#endif
+	} s;
+	struct cvmx_dpi_engx_buf_cn61xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_37_63               : 27;
 	uint64_t compblks                     : 5;  /**< Computed engine block size */
@@ -1689,8 +1763,7 @@ union cvmx_dpi_engx_buf {
 	uint64_t compblks                     : 5;
 	uint64_t reserved_37_63               : 27;
 #endif
-	} s;
-	struct cvmx_dpi_engx_buf_s            cn61xx;
+	} cn61xx;
 	struct cvmx_dpi_engx_buf_cn63xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
@@ -1713,12 +1786,13 @@ union cvmx_dpi_engx_buf {
 #endif
 	} cn63xx;
 	struct cvmx_dpi_engx_buf_cn63xx       cn63xxp1;
-	struct cvmx_dpi_engx_buf_s            cn66xx;
-	struct cvmx_dpi_engx_buf_s            cn68xx;
-	struct cvmx_dpi_engx_buf_s            cn68xxp1;
-	struct cvmx_dpi_engx_buf_s            cn70xx;
+	struct cvmx_dpi_engx_buf_cn61xx       cn66xx;
+	struct cvmx_dpi_engx_buf_cn61xx       cn68xx;
+	struct cvmx_dpi_engx_buf_cn61xx       cn68xxp1;
+	struct cvmx_dpi_engx_buf_cn61xx       cn70xx;
+	struct cvmx_dpi_engx_buf_cn61xx       cn70xxp1;
 	struct cvmx_dpi_engx_buf_s            cn78xx;
-	struct cvmx_dpi_engx_buf_s            cnf71xx;
+	struct cvmx_dpi_engx_buf_cn61xx       cnf71xx;
 };
 typedef union cvmx_dpi_engx_buf cvmx_dpi_engx_buf_t;
 
@@ -1771,6 +1845,7 @@ union cvmx_dpi_info_reg {
 	struct cvmx_dpi_info_reg_s            cn68xx;
 	struct cvmx_dpi_info_reg_s            cn68xxp1;
 	struct cvmx_dpi_info_reg_s            cn70xx;
+	struct cvmx_dpi_info_reg_s            cn70xxp1;
 	struct cvmx_dpi_info_reg_s            cn78xx;
 	struct cvmx_dpi_info_reg_s            cnf71xx;
 };
@@ -1873,6 +1948,7 @@ union cvmx_dpi_int_en {
 	struct cvmx_dpi_int_en_cn63xx         cn68xx;
 	struct cvmx_dpi_int_en_cn63xx         cn68xxp1;
 	struct cvmx_dpi_int_en_s              cn70xx;
+	struct cvmx_dpi_int_en_s              cn70xxp1;
 	struct cvmx_dpi_int_en_s              cnf71xx;
 };
 typedef union cvmx_dpi_int_en cvmx_dpi_int_en_t;
@@ -2015,6 +2091,7 @@ union cvmx_dpi_int_reg {
 	struct cvmx_dpi_int_reg_cn63xx        cn68xx;
 	struct cvmx_dpi_int_reg_cn63xx        cn68xxp1;
 	struct cvmx_dpi_int_reg_s             cn70xx;
+	struct cvmx_dpi_int_reg_s             cn70xxp1;
 	struct cvmx_dpi_int_reg_s             cn78xx;
 	struct cvmx_dpi_int_reg_s             cnf71xx;
 };
@@ -2043,6 +2120,7 @@ union cvmx_dpi_ncbx_cfg {
 	struct cvmx_dpi_ncbx_cfg_s            cn66xx;
 	struct cvmx_dpi_ncbx_cfg_s            cn68xx;
 	struct cvmx_dpi_ncbx_cfg_s            cn70xx;
+	struct cvmx_dpi_ncbx_cfg_s            cn70xxp1;
 	struct cvmx_dpi_ncbx_cfg_s            cn78xx;
 	struct cvmx_dpi_ncbx_cfg_s            cnf71xx;
 };
@@ -2050,16 +2128,39 @@ typedef union cvmx_dpi_ncbx_cfg cvmx_dpi_ncbx_cfg_t;
 
 /**
  * cvmx_dpi_ncb_ctl
+ *
+ * This register chooses which NCB interface to direct traffic for internal only transactions.
+ *
  */
 union cvmx_dpi_ncb_ctl {
 	uint64_t u64;
 	struct cvmx_dpi_ncb_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
-	uint64_t prt                          : 1;  /**< Directs traffic to the specified NCB unit. */
+	uint64_t reserved_25_63               : 39;
+	uint64_t ncbsel_prt_xor_dis           : 1;  /**< Reserved. */
+	uint64_t reserved_21_23               : 3;
+	uint64_t ncbsel_zbw                   : 1;  /**< Reserved. */
+	uint64_t reserved_17_19               : 3;
+	uint64_t ncbsel_req                   : 1;  /**< Reserved. */
+	uint64_t reserved_13_15               : 3;
+	uint64_t ncbsel_dst                   : 1;  /**< Reserved. */
+	uint64_t reserved_9_11                : 3;
+	uint64_t ncbsel_src                   : 1;  /**< Reserved. */
+	uint64_t reserved_1_7                 : 7;
+	uint64_t prt                          : 1;  /**< Directs traffic to the specified NCB unit. (Pass 1 only) */
 #else
 	uint64_t prt                          : 1;
-	uint64_t reserved_1_63                : 63;
+	uint64_t reserved_1_7                 : 7;
+	uint64_t ncbsel_src                   : 1;
+	uint64_t reserved_9_11                : 3;
+	uint64_t ncbsel_dst                   : 1;
+	uint64_t reserved_13_15               : 3;
+	uint64_t ncbsel_req                   : 1;
+	uint64_t reserved_17_19               : 3;
+	uint64_t ncbsel_zbw                   : 1;
+	uint64_t reserved_21_23               : 3;
+	uint64_t ncbsel_prt_xor_dis           : 1;
+	uint64_t reserved_25_63               : 39;
 #endif
 	} s;
 	struct cvmx_dpi_ncb_ctl_s             cn78xx;
@@ -2094,6 +2195,7 @@ union cvmx_dpi_pint_info {
 	struct cvmx_dpi_pint_info_s           cn68xx;
 	struct cvmx_dpi_pint_info_s           cn68xxp1;
 	struct cvmx_dpi_pint_info_s           cn70xx;
+	struct cvmx_dpi_pint_info_s           cn70xxp1;
 	struct cvmx_dpi_pint_info_s           cn78xx;
 	struct cvmx_dpi_pint_info_s           cnf71xx;
 };
@@ -2121,6 +2223,7 @@ union cvmx_dpi_pkt_err_rsp {
 	struct cvmx_dpi_pkt_err_rsp_s         cn68xx;
 	struct cvmx_dpi_pkt_err_rsp_s         cn68xxp1;
 	struct cvmx_dpi_pkt_err_rsp_s         cn70xx;
+	struct cvmx_dpi_pkt_err_rsp_s         cn70xxp1;
 	struct cvmx_dpi_pkt_err_rsp_s         cn78xx;
 	struct cvmx_dpi_pkt_err_rsp_s         cnf71xx;
 };
@@ -2151,6 +2254,7 @@ union cvmx_dpi_req_err_rsp {
 	struct cvmx_dpi_req_err_rsp_s         cn68xx;
 	struct cvmx_dpi_req_err_rsp_s         cn68xxp1;
 	struct cvmx_dpi_req_err_rsp_s         cn70xx;
+	struct cvmx_dpi_req_err_rsp_s         cn70xxp1;
 	struct cvmx_dpi_req_err_rsp_s         cn78xx;
 	struct cvmx_dpi_req_err_rsp_s         cnf71xx;
 };
@@ -2179,6 +2283,7 @@ union cvmx_dpi_req_err_rsp_en {
 	struct cvmx_dpi_req_err_rsp_en_s      cn68xx;
 	struct cvmx_dpi_req_err_rsp_en_s      cn68xxp1;
 	struct cvmx_dpi_req_err_rsp_en_s      cn70xx;
+	struct cvmx_dpi_req_err_rsp_en_s      cn70xxp1;
 	struct cvmx_dpi_req_err_rsp_en_s      cn78xx;
 	struct cvmx_dpi_req_err_rsp_en_s      cnf71xx;
 };
@@ -2210,6 +2315,7 @@ union cvmx_dpi_req_err_rst {
 	struct cvmx_dpi_req_err_rst_s         cn68xx;
 	struct cvmx_dpi_req_err_rst_s         cn68xxp1;
 	struct cvmx_dpi_req_err_rst_s         cn70xx;
+	struct cvmx_dpi_req_err_rst_s         cn70xxp1;
 	struct cvmx_dpi_req_err_rst_s         cn78xx;
 	struct cvmx_dpi_req_err_rst_s         cnf71xx;
 };
@@ -2239,6 +2345,7 @@ union cvmx_dpi_req_err_rst_en {
 	struct cvmx_dpi_req_err_rst_en_s      cn68xx;
 	struct cvmx_dpi_req_err_rst_en_s      cn68xxp1;
 	struct cvmx_dpi_req_err_rst_en_s      cn70xx;
+	struct cvmx_dpi_req_err_rst_en_s      cn70xxp1;
 	struct cvmx_dpi_req_err_rst_en_s      cn78xx;
 	struct cvmx_dpi_req_err_rst_en_s      cnf71xx;
 };
@@ -2281,6 +2388,7 @@ union cvmx_dpi_req_err_skip_comp {
 	struct cvmx_dpi_req_err_skip_comp_s   cn68xx;
 	struct cvmx_dpi_req_err_skip_comp_s   cn68xxp1;
 	struct cvmx_dpi_req_err_skip_comp_s   cn70xx;
+	struct cvmx_dpi_req_err_skip_comp_s   cn70xxp1;
 	struct cvmx_dpi_req_err_skip_comp_s   cn78xx;
 	struct cvmx_dpi_req_err_skip_comp_s   cnf71xx;
 };
@@ -2308,6 +2416,7 @@ union cvmx_dpi_req_gbl_en {
 	struct cvmx_dpi_req_gbl_en_s          cn68xx;
 	struct cvmx_dpi_req_gbl_en_s          cn68xxp1;
 	struct cvmx_dpi_req_gbl_en_s          cn70xx;
+	struct cvmx_dpi_req_gbl_en_s          cn70xxp1;
 	struct cvmx_dpi_req_gbl_en_s          cn78xx;
 	struct cvmx_dpi_req_gbl_en_s          cnf71xx;
 };
@@ -2322,6 +2431,112 @@ typedef union cvmx_dpi_req_gbl_en cvmx_dpi_req_gbl_en_t;
 union cvmx_dpi_sli_prtx_cfg {
 	uint64_t u64;
 	struct cvmx_dpi_sli_prtx_cfg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_29_63               : 35;
+	uint64_t ncbsel                       : 1;  /**< Reserved. */
+	uint64_t reserved_25_27               : 3;
+	uint64_t halt                         : 1;  /**< When set, HALT indicates that the MAC has detected
+                                                         a reset condition. No further instructions that
+                                                         reference the MAC from any instruction Q will be
+                                                         issued until the MAC comes out of reset and HALT
+                                                         is cleared in SLI_CTL_PORTx[DIS_PORT]. */
+	uint64_t qlm_cfg                      : 4;  /**< QLM_CFG is a function of MIO_QLMx_CFG[QLM_CFG]
+                                                         QLM_CFG may contain values that are not normally
+                                                         used for DMA and/or packet operations.
+                                                         QLM_CFG does not indicate if a port is disabled.
+                                                         MIO_QLMx_CFG can be used for more complete QLM
+                                                         configuration information.
+                                                         0000 = MAC is PCIe 1x4 (QLM) or 1x2 (DLM)
+                                                         0001 = MAC is PCIe 2x1 (DLM only)
+                                                         0010 = MAC is SGMII
+                                                         0011 = MAC is XAUI
+                                                         all other encodings are RESERVED */
+	uint64_t reserved_17_19               : 3;
+	uint64_t rd_mode                      : 1;  /**< Read Mode
+                                                         0=Exact Read Mode
+                                                           If the port is a PCIe port, the HW reads on a
+                                                           4B granularity.  In this mode, the HW may break
+                                                           a given read into 3 operations to satisify
+                                                           PCIe rules.
+                                                           If the port is a SRIO port, the HW follows the
+                                                           SRIO read rules from the SRIO specification and
+                                                            only issues 32*n, 16, and 8 byte  operations
+                                                            on the SRIO bus.
+                                                         1=Block Mode
+                                                           The HW will read more data than requested in
+                                                           order to minimize the number of operations
+                                                           necessary to complete the operation.
+                                                           The memory region must be memory like. */
+	uint64_t reserved_14_15               : 2;
+	uint64_t molr                         : 6;  /**< Max Outstanding Load Requests
+                                                         Limits the number of oustanding load requests on
+                                                         the port by restricting the number of tags
+                                                         used by the SLI to track load responses.  This
+                                                         value can range from 1 to 32 depending on the MAC
+                                                         type and number of lanes.
+                                                         MAC == PCIe:           Max is 32
+                                                         MAC == sRio / 4 lanes: Max is 32
+                                                         MAC == sRio / 2 lanes: Max is 16
+                                                         MAC == sRio / 1 lane:  Max is  8
+                                                         Reset value is computed based on the MAC config.
+                                                         Setting MOLR to a value of 0 will halt all read
+                                                         traffic to the port.  There are no restrictions
+                                                         on when this value can be changed. */
+	uint64_t mps_lim                      : 1;  /**< MAC memory space write requests cannot cross the
+                                                         (naturally-aligned) MPS boundary.
+                                                         When clear, DPI is allowed to issue a MAC memory
+                                                         space read that crosses the naturally-aligned
+                                                         boundary of size defined by MPS. (DPI will still
+                                                         only cross the boundary when it would eliminate a
+                                                         write by doing so.)
+                                                         When set, DPI will never issue a MAC memory space
+                                                         write that crosses the naturally-aligned boundary
+                                                         of size defined by MPS. */
+	uint64_t reserved_5_6                 : 2;
+	uint64_t mps                          : 1;  /**< Max Payload Size
+                                                                 0 = 128B
+                                                                 1 = 256B
+                                                         For PCIe MACs, this MPS size must not exceed
+                                                               the size selected by PCIE*_CFG030[MPS].
+                                                         For sRIO MACs, all MPS values are allowed. */
+	uint64_t mrrs_lim                     : 1;  /**< MAC memory space read requests cannot cross the
+                                                         (naturally-aligned) MRRS boundary.
+                                                         When clear, DPI is allowed to issue a MAC memory
+                                                         space read that crosses the naturally-aligned
+                                                         boundary of size defined by MRRS. (DPI will still
+                                                         only cross the boundary when it would eliminate a
+                                                         read by doing so.)
+                                                         When set, DPI will never issue a MAC memory space
+                                                         read that crosses the naturally-aligned boundary
+                                                         of size defined by MRRS. */
+	uint64_t reserved_2_2                 : 1;
+	uint64_t mrrs                         : 2;  /**< Max Read Request Size
+                                                                 0 = 128B
+                                                                 1 = 256B
+                                                                 2 = 512B
+                                                                 3 = 1024B
+                                                         For PCIe MACs, this MRRS size must not exceed
+                                                               the size selected by PCIE*_CFG030[MRRS].
+                                                         For sRIO MACs, this MRRS size must be <= 256B. */
+#else
+	uint64_t mrrs                         : 2;
+	uint64_t reserved_2_2                 : 1;
+	uint64_t mrrs_lim                     : 1;
+	uint64_t mps                          : 1;
+	uint64_t reserved_5_6                 : 2;
+	uint64_t mps_lim                      : 1;
+	uint64_t molr                         : 6;
+	uint64_t reserved_14_15               : 2;
+	uint64_t rd_mode                      : 1;
+	uint64_t reserved_17_19               : 3;
+	uint64_t qlm_cfg                      : 4;
+	uint64_t halt                         : 1;
+	uint64_t reserved_25_27               : 3;
+	uint64_t ncbsel                       : 1;
+	uint64_t reserved_29_63               : 35;
+#endif
+	} s;
+	struct cvmx_dpi_sli_prtx_cfg_cn61xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
 	uint64_t halt                         : 1;  /**< When set, HALT indicates that the MAC has detected
@@ -2422,8 +2637,7 @@ union cvmx_dpi_sli_prtx_cfg {
 	uint64_t halt                         : 1;
 	uint64_t reserved_25_63               : 39;
 #endif
-	} s;
-	struct cvmx_dpi_sli_prtx_cfg_s        cn61xx;
+	} cn61xx;
 	struct cvmx_dpi_sli_prtx_cfg_cn63xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
@@ -2519,7 +2733,7 @@ union cvmx_dpi_sli_prtx_cfg {
 #endif
 	} cn63xx;
 	struct cvmx_dpi_sli_prtx_cfg_cn63xx   cn63xxp1;
-	struct cvmx_dpi_sli_prtx_cfg_s        cn66xx;
+	struct cvmx_dpi_sli_prtx_cfg_cn61xx   cn66xx;
 	struct cvmx_dpi_sli_prtx_cfg_cn63xx   cn68xx;
 	struct cvmx_dpi_sli_prtx_cfg_cn63xx   cn68xxp1;
 	struct cvmx_dpi_sli_prtx_cfg_cn70xx {
@@ -2537,7 +2751,7 @@ union cvmx_dpi_sli_prtx_cfg {
                                                          4B granularity.  In this mode, the HW may break
                                                          a given read into 3 operations to satisify
                                                          PCIe rules.
-                                                         If the port is a SRIO port, the HW follows the
+                                                         INTERNAL: If the port is a SRIO port, the HW follows the
                                                          SRIO read rules from the SRIO specification and
                                                          only issues 32*n, 16, and 8 byte  operations
                                                          on the SRIO bus.
@@ -2576,7 +2790,7 @@ union cvmx_dpi_sli_prtx_cfg {
                                                          1 = 256B
                                                          For PCIe MACs, this MPS size must not exceed
                                                          the size selected by PCIE*_CFG030[MPS].
-                                                         For sRIO MACs, all MPS values are allowed. */
+                                                         INTERNAL: For sRIO MACs, all MPS values are allowed. */
 	uint64_t mrrs_lim                     : 1;  /**< MAC memory space read requests cannot cross the
                                                          (naturally-aligned) MRRS boundary.
                                                          When clear, DPI is allowed to issue a MAC memory
@@ -2595,7 +2809,7 @@ union cvmx_dpi_sli_prtx_cfg {
                                                          3 = 1024B
                                                          For PCIe MACs, this MRRS size must not exceed
                                                          the size selected by PCIE*_CFG030[MRRS].
-                                                         For sRIO MACs, this MRRS size must be <= 256B. */
+                                                         INTERNAL: For sRIO MACs, this MRRS size must be <= 256B. */
 #else
 	uint64_t mrrs                         : 2;
 	uint64_t reserved_2_2                 : 1;
@@ -2611,8 +2825,78 @@ union cvmx_dpi_sli_prtx_cfg {
 	uint64_t reserved_25_63               : 39;
 #endif
 	} cn70xx;
-	struct cvmx_dpi_sli_prtx_cfg_cn63xx   cn78xx;
-	struct cvmx_dpi_sli_prtx_cfg_s        cnf71xx;
+	struct cvmx_dpi_sli_prtx_cfg_cn70xx   cn70xxp1;
+	struct cvmx_dpi_sli_prtx_cfg_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_29_63               : 35;
+	uint64_t ncbsel                       : 1;  /**< Reserved. */
+	uint64_t reserved_25_27               : 3;
+	uint64_t halt                         : 1;  /**< When set, HALT indicates that the MAC has detected a reset condition. No further
+                                                         instructions that reference the MAC from any instruction queue will be issued until the
+                                                         MAC comes out of reset and HALT is cleared in SLI_CTL_PORT()[DIS_PORT]. */
+	uint64_t reserved_21_23               : 3;
+	uint64_t qlm_cfg                      : 1;  /**< Read only copy of the QLM CFG pin.
+                                                         0 = MAC is DPI.
+                                                         1 = Reserved.
+                                                         Since QLM_CFG is simply a copy of the QLM CFG pins, it could reflect values that are not
+                                                         normal for DMA or packet operations. QLM_CFG does not indicate if a port is disabled.
+                                                         GSER()_CFG can be used for more complete QLM configuration information. */
+	uint64_t reserved_17_19               : 3;
+	uint64_t rd_mode                      : 1;  /**< Read mode.
+                                                         0 = Exact read mode. The hardware reads on a four-byte granularity. In this mode, the
+                                                         hardware may break a given read into 3 operations to satisfy DPI rules.
+                                                         1 = Block mode. The hardware reads more data than requested in order to minimize the
+                                                         number of operations necessary to complete the operation. The memory region must be memory
+                                                         like. */
+	uint64_t reserved_14_15               : 2;
+	uint64_t molr                         : 6;  /**< Maximum outstanding load requests. Limits the number of outstanding load requests on the
+                                                         port by restricting the number of tags used by the SLI to track load responses. This value
+                                                         can range from 1 to 32. Setting MOLR to a value of 0 halts all read traffic to the port.
+                                                         There are no restrictions on when this value can be changed. */
+	uint64_t mps_lim                      : 1;  /**< MAC memory space write requests cannot cross the (naturally-aligned) MPS boundary.
+                                                         When clear, DPI is allowed to issue a MAC memory- space read that crosses the naturally-
+                                                         aligned boundary of size defined by MPS. (DPI will still only cross the boundary when it
+                                                         would eliminate a write by doing so.)
+                                                         When set, DPI will never issue a MAC memory space write that crosses the naturally-aligned
+                                                         boundary of size defined by MPS. */
+	uint64_t reserved_5_6                 : 2;
+	uint64_t mps                          : 1;  /**< Maximum payload size.
+                                                         0 = 128B.
+                                                         1 = 256B.
+                                                         The MPS size must not exceed the size selected by PCIE*_CFG030[MPS]. */
+	uint64_t mrrs_lim                     : 1;  /**< MAC memory space read requests cannot cross the (naturally-aligned) MRRS boundary.
+                                                         When clear, DPI is allowed to issue a MAC memory-space read that crosses the naturally-
+                                                         aligned boundary of size defined by MRRS. (DPI will still only cross the boundary when it
+                                                         would eliminate a read by doing so.)
+                                                         When set, DPI will never issue a MAC memory space read that crosses the naturally-aligned
+                                                         boundary of size defined by MRRS. */
+	uint64_t reserved_2_2                 : 1;
+	uint64_t mrrs                         : 2;  /**< Maximum read-request size.
+                                                         0x0 = 128B.
+                                                         0x1 = 256B.
+                                                         0x2 = 512B.
+                                                         0x3 = 1024B.
+                                                         The MRRS size must not exceed the size selected by PCIE*_CFG030[MRRS]. */
+#else
+	uint64_t mrrs                         : 2;
+	uint64_t reserved_2_2                 : 1;
+	uint64_t mrrs_lim                     : 1;
+	uint64_t mps                          : 1;
+	uint64_t reserved_5_6                 : 2;
+	uint64_t mps_lim                      : 1;
+	uint64_t molr                         : 6;
+	uint64_t reserved_14_15               : 2;
+	uint64_t rd_mode                      : 1;
+	uint64_t reserved_17_19               : 3;
+	uint64_t qlm_cfg                      : 1;
+	uint64_t reserved_21_23               : 3;
+	uint64_t halt                         : 1;
+	uint64_t reserved_25_27               : 3;
+	uint64_t ncbsel                       : 1;
+	uint64_t reserved_29_63               : 35;
+#endif
+	} cn78xx;
+	struct cvmx_dpi_sli_prtx_cfg_cn61xx   cnf71xx;
 };
 typedef union cvmx_dpi_sli_prtx_cfg cvmx_dpi_sli_prtx_cfg_t;
 
@@ -2644,6 +2928,7 @@ union cvmx_dpi_sli_prtx_err {
 	struct cvmx_dpi_sli_prtx_err_s        cn68xx;
 	struct cvmx_dpi_sli_prtx_err_s        cn68xxp1;
 	struct cvmx_dpi_sli_prtx_err_s        cn70xx;
+	struct cvmx_dpi_sli_prtx_err_s        cn70xxp1;
 	struct cvmx_dpi_sli_prtx_err_s        cn78xx;
 	struct cvmx_dpi_sli_prtx_err_s        cnf71xx;
 };
@@ -2737,6 +3022,7 @@ union cvmx_dpi_sli_prtx_err_info {
 	struct cvmx_dpi_sli_prtx_err_info_cn61xx cn68xx;
 	struct cvmx_dpi_sli_prtx_err_info_cn61xx cn68xxp1;
 	struct cvmx_dpi_sli_prtx_err_info_cn61xx cn70xx;
+	struct cvmx_dpi_sli_prtx_err_info_cn61xx cn70xxp1;
 	struct cvmx_dpi_sli_prtx_err_info_s   cn78xx;
 	struct cvmx_dpi_sli_prtx_err_info_cn61xx cnf71xx;
 };
@@ -2745,21 +3031,21 @@ typedef union cvmx_dpi_sli_prtx_err_info cvmx_dpi_sli_prtx_err_info_t;
 /**
  * cvmx_dpi_swa_q_vmid
  *
- * This register defines.
+ * Not used.
  *
  */
 union cvmx_dpi_swa_q_vmid {
 	uint64_t u64;
 	struct cvmx_dpi_swa_q_vmid_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t vmid7                        : 8;  /**< The SWA VMID for Queue 7. */
-	uint64_t vmid6                        : 8;  /**< The SWA VMID for Queue 6. */
-	uint64_t vmid5                        : 8;  /**< The SWA VMID for Queue 5. */
-	uint64_t vmid4                        : 8;  /**< The SWA VMID for Queue 4. */
-	uint64_t vmid3                        : 8;  /**< The SWA VMID for Queue 3. */
-	uint64_t vmid2                        : 8;  /**< The SWA VMID for Queue 2. */
-	uint64_t vmid1                        : 8;  /**< The SWA VMID for Queue 1. */
-	uint64_t vmid0                        : 8;  /**< The SWA VMID for Queue 0. */
+	uint64_t vmid7                        : 8;  /**< The SWA VMID for queue 7. */
+	uint64_t vmid6                        : 8;  /**< The SWA VMID for queue 6. */
+	uint64_t vmid5                        : 8;  /**< The SWA VMID for queue 5. */
+	uint64_t vmid4                        : 8;  /**< The SWA VMID for queue 4. */
+	uint64_t vmid3                        : 8;  /**< The SWA VMID for queue 3. */
+	uint64_t vmid2                        : 8;  /**< The SWA VMID for queue 2. */
+	uint64_t vmid1                        : 8;  /**< The SWA VMID for queue 1. */
+	uint64_t vmid0                        : 8;  /**< The SWA VMID for queue 0. */
 #else
 	uint64_t vmid0                        : 8;
 	uint64_t vmid1                        : 8;

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -553,20 +553,20 @@ union cvmx_sata_uahc_gbl_bistafr {
 	struct cvmx_sata_uahc_gbl_bistafr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_16_31               : 16;
-	uint32_t ncp                          : 8;  /**< Bits 7:0 of the 2nd DWORD of BIST activate FIS.
-                                                         0xF1: low transition density pattern (LTDP)
-                                                         0xB5: high transition density pattern (HTDP)
-                                                         0xAB: low frequency spectral component pattern (LFSCP)
-                                                         0x7F: simultaneous switching outputs pattern (SSOP)
-                                                         0x78: mid frequency test pattern (MFTP)
-                                                         0x4A: high frequency test pattern (HFTP)
-                                                         0x7E: low frequency test pattern (LFTP)
-                                                         Else: lone bit pattern (LBP) */
-	uint32_t pd                           : 8;  /**< Bits 23:16 of the 1st DWORD of the BIST activate FIS.
-                                                         Only the following values are supported:
-                                                         0x10: Far-end retimed
-                                                         0xC0: Far-end transmit only
-                                                         0xE0: Far-end transmit only with scrambler bypassed */
+	uint32_t ncp                          : 8;  /**< Bits 7:0 of the second DWORD of BIST activate FIS.
+                                                         0xF1 = low transition density pattern (LTDP)
+                                                         0xB5 = high transition density pattern (HTDP)
+                                                         0xAB = low frequency spectral component pattern (LFSCP)
+                                                         0x7F = simultaneous switching outputs pattern (SSOP)
+                                                         0x78 = mid frequency test pattern (MFTP)
+                                                         0x4A = high frequency test pattern (HFTP)
+                                                         0x7E = low frequency test pattern (LFTP)
+                                                         All other values = lone bit pattern (LBP) */
+	uint32_t pd                           : 8;  /**< Bits 23:16 of the first DWORD of the BIST activate FIS. Only the following values are
+                                                         supported:
+                                                         0x10 = Far-end retimed
+                                                         0xC0 = Far-end transmit only
+                                                         0xE0 = Far-end transmit only with scrambler bypassed */
 #else
 	uint32_t pd                           : 8;
 	uint32_t ncp                          : 8;
@@ -574,6 +574,7 @@ union cvmx_sata_uahc_gbl_bistafr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_bistafr_s   cn70xx;
+	struct cvmx_sata_uahc_gbl_bistafr_s   cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_bistafr cvmx_sata_uahc_gbl_bistafr_t;
 
@@ -604,9 +605,9 @@ union cvmx_sata_uahc_gbl_bistcr {
 	uint32_t sdfe                         : 1;  /**< Signal detect feature enable. */
 	uint32_t reserved_11_11               : 1;
 	uint32_t llc                          : 3;  /**< Link layer control.
-                                                         Bit 10: RPD - repeat primitive drop enable
-                                                         Bit  9: DESCRAM - descrambler enable
-                                                         Bit  8: SCRAM - scrambler enable */
+                                                         <10> = RPD - repeat primitive drop enable
+                                                         <9> = DESCRAM - descrambler enable
+                                                         <8> = SCRAM - scrambler enable */
 	uint32_t reserved_7_7                 : 1;
 	uint32_t erren                        : 1;  /**< Error enable. */
 	uint32_t flip                         : 1;  /**< Flip disparity. */
@@ -636,6 +637,7 @@ union cvmx_sata_uahc_gbl_bistcr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_bistcr_s    cn70xx;
+	struct cvmx_sata_uahc_gbl_bistcr_s    cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_bistcr cvmx_sata_uahc_gbl_bistcr_t;
 
@@ -657,6 +659,7 @@ union cvmx_sata_uahc_gbl_bistdecr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_bistdecr_s  cn70xx;
+	struct cvmx_sata_uahc_gbl_bistdecr_s  cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_bistdecr cvmx_sata_uahc_gbl_bistdecr_t;
 
@@ -678,6 +681,7 @@ union cvmx_sata_uahc_gbl_bistfctr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_bistfctr_s  cn70xx;
+	struct cvmx_sata_uahc_gbl_bistfctr_s  cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_bistfctr cvmx_sata_uahc_gbl_bistfctr_t;
 
@@ -701,6 +705,7 @@ union cvmx_sata_uahc_gbl_bistsr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_bistsr_s    cn70xx;
+	struct cvmx_sata_uahc_gbl_bistsr_s    cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_bistsr cvmx_sata_uahc_gbl_bistsr_t;
 
@@ -734,7 +739,7 @@ union cvmx_sata_uahc_gbl_cap {
 	uint32_t cccs                         : 1;  /**< Command completion coalescing support. */
 	uint32_t ems                          : 1;  /**< Enclosure management support. */
 	uint32_t sxs                          : 1;  /**< Supports external SATA. */
-	uint32_t np                           : 5;  /**< Number of ports. 0x1 = 2 ports. */
+	uint32_t np                           : 5;  /**< Number of ports. 0x1 = two ports, all other values reserved. */
 #else
 	uint32_t np                           : 5;
 	uint32_t sxs                          : 1;
@@ -760,6 +765,7 @@ union cvmx_sata_uahc_gbl_cap {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_cap_s       cn70xx;
+	struct cvmx_sata_uahc_gbl_cap_s       cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_cap cvmx_sata_uahc_gbl_cap_t;
 
@@ -791,6 +797,7 @@ union cvmx_sata_uahc_gbl_cap2 {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_cap2_s      cn70xx;
+	struct cvmx_sata_uahc_gbl_cap2_s      cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_cap2 cvmx_sata_uahc_gbl_cap2_t;
 
@@ -804,8 +811,8 @@ union cvmx_sata_uahc_gbl_ccc_ctl {
 	uint32_t u32;
 	struct cvmx_sata_uahc_gbl_ccc_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t tv                           : 16; /**< Time-out value.  Writable only when SATA_UAHC_GBL_CCC_CTL[EN] = 0. */
-	uint32_t cc                           : 8;  /**< Command completions.  Writable only when SATA_UAHC_GBL_CCC_CTL[EN] = 0. */
+	uint32_t tv                           : 16; /**< Time-out value. Writable only when EN = 0. */
+	uint32_t cc                           : 8;  /**< Command completions. Writable only when EN = 0. */
 	uint32_t intr                         : 5;  /**< Specifies the port interrupt used by the CCC feature. */
 	uint32_t reserved_1_2                 : 2;
 	uint32_t en                           : 1;  /**< CCC enable. */
@@ -818,6 +825,7 @@ union cvmx_sata_uahc_gbl_ccc_ctl {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_ccc_ctl_s   cn70xx;
+	struct cvmx_sata_uahc_gbl_ccc_ctl_s   cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_ccc_ctl cvmx_sata_uahc_gbl_ccc_ctl_t;
 
@@ -839,6 +847,7 @@ union cvmx_sata_uahc_gbl_ccc_ports {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_ccc_ports_s cn70xx;
+	struct cvmx_sata_uahc_gbl_ccc_ports_s cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_ccc_ports cvmx_sata_uahc_gbl_ccc_ports_t;
 
@@ -855,8 +864,7 @@ union cvmx_sata_uahc_gbl_ghc {
 	uint32_t ae                           : 1;  /**< AHCI enable. */
 	uint32_t reserved_2_30                : 29;
 	uint32_t ie                           : 1;  /**< Interrupt enable. */
-	uint32_t hr                           : 1;  /**< HBA reset. Writing a '1' resets the UAHC. HW will clear this bit once
-                                                         reset is complete. */
+	uint32_t hr                           : 1;  /**< HBA reset. Writing a 1 resets the UAHC. Hardware clears this bit once reset is complete. */
 #else
 	uint32_t hr                           : 1;
 	uint32_t ie                           : 1;
@@ -865,6 +873,7 @@ union cvmx_sata_uahc_gbl_ghc {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_ghc_s       cn70xx;
+	struct cvmx_sata_uahc_gbl_ghc_s       cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_ghc cvmx_sata_uahc_gbl_ghc_t;
 
@@ -910,6 +919,7 @@ union cvmx_sata_uahc_gbl_gparam1r {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_gparam1r_s  cn70xx;
+	struct cvmx_sata_uahc_gbl_gparam1r_s  cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_gparam1r cvmx_sata_uahc_gbl_gparam1r_t;
 
@@ -951,6 +961,7 @@ union cvmx_sata_uahc_gbl_gparam2r {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_gparam2r_s  cn70xx;
+	struct cvmx_sata_uahc_gbl_gparam2r_s  cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_gparam2r cvmx_sata_uahc_gbl_gparam2r_t;
 
@@ -970,6 +981,7 @@ union cvmx_sata_uahc_gbl_idr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_idr_s       cn70xx;
+	struct cvmx_sata_uahc_gbl_idr_s       cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_idr cvmx_sata_uahc_gbl_idr_t;
 
@@ -991,6 +1003,7 @@ union cvmx_sata_uahc_gbl_is {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_is_s        cn70xx;
+	struct cvmx_sata_uahc_gbl_is_s        cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_is cvmx_sata_uahc_gbl_is_t;
 
@@ -1020,6 +1033,7 @@ union cvmx_sata_uahc_gbl_oobr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_oobr_s      cn70xx;
+	struct cvmx_sata_uahc_gbl_oobr_s      cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_oobr cvmx_sata_uahc_gbl_oobr_t;
 
@@ -1034,14 +1048,14 @@ union cvmx_sata_uahc_gbl_pi {
 	struct cvmx_sata_uahc_gbl_pi_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_2_31                : 30;
-	uint32_t pi                           : 2;  /**< Ports implemented. This field is one-time writable, then becomes
-                                                         read-only. */
+	uint32_t pi                           : 2;  /**< Number of ports implemented. This field is one-time writable, then becomes read-only. */
 #else
 	uint32_t pi                           : 2;
 	uint32_t reserved_2_31                : 30;
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_pi_s        cn70xx;
+	struct cvmx_sata_uahc_gbl_pi_s        cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_pi cvmx_sata_uahc_gbl_pi_t;
 
@@ -1056,10 +1070,10 @@ union cvmx_sata_uahc_gbl_pparamr {
 	struct cvmx_sata_uahc_gbl_pparamr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_12_31               : 20;
-	uint32_t tx_mem_m                     : 1;  /**< TX FIFO memory read port type (P#_TX_MEM_MODE). */
-	uint32_t tx_mem_s                     : 1;  /**< TX FIFO memory type (P#_TX_MEM_SELECT). */
-	uint32_t rx_mem_m                     : 1;  /**< RX FIFO memory read port type (P#_RX_MEM_MODE). */
-	uint32_t rx_mem_s                     : 1;  /**< RX FIFO memory type (P#_RX_MEM_SELECT). */
+	uint32_t tx_mem_m                     : 1;  /**< TX FIFO memory read port type (Pn_TX_MEM_MODE). */
+	uint32_t tx_mem_s                     : 1;  /**< TX FIFO memory type (Pn_TX_MEM_SELECT). */
+	uint32_t rx_mem_m                     : 1;  /**< RX FIFO memory read port type (Pn_RX_MEM_MODE). */
+	uint32_t rx_mem_s                     : 1;  /**< RX FIFO memory type (Pn_RX_MEM_SELECT). */
 	uint32_t txfifo_depth                 : 4;  /**< TX FIFO depth in FIFO words. */
 	uint32_t rxfifo_depth                 : 4;  /**< RX FIFO depth in FIFO words. */
 #else
@@ -1073,6 +1087,7 @@ union cvmx_sata_uahc_gbl_pparamr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_pparamr_s   cn70xx;
+	struct cvmx_sata_uahc_gbl_pparamr_s   cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_pparamr cvmx_sata_uahc_gbl_pparamr_t;
 
@@ -1098,6 +1113,7 @@ union cvmx_sata_uahc_gbl_testr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_testr_s     cn70xx;
+	struct cvmx_sata_uahc_gbl_testr_s     cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_testr cvmx_sata_uahc_gbl_testr_t;
 
@@ -1112,13 +1128,14 @@ union cvmx_sata_uahc_gbl_timer1ms {
 	struct cvmx_sata_uahc_gbl_timer1ms_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_20_31               : 12;
-	uint32_t timv                         : 20; /**< 1ms timer value.  Writable only when SATA_UAHC_GBL_CCC_CTL[EN] is NOT set. */
+	uint32_t timv                         : 20; /**< 1ms timer value. Writable only when SATA_UAHC_GBL_CCC_CTL[EN] = 0. */
 #else
 	uint32_t timv                         : 20;
 	uint32_t reserved_20_31               : 12;
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_timer1ms_s  cn70xx;
+	struct cvmx_sata_uahc_gbl_timer1ms_s  cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_timer1ms cvmx_sata_uahc_gbl_timer1ms_t;
 
@@ -1138,6 +1155,7 @@ union cvmx_sata_uahc_gbl_versionr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_versionr_s  cn70xx;
+	struct cvmx_sata_uahc_gbl_versionr_s  cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_versionr cvmx_sata_uahc_gbl_versionr_t;
 
@@ -1159,6 +1177,7 @@ union cvmx_sata_uahc_gbl_vs {
 #endif
 	} s;
 	struct cvmx_sata_uahc_gbl_vs_s        cn70xx;
+	struct cvmx_sata_uahc_gbl_vs_s        cn70xxp1;
 };
 typedef union cvmx_sata_uahc_gbl_vs cvmx_sata_uahc_gbl_vs_t;
 
@@ -1178,6 +1197,7 @@ union cvmx_sata_uahc_px_ci {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_ci_s         cn70xx;
+	struct cvmx_sata_uahc_px_ci_s         cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_ci cvmx_sata_uahc_px_ci_t;
 
@@ -1191,7 +1211,7 @@ union cvmx_sata_uahc_px_clb {
 	uint64_t u64;
 	struct cvmx_sata_uahc_px_clb_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t clb                          : 54; /**< Command list base address. */
+	uint64_t clb                          : 54; /**< Command-list base address. */
 	uint64_t reserved_0_9                 : 10;
 #else
 	uint64_t reserved_0_9                 : 10;
@@ -1199,6 +1219,7 @@ union cvmx_sata_uahc_px_clb {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_clb_s        cn70xx;
+	struct cvmx_sata_uahc_px_clb_s        cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_clb cvmx_sata_uahc_px_clb_t;
 
@@ -1214,27 +1235,27 @@ union cvmx_sata_uahc_px_cmd {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t icc                          : 4;  /**< Interface communication control. */
 	uint32_t asp                          : 1;  /**< Aggressive slumber/partial. */
-	uint32_t alpe                         : 1;  /**< Aggressive link power management enable. */
+	uint32_t alpe                         : 1;  /**< Aggressive link-power-management enable. */
 	uint32_t dlae                         : 1;  /**< Drive LED on ATAPI enable. */
 	uint32_t atapi                        : 1;  /**< Device is ATAPI. */
 	uint32_t apste                        : 1;  /**< Automatic partial to slumber transitions enable. */
 	uint32_t fbscp                        : 1;  /**< FIS-based switching capable port. Write-once. */
 	uint32_t esp                          : 1;  /**< External SATA port. Write-once. */
-	uint32_t cpd                          : 1;  /**< Cold presence detection. Write-once. */
+	uint32_t cpd                          : 1;  /**< Cold-presence detection. Write-once. */
 	uint32_t mpsp                         : 1;  /**< Mechanical presence switch attached to port. Write-once. */
-	uint32_t hpcp                         : 1;  /**< Hot plug capable support. Write-once. */
+	uint32_t hpcp                         : 1;  /**< Hot-plug-capable support. Write-once. */
 	uint32_t pma                          : 1;  /**< Port multiplier attached. */
 	uint32_t cps                          : 1;  /**< Cold presence state. */
 	uint32_t cr                           : 1;  /**< Command list running. */
 	uint32_t fr                           : 1;  /**< FIS receive running. */
 	uint32_t mpss                         : 1;  /**< Mechanical presence switch state. */
-	uint32_t ccs                          : 5;  /**< Current command slot. */
+	uint32_t ccs                          : 5;  /**< Current-command slot. */
 	uint32_t reserved_5_7                 : 3;
-	uint32_t fre                          : 1;  /**< FIS receive enable. */
-	uint32_t clo                          : 1;  /**< Command list override. */
-	uint32_t pod                          : 1;  /**< Power on device. R/W only if CPD=1, else read only. */
-	uint32_t sud                          : 1;  /**< Spin-up device. R/W only if SATA_UAHC_GBL_CAP[SSS]=1, else read only.
-                                                         Setting this bit triggers a COMRESET initialization sequence. */
+	uint32_t fre                          : 1;  /**< FIS-receive enable. */
+	uint32_t clo                          : 1;  /**< Command-list override. */
+	uint32_t pod                          : 1;  /**< Power-on device. R/W only if CPD = 1, else read only. */
+	uint32_t sud                          : 1;  /**< Spin-up device. R/W only if SATA_UAHC_GBL_CAP[SSS] = 1, else read only. Setting this bit
+                                                         triggers a COMRESET initialization sequence. */
 	uint32_t st                           : 1;  /**< Start. */
 #else
 	uint32_t st                           : 1;
@@ -1263,6 +1284,7 @@ union cvmx_sata_uahc_px_cmd {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_cmd_s        cn70xx;
+	struct cvmx_sata_uahc_px_cmd_s        cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_cmd cvmx_sata_uahc_px_cmd_t;
 
@@ -1277,10 +1299,10 @@ union cvmx_sata_uahc_px_dmacr {
 	struct cvmx_sata_uahc_px_dmacr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_8_31                : 24;
-	uint32_t rxts                         : 4;  /**< Receive transaction size. This field is R/W when SATA_UAHC_PX_CMD[ST]=0
-                                                         and read only when SATA_UAHC_PX_CMD[ST]=1. */
-	uint32_t txts                         : 4;  /**< Transmit transaction size. This field is R/W when SATA_UAHC_PX_CMD[ST]=0
-                                                         and read only when SATA_UAHC_PX_CMD[ST]=1. */
+	uint32_t rxts                         : 4;  /**< Receive transaction size. This field is R/W when SATA_UAHC_P(0..1)_CMD[ST] = 0
+                                                         and read only when SATA_UAHC_P(0..1)_CMD[ST] = 1. */
+	uint32_t txts                         : 4;  /**< Transmit transaction size. This field is R/W when SATA_UAHC_P(0..1)_CMD[ST] = 0
+                                                         and read only when SATA_UAHC_P(0..1)_CMD[ST] = 1. */
 #else
 	uint32_t txts                         : 4;
 	uint32_t rxts                         : 4;
@@ -1288,6 +1310,7 @@ union cvmx_sata_uahc_px_dmacr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_dmacr_s      cn70xx;
+	struct cvmx_sata_uahc_px_dmacr_s      cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_dmacr cvmx_sata_uahc_px_dmacr_t;
 
@@ -1309,6 +1332,7 @@ union cvmx_sata_uahc_px_fb {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_fb_s         cn70xx;
+	struct cvmx_sata_uahc_px_fb_s         cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_fb cvmx_sata_uahc_px_fb_t;
 
@@ -1342,6 +1366,7 @@ union cvmx_sata_uahc_px_fbs {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_fbs_s        cn70xx;
+	struct cvmx_sata_uahc_px_fbs_s        cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_fbs cvmx_sata_uahc_px_fbs_t;
 
@@ -1355,25 +1380,25 @@ union cvmx_sata_uahc_px_ie {
 	uint32_t u32;
 	struct cvmx_sata_uahc_px_ie_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t cpde                         : 1;  /**< Cold port detect enable. */
-	uint32_t tfee                         : 1;  /**< Task file error enable. */
-	uint32_t hbfe                         : 1;  /**< Host bus fatal error enable. */
-	uint32_t hbde                         : 1;  /**< Host bus data error enable. */
-	uint32_t ife                          : 1;  /**< Interface fatal error enable. */
-	uint32_t infe                         : 1;  /**< Interfave non-fatal error enable. */
+	uint32_t cpde                         : 1;  /**< Cold-port-detect enable. */
+	uint32_t tfee                         : 1;  /**< Task-file-error enable. */
+	uint32_t hbfe                         : 1;  /**< Host-bus fatal-error enable. */
+	uint32_t hbde                         : 1;  /**< Host-bus data-error enable. */
+	uint32_t ife                          : 1;  /**< Interface fatal-error enable. */
+	uint32_t infe                         : 1;  /**< Interface non-fatal-error enable. */
 	uint32_t reserved_25_25               : 1;
 	uint32_t ofe                          : 1;  /**< Overflow enable. */
-	uint32_t impe                         : 1;  /**< Incorrect port multiplier enable. */
-	uint32_t prce                         : 1;  /**< PHY ready change enable. */
+	uint32_t impe                         : 1;  /**< Incorrect port-multiplier enable. */
+	uint32_t prce                         : 1;  /**< PHY-ready-change enable. */
 	uint32_t reserved_8_21                : 14;
-	uint32_t dmpe                         : 1;  /**< Device mechanical presence enable. */
-	uint32_t pce                          : 1;  /**< Port connect change enable. */
-	uint32_t dpe                          : 1;  /**< Descriptor processed enable. */
-	uint32_t ufe                          : 1;  /**< Unknown FIS interrupt enable. */
-	uint32_t sdbe                         : 1;  /**< Set device bits interrupt enable. */
-	uint32_t dse                          : 1;  /**< DMA setup FIS interrupt enable. */
-	uint32_t pse                          : 1;  /**< PIO setup FIS interrupt enable. */
-	uint32_t dhre                         : 1;  /**< Device to host register FIS interrupt enable. */
+	uint32_t dmpe                         : 1;  /**< Device mechanical-presence enable. */
+	uint32_t pce                          : 1;  /**< Port-connect-change enable. */
+	uint32_t dpe                          : 1;  /**< Descriptor-processed enable. */
+	uint32_t ufe                          : 1;  /**< Unknown-FIS-interrupt enable. */
+	uint32_t sdbe                         : 1;  /**< Set device-bits-interrupt enable. */
+	uint32_t dse                          : 1;  /**< DMA-setup FIS interrupt enable. */
+	uint32_t pse                          : 1;  /**< PIO-setup FIS interrupt enable. */
+	uint32_t dhre                         : 1;  /**< Device-to-host register FIS interrupt enable. */
 #else
 	uint32_t dhre                         : 1;
 	uint32_t pse                          : 1;
@@ -1397,6 +1422,7 @@ union cvmx_sata_uahc_px_ie {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_ie_s         cn70xx;
+	struct cvmx_sata_uahc_px_ie_s         cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_ie cvmx_sata_uahc_px_ie_t;
 
@@ -1410,25 +1436,25 @@ union cvmx_sata_uahc_px_is {
 	uint32_t u32;
 	struct cvmx_sata_uahc_px_is_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t cpds                         : 1;  /**< Cold port detect status. */
-	uint32_t tfes                         : 1;  /**< Task file error status. */
-	uint32_t hbfs                         : 1;  /**< Host bus fatal error status. */
-	uint32_t hbds                         : 1;  /**< Host bus data error status. */
-	uint32_t ifs                          : 1;  /**< Interface fatal error status. */
-	uint32_t infs                         : 1;  /**< Interfave non-fatal error status. */
+	uint32_t cpds                         : 1;  /**< Cold-port detect status. */
+	uint32_t tfes                         : 1;  /**< Task-file error status. */
+	uint32_t hbfs                         : 1;  /**< Host-bus fatal-error status. */
+	uint32_t hbds                         : 1;  /**< Host-bus data-error status. */
+	uint32_t ifs                          : 1;  /**< Interface fatal-error status. */
+	uint32_t infs                         : 1;  /**< Interface non-fatal-error status. */
 	uint32_t reserved_25_25               : 1;
 	uint32_t ofs                          : 1;  /**< Overflow status. */
-	uint32_t imps                         : 1;  /**< Incorrect port multiplier status. */
-	uint32_t prcs                         : 1;  /**< PHY ready change status. */
+	uint32_t imps                         : 1;  /**< Incorrect port-multiplier status. */
+	uint32_t prcs                         : 1;  /**< PHY-ready change status. */
 	uint32_t reserved_8_21                : 14;
-	uint32_t dmps                         : 1;  /**< Device mechanical presence status. */
-	uint32_t pcs                          : 1;  /**< Port connect change status. */
+	uint32_t dmps                         : 1;  /**< Device mechanical-presence status. */
+	uint32_t pcs                          : 1;  /**< Port-connect-change status. */
 	uint32_t dps                          : 1;  /**< Descriptor processed. */
 	uint32_t ufs                          : 1;  /**< Unknown FIS interrupt. */
 	uint32_t sdbs                         : 1;  /**< Set device bits interrupt. */
 	uint32_t dss                          : 1;  /**< DMA setup FIS interrupt. */
 	uint32_t pss                          : 1;  /**< PIO setup FIS interrupt. */
-	uint32_t dhrs                         : 1;  /**< Device to host register FIS interrupt. */
+	uint32_t dhrs                         : 1;  /**< Device-to-host register FIS interrupt. */
 #else
 	uint32_t dhrs                         : 1;
 	uint32_t pss                          : 1;
@@ -1452,6 +1478,7 @@ union cvmx_sata_uahc_px_is {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_is_s         cn70xx;
+	struct cvmx_sata_uahc_px_is_s         cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_is cvmx_sata_uahc_px_is_t;
 
@@ -1471,6 +1498,7 @@ union cvmx_sata_uahc_px_phycr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_phycr_s      cn70xx;
+	struct cvmx_sata_uahc_px_phycr_s      cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_phycr cvmx_sata_uahc_px_phycr_t;
 
@@ -1490,6 +1518,7 @@ union cvmx_sata_uahc_px_physr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_physr_s      cn70xx;
+	struct cvmx_sata_uahc_px_physr_s      cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_physr cvmx_sata_uahc_px_physr_t;
 
@@ -1509,6 +1538,7 @@ union cvmx_sata_uahc_px_sact {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_sact_s       cn70xx;
+	struct cvmx_sata_uahc_px_sact_s       cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_sact cvmx_sata_uahc_px_sact_t;
 
@@ -1523,11 +1553,11 @@ union cvmx_sata_uahc_px_sctl {
 	struct cvmx_sata_uahc_px_sctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_10_31               : 22;
-	uint32_t ipm                          : 2;  /**< Interface power management transitions allowed. */
+	uint32_t ipm                          : 2;  /**< Interface power-management transitions allowed. */
 	uint32_t reserved_6_7                 : 2;
 	uint32_t spd                          : 2;  /**< Speed allowed. */
 	uint32_t reserved_3_3                 : 1;
-	uint32_t det                          : 3;  /**< Device detection initialization. */
+	uint32_t det                          : 3;  /**< Device-detection initialization. */
 #else
 	uint32_t det                          : 3;
 	uint32_t reserved_3_3                 : 1;
@@ -1538,6 +1568,7 @@ union cvmx_sata_uahc_px_sctl {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_sctl_s       cn70xx;
+	struct cvmx_sata_uahc_px_sctl_s       cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_sctl cvmx_sata_uahc_px_sctl_t;
 
@@ -1595,6 +1626,7 @@ union cvmx_sata_uahc_px_serr {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_serr_s       cn70xx;
+	struct cvmx_sata_uahc_px_serr_s       cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_serr cvmx_sata_uahc_px_serr_t;
 
@@ -1614,6 +1646,7 @@ union cvmx_sata_uahc_px_sig {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_sig_s        cn70xx;
+	struct cvmx_sata_uahc_px_sig_s        cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_sig cvmx_sata_uahc_px_sig_t;
 
@@ -1635,6 +1668,7 @@ union cvmx_sata_uahc_px_sntf {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_sntf_s       cn70xx;
+	struct cvmx_sata_uahc_px_sntf_s       cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_sntf cvmx_sata_uahc_px_sntf_t;
 
@@ -1660,6 +1694,7 @@ union cvmx_sata_uahc_px_ssts {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_ssts_s       cn70xx;
+	struct cvmx_sata_uahc_px_ssts_s       cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_ssts cvmx_sata_uahc_px_ssts_t;
 
@@ -1674,8 +1709,8 @@ union cvmx_sata_uahc_px_tfd {
 	struct cvmx_sata_uahc_px_tfd_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_16_31               : 16;
-	uint32_t tferr                        : 8;  /**< Copy of task file error register. */
-	uint32_t sts                          : 8;  /**< Copy of task file status register. */
+	uint32_t tferr                        : 8;  /**< Copy of task-file error register. */
+	uint32_t sts                          : 8;  /**< Copy of task-file status register. */
 #else
 	uint32_t sts                          : 8;
 	uint32_t tferr                        : 8;
@@ -1683,6 +1718,7 @@ union cvmx_sata_uahc_px_tfd {
 #endif
 	} s;
 	struct cvmx_sata_uahc_px_tfd_s        cn70xx;
+	struct cvmx_sata_uahc_px_tfd_s        cn70xxp1;
 };
 typedef union cvmx_sata_uahc_px_tfd cvmx_sata_uahc_px_tfd_t;
 
@@ -1734,6 +1770,7 @@ union cvmx_sata_uctl_bist_status {
 #endif
 	} s;
 	struct cvmx_sata_uctl_bist_status_s   cn70xx;
+	struct cvmx_sata_uctl_bist_status_s   cn70xxp1;
 };
 typedef union cvmx_sata_uctl_bist_status cvmx_sata_uctl_bist_status_t;
 
@@ -1748,45 +1785,42 @@ union cvmx_sata_uctl_ctl {
 	uint64_t u64;
 	struct cvmx_sata_uctl_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t clear_bist                   : 1;  /**< BIST fast-clear mode select.
-                                                         There are 2 major modes of BIST: full and clear. Full BIST is run by the BIST state
-                                                         machine when clear_bist is deasserted during BIST. Clear BIST is run if clear_bist is
-                                                         asserted during BIST. A Clear BIST run will simply clear all entries in SATA RAMs to 0x0.
-                                                         To avoid race conditions, software must first perform a CSR write operation that puts the
-                                                         clear_bist setting into the correct state and then perform another CSR write operation to
-                                                         set the BIST trigger (keeping the clear_bist state constant).
-                                                         CLEAR BIST completion is indicated by SATA_UCTL_BIST_STATUS[NDONE]. A BIST clear operation
-                                                         takes almost 2,000 host-controller-clock cycles for the largest RAM. */
-	uint64_t start_bist                   : 1;  /**< Rising edge starts BIST on the memories in SATA.
-                                                         To run BIST, both the host-controller clock must be configured and enabled, and should be
-                                                         configured to the maximum available frequency given the available coprocessor clock and
-                                                         dividers.
-                                                         Also, the UCTL, UAHC, and UPHY should be held in software- initiated reset until BIST is
-                                                         complete.
-                                                         BIST defect status can be checked after FULL BIST completion, both of which are indicated
-                                                         in SATA_UCTL_BIST_STATUS. The full BIST run takes almost 80,000 host-controller-clock
-                                                         cycles
-                                                         for the largest RAM. */
+	uint64_t clear_bist                   : 1;  /**< BIST fast-clear mode select. There are two major modes of BIST: FULL and CLEAR.
+                                                         0 = FULL BIST is run by the BIST state machine.
+                                                         1 = CLEAR BIST is run by the BIST state machine. A clear-BIST run clears all entries in
+                                                         SATA RAMs to 0x0.
+                                                         To avoid race conditions, software must first perform a CSR write operation that puts
+                                                         CLEAR_BIST into the correct state and then perform another CSR write operation to set
+                                                         START_BIST (keeping CLEAR_BIST constant). CLEAR BIST completion is indicated by
+                                                         SATA_UCTL_BIST_STATUS[NDONE].
+                                                         A BIST clear operation takes almost 2,000 host-controller clock cycles for the largest
+                                                         RAM. */
+	uint64_t start_bist                   : 1;  /**< Start BIST. The rising edge starts BIST on the memories in SATA. To run BIST, the host-
+                                                         controller clock must be both configured and enabled, and should be configured to the
+                                                         maximum available frequency given the available coprocessor clock and dividers.
+                                                         Refer to Cold Reset for clock initialization procedures. BIST defect status can be checked
+                                                         after FULL BIST completion, both of which are indicated in SATA_UCTL_BIST_STATUS. The FULL
+                                                         BIST run takes almost 80,000 host-controller clock cycles for the largest RAM. */
 	uint64_t reserved_31_61               : 31;
-	uint64_t a_clk_en                     : 1;  /**< Host-controller-clock enable. When set to 1, the host-controller clock is generated. This
+	uint64_t a_clk_en                     : 1;  /**< Host-controller clock enable. When set to 1, the host-controller clock is generated. This
                                                          also enables access to UCTL registers 0x30-0xF8. */
-	uint64_t a_clk_byp_sel                : 1;  /**< Select the bypass input to the host-controller-clock divider.
+	uint64_t a_clk_byp_sel                : 1;  /**< Select the bypass input to the host-controller clock divider.
                                                          0 = use the divided coprocessor clock from the A_CLKDIV divider
-                                                         1 = use the bypass clock from the GPIO pins
-                                                         Generally bypass is only used for scan purposes.
-                                                         This signal is just a multiplexer-select signal; it does not enable the host-controller
-                                                         clock. You must still set A_CLK_EN separately. A_CLK_BYP_SEL select should not be
-                                                         changed unless A_CLK_EN is disabled.
-                                                         The bypass clock can be selected and running even if the host-controller-clock dividers
-                                                         are not running. */
+                                                         1 = use the bypass clock from the GPIO pins (generally bypass is only used for scan
+                                                         purposes).
+                                                         This signal is a multiplexer-select signal; it does not enable the host-controller clock.
+                                                         You must set A_CLK_EN separately. A_CLK_BYP_SEL select should not be changed unless
+                                                         A_CLK_EN is disabled. The bypass clock can be selected and running even if the host-
+                                                         controller clock dividers are not running. */
 	uint64_t a_clkdiv_rst                 : 1;  /**< Host-controller-clock divider reset. Divided clocks are not generated while the divider is
                                                          being reset.
                                                          This also resets the suspend-clock divider. */
 	uint64_t reserved_27_27               : 1;
-	uint64_t a_clkdiv_sel                 : 3;  /**< The hclk frequency is sclk frequency divided by A_CLKDIV_SEL.
-                                                         The host-controller-clock frequency must be at or below 333MHz.
-                                                         This field can be changed only when A_CLKDIV_RST = 1.
-                                                         The divider values are the following:
+	uint64_t a_clkdiv_sel                 : 3;  /**< The host-controller clock frequency is the coprocessor-clock frequency divided by
+                                                         A_CLKDIV_SEL. The host-controller clock frequency must be at or below the requirements
+                                                         listed in Table 22-1 (Maximum ACLK Frequency).
+                                                         This field can be changed only when A_CLKDIV_RST = 1. The divider values are the
+                                                         following:
                                                          0x0 = divide by 1 0x4 = divide by 6
                                                          0x1 = divide by 2 0x5 = divide by 8
                                                          0x2 = divide by 3 0x6 = divide by 16
@@ -1798,11 +1832,11 @@ union cvmx_sata_uctl_ctl {
 	uint64_t sata_uahc_rst                : 1;  /**< Software reset; resets UAHC; active-high.
                                                          INTERNAL: Note that soft-resetting the UAHC while it is active may cause violations of RSL
                                                          or NCB protocols. */
-	uint64_t sata_uctl_rst                : 1;  /**< Software reset; resets UCTL; active-high.
-                                                         Resets UAHC DMA and register shims. Resets UCTL RSL registers 0x30-0xF8.
-                                                         Does not reset UCTL RSL registers 0x0-0x28.
-                                                         UCTL RSL registers starting from 0x30 can be accessed only after the host-controller clock
-                                                         is active and UCTL_RST is deasserted.
+	uint64_t sata_uctl_rst                : 1;  /**< Software reset; resets UCTL; active-high. Resets UAHC DMA and register shims and the UCTL
+                                                         RSL registers 0x30-0xF8.
+                                                         It does not reset UCTL RSL registers 0x0-0x28.
+                                                         The UCTL RSL registers starting from 0x30 can be accessed only after the host-controller
+                                                         clock is active and UCTL_RST is deasserted.
                                                          INTERNAL: Note that soft-resetting the UCTL while it is active may cause violations of
                                                          RSL, NCB, and CIB protocols. */
 #else
@@ -1822,6 +1856,7 @@ union cvmx_sata_uctl_ctl {
 #endif
 	} s;
 	struct cvmx_sata_uctl_ctl_s           cn70xx;
+	struct cvmx_sata_uctl_ctl_s           cn70xxp1;
 };
 typedef union cvmx_sata_uctl_ctl cvmx_sata_uctl_ctl_t;
 
@@ -1837,19 +1872,17 @@ union cvmx_sata_uctl_intstat {
 	struct cvmx_sata_uctl_intstat_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
-	uint64_t xm_bad_dma                   : 1;  /**< Detected bad DMA access from UAHC to IOI. Error information is logged in
+	uint64_t xm_bad_dma                   : 1;  /**< Detected bad DMA access from UAHC to IOI. The error information is logged in
                                                          SATA_UCTL_SHIM_CFG[XM_BAD_DMA_*]. Received a DMA request from UAHC that violates the
                                                          assumptions made by the AXI-to-IOI shim. Such scenarios include: illegal length/size
                                                          combinations and address out-of-bounds.
                                                          For more information on exact failures, see description in
                                                          SATA_UCTL_SHIM_CFG[XM_BAD_DMA_TYPE].
                                                          The hardware does not translate the request correctly and results may violate IOI
-                                                         protocols.
-                                                         Throws SATA_UCTL_INTSN_E::SATA_UCTL_INTSTAT_XM_BAD_DMA. */
+                                                         protocols. */
 	uint64_t xs_ncb_oob                   : 1;  /**< Detected out-of-bound register access to UAHC over IOI. The UAHC defines 1MB of register
                                                          space, starting at offset 0x0. Any accesses outside of this register space cause this bit
-                                                         to be set to 1. Error information is logged in SATA_UCTL_SHIM_CFG[XS_NCB_OOB_*].
-                                                         Throws SATA_UCTL_INTSN_E::SATA_UCTL_INTSTAT_XS_NCB_OOB. */
+                                                         to be set to 1. The error information is logged in SATA_UCTL_SHIM_CFG[XS_NCB_OOB_*]. */
 	uint64_t reserved_0_0                 : 1;
 #else
 	uint64_t reserved_0_0                 : 1;
@@ -1859,6 +1892,7 @@ union cvmx_sata_uctl_intstat {
 #endif
 	} s;
 	struct cvmx_sata_uctl_intstat_s       cn70xx;
+	struct cvmx_sata_uctl_intstat_s       cn70xxp1;
 };
 typedef union cvmx_sata_uctl_intstat cvmx_sata_uctl_intstat_t;
 
@@ -1878,12 +1912,11 @@ union cvmx_sata_uctl_shim_cfg {
 	struct cvmx_sata_uctl_shim_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t xs_ncb_oob_wrn               : 1;  /**< Read/write error log for out-of-bound UAHC register access.
-                                                         0 = read, 1 = write */
+                                                         0 = read, 1 = write. */
 	uint64_t reserved_57_62               : 6;
-	uint64_t xs_ncb_oob_osrc              : 9;  /**< SRCID error log for out-of-bound UAHC register access. The IOI outbound SRCID for the OOB
-                                                         error. */
+	uint64_t xs_ncb_oob_osrc              : 9;  /**< SRCID error log for out-of-bound UAHC register access. The IOI outbound SRCID for the OOB error. */
 	uint64_t xm_bad_dma_wrn               : 1;  /**< Read/write error log for bad DMA access from UAHC.
-                                                         0 = read error log, 1 = write error log */
+                                                         0 = read error log, 1 = write error log. */
 	uint64_t reserved_44_46               : 3;
 	uint64_t xm_bad_dma_type              : 4;  /**< ErrType error log for bad DMA access from UAHC. Encodes the type of error encountered
                                                          (error largest encoded value has priority). See SATA_UCTL_XM_BAD_DMA_TYPE_E. */
@@ -1910,6 +1943,7 @@ union cvmx_sata_uctl_shim_cfg {
 #endif
 	} s;
 	struct cvmx_sata_uctl_shim_cfg_s      cn70xx;
+	struct cvmx_sata_uctl_shim_cfg_s      cn70xxp1;
 };
 typedef union cvmx_sata_uctl_shim_cfg cvmx_sata_uctl_shim_cfg_t;
 
@@ -1930,6 +1964,7 @@ union cvmx_sata_uctl_spare0 {
 #endif
 	} s;
 	struct cvmx_sata_uctl_spare0_s        cn70xx;
+	struct cvmx_sata_uctl_spare0_s        cn70xxp1;
 };
 typedef union cvmx_sata_uctl_spare0 cvmx_sata_uctl_spare0_t;
 
@@ -1950,6 +1985,7 @@ union cvmx_sata_uctl_spare1 {
 #endif
 	} s;
 	struct cvmx_sata_uctl_spare1_s        cn70xx;
+	struct cvmx_sata_uctl_spare1_s        cn70xxp1;
 };
 typedef union cvmx_sata_uctl_spare1 cvmx_sata_uctl_spare1_t;
 

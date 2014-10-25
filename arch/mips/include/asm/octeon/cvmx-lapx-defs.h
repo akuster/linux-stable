@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -337,10 +337,10 @@ union cvmx_lapx_cfg {
                                                          When ENA transitions from 0 to 1, LAP will build the free list and empty all queue lists.
                                                          Results are unpredictable if ENA is toggled with traffic outstanding. */
 	uint64_t lab_size                     : 3;  /**< Number of LABs versus size of each LAB. This register may only be changed when [ENA]=0.
-                                                         0x0 = 128 LABs, 16 words/LAB (1024 bits)
-                                                         0x1 = 170 LABs, 12 words/LAB (768 bits)
-                                                         0x2 = 256 LABs, 8 words/LAB (512 bits)
-                                                         0x3-0x7 Reserved */
+                                                         0x0 = 128 LABs, 16 words/LAB (1024 bits).
+                                                         0x1 = 170 LABs, 12 words/LAB (768 bits).
+                                                         0x2 = 256 LABs, 8 words/LAB (512 bits).
+                                                         0x3-0x7 Reserved. */
 #else
 	uint64_t lab_size                     : 3;
 	uint64_t ena                          : 1;
@@ -357,17 +357,20 @@ typedef union cvmx_lapx_cfg cvmx_lapx_cfg_t;
 
 /**
  * cvmx_lap#_edat_err_st
+ *
+ * This register is for diagnostic use only.
+ *
  */
 union cvmx_lapx_edat_err_st {
 	uint64_t u64;
 	struct cvmx_lapx_edat_err_st_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_24_63               : 40;
-	uint64_t fsyn                         : 8;  /**< Syndrome of last Expected Mask Ram ECC error. Latched when LAP(0..1)_GEN_INT[EDAT_SBE] or
+	uint64_t fsyn                         : 8;  /**< Syndrome of last Expected Mask Ram ECC error. Latched when LAP()_GEN_INT[EDAT_SBE] or
                                                          [EDAT_DBE] set */
 	uint64_t reserved_4_15                : 12;
-	uint64_t fadr                         : 4;  /**< Address of last Expected Mask Ram ECC error. Latched when
-                                                         LAP(0..1)_GEN_INT[EDAT_SBE] or [EDAT_DBE] set. */
+	uint64_t fadr                         : 4;  /**< Address of last Expected Mask Ram ECC error. Latched when LAP()_GEN_INT[EDAT_SBE] or
+                                                         [EDAT_DBE] set. */
 #else
 	uint64_t fadr                         : 4;
 	uint64_t reserved_4_15                : 12;
@@ -381,17 +384,20 @@ typedef union cvmx_lapx_edat_err_st cvmx_lapx_edat_err_st_t;
 
 /**
  * cvmx_lap#_emsk_err_st
+ *
+ * This register is for diagnostic use only.
+ *
  */
 union cvmx_lapx_emsk_err_st {
 	uint64_t u64;
 	struct cvmx_lapx_emsk_err_st_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_24_63               : 40;
-	uint64_t fsyn                         : 8;  /**< Syndrome of last Expected Data Ram ECC error. Latched when
-                                                         LAP(0..1)_GEN_INT[EMSK_SBE] or [EMSK_DBE] set */
+	uint64_t fsyn                         : 8;  /**< Syndrome of last Expected Data Ram ECC error. Latched when LAP()_GEN_INT[EMSK_SBE] or
+                                                         [EMSK_DBE] set */
 	uint64_t reserved_4_15                : 12;
-	uint64_t fadr                         : 4;  /**< Address of last Expected Data Ram ECC error. Latched when
-                                                         LAP(0..1)_GEN_INT[EMSK_SBE] or [EMSK_DBE] set. */
+	uint64_t fadr                         : 4;  /**< Address of last Expected Data Ram ECC error. Latched when LAP()_GEN_INT[EMSK_SBE] or
+                                                         [EMSK_DBE] set. */
 #else
 	uint64_t fadr                         : 4;
 	uint64_t reserved_4_15                : 12;
@@ -454,7 +460,7 @@ typedef union cvmx_lapx_err_cfg cvmx_lapx_err_cfg_t;
 /**
  * cvmx_lap#_exp#_data
  *
- * Configures exception error masking; see Errors.
+ * Configures exception error masking.
  *
  */
 union cvmx_lapx_expx_data {
@@ -462,7 +468,7 @@ union cvmx_lapx_expx_data {
 	struct cvmx_lapx_expx_data_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t data                         : 64; /**< Data value expected. The packet must have bits matching this value if the corresponding
-                                                         bits in LAP(0..1)_EXP(0..15)_VALID are set. */
+                                                         bits in LAP()_EXP()_VALID are set. */
 #else
 	uint64_t data                         : 64;
 #endif
@@ -474,18 +480,16 @@ typedef union cvmx_lapx_expx_data cvmx_lapx_expx_data_t;
 /**
  * cvmx_lap#_exp#_valid
  *
- * Configures exception error masking; see Errors.
+ * Configures exception error masking.
  *
  */
 union cvmx_lapx_expx_valid {
 	uint64_t u64;
 	struct cvmx_lapx_expx_valid_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t valid                        : 64; /**< Valid mask. Each bit corresponds to a bit in
-                                                         LAP(0..1)_EXP(0..15)_VALID:
+	uint64_t valid                        : 64; /**< Valid mask. Each bit corresponds to a bit in LAP()_EXP()_VALID:
                                                          0 = Corresponding bit is a don't care.
-                                                         1 = Corresponding bit compared against
-                                                         LAP(0..1)_EXP(0..15)_VALID.
+                                                         1 = Corresponding bit compared against LAP()_EXP()_VALID.
                                                          Note that some response bits indicated by LAP_CTL_RTN_S are for Interlaken control, and
                                                          thus should always be zero (don't care) in LAP(0..1)_EXP_VALID(0). */
 #else
@@ -538,41 +542,41 @@ union cvmx_lapx_gen_int {
 	uint64_t reserved_19_63               : 45;
 	uint64_t xid_bad                      : 1;  /**< A response packet's transaction ID was targeted to an LAB not in PROCESSING state. Not
                                                          reported if packet also has CRC or MISMATCH errors. Typically indicates TCAM or
-                                                         configuration error. Throws LAP_INTSN_E::LAP(0..1)_GEN_XID_BAD. */
+                                                         configuration error. Throws LAP_INTSN_E::LAP()_GEN_XID_BAD. */
 	uint64_t nbr_dbe                      : 1;  /**< An ECC uncorrectable error has occurred in the NBR RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_NBR_DBE. */
+                                                         LAP_INTSN_E::LAP()_GEN_NBR_DBE. */
 	uint64_t nbr_sbe                      : 1;  /**< An ECC correctable error has occurred in the NBR RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_NBR_SBE. */
+                                                         LAP_INTSN_E::LAP()_GEN_NBR_SBE. */
 	uint64_t edat_dbe                     : 1;  /**< An ECC uncorrectable error has occurred in the EDAT RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_EDAT_DBE. See also LAP(0..1)_EDAT_ERR_ST. */
+                                                         LAP_INTSN_E::LAP()_GEN_EDAT_DBE. See also LAP()_EDAT_ERR_ST. */
 	uint64_t edat_sbe                     : 1;  /**< An ECC correctable error has occurred in the EDAT RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_EDAT_SBE. See also LAP(0..1)_EDAT_ERR_ST. */
+                                                         LAP_INTSN_E::LAP()_GEN_EDAT_SBE. See also LAP()_EDAT_ERR_ST. */
 	uint64_t emsk_dbe                     : 1;  /**< An ECC uncorrectable error has occurred in the EMSK RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_EMSK_DBE. See also LAP(0..1)_EMSK_ERR_ST. */
+                                                         LAP_INTSN_E::LAP()_GEN_EMSK_DBE. See also LAP()_EMSK_ERR_ST. */
 	uint64_t emsk_sbe                     : 1;  /**< An ECC correctable error has occurred in the EMSK RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_EMSK_SBE. See also LAP(0..1)_EMSK_ERR_ST. */
+                                                         LAP_INTSN_E::LAP()_GEN_EMSK_SBE. See also LAP()_EMSK_ERR_ST. */
 	uint64_t nxt_dbe                      : 1;  /**< An ECC uncorrectable error has occurred in the NXT RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_NXT_DBE. See also LAP(0..1)_NXT_ERR_ST. */
+                                                         LAP_INTSN_E::LAP()_GEN_NXT_DBE. See also LAP()_NXT_ERR_ST. */
 	uint64_t nxt_sbe                      : 1;  /**< An ECC correctable error has occurred in the NXT RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_NXT_SBE. See also LAP(0..1)_NXT_ERR_ST. */
+                                                         LAP_INTSN_E::LAP()_GEN_NXT_SBE. See also LAP()_NXT_ERR_ST. */
 	uint64_t sta_dbe                      : 1;  /**< An ECC uncorrectable error has occurred in the STA RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_STA_DBE. See also LAP(0..1)_STA_ERR_ST. */
+                                                         LAP_INTSN_E::LAP()_GEN_STA_DBE. See also LAP()_STA_ERR_ST. */
 	uint64_t sta_sbe                      : 1;  /**< An ECC correctable error has occurred in the STA RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_STA_SBE. See also LAP(0..1)_STA_ERR_ST. */
+                                                         LAP_INTSN_E::LAP()_GEN_STA_SBE. See also LAP()_STA_ERR_ST. */
 	uint64_t lab_dbe                      : 1;  /**< An ECC uncorrectable error has occurred in the LAB RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_LAB_DBE. See also LAP(0..1)_LAB_ERR_ST. */
+                                                         LAP_INTSN_E::LAP()_GEN_LAB_DBE. See also LAP()_LAB_ERR_ST. */
 	uint64_t lab_sbe                      : 1;  /**< An ECC correctable error has occurred in the LAB RAM. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_LAB_SBE. See also LAP(0..1)_LAB_ERR_ST. */
+                                                         LAP_INTSN_E::LAP()_GEN_LAB_SBE. See also LAP()_LAB_ERR_ST. */
 	uint64_t reserved_4_5                 : 2;
 	uint64_t timeout                      : 1;  /**< Indication timer transitioned an LAB to error state. This interrupt will typically be
-                                                         masked off, as error delivery can be in-band. Throws LAP_INTSN_E::LAP(0..1)_GEN_TIMEOUT. */
+                                                         masked off, as error delivery can be in-band. Throws LAP_INTSN_E::LAP()_GEN_TIMEOUT. */
 	uint64_t new_exc                      : 1;  /**< Indication the exception queue contains any received packet. Software should check the
-                                                         exception queue for new packets. Throws LAP_INTSN_E::LAP(0..1)_GEN_NEW_EXC. */
+                                                         exception queue for new packets. Throws LAP_INTSN_E::LAP()_GEN_NEW_EXC. */
 	uint64_t lost_exc                     : 1;  /**< Error indicating exception packet received with no LABs available on the exception queue;
-                                                         the exception packet was dropped. Throws LAP_INTSN_E::LAP(0..1)_GEN_LOST_EXC. */
+                                                         the exception packet was dropped. Throws LAP_INTSN_E::LAP()_GEN_LOST_EXC. */
 	uint64_t labs_out                     : 1;  /**< Error indicating did push with no free LABs available, or
-                                                         LAP(0..1)_QUE(0..2)_CFG[MAX_LABS] was exceeded. Throws
-                                                         LAP_INTSN_E::LAP(0..1)_GEN_LABS_OUT. */
+                                                         LAP()_QUE()_CFG[MAX_LABS] was exceeded. Throws
+                                                         LAP_INTSN_E::LAP()_GEN_LABS_OUT. */
 #else
 	uint64_t labs_out                     : 1;
 	uint64_t lost_exc                     : 1;
@@ -602,8 +606,8 @@ typedef union cvmx_lapx_gen_int cvmx_lapx_gen_int_t;
 /**
  * cvmx_lap#_lab#_state
  *
- * This register indicates the state of the LAB. This is intended for diagnostics and hypervisor
- * resource recovery; IOBDMA Read operations would normally be used to read this state instead.
+ * This register indicates the state of the LAB. This is intended for diagnostics and resource
+ * recovery; IOBDMA Read operations would normally be used to read this state instead.
  */
 union cvmx_lapx_labx_state {
 	uint64_t u64;
@@ -636,8 +640,8 @@ typedef union cvmx_lapx_labx_state cvmx_lapx_labx_state_t;
 /**
  * cvmx_lap#_lab_data#
  *
- * "This register reads raw data from the LABs. The address is calculated from (LAB#  *
- * words_per_lab_from_table_in_LAP(0..1)_CFG[LAB_SIZE] + offset_in_LAB) * 8."
+ * This register reads raw data from the LABs. The address is calculated from (LAB_number *
+ * words_per_lab_from_table_in_LAP()_CFG[LAB_SIZE] + offset_in_LAB) * 8.
  */
 union cvmx_lapx_lab_datax {
 	uint64_t u64;
@@ -654,17 +658,18 @@ typedef union cvmx_lapx_lab_datax cvmx_lapx_lab_datax_t;
 
 /**
  * cvmx_lap#_lab_err_st
+ *
+ * This register is for diagnostic use only.
+ *
  */
 union cvmx_lapx_lab_err_st {
 	uint64_t u64;
 	struct cvmx_lapx_lab_err_st_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_26_63               : 38;
-	uint64_t fsyn                         : 10; /**< Syndrome of last LAB data ram ECC error. Latched when
-                                                         LAP(0..1)_GEN_INT[LAB_SBE] or [LAB_DBE] set */
+	uint64_t fsyn                         : 10; /**< Syndrome of last LAB data ram ECC error. Latched when LAP()_GEN_INT[LAB_SBE] or [LAB_DBE] set */
 	uint64_t reserved_10_15               : 6;
-	uint64_t fadr                         : 10; /**< Address of last LAB data ram ECC error. Latched when
-                                                         LAP(0..1)_GEN_INT[LAB_SBE] or [LAB_DBE] set. */
+	uint64_t fadr                         : 10; /**< Reserved. */
 #else
 	uint64_t fadr                         : 10;
 	uint64_t reserved_10_15               : 6;
@@ -678,17 +683,20 @@ typedef union cvmx_lapx_lab_err_st cvmx_lapx_lab_err_st_t;
 
 /**
  * cvmx_lap#_nxt_err_st
+ *
+ * This register is for diagnostic use only.
+ *
  */
 union cvmx_lapx_nxt_err_st {
 	uint64_t u64;
 	struct cvmx_lapx_nxt_err_st_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_21_63               : 43;
-	uint64_t fsyn                         : 5;  /**< Syndrome of last Next Pointer Ram ECC error. Latched when
-                                                         LAP(0..1)_GEN_INT[NXT_SBE] or [NXT_DBE] set */
+	uint64_t fsyn                         : 5;  /**< Syndrome of last Next Pointer Ram ECC error. Latched when LAP()_GEN_INT[NXT_SBE] or
+                                                         [NXT_DBE] set */
 	uint64_t reserved_8_15                : 8;
-	uint64_t fadr                         : 8;  /**< Address of last Next Pointer Ram ECC error. Latched when
-                                                         LAP(0..1)_GEN_INT[NXT_SBE] or [NXT_DBE] set. */
+	uint64_t fadr                         : 8;  /**< Address of last Next Pointer Ram ECC error. Latched when LAP()_GEN_INT[NXT_SBE] or
+                                                         [NXT_DBE] set. */
 #else
 	uint64_t fadr                         : 8;
 	uint64_t reserved_8_15                : 8;
@@ -709,9 +717,9 @@ union cvmx_lapx_quex_cfg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_9_63                : 55;
 	uint64_t max_labs                     : 9;  /**< Maximum number of LABS allowed to be assigned to this queue; compared against
-                                                         LAP(0..1)_QUE(0..2)_STATE[LABS_RX] + LAP(0..1)_QUE(0..2)_STATE[LABS_PROC] to generate
+                                                         LAP()_QUE()_STATE[LABS_RX] + LAP()_QUE()_STATE[LABS_PROC] to generate
                                                          errors. The total across all queues' [MAX_LABS] may be over-provisioned, in which case the
-                                                         global LAP(0..1)_SFT_RSTLAP(0..1)_CFG[LAB_SIZE] number of LABs will throttle the
+                                                         global LAP()_CFG[LAB_SIZE] number of LABs will throttle the
                                                          transaction count. */
 #else
 	uint64_t max_labs                     : 9;
@@ -813,17 +821,18 @@ typedef union cvmx_lapx_sft_rst cvmx_lapx_sft_rst_t;
 
 /**
  * cvmx_lap#_sta_err_st
+ *
+ * This register is for diagnostic use only.
+ *
  */
 union cvmx_lapx_sta_err_st {
 	uint64_t u64;
 	struct cvmx_lapx_sta_err_st_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_23_63               : 41;
-	uint64_t fsyn                         : 7;  /**< Syndrome of last LAB state ram ECC error. Latched when
-                                                         LAP(0..1)_GEN_INT[STA_SBE] or [STA_DBE] set */
+	uint64_t fsyn                         : 7;  /**< Syndrome of last LAB state ram ECC error. Latched when LAP()_GEN_INT[STA_SBE] or [STA_DBE] set */
 	uint64_t reserved_8_15                : 8;
-	uint64_t fadr                         : 8;  /**< Address of last LAB state ram ECC error. Latched when
-                                                         LAP(0..1)_GEN_INT[STA_SBE] or [STA_DBE] set. */
+	uint64_t fadr                         : 8;  /**< Address of last LAB state ram ECC error. Latched when LAP()_GEN_INT[STA_SBE] or [STA_DBE] set. */
 #else
 	uint64_t fadr                         : 8;
 	uint64_t reserved_8_15                : 8;
@@ -846,18 +855,18 @@ union cvmx_lapx_timeout {
 	uint64_t iobdma                       : 8;  /**< Timeout waiting for an IOBDMA in number of SCLKs minus one divided by 256. After between
                                                          one and two times this interval an IOBDMA request waiting for a packet will return no-data
                                                          as defined in Interlaken Control Word.
-                                                         0x0 = Timeout between 256 and 511 cycles
-                                                         0x1 = Timeout between 512 and 1023 cycles
-                                                         0x2 = Timeout between 768 and 1535 cycles
-                                                         etc. */
+                                                         0x0 = Timeout between 256 and 511 cycles.
+                                                         0x1 = Timeout between 512 and 1023 cycles.
+                                                         0x2 = Timeout between 768 and 1535 cycles.
+                                                         _ etc. */
 	uint64_t reserved_12_15               : 4;
-	uint64_t resp                         : 12; /**< Timeout waiting for a response in number of sclks minus one divided by 256. After between
+	uint64_t resp                         : 12; /**< Timeout waiting for a response in number of SCLKs minus one divided by 256. After between
                                                          one and two times this interval an in-flight LAB will be considered lost and marked as
-                                                         RECEIVED with error. RESP must be set to >= (2 * LAP(0..1)_TIMEOUT[IOBDMA] + 1).
-                                                         0x0 = Timeout between 256 and 511 cycles
-                                                         0x1 = Timeout between 512 and 1023 cycles
-                                                         0x2 = Timeout between 768 and 1535 cycles
-                                                         etc. */
+                                                         RECEIVED with error. RESP must be set to >= (2 * LAP()_TIMEOUT[IOBDMA] + 1).
+                                                         0x0 = Timeout between 256 and 511 cycles.
+                                                         0x1 = Timeout between 512 and 1023 cycles.
+                                                         0x2 = Timeout between 768 and 1535 cycles.
+                                                         _ etc. */
 #else
 	uint64_t resp                         : 12;
 	uint64_t reserved_12_15               : 4;
@@ -872,7 +881,7 @@ typedef union cvmx_lapx_timeout cvmx_lapx_timeout_t;
 /**
  * cvmx_lap#_xid_pos
  *
- * Configures how to insert and extract transaction ids; see Transaction ID Assignment.
+ * Configures how to insert and extract transaction ids.
  *
  */
 union cvmx_lapx_xid_pos {
@@ -882,18 +891,22 @@ union cvmx_lapx_xid_pos {
 	uint64_t reserved_33_63               : 31;
 	uint64_t as_only                      : 1;  /**< Insert/extract in Interlaken-LA application specific AS fields. If set and REQ_WD or
                                                          RTN_WD are zero, the XID field that is inserted or extracted respectively will skip over
-                                                         the non-application specific fields in the Interlaken LA header. See Transaction ID
-                                                         Packing. */
+                                                         the non-application specific fields in the Interlaken LA header. */
 	uint64_t reserved_26_31               : 6;
-	uint64_t rtn_wd                       : 4;  /**< Extract transaction tag from this 64 bit word number of the return packet; typically the
+	uint64_t rtn_wd                       : 4;  /**< Extract transaction tag from this 64-bit word number of the return packet; typically the
                                                          same value as [REQ_WD]. Word 0 is the Interlaken control word, word 1 is the first word of
                                                          payload. */
-	uint64_t rtn_lsb                      : 6;  /**< Extract transaction tag value's LSB into this LSB of the of request packet; typically the
-                                                         same value as [REQ_LSB]. */
+	uint64_t rtn_lsb                      : 6;  /**< Extract transaction tag value's LSB from this position of the of request packet;
+                                                         typically the same value as [REQ_LSB]. When [AS_ONLY] = 0, refers to a bit
+                                                         position in the input word. When [AS_ONLY] = 1, refers to a bit position within
+                                                         the Interlaken-LA application specific AS fields. */
 	uint64_t reserved_10_15               : 6;
-	uint64_t req_wd                       : 4;  /**< Insert transaction tag into this 64 bit word number of the request packet. Word 0 is the
+	uint64_t req_wd                       : 4;  /**< Insert transaction tag into this 64-bit word number of the request packet. Word 0 is the
                                                          Interlaken control word, word 1 is the first word of payload. */
-	uint64_t req_lsb                      : 6;  /**< Insert transaction tag value's LSB into this LSB of the of request packet. */
+	uint64_t req_lsb                      : 6;  /**< Insert transaction tag value's LSB into this LSB of the of request packet. When
+                                                         [AS_ONLY] = 0, refers to a bit position in the output word. When [AS_ONLY] = 1,
+                                                         refers to a bit position within the Interlaken-LA application specific AS
+                                                         fields. */
 #else
 	uint64_t req_lsb                      : 6;
 	uint64_t req_wd                       : 4;

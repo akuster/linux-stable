@@ -87,8 +87,36 @@ extern "C" {
 #define CVMX_ENABLE_POW_CHECKS 1
 #endif
 
-#define CVMX_SSO_NUM_GROUPS_78XX	(256)
-#define CVMX_SSO_NUM_GROUPS_SET		(CVMX_SSO_NUM_GROUPS_78XX/64)
+/*
+ * Special type for CN78XX style SSO groups (0..255),
+ * for distinction from legacy-style groups (0..15)
+ */
+typedef union {
+	uint8_t		xgrp;
+	/* Fields that map XGRP for backwards compatibility */
+	struct __attribute__ ((__packed__)) {
+#ifdef __BIG_ENDIAN_BITFIELD
+		uint8_t	group: 5,
+			qus: 3;
+#else
+		uint8_t	qus: 3,
+			group: 5;
+#endif
+	};
+} cvmx_xgrp_t;
+
+#define CVMX_SSO_NUM_XGRP		(256)
+
+/*
+ * Softwsare-only structure to convey a return value
+ * containing multiple information fields about an work queue entry
+ */
+typedef struct {
+	uint32_t tag;
+	uint16_t index;
+	uint8_t grp;	/* Legacy group # (0..15) */
+	uint8_t tag_type;
+} cvmx_pow_tag_info_t;
 
 /**
  * Wait flag values for pow functions.
@@ -260,41 +288,35 @@ typedef union {
 
 	struct {
 #ifdef __BIG_ENDIAN_BITFIELD
-		uint64_t unused2:3;
+		uint64_t rsvd_62_63:2;
 		/** Group that the work-queue entry will be scheduled to. Grp
 		   is used for ADDWQ, SWTAG_FULL, SWTAG_DESCH, UPD_WQP_GRP. */
-		uint64_t grp:12;
+		uint64_t grp:10; /** NODE+LGROUP */
 		cvmx_pow_tag_type_t type:2; /** The type of the tag */
 		/** Don't reschedule this entry. NOSCHED is used for
 		   SWTAG_DESCH and DESCHED.*/
 		uint64_t no_sched:1;
+		uint64_t rsvd_48:1;
 		/** the operation to perform */
 		cvmx_pow_tag_op_t op:4;
-		uint64_t unused1:2;
+		uint64_t rsvd_42_43:2;
 		/** Address of the work-queue entry. Must be aligned on a 64-bit
 		    boundary. Used for SWTAG_FULL, ADDWQ, UPD_WQP_GRP;
 		    addr<2:0> must be zero. */
 		uint64_t wqp:42;
 #else
 		uint64_t wqp:42;
-		uint64_t unused1:2;
+		uint64_t rsvd_42_43:2;
 		cvmx_pow_tag_op_t op:4; /**< the operation to perform */
+		uint64_t rsvd_48:1;
 		uint64_t no_sched:1;
 		cvmx_pow_tag_type_t type:2;
-		uint64_t grp:12;
-		uint64_t unused2:3;
+		uint64_t grp:10;
+		uint64_t rsvd_62_63:2;
 #endif
 	} s_cn78xx_other;
 
 } cvmx_pow_tag_req_t;
-
-typedef struct {
-	uint32_t tag;
-	uint16_t index;
-	uint8_t grp;
-	uint8_t tag_type;
-} cvmx_pow_tag_info_t;
-
 
 union cvmx_pow_tag_req_addr {
 	uint64_t u64;
@@ -304,9 +326,8 @@ union cvmx_pow_tag_req_addr {
 		CVMX_BITFIELD_FIELD(uint64_t reserved_49_61:13,
 		CVMX_BITFIELD_FIELD(uint64_t is_io:1,/**< Must be one */
 	        CVMX_BITFIELD_FIELD(uint64_t did:8,
-		CVMX_BITFIELD_FIELD(uint64_t reserved_40_37:4,
-		CVMX_BITFIELD_FIELD(uint64_t addr:36,
-				    ;))))))
+		CVMX_BITFIELD_FIELD(uint64_t addr:40,
+				    ;)))))
 	} s;
 	struct {
 		/**< Mips64 address region. Should be CVMX_IO_SEG */
@@ -336,198 +357,130 @@ typedef union {
      * Address for new work request loads (did<2:0> == 0)
      */
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		/* Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t mem_region:2;
+		CVMX_BITFIELD_FIELD(uint64_t mem_region:2,
 					    /**< Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t reserved_49_61:13;
+		CVMX_BITFIELD_FIELD(uint64_t reserved_49_61:13,
 					    /**< Must be zero */
-		uint64_t is_io:1;	    /**< Must be one */
-		uint64_t did:8;		    /**< the ID of POW -- did<2:0> == 0 in this case */
-		uint64_t reserved_4_39:36;
+		CVMX_BITFIELD_FIELD(uint64_t is_io:1,	    /**< Must be one */
+		CVMX_BITFIELD_FIELD(uint64_t did:8,		    /**< the ID of POW -- did<2:0> == 0 in this case */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_4_39:36,
 					    /**< Must be zero */
-		uint64_t wait:1;	    /**< If set, don't return load response until work is available */
-		uint64_t reserved_0_2:3;
+		CVMX_BITFIELD_FIELD(uint64_t wait:1,	    /**< If set, don't return load response until work is available */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_0_2:3,
 					    /**< Must be zero */
-#else
-		uint64_t reserved_0_2:3;
-		uint64_t wait:1;
-		uint64_t reserved_4_39:36;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t reserved_49_61:13;
-		uint64_t mem_region:2;
-#endif
+		)))))));
 	} swork;
 
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		uint64_t mem_region:2;      /**< Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t reserved_49_61:13; /**< Must be zero */
-		uint64_t is_io:1;           /**< Must be one */
-		uint64_t did:8;             /**< the ID of POW -- did<2:0> == 0 in this case */
-		uint64_t node:4;            /**< OCI Node number */
-		uint64_t reserved_4_35:32;  /**< Must be zero */
-		uint64_t wait:1;            /**< If set, don't return load response until work is available */
-		uint64_t reserved_0_2:3;    /**< Must be zero */
-#else
-		uint64_t reserved_0_2:3;
-		uint64_t wait:1;
-		uint64_t reserved_4_35:36;
-		uint64_t node:4;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t reserved_49_61:13;
-		uint64_t mem_region:2;
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t mem_region:2,      /**< Mips64 address region. Should be CVMX_IO_SEG */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_49_61:13, /**< Must be zero */
+		CVMX_BITFIELD_FIELD(uint64_t is_io:1,           /**< Must be one */
+		CVMX_BITFIELD_FIELD(uint64_t did:8,             /**< the ID of POW -- did<2:0> == 0 in this case */
+		CVMX_BITFIELD_FIELD(uint64_t node:4,            /**< OCI Node number */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_32_35:4,  /**< Must be zero */
+		CVMX_BITFIELD_FIELD(uint64_t indexed:1,  /**< Indexed get_work if set */
+		CVMX_BITFIELD_FIELD(uint64_t grouped:1,  /**< get_work for group specified in index */
+		CVMX_BITFIELD_FIELD(uint64_t rtngrp:1,  /**< Return group and tt in the return if set */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_16_28:13,  /**< Must be zero */
+		CVMX_BITFIELD_FIELD(uint64_t index:12,  /**< mask/grp/index of the request */
+		CVMX_BITFIELD_FIELD(uint64_t wait:1,            /**< If set, don't return load response until work is available */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_0_2:3,    /**< Must be zero */
+		)))))))))))));
 	} swork_78xx;
 
     /**
      * Address for loads to get POW internal status
      */
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		/* Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t mem_region:2;
+		CVMX_BITFIELD_FIELD(uint64_t mem_region:2,
 					    /**< Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t reserved_49_61:13;
+		CVMX_BITFIELD_FIELD(uint64_t reserved_49_61:13,
 					    /**< Must be zero */
-		uint64_t is_io:1;	    /**< Must be one */
-		uint64_t did:8;		    /**< the ID of POW -- did<2:0> == 1 in this case */
-		uint64_t reserved_10_39:30;
+		CVMX_BITFIELD_FIELD(uint64_t is_io:1,	    /**< Must be one */
+		CVMX_BITFIELD_FIELD(uint64_t did:8,		    /**< the ID of POW -- did<2:0> == 1 in this case */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_10_39:30,
 					    /**< Must be zero */
-		uint64_t coreid:4;	    /**< The core id to get status for */
-		uint64_t get_rev:1;	    /**< If set and get_cur is set, return reverse tag-list pointer rather than forward tag-list pointer */
-		uint64_t get_cur:1;	    /**< If set, return current status rather than pending status */
-		uint64_t get_wqp:1;	    /**< If set, get the work-queue pointer rather than tag/type */
-		uint64_t reserved_0_2:3;
-					    /**< Must be zero */
-#else
-		uint64_t reserved_0_2:3;
-		uint64_t get_wqp:1;
-		uint64_t get_cur:1;
-		uint64_t get_rev:1;
-		uint64_t coreid:4;
-		uint64_t reserved_10_39:30;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t reserved_49_61:13;
-		uint64_t mem_region:2;
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t coreid:4,	    /**< The core id to get status for */
+		CVMX_BITFIELD_FIELD(uint64_t get_rev:1,	    /**< If set and get_cur is set, return reverse tag-list pointer rather than forward tag-list pointer */
+		CVMX_BITFIELD_FIELD(uint64_t get_cur:1,	    /**< If set, return current status rather than pending status */
+		CVMX_BITFIELD_FIELD(uint64_t get_wqp:1,	    /**< If set, get the work-queue pointer rather than tag/type */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_0_2:3,  /**< Must be zero */
+		))))))))));
 	} sstatus;
 
     /**
      * Address for loads to get 68XX SS0 internal status
      */
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		/* Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t mem_region:2;
+		CVMX_BITFIELD_FIELD(uint64_t mem_region:2,
 					    /**< Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t reserved_49_61:13;
+		CVMX_BITFIELD_FIELD(uint64_t reserved_49_61:13,
 					    /**< Must be zero */
-		uint64_t is_io:1;	    /**< Must be one */
-		uint64_t did:8;		    /**< the ID of POW -- did<2:0> == 1 in this case */
-		uint64_t reserved_14_39:26;
+		CVMX_BITFIELD_FIELD(uint64_t is_io:1,	    /**< Must be one */
+		CVMX_BITFIELD_FIELD(uint64_t did:8,		    /**< the ID of POW -- did<2:0> == 1 in this case */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_14_39:26,
 					    /**< Must be zero */
-		uint64_t coreid:5;	    /**< The core id to get status for */
-		uint64_t reserved_6_8:3;
-		uint64_t opcode:3;	    /**< Status operation */
-		uint64_t reserved_0_2:3;
-					    /**< Must be zero */
-#else
-		uint64_t reserved_0_2:3;
-		uint64_t opcode:3;
-		uint64_t reserved_6_8:3;
-		uint64_t coreid:5;
-		uint64_t reserved_14_39:26;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t reserved_49_61:13;
-		uint64_t mem_region:2;
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t coreid:5,	    /**< The core id to get status for */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_6_8:3,
+		CVMX_BITFIELD_FIELD(uint64_t opcode:3,	    /**< Status operation */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_0_2:3, /**< Must be zero */
+		)))))))));
 	} sstatus_cn68xx;
 
     /**
      * Address for memory loads to get POW internal state
      */
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		uint64_t mem_region:2;
+		CVMX_BITFIELD_FIELD(uint64_t mem_region:2,
 					    /**< Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t reserved_49_61:13;
+		CVMX_BITFIELD_FIELD(uint64_t reserved_49_61:13,
 					    /**< Must be zero */
-		uint64_t is_io:1;	    /**< Must be one */
-		uint64_t did:8;		    /**< the ID of POW -- did<2:0> == 2 in this case */
-		uint64_t reserved_16_39:24;
+		CVMX_BITFIELD_FIELD(uint64_t is_io:1,	    /**< Must be one */
+		CVMX_BITFIELD_FIELD(uint64_t did:8,		    /**< the ID of POW -- did<2:0> == 2 in this case */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_16_39:24,
 					    /**< Must be zero */
-		uint64_t index:11;	    /**< POW memory index */
-		uint64_t get_des:1;	    /**< If set, return deschedule information rather than the standard
+		CVMX_BITFIELD_FIELD(uint64_t index:11,	    /**< POW memory index */
+		CVMX_BITFIELD_FIELD(uint64_t get_des:1,	    /**< If set, return deschedule information rather than the standard
                                                 response for work-queue index (invalid if the work-queue entry is not on the
                                                 deschedule list). */
-		uint64_t get_wqp:1;	    /**< If set, get the work-queue pointer rather than tag/type (no effect when get_des set). */
-		uint64_t reserved_0_2:3;
-					    /**< Must be zero */
-#else
-		uint64_t reserved_0_2:3;
-		uint64_t get_wqp:1;
-		uint64_t get_des:1;
-		uint64_t index:11;
-		uint64_t reserved_16_39:24;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t reserved_49_61:13;
-		uint64_t mem_region:2;
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t get_wqp:1,	    /**< If set, get the work-queue pointer rather than tag/type (no effect when get_des set). */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_0_2:3,  /**< Must be zero */
+		)))))))));
 	} smemload;
 
     /**
      * Address for memory loads to get SSO internal state
      */
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		/* Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t mem_region:2;
+		CVMX_BITFIELD_FIELD(uint64_t mem_region:2,
 					    /**< Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t reserved_49_61:13;
+		CVMX_BITFIELD_FIELD(uint64_t reserved_49_61:13,
 					    /**< Must be zero */
-		uint64_t is_io:1;	    /**< Must be one */
-		uint64_t did:8;		    /**< the ID of SSO - did<2:0> == 2 in this case */
-		uint64_t reserved_20_39:20;
+		CVMX_BITFIELD_FIELD(uint64_t is_io:1,	    /**< Must be one */
+		CVMX_BITFIELD_FIELD(uint64_t did:8,		    /**< the ID of SSO - did<2:0> == 2 in this case */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_20_39:20,
 					    /**< Must be zero */
-		uint64_t index:11;	    /**< SSO memory index */
-		uint64_t reserved_6_8:3;
+		CVMX_BITFIELD_FIELD(uint64_t index:11,	    /**< SSO memory index */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_6_8:3,
 					    /**< Must be zero */
-		uint64_t opcode:3;	    /**< Read TAG/WQ pointer/pending tag/next potr */
-		uint64_t reserved_0_2:3;
-					    /**< Must be zero */
-#else
-		uint64_t reserved_0_2:3;
-		uint64_t opcode:3;
-		uint64_t reserved_3_5:3;
-		uint64_t index:11;
-		uint64_t reserved_20_39:20;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t reserved_49_61:13;
-		uint64_t mem_region:2;
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t opcode:3,	    /**< Read TAG/WQ pointer/pending tag/next potr */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_0_2:3, /**< Must be zero */
+		)))))))));
 	} smemload_cn68xx;
 
     /**
      * Address for index/pointer loads
      */
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		uint64_t mem_region:2;
+		CVMX_BITFIELD_FIELD(uint64_t mem_region:2,
 					    /**< Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t reserved_49_61:13;
+		CVMX_BITFIELD_FIELD(uint64_t reserved_49_61:13,
 					    /**< Must be zero */
-		uint64_t is_io:1;	    /**< Must be one */
-		uint64_t did:8;		    /**< the ID of POW -- did<2:0> == 3 in this case */
-		uint64_t reserved_9_39:31;
+		CVMX_BITFIELD_FIELD(uint64_t is_io:1,	    /**< Must be one */
+		CVMX_BITFIELD_FIELD(uint64_t did:8,		    /**< the ID of POW -- did<2:0> == 3 in this case */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_9_39:31,
 					    /**< Must be zero */
-		uint64_t qosgrp:4;	    /**< when {get_rmt ==0 AND get_des_get_tail == 0}, this field selects one of
+		CVMX_BITFIELD_FIELD(uint64_t qosgrp:4,	    /**< when {get_rmt ==0 AND get_des_get_tail == 0}, this field selects one of
                                                 eight POW internal-input queues (0-7), one per QOS level; values 8-15 are
                                                 illegal in this case;
                                                 when {get_rmt ==0 AND get_des_get_tail == 1}, this field selects one of
@@ -542,59 +495,35 @@ typedef union {
                                                 - qosgrp = 5, qosgrp = 13:     QOS5
                                                 - qosgrp = 6, qosgrp = 14:     QOS6
                                                 - qosgrp = 7, qosgrp = 15:     QOS7 */
-		uint64_t get_des_get_tail:1;
+		CVMX_BITFIELD_FIELD(uint64_t get_des_get_tail:1,
 					    /**< If set and get_rmt is clear, return deschedule list indexes
                                                 rather than indexes for the specified qos level; if set and get_rmt is set, return
                                                 the tail pointer rather than the head pointer for the specified qos level. */
-		uint64_t get_rmt:1;	    /**< If set, return remote pointers rather than the local indexes for the specified qos level. */
-		uint64_t reserved_0_2:3;
-					    /**< Must be zero */
-#else
-		uint64_t reserved_0_2:3;
-		uint64_t get_rmt:1;
-		uint64_t get_des_get_tail:1;
-		uint64_t qosgrp:4;
-		uint64_t reserved_9_39:31;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t reserved_49_61:13;
-		uint64_t mem_region:2;
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t get_rmt:1,	    /**< If set, return remote pointers rather than the local indexes for the specified qos level. */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_0_2:3,   /**< Must be zero */
+		)))))))));
 	} sindexload;
 
     /**
      * Address for a Index/Pointer loads to get SSO internal state
      */
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		/* Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t mem_region:2;
+		CVMX_BITFIELD_FIELD(uint64_t mem_region:2,
 					    /**< Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t reserved_49_61:13;
+		CVMX_BITFIELD_FIELD(uint64_t reserved_49_61:13,
 					    /**< Must be zero */
-		uint64_t is_io:1;	    /**< Must be one */
-		uint64_t did:8;		    /**< the ID of SSO - did<2:0> == 2 in this case */
-		uint64_t reserved_15_39:25;
+		CVMX_BITFIELD_FIELD(uint64_t is_io:1,	    /**< Must be one */
+		CVMX_BITFIELD_FIELD(uint64_t did:8,		    /**< the ID of SSO - did<2:0> == 2 in this case */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_15_39:25,
 					    /**< Must be zero */
-		uint64_t qos_grp:6;	    /**< When opcode = IPL_IQ, this field specifies IQ (or QOS).
+		CVMX_BITFIELD_FIELD(uint64_t qos_grp:6,	    /**< When opcode = IPL_IQ, this field specifies IQ (or QOS).
                                                  When opcode = IPL_DESCHED, this field specifies the group.
                                                  This field is reserved for all other opcodes. */
-		uint64_t reserved_6_8:3;
+		CVMX_BITFIELD_FIELD(uint64_t reserved_6_8:3,
 					    /**< Must be zero */
-		uint64_t opcode:3;	    /**< Read TAG/WQ pointer/pending tag/next potr */
-		uint64_t reserved_0_2:3;
-					    /**< Must be zero */
-#else
-		uint64_t reserved_0_2:3;
-		uint64_t opcode:3;
-		uint64_t reserved_3_5:3;
-		uint64_t qos_grp:6;
-		uint64_t reserved_15_39:25;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t reserved_49_61:13;
-		uint64_t mem_region:2;
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t opcode:3,	    /**< Read TAG/WQ pointer/pending tag/next potr */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_0_2:3, /**< Must be zero */
+		)))))))));
 	} sindexload_cn68xx;
 
     /**
@@ -605,22 +534,14 @@ typedef union {
      * entry can ever become available.)
      */
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		uint64_t mem_region:2;
+		CVMX_BITFIELD_FIELD(uint64_t mem_region:2,
 					    /**< Mips64 address region. Should be CVMX_IO_SEG */
-		uint64_t reserved_49_61:13;
+		CVMX_BITFIELD_FIELD(uint64_t reserved_49_61:13,
 					    /**< Must be zero */
-		uint64_t is_io:1;	    /**< Must be one */
-		uint64_t did:8;		    /**< the ID of POW -- did<2:0> == 4 in this case */
-		uint64_t reserved_0_39:40;
-					    /**< Must be zero */
-#else
-		uint64_t reserved_0_39:40;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t reserved_49_61:13;
-		uint64_t mem_region:2;
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t is_io:1,	    /**< Must be one */
+		CVMX_BITFIELD_FIELD(uint64_t did:8,		    /**< the ID of POW -- did<2:0> == 4 in this case */
+		CVMX_BITFIELD_FIELD(uint64_t reserved_0_39:40, /**< Must be zero */
+		)))));
 	} snull_rd;
 } cvmx_pow_load_addr_t;
 
@@ -634,30 +555,22 @@ typedef union {
      * Response to new work request loads
      */
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		/*
-		 * Set when no new work queue entry was returned.  *
-		 * If there was de-scheduled work, the HW will
-		 * definitely return it. When this bit is set, it
-		 * could mean either mean:
-		 *
-		 * - There was no work, or
-		 *
-		 * - There was no work that the HW could find. This
-		 *   case can happen, regardless of the wait bit value
-		 *   in the original request, when there is work in
-		 *   the IQ's that is too deep down the list.
-		 */
-		uint64_t no_work:1;
-		/* Must be zero */
-		uint64_t reserved_40_62:23;
-					    /**< Must be zero */
-		uint64_t addr:40;	    /**< 36 in O1 -- the work queue pointer */
-#else
-		uint64_t addr:40;
-		uint64_t reserved_40_62:23;
-		uint64_t no_work:1;
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t no_work:1,	    /**< Set when no new work queue entry was returned.
+                                                If there was de-scheduled work, the HW will definitely
+                                                return it. When this bit is set, it could mean
+                                                either mean:
+                                                - There was no work, or
+                                                - There was no work that the HW could find. This
+                                                    case can happen, regardless of the wait bit value
+                                                    in the original request, when there is work
+                                                    in the IQ's that is too deep down the list. */
+		CVMX_BITFIELD_FIELD(uint64_t pend_switch:1, /**< cn68XX and above, set if there was a pending tag switch*/
+		CVMX_BITFIELD_FIELD(uint64_t tt:2,
+		CVMX_BITFIELD_FIELD(uint64_t reserved_58_59:2,
+		CVMX_BITFIELD_FIELD(uint64_t grp:10,
+		CVMX_BITFIELD_FIELD(uint64_t reserved_42_47:6,    /**< Must be zero */
+		CVMX_BITFIELD_FIELD(uint64_t addr:42,	    /**< 36 in O1 -- the work queue pointer */
+		)))))));
 	} s_work;
 
     /**
@@ -856,6 +769,44 @@ typedef union {
 #endif
 	} s_sstatus1_cn68xx;
 
+	struct {
+#ifdef __BIG_ENDIAN_BITFIELD
+		uint64_t pend_switch:1;
+					    /**< Set when there is a pending non-UNSCHEDULED SWTAG or
+					SWTAG_FULL, and the SSO entry has not left the list for the original tag. */
+		uint64_t pend_get_work:1;
+					    /**< Set when there is a pending GET_WORK */
+		uint64_t pend_get_work_wait:1;
+					    /**< when pend_get_work is set, this biit indicates that the
+					 wait bit was set. */
+		uint64_t pend_nosched:1;
+					    /**< Set when nosched is desired and pend_desched is set. */
+		uint64_t pend_nosched_clr:1;
+					    /**< Set when there is a pending CLR_NSCHED. */
+		uint64_t pend_desched:1;
+					    /**< Set when there is a pending DESCHED or SWTAG_DESCHED. */
+		uint64_t pend_alloc_we:1;
+					    /**< Set when there is a pending ALLOC_WE. */
+		uint64_t reserved_56:1;
+		uint64_t prep_index:12;
+		uint64_t reserved_42_43:2;
+		uint64_t pend_tag:42;
+					    /**< This is the wqp when pend_nosched_clr is set. */
+#else
+		uint64_t pend_tag:42;
+		uint64_t reserved_42_43:2;
+		uint64_t prep_index:12;
+		uint64_t reserved_56:1;
+		uint64_t pend_prep:1;
+		uint64_t pend_alloc_we:1;
+		uint64_t pend_desched:1;
+		uint64_t pend_nosched_clr:1;
+		uint64_t pend_nosched:1;
+		uint64_t pend_get_work_wait:1;
+		uint64_t pend_get_work:1;
+		uint64_t pend_switch:1;
+#endif
+	} s_sso_ppx_pendwqp_cn78xx;
     /**
      * Result for a POW Status Load (when get_cur==1, get_wqp==0, and get_rev==0)
      */
@@ -919,6 +870,30 @@ typedef union {
 #endif
 	} s_sstatus2_cn68xx;
 
+	struct {
+#ifdef __BIG_ENDIAN_BITFIELD
+		uint64_t tailc:1;
+		uint64_t reserved_60_62:3;
+		uint64_t index:12;
+		uint64_t reserved_46_47:2;
+		uint64_t grp:10;
+		uint64_t head:1;
+		uint64_t tail:1;
+		uint64_t tt:2;
+		uint64_t tag:32;
+#else
+		uint64_t tag:32;
+		uint64_t tt:2;
+		uint64_t tail:1;
+		uint64_t head:1;
+		uint64_t grp:10;
+		uint64_t reserved_46_47:2;
+		uint64_t index:12;
+		uint64_t reserved_60_62:3;
+		uint64_t tailc:1;
+#endif
+	} s_sso_ppx_tag_cn78xx;
+
     /**
      * Result for a POW Status Load (when get_cur==1, get_wqp==0, and get_rev==1)
      */
@@ -972,6 +947,20 @@ typedef union {
 		uint64_t reserved_58_63:6;
 #endif
 	} s_sstatus3_cn68xx;
+
+	struct {
+#ifdef __BIG_ENDIAN_BITFIELD
+		uint64_t reserved_58_63:6;
+		uint64_t grp:10;
+		uint64_t reserved_42_47:6;
+		uint64_t tag:42;
+#else
+		uint64_t tag:42;
+		uint64_t reserved_42_47:6;
+		uint64_t grp:10;
+		uint64_t reserved_58_63:6;
+#endif
+	} s_sso_ppx_wqp_cn78xx;
 
     /**
      * Result for a POW Status Load (when get_cur==1, get_wqp==1, and get_rev==0)
@@ -1028,6 +1017,33 @@ typedef union {
 #endif
 	} s_sstatus4_cn68xx;
 
+	struct {
+#ifdef __BIG_ENDIAN_BITFIELD
+		uint64_t tailc:1;
+		uint64_t reserved_60_62:3;
+		uint64_t index:12;
+		uint64_t reserved_38_47:10;
+		uint64_t grp:10;
+		uint64_t head:1;
+		uint64_t tail:1;
+		uint64_t reserved_25:1;
+		uint64_t revlink_index:12;
+		uint64_t link_index_vld:1;
+		uint64_t link_index:12;
+#else
+		uint64_t link_index:12;
+		uint64_t link_index_vld:1;
+		uint64_t revlink_index:12;
+		uint64_t reserved_25:1;
+		uint64_t tail:1;
+		uint64_t head:1;
+		uint64_t grp:10;
+		uint64_t reserved_38_47:10;
+		uint64_t index:12;
+		uint64_t reserved_60_62:3;
+		uint64_t tailc:1;
+#endif
+	} s_sso_ppx_links_cn78xx;
     /**
      * Result for a POW Status Load (when get_cur==1, get_wqp==1, and get_rev==1)
      */
@@ -1096,6 +1112,23 @@ typedef union {
 #endif
 	} s_smemload0_cn68xx;
 
+	struct {
+#ifdef __BIG_ENDIAN_BITFIELD
+		uint64_t reserved_39_63:25;
+		uint64_t tail:1;	/**< Set when this SSO entry is at
+					the tail of its tag list (also set
+					when in the NULL or NULL_NULL state). */
+		uint64_t reserved_34_36:3;
+		uint64_t tag_type:2;	    /**< The tag type of the SSO entry. */
+		uint64_t tag:32;	    /**< The tag of the SSO entry. */
+#else
+		uint64_t tag:32;
+		uint64_t tag_type:2;
+		uint64_t reserved_34_36:3;
+		uint64_t tail:1;
+		uint64_t reserved_38_63:26;
+#endif
+	} s_sso_iaq_ppx_tag_cn78xx;
     /**
      * Result For POW Memory Load (get_des == 0 and get_wqp == 1)
      */
@@ -1135,6 +1168,26 @@ typedef union {
 		uint64_t reserved_51_63:16;
 #endif
 	} s_smemload1_cn68xx;
+
+	struct {
+#ifdef __BIG_ENDIAN_BITFIELD
+		uint64_t reserved_48_63:2;
+		uint64_t head:1;
+		uint64_t nosched:1;	    /**< The nosched bit for the SSO entry. */
+		uint64_t reserved_58_59:2;
+		uint64_t grp:10;		    /**< The group of the SSO entry. */
+		uint64_t reserved_42_47:6;
+		uint64_t wqp:42;	    /**< The WQP held in the SSO entry. */
+#else
+		uint64_t wqp:42;	    /**< The WQP held in the SSO entry. */
+		uint64_t reserved_42_47:6;
+		uint64_t grp:10;		    /**< The group of the SSO entry. */
+		uint64_t reserved_58_59:2;
+		uint64_t nosched:1;	    /**< The nosched bit for the SSO entry. */
+		uint64_t head:1;
+		uint64_t reserved_48_63:2;
+#endif
+	} s_sso_ientx_wqpgrp_cn78xx;
 
     /**
      * Result For POW Memory Load (get_des == 1)
@@ -1186,6 +1239,34 @@ typedef union {
 #endif
 	} s_smemload2_cn68xx;
 
+	struct {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pend_switch		:1;  /**< Set when there is a pending SWTAG, SWTAG_DESCHED, or SWTAG_FULL to ORDERED or ATOMIC. If
+					the register read was issued after an indexed GET_WORK, the DESCHED portion of a
+					SWTAG_DESCHED cannot still be pending. */
+	uint64_t pend_get_work		:1;  /**< Set when there is a pending GET_WORK. */
+	uint64_t pend_get_work_wait	:1;  /**< When PEND_GET_WORK is set, indicates that the WAITW bit was set. */
+	uint64_t pend_nosched		:1;  /**< Set when nosched is desired and PEND_DESCHED is set. */
+	uint64_t pend_nosched_clr	:1;  /**< Set when there is a pending CLR_NSCHED. */
+	uint64_t pend_desched		:1;  /**< Set when there is a pending DESCHED or SWTAG_DESCHED. */
+	uint64_t pend_alloc_we		:1;  /**< Set when there is a pending ALLOC_WE. */
+	uint64_t reserved_34_56		:23;
+	uint64_t pend_tt		:2;  /**< The tag type when PEND_SWITCH is set. */
+	uint64_t pend_tag		:32; /**< The tag when PEND_SWITCH is set. */
+#else
+	uint64_t pend_tag		:32;
+	uint64_t pend_tt		:2;
+	uint64_t reserved_34_56		:23;
+	uint64_t pend_alloc_we		:1;
+	uint64_t pend_desched		:1;
+	uint64_t pend_nosched_clr	:1;
+	uint64_t pend_nosched		:1;
+	uint64_t pend_get_work_wait	:1;
+	uint64_t pend_get_work		:1;
+	uint64_t pend_switch		:1;
+#endif
+	} s_sso_ppx_pendtag_cn78xx;
+
     /**
      * Result For SSO Memory Load (opcode is ML_LINKS)
      */
@@ -1193,11 +1274,11 @@ typedef union {
 #ifdef __BIG_ENDIAN_BITFIELD
 		uint64_t reserved_24_63:40;
 		uint64_t fwd_index:11;
-					    /**< The next entry in the tag list connected to the descheduled head. */
+		/**< The next entry in the tag list connected to the descheduled head. */
 		uint64_t reserved_11_12:2;
 		uint64_t next_index:11;
-					    /**< The next entry in the input, free, descheduled_head list
-                                                 (unpredicatble if entry is the tail of the list). */
+		/**< The next entry in the input, free, descheduled_head list
+		(unpredicatble if entry is the tail of the list). */
 #else
 		uint64_t next_index:11;
 		uint64_t reserved_11_12:2;
@@ -1205,6 +1286,28 @@ typedef union {
 		uint64_t reserved_24_63:40;
 #endif
 	} s_smemload3_cn68xx;
+
+	struct {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_28_63		:36;
+	uint64_t prev_index		:12;
+	/**< The previous entry in the tag chain. Unpredictable if the entry
+	 * is at the head of the list or the head of a conflicted tag chain. */
+	uint64_t reserved_13_15		:3;
+	uint64_t next_index_vld		:1;
+	/**< The NEXT_INDEX is valid. Unpredictable unless the entry is the
+	 * tail entry of an atomic tag chain. */
+	uint64_t next_index		:12;
+	/**< The next entry in the tag chain or conflicted tag chain.
+	 * Unpredictable if the entry is at the tail of the list. */
+#else
+	uint64_t next_index		:12;
+	uint64_t next_index_vld		:1;
+	uint64_t reserved_13_15		:3;
+	uint64_t prev_index		:12;
+	uint64_t reserved_28_63		:36;
+#endif
+	} s_sso_ientx_links_cn78xx;
 
     /**
      * Result For POW Index/Pointer Load (get_rmt == 0/get_des_get_tail == 0)
@@ -1246,7 +1349,8 @@ typedef union {
 	} sindexload0;
 
     /**
-     * Result for SSO Index/Pointer Load(opcode == IPL_IQ/IPL_DESCHED/IPL_NOSCHED)
+     * Result for SSO Index/Pointer Load(opcode ==
+     * IPL_IQ/IPL_DESCHED/IPL_NOSCHED)
      */
 	struct {
 #ifdef __BIG_ENDIAN_BITFIELD
@@ -1486,15 +1590,14 @@ typedef union {
 		/* Address field. addr<2:0> must be zero */
 		uint64_t addr:36;
 #else
-		uint64_t addr:36;
-		uint64_t reserved_36_39:4;
+		uint64_t addr:40;
 		uint64_t did:8;
 		uint64_t is_io:1;
 		uint64_t reserved_49_61:13;
 		uint64_t mem_reg:2;
 #endif
 	} stag;
-} cvmx_pow_tag_store_addr_t;
+} cvmx_pow_tag_store_addr_t;	/* FIXME- this type is unused */
 
 /**
  * decode of the store data when an IOBDMA SENDSINGLE is sent to POW
@@ -1503,58 +1606,32 @@ typedef union {
 	uint64_t u64;
 
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		/*
-		 * the (64-bit word) location in scratchpad to write
-		 * to (if len != 0)
-		 */
-		uint64_t scraddr:8;
+		CVMX_BITFIELD_FIELD(uint64_t scraddr:8,
 				    /**< the (64-bit word) location in scratchpad to write to (if len != 0) */
-		uint64_t len:8;
+		CVMX_BITFIELD_FIELD(uint64_t len:8,
 				    /**< the number of words in the response (0 => no response) */
-		uint64_t did:8;
+		CVMX_BITFIELD_FIELD(uint64_t did:8,
 				    /**< the ID of the device on the non-coherent bus */
-		uint64_t unused:36;
-		uint64_t wait:1;
+		CVMX_BITFIELD_FIELD(uint64_t unused:36,
+		CVMX_BITFIELD_FIELD(uint64_t wait:1,
 				    /**< if set, don't return load response until work is available */
-		uint64_t unused2:3;
-#else
-		uint64_t unused2:3;
-		uint64_t wait:1;
-		uint64_t unused:36;
-		uint64_t did:8;
-		uint64_t len:8;
-		uint64_t scraddr:8;
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t unused2:3,
+		))))));
 	} s;
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
-		uint64_t scraddr:8;/**< the (64-bit word) location in scratchpad to write to (if len != 0) */
-		uint64_t len:8;    /**< the number of words in the response (0 => no response) */
-		uint64_t did:8;    /**< the ID of the device on the non-coherent bus */
-		uint64_t node:2;   /**< OCI node numbe, should always be local node */
-		uint64_t unused1:4;
-		uint64_t indexed:1;
-		uint64_t grouped:1;
-		uint64_t rtngrp:1;
-		uint64_t unused2:13;
-		uint64_t index_grp_mask:12;
-		uint64_t wait:1;   /**< if set, don't return load response until work is available */
-		uint64_t unused3:3;
-#else
-		uint64_t unused3:3;
-		uint64_t wait:1;   /**< if set, don't return load response until work is available */
-		uint64_t index_grp_mask:12;
-		uint64_t unused2:13;
-		uint64_t rtngrp:1;
-		uint64_t grouped:1;
-		uint64_t indexed:1;
-		uint64_t unused1:4;
-		uint64_t node:2;
-		uint64_t did:8;    /**< the ID of the device on the non-coherent bus */
-		uint64_t len:8;    /**< the number of words in the response (0 => no response) */
-		uint64_t scraddr:8;/**< the (64-bit word) location in scratchpad to write to (if len != 0) */
-#endif
+		CVMX_BITFIELD_FIELD(uint64_t scraddr:8,/**< the (64-bit word) location in scratchpad to write to (if len != 0) */
+		CVMX_BITFIELD_FIELD(uint64_t len:8,    /**< the number of words in the response (0 => no response) */
+		CVMX_BITFIELD_FIELD(uint64_t did:8,    /**< the ID of the device on the non-coherent bus */
+		CVMX_BITFIELD_FIELD(uint64_t node:2,   /**< OCI node numbe, should always be local node */
+		CVMX_BITFIELD_FIELD(uint64_t unused1:4,
+		CVMX_BITFIELD_FIELD(uint64_t indexed:1,
+		CVMX_BITFIELD_FIELD(uint64_t grouped:1,
+		CVMX_BITFIELD_FIELD(uint64_t rtngrp:1,
+		CVMX_BITFIELD_FIELD(uint64_t unused2:13,
+		CVMX_BITFIELD_FIELD(uint64_t index_grp_mask:12,
+		CVMX_BITFIELD_FIELD(uint64_t wait:1,   /**< if set, don't return load response until work is available */
+		CVMX_BITFIELD_FIELD(uint64_t unused3:3,
+		))))))))))));
 	} s_cn78xx;
 } cvmx_pow_iobdma_store_t;
 
@@ -1583,13 +1660,17 @@ static inline cvmx_pow_tag_info_t cvmx_pow_get_current_tag(void)
 
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		cvmx_sso_sl_ppx_tag_t sl_ppx_tag;
+		cvmx_xgrp_t xgrp;
 		int node = cvmx_get_node_num();
 		int core = cvmx_get_core_num();
 		sl_ppx_tag.u64 = cvmx_read_csr_node(node, CVMX_SSO_SL_PPX_TAG(core));
-		result.grp = sl_ppx_tag.s.grp;
 		result.index = sl_ppx_tag.s.index;
 		result.tag_type = sl_ppx_tag.s.tt;
 		result.tag      = sl_ppx_tag.s.tag;
+
+		/* Return legacy style group 0..15 */
+		xgrp.xgrp -=  sl_ppx_tag.s.grp;
+		result.grp = xgrp.group;
 	} else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
 		cvmx_pow_sl_tag_resp_t load_resp;
 		load_addr.u64 = 0;
@@ -1688,14 +1769,21 @@ static inline void cvmx_pow_tag_sw_wait(void)
 {
 	const uint64_t MAX_CYCLES = 1ull << 31;
 	uint64_t switch_complete;
-	uint64_t start_cycle = cvmx_get_cycle();
+	uint64_t start_cycle;
+
+	if (CVMX_ENABLE_POW_CHECKS)
+		start_cycle = cvmx_get_cycle();
+
 	while (1) {
 		CVMX_MF_CHORD(switch_complete);
-		if (cvmx_unlikely(switch_complete))
+		if (cvmx_likely(switch_complete))
 			break;
-		if (unlikely(cvmx_get_cycle() > start_cycle + MAX_CYCLES)) {
-			pr_warn("Tag switch is taking a long time, possible deadlock\n");
-			start_cycle = -MAX_CYCLES - 1;
+		if (CVMX_ENABLE_POW_CHECKS) {
+			if (cvmx_unlikely(cvmx_get_cycle() >
+				(start_cycle + MAX_CYCLES))) {
+			    pr_warn("Tag switch is taking a long time, possible deadlock\n");
+			start_cycle += MAX_CYCLES - 1;
+			}
 		}
 	}
 }
@@ -1719,13 +1807,19 @@ static inline cvmx_wqe_t *cvmx_pow_work_request_sync_nocheck(cvmx_pow_wait_t wai
 		__cvmx_pow_warn_if_pending_switch(__func__);
 
 	ptr.u64 = 0;
-	ptr.swork.mem_region = CVMX_IO_SEG;
-	ptr.swork.is_io = 1;
-	ptr.swork.did = CVMX_OCT_DID_TAG_SWTAG;
-	ptr.swork.wait = wait;
 
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		ptr.swork_78xx.node = cvmx_get_node_num();
+		ptr.swork_78xx.mem_region = CVMX_IO_SEG;
+		ptr.swork_78xx.is_io = 1;
+		ptr.swork_78xx.did = CVMX_OCT_DID_TAG_SWTAG;
+		ptr.swork_78xx.wait = wait;
+	} else {
+		ptr.swork.mem_region = CVMX_IO_SEG;
+		ptr.swork.is_io = 1;
+		ptr.swork.did = CVMX_OCT_DID_TAG_SWTAG;
+		ptr.swork.wait = wait;
+
 	}
 
 	result.u64 = cvmx_read_csr(ptr.u64);
@@ -1822,44 +1916,83 @@ static inline void cvmx_pow_work_request_async_nocheck(int scr_addr, cvmx_pow_wa
 }
 
 /**
- * Asynchronous work request.  Work is requested from the POW unit, and should later
+ * Asynchronous work request.  Work is requested from the SSO unit, and should later
  * be checked with function cvmx_pow_work_response_async.
  * This function does NOT wait for previous tag switches to complete,
  * so the caller must ensure that there is not a pending tag switch.
  *
+ * Only works on CN78XX style SSO.
+ *
  * @param scr_addr Scratch memory address that response will be returned to,
  *                  which is either a valid WQE, or a response with the invalid bit set.
  *                  Byte address, must be 8 byte aligned.
- * @param group     group to receive work for.
+ * @param xgrp      group to receive work for (0-255).
  * @param wait      1 to cause response to wait for work to become available (or timeout)
  *                  0 to cause response to return immediately
  */
-static inline void cvmx_sso_work_request_grp_async_nocheck(int scr_addr, unsigned group, cvmx_pow_wait_t wait)
+static inline void cvmx_sso_work_request_grp_async_nocheck(int scr_addr,
+	cvmx_xgrp_t xgrp, cvmx_pow_wait_t wait)
 {
 	cvmx_pow_iobdma_store_t data;
-	if (CVMX_ENABLE_POW_CHECKS)
+	unsigned int node = cvmx_get_node_num();
+	if (CVMX_ENABLE_POW_CHECKS) {
 		__cvmx_pow_warn_if_pending_switch(__func__);
+		cvmx_warn_if(!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE), "Not CN78XX");
+	}
 
 	/* scr_addr must be 8 byte aligned */
 	data.u64 = 0;
-	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
-		unsigned int node = cvmx_get_node_num();
-		data.s_cn78xx.scraddr = scr_addr >> 3;
-		data.s_cn78xx.len = 1;
-		data.s_cn78xx.did = CVMX_OCT_DID_TAG_SWTAG;
-		data.s_cn78xx.grouped = 1;
-		data.s_cn78xx.index_grp_mask = (node << 8) | (group & 0xff);
-		data.s_cn78xx.wait = wait;
-		data.s_cn78xx.node = node;
-	} else {
-		/* GRP not supported on older chips, ignore it */
-		data.s.scraddr = scr_addr >> 3;
-		data.s.len = 1;
-		data.s.did = CVMX_OCT_DID_TAG_SWTAG;
-		data.s.wait = wait;
-	}
+	data.s_cn78xx.scraddr = scr_addr >> 3;
+	data.s_cn78xx.len = 1;
+	data.s_cn78xx.did = CVMX_OCT_DID_TAG_SWTAG;
+	data.s_cn78xx.grouped = 1;
+	data.s_cn78xx.index_grp_mask = (node << 8) | xgrp.xgrp ;
+	data.s_cn78xx.wait = wait;
+	data.s_cn78xx.node = node;
 
 	cvmx_send_single(data.u64);
+}
+
+/**
+ * Synchronous work request.  Requests work from a specific SSO group.
+ * This function waits for any previous tag switch to complete before
+ * requesting the new work.
+ *
+ * Only works on CN78XX style SSO.
+ *
+ * @param lgrp The local group number (within the SSO of the node of the caller) from which to get the work.
+ * @param wait   When set, call stalls until work becomes avaiable, or times out.
+ *               If not set, returns immediately.
+ *
+ * @return Returns the WQE pointer from SSO. Returns NULL if no work was available.
+ */
+static inline void *cvmx_sso_work_request_grp_sync_nocheck(unsigned int lgrp, cvmx_pow_wait_t wait)
+{
+	cvmx_pow_load_addr_t ptr;
+	cvmx_pow_tag_load_resp_t result;
+	unsigned int node = cvmx_get_node_num() & 3;
+
+	if (CVMX_ENABLE_POW_CHECKS) {
+		__cvmx_pow_warn_if_pending_switch(__func__);
+		cvmx_warn_if(!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE), "Not CN78XX");
+	}
+
+	ptr.u64 = 0;
+
+	ptr.swork_78xx.mem_region = CVMX_IO_SEG;
+	ptr.swork_78xx.is_io = 1;
+	ptr.swork_78xx.did = CVMX_OCT_DID_TAG_SWTAG;
+	ptr.swork_78xx.node = node;
+	ptr.swork_78xx.grouped = 1;
+	ptr.swork_78xx.index = (lgrp & 0xff) | node << 8;
+	ptr.swork_78xx.wait = wait;
+
+	result.u64 = cvmx_read_csr(ptr.u64);
+
+	if (result.s_work.no_work)
+		return NULL;
+	else
+		return cvmx_phys_to_ptr(result.s_work.addr);
 }
 
 /**
@@ -1971,7 +2104,6 @@ static inline void cvmx_pow_tag_sw_nocheck(uint32_t tag, cvmx_pow_tag_type_t tag
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		tag_req.s_cn78xx_other.op   = CVMX_POW_TAG_OP_SWTAG;
 		tag_req.s_cn78xx_other.type = tag_type;
-		/* FIXME: tag */
 	} else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
 		tag_req.s_cn68xx_other.op = CVMX_POW_TAG_OP_SWTAG;
 		tag_req.s_cn68xx_other.tag = tag;
@@ -2060,6 +2192,7 @@ static inline void cvmx_pow_tag_sw_full_nocheck(cvmx_wqe_t * wqp, uint32_t tag, 
 {
 	union cvmx_pow_tag_req_addr ptr;
 	cvmx_pow_tag_req_t tag_req;
+	unsigned node = cvmx_get_node_num();
 
 	if (CVMX_ENABLE_POW_CHECKS) {
 		cvmx_pow_tag_info_t current_tag;
@@ -2089,10 +2222,36 @@ static inline void cvmx_pow_tag_sw_full_nocheck(cvmx_wqe_t * wqp, uint32_t tag, 
 
 	tag_req.u64 = 0;
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		unsigned xgrp;
+		uint64_t wqp_phys;
+
+		wqp_phys = cvmx_ptr_to_phys(wqp);
+
+		if(wqp_phys!= 0x80) {
+			/* If WQE is valid, use its XGRP */
+			xgrp = wqp->word1.cn78xx.grp;
+			/* Use XGRP[node] too */
+			node = xgrp >> 8;
+			/* Modify XGRP with legacy group # from arg */
+			xgrp &= ~0xf8;
+			xgrp |= 0xf8 & (group << 3);
+
+			wqp->word1.cn78xx.grp = xgrp;
+			wqp->word1.cn78xx.tag = tag;
+			wqp->word1.cn78xx.tag_type = tag_type;
+			CVMX_SYNCWS;
+		} else {
+			/* If no WQE, build XGRP with QoS=0 and current node */
+			xgrp = group << 3;
+			xgrp |= node << 8;
+		}
+
 		tag_req.s_cn78xx_other.op = CVMX_POW_TAG_OP_SWTAG_FULL;
 		tag_req.s_cn78xx_other.type = tag_type;
-		tag_req.s_cn78xx_other.grp = group;
-		tag_req.s_cn78xx_other.wqp = CAST64(wqp); /* FIXME: phys ? */
+		tag_req.s_cn78xx_other.grp = xgrp;
+		tag_req.s_cn78xx_other.wqp = wqp_phys;
+
+		/* WQE GRP is 10 bits, includes node # */
 	}
 	else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
 		tag_req.s_cn68xx_other.op = CVMX_POW_TAG_OP_SWTAG_FULL;
@@ -2111,13 +2270,13 @@ static inline void cvmx_pow_tag_sw_full_nocheck(cvmx_wqe_t * wqp, uint32_t tag, 
 		ptr.s_cn78xx.mem_region = CVMX_IO_SEG;
 		ptr.s_cn78xx.is_io = 1;
 		ptr.s_cn78xx.did = CVMX_OCT_DID_TAG_SWTAG;
-		ptr.s_cn78xx.node =  cvmx_get_node_num();
+		ptr.s_cn78xx.node = node;
 		ptr.s_cn78xx.tag  = tag;
 	} else {
 		ptr.s.mem_region = CVMX_IO_SEG;
 		ptr.s.is_io = 1;
 		ptr.s.did = CVMX_OCT_DID_TAG_SWTAG;
-		ptr.s.addr = CAST64(wqp);
+		ptr.s.addr = cvmx_ptr_to_phys(wqp);
 	}
 
 	/* once this store arrives at POW, it will attempt the switch
@@ -2245,15 +2404,38 @@ static inline void cvmx_pow_tag_sw_null(void)
  */
 static inline void cvmx_pow_work_submit(cvmx_wqe_t * wqp, uint32_t tag, cvmx_pow_tag_type_t tag_type, uint64_t qos, uint64_t grp)
 {
-	cvmx_addr_t ptr;
+	union cvmx_pow_tag_req_addr ptr;
 	cvmx_pow_tag_req_t tag_req;
 
 	tag_req.u64 = 0;
+	ptr.u64 = 0;
 
-	wqp->word1.tag = tag;
-	wqp->word1.tag_type = tag_type;
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		unsigned node = cvmx_get_node_num();
+		unsigned xgrp;
 
-	if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
+		xgrp = (grp & 0x1f) << 3 ;
+		xgrp |= (qos & 7);
+		xgrp |= 0x300 & (node << 8);
+ 
+		wqp->word1.cn78xx.rsvd_0 = 0;
+		wqp->word1.cn78xx.rsvd_1 = 0;
+		wqp->word1.cn78xx.tag = tag;
+		wqp->word1.cn78xx.tag_type = tag_type;
+		wqp->word1.cn78xx.grp = xgrp;
+		CVMX_SYNCWS;
+
+		tag_req.s_cn78xx_other.op = CVMX_POW_TAG_OP_ADDWQ;
+		tag_req.s_cn78xx_other.type = tag_type;
+		tag_req.s_cn78xx_other.wqp = cvmx_ptr_to_phys(wqp);
+		tag_req.s_cn78xx_other.grp = xgrp;
+
+		ptr.s_cn78xx.did = 0x66; //CVMX_OCT_DID_TAG_TAG6;
+		ptr.s_cn78xx.mem_region = CVMX_IO_SEG;
+		ptr.s_cn78xx.is_io = 1;
+		ptr.s_cn78xx.node = node;
+		ptr.s_cn78xx.tag = tag;
+	} else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
 		/* Reset all reserved bits */
 		wqp->word1.cn68xx.zero_0 = 0;
 		wqp->word1.cn68xx.zero_1 = 0;
@@ -2261,29 +2443,138 @@ static inline void cvmx_pow_work_submit(cvmx_wqe_t * wqp, uint32_t tag, cvmx_pow
 		wqp->word1.cn68xx.qos = qos;
 		wqp->word1.cn68xx.grp = grp;
 
+		wqp->word1.tag = tag;
+		wqp->word1.tag_type = tag_type;
+
 		tag_req.s_cn68xx_add.op = CVMX_POW_TAG_OP_ADDWQ;
 		tag_req.s_cn68xx_add.type = tag_type;
 		tag_req.s_cn68xx_add.tag = tag;
 		tag_req.s_cn68xx_add.qos = qos;
 		tag_req.s_cn68xx_add.grp = grp;
+
+		ptr.s.mem_region = CVMX_IO_SEG;
+		ptr.s.is_io = 1;
+		ptr.s.did = CVMX_OCT_DID_TAG_TAG1;
+		ptr.s.addr = cvmx_ptr_to_phys(wqp);
 	} else {
 		/* Reset all reserved bits */
 		wqp->word1.cn38xx.zero_2 = 0;
 		wqp->word1.cn38xx.qos = qos;
 		wqp->word1.cn38xx.grp = grp;
 
+		wqp->word1.tag = tag;
+		wqp->word1.tag_type = tag_type;
+
 		tag_req.s_cn38xx.op = CVMX_POW_TAG_OP_ADDWQ;
 		tag_req.s_cn38xx.type = tag_type;
 		tag_req.s_cn38xx.tag = tag;
 		tag_req.s_cn38xx.qos = qos;
 		tag_req.s_cn38xx.grp = grp;
+
+		ptr.s.mem_region = CVMX_IO_SEG;
+		ptr.s.is_io = 1;
+		ptr.s.did = CVMX_OCT_DID_TAG_TAG1;
+		ptr.s.addr = cvmx_ptr_to_phys(wqp);
 	}
 
+	/* SYNC write to memory before the work submit.  This is necessary
+	 ** as POW may read values from DRAM at this time */
+	CVMX_SYNCWS;
+	cvmx_write_io(ptr.u64, tag_req.u64);
+}
+
+/**
+ * Submits work to an SSO group on any OCI node.
+ * This function updates the work queue entry in DRAM to match
+ * the arguments given.
+ * Note that the tag provided is for the work queue entry submitted,
+ * and is unrelated to the tag that the core currently holds.
+ *
+ * @param wqp pointer to work queue entry to submit. 
+ * This entry is updated to match the other parameters
+ * @param tag tag value to be assigned to work queue entry
+ * @param tag_type type of tag
+ * @param xgrp native CN78XX group in the range 0..255
+ * @param node The OCI node number for the target group
+ *
+ * When this function is called on a model prior to CN78XX, which does
+ * not support OCI nodes, the 'node' argument is ignored, and the 'xgrp'
+ * parameter is converted into 'qos' (the lower 3 bits) and 'grp' (the higher
+ * 5 bits), following the backward-compatibility scheme of translating
+ * between new and old style group numbers.
+ */
+static inline void cvmx_pow_work_submit_node(cvmx_wqe_t * wqp, uint32_t tag, cvmx_pow_tag_type_t tag_type, uint8_t xgrp, uint8_t node)
+{
+	union cvmx_pow_tag_req_addr ptr;
+	cvmx_pow_tag_req_t tag_req;
+
+	tag_req.u64 = 0;
 	ptr.u64 = 0;
-	ptr.sio.mem_region = CVMX_IO_SEG;
-	ptr.sio.is_io = 1;
-	ptr.sio.did = CVMX_OCT_DID_TAG_TAG1;
-	ptr.sio.offset = cvmx_ptr_to_phys(wqp);
+
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		unsigned gxgrp;
+
+		gxgrp = xgrp & 0xff;
+		gxgrp |= node << 8;
+ 
+		wqp->word1.cn78xx.rsvd_0 = 0;
+		wqp->word1.cn78xx.rsvd_1 = 0;
+		wqp->word1.cn78xx.tag = tag;
+		wqp->word1.cn78xx.tag_type = tag_type;
+		wqp->word1.cn78xx.grp = gxgrp;
+		CVMX_SYNCWS;
+
+		tag_req.s_cn78xx_other.op = CVMX_POW_TAG_OP_ADDWQ;
+		tag_req.s_cn78xx_other.type = tag_type;
+		tag_req.s_cn78xx_other.wqp = cvmx_ptr_to_phys(wqp);
+		tag_req.s_cn78xx_other.grp = xgrp;
+
+		ptr.s_cn78xx.did = 0x66; //CVMX_OCT_DID_TAG_TAG6;
+		ptr.s_cn78xx.mem_region = CVMX_IO_SEG;
+		ptr.s_cn78xx.is_io = 1;
+		ptr.s_cn78xx.node = node;
+		ptr.s_cn78xx.tag = tag;
+	} else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
+		/* Reset all reserved bits */
+		wqp->word1.cn68xx.zero_0 = 0;
+		wqp->word1.cn68xx.zero_1 = 0;
+		wqp->word1.cn68xx.zero_2 = 0;
+		wqp->word1.cn68xx.qos = xgrp & 0x7;
+		wqp->word1.cn68xx.grp = xgrp >> 3;
+
+		wqp->word1.tag = tag;
+		wqp->word1.tag_type = tag_type;
+
+		tag_req.s_cn68xx_add.op = CVMX_POW_TAG_OP_ADDWQ;
+		tag_req.s_cn68xx_add.type = tag_type;
+		tag_req.s_cn68xx_add.tag = tag;
+		tag_req.s_cn68xx_add.qos = xgrp & 0x7;
+		tag_req.s_cn68xx_add.grp = xgrp >> 3;
+
+		ptr.s.mem_region = CVMX_IO_SEG;
+		ptr.s.is_io = 1;
+		ptr.s.did = CVMX_OCT_DID_TAG_TAG1;
+		ptr.s.addr = cvmx_ptr_to_phys(wqp);
+	} else {
+		/* Reset all reserved bits */
+		wqp->word1.cn38xx.zero_2 = 0;
+		wqp->word1.cn38xx.qos = xgrp & 0x7;
+		wqp->word1.cn38xx.grp = xgrp >> 3;
+
+		wqp->word1.tag = tag;
+		wqp->word1.tag_type = tag_type;
+
+		tag_req.s_cn38xx.op = CVMX_POW_TAG_OP_ADDWQ;
+		tag_req.s_cn38xx.type = tag_type;
+		tag_req.s_cn38xx.tag = tag;
+		tag_req.s_cn38xx.qos = xgrp & 0x7;
+		tag_req.s_cn38xx.grp = xgrp >> 3;
+
+		ptr.s.mem_region = CVMX_IO_SEG;
+		ptr.s.is_io = 1;
+		ptr.s.did = CVMX_OCT_DID_TAG_TAG1;
+		ptr.s.addr = cvmx_ptr_to_phys(wqp);
+	}
 
 	/* SYNC write to memory before the work submit.  This is necessary
 	 ** as POW may read values from DRAM at this time */
@@ -2297,22 +2588,69 @@ static inline void cvmx_pow_work_submit(cvmx_wqe_t * wqp, uint32_t tag, cvmx_pow
  * 16 groups.
  *
  * @param core_num   core to apply mask to
- * @param mask   Group mask. There are 16 groups, so only bits 0-15 are valid,
- *               representing groups 0-15.
+ * @param mask   Group mask, one bit for up to 64 groups.
  *               Each 1 bit in the mask enables the core to accept work from
  *               the corresponding group.
+ *               The CN68XX supports 64 groups, earlier models only support
+ *               16 groups.
+ *
+ * The CN78XX in backwards compatibility mode allows up to 32 groups,
+ * so the 'mask' argument has one bit for every of the legacy
+ * groups, and a '1' in the mask causes a total of 8 groups
+ * which share the legacy group numbher and 8 qos levels,
+ * to be enabled for the calling processor core.
+ * A '0' in the mask will disable the current core
+ * from receiving work from the associated group.
  */
 static inline void cvmx_pow_set_group_mask(uint64_t core_num, uint64_t mask)
 {
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		const unsigned mask_set = 0;
+		cvmx_sso_ppx_sx_grpmskx_t grp_msk;
+		unsigned core, node;
+		unsigned rix;	/* Register index */
+		unsigned grp;	/* Legacy group # */
+		unsigned bit;	/* bit index */
+		unsigned xgrp;	/* native group # */
 
-	if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
+		cvmx_warn_if(mask & (~0xffffffffull),
+			"%s group number range exceeded: %#llx\n",
+			__FUNCTION__, (unsigned long long) mask);
+
+		node = cvmx_coremask_core_to_node(core_num);
+		core = cvmx_coremask_core_on_node(core_num);
+	
+		/* 256 groups divided into 4 X 64 bit registers */
+		for (rix = 0; rix < (CVMX_SSO_NUM_XGRP >> 6); rix ++ ) {
+			grp_msk.u64 = 0;
+			for(bit = 0; bit < 64; bit++) {
+				/* 8-bit native XGRP number */
+				xgrp = (rix << 6) | bit;
+				/* Legacy 5-bit group number */
+				grp = (xgrp >> 3) & 0x1f;
+				/* Inspect legacy mask by legacy group */
+				if(mask & (1ull << grp))
+					grp_msk.s.grp_msk |= 1ull << bit;
+				/* Pre-set to all 0's */
+			}
+
+			cvmx_write_csr_node(node,
+				CVMX_SSO_PPX_SX_GRPMSKX(core, mask_set, rix),
+				grp_msk.u64);
+		}
+	} else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
 		cvmx_sso_ppx_grp_msk_t grp_msk;
 		grp_msk.s.grp_msk = mask;
 		cvmx_write_csr(CVMX_SSO_PPX_GRP_MSK(core_num), grp_msk.u64);
 	} else {
 		cvmx_pow_pp_grp_mskx_t grp_msk;
+
+		cvmx_warn_if(mask & ~0xffffull,
+			"%s group number range exceeded: %#llx\n",
+			__FUNCTION__, (unsigned long long) mask);
+
 		grp_msk.u64 = cvmx_read_csr(CVMX_POW_PP_GRP_MSKX(core_num));
-		grp_msk.s.grp_msk = mask;
+		grp_msk.s.grp_msk = mask & 0xffff;
 		cvmx_write_csr(CVMX_POW_PP_GRP_MSKX(core_num), grp_msk.u64);
 	}
 }
@@ -2322,34 +2660,62 @@ static inline void cvmx_pow_set_group_mask(uint64_t core_num, uint64_t mask)
  * indicates which groups each core will accept work from. There are
  * 256 groups in 78xx.
  *
- * @param node 		node number
- * @param core_num   	core to apply mask to
+ * @param core_num   	processor core to apply mask to
  * @param mask_set	78XX has 2 set of masks per core each with 256 groups.
- *                      Cores can choose which mask set to get work from when
-                        getting the work.
- * @param mask   	Group mask. There are 256 groups, divided in 4 of 64 bit mask sets.
+ *                      Bit 0 represents the first mask set, bit 1 the second,
+ * 			when set a each member of <xgrp_mask> will be added
+ * 			to the core, when cleared, each of the groups in
+ * 			<xgrp_mask> will be removed from the mask set.
+ * @param xgrp_mask   	Group mask. There are 256 groups, divided in 4 of 64 bit mask sets.
  * 	        	Each 1 bit in the mask enables the core to accept work from
  *      	        the corresponding group.
+ *
+ * Note: each core can be configured to accept work in accordance to both
+ * mask sets, with the first having higher precedence over the second,
+ * or to accept work in accordance to just one of the two mask sets.
+ * The <core_num> argument represents a processor core on any node
+ * in a coherent multi-chip system.
+ *
+ * TBD: function to configure which mask_set is applied to a core.
  */
-static inline void cvmx_pow_set_group_mask_78xx(int node, uint64_t core_num,
-		uint64_t mask_set, const uint64_t mask[])
+static inline void cvmx_pow_set_xgrp_mask( uint64_t core_num,
+		uint8_t mask_set, const uint64_t xgrp_mask[])
 {
-	int grp;
+	cvmx_sso_ppx_sx_grpmskx_t grp_msk;
+	unsigned grp, node, core;
 
-	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
-		cvmx_sso_ppx_sx_grpmskx_t grp_msk;
-		for (grp = 0; grp < CVMX_SSO_NUM_GROUPS_SET; grp++) {
-			if(mask_set & 1) {
-				grp_msk.u64 = cvmx_read_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core_num, 0, grp));
-				grp_msk.s.grp_msk |= mask[grp];
-				cvmx_write_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core_num, 0, grp), grp_msk.u64);
-			}
-			if(mask_set & 2) {
-				grp_msk.u64 = cvmx_read_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core_num, 1, grp));
-				grp_msk.s.grp_msk |= mask[grp];
-				cvmx_write_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core_num, 1, grp), grp_msk.u64);
-			}
-		}
+	if (!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_dprintf(
+			"ERROR: %s is not supported on this chip)\n", 
+			__FUNCTION__);
+		return;
+	}
+
+	node = cvmx_coremask_core_to_node(core_num);
+	core = cvmx_coremask_core_on_node(core_num);
+
+	for (grp = 0; grp < (CVMX_SSO_NUM_XGRP >> 6); grp++) {
+		uint64_t reg_addr;
+
+		reg_addr = CVMX_SSO_PPX_SX_GRPMSKX(core, 0, grp),
+		grp_msk.u64 = cvmx_read_csr_node(node,reg_addr);
+
+		if (mask_set & 1)
+			grp_msk.s.grp_msk |= xgrp_mask[grp];
+		else
+			grp_msk.s.grp_msk &= ~xgrp_mask[grp];
+
+		cvmx_write_csr_node(node, reg_addr, grp_msk.u64);
+
+		reg_addr = CVMX_SSO_PPX_SX_GRPMSKX(core, 1, grp),
+		grp_msk.u64 = cvmx_read_csr_node(node,reg_addr);
+
+		if (mask_set & 2)
+			grp_msk.s.grp_msk |= xgrp_mask[grp];
+		else
+			grp_msk.s.grp_msk &= ~xgrp_mask[grp];
+
+		cvmx_write_csr_node(node, reg_addr, grp_msk.u64);
 	}
 }
 
@@ -2357,44 +2723,70 @@ static inline void cvmx_pow_set_group_mask_78xx(int node, uint64_t core_num,
  * This function sets the the affinity of group to the cores in 78xx.
  * It sets up all the cores in core_mask to accept work from the specified group.
  *
- * @param node 		node number
- * @param group  	group to accept work from.
+ * @param xgrp  	group to accept work from, 0 - 255.
  * @param core_mask	mask of all the cores which will accept work from this group
  * @param mask_set	every core has set of 2 masks which can be set to accept work
  *                      from 256 groups. At the time of get_work, cores can choose which
  *			mask_set to get work from.
+ * 			<mask_set> values range from 0 to 3, where
+ * 			each of the two bits represents a mask set.
+ * 			Cores will be added to the mask set whith corresponding
+ * 			bit set, and removed from the mask set with 
+ * 			corresponding bit clear.
+ *
+ * Note: cores can only accept work from SSO groups on the same node,
+ * so the node number for the group is derived from the core number.
+ *
  */
-static inline void cvmx_sso_set_group_core_affinity(int node, int group,
-		uint64_t core_mask, int mask_set)
+static inline void cvmx_sso_set_group_core_affinity(cvmx_xgrp_t xgrp,
+		const cvmx_coremask_t * core_mask, uint8_t mask_set)
 {
 	cvmx_sso_ppx_sx_grpmskx_t grp_msk;
 	int core;
-	int grp_index  = group >> 6;
-	int bit_pos = group % 64;
+	int grp_index  = xgrp.xgrp >> 6;
+	int bit_pos = xgrp.xgrp % 64;
 
-	//cvmx_dprintf("Vinita group=%d grp_index=%d bit_pos=%d core_mask=0x%lx\n",group,grp_index,bit_pos,core_mask);
-	while((core = __builtin_ffsll(core_mask))) {
-		core--;
-		if(mask_set & 1) {
-			grp_msk.u64 = cvmx_read_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core, 0, grp_index));
-			grp_msk.s.grp_msk |= (uint64_t)(1ull << bit_pos);
-			cvmx_write_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core, 0, grp_index), grp_msk.u64);
-		}
-		if(mask_set & 2) {
-			grp_msk.u64 = cvmx_read_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core, 1, grp_index));
-			grp_msk.s.grp_msk |= (uint64_t)(1ull << bit_pos);
-			cvmx_write_csr_node(node, CVMX_SSO_PPX_SX_GRPMSKX(core, 1, grp_index), grp_msk.u64);
-		}
-		core_mask &= core_mask - 1;
+	if (!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_dprintf(
+			"ERROR: %s is not supported on this chip)\n", 
+			__FUNCTION__);
+		return;
 	}
 
+	cvmx_coremask_for_each_core(core, core_mask) {
+		unsigned node, ncore;
+		uint64_t reg_addr;
+
+		node = cvmx_coremask_core_to_node(core);
+		ncore = cvmx_coremask_core_on_node(core);
+
+		reg_addr = CVMX_SSO_PPX_SX_GRPMSKX(ncore, 0, grp_index);
+		grp_msk.u64 = cvmx_read_csr_node(node, reg_addr);
+
+		if(mask_set & 1) 
+			grp_msk.s.grp_msk |= (1ull << bit_pos);
+		else
+			grp_msk.s.grp_msk &= ~(1ull << bit_pos);
+		
+		cvmx_write_csr_node(node, reg_addr, grp_msk.u64);
+
+		reg_addr = CVMX_SSO_PPX_SX_GRPMSKX(ncore, 1, grp_index);
+		grp_msk.u64 = cvmx_read_csr_node(node, reg_addr);
+
+		if(mask_set & 2) 
+			grp_msk.s.grp_msk |= (1ull << bit_pos);
+		else
+			grp_msk.s.grp_msk &= ~(1ull << bit_pos);
+		
+		cvmx_write_csr_node(node, reg_addr, grp_msk.u64);
+	}
 }
 
 /**
  * This function sets the priority and group affinity arbitration for each group.
  *
  * @param node 		node number
- * @param group  	group to apply mask parameters to
+ * @param xgrp  	group 0 - 255 to apply mask parameters to
  * @param priority	priority of the group relative to other groups
  *			0x0 - highest priority
  *			0x7 - lowest priority
@@ -2411,20 +2803,32 @@ static inline void cvmx_sso_set_group_core_affinity(int node, int group,
  *                      to modify only weight   -- set bit1
  *			to modify only affinity -- set bit2
  */
-static inline void cvmx_sso_set_group_priority(int node , int group, int priority,
-					       int weight, int affinity,
-					       enum cvmx_sso_group_modify_mask modify_mask)
+static inline void cvmx_sso_set_group_priority(int node, cvmx_xgrp_t xgrp,
+			int priority, int weight, int affinity,
+		       enum cvmx_sso_group_modify_mask modify_mask)
 {
 	cvmx_sso_grpx_pri_t grp_pri;
 
-	grp_pri.u64 = cvmx_read_csr_node(node, CVMX_SSO_GRPX_PRI(group));
+	if (!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_dprintf(
+			"ERROR: %s is not supported on this chip)\n", 
+			__FUNCTION__);
+		return;
+	}
+
+	if (weight <= 0)
+		weight = 0x3f;	/* Force HW default when out of range */
+
+	grp_pri.u64 = cvmx_read_csr_node(node, CVMX_SSO_GRPX_PRI(xgrp.xgrp));
+	if(grp_pri.s.weight == 0)
+		grp_pri.s.weight = 0x3f;
 	if(modify_mask & CVMX_SSO_MODIFY_GROUP_PRIORITY)
 		grp_pri.s.pri = priority;
 	if(modify_mask & CVMX_SSO_MODIFY_GROUP_WEIGHT)
 		grp_pri.s.weight = weight;
 	if(modify_mask & CVMX_SSO_MODIFY_GROUP_AFFINITY)
 		grp_pri.s.affinity = affinity;
-	cvmx_write_csr_node(node,CVMX_SSO_GRPX_PRI(group),grp_pri.u64);
+	cvmx_write_csr_node(node,CVMX_SSO_GRPX_PRI(xgrp.xgrp),grp_pri.u64);
 }
 
 /**
@@ -2446,7 +2850,7 @@ static inline void cvmx_pow_set_priority(uint64_t core_num, const uint8_t priori
 		return;
 
 	/* Detect gaps between priorities and flag error */
-	{
+	if (!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		int i;
 		uint32_t prio_mask = 0;
 
@@ -2460,8 +2864,23 @@ static inline void cvmx_pow_set_priority(uint64_t core_num, const uint8_t priori
 		}
 	}
 
-	/* POW priorities are supported on CN5xxx and later */
-	if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		unsigned group;
+		unsigned node = cvmx_get_node_num();
+		cvmx_sso_grpx_pri_t grp_pri;
+
+		grp_pri.s.weight = 0x3f;
+		grp_pri.s.affinity = 0xf;
+
+		for(group = 0; group < CVMX_SSO_NUM_XGRP; group ++ ) {
+			grp_pri.u64 = cvmx_read_csr_node(node,
+				CVMX_SSO_GRPX_PRI(group));
+			grp_pri.s.pri = priority[group & 0x7];
+			cvmx_write_csr_node(node,
+				CVMX_SSO_GRPX_PRI(group), grp_pri.u64);
+		}
+
+	} else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
 		cvmx_sso_ppx_qos_pri_t qos_pri;
 
 		qos_pri.u64 = cvmx_read_csr(CVMX_SSO_PPX_QOS_PRI(core_num));
@@ -2475,6 +2894,7 @@ static inline void cvmx_pow_set_priority(uint64_t core_num, const uint8_t priori
 		qos_pri.s.qos7_pri = priority[7];
 		cvmx_write_csr(CVMX_SSO_PPX_QOS_PRI(core_num), qos_pri.u64);
 	} else {
+		/* POW priorities on CN5xxx .. CN66XX */
 		cvmx_pow_pp_grp_mskx_t grp_msk;
 
 		grp_msk.u64 = cvmx_read_csr(CVMX_POW_PP_GRP_MSKX(core_num));
@@ -2554,18 +2974,21 @@ static inline void cvmx_pow_tag_sw_desched_nocheck(uint32_t tag, cvmx_pow_tag_ty
 
 	tag_req.u64 = 0;
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		group &= 0x1f;
 		tag_req.s_cn78xx_other.op = CVMX_POW_TAG_OP_SWTAG_DESCH;
 		tag_req.s_cn78xx_other.type = tag_type;
-		tag_req.s_cn78xx_other.grp = group;
+		tag_req.s_cn78xx_other.grp = group << 3;
 		tag_req.s_cn68xx_other.no_sched = no_sched;
 	}
 	if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE)) {
+		group &= 0x3f;
 		tag_req.s_cn68xx_other.op = CVMX_POW_TAG_OP_SWTAG_DESCH;
 		tag_req.s_cn68xx_other.tag = tag;
 		tag_req.s_cn68xx_other.type = tag_type;
 		tag_req.s_cn68xx_other.grp = group;
 		tag_req.s_cn68xx_other.no_sched = no_sched;
 	} else {
+		group &= 0x0f;
 		tag_req.s_cn38xx.op = CVMX_POW_TAG_OP_SWTAG_DESCH;
 		tag_req.s_cn38xx.tag = tag;
 		tag_req.s_cn38xx.type = tag_type;
@@ -2766,15 +3189,18 @@ static inline uint32_t cvmx_pow_tag_get_hw_bits(uint64_t tag)
 
 static inline uint64_t cvmx_sso_get_total_wqe_count(void)
 {
-	if(OCTEON_IS_MODEL(OCTEON_CN78XX))
+
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
 	{
-		cvmx_sso_grpx_aq_cnt_t sso_iq_com_cnt;
+		cvmx_sso_grpx_aq_cnt_t aq_cnt;
+		int node = cvmx_get_node_num();
 		int grp = 0;
 		uint64_t cnt = 0;
 
-		for( grp = 0; grp < CVMX_SSO_NUM_GROUPS_78XX; grp++) {
-			sso_iq_com_cnt.u64 = cvmx_read_csr_node(0,CVMX_SSO_GRPX_AQ_CNT(grp));
-			cnt += sso_iq_com_cnt.u64;
+		for( grp = 0; grp < CVMX_SSO_NUM_XGRP; grp++) {
+			aq_cnt.u64 = cvmx_read_csr_node(node,
+					CVMX_SSO_GRPX_AQ_CNT(grp));
+			cnt += aq_cnt.s.aq_cnt;
 		}
 		return cnt;
 	}
@@ -2824,6 +3250,19 @@ extern void cvmx_pow_display(void *buffer, int buffer_size);
  * @return Number of POW entries
  */
 extern int cvmx_pow_get_num_entries(void);
+extern int cvmx_pow_get_dump_size(void);
+
+/**
+ * This will allocate count number of SSO groups on the specified node to the
+ * calling application. These groups will be for exclusive use of the application
+ * until they are freed.
+ * @param node The numa node for the allocation.
+ * @param base_group Pointer to the initial group, -1 to allocate anywhere.
+ * @param count  The number of consecutive groups to allocate.
+ * @return 0 on success and -1 on failure.
+ */
+int cvmx_sso_allocate_group_range(int node, int *base_group, int count);
+int cvmx_sso_allocate_group(int node);
 
 #ifdef  __cplusplus
 /* *INDENT-OFF* */

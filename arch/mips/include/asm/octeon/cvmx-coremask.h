@@ -60,7 +60,7 @@
  * provide future compatibility if more cores are added to future processors
  * or more nodes are supported.
  *
- * <hr>$Revision: 87873 $<hr>
+ * <hr>$Revision: 104294 $<hr>
  *
  */
 
@@ -163,6 +163,38 @@ typedef struct cvmx_coremask cvmx_coremask_t;
 	for ((core) = -1;					\
 		(core) = cvmx_coremask_next_core((core), pcm),	\
 		(core) >= 0; )
+
+/**
+ * Given a node and node mask, return the next available node.
+ *
+ * @param node		starting node number
+ * @param node_mask	node mask to use to find the next node
+ *
+ * @return next node number or -1 if no more nodes are available
+ */
+static inline int cvmx_coremask_next_node(unsigned node, uint8_t node_mask)
+{
+	int next_offset;
+
+	next_offset = __builtin_ffs(node_mask >> (node + 1));
+	if (next_offset == 0)
+		return -1;
+	else
+		return node + next_offset;
+}
+
+/**
+ * Iterate through all nodes in a node mask
+ *
+ * @param node		node iterator variable
+ * @param node_mask	mask to use for iterating
+ *
+ * Use this like a for statement
+ */
+#define cvmx_coremask_for_each_node(node, node_mask)		\
+	for ((node) = __builtin_ffs(node_mask) - 1;		\
+	     (node) >= 0 && (node) < CVMX_MAX_NODES;		\
+	     (node) = cvmx_coremask_next_node(node, node_mask))
 
 /**
  * Is ``core'' set in the coremask?
@@ -319,7 +351,7 @@ static inline void cvmx_coremask_set64_node(cvmx_coremask_t *pcm,
 					    uint8_t node,
 					    uint64_t coremask_64)
 {
-	
+
 	pcm->coremask_bitmap[CVMX_COREMASK_BMP_NODE_CORE_IDX(node, 0)] =
 								coremask_64;
 }
@@ -375,10 +407,7 @@ static inline int cvmx_coremask_cmp(const cvmx_coremask_t *pcm1,
 	/* Start from highest node for arithemtically correct result */
 	for ( i = CVMX_COREMASK_USED_BMPSZ-1; i >= 0 ; i-- )
 		if( pcm1->coremask_bitmap[i] != pcm2->coremask_bitmap[i] )
-			return (
-				pcm1->coremask_bitmap[i] -
-				pcm2->coremask_bitmap[i] 
-				);
+			return (pcm1->coremask_bitmap[i] > pcm2->coremask_bitmap[i]) ? 1 : -1;
 
 	return 0;
 }
@@ -442,7 +471,8 @@ CVMX_COREMASK_UNARY_DEFUN(dup, +)   /* cvmx_coremask_dup(pcm1, pcm2): pcm1 = pcm
  * - set all (valid) bits in *pcm to 1
  */
 #define cvmx_coremask_complement(pcm)	cvmx_coremask_not(pcm, pcm)
-#define cvmx_coremask_clear_all(pcm)	cvmx_coremask_clear(pcm, NULL)
+/* On clear, even clear the unused bits */
+#define cvmx_coremask_clear_all(pcm)	do {*(pcm) = (cvmx_coremask_t)CVMX_COREMASK_EMPTY;} while (0)
 #define cvmx_coremask_set_all(pcm)	cvmx_coremask_fill(pcm, NULL)
 
 /*
@@ -480,6 +510,39 @@ extern int cvmx_coremask_bmp2str(const cvmx_coremask_t *pcm, char *hexstr);
 static inline int cvmx_coremask_lowest_bit(cvmx_coremask_holder_t h)
 {
 	return __builtin_ctzll(h);
+}
+
+/*
+ * Returns the index of the highest bit in a coremask holder.
+ */
+static inline int cvmx_coremask_highest_bit(cvmx_coremask_holder_t h)
+{
+	return (64 - __builtin_clzll(h));
+}
+
+/**
+ * Returns the last core within the coremask and -1 when the coremask
+ * is empty.
+ *
+ * @param[in] pcm - pointer to coremask
+ * @returns last core set in the coremask or -1 if all clear
+ *
+ */
+static inline int cvmx_coremask_get_last_core(const cvmx_coremask_t *pcm)
+{
+	int i;
+	int found = -1;
+
+	for (i = 0; i < CVMX_COREMASK_USED_BMPSZ; i++) {
+		if (pcm->coremask_bitmap[i])
+			found = i;
+	}
+
+	if (found == -1)
+		return -1;
+
+	return found * CVMX_COREMASK_HLDRSZ +
+	     cvmx_coremask_highest_bit(pcm->coremask_bitmap[found]);
 }
 
 /**
@@ -610,9 +673,11 @@ cvmx_coremask_is_core_first_core(const cvmx_coremask_t *pcm,
 	for (i = 0; i < n; i++)
 		if (pcm->coremask_bitmap[i] != 0)
 			return 0;
-	if (__builtin_ffs(pcm->coremask_bitmap[n]) < core + 1)
+	/* From now on we only care about the core number within an entry */
+	core &= (CVMX_COREMASK_HLDRSZ - 1);
+	if (__builtin_ffsll(pcm->coremask_bitmap[n]) < (core + 1))
 		return 0;
-	return (__builtin_ffs(pcm->coremask_bitmap[n]) == core + 1);
+	return (__builtin_ffsll(pcm->coremask_bitmap[n]) == core + 1);
 }
 
 /*

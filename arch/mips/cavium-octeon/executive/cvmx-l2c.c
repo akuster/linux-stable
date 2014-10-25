@@ -43,7 +43,7 @@
  * Implementation of the Level 2 Cache (L2C) control,
  * measurement, and debugging facilities.
  *
- * <hr>$Revision: 89166 $<hr>
+ * <hr>$Revision: 97778 $<hr>
  *
  */
 
@@ -75,13 +75,14 @@ CVMX_SHARED cvmx_spinlock_t cvmx_l2c_spinlock;
 int cvmx_l2c_get_core_way_partition(uint32_t core)
 {
 	uint32_t field;
+	int node = cvmx_get_node_num();
 
 	/* Validate the core number */
 	if (core >= cvmx_octeon_num_cores())
 		return -1;
 
 	if (OCTEON_IS_OCTEON2() || OCTEON_IS_OCTEON3())
-		return (cvmx_read_csr(CVMX_L2C_WPAR_PPX(core)) & 0xffff);
+		return (cvmx_read_csr_node(node, CVMX_L2C_WPAR_PPX(core)) & 0xffff);
 
 	/*
 	 * Use the lower two bits of the coreNumber to determine the
@@ -111,6 +112,7 @@ int cvmx_l2c_set_core_way_partition(uint32_t core, uint32_t mask)
 {
 	uint32_t field;
 	uint32_t valid_mask;
+	int node = cvmx_get_node_num();
 
 	valid_mask = (0x1 << cvmx_l2c_get_num_assoc()) - 1;
 
@@ -125,7 +127,7 @@ int cvmx_l2c_set_core_way_partition(uint32_t core, uint32_t mask)
 		return -1;
 
 	if (OCTEON_IS_OCTEON2() || OCTEON_IS_OCTEON3()) {
-		cvmx_write_csr(CVMX_L2C_WPAR_PPX(core), mask);
+		cvmx_write_csr_node(node, CVMX_L2C_WPAR_PPX(core), mask);
 		return 0;
 	}
 
@@ -160,6 +162,7 @@ int cvmx_l2c_set_core_way_partition(uint32_t core, uint32_t mask)
 int cvmx_l2c_set_hw_way_partition(uint32_t mask)
 {
 	uint32_t valid_mask;
+	int node = cvmx_get_node_num();
 
 	valid_mask = (0x1 << cvmx_l2c_get_num_assoc()) - 1;
 	mask &= valid_mask;
@@ -169,7 +172,7 @@ int cvmx_l2c_set_hw_way_partition(uint32_t mask)
 		return -1;
 
 	if (OCTEON_IS_OCTEON2() || OCTEON_IS_OCTEON3())
-		cvmx_write_csr(CVMX_L2C_WPAR_IOBX(0), mask);
+		cvmx_write_csr_node(node, CVMX_L2C_WPAR_IOBX(0), mask);
 	else
 		cvmx_write_csr(CVMX_L2C_SPAR4, (cvmx_read_csr(CVMX_L2C_SPAR4) & ~0xFF) | mask);
 	return 0;
@@ -177,8 +180,9 @@ int cvmx_l2c_set_hw_way_partition(uint32_t mask)
 
 int cvmx_l2c_get_hw_way_partition(void)
 {
+	int node = cvmx_get_node_num();
 	if (OCTEON_IS_OCTEON2() || OCTEON_IS_OCTEON3())
-		return cvmx_read_csr(CVMX_L2C_WPAR_IOBX(0)) & 0xffff;
+		return cvmx_read_csr_node(node, CVMX_L2C_WPAR_IOBX(0)) & 0xffff;
 	else
 		return cvmx_read_csr(CVMX_L2C_SPAR4) & (0xFF);
 }
@@ -186,23 +190,25 @@ int cvmx_l2c_get_hw_way_partition(void)
 int cvmx_l2c_set_hw_way_partition2(uint32_t mask)
 {
 	uint32_t valid_mask;
+	int node = cvmx_get_node_num();
 
 	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		return -1;
 
 	valid_mask = (0x1 << cvmx_l2c_get_num_assoc()) - 1;
 	mask &= valid_mask;
-	cvmx_write_csr(CVMX_L2C_WPAR_IOBX(1), mask);
+	cvmx_write_csr_node(node, CVMX_L2C_WPAR_IOBX(1), mask);
 	return 0;
 }
 
 int cvmx_l2c_get_hw_way_partition2(void)
 {
+	int node = cvmx_get_node_num();
 	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN78XX))) {
 		cvmx_warn("only one IOB on this chip");
 		return -1;
 	}
-	return cvmx_read_csr(CVMX_L2C_WPAR_IOBX(1)) & 0xffff;
+	return cvmx_read_csr_node(node, CVMX_L2C_WPAR_IOBX(1)) & 0xffff;
 }
 
 void cvmx_l2c_config_perf(uint32_t counter, enum cvmx_l2c_event event, uint32_t clear_on_read)
@@ -240,8 +246,6 @@ void cvmx_l2c_config_perf(uint32_t counter, enum cvmx_l2c_event event, uint32_t 
 	} else {
 		union cvmx_l2c_tadx_prf l2c_tadx_prf;
 		int tad;
-
-		cvmx_warn("L2C performance counter events are different for this chip, mapping 'event' to cvmx_l2c_tad_event_t\n");
 
 		cvmx_warn_if(clear_on_read, "L2C counters don't support clear on read for this chip\n");
 
@@ -390,12 +394,12 @@ int cvmx_l2c_lock_line(uint64_t addr)
 				 && l2c_tadx_tag.cn70xx.valid
 				 && l2c_tadx_tag.cn70xx.tag == tag)
 				break;
-			else if (l2c_tadx_tag.cn78xx.ts == 0
+			else if (l2c_tadx_tag.cn78xx.ts != 0
 				 && l2c_tadx_tag.cn78xx.tag == tag)
 			        break;
 
-			/* cvmx_dprintf("caddr=%lx tad=%d tagu64=%lx valid=%x tag=%x \n", caddr,
-			   tad, l2c_tadx_tag.u64, l2c_tadx_tag.s.valid, l2c_tadx_tag.s.tag); */
+			 /* cvmx_dprintf("caddr=%lx tad=%d tagu64=%lx valid=%x tag=%x \n", caddr,
+			   tad, l2c_tadx_tag.u64, l2c_tadx_tag.cn70xx.valid, l2c_tadx_tag.cn70xx.tag); */
 		}
 
 		/* Check if a valid line is found */
@@ -809,9 +813,9 @@ union cvmx_l2c_tag cvmx_l2c_get_tag_v2(uint32_t association, uint32_t index, uin
 		l2c_tadx_tag.u64 = cvmx_read_csr(CVMX_L2C_TADX_TAG(tad));
 
 		if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-			if (l2c_tadx_tag.cn78xx.ts == 0)
+			if (l2c_tadx_tag.cn78xx.ts != 0)
 				tag.s.V = 1;
-			tag.s.D = l2c_tadx_tag.cn78xx.sblkdty; /* FIXME */
+			tag.s.D = l2c_tadx_tag.cn78xx.sblkdty;
 			tag.s.L = l2c_tadx_tag.cn78xx.lock;
 			tag.s.U = l2c_tadx_tag.cn78xx.used;
 			tag.s.addr = l2c_tadx_tag.cn78xx.tag;
@@ -904,7 +908,7 @@ union cvmx_l2c_tag cvmx_l2c_get_tag(uint32_t association, uint32_t index)
 		if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 			if (l2c_tadx_tag.cn78xx.ts == 0)
 				tag.s.V = 1;
-			tag.s.D = l2c_tadx_tag.cn78xx.sblkdty; /* FIXME */
+			tag.s.D = l2c_tadx_tag.cn78xx.sblkdty;
 			tag.s.L = l2c_tadx_tag.cn78xx.lock;
 			tag.s.U = l2c_tadx_tag.cn78xx.used;
 			tag.s.addr = l2c_tadx_tag.cn78xx.tag;
@@ -975,6 +979,14 @@ int cvmx_l2c_address_to_tad(uint64_t addr)
 		} else {
 			tad = (addr >> 7) & 3;
 		}
+	} else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		cvmx_l2c_ctl_t l2c_ctl;
+		l2c_ctl.u64 = cvmx_read_csr(CVMX_L2C_CTL);
+		if (!l2c_ctl.s.disidxalias) {
+			tad = ((addr >> 7) ^ (addr >> 12) ^ (addr >> 20)) & 7;
+		} else {
+			tad = (addr >> 7) & 7;
+		}
 	} else {
 		tad = 0;
 	}
@@ -1013,12 +1025,18 @@ uint32_t cvmx_l2c_address_to_index(uint64_t addr)
 	}
 
 	if (indxalias) {
-		if (OCTEON_IS_MODEL(OCTEON_CN68XX)
-		    || OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 			uint32_t a_14_12 = (idx / (CVMX_L2C_MEMBANK_SELECT_SIZE / (1 << CVMX_L2C_IDX_ADDR_SHIFT))) & 0x7;
 			idx ^= (idx / cvmx_l2c_get_num_sets()) & 0x3ff;
 			idx ^= a_14_12 & 0x3;
 			idx ^= a_14_12 << 2;
+		} else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+			uint32_t a_14_12 = (idx / (CVMX_L2C_MEMBANK_SELECT_SIZE / (1 << CVMX_L2C_IDX_ADDR_SHIFT))) & 0x7;
+			uint64_t above_normal_index = (idx / cvmx_l2c_get_num_sets()) & 0xff;	// A<27:20>
+			idx ^= above_normal_index;		  // XOR in A<27:20>
+			idx ^= (above_normal_index & 0x1F) << 8;  // XOR in A<24:20>
+			idx ^= a_14_12;				  // XOR in A<14:12>
+			idx ^= (a_14_12 & 0x3) << 3;		  // XOR in A<13:12>
 		} else if (OCTEON_IS_OCTEON2()
 			   || OCTEON_IS_MODEL(OCTEON_CN70XX)) {
 			uint32_t a_14_12 = (idx / (CVMX_L2C_MEMBANK_SELECT_SIZE / (1 << CVMX_L2C_IDX_ADDR_SHIFT))) & 0x7;
@@ -1103,7 +1121,7 @@ int cvmx_l2c_get_num_assoc(void)
 			break;
 		case 2:  /* 1/2 size */
 			l2_assoc = 2;
-			break; 
+			break;
 		case 1:  /* 3/4 size */
 			l2_assoc = 3;
 			break;
@@ -1141,7 +1159,7 @@ int cvmx_l2c_get_num_assoc(void)
 			l2_assoc = 8;
 		else if (mio_fus_dat3.cn63xx.l2c_crip == 1)
 			l2_assoc = 12;
-	} else {
+	} else if (!OCTEON_IS_OCTEON3()) {
 		union cvmx_l2d_fus3 val;
 		val.u64 = cvmx_read_csr(CVMX_L2D_FUS3);
 		/*
@@ -1219,7 +1237,7 @@ void cvmx_l2c_flush_line(uint32_t assoc, uint32_t index)
 
 /**
  * Initialize the BIG address in L2C+DRAM to generate proper error
- * on reading/writing to an non-existant memory location. 
+ * on reading/writing to an non-existant memory location.
  *
  * @param mem_size  Amount of DRAM configured in MB.
  * @param mode      Allow/Disallow reporting errors L2C_INT_SUM[BIGRD,BIGWR].
@@ -1250,6 +1268,13 @@ void cvmx_l2c_set_big_size(uint64_t mem_size, int mode)
 			cvmx_dprintf("ERROR: Invalid DRAM size (%lld) requested, refer to L2C_BIG_CTL[maxdram] for valid options.\n", (unsigned long long)mem_size);
 			return;
 		}
+
+		/*
+  		 * The BIG/HOLE is logic is not supported in pass1 as per
+		 * Errata L2C-17736
+		 */
+		if (mode == 0 && OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
+			mode = 1;
 
 		big_ctl.u64 = 0;
 		big_ctl.s.maxdram = bits - 9;

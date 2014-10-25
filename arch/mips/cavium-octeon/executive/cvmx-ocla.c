@@ -472,7 +472,12 @@ int cvmx_ocla_init(int			node,
 		cvmx_write_csr_node(node, CVMX_OCLAX_STACK_STORE_CNT(ix), 0);
 
 		limit.u64 = cvmx_read_csr_node(node, CVMX_OCLAX_FIFO_LIMIT(ix));
-		limit.s.ddr = 0;
+		/*
+		 * To accomodate 78xx'x pass1 bug, ddr must be:
+		 * ddr > 28
+		 * ddr % 26 == 0
+		 */
+		limit.s.ddr = 52;
 		cvmx_write_csr_node(node, CVMX_OCLAX_FIFO_LIMIT(ix), limit.u64);
 	}
 

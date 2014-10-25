@@ -73,6 +73,8 @@
 #define CVMX_DEBUG_LOGGING 0
 #endif
 
+#define cvmx_debug_printf(...) do { if (CVMX_DEBUG_LOGGING) cvmx_dprintf(__VA_ARGS__); } while(0)
+
 #ifndef CVMX_DEBUG_ATTACH
 #define CVMX_DEBUG_ATTACH 1
 #endif
@@ -225,19 +227,6 @@ static inline void cvmx_debug_get_state(cvmx_debug_state_t *state)
 	cvmx_debug_memcpy_align(state, cvmx_debug_globals->state, sizeof(cvmx_debug_state_t));
 }
 
-static void cvmx_debug_printf(char *format, ...) __attribute__ ((format(__printf__, 1, 2)));
-static void cvmx_debug_printf(char *format, ...)
-{
-	va_list ap;
-
-	if (!CVMX_DEBUG_LOGGING)
-		return;
-
-	va_start(ap, format);
-	cvmx_dvprintf(format, ap);
-	va_end(ap);
-}
-
 static inline int __cvmx_debug_in_focus(cvmx_debug_state_t *state, unsigned core)
 {
 	return state->focus_core == core;
@@ -286,9 +275,29 @@ static void cvmx_debug_init_globals(void)
 
 	if (cvmx_debug_globals)
 		return;
-	ptr = cvmx_bootmem_alloc_named_range_once(sizeof(cvmx_debug_globals_t), 0,
-						  /* KSEG0 max, 512MB= */ 0 /*1024*1024*512 */ , 8,
-						  CVMX_DEBUG_GLOBALS_BLOCK_NAME, cvmx_debug_init_global_ptr);
+
+	/*
+	 *  For CVMX_ABI_N32, __cvmx_validate_mem_range() will limit the
+	 * range to KSEG0, i.3. 512MB
+	 */
+	ptr = cvmx_bootmem_alloc_named_range_once(
+			sizeof(cvmx_debug_globals_t), 
+			0,	/* min addr */
+			1ull<<29,	/* max addr */
+			8,	/* align */
+			CVMX_DEBUG_GLOBALS_BLOCK_NAME,	/* name */
+			cvmx_debug_init_global_ptr);	/* init func */
+
+	if(ptr == NULL) {
+		cvmx_dprintf("Failed allocating debug globals, spinining.\n");
+#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+		panic("cvmx_debug_global alloc failure.\n");
+#endif
+		while (1) ;
+
+	}
+
+
 	phys = cvmx_ptr_to_phys(ptr);
 
 	/* Since TLBs are not always mapped 1 to 1, we should just use access via KSEG0 for n32

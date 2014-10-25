@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -1333,6 +1333,7 @@ union cvmx_agl_gmx_bad_reg {
 	struct cvmx_agl_gmx_bad_reg_s         cn68xx;
 	struct cvmx_agl_gmx_bad_reg_s         cn68xxp1;
 	struct cvmx_agl_gmx_bad_reg_cn56xx    cn70xx;
+	struct cvmx_agl_gmx_bad_reg_cn56xx    cn70xxp1;
 };
 typedef union cvmx_agl_gmx_bad_reg cvmx_agl_gmx_bad_reg_t;
 
@@ -1413,6 +1414,7 @@ union cvmx_agl_gmx_bist {
 	struct cvmx_agl_gmx_bist_s            cn68xx;
 	struct cvmx_agl_gmx_bist_s            cn68xxp1;
 	struct cvmx_agl_gmx_bist_s            cn70xx;
+	struct cvmx_agl_gmx_bist_s            cn70xxp1;
 };
 typedef union cvmx_agl_gmx_bist cvmx_agl_gmx_bist_t;
 
@@ -1629,6 +1631,7 @@ union cvmx_agl_gmx_prtx_cfg {
 	struct cvmx_agl_gmx_prtx_cfg_s        cn68xx;
 	struct cvmx_agl_gmx_prtx_cfg_s        cn68xxp1;
 	struct cvmx_agl_gmx_prtx_cfg_s        cn70xx;
+	struct cvmx_agl_gmx_prtx_cfg_s        cn70xxp1;
 };
 typedef union cvmx_agl_gmx_prtx_cfg cvmx_agl_gmx_prtx_cfg_t;
 
@@ -1661,6 +1664,7 @@ union cvmx_agl_gmx_rxx_adr_cam0 {
 	struct cvmx_agl_gmx_rxx_adr_cam0_s    cn68xx;
 	struct cvmx_agl_gmx_rxx_adr_cam0_s    cn68xxp1;
 	struct cvmx_agl_gmx_rxx_adr_cam0_s    cn70xx;
+	struct cvmx_agl_gmx_rxx_adr_cam0_s    cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_adr_cam0 cvmx_agl_gmx_rxx_adr_cam0_t;
 
@@ -1693,6 +1697,7 @@ union cvmx_agl_gmx_rxx_adr_cam1 {
 	struct cvmx_agl_gmx_rxx_adr_cam1_s    cn68xx;
 	struct cvmx_agl_gmx_rxx_adr_cam1_s    cn68xxp1;
 	struct cvmx_agl_gmx_rxx_adr_cam1_s    cn70xx;
+	struct cvmx_agl_gmx_rxx_adr_cam1_s    cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_adr_cam1 cvmx_agl_gmx_rxx_adr_cam1_t;
 
@@ -1725,6 +1730,7 @@ union cvmx_agl_gmx_rxx_adr_cam2 {
 	struct cvmx_agl_gmx_rxx_adr_cam2_s    cn68xx;
 	struct cvmx_agl_gmx_rxx_adr_cam2_s    cn68xxp1;
 	struct cvmx_agl_gmx_rxx_adr_cam2_s    cn70xx;
+	struct cvmx_agl_gmx_rxx_adr_cam2_s    cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_adr_cam2 cvmx_agl_gmx_rxx_adr_cam2_t;
 
@@ -1757,6 +1763,7 @@ union cvmx_agl_gmx_rxx_adr_cam3 {
 	struct cvmx_agl_gmx_rxx_adr_cam3_s    cn68xx;
 	struct cvmx_agl_gmx_rxx_adr_cam3_s    cn68xxp1;
 	struct cvmx_agl_gmx_rxx_adr_cam3_s    cn70xx;
+	struct cvmx_agl_gmx_rxx_adr_cam3_s    cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_adr_cam3 cvmx_agl_gmx_rxx_adr_cam3_t;
 
@@ -1789,6 +1796,7 @@ union cvmx_agl_gmx_rxx_adr_cam4 {
 	struct cvmx_agl_gmx_rxx_adr_cam4_s    cn68xx;
 	struct cvmx_agl_gmx_rxx_adr_cam4_s    cn68xxp1;
 	struct cvmx_agl_gmx_rxx_adr_cam4_s    cn70xx;
+	struct cvmx_agl_gmx_rxx_adr_cam4_s    cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_adr_cam4 cvmx_agl_gmx_rxx_adr_cam4_t;
 
@@ -1821,6 +1829,7 @@ union cvmx_agl_gmx_rxx_adr_cam5 {
 	struct cvmx_agl_gmx_rxx_adr_cam5_s    cn68xx;
 	struct cvmx_agl_gmx_rxx_adr_cam5_s    cn68xxp1;
 	struct cvmx_agl_gmx_rxx_adr_cam5_s    cn70xx;
+	struct cvmx_agl_gmx_rxx_adr_cam5_s    cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_adr_cam5 cvmx_agl_gmx_rxx_adr_cam5_t;
 
@@ -1856,6 +1865,7 @@ union cvmx_agl_gmx_rxx_adr_cam_en {
 	struct cvmx_agl_gmx_rxx_adr_cam_en_s  cn68xx;
 	struct cvmx_agl_gmx_rxx_adr_cam_en_s  cn68xxp1;
 	struct cvmx_agl_gmx_rxx_adr_cam_en_s  cn70xx;
+	struct cvmx_agl_gmx_rxx_adr_cam_en_s  cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_adr_cam_en cvmx_agl_gmx_rxx_adr_cam_en_t;
 
@@ -1935,6 +1945,7 @@ union cvmx_agl_gmx_rxx_adr_ctl {
 	struct cvmx_agl_gmx_rxx_adr_ctl_s     cn68xx;
 	struct cvmx_agl_gmx_rxx_adr_ctl_s     cn68xxp1;
 	struct cvmx_agl_gmx_rxx_adr_ctl_s     cn70xx;
+	struct cvmx_agl_gmx_rxx_adr_ctl_s     cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_adr_ctl cvmx_agl_gmx_rxx_adr_ctl_t;
 
@@ -1990,6 +2001,7 @@ union cvmx_agl_gmx_rxx_decision {
 	struct cvmx_agl_gmx_rxx_decision_s    cn68xx;
 	struct cvmx_agl_gmx_rxx_decision_s    cn68xxp1;
 	struct cvmx_agl_gmx_rxx_decision_s    cn70xx;
+	struct cvmx_agl_gmx_rxx_decision_s    cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_decision cvmx_agl_gmx_rxx_decision_t;
 
@@ -2070,6 +2082,7 @@ union cvmx_agl_gmx_rxx_frm_chk {
 	struct cvmx_agl_gmx_rxx_frm_chk_s     cn68xx;
 	struct cvmx_agl_gmx_rxx_frm_chk_s     cn68xxp1;
 	struct cvmx_agl_gmx_rxx_frm_chk_s     cn70xx;
+	struct cvmx_agl_gmx_rxx_frm_chk_s     cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_frm_chk cvmx_agl_gmx_rxx_frm_chk_t;
 
@@ -2228,6 +2241,7 @@ union cvmx_agl_gmx_rxx_frm_ctl {
 	struct cvmx_agl_gmx_rxx_frm_ctl_s     cn68xx;
 	struct cvmx_agl_gmx_rxx_frm_ctl_s     cn68xxp1;
 	struct cvmx_agl_gmx_rxx_frm_ctl_s     cn70xx;
+	struct cvmx_agl_gmx_rxx_frm_ctl_s     cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_frm_ctl cvmx_agl_gmx_rxx_frm_ctl_t;
 
@@ -2276,6 +2290,7 @@ union cvmx_agl_gmx_rxx_frm_max {
 	struct cvmx_agl_gmx_rxx_frm_max_s     cn68xx;
 	struct cvmx_agl_gmx_rxx_frm_max_s     cn68xxp1;
 	struct cvmx_agl_gmx_rxx_frm_max_s     cn70xx;
+	struct cvmx_agl_gmx_rxx_frm_max_s     cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_frm_max cvmx_agl_gmx_rxx_frm_max_t;
 
@@ -2317,6 +2332,7 @@ union cvmx_agl_gmx_rxx_frm_min {
 	struct cvmx_agl_gmx_rxx_frm_min_s     cn68xx;
 	struct cvmx_agl_gmx_rxx_frm_min_s     cn68xxp1;
 	struct cvmx_agl_gmx_rxx_frm_min_s     cn70xx;
+	struct cvmx_agl_gmx_rxx_frm_min_s     cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_frm_min cvmx_agl_gmx_rxx_frm_min_t;
 
@@ -2358,6 +2374,7 @@ union cvmx_agl_gmx_rxx_ifg {
 	struct cvmx_agl_gmx_rxx_ifg_s         cn68xx;
 	struct cvmx_agl_gmx_rxx_ifg_s         cn68xxp1;
 	struct cvmx_agl_gmx_rxx_ifg_s         cn70xx;
+	struct cvmx_agl_gmx_rxx_ifg_s         cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_ifg cvmx_agl_gmx_rxx_ifg_t;
 
@@ -2523,6 +2540,7 @@ union cvmx_agl_gmx_rxx_int_en {
 	struct cvmx_agl_gmx_rxx_int_en_cn61xx cn68xx;
 	struct cvmx_agl_gmx_rxx_int_en_cn61xx cn68xxp1;
 	struct cvmx_agl_gmx_rxx_int_en_s      cn70xx;
+	struct cvmx_agl_gmx_rxx_int_en_s      cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_int_en cvmx_agl_gmx_rxx_int_en_t;
 
@@ -2746,6 +2764,7 @@ union cvmx_agl_gmx_rxx_int_reg {
 	struct cvmx_agl_gmx_rxx_int_reg_cn61xx cn68xx;
 	struct cvmx_agl_gmx_rxx_int_reg_cn61xx cn68xxp1;
 	struct cvmx_agl_gmx_rxx_int_reg_s     cn70xx;
+	struct cvmx_agl_gmx_rxx_int_reg_s     cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_int_reg cvmx_agl_gmx_rxx_int_reg_t;
 
@@ -2798,6 +2817,7 @@ union cvmx_agl_gmx_rxx_jabber {
 	struct cvmx_agl_gmx_rxx_jabber_s      cn68xx;
 	struct cvmx_agl_gmx_rxx_jabber_s      cn68xxp1;
 	struct cvmx_agl_gmx_rxx_jabber_s      cn70xx;
+	struct cvmx_agl_gmx_rxx_jabber_s      cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_jabber cvmx_agl_gmx_rxx_jabber_t;
 
@@ -2833,6 +2853,7 @@ union cvmx_agl_gmx_rxx_pause_drop_time {
 	struct cvmx_agl_gmx_rxx_pause_drop_time_s cn68xx;
 	struct cvmx_agl_gmx_rxx_pause_drop_time_s cn68xxp1;
 	struct cvmx_agl_gmx_rxx_pause_drop_time_s cn70xx;
+	struct cvmx_agl_gmx_rxx_pause_drop_time_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_pause_drop_time cvmx_agl_gmx_rxx_pause_drop_time_t;
 
@@ -2872,6 +2893,7 @@ union cvmx_agl_gmx_rxx_rx_inbnd {
 	struct cvmx_agl_gmx_rxx_rx_inbnd_s    cn68xx;
 	struct cvmx_agl_gmx_rxx_rx_inbnd_s    cn68xxp1;
 	struct cvmx_agl_gmx_rxx_rx_inbnd_s    cn70xx;
+	struct cvmx_agl_gmx_rxx_rx_inbnd_s    cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_rx_inbnd cvmx_agl_gmx_rxx_rx_inbnd_t;
 
@@ -2907,6 +2929,7 @@ union cvmx_agl_gmx_rxx_stats_ctl {
 	struct cvmx_agl_gmx_rxx_stats_ctl_s   cn68xx;
 	struct cvmx_agl_gmx_rxx_stats_ctl_s   cn68xxp1;
 	struct cvmx_agl_gmx_rxx_stats_ctl_s   cn70xx;
+	struct cvmx_agl_gmx_rxx_stats_ctl_s   cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_stats_ctl cvmx_agl_gmx_rxx_stats_ctl_t;
 
@@ -2940,6 +2963,7 @@ union cvmx_agl_gmx_rxx_stats_octs {
 	struct cvmx_agl_gmx_rxx_stats_octs_s  cn68xx;
 	struct cvmx_agl_gmx_rxx_stats_octs_s  cn68xxp1;
 	struct cvmx_agl_gmx_rxx_stats_octs_s  cn70xx;
+	struct cvmx_agl_gmx_rxx_stats_octs_s  cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_stats_octs cvmx_agl_gmx_rxx_stats_octs_t;
 
@@ -2973,6 +2997,7 @@ union cvmx_agl_gmx_rxx_stats_octs_ctl {
 	struct cvmx_agl_gmx_rxx_stats_octs_ctl_s cn68xx;
 	struct cvmx_agl_gmx_rxx_stats_octs_ctl_s cn68xxp1;
 	struct cvmx_agl_gmx_rxx_stats_octs_ctl_s cn70xx;
+	struct cvmx_agl_gmx_rxx_stats_octs_ctl_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_stats_octs_ctl cvmx_agl_gmx_rxx_stats_octs_ctl_t;
 
@@ -3006,6 +3031,7 @@ union cvmx_agl_gmx_rxx_stats_octs_dmac {
 	struct cvmx_agl_gmx_rxx_stats_octs_dmac_s cn68xx;
 	struct cvmx_agl_gmx_rxx_stats_octs_dmac_s cn68xxp1;
 	struct cvmx_agl_gmx_rxx_stats_octs_dmac_s cn70xx;
+	struct cvmx_agl_gmx_rxx_stats_octs_dmac_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_stats_octs_dmac cvmx_agl_gmx_rxx_stats_octs_dmac_t;
 
@@ -3039,6 +3065,7 @@ union cvmx_agl_gmx_rxx_stats_octs_drp {
 	struct cvmx_agl_gmx_rxx_stats_octs_drp_s cn68xx;
 	struct cvmx_agl_gmx_rxx_stats_octs_drp_s cn68xxp1;
 	struct cvmx_agl_gmx_rxx_stats_octs_drp_s cn70xx;
+	struct cvmx_agl_gmx_rxx_stats_octs_drp_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_stats_octs_drp cvmx_agl_gmx_rxx_stats_octs_drp_t;
 
@@ -3071,6 +3098,7 @@ union cvmx_agl_gmx_rxx_stats_pkts {
 	struct cvmx_agl_gmx_rxx_stats_pkts_s  cn68xx;
 	struct cvmx_agl_gmx_rxx_stats_pkts_s  cn68xxp1;
 	struct cvmx_agl_gmx_rxx_stats_pkts_s  cn70xx;
+	struct cvmx_agl_gmx_rxx_stats_pkts_s  cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_stats_pkts cvmx_agl_gmx_rxx_stats_pkts_t;
 
@@ -3102,6 +3130,7 @@ union cvmx_agl_gmx_rxx_stats_pkts_bad {
 	struct cvmx_agl_gmx_rxx_stats_pkts_bad_s cn68xx;
 	struct cvmx_agl_gmx_rxx_stats_pkts_bad_s cn68xxp1;
 	struct cvmx_agl_gmx_rxx_stats_pkts_bad_s cn70xx;
+	struct cvmx_agl_gmx_rxx_stats_pkts_bad_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_stats_pkts_bad cvmx_agl_gmx_rxx_stats_pkts_bad_t;
 
@@ -3138,6 +3167,7 @@ union cvmx_agl_gmx_rxx_stats_pkts_ctl {
 	struct cvmx_agl_gmx_rxx_stats_pkts_ctl_s cn68xx;
 	struct cvmx_agl_gmx_rxx_stats_pkts_ctl_s cn68xxp1;
 	struct cvmx_agl_gmx_rxx_stats_pkts_ctl_s cn70xx;
+	struct cvmx_agl_gmx_rxx_stats_pkts_ctl_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_stats_pkts_ctl cvmx_agl_gmx_rxx_stats_pkts_ctl_t;
 
@@ -3174,6 +3204,7 @@ union cvmx_agl_gmx_rxx_stats_pkts_dmac {
 	struct cvmx_agl_gmx_rxx_stats_pkts_dmac_s cn68xx;
 	struct cvmx_agl_gmx_rxx_stats_pkts_dmac_s cn68xxp1;
 	struct cvmx_agl_gmx_rxx_stats_pkts_dmac_s cn70xx;
+	struct cvmx_agl_gmx_rxx_stats_pkts_dmac_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_stats_pkts_dmac cvmx_agl_gmx_rxx_stats_pkts_dmac_t;
 
@@ -3207,6 +3238,7 @@ union cvmx_agl_gmx_rxx_stats_pkts_drp {
 	struct cvmx_agl_gmx_rxx_stats_pkts_drp_s cn68xx;
 	struct cvmx_agl_gmx_rxx_stats_pkts_drp_s cn68xxp1;
 	struct cvmx_agl_gmx_rxx_stats_pkts_drp_s cn70xx;
+	struct cvmx_agl_gmx_rxx_stats_pkts_drp_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_stats_pkts_drp cvmx_agl_gmx_rxx_stats_pkts_drp_t;
 
@@ -3273,6 +3305,7 @@ union cvmx_agl_gmx_rxx_udd_skp {
 	struct cvmx_agl_gmx_rxx_udd_skp_s     cn68xx;
 	struct cvmx_agl_gmx_rxx_udd_skp_s     cn68xxp1;
 	struct cvmx_agl_gmx_rxx_udd_skp_s     cn70xx;
+	struct cvmx_agl_gmx_rxx_udd_skp_s     cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rxx_udd_skp cvmx_agl_gmx_rxx_udd_skp_t;
 
@@ -3313,6 +3346,7 @@ union cvmx_agl_gmx_rx_bp_dropx {
 	struct cvmx_agl_gmx_rx_bp_dropx_s     cn68xx;
 	struct cvmx_agl_gmx_rx_bp_dropx_s     cn68xxp1;
 	struct cvmx_agl_gmx_rx_bp_dropx_s     cn70xx;
+	struct cvmx_agl_gmx_rx_bp_dropx_s     cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rx_bp_dropx cvmx_agl_gmx_rx_bp_dropx_t;
 
@@ -3348,6 +3382,7 @@ union cvmx_agl_gmx_rx_bp_offx {
 	struct cvmx_agl_gmx_rx_bp_offx_s      cn68xx;
 	struct cvmx_agl_gmx_rx_bp_offx_s      cn68xxp1;
 	struct cvmx_agl_gmx_rx_bp_offx_s      cn70xx;
+	struct cvmx_agl_gmx_rx_bp_offx_s      cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rx_bp_offx cvmx_agl_gmx_rx_bp_offx_t;
 
@@ -3383,6 +3418,7 @@ union cvmx_agl_gmx_rx_bp_onx {
 	struct cvmx_agl_gmx_rx_bp_onx_s       cn68xx;
 	struct cvmx_agl_gmx_rx_bp_onx_s       cn68xxp1;
 	struct cvmx_agl_gmx_rx_bp_onx_s       cn70xx;
+	struct cvmx_agl_gmx_rx_bp_onx_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rx_bp_onx cvmx_agl_gmx_rx_bp_onx_t;
 
@@ -3434,6 +3470,7 @@ union cvmx_agl_gmx_rx_prt_info {
 	struct cvmx_agl_gmx_rx_prt_info_s     cn68xx;
 	struct cvmx_agl_gmx_rx_prt_info_s     cn68xxp1;
 	struct cvmx_agl_gmx_rx_prt_info_cn56xx cn70xx;
+	struct cvmx_agl_gmx_rx_prt_info_cn56xx cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rx_prt_info cvmx_agl_gmx_rx_prt_info_t;
 
@@ -3485,6 +3522,7 @@ union cvmx_agl_gmx_rx_tx_status {
 	struct cvmx_agl_gmx_rx_tx_status_s    cn68xx;
 	struct cvmx_agl_gmx_rx_tx_status_s    cn68xxp1;
 	struct cvmx_agl_gmx_rx_tx_status_cn56xx cn70xx;
+	struct cvmx_agl_gmx_rx_tx_status_cn56xx cn70xxp1;
 };
 typedef union cvmx_agl_gmx_rx_tx_status cvmx_agl_gmx_rx_tx_status_t;
 
@@ -3521,6 +3559,7 @@ union cvmx_agl_gmx_smacx {
 	struct cvmx_agl_gmx_smacx_s           cn68xx;
 	struct cvmx_agl_gmx_smacx_s           cn68xxp1;
 	struct cvmx_agl_gmx_smacx_s           cn70xx;
+	struct cvmx_agl_gmx_smacx_s           cn70xxp1;
 };
 typedef union cvmx_agl_gmx_smacx cvmx_agl_gmx_smacx_t;
 
@@ -3580,6 +3619,7 @@ union cvmx_agl_gmx_stat_bp {
 	struct cvmx_agl_gmx_stat_bp_s         cn68xx;
 	struct cvmx_agl_gmx_stat_bp_s         cn68xxp1;
 	struct cvmx_agl_gmx_stat_bp_s         cn70xx;
+	struct cvmx_agl_gmx_stat_bp_s         cn70xxp1;
 };
 typedef union cvmx_agl_gmx_stat_bp cvmx_agl_gmx_stat_bp_t;
 
@@ -3625,6 +3665,7 @@ union cvmx_agl_gmx_txx_append {
 	struct cvmx_agl_gmx_txx_append_s      cn68xx;
 	struct cvmx_agl_gmx_txx_append_s      cn68xxp1;
 	struct cvmx_agl_gmx_txx_append_s      cn70xx;
+	struct cvmx_agl_gmx_txx_append_s      cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_append cvmx_agl_gmx_txx_append_t;
 
@@ -3668,6 +3709,7 @@ union cvmx_agl_gmx_txx_clk {
 	struct cvmx_agl_gmx_txx_clk_s         cn68xx;
 	struct cvmx_agl_gmx_txx_clk_s         cn68xxp1;
 	struct cvmx_agl_gmx_txx_clk_s         cn70xx;
+	struct cvmx_agl_gmx_txx_clk_s         cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_clk cvmx_agl_gmx_txx_clk_t;
 
@@ -3707,6 +3749,7 @@ union cvmx_agl_gmx_txx_ctl {
 	struct cvmx_agl_gmx_txx_ctl_s         cn68xx;
 	struct cvmx_agl_gmx_txx_ctl_s         cn68xxp1;
 	struct cvmx_agl_gmx_txx_ctl_s         cn70xx;
+	struct cvmx_agl_gmx_txx_ctl_s         cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_ctl cvmx_agl_gmx_txx_ctl_t;
 
@@ -3746,6 +3789,7 @@ union cvmx_agl_gmx_txx_min_pkt {
 	struct cvmx_agl_gmx_txx_min_pkt_s     cn68xx;
 	struct cvmx_agl_gmx_txx_min_pkt_s     cn68xxp1;
 	struct cvmx_agl_gmx_txx_min_pkt_s     cn70xx;
+	struct cvmx_agl_gmx_txx_min_pkt_s     cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_min_pkt cvmx_agl_gmx_txx_min_pkt_t;
 
@@ -3802,6 +3846,7 @@ union cvmx_agl_gmx_txx_pause_pkt_interval {
 	struct cvmx_agl_gmx_txx_pause_pkt_interval_s cn68xx;
 	struct cvmx_agl_gmx_txx_pause_pkt_interval_s cn68xxp1;
 	struct cvmx_agl_gmx_txx_pause_pkt_interval_s cn70xx;
+	struct cvmx_agl_gmx_txx_pause_pkt_interval_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_pause_pkt_interval cvmx_agl_gmx_txx_pause_pkt_interval_t;
 
@@ -3856,6 +3901,7 @@ union cvmx_agl_gmx_txx_pause_pkt_time {
 	struct cvmx_agl_gmx_txx_pause_pkt_time_s cn68xx;
 	struct cvmx_agl_gmx_txx_pause_pkt_time_s cn68xxp1;
 	struct cvmx_agl_gmx_txx_pause_pkt_time_s cn70xx;
+	struct cvmx_agl_gmx_txx_pause_pkt_time_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_pause_pkt_time cvmx_agl_gmx_txx_pause_pkt_time_t;
 
@@ -3891,6 +3937,7 @@ union cvmx_agl_gmx_txx_pause_togo {
 	struct cvmx_agl_gmx_txx_pause_togo_s  cn68xx;
 	struct cvmx_agl_gmx_txx_pause_togo_s  cn68xxp1;
 	struct cvmx_agl_gmx_txx_pause_togo_s  cn70xx;
+	struct cvmx_agl_gmx_txx_pause_togo_s  cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_pause_togo cvmx_agl_gmx_txx_pause_togo_t;
 
@@ -3928,6 +3975,7 @@ union cvmx_agl_gmx_txx_pause_zero {
 	struct cvmx_agl_gmx_txx_pause_zero_s  cn68xx;
 	struct cvmx_agl_gmx_txx_pause_zero_s  cn68xxp1;
 	struct cvmx_agl_gmx_txx_pause_zero_s  cn70xx;
+	struct cvmx_agl_gmx_txx_pause_zero_s  cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_pause_zero cvmx_agl_gmx_txx_pause_zero_t;
 
@@ -3964,6 +4012,7 @@ union cvmx_agl_gmx_txx_soft_pause {
 	struct cvmx_agl_gmx_txx_soft_pause_s  cn68xx;
 	struct cvmx_agl_gmx_txx_soft_pause_s  cn68xxp1;
 	struct cvmx_agl_gmx_txx_soft_pause_s  cn70xx;
+	struct cvmx_agl_gmx_txx_soft_pause_s  cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_soft_pause cvmx_agl_gmx_txx_soft_pause_t;
 
@@ -4003,6 +4052,7 @@ union cvmx_agl_gmx_txx_stat0 {
 	struct cvmx_agl_gmx_txx_stat0_s       cn68xx;
 	struct cvmx_agl_gmx_txx_stat0_s       cn68xxp1;
 	struct cvmx_agl_gmx_txx_stat0_s       cn70xx;
+	struct cvmx_agl_gmx_txx_stat0_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stat0 cvmx_agl_gmx_txx_stat0_t;
 
@@ -4040,6 +4090,7 @@ union cvmx_agl_gmx_txx_stat1 {
 	struct cvmx_agl_gmx_txx_stat1_s       cn68xx;
 	struct cvmx_agl_gmx_txx_stat1_s       cn68xxp1;
 	struct cvmx_agl_gmx_txx_stat1_s       cn70xx;
+	struct cvmx_agl_gmx_txx_stat1_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stat1 cvmx_agl_gmx_txx_stat1_t;
 
@@ -4081,6 +4132,7 @@ union cvmx_agl_gmx_txx_stat2 {
 	struct cvmx_agl_gmx_txx_stat2_s       cn68xx;
 	struct cvmx_agl_gmx_txx_stat2_s       cn68xxp1;
 	struct cvmx_agl_gmx_txx_stat2_s       cn70xx;
+	struct cvmx_agl_gmx_txx_stat2_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stat2 cvmx_agl_gmx_txx_stat2_t;
 
@@ -4119,6 +4171,7 @@ union cvmx_agl_gmx_txx_stat3 {
 	struct cvmx_agl_gmx_txx_stat3_s       cn68xx;
 	struct cvmx_agl_gmx_txx_stat3_s       cn68xxp1;
 	struct cvmx_agl_gmx_txx_stat3_s       cn70xx;
+	struct cvmx_agl_gmx_txx_stat3_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stat3 cvmx_agl_gmx_txx_stat3_t;
 
@@ -4159,6 +4212,7 @@ union cvmx_agl_gmx_txx_stat4 {
 	struct cvmx_agl_gmx_txx_stat4_s       cn68xx;
 	struct cvmx_agl_gmx_txx_stat4_s       cn68xxp1;
 	struct cvmx_agl_gmx_txx_stat4_s       cn70xx;
+	struct cvmx_agl_gmx_txx_stat4_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stat4 cvmx_agl_gmx_txx_stat4_t;
 
@@ -4200,6 +4254,7 @@ union cvmx_agl_gmx_txx_stat5 {
 	struct cvmx_agl_gmx_txx_stat5_s       cn68xx;
 	struct cvmx_agl_gmx_txx_stat5_s       cn68xxp1;
 	struct cvmx_agl_gmx_txx_stat5_s       cn70xx;
+	struct cvmx_agl_gmx_txx_stat5_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stat5 cvmx_agl_gmx_txx_stat5_t;
 
@@ -4241,6 +4296,7 @@ union cvmx_agl_gmx_txx_stat6 {
 	struct cvmx_agl_gmx_txx_stat6_s       cn68xx;
 	struct cvmx_agl_gmx_txx_stat6_s       cn68xxp1;
 	struct cvmx_agl_gmx_txx_stat6_s       cn70xx;
+	struct cvmx_agl_gmx_txx_stat6_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stat6 cvmx_agl_gmx_txx_stat6_t;
 
@@ -4282,6 +4338,7 @@ union cvmx_agl_gmx_txx_stat7 {
 	struct cvmx_agl_gmx_txx_stat7_s       cn68xx;
 	struct cvmx_agl_gmx_txx_stat7_s       cn68xxp1;
 	struct cvmx_agl_gmx_txx_stat7_s       cn70xx;
+	struct cvmx_agl_gmx_txx_stat7_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stat7 cvmx_agl_gmx_txx_stat7_t;
 
@@ -4325,6 +4382,7 @@ union cvmx_agl_gmx_txx_stat8 {
 	struct cvmx_agl_gmx_txx_stat8_s       cn68xx;
 	struct cvmx_agl_gmx_txx_stat8_s       cn68xxp1;
 	struct cvmx_agl_gmx_txx_stat8_s       cn70xx;
+	struct cvmx_agl_gmx_txx_stat8_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stat8 cvmx_agl_gmx_txx_stat8_t;
 
@@ -4363,6 +4421,7 @@ union cvmx_agl_gmx_txx_stat9 {
 	struct cvmx_agl_gmx_txx_stat9_s       cn68xx;
 	struct cvmx_agl_gmx_txx_stat9_s       cn68xxp1;
 	struct cvmx_agl_gmx_txx_stat9_s       cn70xx;
+	struct cvmx_agl_gmx_txx_stat9_s       cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stat9 cvmx_agl_gmx_txx_stat9_t;
 
@@ -4398,6 +4457,7 @@ union cvmx_agl_gmx_txx_stats_ctl {
 	struct cvmx_agl_gmx_txx_stats_ctl_s   cn68xx;
 	struct cvmx_agl_gmx_txx_stats_ctl_s   cn68xxp1;
 	struct cvmx_agl_gmx_txx_stats_ctl_s   cn70xx;
+	struct cvmx_agl_gmx_txx_stats_ctl_s   cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_stats_ctl cvmx_agl_gmx_txx_stats_ctl_t;
 
@@ -4438,6 +4498,7 @@ union cvmx_agl_gmx_txx_thresh {
 	struct cvmx_agl_gmx_txx_thresh_s      cn68xx;
 	struct cvmx_agl_gmx_txx_thresh_s      cn68xxp1;
 	struct cvmx_agl_gmx_txx_thresh_s      cn70xx;
+	struct cvmx_agl_gmx_txx_thresh_s      cn70xxp1;
 };
 typedef union cvmx_agl_gmx_txx_thresh cvmx_agl_gmx_txx_thresh_t;
 
@@ -4485,6 +4546,7 @@ union cvmx_agl_gmx_tx_bp {
 	struct cvmx_agl_gmx_tx_bp_s           cn68xx;
 	struct cvmx_agl_gmx_tx_bp_s           cn68xxp1;
 	struct cvmx_agl_gmx_tx_bp_cn56xx      cn70xx;
+	struct cvmx_agl_gmx_tx_bp_cn56xx      cn70xxp1;
 };
 typedef union cvmx_agl_gmx_tx_bp cvmx_agl_gmx_tx_bp_t;
 
@@ -4520,6 +4582,7 @@ union cvmx_agl_gmx_tx_col_attempt {
 	struct cvmx_agl_gmx_tx_col_attempt_s  cn68xx;
 	struct cvmx_agl_gmx_tx_col_attempt_s  cn68xxp1;
 	struct cvmx_agl_gmx_tx_col_attempt_s  cn70xx;
+	struct cvmx_agl_gmx_tx_col_attempt_s  cn70xxp1;
 };
 typedef union cvmx_agl_gmx_tx_col_attempt cvmx_agl_gmx_tx_col_attempt_t;
 
@@ -4569,6 +4632,7 @@ union cvmx_agl_gmx_tx_ifg {
 	struct cvmx_agl_gmx_tx_ifg_s          cn68xx;
 	struct cvmx_agl_gmx_tx_ifg_s          cn68xxp1;
 	struct cvmx_agl_gmx_tx_ifg_s          cn70xx;
+	struct cvmx_agl_gmx_tx_ifg_s          cn70xxp1;
 };
 typedef union cvmx_agl_gmx_tx_ifg cvmx_agl_gmx_tx_ifg_t;
 
@@ -4703,6 +4767,7 @@ union cvmx_agl_gmx_tx_int_en {
 	uint64_t reserved_21_63               : 43;
 #endif
 	} cn70xx;
+	struct cvmx_agl_gmx_tx_int_en_cn70xx  cn70xxp1;
 };
 typedef union cvmx_agl_gmx_tx_int_en cvmx_agl_gmx_tx_int_en_t;
 
@@ -4837,6 +4902,7 @@ union cvmx_agl_gmx_tx_int_reg {
 	uint64_t reserved_21_63               : 43;
 #endif
 	} cn70xx;
+	struct cvmx_agl_gmx_tx_int_reg_cn70xx cn70xxp1;
 };
 typedef union cvmx_agl_gmx_tx_int_reg cvmx_agl_gmx_tx_int_reg_t;
 
@@ -4872,6 +4938,7 @@ union cvmx_agl_gmx_tx_jam {
 	struct cvmx_agl_gmx_tx_jam_s          cn68xx;
 	struct cvmx_agl_gmx_tx_jam_s          cn68xxp1;
 	struct cvmx_agl_gmx_tx_jam_s          cn70xx;
+	struct cvmx_agl_gmx_tx_jam_s          cn70xxp1;
 };
 typedef union cvmx_agl_gmx_tx_jam cvmx_agl_gmx_tx_jam_t;
 
@@ -4909,6 +4976,7 @@ union cvmx_agl_gmx_tx_lfsr {
 	struct cvmx_agl_gmx_tx_lfsr_s         cn68xx;
 	struct cvmx_agl_gmx_tx_lfsr_s         cn68xxp1;
 	struct cvmx_agl_gmx_tx_lfsr_s         cn70xx;
+	struct cvmx_agl_gmx_tx_lfsr_s         cn70xxp1;
 };
 typedef union cvmx_agl_gmx_tx_lfsr cvmx_agl_gmx_tx_lfsr_t;
 
@@ -4972,6 +5040,7 @@ union cvmx_agl_gmx_tx_ovr_bp {
 	struct cvmx_agl_gmx_tx_ovr_bp_s       cn68xx;
 	struct cvmx_agl_gmx_tx_ovr_bp_s       cn68xxp1;
 	struct cvmx_agl_gmx_tx_ovr_bp_cn56xx  cn70xx;
+	struct cvmx_agl_gmx_tx_ovr_bp_cn56xx  cn70xxp1;
 };
 typedef union cvmx_agl_gmx_tx_ovr_bp cvmx_agl_gmx_tx_ovr_bp_t;
 
@@ -5007,6 +5076,7 @@ union cvmx_agl_gmx_tx_pause_pkt_dmac {
 	struct cvmx_agl_gmx_tx_pause_pkt_dmac_s cn68xx;
 	struct cvmx_agl_gmx_tx_pause_pkt_dmac_s cn68xxp1;
 	struct cvmx_agl_gmx_tx_pause_pkt_dmac_s cn70xx;
+	struct cvmx_agl_gmx_tx_pause_pkt_dmac_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_tx_pause_pkt_dmac cvmx_agl_gmx_tx_pause_pkt_dmac_t;
 
@@ -5042,6 +5112,7 @@ union cvmx_agl_gmx_tx_pause_pkt_type {
 	struct cvmx_agl_gmx_tx_pause_pkt_type_s cn68xx;
 	struct cvmx_agl_gmx_tx_pause_pkt_type_s cn68xxp1;
 	struct cvmx_agl_gmx_tx_pause_pkt_type_s cn70xx;
+	struct cvmx_agl_gmx_tx_pause_pkt_type_s cn70xxp1;
 };
 typedef union cvmx_agl_gmx_tx_pause_pkt_type cvmx_agl_gmx_tx_pause_pkt_type_t;
 
@@ -5068,6 +5139,7 @@ union cvmx_agl_gmx_wol_ctl {
 #endif
 	} s;
 	struct cvmx_agl_gmx_wol_ctl_s         cn70xx;
+	struct cvmx_agl_gmx_wol_ctl_s         cn70xxp1;
 };
 typedef union cvmx_agl_gmx_wol_ctl cvmx_agl_gmx_wol_ctl_t;
 
@@ -5119,20 +5191,20 @@ union cvmx_agl_prtx_ctl {
 	uint64_t u64;
 	struct cvmx_agl_prtx_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t drv_byp                      : 1;  /**< Bypass the compensation controller and use
+	uint64_t drv_byp                      : 1;  /**< When set, bypass the compensation controller and use
                                                          DRV_NCTL and DRV_PCTL */
 	uint64_t reserved_62_62               : 1;
-	uint64_t cmp_pctl                     : 6;  /**< PCTL drive strength from the compensation ctl */
+	uint64_t cmp_pctl                     : 6;  /**< PCTL drive strength from the HW compensation controller */
 	uint64_t reserved_54_55               : 2;
-	uint64_t cmp_nctl                     : 6;  /**< NCTL drive strength from the compensation ctl */
+	uint64_t cmp_nctl                     : 6;  /**< NCTL drive strength from the HW compensation controller */
 	uint64_t reserved_46_47               : 2;
-	uint64_t drv_pctl                     : 6;  /**< PCTL drive strength to use in bypass mode
-                                                         Reset value of 19 is for 50 ohm termination */
+	uint64_t drv_pctl                     : 6;  /**< PCTL drive strength to use in bypass mode.
+                                                         Reset value of 13 is for 50 ohm termination */
 	uint64_t reserved_38_39               : 2;
-	uint64_t drv_nctl                     : 6;  /**< NCTL drive strength to use in bypass mode
-                                                         Reset value of 15 is for 50 ohm termination */
+	uint64_t drv_nctl                     : 6;  /**< NCTL drive strength to use in bypass mode.
+                                                         Reset value of 12 is for 50 ohm termination */
 	uint64_t reserved_31_31               : 1;
-	uint64_t clk_set                      : 7;  /**< The clock delay as determined by the DLL */
+	uint64_t clk_set                      : 7;  /**< The clock delay as determined by the on board HW DLL */
 	uint64_t clkrx_byp                    : 1;  /**< Bypass the RX clock delay setting
                                                          Skews RXC from RXD,RXCTL
                                                          By default, HW internally shifts the RXC clock
@@ -5147,11 +5219,11 @@ union cvmx_agl_prtx_ctl {
 	uint64_t clktx_set                    : 7;  /**< TX clock delay setting to use in bypass mode
                                                          Skews TXC from TXD */
 	uint64_t refclk_sel                   : 2;  /**< Select the refclk to use.  Normal RGMII specification requires a 125MHz oscillator.  In
-                                                         order to save some system cost, a 500MHz coprocessor clock can be divided down and remove
-                                                         the requirements for the external oscillator.  Additionally, in some well defined systems,
-                                                         the link partner may be able to source the RXC.  The RGMII would operate correctly in
-                                                         1000Mbs mode only.  (INTERNAL: Some programming magic could allow for 10/100
-                                                         operation if critical).
+                                                         order to reduce system cost, a 500MHz coprocessor clock can be divided down and remove the
+                                                         requirements for the external oscillator.  Additionally, in some well defined systems, the
+                                                         link partner may be able to source the RXC.  The RGMII would operate correctly in 1000Mbs
+                                                         mode only.  (INTERNAL: Some programming magic could allow for 10/100 operation if
+                                                         critical).
                                                          0 = RGMII REFCLK
                                                          1 = RGMII RXC (1000Mbs only) (INTERNAL: some programming restrictions apply for 10/100)
                                                          2 = divided coprocessor clk
@@ -5263,20 +5335,20 @@ union cvmx_agl_prtx_ctl {
 	struct cvmx_agl_prtx_ctl_cn61xx       cn68xxp1;
 	struct cvmx_agl_prtx_ctl_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t drv_byp                      : 1;  /**< Bypass the compensation controller and use
+	uint64_t drv_byp                      : 1;  /**< When set, bypass the compensation controller and use
                                                          DRV_NCTL and DRV_PCTL */
 	uint64_t reserved_61_62               : 2;
-	uint64_t cmp_pctl                     : 5;  /**< PCTL drive strength from the compensation ctl */
+	uint64_t cmp_pctl                     : 5;  /**< PCTL drive strength from the HW compensation controller */
 	uint64_t reserved_53_55               : 3;
-	uint64_t cmp_nctl                     : 5;  /**< NCTL drive strength from the compensation ctl */
+	uint64_t cmp_nctl                     : 5;  /**< NCTL drive strength from the HW compensation controller */
 	uint64_t reserved_45_47               : 3;
-	uint64_t drv_pctl                     : 5;  /**< PCTL drive strength to use in bypass mode
-                                                         Reset value of 19 is for 50 ohm termination */
+	uint64_t drv_pctl                     : 5;  /**< PCTL drive strength to use in bypass mode.
+                                                         Reset value of 13 is for 50 ohm termination */
 	uint64_t reserved_37_39               : 3;
-	uint64_t drv_nctl                     : 5;  /**< NCTL drive strength to use in bypass mode
-                                                         Reset value of 15 is for 50 ohm termination */
+	uint64_t drv_nctl                     : 5;  /**< NCTL drive strength to use in bypass mode.
+                                                         Reset value of 12 is for 50 ohm termination */
 	uint64_t reserved_31_31               : 1;
-	uint64_t clk_set                      : 7;  /**< The clock delay as determined by the DLL */
+	uint64_t clk_set                      : 7;  /**< The clock delay as determined by the on board HW DLL */
 	uint64_t clkrx_byp                    : 1;  /**< Bypass the RX clock delay setting
                                                          Skews RXC from RXD,RXCTL
                                                          By default, HW internally shifts the RXC clock
@@ -5291,11 +5363,11 @@ union cvmx_agl_prtx_ctl {
 	uint64_t clktx_set                    : 7;  /**< TX clock delay setting to use in bypass mode
                                                          Skews TXC from TXD */
 	uint64_t refclk_sel                   : 2;  /**< Select the refclk to use.  Normal RGMII specification requires a 125MHz oscillator.  In
-                                                         order to save some system cost, a 500MHz coprocessor clock can be divided down and remove
-                                                         the requirements for the external oscillator.  Additionally, in some well defined systems,
-                                                         the link partner may be able to source the RXC.  The RGMII would operate correctly in
-                                                         1000Mbs mode only.  (INTERNAL: Some programming magic could allow for 10/100
-                                                         operation if critical).
+                                                         order to reduce system cost, a 500MHz coprocessor clock can be divided down and remove the
+                                                         requirements for the external oscillator.  Additionally, in some well defined systems, the
+                                                         link partner may be able to source the RXC.  The RGMII would operate correctly in 1000Mbs
+                                                         mode only.  (INTERNAL: Some programming magic could allow for 10/100 operation if
+                                                         critical).
                                                          0 = RGMII REFCLK
                                                          1 = RGMII RXC (1000Mbs only) (INTERNAL: some programming restrictions apply for 10/100)
                                                          2 = divided coprocessor clk
@@ -5332,6 +5404,7 @@ union cvmx_agl_prtx_ctl {
 	uint64_t drv_byp                      : 1;
 #endif
 	} cn70xx;
+	struct cvmx_agl_prtx_ctl_cn70xx       cn70xxp1;
 };
 typedef union cvmx_agl_prtx_ctl cvmx_agl_prtx_ctl_t;
 

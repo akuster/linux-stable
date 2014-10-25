@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -43,7 +43,7 @@
  * File defining different Octeon model IDs and macros to
  * compare them.
  *
- * <hr>$Revision: 88111 $<hr>
+ * <hr>$Revision: 103698 $<hr>
  */
 
 #ifndef __OCTEON_MODEL_H__
@@ -269,7 +269,7 @@ extern "C" {
 #define OCTEON_CN58XX_PASS2_2   0x000d030a
 #define OCTEON_CN58XX_PASS2_3   0x000d030b
 
-#define OCTEON_CN58XX           (OCTEON_CN58XX_PASS1_0 | OM_IGNORE_REVISION)
+#define OCTEON_CN58XX           (OCTEON_CN58XX_PASS2_0 | OM_IGNORE_REVISION)
 #define OCTEON_CN58XX_PASS1_X   (OCTEON_CN58XX_PASS1_0 | OM_IGNORE_MINOR_REVISION)
 #define OCTEON_CN58XX_PASS2_X   (OCTEON_CN58XX_PASS2_0 | OM_IGNORE_MINOR_REVISION)
 #define OCTEON_CN58XX_PASS1     OCTEON_CN58XX_PASS1_X

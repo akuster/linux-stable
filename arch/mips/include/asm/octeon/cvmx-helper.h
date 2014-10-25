@@ -42,7 +42,7 @@
  *
  * Helper functions for common, but complicated tasks.
  *
- * <hr>$Revision: 86434 $<hr>
+ * <hr>$Revision: 101694 $<hr>
  */
 
 #ifndef __CVMX_HELPER_H__
@@ -52,7 +52,6 @@
 #include <asm/octeon/cvmx.h>
 #endif
 
-#include "cvmx-fpa.h"
 #include "cvmx-wqe.h"
 
 #ifdef  __cplusplus
@@ -62,7 +61,8 @@ extern "C" {
 #endif
 
 /* Max number of GMXX */
-#define CVMX_HELPER_MAX_GMX             (OCTEON_IS_MODEL(OCTEON_CN68XX) ? 5 : 2)
+#define CVMX_HELPER_MAX_GMX             (OCTEON_IS_MODEL(OCTEON_CN78XX) ? 6 \
+					 : (OCTEON_IS_MODEL(OCTEON_CN68XX) ? 5 : 2))
 
 #define CVMX_HELPER_CSR_INIT0           0	/* Do not change as
 						   CVMX_HELPER_WRITE_CSR()
@@ -128,6 +128,10 @@ typedef enum {
 	CVMX_HELPER_INTERFACE_MODE_RXAUI,
 	CVMX_HELPER_INTERFACE_MODE_QSGMII,
 	CVMX_HELPER_INTERFACE_MODE_AGL,
+	CVMX_HELPER_INTERFACE_MODE_XLAUI,
+	CVMX_HELPER_INTERFACE_MODE_XFI,
+	CVMX_HELPER_INTERFACE_MODE_10G_KR,
+	CVMX_HELPER_INTERFACE_MODE_40G_KR4,
 } cvmx_helper_interface_mode_t;
 
 typedef union {
@@ -163,15 +167,6 @@ void cvmx_rgmii_set_back_pressure(uint64_t backpressure_dis);
 #include "cvmx-helper-xaui.h"
 
 /**
- * cvmx_override_pko_queue_priority(int ipd_port, uint64_t
- * priorities[16]) is a function pointer. It is meant to allow
- * customization of the PKO queue priorities based on the port
- * number. Users should set this pointer to a function before
- * calling any cvmx-helper operations.
- */
-extern CVMX_SHARED void (*cvmx_override_pko_queue_priority) (int ipd_port, uint64_t * priorities);
-
-/**
  * cvmx_override_iface_phy_mode(int interface, int index) is a function pointer.
  * It is meant to allow customization of interfaces which do not have a PHY.
  *
@@ -202,7 +197,8 @@ extern CVMX_SHARED void (*cvmx_override_ipd_port_setup) (int ipd_port);
  * @return 0 on success
  *         -1 on failure
  */
-extern int cvmx_helper_ipd_and_packet_input_enable(void);
+int cvmx_helper_ipd_and_packet_input_enable_node(int node);
+int cvmx_helper_ipd_and_packet_input_enable(void);
 
 /**
  * Initialize and allocate memory for the SSO.
@@ -215,14 +211,28 @@ extern int cvmx_helper_ipd_and_packet_input_enable(void);
 extern int cvmx_helper_initialize_sso(int wqe_entries);
 
 /**
- * Undo the effect of cvmx_helper_initialize_sso().
+ * Initialize and allocate memory for the SSO on a specific node.
  *
- * Warning: since cvmx_bootmem_alloc() memory cannot be freed, the
- * memory allocated by cvmx_helper_initialize_sso() will be leaked.
+ * @param wqe_entries The maximum number of work queue entries to be
+ * supported.
+ *
+ * @return Zero on success, non-zero on failure.
+ */
+extern int cvmx_helper_initialize_sso_node(unsigned node, int wqe_entries);
+
+/**
+ * Undo the effect of cvmx_helper_initialize_sso().
  *
  * @return Zero on success, non-zero on failure.
  */
 extern int cvmx_helper_uninitialize_sso(void);
+
+/**
+ * Undo the effect of cvmx_helper_initialize_sso_node().
+ *
+ * @return Zero on success, non-zero on failure.
+ */
+extern int cvmx_helper_uninitialize_sso_node(unsigned node);
 
 /**
  * Initialize the PIP, IPD, and PKO hardware to support
@@ -233,7 +243,8 @@ extern int cvmx_helper_uninitialize_sso(void);
  *
  * @return Zero on success, non-zero on failure
  */
-extern int cvmx_helper_initialize_packet_io_global(void);
+int cvmx_helper_initialize_packet_io_global(void);
+int cvmx_helper_initialize_packet_io_node(unsigned int node);
 
 /**
  * Does core local initialization for packet io
@@ -380,6 +391,139 @@ extern int cvmx_helper_configure_loopback(int ipd_port, int enable_internal, int
  *         -1 for uninitialized interface
  */
 int __cvmx_helper_early_ports_on_interface(int interface);
+
+void cvmx_helper_setup_simulator_io_buffer_counts(int node, int num_packet_buffers,
+		int pko_buffers);
+
+void cvmx_helper_set_wqe_no_ptr_mode(bool mode);
+void cvmx_helper_set_pkt_wqe_le_mode(bool mode);
+int cvmx_helper_shutdown_fpa_pools(int node);
+
+
+/**
+ * Convert Ethernet QoS/PCP value to system-level priority
+ *
+ * In OCTEON, highest priority is 0, in Ethernet 802.1p PCP field
+ * the highest priority is 7, lowest is 1. Here is the full conversion
+ * table between QoS (PCP) and OCTEON priority values, per IEEE 802.1Q-2005:
+ *
+ * PCP 	Priority 	Acronym 	Traffic Types
+ * 1 	7 (lowest) 	BK 	Background
+ * 0 	6 	BE 	Best Effort
+ * 2 	5 	EE 	Excellent Effort
+ * 3 	4 	CA 	Critical Applications
+ * 4 	3 	VI 	Video, < 100 ms latency and jitter
+ * 5 	2 	VO 	Voice, < 10 ms latency and jitter
+ * 6 	1 	IC 	Internetwork Control
+ * 7 	0 (highest) 	NC 	Network Control
+ */
+static inline uint8_t cvmx_helper_qos2prio(uint8_t qos)
+{
+	static const unsigned pcp_map =
+		6 << (4 * 0) |
+		7 << (4 * 1) |
+		5 << (4 * 2) |
+		4 << (4 * 3) |
+		3 << (4 * 4) |
+		2 << (4 * 5) |
+		1 << (4 * 6) |
+		0 << (4 * 7);
+
+	return (pcp_map >> ((qos & 0x7) << 2)) & 0x7;
+}
+
+/**
+ * Convert system-level priority to Ethernet QoS/PCP value
+ *
+ * Calculate the reverse of cvmx_helper_qos2prio() per IEEE 802.1Q-2005.
+ */
+static inline uint8_t cvmx_helper_prio2qos(uint8_t prio)
+{
+	static const unsigned prio_map =
+		7 << (4 * 0) |
+		6 << (4 * 1) |
+		5 << (4 * 2) |
+		4 << (4 * 3) |
+		3 << (4 * 4) |
+		2 << (4 * 5) |
+		0 << (4 * 6) |
+		1 << (4 * 7);
+
+	return (prio_map >> ((prio & 0x7) << 2)) & 0x7;
+}
+
+/**
+ * @INTERNAL
+ * Get the number of ipd_ports on an interface.
+ *
+ * @param interface
+ *
+ * @return the number of ipd_ports on the interface and -1 for error.
+ */
+int __cvmx_helper_get_num_ipd_ports(int interface);
+
+enum cvmx_pko_padding __cvmx_helper_get_pko_padding(int xiface);
+
+/**
+ * @INTERNAL
+ *
+ * @param interface
+ * @param num_ipd_ports is the number of ipd_ports on the interface
+ * @param has_fcs indicates if PKO does FCS for the ports on this
+ * @param pad The padding that PKO should apply.
+ * interface.
+ *
+ * @return 0 for success and -1 for failure
+ */
+int __cvmx_helper_init_interface(int interface, int num_ipd_ports, int has_fcs, enum cvmx_pko_padding pad);
+
+void __cvmx_helper_shutdown_interfaces(void);
+
+/*
+ * @INTERNAL
+ * Enable packet input/output from the hardware. This function is
+ * called after all internal setup is complete and IPD is enabled.
+ * After this function completes, packets will be accepted from the
+ * hardware ports. PKO should still be disabled to make sure packets
+ * aren't sent out partially setup hardware.
+ *
+ * @return Zero on success, negative on failure
+ */
+int __cvmx_helper_packet_hardware_enable(int xiface);
+
+/*
+ * @INTERNAL
+ *
+ * @return 0 for success and -1 for failure
+ */
+int __cvmx_helper_set_link_info(int xiface, int index, cvmx_helper_link_info_t link_info);
+
+/**
+ * @INTERNAL
+ *
+ * @param interface
+ * @param port
+ *
+ * @return valid link_info on success or -1 on failure
+ */
+cvmx_helper_link_info_t __cvmx_helper_get_link_info(int interface, int port);
+
+enum cvmx_pko_padding {
+	CVMX_PKO_PADDING_NONE = 0,
+	CVMX_PKO_PADDING_60 = 1,
+};
+
+/**
+ * @INTERNAL
+ *
+ * @param interface
+ *
+ * @return 0 if PKO does not do FCS and 1 otherwise.
+ */
+int __cvmx_helper_get_has_fcs(int interface);
+
+void *cvmx_helper_mem_alloc(int node, uint64_t alloc_size, uint64_t align);
+void cvmx_helper_mem_free(void *buffer, uint64_t size);
 
 #ifdef  __cplusplus
 /* *INDENT-OFF* */

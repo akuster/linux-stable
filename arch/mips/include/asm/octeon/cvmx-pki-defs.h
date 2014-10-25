@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -524,6 +524,17 @@ static inline uint64_t CVMX_PKI_PFE_DIAG_FUNC(void)
 }
 #else
 #define CVMX_PKI_PFE_DIAG (CVMX_ADD_IO_SEG(0x0001180044000560ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKI_PIX_CLKEN CVMX_PKI_PIX_CLKEN_FUNC()
+static inline uint64_t CVMX_PKI_PIX_CLKEN_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_PKI_PIX_CLKEN not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180044000600ull);
+}
+#else
+#define CVMX_PKI_PIX_CLKEN (CVMX_ADD_IO_SEG(0x0001180044000600ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKI_PIX_DIAG CVMX_PKI_PIX_DIAG_FUNC()
@@ -1095,7 +1106,7 @@ typedef union cvmx_pki_active2 cvmx_pki_active2_t;
 /**
  * cvmx_pki_aura#_cfg
  *
- * This register configures aura backpressure, etc; see Backpressure.
+ * This register configures aura backpressure, etc.
  *
  */
 union cvmx_pki_aurax_cfg {
@@ -1103,16 +1114,19 @@ union cvmx_pki_aurax_cfg {
 	struct cvmx_pki_aurax_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t pkt_add                      : 2;  /**< Specifies what to add to FPA_AURA(0..1023)_CNT when PKI enqueues a packet:
+	uint64_t pkt_add                      : 2;  /**< Specifies what to add to FPA_AURA()_CNT when PKI enqueues a packet:
                                                          0 = zero.
                                                          1 = one.
-                                                         2 = The number of FPA buffers allocated; i.e. if PKI_STYLE(0..63)_BUF[DIS_WQ_DAT] is set,
+                                                         2 = The number of FPA buffers allocated; i.e. if PKI_STYLE()_BUF[DIS_WQ_DAT] is set,
                                                          WQE[BUFS]+1, else WQE[BUFS].
                                                          3 = WQE[LEN] (i.e. the packet length). */
 	uint64_t reserved_19_29               : 11;
-	uint64_t ena_red                      : 1;  /**< Enable RED drop between PASS and DROP levels. */
-	uint64_t ena_drop                     : 1;  /**< Enable tail drop when maximum DROP level exceeded. */
-	uint64_t ena_bp                       : 1;  /**< Enable asserting backpressure on BPID when maximum DROP level exceeded. */
+	uint64_t ena_red                      : 1;  /**< Enable RED drop between PASS and DROP levels. See also
+                                                         FPA_AURA()_POOL_LEVELS[RED_ENA] and FPA_AURA()_CNT_LEVELS[RED_ENA]. */
+	uint64_t ena_drop                     : 1;  /**< Enable tail drop when maximum DROP level exceeded. See also
+                                                         FPA_AURA()_POOL_LEVELS[DROP] and FPA_AURA()_CNT_LEVELS[DROP]. */
+	uint64_t ena_bp                       : 1;  /**< Enable asserting backpressure on BPID when maximum DROP level exceeded. See also
+                                                         FPA_AURA()_POOL_LEVELS[RED_ENA] and FPA_AURA()_CNT_LEVELS[RED_ENA]. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t bpid                         : 10; /**< Bpid to assert backpressure on. */
 #else
@@ -1140,26 +1154,25 @@ union cvmx_pki_bist_status0 {
 	uint64_t u64;
 	struct cvmx_pki_bist_status0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_33_63               : 31;
-	uint64_t bist                         : 33; /**< BIST results. Hardware sets a bit in BIST for memory that fails BIST. INTERNAL: This
+	uint64_t reserved_31_63               : 33;
+	uint64_t bist                         : 31; /**< BIST results. Hardware sets a bit in BIST for memory that fails BIST. INTERNAL: This
                                                          register collects status for PKI_PFE.
-                                                         <32> - INB_ERRS
-                                                         <31> - INB OCTS
-                                                         <30> - INB PKTS
-                                                         <29> - LD FIF
-                                                         <28..27> - RD FIF
-                                                         <26> - PBE STATE
-                                                         <25> - WADR STATE
-                                                         <24> - NXT PTAG
-                                                         <23> - CUR PTAG
-                                                         <22> - X2P FIF
-                                                         <21> - DROP FIF
-                                                         <20> - NXT BLK
-                                                         <19..16> - KMEM
-                                                         <15..0> - ASM BUFF */
+                                                         <30> = INB_ERRS.
+                                                         <29> = INB OCTS.
+                                                         <28> = INB PKTS.
+                                                         <27> = LD FIF.
+                                                         <26> = PBE STATE.
+                                                         <25> = WADR STATE.
+                                                         <24> = NXT PTAG.
+                                                         <23> = CUR PTAG.
+                                                         <22> = X2P FIF.
+                                                         <21> = DROP FIF.
+                                                         <20> = NXT BLK.
+                                                         <19..16> = KMEM.
+                                                         <15..0> = ASM BUFF. */
 #else
-	uint64_t bist                         : 33;
-	uint64_t reserved_33_63               : 31;
+	uint64_t bist                         : 31;
+	uint64_t reserved_31_63               : 33;
 #endif
 	} s;
 	struct cvmx_pki_bist_status0_s        cn78xx;
@@ -1176,12 +1189,30 @@ union cvmx_pki_bist_status1 {
 	uint64_t u64;
 	struct cvmx_pki_bist_status1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_20_63               : 44;
-	uint64_t bist                         : 20; /**< BIST results. Hardware sets a bit in BIST for memory that fails BIST. INTERNAL: This
-                                                         register collects status for PKI_PBE. */
+	uint64_t reserved_21_63               : 43;
+	uint64_t bist                         : 21; /**< BIST results. Hardware sets a bit in BIST for memory that fails BIST. INTERNAL: This
+                                                         register collects status for PKI_PBE.
+                                                         <20> = STATS_MEM0.
+                                                         <19> = STATS_MEM1.
+                                                         <18> = STATS_MEM2.
+                                                         <17> = STATS_MEM3.
+                                                         <16> = SWS.
+                                                         <15> = WQEOUT.
+                                                         <14> = DOA.
+                                                         <13> = BPID.
+                                                         <12 =10> = Reserved.
+                                                         <9> = PLC.
+                                                         <8> = PKTWQ.
+                                                         <7 =6> = Reserved.
+                                                         <5> = TAG.
+                                                         <4> = AURA.
+                                                         <3> = CHAN.
+                                                         <2> = PBTAG.
+                                                         <1> = STYLEWQ.
+                                                         <0> = QPG. */
 #else
-	uint64_t bist                         : 20;
-	uint64_t reserved_20_63               : 44;
+	uint64_t bist                         : 21;
+	uint64_t reserved_21_63               : 43;
 #endif
 	} s;
 	struct cvmx_pki_bist_status1_s        cn78xx;
@@ -1201,19 +1232,19 @@ union cvmx_pki_bist_status2 {
 	uint64_t reserved_25_63               : 39;
 	uint64_t bist                         : 25; /**< BIST results. Hardware sets a bit in BIST for memory that fails BIST. INTERNAL: This
                                                          register collects status for PKI_PIX (verif/vkits/pki/pki_mem_info_table.sv).
-                                                         - 24: IMEM
-                                                         - 23: IPEC3 / IPEs 10 .. 19 (RegFile + DMEM)
-                                                         - 22: IPEC3 / IPEs  0 ..  9 (RegFile + DMEM)
-                                                         - 21: IPEC2 / IPEs 10 .. 19 (RegFile + DMEM)
-                                                         - 20: IPEC2 / IPEs  0 ..  9 (RegFile + DMEM)
-                                                         - 19: IPEC1 / IPEs 10 .. 19 (RegFile + DMEM)
-                                                         - 18: IPEC1 / IPEs  0 ..  9 (RegFile + DMEM)
-                                                         - 17: IPEC0 / IPEs 10 .. 19 (RegFile + DMEM)
-                                                         - 16: IPEC0 / IPEs  0 ..  9 (RegFile + DMEM)
-                                                         15..12: IPEC SMEM
-                                                         11..8: IPEC PCAM ECC
-                                                         7..4: IPEC PCAM RES
-                                                         3..0: IPEC PCAM CAM */
+                                                         24 = IMEM.
+                                                         23 = IPEC3 / IPEs 10 .. 19 (RegFile + DMEM).
+                                                         22 = IPEC3 / IPEs  0 ..  9 (RegFile + DMEM).
+                                                         21 = IPEC2 / IPEs 10 .. 19 (RegFile + DMEM).
+                                                         20 = IPEC2 / IPEs  0 ..  9 (RegFile + DMEM).
+                                                         19 = IPEC1 / IPEs 10 .. 19 (RegFile + DMEM).
+                                                         18 = IPEC1 / IPEs  0 ..  9 (RegFile + DMEM).
+                                                         17 = IPEC0 / IPEs 10 .. 19 (RegFile + DMEM).
+                                                         16 = IPEC0 / IPEs  0 ..  9 (RegFile + DMEM).
+                                                         15..12 = IPEC SMEM.
+                                                         11..8 = IPEC PCAM ECC.
+                                                         7..4 = IPEC PCAM RES.
+                                                         3..0 = IPEC PCAM CAM. */
 #else
 	uint64_t bist                         : 25;
 	uint64_t reserved_25_63               : 39;
@@ -1325,7 +1356,8 @@ union cvmx_pki_clx_ecc_ctl {
 	uint64_t u64;
 	struct cvmx_pki_clx_ecc_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_24_63               : 40;
+	uint64_t pcam_en                      : 1;  /**< PCAM ECC checking enable. INTERNAL: This enables the PCAM scrubber. */
+	uint64_t reserved_24_62               : 39;
 	uint64_t pcam1_flip                   : 2;  /**< PCAM1 flip syndrome bits on write. */
 	uint64_t pcam0_flip                   : 2;  /**< PCAM  flip syndrome bits on write. */
 	uint64_t smem_flip                    : 2;  /**< SMEM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM ram to
@@ -1350,7 +1382,8 @@ union cvmx_pki_clx_ecc_ctl {
 	uint64_t smem_flip                    : 2;
 	uint64_t pcam0_flip                   : 2;
 	uint64_t pcam1_flip                   : 2;
-	uint64_t reserved_24_63               : 40;
+	uint64_t reserved_24_62               : 39;
+	uint64_t pcam_en                      : 1;
 #endif
 	} s;
 	struct cvmx_pki_clx_ecc_ctl_s         cn78xx;
@@ -1365,14 +1398,14 @@ union cvmx_pki_clx_ecc_int {
 	struct cvmx_pki_clx_ecc_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
-	uint64_t pcam1_dbe                    : 1;  /**< PCAM1 ECC double bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_PCAM1_DBE. */
-	uint64_t pcam1_sbe                    : 1;  /**< PCAM1 ECC single bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_PCAM1_SBE. */
-	uint64_t pcam0_dbe                    : 1;  /**< PCAM0 ECC double bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_PCAM0_DBE. */
-	uint64_t pcam0_sbe                    : 1;  /**< PCAM0 ECC single bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_PCAM0_SBE. */
-	uint64_t smem_dbe                     : 1;  /**< SMEM ECC double bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_SMEM_DBE. */
-	uint64_t smem_sbe                     : 1;  /**< SMEM ECC single bit error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_SMEM_SBE. */
-	uint64_t dmem_perr                    : 1;  /**< DMEM parity error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_DMEM_PERR. */
-	uint64_t rf_perr                      : 1;  /**< RF RAM parity error. Throws PKI_INTSN_E::PKI_CL(0..3)_ECC_RF_PERR. */
+	uint64_t pcam1_dbe                    : 1;  /**< PCAM1 ECC double bit error. Throws PKI_INTSN_E::PKI_CL()_ECC_PCAM1_DBE. */
+	uint64_t pcam1_sbe                    : 1;  /**< PCAM1 ECC single bit error. Throws PKI_INTSN_E::PKI_CL()_ECC_PCAM1_SBE. */
+	uint64_t pcam0_dbe                    : 1;  /**< PCAM0 ECC double bit error. Throws PKI_INTSN_E::PKI_CL()_ECC_PCAM0_DBE. */
+	uint64_t pcam0_sbe                    : 1;  /**< PCAM0 ECC single bit error. Throws PKI_INTSN_E::PKI_CL()_ECC_PCAM0_SBE. */
+	uint64_t smem_dbe                     : 1;  /**< SMEM ECC double bit error. Throws PKI_INTSN_E::PKI_CL()_ECC_SMEM_DBE. */
+	uint64_t smem_sbe                     : 1;  /**< SMEM ECC single bit error. Throws PKI_INTSN_E::PKI_CL()_ECC_SMEM_SBE. */
+	uint64_t dmem_perr                    : 1;  /**< DMEM parity error. Throws PKI_INTSN_E::PKI_CL()_ECC_DMEM_PERR. */
+	uint64_t rf_perr                      : 1;  /**< RF RAM parity error. Throws PKI_INTSN_E::PKI_CL()_ECC_RF_PERR. */
 #else
 	uint64_t rf_perr                      : 1;
 	uint64_t dmem_perr                    : 1;
@@ -1397,17 +1430,20 @@ union cvmx_pki_clx_int {
 	struct cvmx_pki_clx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
-	uint64_t trapz                        : 1;  /**< PCAM sequencer trapz interrupt. Throws PKI_INTSN_E::PKI_CL(0..3)_INT_TRAPZ. INTERNAL:
-                                                         Caused by TRAP sequence state, may indicate PKI enabled without proper sequencer code
-                                                         loaded in PKI_IMEM(0..2047). */
-	uint64_t iptint                       : 1;  /**< PCAM sequencer debug interrupt. Throws PKI_INTSN_E::PKI_CL(0..3)_INT_IPTINT. INTERNAL:
+	uint64_t trapz                        : 1;  /**< Reserved. INTERNAL: Deprecated. PCAM sequencer trapz interrupt. Throws
+                                                         PKI_INTSN_E::PKI_CL()_INT_TRAPZ. Caused by TRAP sequence state, may indicate PKI
+                                                         enabled without proper sequencer code loaded in PKI_IMEM(). Based on PCAM sequencer
+                                                         execution, will likely throw an additional IPTINT interrupt. */
+	uint64_t iptint                       : 1;  /**< PCAM sequencer debug interrupt. Throws PKI_INTSN_E::PKI_CL()_INT_IPTINT. INTERNAL:
                                                          Caused by TRAP or INTR sequence state. */
 	uint64_t sched_conf                   : 1;  /**< PCAM/SMEM internal port conflict. Internal error, should not occur. Throws
-                                                         PKI_INTSN_E::PKI_CL(0..3)_INT_SCHED_CONF. INTERNAL: Sequencer mis-scheduled PCAM or SMEM
+                                                         PKI_INTSN_E::PKI_CL()_INT_SCHED_CONF. INTERNAL: Sequencer mis-scheduled PCAM or SMEM
                                                          ops with overlapping accesses. */
-	uint64_t pcam_conf                    : 2;  /**< PCAM(0..1) match hit multiple rows, indicating a programming error in
-                                                         PKI_CL(0..3)_PCAM(0..1)_MATCH(0..191) or related registers. Throws
-                                                         PKI_INTSN_E::PKI_CL(0..3)_INT_PCAM_CONF(0..1). */
+	uint64_t pcam_conf                    : 2;  /**< PCAM() match hit multiple rows, indicating either a soft error in the PCAM or a
+                                                         programming error in PKI_CL()_PCAM()_MATCH() or related registers. Throws
+                                                         PKI_INTSN_E::PKI_CL()_INT_PCAM_CONF(). Once a conflict is detected, the PCAM state
+                                                         is unpredictable and is required to be fully reconfigured before further valid processing
+                                                         can take place. */
 #else
 	uint64_t pcam_conf                    : 2;
 	uint64_t sched_conf                   : 1;
@@ -1423,58 +1459,61 @@ typedef union cvmx_pki_clx_int cvmx_pki_clx_int_t;
 /**
  * cvmx_pki_cl#_pcam#_action#
  *
- * If multiple PCAM entries hit, the PKI_GEN_INT[PCAMERR] error interrupt is signaled, and it is
- * unpredictable which PCAM action register will be used.
+ * Action performed based on PCAM lookup using the PKI_CL()_PCAM()_TERM() and
+ * PKI_CL()_PCAM()_MATCH() registers.
+ *
+ * If lookup data matches no PCAM entries, then no action takes place. No matches indicates
+ * normal parsing will continue.
+ *
+ * If data matches multiple PCAM entries, PKI_WQE_S[OPCODE] of the processed packet may be set to
+ * PKI_OPCODE_E::RE_PKIPCAM and the PKI_CL()_INT[PCAM_CONF] error interrupt is signaled.  Once a
+ * conflict is detected, the PCAM state is unpredictable and is required to be fully reconfigured
+ * before further valid processing can take place.
  */
 union cvmx_pki_clx_pcamx_actionx {
 	uint64_t u64;
 	struct cvmx_pki_clx_pcamx_actionx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_31_63               : 33;
-	uint64_t pmc                          : 7;  /**< Parse Mode Change. Where to resume parsing after applying the scan offset (if any) as bit
+	uint64_t pmc                          : 7;  /**< Parse mode change. Where to resume parsing after applying the scan offset (if any) as bit
                                                          mask of which sequence steps to no longer process:
-                                                         <0> = LA (L2)
-                                                         <1> = LB (Custom)
-                                                         <2> = LC (L3)
-                                                         <3> = LD (Virt)
-                                                         <4> = LE (IL3)
-                                                         <5> = LF (L4)
-                                                         <6> = LG (Custom/Application)
+                                                         _ <0> = LA (L2)
+                                                         _ <1> = LB (Custom)
+                                                         _ <2> = LC (L3)
+                                                         _ <3> = LD (Virt)
+                                                         _ <4> = LE (IL3)
+                                                         _ <5> = LF (L4)
+                                                         _ <6> = LG (Custom/Application)
                                                          The legal values are:
-                                                         0x0 = no change in parsing
-                                                         0x1 = Skip further LA parsing; start LB parsing.
-                                                         For TERM==L2_CUSTOM only)
-                                                         0x3 = Skip further LA/LB parsing; start LC parsing.
-                                                         For TERMs through Ethertypes only)
-                                                         0x7 = Skip further LA-LC parsing; start LD parsing.
-                                                         For TERMs through L3FLAGS only)
-                                                         0x3F = Skip further LA-LF parsing; start LG parsing.
-                                                         For TERMs through IL3FLAGS only)
-                                                         0x7F = Skip all parsing; no further packet inspection.
-                                                         For TERMs through L3FLAGS only)
+                                                         0x0 = no change in parsing.
+                                                         0x1 = Skip further LA parsing; start LB parsing. For TERM==L2_CUSTOM only).
+                                                         0x3 = Skip further LA/LB parsing; start LC parsing. For TERMs through Ethertypes only).
+                                                         0x7 = Skip further LA-LC parsing; start LD parsing. For TERMs through L3FLAGS only).
+                                                         0x7F = Skip all parsing; no further packet inspection. For TERMs through L3FLAGS only).
                                                          For example an Ethertype match action that wishes to resume with additional Ethertype
                                                          matches would use a zero PMC to indicate no parse mode change. An Ethertype match action
                                                          that wishes to not parse any additional Ethertypes and resume at LC would use 0x3.
                                                          Must be zero for invalid entries, or for TERMs that do not allow a parse mode change as
-                                                         specified in the PKI_PCAM_TERM_E table.
-                                                         See also Parse Mode. */
+                                                         specified in the PKI_PCAM_TERM_E table. */
 	uint64_t style_add                    : 8;  /**< Resulting interim style adder. If this CAM entry matches, the value to add to the current
-                                                         style (may wrap around through 256). See Styles. Must be zero for invalid entries. */
+                                                         style (may wrap around through 256). Must be zero for invalid entries. */
 	uint64_t pf                           : 3;  /**< Parse flag to set. Specifies the parse flag to set when entry matches, see PCAM actions
                                                          may also specify setting one of four user flags in the generated work queue entry,
-                                                         WQE[PF1] through WQE[PF4]. These flags are not used by hardware; they indicate to software
-                                                         that exceptional handling may be required, such as the presence of an encrypted packet.:
-                                                         0x0 = no change.
-                                                         0x1 = Set WQE[PF1].
-                                                         0x2 = Set WQE[PF2].
-                                                         0x3 = Set WQE[PF3].
-                                                         0x4 = Set WQE[PF4].
-                                                         else = reserved.
+                                                         WQE[PF1] through WQE[PF4]. These flags are not used by hardware; they are intended to
+                                                         indicate to software that exceptional handling may be required, such as the presence of an
+                                                         encrypted packet:
+                                                         _ 0x0 = no change.
+                                                         _ 0x1 = Set WQE[PF1].
+                                                         _ 0x2 = Set WQE[PF2].
+                                                         _ 0x3 = Set WQE[PF3].
+                                                         _ 0x4 = Set WQE[PF4].
+                                                         _ else = reserved.
                                                          Must be zero for invalid entries. */
 	uint64_t setty                        : 5;  /**< Set pointer type. If non-zero, indicates the layer type to be set as described under
-                                                         PKI_PCAM_TERM_E. Values are enumerated in PKI_LTYPE_E. Must be zero for invalid entries. */
-	uint64_t advance                      : 8;  /**< Relative number of bytes to advance scan pointer when entry matches. See Parser Skip and
-                                                         Advancing. Must be even. Must be zero for invalid entries and for TERMs that do not allow
+                                                         PKI_PCAM_TERM_E. Values are enumerated in PKI_LTYPE_E. Must be zero for invalid entries.
+                                                         The PKI_PCAM_TERM_E table enumerates legal/common SETTY values. */
+	uint64_t advance                      : 8;  /**< Relative number of bytes to advance scan pointer when entry matches.
+                                                         Must be even. Must be zero for invalid entries and for TERMs that do not allow
                                                          an advance as specified in the PKI_PCAM_TERM_E table. */
 #else
 	uint64_t advance                      : 8;
@@ -1496,16 +1535,15 @@ union cvmx_pki_clx_pcamx_matchx {
 	uint64_t u64;
 	struct cvmx_pki_clx_pcamx_matchx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t data1                        : 32; /**< See DATA0. */
+	uint64_t data1                        : 32; /**< See [DATA0]. */
 	uint64_t data0                        : 32; /**< The packet data to compare against. Bits may be ignored in comparison based on [DATA0] and
-                                                         [DATA1]. If the entry matches, PKI_CL(0..3)_PCAM(0..1)_ACTION(0..191) will determine the
+                                                         [DATA1]. If the entry matches, PKI_CL()_PCAM()_ACTION() will determine the
                                                          action to be taken. See PKI_PCAM_TERM_E for comparison bit definitions.
                                                          The field value is ternary, where each bit matches as follows:
-                                                         DATA1<n> DATA0<n>
-                                                         0 0 Always match; data<n> don't care.
-                                                         0 1 Match when data<n> == 0.
-                                                         1 0 Match when data<n> == 1.
-                                                         1 1 Reserved. */
+                                                         _ DATA1<n>=0, DATA0<n>=0: Always match; data<n> don't care.
+                                                         _ DATA1<n>=0, DATA0<n>=1: Match when data<n> == 0.
+                                                         _ DATA1<n>=1, DATA0<n>=0: Match when data<n> == 1.
+                                                         _ DATA1<n>=1, DATA0<n>=1: Reserved. */
 #else
 	uint64_t data0                        : 32;
 	uint64_t data1                        : 32;
@@ -1524,26 +1562,23 @@ union cvmx_pki_clx_pcamx_termx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t valid                        : 1;  /**< Valid. */
 	uint64_t reserved_48_62               : 15;
-	uint64_t term1                        : 8;  /**< See TERM0. */
-	uint64_t style1                       : 8;  /**< See STYLE0. */
+	uint64_t term1                        : 8;  /**< See [TERM0]. */
+	uint64_t style1                       : 8;  /**< See [STYLE0]. */
 	uint64_t reserved_16_31               : 16;
 	uint64_t term0                        : 8;  /**< Comparison type. Enumerated with PKI_PCAM_TERM_E. The field value is ternary, where each
                                                          bit matches as follows:
-                                                         TERM1<n> TERM0<n>
-                                                         0 0 Always match; data<n> don't care.
-                                                         0 1 Match when data<n> == 0.
-                                                         1 0 Match when data<n> == 1.
-                                                         1 1 Reserved. */
+                                                         _ TERM1<n>=0, TERM0<n>=0: Always match; data<n> don't care.
+                                                         _ TERM1<n>=0, TERM0<n>=1: Match when data<n> == 0.
+                                                         _ TERM1<n>=1, TERM0<n>=0: Match when data<n> == 1.
+                                                         _ TERM1<n>=1, TERM0<n>=1: Reserved. */
 	uint64_t style0                       : 8;  /**< Previous interim style. The style that must have been calculated by the port
-                                                         PKI_CL(0..3)_PKIND(0..63)_STYLE[STYLE] or as modified by previous CAM hits's
-                                                         PKI_CL(0..3)_PCAM(0..1)_ACTION(0..191)[STYLE]. This is used to form AND style matches; see
-                                                         Styles.
+                                                         PKI_CL()_PKIND()_STYLE[STYLE] or as modified by previous CAM hits's
+                                                         PKI_CL()_PCAM()_ACTION()[STYLE]. This is used to form AND style matches.
                                                          The field value is ternary, where each bit matches as follows:
-                                                         STYLE1<n> STYLE0<n>
-                                                         0 0 Always match; data<n> don't care.
-                                                         0 1 Match when data<n> == 0.
-                                                         1 0 Match when data<n> == 1.
-                                                         1 1 Reserved. */
+                                                         _ STYLE1<n>=0, STYLE0<n>=0: Always match; data<n> don't care.
+                                                         _ STYLE1<n>=0, STYLE0<n>=1: Match when data<n> == 0.
+                                                         _ STYLE1<n>=1, STYLE0<n>=0: Match when data<n> == 1.
+                                                         _ STYLE1<n>=1, STYLE0<n>=1: Reserved. */
 #else
 	uint64_t style0                       : 8;
 	uint64_t term0                        : 8;
@@ -1570,7 +1605,7 @@ union cvmx_pki_clx_pkindx_cfg {
                                                          0 = FCS not present. FCS may not be checked nor stripped.
                                                          1 = FCS present; the last four bytes of the packet are part of the FCS and may not be
                                                          considered part of a IP, TCP or other header for length error checks.
-                                                         PKI_CL(0..3)_STYLE(0..63)_CFG[FCS_CHK or FCS_STRIP] may optionally be set. */
+                                                         PKI_CL()_STYLE()_CFG[FCS_CHK or FCS_STRIP] may optionally be set. */
 	uint64_t mpls_en                      : 1;  /**< Enable MPLS parsing.
                                                          0 = Any MPLS labels are ignored, but may be handled by custom Ethertype PCAM matchers.
                                                          1 = MPLS label stacks are parsed and skipped over. PKI_GBL_PEN[MPLS_PEN] must be set. */
@@ -1615,10 +1650,10 @@ typedef union cvmx_pki_clx_pkindx_cfg cvmx_pki_clx_pkindx_cfg_t;
  * cvmx_pki_cl#_pkind#_kmem#
  *
  * The register initialization value for each PKIND and register number (plus 32 or 48 based on
- * PKI_ICG(0..3)_CFG[MLO]). The other PKI_PKND* registers alias inside regions of
- * PKI_CL(0..3)_PKIND(0..63)_KMEM(0..15). To avoid confusing tools, these aliases have address
+ * PKI_ICG()_CFG[MLO]). The other PKI_PKND* registers alias inside regions of
+ * PKI_CL()_PKIND()_KMEM(). To avoid confusing tools, these aliases have address
  * bit 20 set; the PKI address decoder ignores bit 20 when accessing
- * PKI_CL(0..3)_PKIND(0..63)_KMEM(0..15).
+ * PKI_CL()_PKIND()_KMEM().
  */
 union cvmx_pki_clx_pkindx_kmemx {
 	uint64_t u64;
@@ -1693,7 +1728,7 @@ union cvmx_pki_clx_pkindx_skip {
                                                          even. If PTP_MODE, the 8-byte timestamp is prepended to the packet, and FCS_SKIP must be
                                                          at least 8. */
 	uint64_t inst_skip                    : 8;  /**< Skip amount from front of packet to begin parsing at. If
-                                                         PKI_CL(0..3)_PKIND(0..63)_CFG[INST_HDR] is set, points at the first byte of the
+                                                         PKI_CL()_PKIND()_CFG[INST_HDR] is set, points at the first byte of the
                                                          instruction header. If INST_HDR is clear, points at the first byte to begin parsing at.
                                                          The skip must be even. If PTP_MODE, the 8-byte timestamp is prepended to the packet, and
                                                          INST_SKIP must be at least 8. */
@@ -1716,20 +1751,20 @@ union cvmx_pki_clx_pkindx_style {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
 	uint64_t pm                           : 7;  /**< Initial parse mode. Bit mask of which sequence steps to perform, refer to Parse Mode:
-                                                         <0> = LA (L2)
-                                                         <1> = LB (Custom)
-                                                         <2> = LC (L3)
-                                                         <3> = LD (L4 Virt)
-                                                         <4> = LE (IL3)
-                                                         <5> = LF (L4)
-                                                         <6> = LG (Custom/Application)
+                                                         _ <0> = LA (L2)
+                                                         _ <1> = LB (Custom)
+                                                         _ <2> = LC (L3)
+                                                         _ <3> = LD (L4 Virt)
+                                                         _ <4> = LE (IL3)
+                                                         _ <5> = LF (L4)
+                                                         _ <6> = LG (Custom/Application)
                                                          The legal values are:
-                                                         0x0 =   Parse LA..LG
-                                                         0x1 =   Parse LB..LG
-                                                         0x3 =   Parse LC..LG
-                                                         0x3F = Parse LG
-                                                         0x7F = Parse nothing
-                                                         else = Reserved */
+                                                         _ 0x0 = Parse LA..LG
+                                                         _ 0x1 = Parse LB..LG
+                                                         _ 0x3 = Parse LC..LG
+                                                         _ 0x3F = Parse LG
+                                                         _ 0x7F = Parse nothing
+                                                         _ else = Reserved */
 	uint64_t style                        : 8;  /**< Initial style. Initial style number for packets on this port, will remain as final style
                                                          if no PCAM entries match the packet. Note only 64 final styles exist, the upper two bits
                                                          will only be used for PCAM matching. */
@@ -1746,9 +1781,9 @@ typedef union cvmx_pki_clx_pkindx_style cvmx_pki_clx_pkindx_style_t;
 /**
  * cvmx_pki_cl#_smem#
  *
- * PKI_STYLE* registers alias inside regions of PKI_CL(0..3)_SMEM(0..2047). To avoid confusing
+ * PKI_STYLE* registers alias inside regions of PKI_CL()_SMEM(). To avoid confusing
  * tools, these aliases have address bit 20 set; the PKI address decoder ignores bit 20 when
- * accessing PKI_CL(0..3)_SMEM(0..2047).
+ * accessing PKI_CL()_SMEM().
  */
 union cvmx_pki_clx_smemx {
 	uint64_t u64;
@@ -1793,9 +1828,9 @@ union cvmx_pki_clx_stylex_alg {
 	uint64_t reserved_32_63               : 32;
 	uint64_t tt                           : 2;  /**< SSO tag type to schedule to, enumerated with SSO_TT_E. */
 	uint64_t apad_nip                     : 3;  /**< Value for WQE[APAD] when packet is not IP. */
-	uint64_t qpg_qos                      : 3;  /**< Algorithm to select QoS field in QPG calculation. Enumerated with PKI_QPGQOS_E. See QPG. */
-	uint64_t qpg_port_sh                  : 3;  /**< Number of bits to shift port number in QPG calculation. See QPG. */
-	uint64_t qpg_port_msb                 : 4;  /**< MSB to take from port number in QPG calculation. See QPG.
+	uint64_t qpg_qos                      : 3;  /**< Algorithm to select QoS field in QPG calculation. Enumerated with PKI_QPGQOS_E. */
+	uint64_t qpg_port_sh                  : 3;  /**< Number of bits to shift port number in QPG calculation. */
+	uint64_t qpg_port_msb                 : 4;  /**< MSB to take from port number in QPG calculation.
                                                          0 = Exclude port number from QPG.
                                                          4 = Include port<3:0>.
                                                          8 = Include port<7:0>.
@@ -1814,7 +1849,7 @@ union cvmx_pki_clx_stylex_alg {
 	uint64_t tag_vs1                      : 1;  /**< When VLAN stacking is parsed, include second (network order) VLAN in tuple tag generation. */
 	uint64_t tag_vs0                      : 1;  /**< When VLAN stacking is parsed, include first (network order) VLAN in tuple tag generation. */
 	uint64_t tag_vlan                     : 1;  /**< Reserved. */
-	uint64_t tag_mpls0                    : 1;  /**< When a MPLS label is parsed, include the top label in tag generation. */
+	uint64_t tag_mpls0                    : 1;  /**< Reserved. */
 	uint64_t tag_prt                      : 1;  /**< Include interface port in tag hash. */
 	uint64_t wqe_vs                       : 1;  /**< Which VLAN to put into WQE[VLPTR] when VLAN stacking.
                                                          0 = Use the first (in network order) VLAN or DSA VID.
@@ -1865,31 +1900,31 @@ union cvmx_pki_clx_stylex_cfg {
                                                          including VLAN tags.
                                                          1 = Length check uses equal comparison. Packets must have the exact padding necessary to
                                                          insure a minimum frame size and no more. */
-	uint64_t minmax_sel                   : 1;  /**< Selects which PKI_FRM_LEN_CHK(0..1) register is used for this pkind for MINERR and MAXERR
+	uint64_t minmax_sel                   : 1;  /**< Selects which PKI_FRM_LEN_CHK() register is used for this pkind for MINERR and MAXERR
                                                          checks.
-                                                         0 = use PKI_FRM_LEN_CHK0
-                                                         1 = use PKI_FRM_LEN_CHK1 */
+                                                         0 = use PKI_FRM_LEN_CHK0.
+                                                         1 = use PKI_FRM_LEN_CHK1. */
 	uint64_t maxerr_en                    : 1;  /**< Max frame error check enable. */
 	uint64_t minerr_en                    : 1;  /**< Min frame error check enable. This check is typically not enabled for incoming packets on
                                                          the DPI ports. */
 	uint64_t qpg_dis_grptag               : 1;  /**< Disable computing group using WQE[TAG]. */
 	uint64_t fcs_strip                    : 1;  /**< Strip L2 FCS bytes from packet, decrease WQE[LEN] by 4 bytes.
-                                                         PKI_CL(0..3)_PKIND(0..63)_CFG[FCS_PRES] must be set. */
-	uint64_t fcs_chk                      : 1;  /**< FCS checking enabled. PKI_CL(0..3)_PKIND(0..63)_CFG[FCS_PRES] must be set. */
+                                                         PKI_CL()_PKIND()_CFG[FCS_PRES] must be set. */
+	uint64_t fcs_chk                      : 1;  /**< FCS checking enabled. PKI_CL()_PKIND()_CFG[FCS_PRES] must be set. */
 	uint64_t rawdrp                       : 1;  /**< Allow RAW packet drop.
                                                          0 = Never drop packets with WQE[RAW] set.
-                                                         1 = Allow the PKI to drop RAW packets based on PKI_AURA(0..1023)_CFG[ENA_RED/ENA_DROP]. */
+                                                         1 = Allow the PKI to drop RAW packets based on PKI_AURA()_CFG[ENA_RED/ENA_DROP]. */
 	uint64_t drop                         : 1;  /**< Force packet dropping.
-                                                         0 = Drop packet based on PKI_AURA(0..1023)_CFG[ENA_RED/ENA_DROP].
-                                                         1 = Always drop the packet. Overrides NODROP, RAWDRP. */
+                                                         0 = Drop packet based on PKI_AURA()_CFG[ENA_RED/ENA_DROP].
+                                                         1 = Always drop the packet. Overrides [NODROP], [RAWDRP]. */
 	uint64_t nodrop                       : 1;  /**< Disable QoS packet drop.
-                                                         0 = Allowed to drop packet based on PKI_AURA(0..1023)_CFG[ENA_RED/ENA_DROP].
-                                                         1 = Never drop the packet. Overrides RAWDRP. */
+                                                         0 = Allowed to drop packet based on PKI_AURA()_CFG[ENA_RED/ENA_DROP].
+                                                         1 = Never drop the packet. Overrides [RAWDRP]. */
 	uint64_t qpg_dis_padd                 : 1;  /**< Disable computing port adder by QPG algorithm. */
 	uint64_t qpg_dis_grp                  : 1;  /**< Disable computing group by QPG algorithm. */
 	uint64_t qpg_dis_aura                 : 1;  /**< Disable computing aura by QPG algorithm. */
 	uint64_t reserved_11_15               : 5;
-	uint64_t qpg_base                     : 11; /**< Base index into PKI_QPG_TBL(0..2047). INTERNAL: Sequencer starts with QPG_BASE, performs
+	uint64_t qpg_base                     : 11; /**< Base index into PKI_QPG_TBL(). INTERNAL: Sequencer starts with QPG_BASE, performs
                                                          the QPG calculation and packs the resulting QPG index back into this field for PKI_BE_S. */
 #else
 	uint64_t qpg_base                     : 11;
@@ -1924,10 +1959,10 @@ union cvmx_pki_clx_stylex_cfg2 {
 	struct cvmx_pki_clx_stylex_cfg2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t tag_inc                      : 4;  /**< Include masked tags using PKI_TAG_INC(0..31)_MASK. Each bit indicates to include the
+	uint64_t tag_inc                      : 4;  /**< Include masked tags using PKI_TAG_INC()_MASK. Each bit indicates to include the
                                                          corresponding PKI_TAG_INC_MASK range, see PKI_INST_HDR_S. */
 	uint64_t reserved_25_27               : 3;
-	uint64_t tag_masken                   : 1;  /**< Apply PKI_STYLE(0..63)_TAG_MASK to computed tag. INTERNAL: Sequencer must clear for PKI BE
+	uint64_t tag_masken                   : 1;  /**< Apply PKI_STYLE()_TAG_MASK to computed tag. INTERNAL: Sequencer must clear for PKI BE
                                                          when the tag comes from the PKI_INST_HDR_S. */
 	uint64_t tag_src_lg                   : 1;  /**< Include Layer G source address in tuple tag generation. */
 	uint64_t tag_src_lf                   : 1;  /**< Include Layer F source address in tuple tag generation. */
@@ -1999,7 +2034,7 @@ union cvmx_pki_clken {
 	struct cvmx_pki_clken_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t clken                        : 1;  /**< Controls the conditional clocking within PKI
+	uint64_t clken                        : 1;  /**< Controls the conditional clocking within PKI.
                                                          0 = Allow hardware to control the clocks.
                                                          1 = Force the clocks to be always on. */
 #else
@@ -2022,28 +2057,28 @@ union cvmx_pki_ecc_ctl0 {
 	struct cvmx_pki_ecc_ctl0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_24_63               : 40;
-	uint64_t ldfif_flip                   : 2;  /**< LDFIF RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM ram
+	uint64_t ldfif_flip                   : 2;  /**< LDFIF RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the LDFIF ram
                                                          to test single-bit or double-bit error handling. */
 	uint64_t ldfif_cdis                   : 1;  /**< LDFIF RAM ECC correction disable. */
-	uint64_t rdfif_flip                   : 2;  /**< RDFIF RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM ram
-                                                         to test single-bit or double-bit error handling. */
-	uint64_t rdfif_cdis                   : 1;  /**< RDFIF RAM ECC correction disable. */
-	uint64_t wadr_flip                    : 2;  /**< WADR RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM ram
+	uint64_t pbe_flip                     : 2;  /**< PBE state RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the PBE
+                                                         ram to test single-bit or double-bit error handling. */
+	uint64_t pbe_cdis                     : 1;  /**< PBE state RAM ECC correction disable. */
+	uint64_t wadr_flip                    : 2;  /**< WADR RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the WADR ram
                                                          to test single-bit or double-bit error handling. */
 	uint64_t wadr_cdis                    : 1;  /**< WADR RAM ECC correction disable. */
-	uint64_t nxtptag_flip                 : 2;  /**< NXTPTAG RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM
+	uint64_t nxtptag_flip                 : 2;  /**< NXTPTAG RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the NXTPTAG
                                                          ram to test single-bit or double-bit error handling. */
 	uint64_t nxtptag_cdis                 : 1;  /**< NXTPTAG RAM ECC correction disable. */
-	uint64_t curptag_flip                 : 2;  /**< CURPTAG RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM
+	uint64_t curptag_flip                 : 2;  /**< CURPTAG RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the CURPTAG
                                                          ram to test single-bit or double-bit error handling. */
 	uint64_t curptag_cdis                 : 1;  /**< CURPTAG RAM ECC correction disable. */
-	uint64_t nxtblk_flip                  : 2;  /**< NXTBLK RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM ram
-                                                         to test single-bit or double-bit error handling. */
+	uint64_t nxtblk_flip                  : 2;  /**< NXTBLK RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the NXTBLK
+                                                         ram to test single-bit or double-bit error handling. */
 	uint64_t nxtblk_cdis                  : 1;  /**< NXTBLK RAM ECC correction disable. */
 	uint64_t kmem_flip                    : 2;  /**< KMEM RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM ram
                                                          to test single-bit or double-bit error handling. */
 	uint64_t kmem_cdis                    : 1;  /**< KMEM RAM ECC correction disable. */
-	uint64_t asm_flip                     : 2;  /**< ASM RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the KMEM ram to
+	uint64_t asm_flip                     : 2;  /**< ASM RAM flip syndrome bits on write. Flip syndrome bits <1:0> on writes to the ASM ram to
                                                          test single-bit or double-bit error handling. */
 	uint64_t asm_cdis                     : 1;  /**< ASM RAM ECC correction disable. */
 #else
@@ -2059,8 +2094,8 @@ union cvmx_pki_ecc_ctl0 {
 	uint64_t nxtptag_flip                 : 2;
 	uint64_t wadr_cdis                    : 1;
 	uint64_t wadr_flip                    : 2;
-	uint64_t rdfif_cdis                   : 1;
-	uint64_t rdfif_flip                   : 2;
+	uint64_t pbe_cdis                     : 1;
+	uint64_t pbe_flip                     : 2;
 	uint64_t ldfif_cdis                   : 1;
 	uint64_t ldfif_flip                   : 2;
 	uint64_t reserved_24_63               : 40;
@@ -2080,7 +2115,18 @@ union cvmx_pki_ecc_ctl1 {
 	uint64_t u64;
 	struct cvmx_pki_ecc_ctl1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_27_63               : 37;
+	uint64_t reserved_51_63               : 13;
+	uint64_t sws_flip                     : 2;  /**< SWS flip syndrome bits on write. */
+	uint64_t sws_cdis                     : 1;  /**< SWS ECC correction disable. */
+	uint64_t wqeout_flip                  : 2;  /**< WQEOUT flip syndrome bits on write. */
+	uint64_t wqeout_cdis                  : 1;  /**< WQEOUT ECC correction disable. */
+	uint64_t doa_flip                     : 2;  /**< DOA flip syndrome bits on write. */
+	uint64_t doa_cdis                     : 1;  /**< DOA ECC correction disable. */
+	uint64_t bpid_flip                    : 2;  /**< BPID flip syndrome bits on write. */
+	uint64_t bpid_cdis                    : 1;  /**< BPID ECC correction disable. */
+	uint64_t reserved_30_38               : 9;
+	uint64_t plc_flip                     : 2;  /**< PLC flip syndrome bits on write. */
+	uint64_t plc_cdis                     : 1;  /**< PLC ECC correction disable. */
 	uint64_t pktwq_flip                   : 2;  /**< PKTWQ flip syndrome bits on write. */
 	uint64_t pktwq_cdis                   : 1;  /**< PKTWQ ECC correction disable. */
 	uint64_t reserved_18_23               : 6;
@@ -2112,7 +2158,18 @@ union cvmx_pki_ecc_ctl1 {
 	uint64_t reserved_18_23               : 6;
 	uint64_t pktwq_cdis                   : 1;
 	uint64_t pktwq_flip                   : 2;
-	uint64_t reserved_27_63               : 37;
+	uint64_t plc_cdis                     : 1;
+	uint64_t plc_flip                     : 2;
+	uint64_t reserved_30_38               : 9;
+	uint64_t bpid_cdis                    : 1;
+	uint64_t bpid_flip                    : 2;
+	uint64_t doa_cdis                     : 1;
+	uint64_t doa_flip                     : 2;
+	uint64_t wqeout_cdis                  : 1;
+	uint64_t wqeout_flip                  : 2;
+	uint64_t sws_cdis                     : 1;
+	uint64_t sws_flip                     : 2;
+	uint64_t reserved_51_63               : 13;
 #endif
 	} s;
 	struct cvmx_pki_ecc_ctl1_s            cn78xx;
@@ -2153,8 +2210,8 @@ union cvmx_pki_ecc_int0 {
 	uint64_t reserved_16_63               : 48;
 	uint64_t ldfif_dbe                    : 1;  /**< LDFIF ECC double bit error. Throws PKI_INTSN_E::PKI_ECC0_LDFIF_DBE. */
 	uint64_t ldfif_sbe                    : 1;  /**< LDFIF ECC single bit error. Throws PKI_INTSN_E::PKI_ECC0_LDFIF_SBE. */
-	uint64_t rdfif_dbe                    : 1;  /**< RDFIF ECC double bit error. Throws PKI_INTSN_E::PKI_ECC0_RDFIF_DBE. */
-	uint64_t rdfif_sbe                    : 1;  /**< RDFIF ECC single bit error. Throws PKI_INTSN_E::PKI_ECC0_RDFIF_SBE. */
+	uint64_t pbe_dbe                      : 1;  /**< PBE ECC double bit error. Throws PKI_INTSN_E::PKI_ECC0_PBE_DBE. */
+	uint64_t pbe_sbe                      : 1;  /**< PBE ECC single bit error. Throws PKI_INTSN_E::PKI_ECC0_PBE_SBE. */
 	uint64_t wadr_dbe                     : 1;  /**< WADR ECC double bit error. Throws PKI_INTSN_E::PKI_ECC0_WADR_DBE. */
 	uint64_t wadr_sbe                     : 1;  /**< WADR ECC single bit error. Throws PKI_INTSN_E::PKI_ECC0_WADR_SBE. */
 	uint64_t nxtptag_dbe                  : 1;  /**< NXTPTAG ECC double bit error. Throws PKI_INTSN_E::PKI_ECC0_NXTPTAG_DBE. */
@@ -2180,8 +2237,8 @@ union cvmx_pki_ecc_int0 {
 	uint64_t nxtptag_dbe                  : 1;
 	uint64_t wadr_sbe                     : 1;
 	uint64_t wadr_dbe                     : 1;
-	uint64_t rdfif_sbe                    : 1;
-	uint64_t rdfif_dbe                    : 1;
+	uint64_t pbe_sbe                      : 1;
+	uint64_t pbe_dbe                      : 1;
 	uint64_t ldfif_sbe                    : 1;
 	uint64_t ldfif_dbe                    : 1;
 	uint64_t reserved_16_63               : 48;
@@ -2198,7 +2255,18 @@ union cvmx_pki_ecc_int1 {
 	uint64_t u64;
 	struct cvmx_pki_ecc_int1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_18_63               : 46;
+	uint64_t reserved_34_63               : 30;
+	uint64_t sws_dbe                      : 1;  /**< PLC ECC double bit error. Throws PKI_INTSN_E::PKI_ECC1_SWS_DBE. */
+	uint64_t sws_sbe                      : 1;  /**< PLC ECC single bit error. Throws PKI_INTSN_E::PKI_ECC1_SWS_SBE. */
+	uint64_t wqeout_dbe                   : 1;  /**< PLC ECC double bit error. Throws PKI_INTSN_E::PKI_ECC1_WQEOUT_DBE. */
+	uint64_t wqeout_sbe                   : 1;  /**< PLC ECC single bit error. Throws PKI_INTSN_E::PKI_ECC1_WQEOUT_SBE. */
+	uint64_t doa_dbe                      : 1;  /**< PLC ECC double bit error. Throws PKI_INTSN_E::PKI_ECC1_DOA_DBE. */
+	uint64_t doa_sbe                      : 1;  /**< PLC ECC single bit error. Throws PKI_INTSN_E::PKI_ECC1_DOA_SBE. */
+	uint64_t bpid_dbe                     : 1;  /**< PLC ECC double bit error. Throws PKI_INTSN_E::PKI_ECC1_BPID_DBE. */
+	uint64_t bpid_sbe                     : 1;  /**< PLC ECC single bit error. Throws PKI_INTSN_E::PKI_ECC1_BPID_SBE. */
+	uint64_t reserved_20_25               : 6;
+	uint64_t plc_dbe                      : 1;  /**< PLC ECC double bit error. Throws PKI_INTSN_E::PKI_ECC1_PLC_DBE. */
+	uint64_t plc_sbe                      : 1;  /**< PLC ECC single bit error. Throws PKI_INTSN_E::PKI_ECC1_PLC_SBE. */
 	uint64_t pktwq_dbe                    : 1;  /**< PKTWQ ECC double bit error. Throws PKI_INTSN_E::PKI_ECC1_PKTWQ_DBE. */
 	uint64_t pktwq_sbe                    : 1;  /**< PKTWQ ECC single bit error. Throws PKI_INTSN_E::PKI_ECC1_PKTWQ_SBE. */
 	uint64_t reserved_12_15               : 4;
@@ -2230,7 +2298,18 @@ union cvmx_pki_ecc_int1 {
 	uint64_t reserved_12_15               : 4;
 	uint64_t pktwq_sbe                    : 1;
 	uint64_t pktwq_dbe                    : 1;
-	uint64_t reserved_18_63               : 46;
+	uint64_t plc_sbe                      : 1;
+	uint64_t plc_dbe                      : 1;
+	uint64_t reserved_20_25               : 6;
+	uint64_t bpid_sbe                     : 1;
+	uint64_t bpid_dbe                     : 1;
+	uint64_t doa_sbe                      : 1;
+	uint64_t doa_dbe                      : 1;
+	uint64_t wqeout_sbe                   : 1;
+	uint64_t wqeout_dbe                   : 1;
+	uint64_t sws_sbe                      : 1;
+	uint64_t sws_dbe                      : 1;
+	uint64_t reserved_34_63               : 30;
 #endif
 	} s;
 	struct cvmx_pki_ecc_int1_s            cn78xx;
@@ -2290,11 +2369,11 @@ union cvmx_pki_gbl_pen {
                                                          reductions.
                                                          1 = VXLAN/NVGRE parsing may be used. */
 	uint64_t clg_pen                      : 1;  /**< Custom LG parsing enable.
-                                                         0 = Custom LG is never used in any style; i.e. PKI_CL(0..3)_PKIND(0..63)_CFG[LG_CUSTOM] is
+                                                         0 = Custom LG is never used in any style; i.e. PKI_CL()_PKIND()_CFG[LG_CUSTOM] is
                                                          zero for all indices. This enables internal power and latency reductions.
                                                          1 = Custom LG parsing may be used. */
 	uint64_t cl2_pen                      : 1;  /**< Custom L2 parsing enable.
-                                                         0 = Custom L2 is never used in any style; i.e. PKI_CL(0..3)_PKIND(0..63)_L2_CUSTOM[VALID]
+                                                         0 = Custom L2 is never used in any style; i.e. PKI_CL()_PKIND()_L2_CUSTOM[VALID]
                                                          is zero for all indices. This enables internal power and latency reductions.
                                                          1 = Custom L2 parsing may be used. */
 	uint64_t l4_pen                       : 1;  /**< L4 parsing enable.
@@ -2310,20 +2389,20 @@ union cvmx_pki_gbl_pen {
                                                          reductions.
                                                          1 = L3 parsing may be used. */
 	uint64_t mpls_pen                     : 1;  /**< MPLS parsing enable.
-                                                         0 = MPLS parsing is never used in any style; i.e. PKI_CL(0..3)_PKIND(0..63)_CFG[MPLS_EN]
+                                                         0 = MPLS parsing is never used in any style; i.e. PKI_CL()_PKIND()_CFG[MPLS_EN]
                                                          is zero for all indices. This enables internal power and latency reductions.
                                                          1 = MPLS parsing may be used. */
 	uint64_t fulc_pen                     : 1;  /**< Fulcrum parsing enable.
                                                          0 = Fulcrum parsing is never used in any style; i.e.
-                                                         PKI_CL(0..3)_PKIND(0..63)_CFG[FULC_EN] is zero for all indices. This enables internal
+                                                         PKI_CL()_PKIND()_CFG[FULC_EN] is zero for all indices. This enables internal
                                                          power and latency reductions.
                                                          1 = Fulcrum parsing may be used. */
 	uint64_t dsa_pen                      : 1;  /**< DSA parsing enable. Must be zero if HG_PEN is set.
-                                                         0 = DSA parsing is never used in any style; i.e. PKI_CL(0..3)_PKIND(0..63)_CFG[DSA_EN] is
+                                                         0 = DSA parsing is never used in any style; i.e. PKI_CL()_PKIND()_CFG[DSA_EN] is
                                                          zero for all indices. This enables internal power and latency reductions.
                                                          1 = DSA parsing may be used. */
 	uint64_t hg_pen                       : 1;  /**< HiGig parsing enable. Must be zero if DSA_PEN is set.
-                                                         0 = HiGig parsing is never used in any style; i.e. PKI_CL(0..3)_PKIND(0..63)_CFG[HG2_EN,
+                                                         0 = HiGig parsing is never used in any style; i.e. PKI_CL()_PKIND()_CFG[HG2_EN,
                                                          HG_EN] are zero for all indices. This enables internal power and latency reductions.
                                                          1 = HiGig parsing may be used. */
 #else
@@ -2370,12 +2449,7 @@ union cvmx_pki_gen_int {
 	uint64_t bckprs                       : 1;  /**< PKI asserted backpressure. Set when PKI was unable to accept the next valid data from
                                                          BGX/DPI/ILK etc. over X2P due to all internal resources being used up, and PKI will
                                                          backpressure X2P. Throws PKI_INTSN_E::PKI_GEN_BCKPRS. */
-	uint64_t crcerr                       : 1;  /**< PKI calculated bad CRC. If the packet arrived via a BGX interface, the packet had an FCS
-                                                         error. If the packet arrived via PKO internal loopback, the packet had one or more parity
-                                                         errors. Not applicable when the packet arrived via the DPI interface. For ILK interfaces,
-                                                         the following ILK errors can cause packets to terminate with this error code:
-                                                         SERDES_LOCK_LOSS, BDRY_SYNC_LOSS, SCRM_SYNC_LOSS, LANE_ALIGN_FAIL, DESKEW_FIFO_OVFL,
-                                                         CRC24_ERR, UKWN_CNTL_WORD, and BAD_64B67B. Throws PKI_INTSN_E::PKI_GEN_CRCERR. */
+	uint64_t crcerr                       : 1;  /**< PKI calculated bad CRC in the L2 frame. Throws PKI_INTSN_E::PKI_GEN_CRCERR. */
 	uint64_t pktdrp                       : 1;  /**< Packet dropped due to QOS. If the QOS algorithm decides to drop a packet, PKI asserts this
                                                          interrupt. Throws PKI_INTSN_E::PKI_GEN_PKTDRP. */
 #else
@@ -2428,8 +2502,8 @@ union cvmx_pki_icgx_cfg {
                                                          1 = Normal sequencer operation. */
 	uint64_t timer                        : 12; /**< Current hold-off timer. Enables even spreading of cluster utilization over time; while
                                                          TIMER is non-zero, a cluster in this group will not start parsing. When a cluster in this
-                                                         group starts parsing, TIMER is set to DELAY, and decrements every sclk cycle. TIMER is
-                                                         zeroed if all clusters in this group are idle. */
+                                                         group starts parsing, TIMER is set to DELAY, and decrements every coprocessor-clock. TIMER
+                                                         is zeroed if all clusters in this group are idle. */
 	uint64_t delay                        : 12; /**< Delay between cluster starts, as described under TIMER. If zero, a cluster can start at
                                                          any time relative to other clusters. DELAY should be typically selected to minimize the
                                                          average observed parser latency by loading with the parsing delay divided by the number of
@@ -2528,8 +2602,9 @@ union cvmx_pki_pcam_result {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
 	uint64_t match                        : 1;  /**< Resulting match. */
-	uint64_t entry                        : 8;  /**< Resulting matching entry number, unpredictable unless [MATCH] set. */
-	uint64_t result                       : 32; /**< Resulting data from matching line's PKI_CL(0..3)_PCAM(0..1)_ACTION(0..191), or zero if no match. */
+	uint64_t entry                        : 8;  /**< Resulting matching entry number, unpredictable unless [MATCH] set and [CONFLICT] is clear. */
+	uint64_t result                       : 32; /**< Resulting data from matching line's PKI_CL()_PCAM()_ACTION(), or zero if no
+                                                         match. Unpredictable unless [CONFLICT] is clear. */
 #else
 	uint64_t result                       : 32;
 	uint64_t entry                        : 8;
@@ -2540,11 +2615,12 @@ union cvmx_pki_pcam_result {
 	struct cvmx_pki_pcam_result_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t conflict                     : 1;  /**< Conflict. The lookup resulted in multiple entries matching PKI_PCAM_LOOKUP[DATA], [TERM]
-                                                         and [STYLE], or zero if no match. */
+                                                         and [STYLE], or zero if no conflict. */
 	uint64_t reserved_41_62               : 22;
 	uint64_t match                        : 1;  /**< Resulting match. */
-	uint64_t entry                        : 8;  /**< Resulting matching entry number, unpredictable unless [MATCH] set. */
-	uint64_t result                       : 32; /**< Resulting data from matching line's PKI_CL(0..3)_PCAM(0..1)_ACTION(0..191), or zero if no match. */
+	uint64_t entry                        : 8;  /**< Resulting matching entry number, unpredictable unless [MATCH] set and [CONFLICT] is clear. */
+	uint64_t result                       : 32; /**< Resulting data from matching line's PKI_CL()_PCAM()_ACTION(), or zero if no
+                                                         match. Unpredictable unless [CONFLICT] is clear. */
 #else
 	uint64_t result                       : 32;
 	uint64_t entry                        : 8;
@@ -2575,6 +2651,28 @@ union cvmx_pki_pfe_diag {
 typedef union cvmx_pki_pfe_diag cvmx_pki_pfe_diag_t;
 
 /**
+ * cvmx_pki_pix_clken
+ */
+union cvmx_pki_pix_clken {
+	uint64_t u64;
+	struct cvmx_pki_pix_clken_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_17_63               : 47;
+	uint64_t mech                         : 1;  /**< When set, force the conditional clocks on for mech. */
+	uint64_t reserved_4_15                : 12;
+	uint64_t cls                          : 4;  /**< When set, force the conditional clocks on for this cluster. */
+#else
+	uint64_t cls                          : 4;
+	uint64_t reserved_4_15                : 12;
+	uint64_t mech                         : 1;
+	uint64_t reserved_17_63               : 47;
+#endif
+	} s;
+	struct cvmx_pki_pix_clken_s           cn78xx;
+};
+typedef union cvmx_pki_pix_clken cvmx_pki_pix_clken_t;
+
+/**
  * cvmx_pki_pix_diag
  */
 union cvmx_pki_pix_diag {
@@ -2600,7 +2698,7 @@ union cvmx_pki_pkindx_icgsel {
 	struct cvmx_pki_pkindx_icgsel_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
-	uint64_t icg                          : 2;  /**< Cluster group that will service traffic on this pkind. See also PKI_ICG(0..3)_CFG, the
+	uint64_t icg                          : 2;  /**< Cluster group that will service traffic on this pkind. See also PKI_ICG()_CFG, the
                                                          register to which this field indexes. */
 #else
 	uint64_t icg                          : 2;
@@ -2698,6 +2796,7 @@ typedef union cvmx_pki_pkt_err cvmx_pki_pkt_err_t;
  *
  * The QPG table is used to indirectly calculate the Portadd/Aura/Group from the Diffsrv, HiGig
  * or VLAN information as described in QPG.
+ * See also PKI_QPG_TBL2().
  */
 union cvmx_pki_qpg_tblx {
 	uint64_t u64;
@@ -3048,8 +3147,8 @@ union cvmx_pki_statx_stat13 {
 	struct cvmx_pki_statx_stat13_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t spec                         : 48; /**< Number of packets, dropped or non-dropped, with special handling. For profiling and
-                                                         diagnostic use only.
+	uint64_t spec                         : 48; /**< Number of non-dropped packets with special handling. For profiling and diagnostic use
+                                                         only.
                                                          INTERNAL: Counts packets completing IPE processing with WQE[SH] set. */
 #else
 	uint64_t spec                         : 48;
@@ -3068,8 +3167,8 @@ union cvmx_pki_statx_stat14 {
 	struct cvmx_pki_statx_stat14_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t drp_bcast                    : 48; /**< Number of packets with L2 broadcast DMAC that were dropped due to RED or buffer
-                                                         exhaustion. See WQE[L2B] for the definition of L2 broadcast. */
+	uint64_t drp_bcast                    : 48; /**< Number of packets with L2 broadcast DMAC that were dropped by RED, buffer exhaustion, or
+                                                         PKI_CL()_STYLE()_CFG[DROP]. See WQE[L2B] for the definition of L2 broadcast. */
 #else
 	uint64_t drp_bcast                    : 48;
 	uint64_t reserved_48_63               : 16;
@@ -3087,8 +3186,8 @@ union cvmx_pki_statx_stat15 {
 	struct cvmx_pki_statx_stat15_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t drp_mcast                    : 48; /**< Number of packets with L2 multicast DMAC that were dropped due to RED or buffer
-                                                         exhaustion. See WQE[L2M] for the definition of L2 multicast. */
+	uint64_t drp_mcast                    : 48; /**< Number of packets with L2 multicast DMAC that were dropped by RED, buffer exhaustion, or
+                                                         PKI_CL()_STYLE()_CFG[DROP]. See WQE[L2M] for the definition of L2 multicast. */
 #else
 	uint64_t drp_mcast                    : 48;
 	uint64_t reserved_48_63               : 16;
@@ -3181,7 +3280,7 @@ union cvmx_pki_statx_stat3 {
 	struct cvmx_pki_statx_stat3_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t drp_pkts                     : 48; /**< Inbound packets dropped by RED or buffer exhaustion. */
+	uint64_t drp_pkts                     : 48; /**< Inbound packets dropped by RED, buffer exhaustion, or PKI_CL()_STYLE()_CFG[DROP]. */
 #else
 	uint64_t drp_pkts                     : 48;
 	uint64_t reserved_48_63               : 16;
@@ -3199,7 +3298,7 @@ union cvmx_pki_statx_stat4 {
 	struct cvmx_pki_statx_stat4_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t drp_octs                     : 48; /**< Inbound octets dropped by RED or buffer exhaustion. */
+	uint64_t drp_octs                     : 48; /**< Inbound octets dropped by RED, buffer exhaustion, or PKI_CL()_STYLE()_CFG[DROP]. */
 #else
 	uint64_t drp_octs                     : 48;
 	uint64_t reserved_48_63               : 16;
@@ -3313,10 +3412,14 @@ union cvmx_pki_stat_ctl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
 	uint64_t mode                         : 2;  /**< The PKI_STAT*_X registers can be indexed either by port kind (pkind), or final style.
-                                                         (Does not apply to the PKI_STAT_INB* registers.)
-                                                         0 = X represents the packet's pkind
-                                                         1 = X represents the low 6-bits of packet's final style
-                                                         2,3 = Reserved */
+                                                         (Does not apply to the PKI_STAT_INB* nor PKI_DSTAT_* registers.)
+                                                         _ 0x0 = X represents the packet's pkind.
+                                                         _ 0x1 = X represents the low 6-bits of packet's final style.
+                                                         _ 0x2 = X represents the packet's PKI_QPG_TBL2()[DSTAT_ID].
+                                                           PKI_STAT()_STAT0..PKI_STAT()_STAT18 and PKI_STAT()_HIST0..PKI_STAT()_HIST6 will only
+                                                           be incremented if the DSTAT_ID is less than 64; i.e. fits in the index of the
+                                                           PKI_STAT()_STAT0 etc. Added in pass 2.
+                                                         _ 0x3 = Reserved. */
 #else
 	uint64_t mode                         : 2;
 	uint64_t reserved_2_63                : 62;
@@ -3338,31 +3441,38 @@ union cvmx_pki_stylex_buf {
                                                          endian. Does not change the WQE header format, which is properly endian neutral. */
 	uint64_t wqe_hsz                      : 2;  /**< Work queue header size:
                                                          0x0 = WORD0..4, standard WQE_S. Note FIRST_SKIP may be set to not include WORD4 in memory.
-                                                         0x1 = WORD0..5
-                                                         0x2 = WORD0..6
-                                                         0x3 = WORD0..7
-                                                         else = Reserved
+                                                         0x1 = WORD0..5.
+                                                         0x2 = Reserved
+                                                         0x3 = Reserved
                                                          INTERNAL: Selects which PIX words are transferred to the PKI BE. If a word is not
                                                          transferred and the word will reach memory (FIRST_SKIP is greater than that word number),
                                                          then the final WQE memory word will be zero, not the PIX register contents. */
 	uint64_t wqe_skip                     : 2;  /**< WQE start offset. The number of 128-byte cache lines to skip between the buffer pointer
-                                                         and WORD0 of the work-queue entry. See PKI Hardware Allocating Multiple Buffers. */
+                                                         and WORD0 of the work-queue entry.
+                                                         If [DIS_WQ_DAT]=1, legal values must satisfy:
+                                                           * [MB_SIZE] >= (PKI_STYLE()_BUF[WQE_SKIP] * (128/8)) + 18
+                                                         If [DIS_WQ_DAT]=0, legal values must satisfy:
+                                                           * ([WQE_SKIP] * (128/8)) + 4 <= [FIRST_SKIP], to insure the minimum of four
+                                                             work-queue entry words will fit within [FIRST_SKIP]. */
 	uint64_t first_skip                   : 6;  /**< The number of eight-byte words from the top of the first MBUF that the PKI stores the next
-                                                         pointer. If [DIS_WQ_DAT]=1, any value is legal. If [DIS_WQ_DAT]=0, legal values must
-                                                         satisfy:
-                                                         FIRST_SKIP <= PKI_STYLE(0..63)_BUF[MB_SIZE] - 18.
-                                                         FIRST_SKIP must be at least 0x4, but 0x5 is recommended minimum. 0x4 will drop WQE WORD4,
-                                                         for use in backward compatible applications.
-                                                         WQE_SKIP * (128/8) + 4 <= FIRST_SKIP, to insure the minimum of four work-queue entry words
-                                                         will fit within FIRST_SKIP. */
+                                                         pointer.
+                                                         If [DIS_WQ_DAT]=1, legal values must satisfy:
+                                                           * [FIRST_SKIP] <= PKI_STYLE()_BUF[MB_SIZE] - 18.
+                                                         If [DIS_WQ_DAT]=0, legal values must satisfy:
+                                                           * [FIRST_SKIP] <= PKI_STYLE()_BUF[MB_SIZE] - 18.
+                                                           * ([WQE_SKIP] * (128/8)) + X <= [FIRST_SKIP].
+                                                           _ X must be at least 0x4 to insure the minimum of four work-queue entry,
+                                                             but 0x5 is recommended minimum. X = 0x4 will drop WQE WORD4, for use in
+                                                             backward compatible applications. */
 	uint64_t later_skip                   : 6;  /**< The number of eight-byte words from the top of any MBUF that is not the first MBUF that
-                                                         PKI writes the next-pointer to. Legal values are 0 to PKI_STYLE(0..63)_BUF[MB_SIZE] - 18. */
+                                                         PKI writes the next-pointer to. Legal values are 0 to PKI_STYLE()_BUF[MB_SIZE] - 18. */
 	uint64_t opc_mode                     : 2;  /**< Select the style of write to the L2C.
-                                                         0 = all packet data and next-buffer pointers are written through to memory.
-                                                         1 = all packet data and next-buffer pointers are written into the cache.
-                                                         2 = the first aligned cache block holding the WQE and/or front packet data are written to
+                                                         0x0 = all packet data and next-buffer pointers are written through to memory.
+                                                         0x1 = all packet data and next-buffer pointers are written into the cache.
+                                                         0x2 = the first aligned cache block holding the WQE and/or front packet data are written
+                                                         to
                                                          the L2 cache. All remaining cache blocks are not written to the L2 cache.
-                                                         3 = the first two aligned cache blocks holding the WQE and front packet data are written
+                                                         0x3 = the first two aligned cache blocks holding the WQE and front packet data are written
                                                          to the L2 cache. All remaining cache blocks are not written to the L2 cache. */
 	uint64_t dis_wq_dat                   : 1;  /**< Separate first data buffer from the work queue entry.
                                                          0 = The packet link pointer will be at word [FIRST_SKIP] immediately followed by packet
@@ -3372,9 +3482,18 @@ union cvmx_pki_stylex_buf {
                                                          lines in the buffer will not be modified and will retain stale data (from the buffer's
                                                          previous use). This setting may decrease the peak PKI performance by up to half on small
                                                          packets. */
-	uint64_t mb_size                      : 13; /**< The number of eight-byte words to store into a buffer. This must be in the range of 32 to
-                                                         4096. This must be less than or equal to the maximum size of every free page in every FPA
-                                                         pool this style may use. */
+	uint64_t mb_size                      : 13; /**< The number of eight-byte words between the start of a buffer and the last word
+                                                         that PKI may write into that buffer. The total amount of data stored by PKI into
+                                                         the buffer will be MB_SIZE minus FIRST_SKIP or LATER_SKIP.
+                                                         This must be even, in the range of 32 to 4096. This must be less than or equal
+                                                         to the maximum size of every free page in every FPA pool this style may use.
+                                                         If [DIS_WQ_DAT]=1, legal values must satisfy:
+                                                           * MB_SIZE >= (PKI_STYLE()_BUF[WQE_SKIP] * (128/8)) + 18
+                                                           * MB_SIZE >= PKI_STYLE()_BUF[FIRST_SKIP] + 18.
+                                                           * MB_SIZE >= PKI_STYLE()_BUF[LATER_SKIP] + 18.
+                                                         If [DIS_WQ_DAT]=0, legal values must satisfy:
+                                                           * MB_SIZE >= PKI_STYLE()_BUF[FIRST_SKIP] + 18.
+                                                           * MB_SIZE >= PKI_STYLE()_BUF[LATER_SKIP] + 18. */
 #else
 	uint64_t mb_size                      : 13;
 	uint64_t dis_wq_dat                   : 1;
@@ -3400,8 +3519,8 @@ union cvmx_pki_stylex_tag_mask {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t mask                         : 16; /**< When set, each bit excludes corresponding bit of the tuple computed tag from being
-                                                         included in the final tag. PKI_CL(0..3)_STYLE(0..63)_CFG2 [TAG_MASKEN] must be set. Does
-                                                         not affect tags from packets with a PKI_INST_HDR_S when PKI_INST_HDR[UTAG] is set */
+                                                         included in the final tag. PKI_CL()_STYLE()_CFG2 [TAG_MASKEN] must be set. Does
+                                                         not affect tags from packets with a PKI_INST_HDR_S when PKI_INST_HDR_S[UTAG] is set. */
 #else
 	uint64_t mask                         : 16;
 	uint64_t reserved_16_63               : 48;
@@ -3425,7 +3544,7 @@ union cvmx_pki_stylex_tag_sel {
 	uint64_t reserved_11_15               : 5;
 	uint64_t tag_idx1                     : 3;  /**< Index for TAG_INC<1>. */
 	uint64_t reserved_3_7                 : 5;
-	uint64_t tag_idx0                     : 3;  /**< Index for TAG_INC<0>. This value is multipled by 4 to index into PKI_TAG_INC(0..31)_MASK.
+	uint64_t tag_idx0                     : 3;  /**< Index for TAG_INC<0>. This value is multipled by 4 to index into PKI_TAG_INC()_MASK.
                                                          See WQE[TAG]. */
 #else
 	uint64_t tag_idx0                     : 3;
@@ -3486,7 +3605,7 @@ union cvmx_pki_tag_incx_ctl {
 	struct cvmx_pki_tag_incx_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t ptr_sel                      : 4;  /**< Which pointer to use for the bitmask in PKI_TAG_INC(0..31)_MASK.
+	uint64_t ptr_sel                      : 4;  /**< Which pointer to use for the bitmask in PKI_TAG_INC()_MASK.
                                                          0 = Absolute from start of packet.
                                                          1-7 = Reserved.
                                                          8 = Relative to start of WQE[LAPTR]. LAPTR must be valid (see WQE[LAPTR]) or mask is
@@ -3506,7 +3625,7 @@ union cvmx_pki_tag_incx_ctl {
                                                          15 = Relative to start of WQE[VLPTR]. VLPTR must be valid (see WQE[VLPTR]) or mask is
                                                          ignored.
                                                          INTERNAL: Note excluding 0, the encoding matches the byte number to read from WQE WORD4. */
-	uint64_t offset                       : 8;  /**< Offset for PKI_TAG_INC(0..31)_MASK. Number of bytes to add to the selected pointer before
+	uint64_t offset                       : 8;  /**< Offset for PKI_TAG_INC()_MASK. Number of bytes to add to the selected pointer before
                                                          applying the mask. */
 #else
 	uint64_t offset                       : 8;
@@ -3526,7 +3645,7 @@ union cvmx_pki_tag_incx_mask {
 	struct cvmx_pki_tag_incx_mask_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t en                           : 64; /**< Include byte in mask-tag algorithm. Each EN bit corresponds to 64 consecutive bytes in the
-                                                         data stream, as controlled by PKI_TAG_INC(0..31)_CTL as described in WQE[TAG]. */
+                                                         data stream, as controlled by PKI_TAG_INC()_CTL as described in WQE[TAG]. */
 #else
 	uint64_t en                           : 64;
 #endif

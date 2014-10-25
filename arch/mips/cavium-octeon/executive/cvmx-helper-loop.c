@@ -43,17 +43,19 @@
  * Functions for LOOP initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 75749 $<hr>
+ * <hr>$Revision: 97657 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-pip-defs.h>
 #include <asm/octeon/cvmx-pko-defs.h>
+#include <asm/octeon/cvmx-lbk-defs.h>
+#include <asm/octeon/cvmx-pki.h>
 #else
-
 #include "cvmx.h"
 #include "cvmx-helper.h"
+#include "cvmx-pki.h"
 #endif
 
 int __cvmx_helper_loop_enumerate(int interface)
@@ -94,17 +96,23 @@ int __cvmx_helper_loop_enable(int interface)
 
 	num_ports = __cvmx_helper_get_num_ipd_ports(interface);
 
-	/* 
+	/*
 	 * We need to disable length checking so packet < 64 bytes and jumbo
 	 * frames don't get errors
 	 */
 	for (index = 0; index < num_ports; index++) {
 		offset = ((octeon_has_feature(OCTEON_FEATURE_PKND)) ? cvmx_helper_get_pknd(interface, index) : cvmx_helper_get_ipd_port(interface, index));
 
-		port_cfg.u64 = cvmx_read_csr(CVMX_PIP_PRT_CFGX(offset));
-		port_cfg.s.maxerr_en = 0;
-		port_cfg.s.minerr_en = 0;
-		cvmx_write_csr(CVMX_PIP_PRT_CFGX(offset), port_cfg.u64);
+		if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+			int node = cvmx_get_node_num();
+			cvmx_pki_endis_l2_errs(node, offset, 1, 0, 0);
+                        cvmx_pki_endis_fcs_check(node, offset, 0, 0);
+		} else {
+			port_cfg.u64 = cvmx_read_csr(CVMX_PIP_PRT_CFGX(offset));
+			port_cfg.s.maxerr_en = 0;
+			port_cfg.s.minerr_en = 0;
+			cvmx_write_csr(CVMX_PIP_PRT_CFGX(offset), port_cfg.u64);
+		}
 	}
 
 	/*
@@ -115,12 +123,11 @@ int __cvmx_helper_loop_enable(int interface)
 		ipd_sub_port_fcs.u64 = cvmx_read_csr(CVMX_IPD_SUB_PORT_FCS);
 		ipd_sub_port_fcs.s.port_bit2 = 0;
 		cvmx_write_csr(CVMX_IPD_SUB_PORT_FCS, ipd_sub_port_fcs.u64);
-	}
-
+	} 
 	/*
  	 * Set PKND and BPID for loopback ports.
  	 */
-	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 		cvmx_pko_reg_loopback_pkind_t lp_pknd;
 		cvmx_pko_reg_loopback_bpid_t lp_bpid;
 
@@ -170,6 +177,14 @@ int __cvmx_helper_loop_enable(int interface)
 			}
 			cvmx_write_csr(CVMX_PKO_REG_LOOPBACK_PKIND, lp_pknd.u64);
 			cvmx_write_csr(CVMX_PKO_REG_LOOPBACK_BPID, lp_bpid.u64);
+		}
+	} else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		cvmx_lbk_chx_pkind_t lbk_pkind;
+
+		for (index = 0; index < num_ports; index++) {
+			lbk_pkind.u64 = 0;
+			lbk_pkind.s.pkind = cvmx_helper_get_pknd(interface, index);
+			cvmx_write_csr(CVMX_LBK_CHX_PKIND(index), lbk_pkind.u64);
 		}
 	}
 

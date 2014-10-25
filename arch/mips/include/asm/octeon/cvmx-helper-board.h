@@ -44,7 +44,7 @@
  * Helper functions to abstract board specific data about
  * network ports from the rest of the cvmx-helper files.
  *
- * <hr>$Revision: 86922 $<hr>
+ * <hr>$Revision: 103898 $<hr>
  */
 #ifndef __CVMX_HELPER_BOARD_H__
 #define __CVMX_HELPER_BOARD_H__
@@ -62,12 +62,14 @@ typedef enum {
 	USB_CLOCK_TYPE_CRYSTAL_12,
 } cvmx_helper_board_usb_clock_types_t;
 
-typedef enum {
+typedef enum cvmx_phy_type {
 	BROADCOM_GENERIC_PHY,
 	MARVELL_GENERIC_PHY,
- 	VITESSE_GENERIC_PHY,
 	CORTINA_PHY,
+	GENERIC_8023_C22_PHY,
+	GENERIC_8023_C45_PHY,
  	INBAND_PHY,
+	QUALCOMM_S17,	/** Qualcomm QCA833X switch */
 } cvmx_phy_type_t;
 
 /** Used to record the host mode used by the Cortina CS4321 PHY */
@@ -94,8 +96,6 @@ typedef enum {
 	set_phy_link_flags_flow_control_mask = 0x3 << 1,	/* Mask for 2 bit wide flow control field */
 } cvmx_helper_board_set_phy_link_flags_types_t;
 
-#if !defined(CVMX_BUILD_FOR_LINUX_KERNEL)
-
 /**
  * The EBB6600 board uses a MDIO mux device to select between the two QLM
  * modules since both QLM modules share the same PHY addresses.  The
@@ -107,7 +107,7 @@ typedef enum {
  * this board a very complex operation involving writing to the TWSI mux,
  * followed by the MDIO mux device.
  */
-
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 /** Maximum number of GPIO devices used to control the MDIO mux */
 #define CVMX_PHY_MUX_MAX_GPIO	2
 /** Type of MDIO mux device, currently OTHER isn't supported */
@@ -122,6 +122,10 @@ typedef enum {
 	GPIO_PCA8574	/** TWSI mux device */
 } cvmx_phy_gpio_type_t;
 
+struct cvmx_phy_device;
+struct cvmx_phy_info;
+#endif
+
 /**
  * @INTERNAL
  * This data structure is used to hold PHY information and is subject to change.
@@ -132,7 +136,9 @@ typedef enum {
  */
 typedef struct cvmx_phy_info {
 	int phy_addr;			/** MDIO address of PHY */
-
+	int phy_sub_addr;		/** Sub-address (i.e. slice), used by Cortina */
+	int ipd_port;			/** IPD port number for the PHY */
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 	/** MDIO bus PHY connected to (even if behind mux) */
 	int mdio_unit;
 	int direct_connect;		/** 1 if PHY is directly connected */
@@ -152,8 +158,11 @@ typedef struct cvmx_phy_info {
 	cvmx_phy_mux_type_t mux_type;	/** Type of MDIO mux */
 	int mux_twsi_addr;		/** Address of the MDIO mux */
 	cvmx_phy_host_mode_t host_mode;	/** Used by Cortina PHY */
+	struct cvmx_phy_device *phydev;	/** Pointer to parent phy device */
+#endif
+	/** Pointer to function to return link information */
+	cvmx_helper_link_info_t (*link_function)(struct cvmx_phy_info *phy_info);
 } cvmx_phy_info_t;
-#endif /* !CVMX_BUILD_FOR_LINUX_KERNEL */
 
 /* Fake IPD port, the RGMII/MII interface may use different PHY, use this
    macro to return appropriate MIX address to read the PHY. */
@@ -320,6 +329,16 @@ cvmx_phy_host_mode_t cvmx_helper_board_get_phy_host_mode(int ipd_port);
  * NOTE: The phy_info data structure is subject to change.
  */
 int cvmx_helper_board_get_phy_info(cvmx_phy_info_t *phy_info, int ipd_port);
+
+/**
+ * @INTERNAL
+ * Parse the device tree and set whether a port is valid or not.
+ *
+ * @param fdt_addr	Pointer to device tree
+ *
+ * @return 0 for success, -1 on error.
+ */
+int __cvmx_helper_parse_78xx_bgx_dt(void *fdt_addr);
 #endif
 
 #ifdef	__cplusplus

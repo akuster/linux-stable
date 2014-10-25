@@ -45,13 +45,13 @@
  * chip errata. For the most part, code doesn't need to call
  * these functions directly.
  *
- * <hr>$Revision: 78395 $<hr>
+ * <hr>$Revision: 95626 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-jtag.h>
-#include <asm/octeon/cvmx-pko.h>
+#include <asm/octeon/cvmx-hwpko.h>
 #include <asm/octeon/cvmx-asxx-defs.h>
 #include <asm/octeon/cvmx-gmxx-defs.h>
 #include <asm/octeon/cvmx-ipd.h>
@@ -61,7 +61,7 @@
 
 #include "cvmx-fpa.h"
 #include "cvmx-pip.h"
-#include "cvmx-pko.h"
+#include "cvmx-hwpko.h"
 #include "cvmx-ipd.h"
 #include "cvmx-spi.h"
 #include "cvmx-pow.h"
@@ -137,7 +137,7 @@ int __cvmx_helper_errata_fix_ipd_ptr_alignment(void)
 		CVMX_SYNC;
 
 		g_buffer.u64 = 0;
-		g_buffer.s.addr = cvmx_ptr_to_phys(cvmx_fpa_alloc(wqe_pool));
+		g_buffer.s.addr = cvmx_ptr_to_phys(cvmx_fpa1_alloc(wqe_pool));
 		if (g_buffer.s.addr == 0) {
 			cvmx_dprintf("WARNING: FIX_IPD_PTR_ALIGNMENT buffer allocation failure.\n");
 			goto fix_ipd_exit;
@@ -147,7 +147,7 @@ int __cvmx_helper_errata_fix_ipd_ptr_alignment(void)
 		g_buffer.s.size = num_segs;
 
 		pkt_buffer.u64 = 0;
-		pkt_buffer.s.addr = cvmx_ptr_to_phys(cvmx_fpa_alloc(cvmx_fpa_get_packet_pool()));
+		pkt_buffer.s.addr = cvmx_ptr_to_phys(cvmx_fpa1_alloc(cvmx_fpa_get_packet_pool()));
 		if (pkt_buffer.s.addr == 0) {
 			cvmx_dprintf("WARNING: FIX_IPD_PTR_ALIGNMENT buffer allocation failure.\n");
 			goto fix_ipd_exit;
@@ -189,7 +189,7 @@ int __cvmx_helper_errata_fix_ipd_ptr_alignment(void)
 		cvmx_write_csr(CVMX_GMXX_RXX_FRM_MAX(INDEX(FIX_IPD_OUTPORT), INTERFACE(FIX_IPD_OUTPORT)), 65392 - 14 - 4);
 
 		cvmx_pko_send_packet_prepare(FIX_IPD_OUTPORT, cvmx_pko_get_base_queue(FIX_IPD_OUTPORT), CVMX_PKO_LOCK_CMD_QUEUE);
-		cvmx_pko_send_packet_finish(FIX_IPD_OUTPORT, cvmx_pko_get_base_queue(FIX_IPD_OUTPORT), pko_command, g_buffer, CVMX_PKO_LOCK_CMD_QUEUE);
+		cvmx_hwpko_send_packet_finish(FIX_IPD_OUTPORT, cvmx_pko_get_base_queue(FIX_IPD_OUTPORT), pko_command, g_buffer, CVMX_PKO_LOCK_CMD_QUEUE);
 
 		CVMX_SYNC;
 

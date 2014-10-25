@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -43,11 +43,12 @@
  * Interface to the PCI / PCIe DMA engines. These are only avialable
  * on chips with PCI / PCIe.
  *
- * <hr>$Revision: 84896 $<hr>
+ * <hr>$Revision: 103836 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <linux/export.h>
 #include <asm/octeon/cvmx.h>
+#include <asm/octeon/cvmx-fpa.h>
 #include <asm/octeon/octeon-model.h>
 #include <asm/octeon/cvmx-cmd-queue.h>
 #include <asm/octeon/cvmx-dma-engine.h>
@@ -57,12 +58,15 @@
 #include <asm/octeon/cvmx-dpi-defs.h>
 #include <asm/octeon/cvmx-pexp-defs.h>
 #include <asm/octeon/cvmx-helper-cfg.h>
+#include <asm/octeon/cvmx-helper-fpa.h>
 #else
 #include "cvmx.h"
+#include "cvmx-bootmem.h"
 #include "cvmx-cmd-queue.h"
 #include "cvmx-dma-engine.h"
 #include "cvmx-helper-cfg.h"
 #include "cvmx-helper-fpa.h"
+#include "cvmx-fpa.h"
 #endif
 
 
@@ -92,21 +96,24 @@ int cvmx_dma_engine_get_num(void)
 int cvmx_dma_engine_initialize(void)
 {
 	int engine;
-	int outputbuffer_pool = (int)cvmx_fpa_get_dma_pool();
-	uint64_t outputbuffer_pool_size = cvmx_fpa_get_dma_pool_block_size();
+	int pool = (int)cvmx_fpa_get_dma_pool();
+	uint64_t pool_size = cvmx_fpa_get_dma_pool_block_size();
 
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+	int buffer_cnt = dma_config.command_queue_pool.buffer_count;
+	
 	/** It allocate pools for dma command queues
 	 */
-#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 	cvmx_fpa_global_initialize();
-	if(dma_config.command_queue_pool.buffer_count != 0)
-		__cvmx_helper_initialize_fpa_pool(outputbuffer_pool, outputbuffer_pool_size,
-			  dma_config.command_queue_pool.buffer_count, "Dma Cmd Buffers");
+	if(buffer_cnt != 0) {
+		__cvmx_helper_initialize_fpa_pool(pool, pool_size,
+					buffer_cnt, "Dma Cmd Buffers");
+	}
 #endif
 
 	for (engine = 0; engine < cvmx_dma_engine_get_num(); engine++) {
 		cvmx_cmd_queue_result_t result;
-		result = cvmx_cmd_queue_initialize(CVMX_CMD_QUEUE_DMA(engine), 0, outputbuffer_pool, outputbuffer_pool_size);
+		result = cvmx_cmd_queue_initialize(CVMX_CMD_QUEUE_DMA(engine), 0, pool, pool_size);
 		if (result != CVMX_CMD_QUEUE_SUCCESS)
 			return -1;
 		if (octeon_has_feature(OCTEON_FEATURE_NPEI)) {
@@ -117,7 +124,7 @@ int cvmx_dma_engine_initialize(void)
 		} else if (octeon_has_feature(OCTEON_FEATURE_PCIE)) {
 			cvmx_dpi_dmax_ibuff_saddr_t dpi_dmax_ibuff_saddr;
 			dpi_dmax_ibuff_saddr.u64 = 0;
-			dpi_dmax_ibuff_saddr.s.csize = outputbuffer_pool_size / 8;
+			dpi_dmax_ibuff_saddr.s.csize = pool_size / 8;
 			if (OCTEON_IS_OCTEON3())
 				dpi_dmax_ibuff_saddr.cn78xx.saddr = cvmx_ptr_to_phys(cvmx_cmd_queue_buffer(CVMX_CMD_QUEUE_DMA(engine))) >> 7;
 			else
@@ -143,9 +150,9 @@ int cvmx_dma_engine_initialize(void)
 		dma_control.s.dma0_enb = 1;
 		dma_control.s.o_mode = 1;	/* Pull NS and RO from this register, not the pointers */
 		//dma_control.s.dwb_denb = 1;
-		//dma_control.s.dwb_ichk = outputbuffer_pool_size/128;
-		dma_control.s.fpa_que = outputbuffer_pool;
-		dma_control.s.csize = outputbuffer_pool_size / 8;
+		dma_control.s.dwb_ichk = pool_size/128;
+		dma_control.s.fpa_que = pool;
+		dma_control.s.csize = pool_size / 8;
 		cvmx_write_csr(CVMX_PEXP_NPEI_DMA_CONTROL, dma_control.u64);
 		/* As a workaround for errata PCIE-811 we only allow a single
 		   outstanding DMA read over PCIe at a time. This limits performance,
@@ -183,15 +190,17 @@ int cvmx_dma_engine_initialize(void)
 		cvmx_write_csr(CVMX_DPI_ENGX_BUF(5), dpi_engx_buf.u64);
 
 		dma_control.u64 = cvmx_read_csr(CVMX_DPI_DMA_CONTROL);
-		dma_control.s.pkt_hp = 1;
 		dma_control.s.pkt_en = 1;
 		dma_control.s.dma_enb = 0x1f;
-		if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-			/* FIXME */
+		if (octeon_has_feature(OCTEON_FEATURE_FPA3)) {
+			dma_control.cn78xx.ldwb = cvmx_helper_cfg_opt_get(CVMX_HELPER_CFG_OPT_USE_DWB);
+			dma_control.cn78xx.aura_ichk = pool;
+
 		} else {
+			dma_control.cn61xx.pkt_hp = 1;
 			dma_control.cn61xx.dwb_denb = cvmx_helper_cfg_opt_get(CVMX_HELPER_CFG_OPT_USE_DWB);
-			dma_control.cn61xx.dwb_ichk = outputbuffer_pool_size / 128;
-			dma_control.cn61xx.fpa_que = outputbuffer_pool;
+			dma_control.cn61xx.dwb_ichk = pool_size / 128;
+			dma_control.cn61xx.fpa_que = pool;
 		}
 		dma_control.s.o_mode = 1;
 		cvmx_write_csr(CVMX_DPI_DMA_CONTROL, dma_control.u64);
@@ -204,12 +213,12 @@ int cvmx_dma_engine_initialize(void)
 		cvmx_npi_dma_control_t dma_control;
 		dma_control.u64 = 0;
 		//dma_control.s.dwb_denb = 1;
-		//dma_control.s.dwb_ichk = outputbuffer_pool_size/128;
+		dma_control.s.dwb_ichk = pool_size/128;
 		dma_control.s.o_add1 = 1;
-		dma_control.s.fpa_que = outputbuffer_pool;
+		dma_control.s.fpa_que = pool;
 		dma_control.s.hp_enb = 1;
 		dma_control.s.lp_enb = 1;
-		dma_control.s.csize = outputbuffer_pool_size / 8;
+		dma_control.s.csize = pool_size / 8;
 		cvmx_write_csr(CVMX_NPI_DMA_CONTROL, dma_control.u64);
 	}
 
@@ -298,17 +307,23 @@ int cvmx_dma_engine_submit(int engine, cvmx_dma_engine_header_t header, int num_
 {
 	cvmx_cmd_queue_result_t result;
 	int cmd_count = 1;
-	uint64_t cmds[num_buffers + 1];
+	uint64_t cmds[num_buffers + 2];
 
 	if (OCTEON_IS_MODEL(OCTEON_CN56XX_PASS1_X)) {
 		/* Check for Errata PCIe-604 */
-		if ((header.s.nfst > 11) || (header.s.nlst > 11) || (header.s.nfst + header.s.nlst > 15)) {
+		if ((header.word0.cn38xx.nfst > 11)
+		     || (header.word0.cn38xx.nlst > 11)
+		     || (header.word0.cn38xx.nfst + header.word0.cn38xx.nlst > 15)) {
 			cvmx_dprintf("DMA engine submit too large\n");
 			return -1;
 		}
 	}
 
-	cmds[0] = header.u64;
+	cmds[0] = header.word0.u64;
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		cmds[1] = header.word1.u64;
+		cmd_count = 2;
+	}
 	while (num_buffers--) {
 		cmds[cmd_count++] = buffers->u64;
 		buffers++;
@@ -363,8 +378,14 @@ static inline int __cvmx_dma_engine_build_internal_pointers(cvmx_dma_engine_buff
 		if (chunk > 8191)
 			chunk = 8191;
 		buffers[segments].u64 = 0;
-		buffers[segments].internal.size = chunk;
-		buffers[segments].internal.addr = address;
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+			buffers[segments].internal_cn78xx.ac = 1;
+			buffers[segments].internal_cn78xx.size = chunk;
+			buffers[segments].internal_cn78xx.addr = address;
+		} else {
+			buffers[segments].internal.size = chunk;
+			buffers[segments].internal.addr = address;
+		}
 		address += chunk;
 		size -= chunk;
 		segments++;
@@ -482,29 +503,42 @@ int cvmx_dma_engine_transfer(int engine, cvmx_dma_engine_header_t header, uint64
 {
 	cvmx_dma_engine_buffer_t buffers[32];
 	int words = 0;
+	uint32_t nfst, nlst;
+	cvmx_dma_engine_transfer_t type;
 
-	switch (header.s.type) {
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		type = header.word0.cn78xx.type;
+	else
+		type = header.word0.cn38xx.type;
+	switch (type) {
 	case CVMX_DMA_ENGINE_TRANSFER_INTERNAL:
-		header.s.nfst = __cvmx_dma_engine_build_internal_pointers(buffers, first_address, size);
-		words += header.s.nfst;
-		header.s.nlst = __cvmx_dma_engine_build_internal_pointers(buffers + words, last_address, size);
-		words += header.s.nlst;
+		nfst = __cvmx_dma_engine_build_internal_pointers(buffers, first_address, size);
+		words += (nfst & 0xf);
+		nlst = __cvmx_dma_engine_build_internal_pointers(buffers + words, last_address, size);
+		words += (nlst & 0xf);
 		break;
 	case CVMX_DMA_ENGINE_TRANSFER_INBOUND:
 	case CVMX_DMA_ENGINE_TRANSFER_OUTBOUND:
-		header.s.nfst = __cvmx_dma_engine_build_internal_pointers(buffers, first_address, size);
-		words += header.s.nfst;
-		header.s.nlst = __cvmx_dma_engine_build_external_pointers(buffers + words, last_address, size);
-		words += header.s.nlst + ((header.s.nlst - 1) >> 2) + 1;
+		nfst = __cvmx_dma_engine_build_internal_pointers(buffers, first_address, size);
+		words += (nfst & 0xf);
+		nlst = __cvmx_dma_engine_build_external_pointers(buffers + words, last_address, size);
+		words += nlst + ((nlst - 1) >> 2) + 1;
 		break;
 	case CVMX_DMA_ENGINE_TRANSFER_EXTERNAL:
-		header.s.nfst = __cvmx_dma_engine_build_external_pointers(buffers, first_address, size);
-		words += header.s.nfst + ((header.s.nfst - 1) >> 2) + 1;
-		header.s.nlst = __cvmx_dma_engine_build_external_pointers(buffers + words, last_address, size);
-		words += header.s.nlst + ((header.s.nlst - 1) >> 2) + 1;
+		nfst = __cvmx_dma_engine_build_external_pointers(buffers, first_address, size);
+		words += nfst + ((nfst - 1) >> 2) + 1;
+		nlst = __cvmx_dma_engine_build_external_pointers(buffers + words, last_address, size);
+		words += nlst + ((nlst - 1) >> 2) + 1;
 		break;
 	default:
 		return -1;
+	}
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		header.word0.cn78xx.nlst = nlst;
+		header.word0.cn78xx.nfst = nfst;
+	} else {
+		header.word0.cn38xx.nlst = nlst;
+		header.word0.cn38xx.nfst = nfst;
 	}
 	return cvmx_dma_engine_submit(engine, header, words, buffers);
 }

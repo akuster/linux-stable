@@ -49,9 +49,14 @@
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-pki-defs.h>
-#include <asm/octeon/cvmx-fpa.h>
+#include <asm/octeon/cvmx-fpa3.h>
+#include <asm/octeon/cvmx-helper-util.h>
+#include <asm/octeon/cvmx-helper-cfg.h>
 #else
-#include "cvmx-fpa.h"
+#include "cvmx-fpa3.h"
+#include "cvmx-helper-util.h"
+#include "cvmx-helper-cfg.h"
+#include "cvmx-error.h"
 #endif
 
 #ifdef	__cplusplus
@@ -61,167 +66,38 @@ extern "C" {
 #endif
 
 #define CVMX_PKI_NUM_CHANNEL		(4096)
-#define CVMX_PKI_NUM_AURA       	(1024)
-#define CVMX_PKI_NUM_BPID 	      	(1024)
+#define CVMX_PKI_NUM_AURA		(1024)
+#define CVMX_PKI_NUM_BPID		(1024)
 #define CVMX_PKI_NUM_PKIND		(64)
-#define CVMX_PKI_NUM_INTERNAL_STYLES    (256)
-#define CVMX_PKI_NUM_FINAL_STYLES	(64)
+#define CVMX_PKI_NUM_INTERNAL_STYLE     (256)
+#define CVMX_PKI_NUM_FINAL_STYLE 	(64)
 #define CVMX_PKI_NUM_QPG_ENTRY		(2048)
-#define CVMX_PKI_NUM_FRAME_CHECK_VALUES	(2)
-#define CVMX_PKI_NUM_LTYPES		(32)
-#define CVMX_PKI_NUM_CLUSTERS		(4)
+#define CVMX_PKI_NUM_LTYPE		(32)
+#define CVMX_PKI_NUM_CLUSTER		(4)
 #define CVMX_PKI_NUM_CLUSTER_GROUP      (4)
 #define CVMX_PKI_NUM_PCAM_BANK		(2)
 #define CVMX_PKI_NUM_PCAM_ENTRY		(192)
-#define CVMX_PKI_NUM_QPG_STYLE_INDEX	(8)
-#define CVMX_PKI_NUM_FRAME_SIZE_ID	(2)
-#define CVMX_PKI_NUM_CHANNELS		(4096)
+#define CVMX_PKI_NUM_FRAME_CHECK	(2)
 #define CVMX_PKI_NUM_BPID		(1024)
+#define CVMX_PKI_NUM_SSO_GROUP		(256)
+#define CVMX_PKI_NUM_BELTYPE		(32)
 #define CVMX_PKI_MAX_FRAME_SIZE		(65535)
 #define CVMX_PKI_FIND_AVAL_ENTRY        (-1)
-#define CVMX_PKI_MAX_CLUSTER_PROFILES   (4)
-#define CVMX_PKI_MAX_STYLE_PROFILES	(256)
-#define CVMX_PKI_MAX_NAME		(16)
-#define CVMX_PKI_MAX_POOL_PROFILES	(64) //modify it later
-#define CVMX_PKI_MAX_AURA_PROFILES	(256) //modify it later
-#define CVMX_PKI_MAX_SSO_GROUP_PROFILES	(256)
+#define CVMX_PKI_CLUSTER_ALL		(0xf)
 
 #ifdef CVMX_SUPPORT_SEPARATE_CLUSTER_CONFIG
-#define CVMX_PKI_TOTAL_PCAM_ENTRY	((CVMX_PKI_NUM_CLUSTERS) * (CVMX_PKI_NUM_PCAM_BANK) *\
+#define CVMX_PKI_TOTAL_PCAM_ENTRY	((CVMX_PKI_NUM_CLUSTER) * (CVMX_PKI_NUM_PCAM_BANK) *\
 						(CVMX_PKI_NUM_PCAM_ENTRY))
 #else
 #define CVMX_PKI_TOTAL_PCAM_ENTRY	(CVMX_PKI_NUM_PCAM_BANK * CVMX_PKI_NUM_PCAM_ENTRY)
 #endif
 
-#define CVMX_PKI_MAX_QPG_PROFILES	(2048)
-#define CVMX_PKI_NOT_ASSIGNED		(-88)
-
-
-struct cvmx_pki_cluster_profile
-{
-	char		name[CVMX_PKI_MAX_NAME];
-	int 		num_clusters;
-	int 		cluster_group;
-#define CVMX_PKI_PARSE_DSP		0x01
-#define CVMX_PKI_PARSE_FULCRUM		0x02
-#define CVMX_PKI_PARSE_MPLS		0x04
-#define CVMX_PKI_PARSE_L3		0x08
-#define CVMX_PKI_PARSE_IL3		0x10
-#define CVMX_PKI_PARSE_L4 		0x20
-#define CVMX_PKI_PARSE_CUSTOM_L2	0x40
-#define CVMX_PKI_PARSE_CUSTOM_LG	0x80
-#define CVMX_PKI_PARSE_VIRTUALIZATION	0x100
-#define CVMX_PKI_CLUSTER_ALL            0xf
-	uint64_t        parsing_mask;
-
-};
-
-struct cvmx_pki_cluster_list
-{
-	int index;
-	struct cvmx_pki_cluster_profile cl_profile[CVMX_PKI_MAX_CLUSTER_PROFILES];
-};
-
-struct cvmx_pki_pool_profile
-{
-	char pool_name[CVMX_PKI_MAX_NAME];
-	cvmx_fpa_pool_config_t	pool_cfg;
-};
-
-struct cvmx_pki_pool_list
-{
-	int index;
-	struct cvmx_pki_pool_profile pool_profile[CVMX_PKI_MAX_POOL_PROFILES];
-};
-
-struct cvmx_pki_aura_profile
-{
-	char aura_name[CVMX_PKI_MAX_NAME];
-	int aura_num;
-	int pool_num;
-	int buffer_count;
-};
-
-struct cvmx_pki_aura_list
-{
-	int index;
-	struct cvmx_pki_aura_profile aura_profile[CVMX_PKI_MAX_AURA_PROFILES];
-};
-
-struct cvmx_pki_sso_grp_profile
-{
-	char grp_name[CVMX_PKI_MAX_NAME];
-	int grp_num;
-	int priority;
-	int weight;
-	int affinity;
-	uint64_t core_affinity_mask;
-	uint64_t core_affinity_mask_set;
-};
-struct cvmx_pki_sso_grp_list
-{
-	int index;
-	struct cvmx_pki_sso_grp_profile grp_profile[CVMX_PKI_MAX_SSO_GROUP_PROFILES];
-};
-
-struct cvmx_pki_qpg_profile
-{
-	char qpg_name[CVMX_PKI_MAX_NAME];
-	int base_offset;
-	int num_entries;
-};
-
-struct cvmx_pki_qpg_list
-{
-	int index;
-	struct cvmx_pki_qpg_profile qpg_profile[CVMX_PKI_MAX_QPG_PROFILES];
-};
-
-struct cvmx_pki_style_profile
-{
-	char				name[CVMX_PKI_MAX_NAME];
-	int				style_num;
-};
-
-struct cvmx_pki_style_list
-{
-	int    index;
-	struct cvmx_pki_style_profile style_profile[CVMX_PKI_MAX_STYLE_PROFILES];
-};
-
-struct cvmx_pki_framelen_chk {
-	uint16_t	maxlen;
-	uint16_t	minlen;
-};
-
-struct cvmx_pki_global_config
-{
-	uint64_t			parsing_mask;
-	uint64_t			clusters_in_use_mask;
-	struct cvmx_pki_framelen_chk    frame_len_chk[CVMX_PKI_NUM_FRAME_SIZE_ID];
-	//enum cvmx_pki_bel		bel_type_map[CVMX_PKI_MAX_LTYPE];
-};
-
-struct cvmx_pki_qpg_config
-{
-	int  port_add;
-	int  aura;
-	int  group_ok;
-	int  group_bad;
-};
-
-struct cvmx_pki_clustergrp_config
-{
-	int		users;
-	uint64_t	cluster_mask;
-};
-
-enum cvmx_pki_pkind_parse_mode{
-	CVMX_PKI_PARSE_LA_TO_LG = 0,
-	CVMX_PKI_PARSE_LB_TO_LG = 1,
-	CVMX_PKI_PARSE_LC_TO_LG = 3,
-	CVMX_PKI_PARSE_LG = 0x3f,
-	CVMX_PKI_PARSE_NOTHING = 0x7f,
+enum cvmx_pki_pkind_parse_mode {
+	CVMX_PKI_PARSE_LA_TO_LG = 0,	/* parse LA(L2) to LG */
+	CVMX_PKI_PARSE_LB_TO_LG = 1,	/* parse LB(custom) to LG */
+	CVMX_PKI_PARSE_LC_TO_LG = 3,	/* parse LC(L3) to LG */
+	CVMX_PKI_PARSE_LG = 0x3f,	/* parse LG */
+	CVMX_PKI_PARSE_NOTHING = 0x7f	/* parse nothing */
 };
 
 enum cvmx_pki_parse_mode_chg {
@@ -231,41 +107,6 @@ enum cvmx_pki_parse_mode_chg {
 	CVMX_PKI_PARSE_SKIP_TO_LD = 0x7,
 	CVMX_PKI_PARSE_SKIP_TO_LG = 0x3f,
 	CVMX_PKI_PARSE_SKIP_ALL = 0x7f,
-};
-
-struct cvmx_pki_pkind_config
-{
-	int				users;
-	enum cvmx_pki_pkind_parse_mode	parsing_mode;
-	uint64_t 			cluster_mask;
-	uint64_t 			l2_parsing_mask;
-	int	 			initial_style;
-	int				cluster_grp;
-};
-
-struct cvmx_pki_tag_fields
-{
-	uint64_t layer_G_src:1;
-	uint64_t layer_F_src:1;
-	uint64_t layer_E_src:1;
-	uint64_t layer_D_src:1;
-	uint64_t layer_C_src:1;
-	uint64_t layer_B_src:1;
-	uint64_t layer_G_dst:1;
-	uint64_t layer_F_dst:1;
-	uint64_t layer_E_dst:1;
-	uint64_t layer_D_dst:1;
-	uint64_t layer_C_dst:1;
-	uint64_t layer_B_dst:1;
-	uint64_t input_port:1;
-	uint64_t mpls_label:1;
-	uint64_t first_vlan:1;
-	uint64_t second_vlan:1;
-	uint64_t ip_prot_nexthdr:1;
-	uint64_t tag_sync:1;
-	uint64_t tag_spi:1;
-	uint64_t tag_gtp:1;
-	uint64_t tag_vni:1;
 };
 
 enum cvmx_pki_l2_len_mode {
@@ -283,7 +124,7 @@ enum cvmx_pki_cache_mode {
 /**
  * Tag type definitions
  */
-enum cvmx_sso_tag_type{
+enum cvmx_sso_tag_type {
 	CVMX_SSO_TAG_TYPE_ORDERED = 0L,	/**< Tag ordering is maintained */
 	CVMX_SSO_TAG_TYPE_ATOMIC = 1L,	/**< Tag ordering is maintained, and at most one PP has the tag */
 	CVMX_SSO_TAG_TYPE_UNTAGGED = 2L,	/**< The work queue entry from the order
@@ -301,37 +142,342 @@ enum cvmx_pki_qpg_qos {
 	CVMX_PKI_QPG_QOS_MPLS,
 	CVMX_PKI_QPG_QOS_DSA_SRC,
 	CVMX_PKI_QPG_QOS_DIFFSERV,
-	CVMX_PKI_QPG_QOS_HIGIG
+	CVMX_PKI_QPG_QOS_HIGIG,
 };
 
-struct cvmx_pki_style_config
-{
-	int				users;
-	bool				en_l2_lenchk;
-	uint64_t			cluster_mask;
-	enum cvmx_pki_l2_len_mode	l2_lenchk_mode;
-	bool 				en_maxframe_errchk;
-	bool 				en_minframe_errchk;
-	int	 			max_min_frame_sel;
-	bool 				strip_l2_fcs;
-	bool 				en_fcs_check;
-	int	 			wqe_header_size;
-	int 				wqe_start_offset;
-	int 				first_mbuf_skip;
-	int	 			later_mbuf_skip;
-	int				mbuff_size;
-	enum cvmx_pki_cache_mode 	cache_mode;
-	bool 				data_wqe_buf_diff;
-	int				wqe_vlan;
-	int				qpg_base_offset;
-	bool 				qpg_calc_port_addr;
-	bool 				qpg_calc_aura;
-	bool 				qpg_calc_group;
-	enum cvmx_pki_qpg_qos		qpg_qos;
-	int				qpg_port_msb;
-	int				qpg_port_shift;
-	enum cvmx_sso_tag_type	 	tag_type;
-	struct cvmx_pki_tag_fields 	tag_fields;
+enum cvmx_pki_wqe_vlan {
+	CVMX_PKI_USE_FIRST_VLAN = 0,
+	CVMX_PKI_USE_SECOND_VLAN
+};
+
+/**
+ * Controls how the PKI statistics counters are handled
+ * The PKI_STAT*_X registers can be indexed either by port kind (pkind), or
+ * final style. (Does not apply to the PKI_STAT_INB* registers.)
+ *    0 = X represents the packet’s pkind
+ *    1 = X represents the low 6-bits of packet’s final style
+ */
+enum cvmx_pki_stats_mode {
+	CVMX_PKI_STAT_MODE_PKIND,
+	CVMX_PKI_STAT_MODE_STYLE
+};
+
+enum cvmx_pki_fpa_wait {
+	CVMX_PKI_DROP_PKT,
+	CVMX_PKI_WAIT_PKT
+};
+
+#define PKI_BELTYPE_E__NONE_M                              (0x0)
+#define PKI_BELTYPE_E__MISC_M                              (0x1)
+#define PKI_BELTYPE_E__IP4_M                               (0x2)
+#define PKI_BELTYPE_E__IP6_M                               (0x3)
+#define PKI_BELTYPE_E__TCP_M                               (0x4)
+#define PKI_BELTYPE_E__UDP_M                               (0x5)
+#define PKI_BELTYPE_E__SCTP_M                              (0x6)
+#define PKI_BELTYPE_E__SNAP_M                              (0x7)
+
+enum cvmx_pki_beltype { /* PKI_BELTYPE_E_t */
+	CVMX_PKI_BELTYPE_NONE	= PKI_BELTYPE_E__NONE_M,
+	CVMX_PKI_BELTYPE_MISC	= PKI_BELTYPE_E__MISC_M,
+	CVMX_PKI_BELTYPE_IP4	= PKI_BELTYPE_E__IP4_M,
+	CVMX_PKI_BELTYPE_IP6    = PKI_BELTYPE_E__IP6_M,
+	CVMX_PKI_BELTYPE_TCP    = PKI_BELTYPE_E__TCP_M,
+	CVMX_PKI_BELTYPE_UDP    = PKI_BELTYPE_E__UDP_M,
+	CVMX_PKI_BELTYPE_SCTP   = PKI_BELTYPE_E__SCTP_M,
+	CVMX_PKI_BELTYPE_SNAP   = PKI_BELTYPE_E__SNAP_M,
+	CVMX_PKI_BELTYPE_MAX   = CVMX_PKI_BELTYPE_SNAP
+};
+
+struct cvmx_pki_frame_len {
+	uint16_t	maxlen;
+	uint16_t	minlen;
+};
+
+struct cvmx_pki_tag_fields {
+	uint64_t layer_g_src:1;
+	uint64_t layer_f_src:1;
+	uint64_t layer_e_src:1;
+	uint64_t layer_d_src:1;
+	uint64_t layer_c_src:1;
+	uint64_t layer_b_src:1;
+	uint64_t layer_g_dst:1;
+	uint64_t layer_f_dst:1;
+	uint64_t layer_e_dst:1;
+	uint64_t layer_d_dst:1;
+	uint64_t layer_c_dst:1;
+	uint64_t layer_b_dst:1;
+	uint64_t input_port:1;
+	uint64_t mpls_label:1;
+	uint64_t first_vlan:1;
+	uint64_t second_vlan:1;
+	uint64_t ip_prot_nexthdr:1;
+	uint64_t tag_sync:1;
+	uint64_t tag_spi:1;
+	uint64_t tag_gtp:1;
+	uint64_t tag_vni:1;
+};
+
+struct cvmx_pki_pkind_parse {
+	uint64_t mpls_en:1;	/**< Enable MPLS parsing.
+				0 = Any MPLS labels are ignored, but may be handled by custom Ethertype PCAM matchers.
+				1 = MPLS label stacks are parsed and skipped over. PKI_GBL_PEN[MPLS_PEN] must be set. */
+	uint64_t inst_hdr:1;	/**< INST header. When set, the eight-byte INST_HDR is present on all packets (except incoming
+				packets on the DPI ports). */
+	uint64_t lg_custom:1;	/**< Layer G Custom Match Enable.
+				0 = Disable custom LG header extraction
+				1 = Enable custom LG header extraction.*/
+	uint64_t fulc_en:1;	/**< Enable Fulcrum tag parsing.
+				0 = Any Fulcrum header is ignored.
+				1 = Fulcrum header is parsed.*/
+	uint64_t dsa_en:1;	/**< Enable DSA parsing. This field should not be set for DPI ports.
+				0 = Any DSA header is ignored.
+				1 = DSA is parsed. */
+	uint64_t hg2_en:1;	/**< Enable HiGig 2 parsing. This field should not be set for DPI ports.
+				0 = Any HiGig2 header is ignored.
+				1 = HiGig2 is parsed. PKI_GBL_PEN[HG_PEN] must be set. */
+	uint64_t hg_en:1;	/**< Enable HiGig parsing. This field should not be set for DPI ports.
+				0 = Any HiGig header is ignored.
+				1 = HiGig is parsed. PKI_GBL_PEN[HG_PEN] must be set.
+				At most one of FULC_EN, DSA_EN or HG_EN may be set. */
+};
+
+struct cvmx_pki_pool_config {
+	int pool_num;
+	cvmx_fpa3_pool_t pool;
+	uint64_t buffer_size;
+	uint64_t buffer_count;
+};
+
+struct cvmx_pki_qpg_config {
+	int qpg_base;
+	int port_add;
+	int aura_num;
+	int grp_ok;
+	int grp_bad;
+	int grptag_ok;
+	int grptag_bad;
+};
+
+struct cvmx_pki_aura_config {
+	int aura_num;
+	int pool_num;
+	cvmx_fpa3_pool_t pool;
+	cvmx_fpa3_gaura_t aura;
+	int buffer_count;
+};
+
+struct cvmx_pki_cluster_grp_config {
+	int grp_num;
+	uint64_t cluster_mask; /* bit mask of cluster assigned to this cluster group */
+};
+
+struct cvmx_pki_sso_grp_config {
+	int group;
+	int priority;
+	int weight;
+	int affinity;
+	uint64_t core_mask;
+	uint8_t core_mask_set;
+};
+
+/* This is per style structure for configuring port parameters,
+ * it is kind of of profile which can be assigned to any port.
+ * If multiple ports are assigned same style be aware that modifying
+ * that style will modify the respective parameters for all the ports
+ * which are using this style
+ */
+struct cvmx_pki_style_parm {
+
+	bool ip6_udp_opt;	/**< IPv6/UDP checksum is optional. IPv4 allows an optional UDP checksum by sending the all-0s
+					patterns. IPv6 outlaws this and the spec says to always check UDP checksum.
+					0 = Spec compliant, do not allow optional code.
+					1 = Treat IPv6 as IPv4; */
+	bool lenerr_en;         /**< L2 length error check enable. Check if frame was received with L2 length error. */
+	bool maxerr_en;         /**< Max frame error check enable. */
+	bool minerr_en;	        /**< Min frame error check enable. */
+
+	uint8_t lenerr_eqpad;	/**< L2 length checks exact pad size.
+					0 = Length check uses greater then or equal comparison.
+					1 = Length check uses equal comparison.*/
+	uint8_t minmax_sel;	/**< Selects which PKI_FRM_LEN_CHK(0..1) register is used for this pkind for MINERR and MAXERR */
+	bool qpg_dis_grptag;	/**< Disable computing group using WQE[TAG]. 1 -- Disable 0 -- Enable */
+	bool fcs_strip;         /**< Strip L2 FCS bytes from packet, decrease WQE[LEN] by 4 bytes.*/
+	bool fcs_chk;           /**< FCS checking enabled.*/
+	bool rawdrp;		/**< Allow RAW packet drop
+					0 = Never drop packets with WQE[RAW] set.
+					1 = Allow the PKI to drop RAW packets based on PKI_AURA(0..1023)_CFG[ENA_RED/ENA_DROP]. */
+	bool force_drop;	/**< Force packet dropping.
+					0 = Drop packet based on PKI_AURA(0..1023)_CFG[ENA_RED/ENA_DROP].
+					1 = Always drop the packet. Overrides NODROP, RAWDRP. */
+	bool nodrop;            /**< Disable QoS packet drop.
+					0 = Allowed to drop packet based on PKI_AURA(0..1023)_CFG[ENA_RED/ENA_DROP].
+					1 = Never drop the packet. Overrides RAWDRP. */
+	bool qpg_dis_padd;	/**< Disable computing port adder by QPG algorithm. */
+	bool qpg_dis_grp;       /**< Disable computing group by QPG algorithm. */
+	bool qpg_dis_aura;      /**< Disable computing aura by QPG algorithm. */
+	uint16_t qpg_base;	/**< Base index into PKI_QPG_TBL(0..2047)*/
+	enum cvmx_pki_qpg_qos	qpg_qos;	/**< Algorithm to select QoS field in QPG calculation */
+	uint8_t			qpg_port_sh;	/**< MSB to take from port number in QPG calculation
+							0 = Exclude port number from QPG.
+							4 = Include port<3:0>.
+							8 = Include port<7:0>.*/
+	uint8_t			qpg_port_msb;	/**< Number of bits to shift port number in QPG */
+	uint8_t apad_nip;			/**< Value for WQE[APAD] when packet is not IP. */
+	uint8_t wqe_vs;				/**< Which VLAN to put into WQE[VLPTR] when VLAN stacking.
+							0 = Use the first (in network order) VLAN or DSA VID.
+							1 = Use the second (in network order) VLAN. */
+
+	enum cvmx_sso_tag_type	tag_type;	/**< SSO tag type to schedule to */
+	bool pkt_lend;				/**< Packet little-endian.write operations of packet data to L2C to be in LE */
+	uint8_t wqe_hsz;			/**< Work queue header size:
+							0x0 = WORD0..4, standard WQE_S. Note FIRST_SKIP may be set to not include WORD4 in memory.
+							0x1 = WORD0..5
+							0x2 = WORD0..6
+							0x3 = WORD0..7
+							else = Reserved */
+	uint8_t wqe_skip;			/**< in bytes, WQE start offset. The number of 128-byte cache lines to skip between the buffer
+							Pointer and WORD0 of the work-queue entry.*/
+	uint8_t first_skip;			/**< in bytes, The number of eight-byte words from the top of the first MBUF
+							that the PKI stores the next pointer.*/
+	uint8_t later_skip;			/**< in bytes, The number of eight-byte words from the top of any MBUF
+							that is not the first MBUF that PKI writes next-pointer to.*/
+	enum cvmx_pki_cache_mode cache_mode;;	/**< Select the style of write to the L2C.
+							0 = all packet data and next-buffer pointers are written through to memory.
+							1 = all packet data and next-buffer pointers are written into the cache.
+							2 = the first aligned cache block holding the WQE and/or front packet data are written to
+							    the L2 cache. All remaining cache blocks are not written to the L2 cache.
+							3 = the first two aligned cache blocks holding the WQE and front packet data are written
+							    to the L2 cache. All remaining cache blocks are not written to the L2 cache. */
+	uint8_t dis_wq_dat;			/**< Separate first data buffer from the work queue entry.
+							0 = The packet link pointer will be at word [FIRST_SKIP] immediately followed by packet
+							    data, in the same buffer as the work queue entry.
+							1 = The packet link pointer will be at word [FIRST_SKIP] in a new buffer separate from the
+							    work queue entry.*/
+	uint64_t mbuff_size;			/**< The number of eight-byte words to store into a buffer. This must be even, in the range of
+						     32 to 4096. This must be less than or equal to the maximum size of every free page in
+						     every FPA pool this style may use. */
+	bool len_lg;				/**< Check length of Layer G. */
+	bool len_lf;				/**< Check length of Layer F. */
+	bool len_le;				/**< Check length of Layer E. */
+	bool len_ld;				/**< Check length of Layer D. */
+	bool len_lc;				/**< Check length of Layer C. */
+	bool len_lb;				/**< Check length of Layer B. */
+	bool csum_lg;				/**< Compute checksum on Layer G. */
+	bool csum_lf;				/**< Compute checksum on Layer F. */
+	bool csum_le;				/**< Compute checksum on Layer E. */
+	bool csum_ld;				/**< Compute checksum on Layer D. */
+	bool csum_lc;				/**< Compute checksum on Layer C. */
+	bool csum_lb;				/**< Compute checksum on Layer B. */
+};
+
+/* This is per style structure for configuring port's tag configuration, it is kind of of profile
+   which can be assigned to any port. If multiple ports are assigned same style be aware
+   that modiying that style will modify the respective parameters for all the ports which
+   are using this style */
+
+struct cvmx_pki_mask_tag {
+	uint64_t tag_inc;			/**< Include masked tags using PKI_TAG_INC(0..31)_MASK. Each bit indicates to include the
+						     corresponding PKI_TAG_INC_MASK range. */
+	uint64_t tag_masken;			/**< Apply PKI_STYLE(0..63)_TAG_MASK to computed tag.*/
+	uint64_t mask;				/**< When set, each bit excludes corresponding bit of the tuple computed tag from being
+						     included in the final tag. PKI_CL(0..3)_STYLE(0..63)_CFG2 [TAG_MASKEN] must be set. Does
+						     not affect tags from packets with a PKI_INST_HDR_S when PKI_INST_HDR[UTAG] is set */
+	uint64_t tag_idx[4];			/**< Index 0-3 for TAG_INC<3>. This value is multipled by 4 to index into PKI_TAG_INC(0..31)_MASK.
+						     See WQE[TAG]. */
+};
+
+struct cvmx_pki_style_tag_cfg {
+	struct cvmx_pki_tag_fields tag_fields;
+	struct cvmx_pki_mask_tag   mask_tag;
+};
+
+struct cvmx_pki_style_config {
+	struct cvmx_pki_style_parm parm_cfg;		/**< General parameter configuration. */
+	struct cvmx_pki_style_tag_cfg  tag_cfg;		/**< Tag parameter configuration. */
+};
+
+struct cvmx_pki_pkind_config {
+	uint8_t cluster_grp;		/**< cluster group that will service traffic on this pkind */
+	bool fcs_pres;			/**< FCS present.
+					0 = FCS not present. FCS may not be checked nor stripped.
+					1 = FCS present; the last four bytes of the packet are part of the FCS and may not be
+					considered part of a IP, TCP or other header for length error checks.*/
+	struct cvmx_pki_pkind_parse parse_en;
+	enum cvmx_pki_pkind_parse_mode	initial_parse_mode;
+	uint8_t fcs_skip;
+	uint8_t inst_skip;              /**< Skip amount from front of packet to first byte covered by FCS start. The
+	                                skip must be even. If PTP_MODE, the 8-byte timestamp is prepended to
+	                                the packet, and FCS_SKIP must be at least 8.*/
+	int initial_style;             /**< Skip amount from front of packet to begin parsing at. If
+	                                PKI_CL(0..3)_PKIND(0..63)_CFG[INST_HDR] is set, points at the first
+	                                byte of the instruction header. If INST_HDR is clear, points at the first
+	                                byte to begin parsing at. The skip must be even. If PTP_MODE, the 8-
+	                                byte timestamp is prepended to the packet, and INST_SKIP must be at
+	                                least 8. */
+	bool custom_l2_hdr;		/**< Valid.custom L2 hesder extraction
+					0 = Disable custom L2 header extraction.
+					1 = Enable custom L2 header extraction.
+					PKI_GBL_PEN[CLG_PEN] must be set. */
+	uint8_t l2_scan_offset;		/**< Scan offset for custom L2 header.
+					Pointer to first byte of 32-bit custom extraction header, as absolute number
+					of bytes from beginning of packet. If PTP_MODE, the 8-byte timestamp is prepended to the
+					packet, and must be included in counting offset bytes. */
+	uint64_t lg_scan_offset;	/**< Scan offset for custom lg header.
+					Pointer to first byte of 32-bit custom extraction header, as relative number
+					of bytes from WQE[LFPTR]. */
+};
+
+struct cvmx_pki_port_config {
+	struct cvmx_pki_pkind_config pkind_cfg;		/**< Parameters can be configure per pkind */
+	struct cvmx_pki_style_config style_cfg;		/**< Parameters are configured per style, style is a profile
+							which can be applied to multiple ports which have same configuration
+							and packet processing */
+};
+
+struct cvmx_pki_global_parse {
+	uint64_t virt_pen:1;	/**< Virtualization parsing enable.*/
+	uint64_t clg_pen:1;	/**< Custom LG parsing enable. */
+	uint64_t cl2_pen:1;	/**< Custom L2 parsing enable.*/
+	uint64_t l4_pen:1;	/**< L4 parsing enable.*/
+	uint64_t il3_pen:1;	/**< L3 inner parsing enable. Must be zero if L3_PEN is zero. */
+	uint64_t l3_pen:1;	/**< L3 parsing enable.*/
+	uint64_t mpls_pen:1;	/**< MPLS parsing enable.*/
+	uint64_t fulc_pen:1;	/**< Fulcrum parsing enable.*/
+	uint64_t dsa_pen:1;	/**< DSA parsing enable. Must be zero if HG_PEN is set.*/
+	uint64_t hg_pen:1;	/**< HiGig parsing enable. Must be zero if DSA_PEN is set.*/
+};
+
+struct cvmx_pki_tag_sec {
+	uint16_t dst6;				/**< Secret for the destination tuple IPv6 tag CRC calculation. Typically identical to SRC6 to						insure tagging is symmetric between source/destination flows. Typically different from DST
+						for maximum security. */
+	uint16_t src6;				/**< Secret for the source tuple IPv6 tag CRC calculation. Typically different from SRC for
+						maximum security. */
+	uint16_t dst;				/**< Secret for the destination tuple tag CRC calculation. Typically identical to DST6 to
+						insure tagging is symmetric between source/destination flows. */
+	uint16_t src;				/**< Secret for the source tuple tag CRC calculation. */
+};
+
+struct cvmx_pki_global_config {
+	uint64_t cluster_mask[CVMX_PKI_NUM_CLUSTER_GROUP];	/**< Mask of clusters associated with that cluster group,
+								there are 4 cluster groups and 4 clusters which can be assigned
+								to cluster groups */
+	enum cvmx_pki_stats_mode stat_mode;			/**< The PKI_STAT*_X registers can be indexed either by pkind or final style.
+								(Does not apply to the PKI_STAT_INB* registers.)
+								0 = X represents the packet's pkind
+								1 = X represents the low 6-bits of packet's final style */
+	enum cvmx_pki_fpa_wait fpa_wait;			/**< Policy when FPA runs out of buffers:
+								0 = Drop the remainder of the packet requesting the buffer, and
+								set WQE[OPCODE] to RE_MEMOUT.
+								1 = Wait until buffers become available, only dropping packets if
+								buffering ahead of PKI fills. This may lead to head-of-line
+								blocking of packets on other Auras */
+	struct cvmx_pki_global_parse gbl_pen;			/**< Controls Global parsing options for chip */
+	struct cvmx_pki_tag_sec tag_secret;			/**< Secret value for src/dst tag tuple to reduce cache collision attacks */
+	struct cvmx_pki_frame_len frm_len[CVMX_PKI_NUM_FRAME_CHECK]; /**< values for max and min frame length to check against,2 combination */
+	enum cvmx_pki_beltype ltype_map[CVMX_PKI_NUM_BELTYPE];	/**< Map of which protocol maps to what layer */
+	/* struct cvmx_pki_tag_ctl  tag_ctl[32]; */
+	/* cvmx_pki_tag_incx_mask_t tag_mask[32]; */
+	int pki_enable;
 };
 
 #define CVMX_PKI_PCAM_TERM_E_NONE_M                            (0x0)
@@ -352,91 +498,36 @@ struct cvmx_pki_style_config
 #define CVMX_PKI_PCAM_TERM_E_L4_PORT_M                         (0x30)
 #define CVMX_PKI_PCAM_TERM_E_LG_CUSTOM_M                       (0x39)
 
-enum cvmx_pki_term { // CVMX_PKI_PCAM_TERM_E_t
-	CVMX_PKI_PCAM_TERM_E_NONE                    = CVMX_PKI_PCAM_TERM_E_NONE_M,
-	CVMX_PKI_PCAM_TERM_E_L2_CUSTOM               = CVMX_PKI_PCAM_TERM_E_L2_CUSTOM_M,
-	CVMX_PKI_PCAM_TERM_E_HIGIG                   = CVMX_PKI_PCAM_TERM_E_HIGIG_M,
-	CVMX_PKI_PCAM_TERM_E_DMACH                   = CVMX_PKI_PCAM_TERM_E_DMACH_M,
-	CVMX_PKI_PCAM_TERM_E_DMACL                   = CVMX_PKI_PCAM_TERM_E_DMACL_M,
-	CVMX_PKI_PCAM_TERM_E_GLORT                   = CVMX_PKI_PCAM_TERM_E_GLORT_M,
-	CVMX_PKI_PCAM_TERM_E_DSA                     = CVMX_PKI_PCAM_TERM_E_DSA_M,
-	CVMX_PKI_PCAM_TERM_E_ETHTYPE0                = CVMX_PKI_PCAM_TERM_E_ETHTYPE0_M,
-	CVMX_PKI_PCAM_TERM_E_ETHTYPE1                = CVMX_PKI_PCAM_TERM_E_ETHTYPE1_M,
-	CVMX_PKI_PCAM_TERM_E_ETHTYPE2                = CVMX_PKI_PCAM_TERM_E_ETHTYPE2_M,
-	CVMX_PKI_PCAM_TERM_E_ETHTYPE3                = CVMX_PKI_PCAM_TERM_E_ETHTYPE3_M,
-	CVMX_PKI_PCAM_TERM_E_MPLS0                   = CVMX_PKI_PCAM_TERM_E_MPLS0_M,
-	CVMX_PKI_PCAM_TERM_E_L3_FLAGS                = CVMX_PKI_PCAM_TERM_E_L3_FLAGS_M,
-	CVMX_PKI_PCAM_TERM_E_LD_VNI                  = CVMX_PKI_PCAM_TERM_E_LD_VNI_M,
-	CVMX_PKI_PCAM_TERM_E_IL3_FLAGS               = CVMX_PKI_PCAM_TERM_E_IL3_FLAGS_M,
-	CVMX_PKI_PCAM_TERM_E_L4_PORT                 = CVMX_PKI_PCAM_TERM_E_L4_PORT_M,
-	CVMX_PKI_PCAM_TERM_E_LG_CUSTOM               = CVMX_PKI_PCAM_TERM_E_LG_CUSTOM_M
+enum cvmx_pki_term {
+	CVMX_PKI_PCAM_TERM_NONE                    = CVMX_PKI_PCAM_TERM_E_NONE_M,
+	CVMX_PKI_PCAM_TERM_L2_CUSTOM               = CVMX_PKI_PCAM_TERM_E_L2_CUSTOM_M,
+	CVMX_PKI_PCAM_TERM_HIGIG                   = CVMX_PKI_PCAM_TERM_E_HIGIG_M,
+	CVMX_PKI_PCAM_TERM_DMACH                   = CVMX_PKI_PCAM_TERM_E_DMACH_M,
+	CVMX_PKI_PCAM_TERM_DMACL                   = CVMX_PKI_PCAM_TERM_E_DMACL_M,
+	CVMX_PKI_PCAM_TERM_GLORT                   = CVMX_PKI_PCAM_TERM_E_GLORT_M,
+	CVMX_PKI_PCAM_TERM_DSA                     = CVMX_PKI_PCAM_TERM_E_DSA_M,
+	CVMX_PKI_PCAM_TERM_ETHTYPE0                = CVMX_PKI_PCAM_TERM_E_ETHTYPE0_M,
+	CVMX_PKI_PCAM_TERM_ETHTYPE1                = CVMX_PKI_PCAM_TERM_E_ETHTYPE1_M,
+	CVMX_PKI_PCAM_TERM_ETHTYPE2                = CVMX_PKI_PCAM_TERM_E_ETHTYPE2_M,
+	CVMX_PKI_PCAM_TERM_ETHTYPE3                = CVMX_PKI_PCAM_TERM_E_ETHTYPE3_M,
+	CVMX_PKI_PCAM_TERM_MPLS0                   = CVMX_PKI_PCAM_TERM_E_MPLS0_M,
+	CVMX_PKI_PCAM_TERM_L3_FLAGS                = CVMX_PKI_PCAM_TERM_E_L3_FLAGS_M,
+	CVMX_PKI_PCAM_TERM_LD_VNI                  = CVMX_PKI_PCAM_TERM_E_LD_VNI_M,
+	CVMX_PKI_PCAM_TERM_IL3_FLAGS               = CVMX_PKI_PCAM_TERM_E_IL3_FLAGS_M,
+	CVMX_PKI_PCAM_TERM_L4_PORT                 = CVMX_PKI_PCAM_TERM_E_L4_PORT_M,
+	CVMX_PKI_PCAM_TERM_LG_CUSTOM               = CVMX_PKI_PCAM_TERM_E_LG_CUSTOM_M
 };
 
-struct cvmx_pki_pcam_input
-{
-	uint64_t 		style;
-	uint64_t		style_mask;
+struct cvmx_pki_pcam_input {
+	uint64_t		style;
+	uint64_t		style_mask; /* bits: 1-match, 0-dont care */
 	enum cvmx_pki_term	field;
-	uint32_t 		field_mask;
-	uint64_t 		data;
-	uint64_t 		data_mask;
+	uint32_t		field_mask; /* bits: 1-match, 0-dont care */
+	uint64_t		data;
+	uint64_t		data_mask; /* bits: 1-match, 0-dont care */
 };
 
-#define CVMX_PKI_LTYPE_E_NONE_M                                (0x0)
-#define CVMX_PKI_LTYPE_E_ENET_M                                (0x1)
-#define CVMX_PKI_LTYPE_E_VLAN_M                                (0x2)
-#define CVMX_PKI_LTYPE_E_SNAP_PAYLD_M                          (0x5)
-#define CVMX_PKI_LTYPE_E_ARP_M                                 (0x6)
-#define CVMX_PKI_LTYPE_E_RARP_M                                (0x7)
-#define CVMX_PKI_LTYPE_E_IP4_M                                 (0x8)
-#define CVMX_PKI_LTYPE_E_IP4_OPT_M                             (0x9)
-#define CVMX_PKI_LTYPE_E_IP6_M                                 (0xA)
-#define CVMX_PKI_LTYPE_E_IP6_OPT_M                             (0xB)
-#define CVMX_PKI_LTYPE_E_IPSEC_ESP_M                           (0xC)
-#define CVMX_PKI_LTYPE_E_IPFRAG_M                              (0xD)
-#define CVMX_PKI_LTYPE_E_IPCOMP_M                              (0xE)
-#define CVMX_PKI_LTYPE_E_TCP_M                                 (0x10)
-#define CVMX_PKI_LTYPE_E_UDP_M                                 (0x11)
-#define CVMX_PKI_LTYPE_E_SCTP_M                                (0x12)
-#define CVMX_PKI_LTYPE_E_UDP_VXLAN_M                           (0x13)
-#define CVMX_PKI_LTYPE_E_GRE_M                                 (0x14)
-#define CVMX_PKI_LTYPE_E_NVGRE_M                               (0x15)
-#define CVMX_PKI_LTYPE_E_GTP_M                                 (0x16)
-#define CVMX_PKI_LTYPE_E_SW28_M                                (0x1C)
-#define CVMX_PKI_LTYPE_E_SW29_M                                (0x1D)
-#define CVMX_PKI_LTYPE_E_SW30_M                                (0x1E)
-#define CVMX_PKI_LTYPE_E_SW31_M                                (0x1F)
-
-enum cvmx_pki_layer_type{ // PKI_LTYPE_E_t
-	CVMX_PKI_LTYPE_E_NONE                        = CVMX_PKI_LTYPE_E_NONE_M,
-	CVMX_PKI_LTYPE_E_ENET                        = CVMX_PKI_LTYPE_E_ENET_M,
-	CVMX_PKI_LTYPE_E_VLAN                        = CVMX_PKI_LTYPE_E_VLAN_M,
-	CVMX_PKI_LTYPE_E_SNAP_PAYLD                  = CVMX_PKI_LTYPE_E_SNAP_PAYLD_M,
-	CVMX_PKI_LTYPE_E_ARP                         = CVMX_PKI_LTYPE_E_ARP_M,
-	CVMX_PKI_LTYPE_E_RARP                        = CVMX_PKI_LTYPE_E_RARP_M,
-	CVMX_PKI_LTYPE_E_IP4                         = CVMX_PKI_LTYPE_E_IP4_M,
-	CVMX_PKI_LTYPE_E_IP4_OPT                     = CVMX_PKI_LTYPE_E_IP4_OPT_M,
-	CVMX_PKI_LTYPE_E_IP6                         = CVMX_PKI_LTYPE_E_IP6_M,
-	CVMX_PKI_LTYPE_E_IP6_OPT                     = CVMX_PKI_LTYPE_E_IP6_OPT_M,
-	CVMX_PKI_LTYPE_E_IPSEC_ESP                   = CVMX_PKI_LTYPE_E_IPSEC_ESP_M,
-	CVMX_PKI_LTYPE_E_IPFRAG                      = CVMX_PKI_LTYPE_E_IPFRAG_M,
-	CVMX_PKI_LTYPE_E_IPCOMP                      = CVMX_PKI_LTYPE_E_IPCOMP_M,
-	CVMX_PKI_LTYPE_E_TCP                         = CVMX_PKI_LTYPE_E_TCP_M,
-	CVMX_PKI_LTYPE_E_UDP                         = CVMX_PKI_LTYPE_E_UDP_M,
-	CVMX_PKI_LTYPE_E_SCTP                        = CVMX_PKI_LTYPE_E_SCTP_M,
-	CVMX_PKI_LTYPE_E_UDP_VXLAN                   = CVMX_PKI_LTYPE_E_UDP_VXLAN_M,
-	CVMX_PKI_LTYPE_E_GRE                         = CVMX_PKI_LTYPE_E_GRE_M,
-	CVMX_PKI_LTYPE_E_NVGRE                       = CVMX_PKI_LTYPE_E_NVGRE_M,
-	CVMX_PKI_LTYPE_E_GTP                         = CVMX_PKI_LTYPE_E_GTP_M,
-	CVMX_PKI_LTYPE_E_SW28                        = CVMX_PKI_LTYPE_E_SW28_M,
-	CVMX_PKI_LTYPE_E_SW29                        = CVMX_PKI_LTYPE_E_SW29_M,
-	CVMX_PKI_LTYPE_E_SW30                        = CVMX_PKI_LTYPE_E_SW30_M,
-	CVMX_PKI_LTYPE_E_SW31                        = CVMX_PKI_LTYPE_E_SW31_M
-};
-
-
-struct cvmx_pki_pcam_action
-{
+struct cvmx_pki_pcam_action {
 	enum cvmx_pki_parse_mode_chg	parse_mode_chg;
 	enum cvmx_pki_layer_type	layer_type_set;
 	int				style_add;
@@ -444,69 +535,81 @@ struct cvmx_pki_pcam_action
 	int				pointer_advance;
 };
 
-struct cvmx_pki_pcam_config
-{
+struct cvmx_pki_pcam_config {
 	int				in_use;
-	int 				entry_num;
+	int				entry_num;
 	uint64_t			cluster_mask;
 	struct cvmx_pki_pcam_input	pcam_input;
 	struct cvmx_pki_pcam_action	pcam_action;
 };
 
-struct cvmx_pki_pcam_list
-{
-	int	 			index;
-	struct cvmx_pki_pcam_config	pcam_cfg[CVMX_PKI_TOTAL_PCAM_ENTRY];
-};
-
-/** PKI block configuration*/
-struct cvmx_pki_config
-{
-	struct cvmx_pki_global_config		global_cfg;
-	struct cvmx_pki_clustergrp_config	cluster_cfg[CVMX_PKI_NUM_CLUSTER_GROUP];
-	struct cvmx_pki_pkind_config		pkind_cfg[CVMX_PKI_NUM_PKIND];
-	struct cvmx_pki_style_config		style_cfg[CVMX_PKI_NUM_FINAL_STYLES];
-	struct cvmx_pki_qpg_config		qpg_cfg[CVMX_PKI_NUM_QPG_ENTRY];
-	//struct cvmx_fpa_pool_config_t		pool_cfg[CVMX_FPA_NUM_POOLS_78XX];
-	//struct cvmx_pki_aura_config		aura_cfg[CVMX_FPA_AURA_NUM];//fpa should have aura config defined but it does not
-};
-
-/** Mapping of profile names to their respective config number*/
-struct cvmx_pki_profiles
-{
-	struct cvmx_pki_pcam_list		pcam_list;
-	struct cvmx_pki_cluster_list    	cl_profile_list;
-	struct cvmx_pki_style_list		style_profile_list;
-	struct cvmx_pki_pool_list		pool_profile_list;
-	struct cvmx_pki_aura_list		aura_profile_list;
-	struct cvmx_pki_sso_grp_list	        sso_grp_profile_list;
-	struct cvmx_pki_qpg_list	        qpg_profile_list;
-};
-
-extern CVMX_SHARED struct cvmx_pki_config pki_config[CVMX_MAX_NODES];
-extern CVMX_SHARED struct cvmx_pki_profiles pki_profiles[CVMX_MAX_NODES];
 
 /**
- * This function writes qpg entry at specified offset in hardware
- *
- * @param node		node number
- * @param index		offset in qpg entry to write to.
- * @param padd		port address for channel calculation
- * @param aura		aura number to send packet to
- * @param group_ok	group number to send packet to if there is no error
- * @param group_bad	group number to send packet  to if there is error
+ * Status statistics for a port
  */
-static inline void cvmx_pki_write_qpg_entry(int node, int index, int padd, int aura,
-					      int group_ok, int group_bad)
-{
-	cvmx_pki_qpg_tblx_t qpg_tbl;
-	qpg_tbl.u64 = cvmx_read_csr_node(node, CVMX_PKI_QPG_TBLX(index));
-	qpg_tbl.s.padd = padd;
-	qpg_tbl.s.laura = aura;
-	qpg_tbl.s.grp_ok = group_ok;
-	qpg_tbl.s.grp_bad = group_bad;
-	cvmx_write_csr_node(node, CVMX_PKI_QPG_TBLX(index), qpg_tbl.u64);
-}
+struct cvmx_pki_port_stats {
+	uint32_t dropped_octets;	/**< Inbound octets marked to be dropped by the IPD */
+	uint32_t dropped_packets;	/**< Inbound packets marked to be dropped by the IPD */
+	uint32_t pci_raw_packets;	/**< RAW PCI Packets received by PKI per port */
+	uint32_t octets;		/**< Number of octets processed by PKI */
+	uint32_t packets;		/**< Number of packets processed by PKI */
+	uint32_t multicast_packets;	/**< Number of indentified L2 multicast packets.
+					Does not include broadcast packets.
+					Only includes packets whose parse mode is
+					SKIP_TO_L2 */
+	uint32_t broadcast_packets;	/**< Number of indentified L2 broadcast packets.
+					Does not include multicast packets.
+					Only includes packets whose parse mode is
+					SKIP_TO_L2 */
+	uint32_t len_64_packets;	/**< Number of 64B packets */
+	uint32_t len_65_127_packets;	/**< Number of 65-127B packets */
+	uint32_t len_128_255_packets;	/**< Number of 128-255B packets */
+	uint32_t len_256_511_packets;	/**< Number of 256-511B packets */
+	uint32_t len_512_1023_packets;	/**< Number of 512-1023B packets */
+	uint32_t len_1024_1518_packets;	/**< Number of 1024-1518B packets */
+	uint32_t len_1519_max_packets;	/**< Number of 1519-max packets */
+	uint32_t fcs_align_err_packets;	/**< Number of packets with FCS or Align opcode errors */
+	uint32_t runt_packets;		/**< Number of packets with length < min */
+	uint32_t runt_crc_packets;	/**< Number of packets with length < min and FCS error */
+	uint32_t oversize_packets;	/**< Number of packets with length > max */
+	uint32_t oversize_crc_packets;	/**< Number of packets with length > max and FCS error */
+	uint32_t inb_packets;		/**< Number of packets without GMX/SPX/PCI errors received by PKI */
+	uint64_t inb_octets;		/**< Total number of octets from all packets received by PKI, including CRC */
+	uint16_t inb_errors;		/**< Number of packets with GMX/SPX/PCI errors received by PKI */
+	uint32_t mcast_l2_red_packets;	/**< Number of packets with L2 Multicast DMAC
+					that were dropped due to RED.
+					The HW will consider a packet to be an L2
+					multicast packet when the least-significant bit
+					of the first byte of the DMAC is set and the
+					packet is not an L2 broadcast packet.
+					Only applies when the parse mode for the packets
+					is SKIP-TO-L2 */
+	uint32_t bcast_l2_red_packets;	/**< Number of packets with L2 Broadcast DMAC	that were dropped due to RED.
+					The HW will consider a packet to be an L2
+					broadcast packet when the 48-bit DMAC is all 1's.
+					Only applies when the parse mode for the packets
+					is SKIP-TO-L2 */
+	uint32_t mcast_l3_red_packets;	/**< Number of packets with L3 Multicast Dest Address
+					that were dropped due to RED.
+					The HW considers an IPv4 packet to be multicast
+					when the most-significant nibble of the 32-bit
+					destination address is 0xE (i.e it is a class D
+					address). The HW considers an IPv6 packet to be
+					multicast when the most-significant byte of the
+					128-bit destination address is all 1's.
+					Only applies when the parse mode for the packets
+					is SKIP-TO-L2 and the packet is IP or the parse
+					mode for the packet is SKIP-TO-IP */
+	uint32_t bcast_l3_red_packets;	/**< Number of packets with L3 Broadcast Dest Address
+					that were dropped due to RED.
+					The HW considers an IPv4 packet to be broadcast
+					when all bits are set in the MSB of the
+					destination address. IPv6 does not have the
+					concept of a broadcast packets.
+					Only applies when the parse mode for the packet
+					is SKIP-TO-L2 and the packet is IP or the parse
+					mode for the packet is SKIP-TO-IP */
+};
 
 /**
  * This function assignes the clusters to a group, later pkind can be
@@ -525,21 +628,56 @@ static inline int cvmx_pki_attach_cluster_to_group(int node, uint64_t cluster_gr
 {
 	cvmx_pki_icgx_cfg_t pki_cl_grp;
 
-	if(node >= CVMX_MAX_NODES) {
-		cvmx_dprintf("Invalid node number %d",node);
-		return -1;
-	}
-
-	if( cluster_group >= CVMX_PKI_NUM_CLUSTER_GROUP ) {
+	if (cluster_group >= CVMX_PKI_NUM_CLUSTER_GROUP) {
 		cvmx_dprintf("ERROR: config cluster group %d", (int)cluster_group);
 		return -1;
 	}
-	pki_cl_grp.u64 = cvmx_read_csr_node(node,CVMX_PKI_ICGX_CFG(cluster_group));
+	pki_cl_grp.u64 = cvmx_read_csr_node(node, CVMX_PKI_ICGX_CFG(cluster_group));
 	pki_cl_grp.s.clusters = cluster_mask;
-	cvmx_write_csr_node(node,CVMX_PKI_ICGX_CFG(cluster_group), pki_cl_grp.u64);
-	pki_config[node].global_cfg.clusters_in_use_mask |= cluster_mask;
-	pki_config[node].cluster_cfg[cluster_group].cluster_mask = cluster_mask;
+	cvmx_write_csr_node(node, CVMX_PKI_ICGX_CFG(cluster_group), pki_cl_grp.u64);
 	return 0;
+}
+
+static inline void cvmx_pki_write_global_parse(int node, struct cvmx_pki_global_parse gbl_pen)
+{
+	cvmx_pki_gbl_pen_t gbl_pen_reg;
+	gbl_pen_reg.u64 = cvmx_read_csr_node(node, CVMX_PKI_GBL_PEN);
+	gbl_pen_reg.s.virt_pen = gbl_pen.virt_pen;
+	gbl_pen_reg.s.clg_pen = gbl_pen.clg_pen;
+	gbl_pen_reg.s.cl2_pen = gbl_pen.cl2_pen;
+	gbl_pen_reg.s.l4_pen = gbl_pen.l4_pen;
+	gbl_pen_reg.s.il3_pen = gbl_pen.il3_pen;
+	gbl_pen_reg.s.l3_pen = gbl_pen.l3_pen;
+	gbl_pen_reg.s.mpls_pen = gbl_pen.mpls_pen;
+	gbl_pen_reg.s.fulc_pen = gbl_pen.fulc_pen;
+	gbl_pen_reg.s.dsa_pen = gbl_pen.dsa_pen;
+	gbl_pen_reg.s.hg_pen = gbl_pen.hg_pen;
+	cvmx_write_csr_node(node, CVMX_PKI_GBL_PEN, gbl_pen_reg.u64);
+}
+
+static inline void cvmx_pki_write_tag_secret(int node, struct cvmx_pki_tag_sec tag_secret)
+{
+	cvmx_pki_tag_secret_t tag_secret_reg;
+	tag_secret_reg.u64 = cvmx_read_csr_node(node, CVMX_PKI_TAG_SECRET);
+	tag_secret_reg.s.dst6 = tag_secret.dst6;
+	tag_secret_reg.s.src6 = tag_secret.src6;
+	tag_secret_reg.s.dst = tag_secret.dst;
+	tag_secret_reg.s.src = tag_secret.src;
+	cvmx_write_csr_node(node, CVMX_PKI_TAG_SECRET, tag_secret_reg.u64);
+}
+
+static inline void cvmx_pki_write_ltype_map(int node,
+		enum cvmx_pki_layer_type layer,
+		enum cvmx_pki_beltype backend)
+{
+	cvmx_pki_ltypex_map_t ltype_map;
+	if (layer > CVMX_PKI_LTYPE_E_MAX || backend > CVMX_PKI_BELTYPE_MAX) {
+		cvmx_dprintf("ERROR: invalid ltype beltype mapping\n");
+		return;
+	}
+	ltype_map.u64 = cvmx_read_csr_node(node, CVMX_PKI_LTYPEX_MAP(layer));
+	ltype_map.s.beltype = backend;
+	cvmx_write_csr_node(node, CVMX_PKI_LTYPEX_MAP(layer), ltype_map.u64);
 }
 
 /**
@@ -553,13 +691,13 @@ static inline int cvmx_pki_parse_enable(int node, int cl_grp)
 {
 	cvmx_pki_icgx_cfg_t pki_cl_grp;
 
-	if( cl_grp >= CVMX_PKI_NUM_CLUSTER_GROUP ) {
+	if (cl_grp >= CVMX_PKI_NUM_CLUSTER_GROUP) {
 		cvmx_dprintf("ERROR: pki parse en group %d", (int)cl_grp);
 		return -1;
 	}
-	pki_cl_grp.u64 = cvmx_read_csr_node(node,CVMX_PKI_ICGX_CFG(cl_grp));
+	pki_cl_grp.u64 = cvmx_read_csr_node(node, CVMX_PKI_ICGX_CFG(cl_grp));
 	pki_cl_grp.s.pena = 1;
-	cvmx_write_csr_node(node,CVMX_PKI_ICGX_CFG(cl_grp), pki_cl_grp.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_ICGX_CFG(cl_grp), pki_cl_grp.u64);
 	return 0;
 }
 
@@ -574,20 +712,326 @@ static inline void cvmx_pki_enable_backpressure(int node)
 
 	pki_buf_ctl.u64 = cvmx_read_csr_node(node, CVMX_PKI_BUF_CTL);
 	pki_buf_ctl.s.pbp_en = 1;
-	cvmx_write_csr_node(node,CVMX_PKI_BUF_CTL, pki_buf_ctl.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_BUF_CTL, pki_buf_ctl.u64);
 }
 
-static inline void cvmx_pki_mark_style_in_use(int node, int style)
-{
-#define CVMX_PKI_MANAGE_RESOURCES 1 //vinita_to_do, later make it global option
-#if CVMX_PKI_MANAGE_RESOURCES
+#define READCORRECT(cnt, node, value, addr)	\
+	{cnt = 0;	\
+	while (value >= (1ull << 48) && cnt++ < 20) \
+		value = cvmx_read_csr_node(node, addr); \
+	if (cnt >= 20)  \
+		cvmx_dprintf("count stuck for 0x%llx\n", (long long unsigned int)addr); }
 
-	//vinita_to_do spinlock
-	pki_config[node].style_cfg[style].users++;
-#else
+
+/**
+ * Get the statistics counters for a port.
+ *
+ * @param node	   node number
+ * @param port_num Port number (ipd_port) to get statistics for.
+ *		   Make sure PKI_STATS_CTL:mode is set to 0 for
+ *		   collecting per port/pkind stats.
+ *
+ */
+static inline void cvmx_pki_clear_port_stats(int node, uint64_t port)
+{
+	int interface = cvmx_helper_get_interface_num(port);
+	int index = cvmx_helper_get_interface_index_num(port);
+	int pknd = cvmx_helper_get_pknd(interface, index);
+
+	cvmx_pki_statx_stat0_t stat0;
+	cvmx_pki_statx_stat1_t stat1;
+	cvmx_pki_statx_stat2_t stat2;
+	cvmx_pki_statx_stat3_t stat3;
+	cvmx_pki_statx_stat4_t stat4;
+	cvmx_pki_statx_stat5_t stat5;
+	cvmx_pki_statx_stat6_t stat6;
+	cvmx_pki_statx_stat7_t stat7;
+	cvmx_pki_statx_stat8_t stat8;
+	cvmx_pki_statx_stat9_t stat9;
+	cvmx_pki_statx_stat10_t stat10;
+	cvmx_pki_statx_stat11_t stat11;
+	cvmx_pki_statx_stat14_t stat14;
+	cvmx_pki_statx_stat15_t stat15;
+	cvmx_pki_statx_stat16_t stat16;
+	cvmx_pki_statx_stat17_t stat17;
+	cvmx_pki_statx_hist0_t hist0;
+	cvmx_pki_statx_hist1_t hist1;
+	cvmx_pki_statx_hist2_t hist2;
+	cvmx_pki_statx_hist3_t hist3;
+	cvmx_pki_statx_hist4_t hist4;
+	cvmx_pki_statx_hist5_t hist5;
+	cvmx_pki_statx_hist6_t hist6;
+	cvmx_pki_pkndx_inb_stat0_t pki_pknd_inb_stat0;
+	cvmx_pki_pkndx_inb_stat1_t pki_pknd_inb_stat1;
+	cvmx_pki_pkndx_inb_stat2_t pki_pknd_inb_stat2;
+
+	stat0.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT0(pknd));
+	stat1.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT1(pknd));
+	stat2.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT2(pknd));
+	stat3.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT3(pknd));
+	stat4.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT4(pknd));
+	stat5.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT5(pknd));
+	stat6.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT6(pknd));
+	stat7.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT7(pknd));
+	stat8.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT8(pknd));
+	stat9.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT9(pknd));
+	stat10.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT10(pknd));
+	stat11.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT11(pknd));
+	stat14.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT14(pknd));
+	stat15.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT15(pknd));
+	stat16.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT16(pknd));
+	stat17.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT17(pknd));
+	hist0.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST0(pknd));
+	hist1.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST1(pknd));
+	hist2.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST2(pknd));
+	hist3.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST3(pknd));
+	hist4.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST4(pknd));
+	hist5.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST5(pknd));
+	hist6.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST6(pknd));
+	pki_pknd_inb_stat0.u64 = cvmx_read_csr_node(node, CVMX_PKI_PKNDX_INB_STAT0(pknd));
+	pki_pknd_inb_stat1.u64 = cvmx_read_csr_node(node, CVMX_PKI_PKNDX_INB_STAT1(pknd));
+	pki_pknd_inb_stat2.u64 = cvmx_read_csr_node(node, CVMX_PKI_PKNDX_INB_STAT2(pknd));
+
+	stat4.s.drp_octs = 0;
+	stat3.s.drp_pkts = 0;
+	stat1.s.octs = 0;
+	stat2.s.raw = 0;
+	stat0.s.pkts = 0;
+	stat6.s.mcast = 0;
+	stat5.s.bcast = 0;
+	hist0.s.h1to63 = 0;
+	hist1.s.h64to127 = 0;
+	hist2.s.h128to255 = 0;
+	hist3.s.h256to511 = 0;
+	hist4.s.h512to1023 = 0;
+	hist5.s.h1024to1518 = 0;
+	hist6.s.h1519 = 0;
+	stat7.s.fcs = 0;
+	stat9.s.undersz = 0;
+	stat8.s.frag = 0;
+	stat11.s.oversz = 0;
+	stat10.s.jabber = 0;
+	stat15.s.drp_mcast = 0;
+	stat14.s.drp_bcast = 0;
+	stat17.s.drp_mcast = 0;
+	stat16.s.drp_bcast = 0;
+	pki_pknd_inb_stat0.s.pkts = 0;
+	pki_pknd_inb_stat1.s.octs = 0;
+	pki_pknd_inb_stat2.s.errs = 0;
+
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT0(pknd), stat0.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT1(pknd), stat1.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT2(pknd), stat2.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT3(pknd), stat3.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT4(pknd), stat4.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT5(pknd), stat5.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT6(pknd), stat6.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT7(pknd), stat7.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT8(pknd), stat8.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT9(pknd), stat9.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT10(pknd), stat10.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT11(pknd), stat11.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT14(pknd), stat14.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT15(pknd), stat15.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT16(pknd), stat16.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_STAT17(pknd), stat17.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_HIST0(pknd), hist0.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_HIST1(pknd), hist1.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_HIST2(pknd), hist2.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_HIST3(pknd), hist3.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_HIST4(pknd), hist4.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_HIST5(pknd), hist5.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_STATX_HIST6(pknd), hist6.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_PKNDX_INB_STAT0(pknd), pki_pknd_inb_stat0.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_PKNDX_INB_STAT1(pknd), pki_pknd_inb_stat1.u64);
+	cvmx_write_csr_node(node, CVMX_PKI_PKNDX_INB_STAT2(pknd), pki_pknd_inb_stat2.u64);
+
+}
+
+
+/**
+ * Get the status counters for index from PKI.
+ *
+ * @param node	   node number
+ * @param index    pkind number (if PKI_STATS_CTL:mode=0) or
+ *		   style(flow) number (if PKI_STATS_CTL:mode=1)
+ * @param status   Where to put the results.
+ */
+static inline void cvmx_pki_get_stats(int node, int index, struct cvmx_pki_port_stats *status)
+{
+	cvmx_pki_statx_stat0_t stat0;
+	cvmx_pki_statx_stat1_t stat1;
+	cvmx_pki_statx_stat2_t stat2;
+	cvmx_pki_statx_stat3_t stat3;
+	cvmx_pki_statx_stat4_t stat4;
+	cvmx_pki_statx_stat5_t stat5;
+	cvmx_pki_statx_stat6_t stat6;
+	cvmx_pki_statx_stat7_t stat7;
+	cvmx_pki_statx_stat8_t stat8;
+	cvmx_pki_statx_stat9_t stat9;
+	cvmx_pki_statx_stat10_t stat10;
+	cvmx_pki_statx_stat11_t stat11;
+	cvmx_pki_statx_stat14_t stat14;
+	cvmx_pki_statx_stat15_t stat15;
+	cvmx_pki_statx_stat16_t stat16;
+	cvmx_pki_statx_stat17_t stat17;
+	cvmx_pki_statx_hist0_t hist0;
+	cvmx_pki_statx_hist1_t hist1;
+	cvmx_pki_statx_hist2_t hist2;
+	cvmx_pki_statx_hist3_t hist3;
+	cvmx_pki_statx_hist4_t hist4;
+	cvmx_pki_statx_hist5_t hist5;
+	cvmx_pki_statx_hist6_t hist6;
+	cvmx_pki_pkndx_inb_stat0_t pki_pknd_inb_stat0;
+	cvmx_pki_pkndx_inb_stat1_t pki_pknd_inb_stat1;
+	cvmx_pki_pkndx_inb_stat2_t pki_pknd_inb_stat2;
+	int cnt;
+
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+	/* Accessing PKI stat registers can timeout based on the Errata
+	   PKI-20775, disable SLI_INT_SUM[RML_TO] before reading the stats
+	   enable back after clearing the interrupt. */
+	cvmx_error_intsn_disable_v3(0x1f000);
+#endif
+
+	stat0.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT0(index));
+	READCORRECT(cnt, node, stat0.u64, CVMX_PKI_STATX_STAT0(index));
+
+	stat1.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT1(index));
+	READCORRECT(cnt, node, stat1.u64, CVMX_PKI_STATX_STAT1(index));
+
+	stat2.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT2(index));
+	READCORRECT(cnt, node, stat2.u64, CVMX_PKI_STATX_STAT2(index));
+
+	stat3.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT3(index));
+	READCORRECT(cnt, node, stat3.u64, CVMX_PKI_STATX_STAT3(index));
+
+	stat4.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT4(index));
+	READCORRECT(cnt, node, stat4.u64, CVMX_PKI_STATX_STAT4(index));
+
+	stat5.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT5(index));
+	READCORRECT(cnt, node, stat5.u64, CVMX_PKI_STATX_STAT5(index));
+
+	stat6.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT6(index));
+	READCORRECT(cnt, node, stat6.u64, CVMX_PKI_STATX_STAT6(index));
+
+	stat7.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT7(index));
+	READCORRECT(cnt, node, stat7.u64, CVMX_PKI_STATX_STAT7(index));
+
+	stat8.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT8(index));
+	READCORRECT(cnt, node, stat8.u64, CVMX_PKI_STATX_STAT8(index));
+
+	stat9.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT9(index));
+	READCORRECT(cnt, node, stat9.u64, CVMX_PKI_STATX_STAT9(index));
+
+	stat10.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT10(index));
+	READCORRECT(cnt, node, stat10.u64, CVMX_PKI_STATX_STAT10(index));
+
+	stat11.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT11(index));
+	READCORRECT(cnt, node, stat11.u64, CVMX_PKI_STATX_STAT11(index));
+
+	stat14.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT14(index));
+	READCORRECT(cnt, node, stat14.u64, CVMX_PKI_STATX_STAT14(index));
+
+	stat15.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT15(index));
+	READCORRECT(cnt, node, stat15.u64, CVMX_PKI_STATX_STAT15(index));
+
+	stat16.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT16(index));
+	READCORRECT(cnt, node, stat16.u64, CVMX_PKI_STATX_STAT16(index));
+
+	stat17.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_STAT17(index));
+	READCORRECT(cnt, node, stat17.u64, CVMX_PKI_STATX_STAT17(index));
+
+	hist0.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST0(index));
+	READCORRECT(cnt, node, hist0.u64, CVMX_PKI_STATX_HIST0(index));
+
+	hist1.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST1(index));
+	READCORRECT(cnt, node, hist1.u64, CVMX_PKI_STATX_HIST1(index));
+
+	hist2.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST2(index));
+	READCORRECT(cnt, node, hist2.u64, CVMX_PKI_STATX_HIST2(index));
+
+	hist3.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST3(index));
+	READCORRECT(cnt, node, hist3.u64, CVMX_PKI_STATX_HIST3(index));
+
+	hist4.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST4(index));
+	READCORRECT(cnt, node, hist4.u64, CVMX_PKI_STATX_HIST4(index));
+
+	hist5.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST5(index));
+	READCORRECT(cnt, node, hist5.u64, CVMX_PKI_STATX_HIST5(index));
+
+	hist6.u64 = cvmx_read_csr_node(node, CVMX_PKI_STATX_HIST6(index));
+	READCORRECT(cnt, node, hist6.u64, CVMX_PKI_STATX_HIST6(index));
+
+	pki_pknd_inb_stat0.u64 = cvmx_read_csr_node(node, CVMX_PKI_PKNDX_INB_STAT0(index));
+	pki_pknd_inb_stat1.u64 = cvmx_read_csr_node(node, CVMX_PKI_PKNDX_INB_STAT1(index));
+	pki_pknd_inb_stat2.u64 = cvmx_read_csr_node(node, CVMX_PKI_PKNDX_INB_STAT2(index));
+
+	status->dropped_octets = stat4.s.drp_octs;
+	status->dropped_packets = stat3.s.drp_pkts;
+	status->octets = stat1.s.octs;
+	status->pci_raw_packets = stat2.s.raw;
+	status->packets = stat0.s.pkts;
+	status->multicast_packets = stat6.s.mcast;
+	status->broadcast_packets = stat5.s.bcast;
+	status->len_64_packets = hist0.s.h1to63;
+	status->len_65_127_packets = hist1.s.h64to127;
+	status->len_128_255_packets = hist2.s.h128to255;
+	status->len_256_511_packets = hist3.s.h256to511;
+	status->len_512_1023_packets = hist4.s.h512to1023;
+	status->len_1024_1518_packets = hist5.s.h1024to1518;
+	status->len_1519_max_packets = hist6.s.h1519;
+	status->fcs_align_err_packets = stat7.s.fcs;
+	status->runt_packets = stat9.s.undersz;
+	status->runt_crc_packets = stat8.s.frag;
+	status->oversize_packets = stat11.s.oversz;
+	status->oversize_crc_packets = stat10.s.jabber;
+	status->mcast_l2_red_packets = stat15.s.drp_mcast;
+	status->bcast_l2_red_packets = stat14.s.drp_bcast;
+	status->mcast_l3_red_packets = stat17.s.drp_mcast;
+	status->bcast_l3_red_packets = stat16.s.drp_bcast;
+	status->inb_packets = pki_pknd_inb_stat0.s.pkts;
+	status->inb_octets = pki_pknd_inb_stat1.s.octs;
+	status->inb_errors = pki_pknd_inb_stat2.s.errs;
+
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+	/* Enable SLI_INT_SUM[RML_TO] interrupt after clear the pending interrupt. */
+	cvmx_write_csr_node(node, CVMX_CIU3_ISCX_W1C(0x1f000), 1);
+	cvmx_error_intsn_enable_v3(0x1f000);
 #endif
 }
 
+/**
+ * Get the statistics counters for a port.
+ *
+ * @param node	   node number
+ * @param port_num Port number (ipd_port) to get statistics for.
+ *		   Make sure PKI_STATS_CTL:mode is set to 0 for
+ *		   collecting per port/pkind stats.
+ * @param status   Where to put the results.
+ */
+static inline void cvmx_pki_get_port_stats(int node, uint64_t port, struct cvmx_pki_port_stats *status)
+{
+	int interface = cvmx_helper_get_interface_num(port);
+	int index = cvmx_helper_get_interface_index_num(port);
+	int pknd = cvmx_helper_get_pknd(interface, index);
+
+	cvmx_pki_get_stats(node, pknd, status);
+}
+
+/**
+ * Get the statistics counters for a flow represented by style in PKI.
+ *
+ * @param node	   node number
+ * @param style	   style number to get statistics for.
+ *		   Make sure PKI_STATS_CTL:mode is set to 1 for
+ *		   collecting per style/flow stats.
+ * @param status   Where to put the results.
+ */
+static inline void cvmx_pki_get_flow_stats(int node, uint64_t style_num, struct cvmx_pki_port_stats *status)
+{
+	cvmx_pki_get_stats(node, style_num, status);
+}
 
 /**
  * This function enables pki
@@ -597,37 +1041,118 @@ void cvmx_pki_enable(int node);
 
 /**
  * This function disables pki
- * @param node	 	node to disable pki in.
+ * @param node	node to disable pki in.
  */
 void cvmx_pki_disable(int node);
 
 /**
- * This function writes per pkind parameters in hardware which defines how
+ * This function soft resets pki
+ * @param node	node to enable pki in.
+ */
+void cvmx_pki_reset(int node);
+
+/**
+ * This function sets the clusters in PKI
+ * @param node	node to set clusters in.
+ */
+int cvmx_pki_setup_clusters(int node);
+
+/**
+ * This function reads global configuration of PKI block.
+ * @param node		      node number.
+ * @param gbl_cfg	      pointer to struct to read global configuration
+ */
+void cvmx_pki_read_global_config(int node, struct cvmx_pki_global_config *gbl_cfg);
+
+/**
+ * This function writes global configuration of PKI into hw.
+ * @param node		      node number.
+ * @param gbl_cfg	      pointer to struct to global configuration
+ */
+void cvmx_pki_write_global_config(int node, struct cvmx_pki_global_config *gbl_cfg);
+
+
+/**
+ * This function reads per pkind parameters in hardware which defines how
   the incoming packet is processed.
- * @param node	 	      node to which pkind belongs.
+ * @param node		      node number.
  * @param pkind               PKI supports a large number of incoming interfaces
  *                            and packets arriving on different interfaces or channels
  *                            may want to be processed differently. PKI uses the pkind to
  *                            determine how the incoming packet is processed.
- * @param cluster_group       Which cluster group to use. Application would choose the cluster
- *                            group depending on number of clusters it want to use for that pkind.
- * @param initial_parse_mode  Which initial parsing stage is expected.
- * @param initial_style       Which initial style to assign to this pkind. Style also go as one of
- *                            the inputs to match in the pcam table. If no match is found this initial
- *                            style will be the final style.
+ * @param pkind_cfg	      pointer to struct conatining pkind configuration read from hw
  */
-int cvmx_pki_write_pkind(int node, int pkind, int cluster_group,
-			   int initial_parse_mode, int initial_style);
+int cvmx_pki_read_pkind_config(int node, int pkind, struct cvmx_pki_pkind_config *pkind_cfg);
+
+/**
+ * This function writes per pkind parameters in hardware which defines how
+  the incoming packet is processed.
+ * @param node		      node number.
+ * @param pkind               PKI supports a large number of incoming interfaces
+ *                            and packets arriving on different interfaces or channels
+ *                            may want to be processed differently. PKI uses the pkind to
+ *                            determine how the incoming packet is processed.
+ * @param pkind_cfg	      pointer to struct conatining pkind configuration need to be written
+ *                            in hw
+ */
+int cvmx_pki_write_pkind_config(int node, int pkind, struct cvmx_pki_pkind_config *pkind_cfg);
+
+ /** This function reads parameters associated with tag configuration in hardware.
+ * @param node	              node number.
+ * @param style		      style to configure tag for
+ * @param cluster_mask	      Mask of clusters to configure the style for.
+ * @param tag_cfg	      pointer to tag configuration struct.
+  */
+void cvmx_pki_read_tag_config(int node, int style, uint64_t cluster_mask,
+		struct cvmx_pki_style_tag_cfg *tag_cfg);
+
+ /** This function writes/configures parameters associated with tag configuration in hardware.
+ * @param node	              node number.
+ * @param style		      style to configure tag for
+ * @param cluster_mask	      Mask of clusters to configure the style for.
+ * @param tag_cfg	      pointer to taf configuration struct.
+  */
+void cvmx_pki_write_tag_config(int node, int style, uint64_t cluster_mask,
+		struct cvmx_pki_style_tag_cfg *tag_cfg);
+
+/**
+ * This function reads parameters associated with style in hardware.
+ * @param node	              node number.
+ * @param style		      style to read from.
+ * @param cluster_mask	      Mask of clusters style belongs to.
+ * @param style_cfg	      pointer to style config struct.
+ */
+void cvmx_pki_read_style_config(int node, int style, uint64_t cluster_mask,
+		struct cvmx_pki_style_config *style_cfg);
 
 /**
  * This function writes/configures parameters associated with style in hardware.
- * @param node	              node to which style belong.
+ * @param node	              node number.
  * @param style		      style to configure.
  * @param cluster_mask	      Mask of clusters to configure the style for.
- * @param style_cfg 	      parameters to configure for style passed in struct.
+ * @param style_cfg	      pointer to style config struct.
  */
-void cvmx_pki_write_style(int node, uint64_t style, uint64_t cluster_mask,
-			    struct cvmx_pki_style_config style_cfg);
+void cvmx_pki_write_style_config(int node, uint64_t style,
+		uint64_t cluster_mask,
+		struct cvmx_pki_style_config *style_cfg);
+/**
+ * This function reads qpg entry at specified offset from qpg table
+ *
+ * @param node		node number
+ * @param offset	offset in qpg table to read from.
+ * @param qpg_cfg       pointer to structure containing qpg values
+ */
+int cvmx_pki_read_qpg_entry(int node, int offset, struct cvmx_pki_qpg_config *qpg_cfg);
+
+
+/**
+ * This function writes qpg entry at specified offset in qpg table
+ *
+ * @param node		node number
+ * @param offset	offset in qpg table to write to.
+ * @param qpg_cfg       pointer to stricture containing qpg values
+ */
+void cvmx_pki_write_qpg_entry(int node, int offset, struct cvmx_pki_qpg_config *qpg_cfg);
 
 /**
  * This function writes pcam entry at given offset in pcam table in hardware
@@ -640,10 +1165,8 @@ void cvmx_pki_write_style(int node, uint64_t style, uint64_t cluster_mask,
  *
  */
 int cvmx_pki_pcam_write_entry(int node, int index, uint64_t cluster_mask,
-				struct cvmx_pki_pcam_input input, struct cvmx_pki_pcam_action action);
-
-int cvmx_pki_setup_clusters(int node);
-
+		struct cvmx_pki_pcam_input input,
+		struct cvmx_pki_pcam_action action);
 /**
  * Configures the channel which will receive backpressure
  * from the specified bpid.
@@ -680,296 +1203,108 @@ int cvmx_pki_write_aura_bpid(int node, int aura, int bpid);
  *                  1-enable 0-disable
  */
 int cvmx_pki_enable_aura_qos(int node, int aura, bool ena_red,
-			      bool ena_drop, bool ena_bp);
+		bool ena_drop, bool ena_bp);
 
 /**
- * This function finds if cluster profile with name already exist
- * @param node  node number
- * @param name  profile name to look for
- * @return 	profile index in cluster list on SUCCESS
-                -1 if profile not found in cluster list
+ * This function gives the initial style used by that pkind.
+ * @param node          node number.
+ * @param pkind         pkind number.
  */
-int cvmx_pki_cluster_profile_exist(int node, char *name);
+int cvmx_pki_get_pkind_style(int node, int pkind);
 
 /**
- * This function finds cluster mask associated with
- * given cluster profile name.
- * @param node  node number
- * @param name  profile name to look for
- * @return 	cluster_mask on SUCCESS
-                -1 if profile not found in cluster list
+ * This function sets the wqe buffer mode. First packet data buffer can reside
+ * either in same buffer as wqe OR it can go in separate buffer. If used the later mode,
+ * make sure software allocate enough buffers to now have wqe separate from packet data.
+ * @param node	              node number.
+ * @param style		      style to configure.
+ * @param pkt_outside_wqe.	0 = The packet link pointer will be at word [FIRST_SKIP]
+ *				    immediately followed by packet data, in the same buffer
+ *				    as the work queue entry.
+ *				1 = The packet link pointer will be at word [FIRST_SKIP] in a new
+ *				    buffer separate from the work queue entry. Words following the
+ *				    WQE in the same cache line will be zeroed, other lines in the
+ *				    buffer will not be modified and will retain stale data (from the
+ *				    buffer’s previous use). This setting may decrease the peak PKI
+ *				    performance by up to half on small packets.
  */
-int cvmx_pki_find_cluster_mask(int node, char *name);
+void cvmx_pki_set_wqe_mode(int node, uint64_t style, bool pkt_outside_wqe);
 
 /**
- * This function finds cluster group associated with
- * given cluster profile name
- * @param node  node number
- * @param name  profile name to look for
- * @return 	cluster group number on SUCCESS
-                -1 if profile not found in cluster list
+ * This function sets the Packet mode of all ports and styles to little-endian.
+ * It Changes write operations of packet data to L2C to
+ * be in little-endian. Does not change the WQE header format, which is
+ * properly endian neutral.
+ * @param node	              node number.
+ * @param style 	      style to configure.
  */
-int cvmx_pki_find_cluster_group(int node, char *name);
+void cvmx_pki_set_little_endian(int node, uint64_t style);
 
 /**
- * This function finds if fpa pool profile with
- * name already exist
- * @param node  node number
- * @param name  profile name to look for
- * @return 	profile index in pool list on SUCCESS
-                -1 if profile not found in pool list
+ * Enables/Disables l2 length error check and max & min frame length checks
+ * @param node		node number
+ * @param pknd		pkind to disable error for.
+ * @param l2len_err	L2 length error check enable.
+ * @param maxframe_err	Max frame error check enable.
+ * @param minframe_err	Min frame error check enable.
+ *			1 -- Enabel err checks
+ *			0 -- Disable error checks
  */
-int cvmx_pki_pool_profile_exist(int node, char *name);
+void cvmx_pki_endis_l2_errs(int node, int pknd, bool l2len_err,
+			bool maxframe_err, bool minframe_err);
 
 /**
- * This function finds if fpa pool number associated with
- * given profile name
- * @param node  node number
- * @param name  profile name to look for
- * @return 	pool number on SUCCESS
-                -1 if profile not found in pool list
+ * Enables/Disables fcs check and fcs stripping on the pkind.
+ * @param node		node number
+ * @param pknd		pkind to apply settings on.
+ * @param fcs_chk	enable/disable fcs check.
+ *			1 -- enable fcs error check.
+ *			0 -- disable fcs error check.
+ * @param fcs_strip	Strip L2 FCS bytes from packet, decrease WQE[LEN] by 4 bytes
+ *			1 -- strip L2 FCS.
+ *			0 -- Do not strip L2 FCS.
  */
-int cvmx_pki_find_pool(int node, char *name);
+void cvmx_pki_endis_fcs_check(int node, int pknd, bool fcs_chk, bool fcs_strip);
 
 /**
- * This function finds if fpa aura with given name
- * exist in aura list
- * @param node  node number
- * @param name  profile name to look for
- * @return 	aura index in aura list on SUCCESS
-                -1 if profile not found in aura list
+ * This function shows the qpg table entries,
+ * read directly from hardware.
+ * @param node    node number
  */
-int cvmx_pki_aura_profile_exist(int node, char *name);
+void cvmx_pki_show_qpg_entries(int node, uint16_t num_entry);
 
 /**
- * This function finds aura number associated with
- * given aura name.
- * @param node  node number
- * @param name  profile name to look for
- * @return 	aura number in aura list on SUCCESS
-                -1 if profile not found in aura list
+ * This function shows the pcam table in raw format,
+ * read directly from hardware.
+ * @param node    node number
  */
-int cvmx_pki_find_aura(int node, char *name);
+void cvmx_pki_show_pcam_entries(int node);
 
 /**
- * This function finds if group with given name
- * exist in group list
- * @param node  node number
- * @param name  profile name to look for
- * @return 	index in group list on SUCCESS
-                -1 if profile not found in group list
+ * This function shows the valid entries in readable format,
+ * read directly from hardware.
+ * @param node    node number
  */
-int cvmx_pki_group_profile_exist(int node, char *name);
+void cvmx_pki_show_valid_pcam_entries(int node);
 
 /**
- * This function finds group number associated with
- * given group profile name
- * @param node  node number
- * @param name  profile name to look for
- * @return 	group number on SUCCESS
-                -1 if profile not found in group list
+ * This function shows the pkind attributes in readable format,
+ * read directly from hardware.
+ * @param node    node number
  */
-int cvmx_pki_find_group(int node, char *name);
+void cvmx_pki_show_pkind_attributes(int node, int pkind);
 
 /**
- * This function finds if qpg profile with given name
- * exist in qpg list
- * @param node  node number
- * @param name  profile name to look for
- * @return 	index in qpg list on SUCCESS
-                -1 if profile not found in qpg list
+ * @INTERNAL
+ * This function is called by cvmx_helper_shutdown() to extract
+ * all FPA buffers out of the PKI. After this function
+ * completes, all FPA buffers that were prefetched by PKI
+ * wil be in the apropriate FPA pool. This functions does not reset
+ * PKI.
+ * WARNING: It is very important that PKI be
+ * reset soon after a call to this function.
  */
-int cvmx_pki_qpg_profile_exist(int node, char *name);
-
-/**
- * This function finds qpg base offset associated with
- * given qpg profile name.
- * @param node  node number
- * @param name  profile name to look for
- * @return 	qpg base offset on SUCCESS
-                -1 if profile not found in qpg list
- */
-int cvmx_pki_find_qpg_base_offset(int node, char *name);
-
-/**
- * This function get the buffer size of the given pool number
- * @param node  node number
- * @param pool  fpa pool number
- * @return 	buffer size SUCCESS
-                -1 if pool number is not found in pool list
- */
-int cvmx_pki_get_pool_buffer_size(int node,int pool);
-
-/**
- * This function get the buffer size of the given aura number
- * @param node  node number
- * @param pool  fpa aura number
- * @return 	buffer size SUCCESS
-                -1 if aura number is not found in aura list
- */
-int cvmx_pki_get_aura_buffer_size(int node, int aura);
-
-int cvmx_pki_get_mbuff_size (int node, int base_offset);
-
-/**
- * This function finds if style profile with given name
- * exist in style list
- * @param node  node number
- * @param name  profile name to look for
- * @return 	index into style list on SUCCESS
-                -1 if profile not found in style list
- */
-int cvmx_pki_style_profile_exist(int node, char *name);
-
-/**
- * This function finds style number associated with
- * given style profile name.
- * @param node  node number
- * @param name  profile name to look for
- * @return 	style number on SUCCESS
-                -1 if profile not found in style list
- */
-int cvmx_pki_find_style(int node, char *name);
-
-
-/**
- * This function stores the cluster configuration in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param name  	name associated with this config
- * @param cl_profile    structure containing cluster profile parameters below
- * 			-cluster_group (-1 if needs to be allocated)
- * 			-num_cluster   (number of cluster in the cluster group)
- * 			-parsing_mask  (parsing mask for the cluster group)
- * @return 		0 on SUCCESS
-                        -1 on failure
- */
-int cvmx_pki_set_cluster_config(int node, struct cvmx_pki_cluster_profile cl_profile);
-
-/**
- * This function stores the pool configuration in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param pool_name  	name associated with this config
- * @param pool_numb     pool number (-1 if need to be allocated)
- * @param buffer_size	size of buffers in specified pool
- * @param num_buffers	numberof buffers in specified pool
- * @return 		0 on SUCCESS
-                        -1 on failure
- */
-int cvmx_pki_set_pool_config(int node, char* pool_name, int pool_num,
-			     uint64_t buffer_size, uint64_t num_buffers);
-
-/**
- * This function stores the aura configuration in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param aura_name  	name associated with this config
- * @param aura_num      aura number (-1 if need to be allocated)
- * @param pool  	pool to which aura is mapped
- * @param num_buffers	number of buffers to allocate to aura.
- * @return 		0 on SUCCESS
-                        -1 on failure
- */
-int cvmx_pki_set_aura_config(int node, char* aura_name, int aura_num, int pool,
-			     int num_buffers);
-
-/**
- * This function stores the group configuration in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param grp_profile	struct to SSO group profile to configure
- * @return 		0 on SUCCESS
-                        -1 on failure
- */
-int cvmx_pki_set_sso_group_config(int node, struct cvmx_pki_sso_grp_profile grp_profile);
-
-/**
- * This function stores the qpg configuration in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param name  	name associated with this config
- * @param base_offset	offset in QPG table (-1 if needs to be allocated)
- * @param num_entries	total number of indexes needs to be allocated from
- *                      base_offset.
- * @return 		0 on SUCCESS
-                        -1 on failure
- */
-int cvmx_pki_set_qpg_profile(int node, char* name, int base_offset, int num_entries);
-
-/**
- * This function stores the group configuration in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param aura_name  	name associated with this config
- * @param group		SSO group number (-1 if needs to be allocated)
- * @return 		0 on SUCCESS
-                        -1 on failure
- */
-int cvmx_pki_set_qpg_config(int node, char* name, int entry_start,
-			    int entry_end, struct cvmx_pki_qpg_config qpg_config);
-
-/**
- * This function stores the style configuration in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param aura_name  	name associated with this config
- * @param style_num	style number (-1 if needs to be allocated)
- * @param style_cfg	pointer to struct which has parameters related
- *                      to style config
- * @return 		0 on SUCCESS
-                        -1 on failure
- */
-int cvmx_pki_set_style_config(int node, char* style_name, int style_num,
-			      struct cvmx_pki_style_config* style_cfg);
-
-/**
- * This function stores the pkind style configuration in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param pkind  	pkind number
- * @param style_name	pointer to style name which need to be assigned to pkind
- * @return 		0 on SUCCESS
-                        -1 on failure
- */
-int cvmx_pki_set_pkind_style(int node, int pkind, int style_name);
-
-/**
- * This function stores the pkind initial parse mode in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param pkind  	pkind number
- * @param parse_mode    parse mode to assign to specified pkind.
- * @return 		0 on SUCCESS
-                        -1 on failure
- */
-void cvmx_pki_set_pkind_initial_parse_mode(int node, int pkind, int parse_mode);
-
-/**
- * This function stores the pkind cluster configuration in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param pkind  	pkind number
- * @param style_name	pointer to style name which need to be assigned to pkind
- * @return 		0 on SUCCESS
-                        -1 on failure
- */
-void cvmx_pki_set_pkind_cluster_config(int node, int pkind,
-				       int cl_grp, uint64_t cl_mask);
-
-/**
- * This function stores the pcam entry in data structure
- * which is then used to program the hardware.
- * @param node  	node number
- * @param cluster_mask	Mask of clusters on which the entry meeds to be appiled.
- * @param input		structure of pcam input parameter which defines matching creteria.
- * @param action	structure of pcam action parameters which aill be applied if match is found.
- * @return              0 on scuccess
- *			-1 on failure
- */
-int cvmx_pki_set_pcam_entry(int node, int pcam_index, uint64_t cl_mask,
-			    struct cvmx_pki_pcam_input input,
-			    struct cvmx_pki_pcam_action action);
+void __cvmx_pki_free_ptr(int node);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

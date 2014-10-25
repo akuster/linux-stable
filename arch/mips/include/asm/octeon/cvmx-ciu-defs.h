@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -196,7 +196,58 @@ static inline uint64_t CVMX_CIU_CIB_USBDRDX_RAWX(unsigned long offset, unsigned 
 #else
 #define CVMX_CIU_CIB_USBDRDX_RAWX(offset, block_id) (CVMX_ADD_IO_SEG(0x000107000000E800ull) + ((block_id) & 1) * 0x100ull)
 #endif
-#define CVMX_CIU_DINT (CVMX_ADD_IO_SEG(0x0001070000000720ull))
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_CIU_DINT CVMX_CIU_DINT_FUNC()
+static inline uint64_t CVMX_CIU_DINT_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000720ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000000180ull);
+			break;
+	}
+	cvmx_warn("CVMX_CIU_DINT not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001070000000720ull);
+}
+#else
+#define CVMX_CIU_DINT CVMX_CIU_DINT_FUNC()
+static inline uint64_t CVMX_CIU_DINT_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000720ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000000180ull);
+	}
+	return CVMX_ADD_IO_SEG(0x0001070000000720ull);
+}
+#endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_CIU_EN2_IOX_INT(unsigned long offset)
 {
@@ -365,7 +416,58 @@ static inline uint64_t CVMX_CIU_EN2_PPX_IP4_W1S(unsigned long offset)
 #else
 #define CVMX_CIU_EN2_PPX_IP4_W1S(offset) (CVMX_ADD_IO_SEG(0x000107000000AC00ull) + ((offset) & 15) * 8)
 #endif
-#define CVMX_CIU_FUSE (CVMX_ADD_IO_SEG(0x0001070000000728ull))
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_CIU_FUSE CVMX_CIU_FUSE_FUNC()
+static inline uint64_t CVMX_CIU_FUSE_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000728ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00010100000001A0ull);
+			break;
+	}
+	cvmx_warn("CVMX_CIU_FUSE not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001070000000728ull);
+}
+#else
+#define CVMX_CIU_FUSE CVMX_CIU_FUSE_FUNC()
+static inline uint64_t CVMX_CIU_FUSE_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000728ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00010100000001A0ull);
+	}
+	return CVMX_ADD_IO_SEG(0x0001070000000728ull);
+}
+#endif
 #define CVMX_CIU_GSTOP (CVMX_ADD_IO_SEG(0x0001070000000710ull))
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_CIU_INT33_SUM0 CVMX_CIU_INT33_SUM0_FUNC()
@@ -839,7 +941,58 @@ static inline uint64_t CVMX_CIU_PP_BIST_STAT_FUNC(void)
 #else
 #define CVMX_CIU_PP_BIST_STAT (CVMX_ADD_IO_SEG(0x00010700000007E0ull))
 #endif
-#define CVMX_CIU_PP_DBG (CVMX_ADD_IO_SEG(0x0001070000000708ull))
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_CIU_PP_DBG CVMX_CIU_PP_DBG_FUNC()
+static inline uint64_t CVMX_CIU_PP_DBG_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000708ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000000120ull);
+			break;
+	}
+	cvmx_warn("CVMX_CIU_PP_DBG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001070000000708ull);
+}
+#else
+#define CVMX_CIU_PP_DBG CVMX_CIU_PP_DBG_FUNC()
+static inline uint64_t CVMX_CIU_PP_DBG_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000708ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000000120ull);
+	}
+	return CVMX_ADD_IO_SEG(0x0001070000000708ull);
+}
+#endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_CIU_PP_POKEX(unsigned long offset)
 {
@@ -877,14 +1030,14 @@ static inline uint64_t CVMX_CIU_PP_POKEX(unsigned long offset)
 			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001070000000580ull) + ((offset) & 0) * 8;
 			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 47))
+				return CVMX_ADD_IO_SEG(0x0001010000030000ull) + ((offset) & 63) * 8;
+			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 31))
 				return CVMX_ADD_IO_SEG(0x0001070100100200ull) + ((offset) & 31) * 8;
 			break;
-
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if ((offset <= 47))
-				return CVMX_ADD_IO_SEG(0x0001010000030000ull) + ((offset) & 63) * 8;
 	}
 	cvmx_warn("CVMX_CIU_PP_POKEX (offset = %lu) not supported on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000000580ull) + ((offset) & 3) * 8;
@@ -912,25 +1065,93 @@ static inline uint64_t CVMX_CIU_PP_POKEX(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001070000000580ull) + (offset) * 8;
 		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000580ull) + (offset) * 8;
-		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001070100100200ull) + (offset) * 8;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000030000ull) + (offset) * 8;
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070100100200ull) + (offset) * 8;
 	}
 	return CVMX_ADD_IO_SEG(0x0001070000000580ull) + (offset) * 8;
 }
 #endif
-#define CVMX_CIU_PP_RST (CVMX_ADD_IO_SEG(0x0001070000000700ull))
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_CIU_PP_RST CVMX_CIU_PP_RST_FUNC()
+static inline uint64_t CVMX_CIU_PP_RST_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000700ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000000100ull);
+			break;
+	}
+	cvmx_warn("CVMX_CIU_PP_RST not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001070000000700ull);
+}
+#else
+#define CVMX_CIU_PP_RST CVMX_CIU_PP_RST_FUNC()
+static inline uint64_t CVMX_CIU_PP_RST_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000700ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000000100ull);
+	}
+	return CVMX_ADD_IO_SEG(0x0001070000000700ull);
+}
+#endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_CIU_PP_RST_PENDING CVMX_CIU_PP_RST_PENDING_FUNC()
 static inline uint64_t CVMX_CIU_PP_RST_PENDING_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
-		cvmx_warn("CVMX_CIU_PP_RST_PENDING not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001070000000740ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000740ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000000110ull);
+			break;
+	}
+	cvmx_warn("CVMX_CIU_PP_RST_PENDING not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001010000000110ull);
 }
 #else
-#define CVMX_CIU_PP_RST_PENDING (CVMX_ADD_IO_SEG(0x0001070000000740ull))
+#define CVMX_CIU_PP_RST_PENDING CVMX_CIU_PP_RST_PENDING_FUNC()
+static inline uint64_t CVMX_CIU_PP_RST_PENDING_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000740ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000000110ull);
+	}
+	return CVMX_ADD_IO_SEG(0x0001010000000110ull);
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_CIU_QLM0 CVMX_CIU_QLM0_FUNC()
@@ -1260,14 +1481,14 @@ static inline uint64_t CVMX_CIU_WDOGX(unsigned long offset)
 			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001070000000500ull) + ((offset) & 0) * 8;
 			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 47))
+				return CVMX_ADD_IO_SEG(0x0001010000020000ull) + ((offset) & 63) * 8;
+			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 31))
 				return CVMX_ADD_IO_SEG(0x0001070100100000ull) + ((offset) & 31) * 8;
 			break;
-
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if ((offset <= 47))
-				return CVMX_ADD_IO_SEG(0x0001010000020000ull) + ((offset) & 63) * 8;
 	}
 	cvmx_warn("CVMX_CIU_WDOGX (offset = %lu) not supported on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000000500ull) + ((offset) & 3) * 8;
@@ -1295,10 +1516,10 @@ static inline uint64_t CVMX_CIU_WDOGX(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001070000000500ull) + (offset) * 8;
 		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000500ull) + (offset) * 8;
-		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001070100100000ull) + (offset) * 8;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000020000ull) + (offset) * 8;
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070100100000ull) + (offset) * 8;
 	}
 	return CVMX_ADD_IO_SEG(0x0001070000000500ull) + (offset) * 8;
 }
@@ -1388,6 +1609,7 @@ union cvmx_ciu_bist {
 	struct cvmx_ciu_bist_s                cn68xx;
 	struct cvmx_ciu_bist_s                cn68xxp1;
 	struct cvmx_ciu_bist_cn52xx           cn70xx;
+	struct cvmx_ciu_bist_cn52xx           cn70xxp1;
 	struct cvmx_ciu_bist_cn61xx           cnf71xx;
 };
 typedef union cvmx_ciu_bist cvmx_ciu_bist_t;
@@ -1973,6 +2195,7 @@ union cvmx_ciu_cib_l2c_enx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_l2c_enx_s         cn70xx;
+	struct cvmx_ciu_cib_l2c_enx_s         cn70xxp1;
 };
 typedef union cvmx_ciu_cib_l2c_enx cvmx_ciu_cib_l2c_enx_t;
 
@@ -1984,29 +2207,52 @@ union cvmx_ciu_cib_l2c_rawx {
 	struct cvmx_ciu_cib_l2c_rawx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_23_63               : 41;
-	uint64_t cbcx_int_ioccmddbe           : 1;  /**< Set when L2C_CBC(0..0)_INT[IOCCMDDBE] set. */
-	uint64_t cbcx_int_ioccmdsbe           : 1;  /**< Set when L2C_CBC(0..0)_INT[IOCCMDSBE] set. */
-	uint64_t cbcx_int_rsddbe              : 1;  /**< Set when L2C_CBC(0..0)_INT[RSDDBE] set. */
-	uint64_t cbcx_int_rsdsbe              : 1;  /**< Set when L2C_CBC(0..0)_INT[RSDSBE] set. */
-	uint64_t mcix_int_vbfdbe              : 1;  /**< Set when L2C_MCI(0..0)_INT[VBFDBE] set. */
-	uint64_t mcix_int_vbfsbe              : 1;  /**< Set when L2C_MCI(0..0)_INT[VBFSBE] set. */
-	uint64_t tadx_int_rtgdbe              : 1;  /**< Set when L2C_TAD(0..0)_INT[RTGDBE] set. */
-	uint64_t tadx_int_rtgsbe              : 1;  /**< Set when L2C_TAD(0..0)_INT[RTGSBE] set. */
-	uint64_t tadx_int_rddislmc            : 1;  /**< Set when L2C_TAD(0..0)_INT[RDDISLMC] set. */
-	uint64_t tadx_int_wrdislmc            : 1;  /**< Set when L2C_TAD(0..0)_INT[WRDISLMC] set. */
-	uint64_t tadx_int_bigrd               : 1;  /**< Set when L2C_TAD(0..0)_INT[BIGRD] set. */
-	uint64_t tadx_int_bigwr               : 1;  /**< Set when L2C_TAD(0..0)_INT[BIGWR] set. */
-	uint64_t tadx_int_holerd              : 1;  /**< Set when L2C_TAD(0..0)_INT[HOLERD] set. */
-	uint64_t tadx_int_holewr              : 1;  /**< Set when L2C_TAD(0..0)_INT[HOLEWR] set. */
-	uint64_t tadx_int_noway               : 1;  /**< Set when L2C_TAD(0..0)_INT[NOWAY] set. */
-	uint64_t tadx_int_tagdbe              : 1;  /**< Set when L2C_TAD(0..0)_INT[TAGDBE] set. */
-	uint64_t tadx_int_tagsbe              : 1;  /**< Set when L2C_TAD(0..0)_INT[TAGSBE] set. */
-	uint64_t tadx_int_fbfdbe              : 1;  /**< Set when L2C_TAD(0..0)_INT[FBFDBE] set. */
-	uint64_t tadx_int_fbfsbe              : 1;  /**< Set when L2C_TAD(0..0)_INT[FBFSBE] set. */
-	uint64_t tadx_int_sbfdbe              : 1;  /**< Set when L2C_TAD(0..0)_INT[SBFDBE] set. */
-	uint64_t tadx_int_sbfsbe              : 1;  /**< Set when L2C_TAD(0..0)_INT[SBFSBE] set. */
-	uint64_t tadx_int_l2ddbe              : 1;  /**< Set when L2C_TAD(0..0)_INT[L2DDBE] set. */
-	uint64_t tadx_int_l2dsbe              : 1;  /**< Set when L2C_TAD(0..0)_INT[L2DSBE] set. */
+	uint64_t cbcx_int_ioccmddbe           : 1;  /**< Set when L2C_CBC0_INT[IOCCMDDBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [CBCX_INT_IOCCMDDBE] before clearing L2C_CBC0_INT[IOCCMDDBE]. */
+	uint64_t cbcx_int_ioccmdsbe           : 1;  /**< Set when L2C_CBC0_INT[IOCCMDSBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [CBCX_INT_IOCCMDSBE] before clearing L2C_CBC0_INT[IOCCMDSBE]. */
+	uint64_t cbcx_int_rsddbe              : 1;  /**< Set when L2C_CBC0_INT[RSDDBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [CBCX_INT_RSDDBE] before clearing L2C_CBC0_INT[RSDDBE]. */
+	uint64_t cbcx_int_rsdsbe              : 1;  /**< Set when L2C_CBC0_INT[RSDSBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [CBCX_INT_RSDSBE] before clearing L2C_CBC0_INT[RSDSBE]. */
+	uint64_t mcix_int_vbfdbe              : 1;  /**< Set when L2C_MCI0_INT[VBFDBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [MCIX_INT_VBFDBE] before clearing L2C_MCI0_INT[VBFDBE]. */
+	uint64_t mcix_int_vbfsbe              : 1;  /**< Set when L2C_MCI0_INT[VBFSBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [MCIX_INT_VBFSBE] before clearing L2C_MCI0_INT[VBFSBE]. */
+	uint64_t tadx_int_rtgdbe              : 1;  /**< Set when L2C_TAD0_INT[RTGDBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_RTGDBE] before clearing L2C_TAD0_INT[RTGDBE]. */
+	uint64_t tadx_int_rtgsbe              : 1;  /**< Set when L2C_TAD0_INT[RTGSBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_RTGSBE] before clearing L2C_TAD0_INT[RTGSBE]. */
+	uint64_t tadx_int_rddislmc            : 1;  /**< Set when L2C_TAD0_INT[RDDISLMC] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_RDDISLMC] before clearing L2C_TAD0_INT[RDDISLMC]. */
+	uint64_t tadx_int_wrdislmc            : 1;  /**< Set when L2C_TAD0_INT[WRDISLMC] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_WRDISLMC] before clearing L2C_TAD0_INT[WRDISLMC]. */
+	uint64_t tadx_int_bigrd               : 1;  /**< Set when L2C_TAD0_INT[BIGRD] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_BIGRD] before clearing L2C_TAD0_INT[BIGRD]. */
+	uint64_t tadx_int_bigwr               : 1;  /**< Set when L2C_TAD0_INT[BIGWR] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_BIGWR] before clearing L2C_TAD0_INT[BIGWR]. */
+	uint64_t tadx_int_holerd              : 1;  /**< Set when L2C_TAD0_INT[HOLERD] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_HOLERD] before clearing L2C_TAD0_INT[HOLERD]. */
+	uint64_t tadx_int_holewr              : 1;  /**< Set when L2C_TAD0_INT[HOLEWR] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_HOLEWR] before clearing L2C_TAD0_INT[HOLEWR]. */
+	uint64_t tadx_int_noway               : 1;  /**< Set when L2C_TAD0_INT[NOWAY] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_NOWAY] before clearing L2C_TAD0_INT[NOWAY]. */
+	uint64_t tadx_int_tagdbe              : 1;  /**< Set when L2C_TAD0_INT[TAGDBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_TAGDBE] before clearing L2C_TAD0_INT[TAGDBE]. */
+	uint64_t tadx_int_tagsbe              : 1;  /**< Set when L2C_TAD0_INT[TAGSBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_TAGSBE] before clearing L2C_TAD0_INT[TAGSBE]. */
+	uint64_t tadx_int_fbfdbe              : 1;  /**< Set when L2C_TAD0_INT[FBFDBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_FBFDBE] before clearing L2C_TAD0_INT[FBFDBE]. */
+	uint64_t tadx_int_fbfsbe              : 1;  /**< Set when L2C_TAD0_INT[FBFSBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_FBFSBE] before clearing L2C_TAD0_INT[FBFSBE]. */
+	uint64_t tadx_int_sbfdbe              : 1;  /**< Set when L2C_TAD0_INT[SBFDBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_SBFDBE] before clearing L2C_TAD0_INT[SBFDBE]. */
+	uint64_t tadx_int_sbfsbe              : 1;  /**< Set when L2C_TAD0_INT[SBFSBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_SBFSBE] before clearing L2C_TAD0_INT[SBFSBE]. */
+	uint64_t tadx_int_l2ddbe              : 1;  /**< Set when L2C_TAD0_INT[L2DDBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_L2DDBE] before clearing L2C_TAD0_INT[L2DDBE]. */
+	uint64_t tadx_int_l2dsbe              : 1;  /**< Set when L2C_TAD0_INT[L2DSBE] set. Edge-sensitive interrupt, so software should clear
+                                                         [TADX_INT_L2DSBE] before clearing L2C_TAD0_INT[L2DSBE]. */
 #else
 	uint64_t tadx_int_l2dsbe              : 1;
 	uint64_t tadx_int_l2ddbe              : 1;
@@ -2035,6 +2281,7 @@ union cvmx_ciu_cib_l2c_rawx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_l2c_rawx_s        cn70xx;
+	struct cvmx_ciu_cib_l2c_rawx_s        cn70xxp1;
 };
 typedef union cvmx_ciu_cib_l2c_rawx cvmx_ciu_cib_l2c_rawx_t;
 
@@ -2063,6 +2310,7 @@ union cvmx_ciu_cib_lmcx_enx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_lmcx_enx_s        cn70xx;
+	struct cvmx_ciu_cib_lmcx_enx_s        cn70xxp1;
 };
 typedef union cvmx_ciu_cib_lmcx_enx cvmx_ciu_cib_lmcx_enx_t;
 
@@ -2074,12 +2322,18 @@ union cvmx_ciu_cib_lmcx_rawx {
 	struct cvmx_ciu_cib_lmcx_rawx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t int_ddr_err                  : 1;  /**< Set when LMC(0..0)_INT[DDR_ERR] set. */
-	uint64_t int_dlc_ded                  : 1;  /**< Set when LMC(0..0)_INT[DLCRAM_DED_ERR] set. */
-	uint64_t int_dlc_sec                  : 1;  /**< Set when LMC(0..0)_INT[DLCRAM_SEC_ERR] set. */
-	uint64_t int_ded_errx                 : 4;  /**< Set when LMC(0..0)_INT[DED_ERR<b>] set. */
-	uint64_t int_sec_errx                 : 4;  /**< Set when LMC(0..0)_INT[SEC_ERR<b>] set. */
-	uint64_t int_nxm_wr_err               : 1;  /**< Set when LMC(0..0)_INT[NXM_WR_ERR] set. */
+	uint64_t int_ddr_err                  : 1;  /**< Set when LMC0_INT[DDR_ERR] set. Edge-sensitive interrupt, so software should clear
+                                                         [INT_DDR_ERR] before clearing LMC0_INT[DDR_ERR]. */
+	uint64_t int_dlc_ded                  : 1;  /**< Set when LMC0_INT[DLCRAM_DED_ERR] set. Edge-sensitive interrupt, so software should clear
+                                                         [INT_DLC_DED] before clearing LMC0_INT[DLCRAM_DED_ERR]. */
+	uint64_t int_dlc_sec                  : 1;  /**< Set when LMC0_INT[DLCRAM_SEC_ERR] set. Edge-sensitive interrupt, so software should clear
+                                                         [INT_DLC_SEC] before clearing LMC0_INT[DLCRAM_SEC_ERR]. */
+	uint64_t int_ded_errx                 : 4;  /**< Set when LMC0_INT[DED_ERR<b>] set. Edge-sensitive interrupts, so software should clear
+                                                         [INT_DED_ERRX<b>] before clearing LMC0_INT[DED_ERR<b>]. */
+	uint64_t int_sec_errx                 : 4;  /**< Set when LMC0_INT[SEC_ERR<b>] set. Edge-sensitive interrupts, so software should clear
+                                                         [INT_SEC_ERRX<b>] before clearing LMC0_INT[SEC_ERR<b>]. */
+	uint64_t int_nxm_wr_err               : 1;  /**< Set when LMC0_INT[NXM_WR_ERR] set. Edge-sensitive interrupt, so software should clear
+                                                         [INT_NXM_WR_ERR] before clearing LMC0_INT[NXM_WR_ERR]. */
 #else
 	uint64_t int_nxm_wr_err               : 1;
 	uint64_t int_sec_errx                 : 4;
@@ -2091,6 +2345,7 @@ union cvmx_ciu_cib_lmcx_rawx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_lmcx_rawx_s       cn70xx;
+	struct cvmx_ciu_cib_lmcx_rawx_s       cn70xxp1;
 };
 typedef union cvmx_ciu_cib_lmcx_rawx cvmx_ciu_cib_lmcx_rawx_t;
 
@@ -2127,6 +2382,7 @@ union cvmx_ciu_cib_oclax_enx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_oclax_enx_s       cn70xx;
+	struct cvmx_ciu_cib_oclax_enx_s       cn70xxp1;
 };
 typedef union cvmx_ciu_cib_oclax_enx cvmx_ciu_cib_oclax_enx_t;
 
@@ -2138,16 +2394,26 @@ union cvmx_ciu_cib_oclax_rawx {
 	struct cvmx_ciu_cib_oclax_rawx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
-	uint64_t state_ddrfull                : 1;  /**< Set when OCLA(0)_STATE_INT[DDRFULL] set. */
-	uint64_t state_wmark                  : 1;  /**< Set when OCLA(0)_STATE_INT[WMARK] set. */
-	uint64_t state_overfull               : 1;  /**< Set when OCLA(0)_STATE_INT[OVERFULL] set. */
-	uint64_t state_trigfull               : 1;  /**< Set when OCLA(0)_STATE_INT[TRIGFULL] set. */
-	uint64_t state_captured               : 1;  /**< Set when OCLA(0)_STATE_INT[CAPTURED] set. */
-	uint64_t state_fsm1_int               : 1;  /**< Set when OCLA(0)_STATE_INT[FSM1_INT] set. */
-	uint64_t state_fsm0_int               : 1;  /**< Set when OCLA(0)_STATE_INT[FSM0_INT] set. */
-	uint64_t state_mcdx                   : 3;  /**< Set when OCLA(0)_STATE_INT[MCD<b>] set. */
-	uint64_t state_trig                   : 1;  /**< Set when OCLA(0)_STATE_INT[TRIG] set. */
-	uint64_t state_ovflx                  : 4;  /**< Set when OCLA(0)_STATE_INT[OVFL<b>] set. */
+	uint64_t state_ddrfull                : 1;  /**< Set when OCLA0_STATE_INT[DDRFULL] set. Edge-sensitive interrupt, so software should clear
+                                                         [STATE_DDRFULL] before clearing OCLA0_STATE_INT[DDRFULL]. */
+	uint64_t state_wmark                  : 1;  /**< Set when OCLA0_STATE_INT[WMARK] set. Edge-sensitive interrupt, so software should clear
+                                                         [STATE_WMARK] before clearing OCLA0_STATE_INT[WMARK]. */
+	uint64_t state_overfull               : 1;  /**< Set when OCLA0_STATE_INT[OVERFULL] set. Edge-sensitive interrupt, so software should clear
+                                                         [STATE_OVERFULL] before clearing OCLA0_STATE_INT[OVERFULL]. */
+	uint64_t state_trigfull               : 1;  /**< Set when OCLA0_STATE_INT[TRIGFULL] set. Edge-sensitive interrupt, so software should clear
+                                                         [STATE_TRIGFULL] before clearing OCLA0_STATE_INT[TRIGFULL]. */
+	uint64_t state_captured               : 1;  /**< Set when OCLA0_STATE_INT[CAPTURED] set. Edge-sensitive interrupt, so software should clear
+                                                         [STATE_CAPTURED] before clearing OCLA0_STATE_INT[CAPTURED]. */
+	uint64_t state_fsm1_int               : 1;  /**< Set when OCLA0_STATE_INT[FSM1_INT] set. Edge-sensitive interrupt, so software should clear
+                                                         [STATE_FSM1_INT] before clearing OCLA0_STATE_INT[FSM1_INT]. */
+	uint64_t state_fsm0_int               : 1;  /**< Set when OCLA0_STATE_INT[FSM0_INT] set. Edge-sensitive interrupt, so software should clear
+                                                         [STATE_FSM0_INT] before clearing OCLA0_STATE_INT[FSM0_INT]. */
+	uint64_t state_mcdx                   : 3;  /**< Set when OCLA0_STATE_INT[MCD<b>] set. Edge-sensitive interrupts, so software should clear
+                                                         [STATE_MCDX<b>] before clearing OCLA0_STATE_INT[MCD<b>]. */
+	uint64_t state_trig                   : 1;  /**< Set when OCLA0_STATE_INT[TRIG] set. Edge-sensitive interrupt, so software should clear
+                                                         [STATE_TRIG] before clearing OCLA0_STATE_INT[TRIG]. */
+	uint64_t state_ovflx                  : 4;  /**< Set when OCLA0_STATE_INT[OVFL<b>] set. Edge-sensitive interrupts, so software should clear
+                                                         [STATE_OVFLX<b>] before clearing OCLA0_STATE_INT[OVFL<b>]. */
 #else
 	uint64_t state_ovflx                  : 4;
 	uint64_t state_trig                   : 1;
@@ -2163,6 +2429,7 @@ union cvmx_ciu_cib_oclax_rawx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_oclax_rawx_s      cn70xx;
+	struct cvmx_ciu_cib_oclax_rawx_s      cn70xxp1;
 };
 typedef union cvmx_ciu_cib_oclax_rawx cvmx_ciu_cib_oclax_rawx_t;
 
@@ -2183,6 +2450,7 @@ union cvmx_ciu_cib_rst_enx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_rst_enx_s         cn70xx;
+	struct cvmx_ciu_cib_rst_enx_s         cn70xxp1;
 };
 typedef union cvmx_ciu_cib_rst_enx cvmx_ciu_cib_rst_enx_t;
 
@@ -2194,8 +2462,10 @@ union cvmx_ciu_cib_rst_rawx {
 	struct cvmx_ciu_cib_rst_rawx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_6_63                : 58;
-	uint64_t int_perstx                   : 3;  /**< Set when RST_INT[PERST<a>] set. */
-	uint64_t int_linkx                    : 3;  /**< Set when RST_INT[RST_LINK<a>] set. */
+	uint64_t int_perstx                   : 3;  /**< Set when RST_INT[PERST<a>] set. Edge-sensitive interrupts, so software should clear
+                                                         [INT_PERSTX<a>] before clearing RST_INT[PERST<a>]. */
+	uint64_t int_linkx                    : 3;  /**< Set when RST_INT[RST_LINK<a>] set. Edge-sensitive interrupts, so software should clear
+                                                         [INT_LINKX<a>] before clearing RST_INT[RST_LINK<a>]. */
 #else
 	uint64_t int_linkx                    : 3;
 	uint64_t int_perstx                   : 3;
@@ -2203,6 +2473,7 @@ union cvmx_ciu_cib_rst_rawx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_rst_rawx_s        cn70xx;
+	struct cvmx_ciu_cib_rst_rawx_s        cn70xxp1;
 };
 typedef union cvmx_ciu_cib_rst_rawx cvmx_ciu_cib_rst_rawx_t;
 
@@ -2227,6 +2498,7 @@ union cvmx_ciu_cib_sata_enx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_sata_enx_s        cn70xx;
+	struct cvmx_ciu_cib_sata_enx_s        cn70xxp1;
 };
 typedef union cvmx_ciu_cib_sata_enx cvmx_ciu_cib_sata_enx_t;
 
@@ -2238,14 +2510,27 @@ union cvmx_ciu_cib_sata_rawx {
 	struct cvmx_ciu_cib_sata_rawx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t uahc_pme_req_ip              : 1;  /**< Set when SATA_UAHC_PX_IS[CPDS],
-                                                         SATA_UAHC_PX_IS[DMPS],
-                                                         SATA_UAHC_PX_IS[PCS],
-                                                         SATA_UAHC_PX_IS[SDBS], or
-                                                         SATA_UAHC_PX_SNTF[PMN] set. */
-	uint64_t uahc_intrq_ip                : 1;  /**< Set when SATA_UAHC_GBL_IS[IPS] or SATA_UAHC_PX_IS set. */
-	uint64_t intstat_xm_bad_dma           : 1;  /**< Set when SATA_UCTL_INTSTAT[XM_BAD_DMA] set. */
-	uint64_t intstat_xs_ncb_oob           : 1;  /**< Set when SATA_UCTL_INTSTAT[XS_NCB_OOB] set. */
+	uint64_t uahc_pme_req_ip              : 1;  /**< Summary for chip-internal level-sensitive interrupt that is asserted any of
+                                                         SATA_UAHC_P_IS[CPDS,DMPS,PCS] are set, and also asserts when both SATA_UAHC_P_IS[SDBS] and
+                                                         SATA_UAHC_PX_SNTF[PMN] are set.
+                                                         Hardware sets [UAHC_PME_REQ_IP] sometime after the underlying interrupt condition changes
+                                                         from de-asserting to asserting, and clears [UAHC_PME_REQ_IP] sometime after the underlying
+                                                         interrupt condition changes from asserting to de-asserting.
+                                                         R/W1C, but software need not clear [UAHC_PME_REQ_IP], and perhaps should only ever clear
+                                                         [UAHC_PME_REQ_IP]
+                                                         when the underlying interrupt condition is known to be asserted. */
+	uint64_t uahc_intrq_ip                : 1;  /**< Summary for chip-internal level-sensitive interrupt that is asserted when any bit in
+                                                         SATA_UAHC_GBL_IS[IPS] is set.
+                                                         Hardware sets [UAHC_INTRQ_IP] sometime after the underlying interrupt condition changes
+                                                         from de-asserting to asserting, and clears [UAHC_INTRQ_IP] sometime after the underlying
+                                                         interrupt condition changes from asserting to de-asserting.
+                                                         R/W1C, but software need not clear [UAHC_INTRQ_IP], and perhaps should only ever clear
+                                                         [UAHC_INTRQ_IP]
+                                                         when the underlying interrupt condition is known to be asserted. */
+	uint64_t intstat_xm_bad_dma           : 1;  /**< Set when SATA_UCTL_INTSTAT[XM_BAD_DMA] set. Edge-sensitive interrupt, so software should
+                                                         clear [INTSTAT_XM_BAD_DMA] before clearing SATA_UCTL_INTSTAT[XM_BAD_DMA]. */
+	uint64_t intstat_xs_ncb_oob           : 1;  /**< Set when SATA_UCTL_INTSTAT[XS_NCB_OOB] set. Edge-sensitive interrupt, so software should
+                                                         clear [INTSTAT_XS_NCB_OOB] before clearing SATA_UCTL_INTSTAT[XS_NCB_OOB]. */
 #else
 	uint64_t intstat_xs_ncb_oob           : 1;
 	uint64_t intstat_xm_bad_dma           : 1;
@@ -2255,6 +2540,7 @@ union cvmx_ciu_cib_sata_rawx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_sata_rawx_s       cn70xx;
+	struct cvmx_ciu_cib_sata_rawx_s       cn70xxp1;
 };
 typedef union cvmx_ciu_cib_sata_rawx cvmx_ciu_cib_sata_rawx_t;
 
@@ -2293,6 +2579,7 @@ union cvmx_ciu_cib_usbdrdx_enx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_usbdrdx_enx_s     cn70xx;
+	struct cvmx_ciu_cib_usbdrdx_enx_s     cn70xxp1;
 };
 typedef union cvmx_ciu_cib_usbdrdx_enx cvmx_ciu_cib_usbdrdx_enx_t;
 
@@ -2304,17 +2591,57 @@ union cvmx_ciu_cib_usbdrdx_rawx {
 	struct cvmx_ciu_cib_usbdrdx_rawx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_11_63               : 53;
-	uint64_t uahc_dev_int                 : 1;  /**< Set when USBDRD(0..1)_UAHC_GEVNTCOUNT[EVNTCOUNT] */
-	uint64_t uahc_imanx_ip                : 1;  /**< Set when USBDRD(0..1)_UAHC_IMAN(0..0)[IP] set. */
-	uint64_t uahc_usbsts_hse              : 1;  /**< Set when USBDRD(0..1)_UAHC_USBSTS[HSE] set. */
-	uint64_t intstat_ram2_dbe             : 1;  /**< Set when USBDRD(0..1)_UCTL_INTSTAT[RAM2_DBE] set. */
-	uint64_t intstat_ram2_sbe             : 1;  /**< Set when USBDRD(0..1)_UCTL_INTSTAT[RAM2_SBE] set. */
-	uint64_t intstat_ram1_dbe             : 1;  /**< Set when USBDRD(0..1)_UCTL_INTSTAT[RAM1_DBE] set. */
-	uint64_t intstat_ram1_sbe             : 1;  /**< Set when USBDRD(0..1)_UCTL_INTSTAT[RAM1_SBE] set. */
-	uint64_t intstat_ram0_dbe             : 1;  /**< Set when USBDRD(0..1)_UCTL_INTSTAT[RAM0_DBE] set. */
-	uint64_t intstat_ram0_sbe             : 1;  /**< Set when USBDRD(0..1)_UCTL_INTSTAT[RAM0_SBE] set. */
-	uint64_t intstat_xm_bad_dma           : 1;  /**< Set when USBDRD(0..1)_UCTL_INTSTAT[XM_BAD_DMA] set. */
-	uint64_t intstat_xs_ncb_oob           : 1;  /**< Set when USBDRD(0..1)_UCTL_INTSTAT[XS_NCB_OOB] set. */
+	uint64_t uahc_dev_int                 : 1;  /**< Summary for chip-internal level-sensitive interrupt that is asserted when corresponding
+                                                         (USBDRD(0..1)_UAHC_GEVNTCOUNT[EVNTCOUNT]!=0).
+                                                         Hardware sets [UAHC_DEV_INT] sometime after corresponding
+                                                         USBDRD(0..1)_UAHC_GEVNTCOUNT[EVNTCOUNT] changes
+                                                         from zero, and clears [UAHC_DEV_INT] sometime after corresponding
+                                                         USBDRD(0..1)_UAHC_GEVNTCOUNT[EVNTCOUNT] changes to zero.
+                                                         R/W1C, but software need not clear [UAHC_DEV_INT], and perhaps should only ever clear
+                                                         [UAHC_DEV_INT]
+                                                         when corresponding USBDRD(0..1)_UAHC_GEVNTCOUNT[EVNTCOUNT] is known to be non-zero. */
+	uint64_t uahc_imanx_ip                : 1;  /**< Summary for chip-internal level-sensitive interrupt that is asserted when corresponding
+                                                         USBDRD(0..1)_UAHC_IMAN(0..0)[IP] is set.
+                                                         Hardware sets [UAHC_IMANX_IP] sometime after corresponding
+                                                         USBDRD(0..1)_UAHC_IMAN(0..0)[IP] changes
+                                                         0->1, and clears [UAHC_IMANX_IP] sometime after corresponding
+                                                         USBDRD(0..1)_UAHC_IMAN(0..0)[IP] changes 1->0.
+                                                         R/W1C, but software need not clear [UAHC_IMANX_IP], and perhaps should only ever clear
+                                                         [UAHC_IMANX_IP]
+                                                         when corresponding USBDRD(0..1)_UAHC_IMAN(0..0)[IP] is known to be set. */
+	uint64_t uahc_usbsts_hse              : 1;  /**< Summary for chip-internal level-sensitive interrupt that is asserted when corresponding
+                                                         USBDRD(0..1)_UAHC_USBSTS[HSE] is set.
+                                                         Hardware sets [UAHC_USBSTS_HSE] sometime after corresponding USBDRD(0..1)_UAHC_USBSTS[HSE]
+                                                         changes
+                                                         0->1, and clears [UAHC_USBSTS_HSE] sometime after corresponding
+                                                         USBDRD(0..1)_UAHC_USBSTS[HSE] changes 1->0.
+                                                         R/W1C, but software need not clear [UAHC_USBSTS_HSE], and perhaps should only ever clear
+                                                         [UAHC_USBSTS_HSE]
+                                                         when corresponding USBDRD(0..1)_UAHC_USBSTS[HSE] is known to be set. */
+	uint64_t intstat_ram2_dbe             : 1;  /**< Set when corresponding USBDRD(0..1)_UCTL_INTSTAT[RAM2_DBE] set. Edge-sensitive interrupt,
+                                                         so software should clear [INTSTAT_RAM2_DBE] before clearing corresponding
+                                                         USBDRD(0..1)_UCTL_INTSTAT[RAM2_DBE]. */
+	uint64_t intstat_ram2_sbe             : 1;  /**< Set when corresponding USBDRD(0..1)_UCTL_INTSTAT[RAM2_SBE] set. Edge-sensitive interrupt,
+                                                         so software should clear [INTSTAT_RAM2_SBE] before clearing corresponding
+                                                         USBDRD(0..1)_UCTL_INTSTAT[RAM2_SBE]. */
+	uint64_t intstat_ram1_dbe             : 1;  /**< Set when corresponding USBDRD(0..1)_UCTL_INTSTAT[RAM1_DBE] set. Edge-sensitive interrupt,
+                                                         so software should clear [INTSTAT_RAM1_DBE] before clearing corresponding
+                                                         USBDRD(0..1)_UCTL_INTSTAT[RAM1_DBE]. */
+	uint64_t intstat_ram1_sbe             : 1;  /**< Set when corresponding USBDRD(0..1)_UCTL_INTSTAT[RAM1_SBE] set. Edge-sensitive interrupt,
+                                                         so software should clear [INTSTAT_RAM1_SBE] before clearing corresponding
+                                                         USBDRD(0..1)_UCTL_INTSTAT[RAM1_SBE]. */
+	uint64_t intstat_ram0_dbe             : 1;  /**< Set when corresponding USBDRD(0..1)_UCTL_INTSTAT[RAM0_DBE] set. Edge-sensitive interrupt,
+                                                         so software should clear [INTSTAT_RAM0_DBE] before clearing corresponding
+                                                         USBDRD(0..1)_UCTL_INTSTAT[RAM0_DBE]. */
+	uint64_t intstat_ram0_sbe             : 1;  /**< Set when corresponding USBDRD(0..1)_UCTL_INTSTAT[RAM0_SBE] set. Edge-sensitive interrupt,
+                                                         so software should clear [INTSTAT_RAM0_SBE] before clearing corresponding
+                                                         USBDRD(0..1)_UCTL_INTSTAT[RAM0_SBE]. */
+	uint64_t intstat_xm_bad_dma           : 1;  /**< Set when corresponding USBDRD(0..1)_UCTL_INTSTAT[XM_BAD_DMA] set. Edge-sensitive
+                                                         interrupt, so software should clear [INTSTAT_XM_BAD_DMA] before clearing corresponding
+                                                         USBDRD(0..1)_UCTL_INTSTAT[XM_BAD_DMA]. */
+	uint64_t intstat_xs_ncb_oob           : 1;  /**< Set when corresponding USBDRD(0..1)_UCTL_INTSTAT[XS_NCB_OOB] set. Edge-sensitive
+                                                         interrupt, so software should clear [INTSTAT_XS_NCB_OOB] before clearing corresponding
+                                                         USBDRD(0..1)_UCTL_INTSTAT[XS_NCB_OOB]. */
 #else
 	uint64_t intstat_xs_ncb_oob           : 1;
 	uint64_t intstat_xm_bad_dma           : 1;
@@ -2331,6 +2658,7 @@ union cvmx_ciu_cib_usbdrdx_rawx {
 #endif
 	} s;
 	struct cvmx_ciu_cib_usbdrdx_rawx_s    cn70xx;
+	struct cvmx_ciu_cib_usbdrdx_rawx_s    cn70xxp1;
 };
 typedef union cvmx_ciu_cib_usbdrdx_rawx cvmx_ciu_cib_usbdrdx_rawx_t;
 
@@ -2341,11 +2669,11 @@ union cvmx_ciu_dint {
 	uint64_t u64;
 	struct cvmx_ciu_dint_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_32_63               : 32;
-	uint64_t dint                         : 32; /**< Send DINT pulse to PP vector */
+	uint64_t reserved_48_63               : 16;
+	uint64_t dint                         : 48; /**< Send DINT pulse to PP vector */
 #else
-	uint64_t dint                         : 32;
-	uint64_t reserved_32_63               : 32;
+	uint64_t dint                         : 48;
+	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
 	struct cvmx_ciu_dint_cn30xx {
@@ -2419,9 +2747,19 @@ union cvmx_ciu_dint {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} cn66xx;
-	struct cvmx_ciu_dint_s                cn68xx;
-	struct cvmx_ciu_dint_s                cn68xxp1;
+	struct cvmx_ciu_dint_cn68xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t dint                         : 32; /**< Send DINT pulse to PP vector */
+#else
+	uint64_t dint                         : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} cn68xx;
+	struct cvmx_ciu_dint_cn68xx           cn68xxp1;
 	struct cvmx_ciu_dint_cn52xx           cn70xx;
+	struct cvmx_ciu_dint_cn52xx           cn70xxp1;
+	struct cvmx_ciu_dint_s                cn78xx;
 	struct cvmx_ciu_dint_cn52xx           cnf71xx;
 };
 typedef union cvmx_ciu_dint cvmx_ciu_dint_t;
@@ -2440,7 +2778,7 @@ union cvmx_ciu_en2_iox_int {
 	uint64_t bch                          : 1;  /**< BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< SATA_UNTL interrupt enable */
+	uint64_t sata                         : 1;  /**< SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< EOI rsl interrupt enable */
@@ -2479,7 +2817,7 @@ union cvmx_ciu_en2_iox_int {
 	uint64_t bch                          : 1;  /**< BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< SATA_UNTL interrupt enable */
+	uint64_t sata                         : 1;  /**< SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< General timer 4-9 interrupt enable */
 	uint64_t reserved_0_3                 : 4;
@@ -2494,6 +2832,7 @@ union cvmx_ciu_en2_iox_int {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_iox_int_cn70xx    cn70xxp1;
 	struct cvmx_ciu_en2_iox_int_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -2528,7 +2867,7 @@ union cvmx_ciu_en2_iox_int_w1c {
 	uint64_t bch                          : 1;  /**< Write 1 to clear BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to clear AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to clear OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to clear SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to clear SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< Write 1 to clear ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< Write 1 to clear EOI rsl interrupt enable */
@@ -2567,7 +2906,7 @@ union cvmx_ciu_en2_iox_int_w1c {
 	uint64_t bch                          : 1;  /**< Write 1 to clear BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to clear AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to clear OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to clear SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to clear SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< Write 1 to clear General timer 4-9 interrupt enable */
 	uint64_t reserved_0_3                 : 4;
@@ -2582,6 +2921,7 @@ union cvmx_ciu_en2_iox_int_w1c {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_iox_int_w1c_cn70xx cn70xxp1;
 	struct cvmx_ciu_en2_iox_int_w1c_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -2616,7 +2956,7 @@ union cvmx_ciu_en2_iox_int_w1s {
 	uint64_t bch                          : 1;  /**< Write 1 to set BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to set AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to set OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to set SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to set SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< Write 1 to set ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< Write 1 to set EOI rsl interrupt enable */
@@ -2655,7 +2995,7 @@ union cvmx_ciu_en2_iox_int_w1s {
 	uint64_t bch                          : 1;  /**< Write 1 to set BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to set AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to set OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to set SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to set SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< Write 1 to set General timer 4-9 interrupt enables */
 	uint64_t reserved_0_3                 : 4;
@@ -2670,6 +3010,7 @@ union cvmx_ciu_en2_iox_int_w1s {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_iox_int_w1s_cn70xx cn70xxp1;
 	struct cvmx_ciu_en2_iox_int_w1s_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -2705,7 +3046,7 @@ union cvmx_ciu_en2_ppx_ip2 {
 	uint64_t bch                          : 1;  /**< BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< SATA_UNTL interrupt enable */
+	uint64_t sata                         : 1;  /**< SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< EOI rsl interrupt enable */
@@ -2744,7 +3085,7 @@ union cvmx_ciu_en2_ppx_ip2 {
 	uint64_t bch                          : 1;  /**< BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< SATA_UNTL interrupt enable */
+	uint64_t sata                         : 1;  /**< SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< General timer 4-9 interrupt enable */
 	uint64_t reserved_0_3                 : 4;
@@ -2759,6 +3100,7 @@ union cvmx_ciu_en2_ppx_ip2 {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_ppx_ip2_cn70xx    cn70xxp1;
 	struct cvmx_ciu_en2_ppx_ip2_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -2793,7 +3135,7 @@ union cvmx_ciu_en2_ppx_ip2_w1c {
 	uint64_t bch                          : 1;  /**< Write 1 to clear BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to clear AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to clear OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to clear SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to clear SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< Write 1 to clear ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< Write 1 to clear EOI rsl interrupt enable */
@@ -2832,7 +3174,7 @@ union cvmx_ciu_en2_ppx_ip2_w1c {
 	uint64_t bch                          : 1;  /**< Write 1 to clear BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to clear AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to clear OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to clear SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to clear SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< Write 1 to clear General timer 4-9 interrupt enable */
 	uint64_t reserved_0_3                 : 4;
@@ -2847,6 +3189,7 @@ union cvmx_ciu_en2_ppx_ip2_w1c {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_ppx_ip2_w1c_cn70xx cn70xxp1;
 	struct cvmx_ciu_en2_ppx_ip2_w1c_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -2881,7 +3224,7 @@ union cvmx_ciu_en2_ppx_ip2_w1s {
 	uint64_t bch                          : 1;  /**< Write 1 to set BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to set AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to set OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to set SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to set SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< Write 1 to set ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< Write 1 to set EOI rsl interrupt enable */
@@ -2920,7 +3263,7 @@ union cvmx_ciu_en2_ppx_ip2_w1s {
 	uint64_t bch                          : 1;  /**< Write 1 to set BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to set AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to set OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to set SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to set SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< Write 1 to set General timer 4-9 interrupt enables */
 	uint64_t reserved_0_3                 : 4;
@@ -2935,6 +3278,7 @@ union cvmx_ciu_en2_ppx_ip2_w1s {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_ppx_ip2_w1s_cn70xx cn70xxp1;
 	struct cvmx_ciu_en2_ppx_ip2_w1s_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -2970,7 +3314,7 @@ union cvmx_ciu_en2_ppx_ip3 {
 	uint64_t bch                          : 1;  /**< BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< SATA_UNTL interrupt enable */
+	uint64_t sata                         : 1;  /**< SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< EOI rsl interrupt enable */
@@ -3009,7 +3353,7 @@ union cvmx_ciu_en2_ppx_ip3 {
 	uint64_t bch                          : 1;  /**< BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< SATA_UNTL interrupt enable */
+	uint64_t sata                         : 1;  /**< SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< General timer 4-9 interrupt enable */
 	uint64_t reserved_0_3                 : 4;
@@ -3024,6 +3368,7 @@ union cvmx_ciu_en2_ppx_ip3 {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_ppx_ip3_cn70xx    cn70xxp1;
 	struct cvmx_ciu_en2_ppx_ip3_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -3059,7 +3404,7 @@ union cvmx_ciu_en2_ppx_ip3_w1c {
 	uint64_t bch                          : 1;  /**< Write 1 to clear BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to clear AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to clear OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to clear SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to clear SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< Write 1 to clear ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< Write 1 to clear EOI rsl interrupt enable */
@@ -3098,7 +3443,7 @@ union cvmx_ciu_en2_ppx_ip3_w1c {
 	uint64_t bch                          : 1;  /**< Write 1 to clear BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to clear AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to clear OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to clear SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to clear SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< Write 1 to clear General timer 4-9 interrupt enable */
 	uint64_t reserved_0_3                 : 4;
@@ -3113,6 +3458,7 @@ union cvmx_ciu_en2_ppx_ip3_w1c {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_ppx_ip3_w1c_cn70xx cn70xxp1;
 	struct cvmx_ciu_en2_ppx_ip3_w1c_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -3148,7 +3494,7 @@ union cvmx_ciu_en2_ppx_ip3_w1s {
 	uint64_t bch                          : 1;  /**< Write 1 to set BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to set AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to set OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to set SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to set SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< Write 1 to set ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< Write 1 to set EOI rsl interrupt enable */
@@ -3187,7 +3533,7 @@ union cvmx_ciu_en2_ppx_ip3_w1s {
 	uint64_t bch                          : 1;  /**< Write 1 to set BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to set AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to set OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to set SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to set SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< Write 1 to set General timer 4-9 interrupt enables */
 	uint64_t reserved_0_3                 : 4;
@@ -3202,6 +3548,7 @@ union cvmx_ciu_en2_ppx_ip3_w1s {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_ppx_ip3_w1s_cn70xx cn70xxp1;
 	struct cvmx_ciu_en2_ppx_ip3_w1s_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -3237,7 +3584,7 @@ union cvmx_ciu_en2_ppx_ip4 {
 	uint64_t bch                          : 1;  /**< BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< SATA_UNTL interrupt enable */
+	uint64_t sata                         : 1;  /**< SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< EOI rsl interrupt enable */
@@ -3276,7 +3623,7 @@ union cvmx_ciu_en2_ppx_ip4 {
 	uint64_t bch                          : 1;  /**< BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< SATA_UNTL interrupt enable */
+	uint64_t sata                         : 1;  /**< SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< General timer 4-9 interrupt enable */
 	uint64_t reserved_0_3                 : 4;
@@ -3291,6 +3638,7 @@ union cvmx_ciu_en2_ppx_ip4 {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_ppx_ip4_cn70xx    cn70xxp1;
 	struct cvmx_ciu_en2_ppx_ip4_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -3326,7 +3674,7 @@ union cvmx_ciu_en2_ppx_ip4_w1c {
 	uint64_t bch                          : 1;  /**< Write 1 to clear BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to clear AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to clear OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to clear SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to clear SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< Write 1 to clear ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< Write 1 to clear EOI rsl interrupt enable */
@@ -3365,7 +3713,7 @@ union cvmx_ciu_en2_ppx_ip4_w1c {
 	uint64_t bch                          : 1;  /**< Write 1 to clear BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to clear AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to clear OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to clear SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to clear SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< Write 1 to clear General timer 4-9 interrupt enable */
 	uint64_t reserved_0_3                 : 4;
@@ -3380,6 +3728,7 @@ union cvmx_ciu_en2_ppx_ip4_w1c {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_ppx_ip4_w1c_cn70xx cn70xxp1;
 	struct cvmx_ciu_en2_ppx_ip4_w1c_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -3415,7 +3764,7 @@ union cvmx_ciu_en2_ppx_ip4_w1s {
 	uint64_t bch                          : 1;  /**< Write 1 to set BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to set AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to set OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to set SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to set SATA interrupt enable */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< Write 1 to set ENDOR PHY interrupts enable */
 	uint64_t eoi                          : 1;  /**< Write 1 to set EOI rsl interrupt enable */
@@ -3454,7 +3803,7 @@ union cvmx_ciu_en2_ppx_ip4_w1s {
 	uint64_t bch                          : 1;  /**< Write 1 to set BCH interrupt enable */
 	uint64_t agl_drp                      : 1;  /**< Write 1 to set AGL_DRP interrupt enable */
 	uint64_t ocla                         : 1;  /**< Write 1 to set OCLA interrupt enable */
-	uint64_t sata                         : 1;  /**< Write 1 to set SATA_UCTL interrupt enable */
+	uint64_t sata                         : 1;  /**< Write 1 to set SATA interrupt enable */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< Write 1 to set General timer 4-9 interrupt enables */
 	uint64_t reserved_0_3                 : 4;
@@ -3469,6 +3818,7 @@ union cvmx_ciu_en2_ppx_ip4_w1s {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_en2_ppx_ip4_w1s_cn70xx cn70xxp1;
 	struct cvmx_ciu_en2_ppx_ip4_w1s_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -3496,11 +3846,11 @@ union cvmx_ciu_fuse {
 	uint64_t u64;
 	struct cvmx_ciu_fuse_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_32_63               : 32;
-	uint64_t fuse                         : 32; /**< Physical PP is present */
+	uint64_t reserved_48_63               : 16;
+	uint64_t fuse                         : 48; /**< Physical PP is present */
 #else
-	uint64_t fuse                         : 32;
-	uint64_t reserved_32_63               : 32;
+	uint64_t fuse                         : 48;
+	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
 	struct cvmx_ciu_fuse_cn30xx {
@@ -3574,9 +3924,19 @@ union cvmx_ciu_fuse {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} cn66xx;
-	struct cvmx_ciu_fuse_s                cn68xx;
-	struct cvmx_ciu_fuse_s                cn68xxp1;
+	struct cvmx_ciu_fuse_cn68xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t fuse                         : 32; /**< Physical PP is present */
+#else
+	uint64_t fuse                         : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} cn68xx;
+	struct cvmx_ciu_fuse_cn68xx           cn68xxp1;
 	struct cvmx_ciu_fuse_cn52xx           cn70xx;
+	struct cvmx_ciu_fuse_cn52xx           cn70xxp1;
+	struct cvmx_ciu_fuse_s                cn78xx;
 	struct cvmx_ciu_fuse_cn52xx           cnf71xx;
 };
 typedef union cvmx_ciu_fuse cvmx_ciu_fuse_t;
@@ -3613,6 +3973,7 @@ union cvmx_ciu_gstop {
 	struct cvmx_ciu_gstop_s               cn68xx;
 	struct cvmx_ciu_gstop_s               cn68xxp1;
 	struct cvmx_ciu_gstop_s               cn70xx;
+	struct cvmx_ciu_gstop_s               cn70xxp1;
 	struct cvmx_ciu_gstop_s               cnf71xx;
 };
 typedef union cvmx_ciu_gstop cvmx_ciu_gstop_t;
@@ -4054,6 +4415,7 @@ union cvmx_ciu_intx_en0 {
 	uint64_t bootdma                      : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en0_cn70xx       cn70xxp1;
 	struct cvmx_ciu_intx_en0_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bootdma                      : 1;  /**< Boot bus DMA engines Interrupt enable */
@@ -4463,6 +4825,7 @@ union cvmx_ciu_intx_en0_w1c {
 	uint64_t bootdma                      : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en0_w1c_cn70xx   cn70xxp1;
 	struct cvmx_ciu_intx_en0_w1c_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bootdma                      : 1;  /**< Write 1 to clear Boot bus DMA engines Interrupt
@@ -4874,6 +5237,7 @@ union cvmx_ciu_intx_en0_w1s {
 	uint64_t bootdma                      : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en0_w1s_cn70xx   cn70xxp1;
 	struct cvmx_ciu_intx_en0_w1s_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bootdma                      : 1;  /**< Write 1 to set Boot bus DMA engines Interrupt
@@ -5435,6 +5799,7 @@ union cvmx_ciu_intx_en1 {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en1_cn70xx       cn70xxp1;
 	struct cvmx_ciu_intx_en1_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< MIO RST interrupt enable */
@@ -5940,6 +6305,7 @@ union cvmx_ciu_intx_en1_w1c {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en1_w1c_cn70xx   cn70xxp1;
 	struct cvmx_ciu_intx_en1_w1c_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< Write 1 to clear MIO RST interrupt enable */
@@ -6446,6 +6812,7 @@ union cvmx_ciu_intx_en1_w1s {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en1_w1s_cn70xx   cn70xxp1;
 	struct cvmx_ciu_intx_en1_w1s_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< Write 1 to set MIO RST interrupt enable */
@@ -6898,6 +7265,7 @@ union cvmx_ciu_intx_en4_0 {
 	uint64_t bootdma                      : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en4_0_cn70xx     cn70xxp1;
 	struct cvmx_ciu_intx_en4_0_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bootdma                      : 1;  /**< Boot bus DMA engines Interrupt enable */
@@ -7299,6 +7667,7 @@ union cvmx_ciu_intx_en4_0_w1c {
 	uint64_t bootdma                      : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en4_0_w1c_cn70xx cn70xxp1;
 	struct cvmx_ciu_intx_en4_0_w1c_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bootdma                      : 1;  /**< Write 1 to clear Boot bus DMA engines Interrupt
@@ -7706,6 +8075,7 @@ union cvmx_ciu_intx_en4_0_w1s {
 	uint64_t bootdma                      : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en4_0_w1s_cn70xx cn70xxp1;
 	struct cvmx_ciu_intx_en4_0_w1s_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bootdma                      : 1;  /**< Write 1 to set Boot bus DMA engines Interrupt
@@ -8218,6 +8588,7 @@ union cvmx_ciu_intx_en4_1 {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en4_1_cn70xx     cn70xxp1;
 	struct cvmx_ciu_intx_en4_1_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< MIO RST interrupt enable */
@@ -8722,6 +9093,7 @@ union cvmx_ciu_intx_en4_1_w1c {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en4_1_w1c_cn70xx cn70xxp1;
 	struct cvmx_ciu_intx_en4_1_w1c_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< Write 1 to clear MIO RST interrupt enable */
@@ -9227,6 +9599,7 @@ union cvmx_ciu_intx_en4_1_w1s {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_en4_1_w1s_cn70xx cn70xxp1;
 	struct cvmx_ciu_intx_en4_1_w1s_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< Write 1 to set MIO RST interrupt enable */
@@ -10032,6 +10405,7 @@ union cvmx_ciu_intx_sum0 {
 	uint64_t bootdma                      : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_sum0_cn70xx      cn70xxp1;
 	struct cvmx_ciu_intx_sum0_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bootdma                      : 1;  /**< Boot bus DMA engines Interrupt
@@ -10787,6 +11161,7 @@ union cvmx_ciu_intx_sum4 {
 	uint64_t bootdma                      : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_intx_sum4_cn70xx      cn70xxp1;
 	struct cvmx_ciu_intx_sum4_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bootdma                      : 1;  /**< Boot bus DMA engines Interrupt
@@ -11293,6 +11668,7 @@ union cvmx_ciu_int33_sum0 {
 	uint64_t bootdma                      : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_int33_sum0_cn70xx     cn70xxp1;
 	struct cvmx_ciu_int33_sum0_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bootdma                      : 1;  /**< Boot bus DMA engines Interrupt
@@ -11568,8 +11944,8 @@ union cvmx_ciu_int_sum1 {
                                                          See  EMMC interrupt */
 	uint64_t mii1                         : 1;  /**< RGMII/MII/MIX Interface 1 Interrupt
                                                          See MIX1_ISR */
-	uint64_t usb1                         : 1;  /**< USBDRD1 Interrupt.  (CIU_CIB_USBDRD(1)_RAW[0] & CIU_CIB_USBDRD1(1)_EN[0])
-                                                         See CIU_CIB_USBDRD(1)_RAW[0] and CIU_CIB_USBDRD(1)_EN[0] */
+	uint64_t usb1                         : 1;  /**< USBDRD1 Interrupt.  Value equals ((CIU_CIB_USBDRD(1)_RAW & CIU_CIB_USBDRD(1)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(1)_RAW and CIU_CIB_USBDRD(1)_EN. */
 	uint64_t uart2                        : 1;  /**< Third UART interrupt */
 	uint64_t wdog                         : 16; /**< Per PP watchdog interrupts */
 #else
@@ -11999,11 +12375,11 @@ union cvmx_ciu_int_sum1 {
 	} cn66xx;
 	struct cvmx_ciu_int_sum1_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t rst                          : 1;  /**< MIO RST interrupt. |(CIU_CIB_RST_RAW(0) & CIU_CIB_RST_EN(0))
-                                                         See CIU_CIB_RST_RAW(0) and CIU_CIB_RST_EN(0) */
+	uint64_t rst                          : 1;  /**< RST interrupt. Value equals ((CIU_CIB_RST_RAW & CIU_CIB_RST_EN) != 0).
+                                                         See CIU_CIB_RST_RAW and CIU_CIB_RST_EN. */
 	uint64_t reserved_53_62               : 10;
-	uint64_t lmc0                         : 1;  /**< LMC0 interrupt. |(CIU_CIB_LMC(0)_RAW[0] & CIU_CIB_LMC(0)_EN[0])
-                                                         See CIU_CIB_LMC(0)_RAW[0] and CIU_CIB_LMC(0)_EN[0] */
+	uint64_t lmc0                         : 1;  /**< LMC0 interrupt. Value equals ((CIU_CIB_LMC(0)_RAW & CIU_CIB_LMC(0)_EN) != 0).
+                                                         See CIU_CIB_LMC(0)_RAW and CIU_CIB_LMC(0)_EN. */
 	uint64_t reserved_51_51               : 1;
 	uint64_t pem2                         : 1;  /**< PEM2 interrupt
                                                          See PEM2_INT_SUM (enabled by PEM2_INT_ENB) */
@@ -12026,8 +12402,8 @@ union cvmx_ciu_int_sum1 {
                                                          See DPI_INT_REG */
 	uint64_t sli                          : 1;  /**< SLI interrupt
                                                          See SLI_INT_SUM (enabled by SLI_INT_ENB_CIU) */
-	uint64_t usb                          : 1;  /**< USBDRD0 Interrupt.  (CIU_CIB_USBDRD(0)_RAW[0] & CIU_CIB_USBDRD(0)_EN)
-                                                         See CIU_CIB_USBDRD(0)_RAW[0] and CIU_CIB_USBDRD(0)_EN[0] */
+	uint64_t usb                          : 1;  /**< USBDRD0 Interrupt.  Value equals ((CIU_CIB_USBDRD(0)_RAW & CIU_CIB_USBDRD(0)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(0)_RAW and CIU_CIB_USBDRD(0)_EN. */
 	uint64_t dfa                          : 1;  /**< DFA interrupt
                                                          See DFA_ERROR */
 	uint64_t key                          : 1;  /**< KEY interrupt
@@ -12043,8 +12419,8 @@ union cvmx_ciu_int_sum1 {
                                                          See PIP_INT_REG */
 	uint64_t ipd                          : 1;  /**< IPD interrupt
                                                          See IPD_INT_SUM */
-	uint64_t l2c                          : 1;  /**< L2C interrupt. |(CIU_CIB_L2C_RAW[0..2] & CIU_CIB_L2C_EN[0..2])
-                                                         See CIU_CIB_L2C_RAW[0..2] and CIU_CIB_L2C_EN[0..2]. */
+	uint64_t l2c                          : 1;  /**< L2C interrupt. Value equals ((CIU_CIB_L2C_RAW & CIU_CIB_L2C_EN) != 0).
+                                                         See CIU_CIB_L2C_RAW and CIU_CIB_L2C_EN. */
 	uint64_t pow                          : 1;  /**< POW err interrupt
                                                          See POW_ECC_ERR */
 	uint64_t fpa                          : 1;  /**< FPA interrupt
@@ -12056,8 +12432,8 @@ union cvmx_ciu_int_sum1 {
 	uint64_t nand                         : 1;  /**< NAND / EMMC Controller interrupt
                                                          See  NAND / EMMC interrupt */
 	uint64_t reserved_18_18               : 1;
-	uint64_t usb1                         : 1;  /**< USBDRD1 Interrupt.  (CIU_CIB_USBDRD(1)_RAW[0] & CIU_CIB_USBDRD1(1)_EN[0])
-                                                         See CIU_CIB_USBDRD(1)_RAW[0] and CIU_CIB_USBDRD(1)_EN[0] */
+	uint64_t usb1                         : 1;  /**< USBDRD1 Interrupt.  Value equals ((CIU_CIB_USBDRD(1)_RAW & CIU_CIB_USBDRD(1)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(1)_RAW and CIU_CIB_USBDRD(1)_EN. */
 	uint64_t reserved_4_16                : 13;
 	uint64_t wdog                         : 4;  /**< Watchdog interrupts. Bit 0 for PP0 watchdog, and Bit n for PPn. */
 #else
@@ -12096,6 +12472,7 @@ union cvmx_ciu_int_sum1 {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_int_sum1_cn70xx       cn70xxp1;
 	struct cvmx_ciu_int_sum1_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< MIO RST interrupt
@@ -12205,6 +12582,7 @@ union cvmx_ciu_intr_slowdown {
 #endif
 	} s;
 	struct cvmx_ciu_intr_slowdown_s       cn70xx;
+	struct cvmx_ciu_intr_slowdown_s       cn70xxp1;
 };
 typedef union cvmx_ciu_intr_slowdown cvmx_ciu_intr_slowdown_t;
 
@@ -12241,6 +12619,7 @@ union cvmx_ciu_mbox_clrx {
 	struct cvmx_ciu_mbox_clrx_s           cn68xx;
 	struct cvmx_ciu_mbox_clrx_s           cn68xxp1;
 	struct cvmx_ciu_mbox_clrx_s           cn70xx;
+	struct cvmx_ciu_mbox_clrx_s           cn70xxp1;
 	struct cvmx_ciu_mbox_clrx_s           cnf71xx;
 };
 typedef union cvmx_ciu_mbox_clrx cvmx_ciu_mbox_clrx_t;
@@ -12278,6 +12657,7 @@ union cvmx_ciu_mbox_setx {
 	struct cvmx_ciu_mbox_setx_s           cn68xx;
 	struct cvmx_ciu_mbox_setx_s           cn68xxp1;
 	struct cvmx_ciu_mbox_setx_s           cn70xx;
+	struct cvmx_ciu_mbox_setx_s           cn70xxp1;
 	struct cvmx_ciu_mbox_setx_s           cnf71xx;
 };
 typedef union cvmx_ciu_mbox_setx cvmx_ciu_mbox_setx_t;
@@ -12370,6 +12750,7 @@ union cvmx_ciu_nmi {
 	struct cvmx_ciu_nmi_s                 cn68xx;
 	struct cvmx_ciu_nmi_s                 cn68xxp1;
 	struct cvmx_ciu_nmi_cn52xx            cn70xx;
+	struct cvmx_ciu_nmi_cn52xx            cn70xxp1;
 	struct cvmx_ciu_nmi_cn52xx            cnf71xx;
 };
 typedef union cvmx_ciu_nmi cvmx_ciu_nmi_t;
@@ -12408,6 +12789,7 @@ union cvmx_ciu_pci_inta {
 	struct cvmx_ciu_pci_inta_s            cn68xx;
 	struct cvmx_ciu_pci_inta_s            cn68xxp1;
 	struct cvmx_ciu_pci_inta_s            cn70xx;
+	struct cvmx_ciu_pci_inta_s            cn70xxp1;
 	struct cvmx_ciu_pci_inta_s            cnf71xx;
 };
 typedef union cvmx_ciu_pci_inta cvmx_ciu_pci_inta_t;
@@ -12438,12 +12820,12 @@ union cvmx_ciu_pp_dbg {
 	uint64_t u64;
 	struct cvmx_ciu_pp_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_32_63               : 32;
-	uint64_t ppdbg                        : 32; /**< Debug[DM] value for each PP
+	uint64_t reserved_48_63               : 16;
+	uint64_t ppdbg                        : 48; /**< Debug[DM] value for each PP
                                                          whether the PP's are in debug mode or not */
 #else
-	uint64_t ppdbg                        : 32;
-	uint64_t reserved_32_63               : 32;
+	uint64_t ppdbg                        : 48;
+	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
 	struct cvmx_ciu_pp_dbg_cn30xx {
@@ -12524,9 +12906,20 @@ union cvmx_ciu_pp_dbg {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} cn66xx;
-	struct cvmx_ciu_pp_dbg_s              cn68xx;
-	struct cvmx_ciu_pp_dbg_s              cn68xxp1;
+	struct cvmx_ciu_pp_dbg_cn68xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t ppdbg                        : 32; /**< Debug[DM] value for each PP
+                                                         whether the PP's are in debug mode or not */
+#else
+	uint64_t ppdbg                        : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} cn68xx;
+	struct cvmx_ciu_pp_dbg_cn68xx         cn68xxp1;
 	struct cvmx_ciu_pp_dbg_cn52xx         cn70xx;
+	struct cvmx_ciu_pp_dbg_cn52xx         cn70xxp1;
+	struct cvmx_ciu_pp_dbg_s              cn78xx;
 	struct cvmx_ciu_pp_dbg_cn52xx         cnf71xx;
 };
 typedef union cvmx_ciu_pp_dbg cvmx_ciu_pp_dbg_t;
@@ -12564,6 +12957,20 @@ union cvmx_ciu_pp_pokex {
 	struct cvmx_ciu_pp_pokex_s            cn68xx;
 	struct cvmx_ciu_pp_pokex_s            cn68xxp1;
 	struct cvmx_ciu_pp_pokex_s            cn70xx;
+	struct cvmx_ciu_pp_pokex_s            cn70xxp1;
+	struct cvmx_ciu_pp_pokex_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_1_63                : 63;
+	uint64_t poke                         : 1;  /**< Core poke. Writing any value to this register does the following:
+                                                         * clears any pending interrupt generated by the associated watchdog.
+                                                         * resets CIU_WDOG()[STATE] to 0x0.
+                                                         * sets CIU_WDOG()[CNT] to ( CIU_WDOG()[LEN] << 8).
+                                                         Reading this register returns the associated CIU_WDOG() register. */
+#else
+	uint64_t poke                         : 1;
+	uint64_t reserved_1_63                : 63;
+#endif
+	} cn78xx;
 	struct cvmx_ciu_pp_pokex_s            cnf71xx;
 };
 typedef union cvmx_ciu_pp_pokex cvmx_ciu_pp_pokex_t;
@@ -12571,27 +12978,23 @@ typedef union cvmx_ciu_pp_pokex cvmx_ciu_pp_pokex_t;
 /**
  * cvmx_ciu_pp_rst
  *
- * Contains the reset control for each PP.  Value of '1' will hold a PP in reset, '0' will
- * release.
- * Resets to all 1's when REMOTE_BOOT is enabled, 0xe otherwise.  Writes to this register should
- * occur
- * only if the CIU_PP_RST_PENDING register is cleared.
- * On pass 2, RST_PP_POWER register can be statically set and writes to this register will
- * automatically enable/disable power
- * saving when RST_PP_POWER[GATE] is enabled.
+ * This register contains the reset control for each core. A 1 holds a core in reset, 0 release
+ * from reset. It resets to all ones when REMOTE_BOOT is enabled or all ones excluding bit 0 when
+ * REMOTE_BOOT is disabled. Writes to this register should occur only if the CIU_PP_RST_PENDING
+ * register is cleared.
  */
 union cvmx_ciu_pp_rst {
 	uint64_t u64;
 	struct cvmx_ciu_pp_rst_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_32_63               : 32;
-	uint64_t rst                          : 31; /**< PP Rst for PP's 3-1 */
+	uint64_t reserved_48_63               : 16;
+	uint64_t rst                          : 47; /**< PP Rst for PP's 3-1 */
 	uint64_t rst0                         : 1;  /**< PP Rst for PP0
                                                          depends on standalone mode */
 #else
 	uint64_t rst0                         : 1;
-	uint64_t rst                          : 31;
-	uint64_t reserved_32_63               : 32;
+	uint64_t rst                          : 47;
+	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
 	struct cvmx_ciu_pp_rst_cn30xx {
@@ -12684,9 +13087,22 @@ union cvmx_ciu_pp_rst {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} cn66xx;
-	struct cvmx_ciu_pp_rst_s              cn68xx;
-	struct cvmx_ciu_pp_rst_s              cn68xxp1;
+	struct cvmx_ciu_pp_rst_cn68xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t rst                          : 31; /**< PP Rst for PP's 31-1 */
+	uint64_t rst0                         : 1;  /**< PP Rst for PP0
+                                                         depends on standalone mode */
+#else
+	uint64_t rst0                         : 1;
+	uint64_t rst                          : 31;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} cn68xx;
+	struct cvmx_ciu_pp_rst_cn68xx         cn68xxp1;
 	struct cvmx_ciu_pp_rst_cn52xx         cn70xx;
+	struct cvmx_ciu_pp_rst_cn52xx         cn70xxp1;
+	struct cvmx_ciu_pp_rst_s              cn78xx;
 	struct cvmx_ciu_pp_rst_cn52xx         cnf71xx;
 };
 typedef union cvmx_ciu_pp_rst cvmx_ciu_pp_rst_t;
@@ -12694,24 +13110,26 @@ typedef union cvmx_ciu_pp_rst cvmx_ciu_pp_rst_t;
 /**
  * cvmx_ciu_pp_rst_pending
  *
- * This register contains the reset status for each core. A 1 indicated the core is waiting to
- * change it's reset state.
- * (Pass 2) Normally a reset change occurs immediately but if RST_PP_POWER[GATE] bit is set and
- * the core is released from reset
- * a delay of 64K core clocks per PP will occur to satisify power management.
+ * This register contains the reset status for each core.
+ *
  */
 union cvmx_ciu_pp_rst_pending {
 	uint64_t u64;
 	struct cvmx_ciu_pp_rst_pending_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t pend                         : 48; /**< Core waiting on reset to deassert complete.  This register always returns zero on 70xx Pass 1. */
+	uint64_t pend                         : 48; /**< Set if corresponding core is waiting to change its reset state. Normally a reset change
+                                                         occurs immediately but if RST_PP_POWER[GATE] bit is set and the core is released from
+                                                         reset a delay of 64K core clocks between each core reset will apply to satisfy power
+                                                         management. */
 #else
 	uint64_t pend                         : 48;
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
 	struct cvmx_ciu_pp_rst_pending_s      cn70xx;
+	struct cvmx_ciu_pp_rst_pending_s      cn70xxp1;
+	struct cvmx_ciu_pp_rst_pending_s      cn78xx;
 };
 typedef union cvmx_ciu_pp_rst_pending cvmx_ciu_pp_rst_pending_t;
 
@@ -13358,6 +13776,7 @@ union cvmx_ciu_soft_bist {
 	struct cvmx_ciu_soft_bist_s           cn68xx;
 	struct cvmx_ciu_soft_bist_s           cn68xxp1;
 	struct cvmx_ciu_soft_bist_s           cn70xx;
+	struct cvmx_ciu_soft_bist_s           cn70xxp1;
 	struct cvmx_ciu_soft_bist_s           cnf71xx;
 };
 typedef union cvmx_ciu_soft_bist cvmx_ciu_soft_bist_t;
@@ -13614,8 +14033,8 @@ union cvmx_ciu_sum1_iox_int {
                                                          See EMMC interrupt */
 	uint64_t mii1                         : 1;  /**< RGMII/MII/MIX Interface 1 Interrupt
                                                          See MIX1_ISR */
-	uint64_t usb1                         : 1;  /**< USBDRD1 interrupts. |(CIU_CIB_USBDRD(1)_RAW[0] & CIU_CIB_USBDRD1(1)_EN[0]).
-                                                         See CIU_CIB_USBDRD(1)_RAW[0] and CIU_CIB_USBDRD(1)_EN[0]. */
+	uint64_t usb1                         : 1;  /**< USBDRD1 interrupt.  Value equals ((CIU_CIB_USBDRD(1)_RAW & CIU_CIB_USBDRD(1)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(1)_RAW and CIU_CIB_USBDRD(1)_EN. */
 	uint64_t reserved_10_16               : 7;
 	uint64_t wdog                         : 10; /**< Per PP watchdog interrupts */
 #else
@@ -13873,11 +14292,11 @@ union cvmx_ciu_sum1_iox_int {
 	} cn66xx;
 	struct cvmx_ciu_sum1_iox_int_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t rst                          : 1;  /**< MIO RST interrupt
-                                                         See MIO_RST_INT */
+	uint64_t rst                          : 1;  /**< RST interrupt. Value equals ((CIU_CIB_RST_RAW & CIU_CIB_RST_EN) != 0).
+                                                         See CIU_CIB_RST_RAW and CIU_CIB_RST_EN. */
 	uint64_t reserved_53_62               : 10;
-	uint64_t lmc0                         : 1;  /**< LMC0 interrupt
-                                                         See LMC0_INT */
+	uint64_t lmc0                         : 1;  /**< LMC0 interrupt. Value equals ((CIU_CIB_LMC(0)_RAW & CIU_CIB_LMC(0)_EN) != 0).
+                                                         See CIU_CIB_LMC(0)_RAW and CIU_CIB_LMC(0)_EN. */
 	uint64_t reserved_51_51               : 1;
 	uint64_t pem2                         : 1;  /**< PEM2 interrupt
                                                          See PEM2_INT_SUM (enabled by PEM2_INT_ENB) */
@@ -13892,7 +14311,7 @@ union cvmx_ciu_sum1_iox_int {
 	uint64_t reserved_41_45               : 5;
 	uint64_t dpi_dma                      : 1;  /**< DPI DMA instruction completion interrupt.
                                                          This bit is different for each CIU_SUM1_PPx.
-                                                         TBD, See DPI DMA instruction completion */
+                                                         See DPI_DMA_PP*_CNT. */
 	uint64_t reserved_38_39               : 2;
 	uint64_t agx1                         : 1;  /**< GMX1 interrupt
                                                          See GMX1_RX*_INT_REG, GMX1_TX_INT_REG,
@@ -13904,8 +14323,8 @@ union cvmx_ciu_sum1_iox_int {
                                                          See DPI_INT_REG */
 	uint64_t sli                          : 1;  /**< SLI interrupt
                                                          See SLI_INT_SUM (enabled by SLI_INT_ENB_CIU) */
-	uint64_t usb                          : 1;  /**< USBDRD0 interrupt. (CIU_CIB_USBDRD(0)_RAW[0] & CIU_CIB_USBDRD(0)_EN(0))
-                                                         See CIU_CIB_USBDRD(0)_RAW[0] and CIU_CIB_USBDRD(0)_EN(0) */
+	uint64_t usb                          : 1;  /**< USBDRD0 interrupt.  Value equals ((CIU_CIB_USBDRD(0)_RAW & CIU_CIB_USBDRD(0)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(0)_RAW and CIU_CIB_USBDRD(0)_EN. */
 	uint64_t dfa                          : 1;  /**< DFA interrupt
                                                          See DFA_ERROR */
 	uint64_t key                          : 1;  /**< KEY interrupt
@@ -13921,8 +14340,8 @@ union cvmx_ciu_sum1_iox_int {
                                                          See PIP_INT_REG */
 	uint64_t ipd                          : 1;  /**< IPD interrupt
                                                          See IPD_INT_SUM */
-	uint64_t l2c                          : 1;  /**< L2C interrupt
-                                                         See L2C_INT_REG */
+	uint64_t l2c                          : 1;  /**< L2C interrupt. Value equals ((CIU_CIB_L2C_RAW & CIU_CIB_L2C_EN) != 0).
+                                                         See CIU_CIB_L2C_RAW and CIU_CIB_L2C_EN. */
 	uint64_t pow                          : 1;  /**< POW err interrupt
                                                          See POW_ECC_ERR */
 	uint64_t fpa                          : 1;  /**< FPA interrupt
@@ -13934,8 +14353,8 @@ union cvmx_ciu_sum1_iox_int {
 	uint64_t nand                         : 1;  /**< NAND / EMMC Controller interrupt
                                                          See NAND / EMMC interrupt */
 	uint64_t reserved_18_18               : 1;
-	uint64_t usb1                         : 1;  /**< USBDRD1 interrupts. |(CIU_CIB_USBDRD(1)_RAW[0] & CIU_CIB_USBDRD1(1)_EN[0]).
-                                                         See CIU_CIB_USBDRD(1)_RAW[0] and CIU_CIB_USBDRD(1)_EN[0]. */
+	uint64_t usb1                         : 1;  /**< USBDRD1 interrupt.  Value equals ((CIU_CIB_USBDRD(1)_RAW & CIU_CIB_USBDRD(1)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(1)_RAW and CIU_CIB_USBDRD(1)_EN. */
 	uint64_t reserved_4_16                : 13;
 	uint64_t wdog                         : 4;  /**< Watchdog interrupts, bit 0 is watchdog for PP0, ..., bit x for PPx. */
 #else
@@ -13976,6 +14395,7 @@ union cvmx_ciu_sum1_iox_int {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_sum1_iox_int_cn70xx   cn70xxp1;
 	struct cvmx_ciu_sum1_iox_int_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< MIO RST interrupt
@@ -14148,8 +14568,8 @@ union cvmx_ciu_sum1_ppx_ip2 {
                                                          See EMMC interrupt */
 	uint64_t mii1                         : 1;  /**< RGMII/MII/MIX Interface 1 Interrupt
                                                          See MIX1_ISR */
-	uint64_t usb1                         : 1;  /**< USBDRD1 interrupts. |(CIU_CIB_USBDRD(1)_RAW[0] & CIU_CIB_USBDRD1(1)_EN[0]).
-                                                         See CIU_CIB_USBDRD(1)_RAW[0] and CIU_CIB_USBDRD(1)_EN[0]. */
+	uint64_t usb1                         : 1;  /**< USBDRD1 interrupt.  Value equals ((CIU_CIB_USBDRD(1)_RAW & CIU_CIB_USBDRD(1)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(1)_RAW and CIU_CIB_USBDRD(1)_EN. */
 	uint64_t reserved_10_16               : 7;
 	uint64_t wdog                         : 10; /**< Per PP watchdog interrupts */
 #else
@@ -14407,11 +14827,11 @@ union cvmx_ciu_sum1_ppx_ip2 {
 	} cn66xx;
 	struct cvmx_ciu_sum1_ppx_ip2_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t rst                          : 1;  /**< MIO RST interrupt
-                                                         See MIO_RST_INT */
+	uint64_t rst                          : 1;  /**< RST interrupt. Value equals ((CIU_CIB_RST_RAW & CIU_CIB_RST_EN) != 0).
+                                                         See CIU_CIB_RST_RAW and CIU_CIB_RST_EN. */
 	uint64_t reserved_53_62               : 10;
-	uint64_t lmc0                         : 1;  /**< LMC0 interrupt
-                                                         See LMC0_INT */
+	uint64_t lmc0                         : 1;  /**< LMC0 interrupt. Value equals ((CIU_CIB_LMC(0)_RAW & CIU_CIB_LMC(0)_EN) != 0).
+                                                         See CIU_CIB_LMC(0)_RAW and CIU_CIB_LMC(0)_EN. */
 	uint64_t reserved_51_51               : 1;
 	uint64_t pem2                         : 1;  /**< PEM2 interrupt
                                                          See PEM2_INT_SUM (enabled by PEM2_INT_ENB) */
@@ -14426,7 +14846,7 @@ union cvmx_ciu_sum1_ppx_ip2 {
 	uint64_t reserved_41_45               : 5;
 	uint64_t dpi_dma                      : 1;  /**< DPI DMA instruction completion interrupt.
                                                          This bit is different for each CIU_SUM1_PPx.
-                                                         TBD, See DPI DMA instruction completion */
+                                                         See DPI_DMA_PP*_CNT. */
 	uint64_t reserved_38_39               : 2;
 	uint64_t agx1                         : 1;  /**< GMX1 interrupt
                                                          See GMX1_RX*_INT_REG, GMX1_TX_INT_REG,
@@ -14438,8 +14858,8 @@ union cvmx_ciu_sum1_ppx_ip2 {
                                                          See DPI_INT_REG */
 	uint64_t sli                          : 1;  /**< SLI interrupt
                                                          See SLI_INT_SUM (enabled by SLI_INT_ENB_CIU) */
-	uint64_t usb                          : 1;  /**< USBDRD0 interrupt. (CIU_CIB_USBDRD(0)_RAW[0] & CIU_CIB_USBDRD(0)_EN(0))
-                                                         See CIU_CIB_USBDRD(0)_RAW[0] and CIU_CIB_USBDRD(0)_EN(0) */
+	uint64_t usb                          : 1;  /**< USBDRD0 interrupt.  Value equals ((CIU_CIB_USBDRD(0)_RAW & CIU_CIB_USBDRD(0)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(0)_RAW and CIU_CIB_USBDRD(0)_EN. */
 	uint64_t dfa                          : 1;  /**< DFA interrupt
                                                          See DFA_ERROR */
 	uint64_t key                          : 1;  /**< KEY interrupt
@@ -14455,8 +14875,8 @@ union cvmx_ciu_sum1_ppx_ip2 {
                                                          See PIP_INT_REG */
 	uint64_t ipd                          : 1;  /**< IPD interrupt
                                                          See IPD_INT_SUM */
-	uint64_t l2c                          : 1;  /**< L2C interrupt
-                                                         See L2C_INT_REG */
+	uint64_t l2c                          : 1;  /**< L2C interrupt. Value equals ((CIU_CIB_L2C_RAW & CIU_CIB_L2C_EN) != 0).
+                                                         See CIU_CIB_L2C_RAW and CIU_CIB_L2C_EN. */
 	uint64_t pow                          : 1;  /**< POW err interrupt
                                                          See POW_ECC_ERR */
 	uint64_t fpa                          : 1;  /**< FPA interrupt
@@ -14468,8 +14888,8 @@ union cvmx_ciu_sum1_ppx_ip2 {
 	uint64_t nand                         : 1;  /**< NAND / EMMC Controller interrupt
                                                          See NAND / EMMC interrupt */
 	uint64_t reserved_18_18               : 1;
-	uint64_t usb1                         : 1;  /**< USBDRD1 interrupts. |(CIU_CIB_USBDRD(1)_RAW[0] & CIU_CIB_USBDRD1(1)_EN[0]).
-                                                         See CIU_CIB_USBDRD(1)_RAW[0] and CIU_CIB_USBDRD(1)_EN[0]. */
+	uint64_t usb1                         : 1;  /**< USBDRD1 interrupt.  Value equals ((CIU_CIB_USBDRD(1)_RAW & CIU_CIB_USBDRD(1)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(1)_RAW and CIU_CIB_USBDRD(1)_EN. */
 	uint64_t reserved_4_16                : 13;
 	uint64_t wdog                         : 4;  /**< Watchdog interrupts, bit 0 is watchdog for PP0, ..., bit x for PPx. */
 #else
@@ -14510,6 +14930,7 @@ union cvmx_ciu_sum1_ppx_ip2 {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_sum1_ppx_ip2_cn70xx   cn70xxp1;
 	struct cvmx_ciu_sum1_ppx_ip2_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< MIO RST interrupt
@@ -14683,8 +15104,8 @@ union cvmx_ciu_sum1_ppx_ip3 {
                                                          See EMMC interrupt */
 	uint64_t mii1                         : 1;  /**< RGMII/MII/MIX Interface 1 Interrupt
                                                          See MIX1_ISR */
-	uint64_t usb1                         : 1;  /**< USBDRD1 interrupts. |(CIU_CIB_USBDRD(1)_RAW[0] & CIU_CIB_USBDRD1(1)_EN[0]).
-                                                         See CIU_CIB_USBDRD(1)_RAW[0] and CIU_CIB_USBDRD(1)_EN[0]. */
+	uint64_t usb1                         : 1;  /**< USBDRD1 interrupt.  Value equals ((CIU_CIB_USBDRD(1)_RAW & CIU_CIB_USBDRD(1)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(1)_RAW and CIU_CIB_USBDRD(1)_EN. */
 	uint64_t reserved_10_16               : 7;
 	uint64_t wdog                         : 10; /**< Per PP watchdog interrupts */
 #else
@@ -14942,11 +15363,11 @@ union cvmx_ciu_sum1_ppx_ip3 {
 	} cn66xx;
 	struct cvmx_ciu_sum1_ppx_ip3_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t rst                          : 1;  /**< MIO RST interrupt
-                                                         See MIO_RST_INT */
+	uint64_t rst                          : 1;  /**< RST interrupt. Value equals ((CIU_CIB_RST_RAW & CIU_CIB_RST_EN) != 0).
+                                                         See CIU_CIB_RST_RAW and CIU_CIB_RST_EN. */
 	uint64_t reserved_53_62               : 10;
-	uint64_t lmc0                         : 1;  /**< LMC0 interrupt
-                                                         See LMC0_INT */
+	uint64_t lmc0                         : 1;  /**< LMC0 interrupt. Value equals ((CIU_CIB_LMC(0)_RAW & CIU_CIB_LMC(0)_EN) != 0).
+                                                         See CIU_CIB_LMC(0)_RAW and CIU_CIB_LMC(0)_EN. */
 	uint64_t reserved_51_51               : 1;
 	uint64_t pem2                         : 1;  /**< PEM2 interrupt
                                                          See PEM2_INT_SUM (enabled by PEM2_INT_ENB) */
@@ -14961,7 +15382,7 @@ union cvmx_ciu_sum1_ppx_ip3 {
 	uint64_t reserved_41_45               : 5;
 	uint64_t dpi_dma                      : 1;  /**< DPI DMA instruction completion interrupt.
                                                          This bit is different for each CIU_SUM1_PPx.
-                                                         TBD, See DPI DMA instruction completion */
+                                                         See DPI_DMA_PP*_CNT. */
 	uint64_t reserved_38_39               : 2;
 	uint64_t agx1                         : 1;  /**< GMX1 interrupt
                                                          See GMX1_RX*_INT_REG, GMX1_TX_INT_REG,
@@ -14973,8 +15394,8 @@ union cvmx_ciu_sum1_ppx_ip3 {
                                                          See DPI_INT_REG */
 	uint64_t sli                          : 1;  /**< SLI interrupt
                                                          See SLI_INT_SUM (enabled by SLI_INT_ENB_CIU) */
-	uint64_t usb                          : 1;  /**< USBDRD0 interrupt. (CIU_CIB_USBDRD(0)_RAW[0] & CIU_CIB_USBDRD(0)_EN(0))
-                                                         See CIU_CIB_USBDRD(0)_RAW[0] and CIU_CIB_USBDRD(0)_EN(0) */
+	uint64_t usb                          : 1;  /**< USBDRD0 interrupt.  Value equals ((CIU_CIB_USBDRD(0)_RAW & CIU_CIB_USBDRD(0)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(0)_RAW and CIU_CIB_USBDRD(0)_EN. */
 	uint64_t dfa                          : 1;  /**< DFA interrupt
                                                          See DFA_ERROR */
 	uint64_t key                          : 1;  /**< KEY interrupt
@@ -14990,8 +15411,8 @@ union cvmx_ciu_sum1_ppx_ip3 {
                                                          See PIP_INT_REG */
 	uint64_t ipd                          : 1;  /**< IPD interrupt
                                                          See IPD_INT_SUM */
-	uint64_t l2c                          : 1;  /**< L2C interrupt
-                                                         See L2C_INT_REG */
+	uint64_t l2c                          : 1;  /**< L2C interrupt. Value equals ((CIU_CIB_L2C_RAW & CIU_CIB_L2C_EN) != 0).
+                                                         See CIU_CIB_L2C_RAW and CIU_CIB_L2C_EN. */
 	uint64_t pow                          : 1;  /**< POW err interrupt
                                                          See POW_ECC_ERR */
 	uint64_t fpa                          : 1;  /**< FPA interrupt
@@ -15003,8 +15424,8 @@ union cvmx_ciu_sum1_ppx_ip3 {
 	uint64_t nand                         : 1;  /**< NAND / EMMC Controller interrupt
                                                          See NAND / EMMC interrupt */
 	uint64_t reserved_18_18               : 1;
-	uint64_t usb1                         : 1;  /**< USBDRD1 interrupts. |(CIU_CIB_USBDRD(1)_RAW[0] & CIU_CIB_USBDRD1(1)_EN[0]).
-                                                         See CIU_CIB_USBDRD(1)_RAW[0] and CIU_CIB_USBDRD(1)_EN[0]. */
+	uint64_t usb1                         : 1;  /**< USBDRD1 interrupt.  Value equals ((CIU_CIB_USBDRD(1)_RAW & CIU_CIB_USBDRD(1)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(1)_RAW and CIU_CIB_USBDRD(1)_EN. */
 	uint64_t reserved_4_16                : 13;
 	uint64_t wdog                         : 4;  /**< Watchdog interrupts, bit 0 is watchdog for PP0, ..., bit x for PPx. */
 #else
@@ -15045,6 +15466,7 @@ union cvmx_ciu_sum1_ppx_ip3 {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_sum1_ppx_ip3_cn70xx   cn70xxp1;
 	struct cvmx_ciu_sum1_ppx_ip3_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< MIO RST interrupt
@@ -15218,8 +15640,8 @@ union cvmx_ciu_sum1_ppx_ip4 {
                                                          See EMMC interrupt */
 	uint64_t mii1                         : 1;  /**< RGMII/MII/MIX Interface 1 Interrupt
                                                          See MIX1_ISR */
-	uint64_t usb1                         : 1;  /**< USBDRD1 interrupts. |(CIU_CIB_USBDRD(1)_RAW[0] & CIU_CIB_USBDRD1(1)_EN[0]).
-                                                         See CIU_CIB_USBDRD(1)_RAW[0] and CIU_CIB_USBDRD(1)_EN[0]. */
+	uint64_t usb1                         : 1;  /**< USBDRD1 interrupt.  Value equals ((CIU_CIB_USBDRD(1)_RAW & CIU_CIB_USBDRD(1)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(1)_RAW and CIU_CIB_USBDRD(1)_EN. */
 	uint64_t reserved_10_16               : 7;
 	uint64_t wdog                         : 10; /**< Per PP watchdog interrupts */
 #else
@@ -15477,11 +15899,11 @@ union cvmx_ciu_sum1_ppx_ip4 {
 	} cn66xx;
 	struct cvmx_ciu_sum1_ppx_ip4_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t rst                          : 1;  /**< MIO RST interrupt
-                                                         See MIO_RST_INT */
+	uint64_t rst                          : 1;  /**< RST interrupt. Value equals ((CIU_CIB_RST_RAW & CIU_CIB_RST_EN) != 0).
+                                                         See CIU_CIB_RST_RAW and CIU_CIB_RST_EN. */
 	uint64_t reserved_53_62               : 10;
-	uint64_t lmc0                         : 1;  /**< LMC0 interrupt
-                                                         See LMC0_INT */
+	uint64_t lmc0                         : 1;  /**< LMC0 interrupt. Value equals ((CIU_CIB_LMC(0)_RAW & CIU_CIB_LMC(0)_EN) != 0).
+                                                         See CIU_CIB_LMC(0)_RAW and CIU_CIB_LMC(0)_EN. */
 	uint64_t reserved_51_51               : 1;
 	uint64_t pem2                         : 1;  /**< PEM2 interrupt
                                                          See PEM2_INT_SUM (enabled by PEM2_INT_ENB) */
@@ -15496,7 +15918,7 @@ union cvmx_ciu_sum1_ppx_ip4 {
 	uint64_t reserved_41_45               : 5;
 	uint64_t dpi_dma                      : 1;  /**< DPI DMA instruction completion interrupt.
                                                          This bit is different for each CIU_SUM1_PPx.
-                                                         TBD, See DPI DMA instruction completion */
+                                                         See DPI_DMA_PP*_CNT. */
 	uint64_t reserved_38_39               : 2;
 	uint64_t agx1                         : 1;  /**< GMX1 interrupt
                                                          See GMX1_RX*_INT_REG, GMX1_TX_INT_REG,
@@ -15508,8 +15930,8 @@ union cvmx_ciu_sum1_ppx_ip4 {
                                                          See DPI_INT_REG */
 	uint64_t sli                          : 1;  /**< SLI interrupt
                                                          See SLI_INT_SUM (enabled by SLI_INT_ENB_CIU) */
-	uint64_t usb                          : 1;  /**< USBDRD0 interrupt. (CIU_CIB_USBDRD(0)_RAW[0] & CIU_CIB_USBDRD(0)_EN(0))
-                                                         See CIU_CIB_USBDRD(0)_RAW[0] and CIU_CIB_USBDRD(0)_EN(0) */
+	uint64_t usb                          : 1;  /**< USBDRD0 interrupt.  Value equals ((CIU_CIB_USBDRD(0)_RAW & CIU_CIB_USBDRD(0)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(0)_RAW and CIU_CIB_USBDRD(0)_EN. */
 	uint64_t dfa                          : 1;  /**< DFA interrupt
                                                          See DFA_ERROR */
 	uint64_t key                          : 1;  /**< KEY interrupt
@@ -15525,8 +15947,8 @@ union cvmx_ciu_sum1_ppx_ip4 {
                                                          See PIP_INT_REG */
 	uint64_t ipd                          : 1;  /**< IPD interrupt
                                                          See IPD_INT_SUM */
-	uint64_t l2c                          : 1;  /**< L2C interrupt
-                                                         See L2C_INT_REG */
+	uint64_t l2c                          : 1;  /**< L2C interrupt. Value equals ((CIU_CIB_L2C_RAW & CIU_CIB_L2C_EN) != 0).
+                                                         See CIU_CIB_L2C_RAW and CIU_CIB_L2C_EN. */
 	uint64_t pow                          : 1;  /**< POW err interrupt
                                                          See POW_ECC_ERR */
 	uint64_t fpa                          : 1;  /**< FPA interrupt
@@ -15538,8 +15960,8 @@ union cvmx_ciu_sum1_ppx_ip4 {
 	uint64_t nand                         : 1;  /**< NAND / EMMC Controller interrupt
                                                          See NAND / EMMC interrupt */
 	uint64_t reserved_18_18               : 1;
-	uint64_t usb1                         : 1;  /**< USBDRD1 interrupts. |(CIU_CIB_USBDRD(1)_RAW[0] & CIU_CIB_USBDRD1(1)_EN[0]).
-                                                         See CIU_CIB_USBDRD(1)_RAW[0] and CIU_CIB_USBDRD(1)_EN[0]. */
+	uint64_t usb1                         : 1;  /**< USBDRD1 interrupt.  Value equals ((CIU_CIB_USBDRD(1)_RAW & CIU_CIB_USBDRD(1)_EN) != 0).
+                                                         See CIU_CIB_USBDRD(1)_RAW and CIU_CIB_USBDRD(1)_EN. */
 	uint64_t reserved_4_16                : 13;
 	uint64_t wdog                         : 4;  /**< Watchdog interrupts, bit 0 is watchdog for PP0, ..., bit x for PPx. */
 #else
@@ -15580,6 +16002,7 @@ union cvmx_ciu_sum1_ppx_ip4 {
 	uint64_t rst                          : 1;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_sum1_ppx_ip4_cn70xx   cn70xxp1;
 	struct cvmx_ciu_sum1_ppx_ip4_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t rst                          : 1;  /**< MIO RST interrupt
@@ -15682,12 +16105,12 @@ union cvmx_ciu_sum2_iox_int {
 	struct cvmx_ciu_sum2_iox_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
-	uint64_t bch                          : 1;  /**< BCH interrupt. TBD. */
-	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. TBD. */
-	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. |(CIU_CIB_OCLA(0)_RAW[0] & CIU_CIB_OCLA(0)_EN[0]).
-                                                         See  CIU_CIB_OCLA(0)_RAW[0]  and  CIU_CIB_OCLA(0)_EN[0]. */
-	uint64_t sata                         : 1;  /**< SATA interrupt summary. |(CIU_CIB_SATA(0)_RAW[0] & CIU_CIB_SATA(0)_EN(0)).
-                                                         See  CIU_CIB_SATA(0)_RAW[0]  and  CIU_CIB_SATA(0)_EN(0). */
+	uint64_t bch                          : 1;  /**< BCH interrupt. See BCH_GEN_INT. */
+	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. Set any time AGL drops a packet. */
+	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. Value equals ((CIU_CIB_OCLA(0)_RAW & CIU_CIB_OCLA(0)_EN) != 0).
+                                                         See CIU_CIB_OCLA(0)_RAW and CIU_CIB_OCLA(0)_EN. */
+	uint64_t sata                         : 1;  /**< SATA interrupt summary. Value equals ((CIU_CIB_SATA(0)_RAW & CIU_CIB_SATA(0)_EN) != 0).
+                                                         See CIU_CIB_SATA(0)_RAW and CIU_CIB_SATA(0)_EN. */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< ENDOR PHY interrupts, see ENDOR interrupt status
                                                          register ENDOR_RSTCLK_INTR0(1)_STATUS for details */
@@ -15742,12 +16165,12 @@ union cvmx_ciu_sum2_iox_int {
 	struct cvmx_ciu_sum2_iox_int_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
-	uint64_t bch                          : 1;  /**< BCH interrupt. TBD. */
-	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. TBD. */
-	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. |(CIU_CIB_OCLA(0)_RAW[0] & CIU_CIB_OCLA(0)_EN[0]).
-                                                         See  CIU_CIB_OCLA(0)_RAW[0]  and  CIU_CIB_OCLA(0)_EN[0]. */
-	uint64_t sata                         : 1;  /**< SATA interrupt summary. |(CIU_CIB_SATA(0)_RAW[0] & CIU_CIB_SATA(0)_EN(0)).
-                                                         See  CIU_CIB_SATA(0)_RAW[0]  and  CIU_CIB_SATA(0)_EN(0). */
+	uint64_t bch                          : 1;  /**< BCH interrupt. See BCH_GEN_INT. */
+	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. Set any time AGL drops a packet. */
+	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. Value equals ((CIU_CIB_OCLA(0)_RAW & CIU_CIB_OCLA(0)_EN) != 0).
+                                                         See CIU_CIB_OCLA(0)_RAW and CIU_CIB_OCLA(0)_EN. */
+	uint64_t sata                         : 1;  /**< SATA interrupt summary. Value equals ((CIU_CIB_SATA(0)_RAW & CIU_CIB_SATA(0)_EN) != 0).
+                                                         See CIU_CIB_SATA(0)_RAW and CIU_CIB_SATA(0)_EN. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< General timer 4-9 interrupts.
                                                          When CIU_TIM_MULTI_CAST[EN] == 0, this interrupt is
@@ -15771,6 +16194,7 @@ union cvmx_ciu_sum2_iox_int {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_sum2_iox_int_cn70xx   cn70xxp1;
 	struct cvmx_ciu_sum2_iox_int_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -15812,12 +16236,12 @@ union cvmx_ciu_sum2_ppx_ip2 {
 	struct cvmx_ciu_sum2_ppx_ip2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
-	uint64_t bch                          : 1;  /**< BCH interrupt. TBD. */
-	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. TBD. */
-	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. |(CIU_CIB_OCLA(0)_RAW[0] & CIU_CIB_OCLA(0)_EN[0]).
-                                                         See  CIU_CIB_OCLA(0)_RAW[0]  and  CIU_CIB_OCLA(0)_EN[0]. */
-	uint64_t sata                         : 1;  /**< SATA interrupt summary. |(CIU_CIB_SATA(0)_RAW[0] & CIU_CIB_SATA(0)_EN(0)).
-                                                         See  CIU_CIB_SATA(0)_RAW[0]  and  CIU_CIB_SATA(0)_EN(0). */
+	uint64_t bch                          : 1;  /**< BCH interrupt. See BCH_GEN_INT. */
+	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. Set any time AGL drops a packet. */
+	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. Value equals ((CIU_CIB_OCLA(0)_RAW & CIU_CIB_OCLA(0)_EN) != 0).
+                                                         See CIU_CIB_OCLA(0)_RAW and CIU_CIB_OCLA(0)_EN. */
+	uint64_t sata                         : 1;  /**< SATA interrupt summary. Value equals ((CIU_CIB_SATA(0)_RAW & CIU_CIB_SATA(0)_EN) != 0).
+                                                         See CIU_CIB_SATA(0)_RAW and CIU_CIB_SATA(0)_EN. */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< ENDOR PHY interrupts, see ENDOR interrupt status
                                                          register ENDOR_RSTCLK_INTR0(1)_STATUS for details */
@@ -15872,12 +16296,12 @@ union cvmx_ciu_sum2_ppx_ip2 {
 	struct cvmx_ciu_sum2_ppx_ip2_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
-	uint64_t bch                          : 1;  /**< BCH interrupt. TBD. */
-	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. TBD. */
-	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. |(CIU_CIB_OCLA(0)_RAW[0] & CIU_CIB_OCLA(0)_EN[0]).
-                                                         See  CIU_CIB_OCLA(0)_RAW[0]  and  CIU_CIB_OCLA(0)_EN[0]. */
-	uint64_t sata                         : 1;  /**< SATA interrupt summary. |(CIU_CIB_SATA(0)_RAW[0] & CIU_CIB_SATA(0)_EN(0)).
-                                                         See  CIU_CIB_SATA(0)_RAW[0]  and  CIU_CIB_SATA(0)_EN(0). */
+	uint64_t bch                          : 1;  /**< BCH interrupt. See BCH_GEN_INT. */
+	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. Set any time AGL drops a packet. */
+	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. Value equals ((CIU_CIB_OCLA(0)_RAW & CIU_CIB_OCLA(0)_EN) != 0).
+                                                         See CIU_CIB_OCLA(0)_RAW and CIU_CIB_OCLA(0)_EN. */
+	uint64_t sata                         : 1;  /**< SATA interrupt summary. Value equals ((CIU_CIB_SATA(0)_RAW & CIU_CIB_SATA(0)_EN) != 0).
+                                                         See CIU_CIB_SATA(0)_RAW and CIU_CIB_SATA(0)_EN. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< General timer 4-9 interrupts.
                                                          When CIU_TIM_MULTI_CAST[EN] == 0, this interrupt is
@@ -15901,6 +16325,7 @@ union cvmx_ciu_sum2_ppx_ip2 {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_sum2_ppx_ip2_cn70xx   cn70xxp1;
 	struct cvmx_ciu_sum2_ppx_ip2_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -15943,12 +16368,12 @@ union cvmx_ciu_sum2_ppx_ip3 {
 	struct cvmx_ciu_sum2_ppx_ip3_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
-	uint64_t bch                          : 1;  /**< BCH interrupt. TBD. */
-	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. TBD. */
-	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. |(CIU_CIB_OCLA(0)_RAW[0] & CIU_CIB_OCLA(0)_EN[0]).
-                                                         See  CIU_CIB_OCLA(0)_RAW[0]  and  CIU_CIB_OCLA(0)_EN[0]. */
-	uint64_t sata                         : 1;  /**< SATA interrupt summary. |(CIU_CIB_SATA(0)_RAW[0] & CIU_CIB_SATA(0)_EN(0)).
-                                                         See  CIU_CIB_SATA(0)_RAW[0]  and  CIU_CIB_SATA(0)_EN(0). */
+	uint64_t bch                          : 1;  /**< BCH interrupt. See BCH_GEN_INT. */
+	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. Set any time AGL drops a packet. */
+	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. Value equals ((CIU_CIB_OCLA(0)_RAW & CIU_CIB_OCLA(0)_EN) != 0).
+                                                         See CIU_CIB_OCLA(0)_RAW and CIU_CIB_OCLA(0)_EN. */
+	uint64_t sata                         : 1;  /**< SATA interrupt summary. Value equals ((CIU_CIB_SATA(0)_RAW & CIU_CIB_SATA(0)_EN) != 0).
+                                                         See CIU_CIB_SATA(0)_RAW and CIU_CIB_SATA(0)_EN. */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< ENDOR PHY interrupts, see ENDOR interrupt status
                                                          register ENDOR_RSTCLK_INTR0(1)_STATUS for details */
@@ -16003,12 +16428,12 @@ union cvmx_ciu_sum2_ppx_ip3 {
 	struct cvmx_ciu_sum2_ppx_ip3_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
-	uint64_t bch                          : 1;  /**< BCH interrupt. TBD. */
-	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. TBD. */
-	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. |(CIU_CIB_OCLA(0)_RAW[0] & CIU_CIB_OCLA(0)_EN[0]).
-                                                         See  CIU_CIB_OCLA(0)_RAW[0]  and  CIU_CIB_OCLA(0)_EN[0]. */
-	uint64_t sata                         : 1;  /**< SATA interrupt summary. |(CIU_CIB_SATA(0)_RAW[0] & CIU_CIB_SATA(0)_EN(0)).
-                                                         See  CIU_CIB_SATA(0)_RAW[0]  and  CIU_CIB_SATA(0)_EN(0). */
+	uint64_t bch                          : 1;  /**< BCH interrupt. See BCH_GEN_INT. */
+	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. Set any time AGL drops a packet. */
+	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. Value equals ((CIU_CIB_OCLA(0)_RAW & CIU_CIB_OCLA(0)_EN) != 0).
+                                                         See CIU_CIB_OCLA(0)_RAW and CIU_CIB_OCLA(0)_EN. */
+	uint64_t sata                         : 1;  /**< SATA interrupt summary. Value equals ((CIU_CIB_SATA(0)_RAW & CIU_CIB_SATA(0)_EN) != 0).
+                                                         See CIU_CIB_SATA(0)_RAW and CIU_CIB_SATA(0)_EN. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< General timer 4-9 interrupts.
                                                          When CIU_TIM_MULTI_CAST[EN] == 0, this interrupt is
@@ -16032,6 +16457,7 @@ union cvmx_ciu_sum2_ppx_ip3 {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_sum2_ppx_ip3_cn70xx   cn70xxp1;
 	struct cvmx_ciu_sum2_ppx_ip3_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -16074,12 +16500,12 @@ union cvmx_ciu_sum2_ppx_ip4 {
 	struct cvmx_ciu_sum2_ppx_ip4_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
-	uint64_t bch                          : 1;  /**< BCH interrupt. TBD. */
-	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. TBD. */
-	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. |(CIU_CIB_OCLA(0)_RAW[0] & CIU_CIB_OCLA(0)_EN[0]).
-                                                         See  CIU_CIB_OCLA(0)_RAW[0]  and  CIU_CIB_OCLA(0)_EN[0]. */
-	uint64_t sata                         : 1;  /**< SATA interrupt summary. |(CIU_CIB_SATA(0)_RAW[0] & CIU_CIB_SATA(0)_EN(0)).
-                                                         See  CIU_CIB_SATA(0)_RAW[0]  and  CIU_CIB_SATA(0)_EN(0). */
+	uint64_t bch                          : 1;  /**< BCH interrupt. See BCH_GEN_INT. */
+	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. Set any time AGL drops a packet. */
+	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. Value equals ((CIU_CIB_OCLA(0)_RAW & CIU_CIB_OCLA(0)_EN) != 0).
+                                                         See CIU_CIB_OCLA(0)_RAW and CIU_CIB_OCLA(0)_EN. */
+	uint64_t sata                         : 1;  /**< SATA interrupt summary. Value equals ((CIU_CIB_SATA(0)_RAW & CIU_CIB_SATA(0)_EN) != 0).
+                                                         See CIU_CIB_SATA(0)_RAW and CIU_CIB_SATA(0)_EN. */
 	uint64_t reserved_15_15               : 1;
 	uint64_t endor                        : 2;  /**< ENDOR PHY interrupts, see ENDOR interrupt status
                                                          register ENDOR_RSTCLK_INTR0(1)_STATUS for details */
@@ -16134,12 +16560,12 @@ union cvmx_ciu_sum2_ppx_ip4 {
 	struct cvmx_ciu_sum2_ppx_ip4_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
-	uint64_t bch                          : 1;  /**< BCH interrupt. TBD. */
-	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. TBD. */
-	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. |(CIU_CIB_OCLA(0)_RAW[0] & CIU_CIB_OCLA(0)_EN[0]).
-                                                         See  CIU_CIB_OCLA(0)_RAW[0]  and  CIU_CIB_OCLA(0)_EN[0]. */
-	uint64_t sata                         : 1;  /**< SATA interrupt summary. |(CIU_CIB_SATA(0)_RAW[0] & CIU_CIB_SATA(0)_EN(0)).
-                                                         See  CIU_CIB_SATA(0)_RAW[0]  and  CIU_CIB_SATA(0)_EN(0). */
+	uint64_t bch                          : 1;  /**< BCH interrupt. See BCH_GEN_INT. */
+	uint64_t agl_drp                      : 1;  /**< AGL parket drop interrupt. Set any time AGL drops a packet. */
+	uint64_t ocla                         : 1;  /**< OCLA interrupt summary. Value equals ((CIU_CIB_OCLA(0)_RAW & CIU_CIB_OCLA(0)_EN) != 0).
+                                                         See CIU_CIB_OCLA(0)_RAW and CIU_CIB_OCLA(0)_EN. */
+	uint64_t sata                         : 1;  /**< SATA interrupt summary. Value equals ((CIU_CIB_SATA(0)_RAW & CIU_CIB_SATA(0)_EN) != 0).
+                                                         See CIU_CIB_SATA(0)_RAW and CIU_CIB_SATA(0)_EN. */
 	uint64_t reserved_10_15               : 6;
 	uint64_t timer                        : 6;  /**< General timer 4-9 interrupts.
                                                          When CIU_TIM_MULTI_CAST[EN] == 0, this interrupt is
@@ -16163,6 +16589,7 @@ union cvmx_ciu_sum2_ppx_ip4 {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} cn70xx;
+	struct cvmx_ciu_sum2_ppx_ip4_cn70xx   cn70xxp1;
 	struct cvmx_ciu_sum2_ppx_ip4_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
@@ -16234,6 +16661,7 @@ union cvmx_ciu_timx {
 	struct cvmx_ciu_timx_s                cn68xx;
 	struct cvmx_ciu_timx_s                cn68xxp1;
 	struct cvmx_ciu_timx_s                cn70xx;
+	struct cvmx_ciu_timx_s                cn70xxp1;
 	struct cvmx_ciu_timx_s                cnf71xx;
 };
 typedef union cvmx_ciu_timx cvmx_ciu_timx_t;
@@ -16266,6 +16694,7 @@ union cvmx_ciu_tim_multi_cast {
 	struct cvmx_ciu_tim_multi_cast_s      cn61xx;
 	struct cvmx_ciu_tim_multi_cast_s      cn66xx;
 	struct cvmx_ciu_tim_multi_cast_s      cn70xx;
+	struct cvmx_ciu_tim_multi_cast_s      cn70xxp1;
 	struct cvmx_ciu_tim_multi_cast_s      cnf71xx;
 };
 typedef union cvmx_ciu_tim_multi_cast cvmx_ciu_tim_multi_cast_t;
@@ -16325,6 +16754,8 @@ union cvmx_ciu_wdogx {
 	struct cvmx_ciu_wdogx_s               cn68xx;
 	struct cvmx_ciu_wdogx_s               cn68xxp1;
 	struct cvmx_ciu_wdogx_s               cn70xx;
+	struct cvmx_ciu_wdogx_s               cn70xxp1;
+	struct cvmx_ciu_wdogx_s               cn78xx;
 	struct cvmx_ciu_wdogx_s               cnf71xx;
 };
 typedef union cvmx_ciu_wdogx cvmx_ciu_wdogx_t;

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com).  All rights
  * reserved.
  *
  *
@@ -20,7 +20,7 @@
  *     derived from this software without specific prior written
  *     permission.
 
- * This Software, including technical data, may be subject to U.S. export  control
+ * This Software, including technical data, may be subject to U.S. export control
  * laws, including the U.S. Export Administration Act and its  associated
  * regulations, and may be subject to export or import  regulations in other
  * countries.
@@ -361,136 +361,212 @@ typedef union {
 } cvmx_nand_cmd_t;
 
 typedef struct __attribute__ ((packed)) {
-	char onfi[4];		    /**< Bytes 0-3: The ASCII characters 'O', 'N', 'F', 'I' */
-	uint16_t revision_number;
-				    /**< Bytes 4-5: ONFI revision number
-                                        - 2-15 Reserved (0)
-                                        - 1    1 = supports ONFI version 1.0
-                                        - 0    Reserved (0) */
-	uint16_t features;	    /**< Bytes 6-7: Features supported
-                                        - 5-15    Reserved (0)
-                                        - 4       1 = supports odd to even page Copyback
-                                        - 3       1 = supports interleaved operations
-                                        - 2       1 = supports non-sequential page programming
-                                        - 1       1 = supports multiple LUN operations
-                                        - 0       1 = supports 16-bit data bus width */
-	uint16_t optional_commands;
-				    /**< Bytes 8-9: Optional commands supported
-                                        - 6-15   Reserved (0)
-                                        - 5      1 = supports Read Unique ID
-                                        - 4      1 = supports Copyback
-                                        - 3      1 = supports Read Status Enhanced
-                                        - 2      1 = supports Get Features and Set Features
-                                        - 1      1 = supports Read Cache commands
-                                        - 0      1 = supports Page Cache Program command */
-	uint8_t reserved_10_31[22];
-				    /**< Bytes 10-31: Reserved */
+	char onfi[4];			/**
+					 * Bytes 0-3: The ASCII characters
+					 * 'O', 'N', 'F', 'I'
+					 */
+	uint16_t revision_number;	/**
+					 * Bytes 4-5: ONFI revision number
+                                         * - 2-15 Reserved (0)
+                                         * - 1    1 = supports ONFI version 1.0
+                                         * - 0    Reserved (0)
+                                         */
+	uint16_t features;		/**
+					 * Bytes 6-7: Features supported
+                                         * - 5-15    Reserved (0)
+                                         * - 4       1 = supports odd to even
+                                         *		 page Copyback
+                                         * - 3       1 = supports interleaved
+                                         *		 operations
+                                         * - 2       1 = supports non-sequential
+                                         *		 page programming
+                                         * - 1       1 = supports multiple LUN
+                                         *		 operations
+                                         * - 0       1 = supports 16-bit data
+                                         *		 bus width
+                                         */
+	uint16_t optional_commands;	/**
+					 * Bytes 8-9: Optional commands
+					 * supported
+					 *   - 6-15   Reserved (0)
+					 *   - 5      1 = supports Read Unique
+					 *		  ID
+					 *   - 4      1 = supports Copyback
+					 *   - 3      1 = supports Read Status
+					 *		  Enhanced
+					 *   - 2      1 = supports Get Features
+					 *		  and Set Features
+					 *   - 1      1 = supports Read Cache
+					 *		  commands
+					 *   - 0      1 = supports Page Cache
+					 *		  Program command
+					 */
+	uint8_t reserved_10_11[2]; 	/** Bytes 10-11: Reserved */
+	uint16_t extended_param_page_len;/** Extended parameter page length */
+	uint8_t num_param_pages;	/** Number of parameter pages */
+	uint8_t reserved_15_31[17];	/** Bytes 15-31: Reserved */
+	char manufacturer[12];		/**
+					 * Bytes 32-43: Device manufacturer
+					 * (12 ASCII characters)
+					 */
+	char model[20];			/**
+					 * Bytes 40-63: Device model
+					 * (20 ASCII characters)
+					 */
+	uint8_t jedec_id;	    	/** Byte 64: JEDEC manufacturer ID */
+	uint16_t date_code;	    	/** Byte 65-66: Date code */
+	uint8_t reserved_67_79[13];	/** Bytes 67-79: Reserved */
+	uint32_t page_data_bytes;	/**
+					 * Bytes 80-83: Number of data bytes per
+					 * page
+					 */
+	uint16_t page_spare_bytes;	/**
+					 * Bytes 84-85: Number of spare bytes
+					 * per page
+					 */
+	uint32_t partial_page_data_bytes;	/**
+						* Bytes 86-89: Number of data
+						* bytes per partial page
+						*/
+	uint16_t partial_page_spare_bytes;	/**
+						 * Bytes 90-91: Number of spare
+						 * bytes per partial page
+						 */
+	uint32_t pages_per_block;	/**
+					 * Bytes 92-95: Number of pages per
+					 * block
+					 */
+	uint32_t blocks_per_lun;	/**
+					 * Bytes 96-99: Number of blocks per
+					 * logical unit (LUN)
+					 */
+	uint8_t number_lun;		/**
+					 * Byte 100: Number of logical units
+					 * (LUNs)
+					 */
+	uint8_t address_cycles;		/**
+					 * Byte 101: Number of address cycles
+                                         * - 4-7     Column address cycles
+                                         * - 0-3     Row address cycles
+                                         */
+	uint8_t bits_per_cell;		/** Byte 102: Number of bits per cell */
+	uint16_t bad_block_per_lun;	/**
+					 *  Bytes 103-104: Bad blocks maximum
+					 * per LUN
+					 */
+	uint16_t block_endurance;	/** Bytes 105-106: Block endurance */
+	uint8_t good_blocks;		/**
+					 * Byte 107: Guaranteed valid blocks at
+					 * beginning of target
+					 */
+	uint16_t good_block_endurance;	/**
+					 * Bytes 108-109: Block endurance for
+					 * guaranteed valid blocks
+					 */
+	uint8_t programs_per_page;	/**
+					 * Byte 110: Number of programs per page
+					 */
+	uint8_t partial_program_attrib;	/**
+					 * Byte 111: Partial programming
+					 * attributes
+					 * - 5-7    Reserved
+					 * - 4      1 = partial page layout is
+					 *		partial page data
+					 *		followed by partial
+					 *		page spare
+					 * - 1-3    Reserved
+					 * - 0      1 = partial page programming
+					 *		has constraints
+					 */
+	uint8_t bits_ecc;		/**
+					 * Byte 112: Number of bits ECC
+					 * correctability
+					 */
+	uint8_t interleaved_address_bits;	/**
+						 * Byte 113: Number of
+						 * interleaved address bits
+						 * - 4-7    Reserved (0)
+						 * - 0-3    Number of
+						 *	    interleaved address
+						 *	    bits
+						 */
+	uint8_t interleaved_attrib;	/**
+					 * Byte 114: Interleaved operation
+					 * attributes
+					 * - 4-7    Reserved (0)
+					 * - 3      Address restrictions for
+					 *	    program cache
+					 * - 2      1 = program cache supported
+					 * - 1      1 = no block address
+					 *		restrictions
+					 * - 0      Overlapped / concurrent
+					 *	    interleaving support
+					 */
+	uint8_t reserved_115_127[13];	/** Bytes 115-127: Reserved (0) */
 
-	char manufacturer[12];
-				    /**< Bytes 32-43: Device manufacturer (12 ASCII characters) */
-	char model[20];		    /**< Bytes 40-63: Device model (20 ASCII characters) */
-	uint8_t jedec_id;	    /**< Byte 64: JEDEC manufacturer ID */
-	uint16_t date_code;	    /**< Byte 65-66: Date code */
-	uint8_t reserved_67_79[13];
-				    /**< Bytes 67-79: Reserved */
-
-	uint32_t page_data_bytes;
-				    /**< Bytes 80-83: Number of data bytes per page */
-	uint16_t page_spare_bytes;
-				    /**< Bytes 84-85: Number of spare bytes per page */
-	uint32_t partial_page_data_bytes;
-				      /**< Bytes 86-89: Number of data bytes per partial page */
-	uint16_t partial_page_spare_bytes;
-				       /**< Bytes 90-91: Number of spare bytes per partial page */
-	uint32_t pages_per_block;
-				    /**< Bytes 92-95: Number of pages per block */
-	uint32_t blocks_per_lun;
-				    /**< Bytes 96-99: Number of blocks per logical unit (LUN) */
-	uint8_t number_lun;	    /**< Byte 100: Number of logical units (LUNs) */
-	uint8_t address_cycles;
-				    /**< Byte 101: Number of address cycles
-                                        - 4-7     Column address cycles
-                                        - 0-3     Row address cycles */
-	uint8_t bits_per_cell;
-				    /**< Byte 102: Number of bits per cell */
-	uint16_t bad_block_per_lun;
-				    /**< Bytes 103-104: Bad blocks maximum per LUN */
-	uint16_t block_endurance;
-				    /**< Bytes 105-106: Block endurance */
-	uint8_t good_blocks;	    /**< Byte 107: Guaranteed valid blocks at beginning of target */
-	uint16_t good_block_endurance;
-				    /**< Bytes 108-109: Block endurance for guaranteed valid blocks */
-	uint8_t programs_per_page;
-				    /**< Byte 110: Number of programs per page */
-	uint8_t partial_program_attrib;
-				    /**< Byte 111: Partial programming attributes
-                                        - 5-7    Reserved
-                                        - 4      1 = partial page layout is partial page data followed by partial page spare
-                                        - 1-3    Reserved
-                                        - 0      1 = partial page programming has constraints */
-	uint8_t bits_ecc;	    /**< Byte 112: Number of bits ECC correctability */
-	uint8_t interleaved_address_bits;
-					/**< Byte 113: Number of interleaved address bits
-                                            - 4-7    Reserved (0)
-                                            - 0-3    Number of interleaved address bits */
-	uint8_t interleaved_attrib;
-				    /**< Byte 114: Interleaved operation attributes
-                                        - 4-7    Reserved (0)
-                                        - 3      Address restrictions for program cache
-                                        - 2      1 = program cache supported
-                                        - 1      1 = no block address restrictions
-                                        - 0      Overlapped / concurrent interleaving support */
-	uint8_t reserved_115_127[13];
-				    /**< Bytes 115-127: Reserved (0) */
-
-	uint8_t pin_capacitance;
-				    /**< Byte 128: I/O pin capacitance */
-	uint16_t timing_mode;
-				    /**< Byte 129-130: Timing mode support
-                                        - 6-15   Reserved (0)
-                                        - 5      1 = supports timing mode 5
-                                        - 4      1 = supports timing mode 4
-                                        - 3      1 = supports timing mode 3
-                                        - 2      1 = supports timing mode 2
-                                        - 1      1 = supports timing mode 1
-                                        - 0      1 = supports timing mode 0, shall be 1 */
-	uint16_t cache_timing_mode;
-				    /**< Byte 131-132: Program cache timing mode support
-                                        - 6-15   Reserved (0)
-                                        - 5      1 = supports timing mode 5
-                                        - 4      1 = supports timing mode 4
-                                        - 3      1 = supports timing mode 3
-                                        - 2      1 = supports timing mode 2
-                                        - 1      1 = supports timing mode 1
-                                        - 0      1 = supports timing mode 0 */
-	uint16_t t_prog;	    /**< Byte 133-134: Maximum page program time (us) */
-	uint16_t t_bers;	    /**< Byte 135-136: Maximum block erase time (us) */
-	uint16_t t_r;		    /**< Byte 137-148: Maximum page read time (us) */
-	uint16_t t_ccs;		    /**< Byte 139-140: Minimum change column setup time (ns) */
-	uint8_t reserved_141_163[23];
-				    /**< Byte 141-163: Reserved (0) */
-
-	uint16_t vendor_revision;
-				    /**< Byte 164-165: Vendor specific Revision number */
-	uint8_t vendor_specific[88];
-				    /**< Byte 166-253: Vendor specific */
-	uint16_t crc;		    /**< Byte 254-255: Integrity CRC */
+	uint8_t pin_capacitance;	/** Byte 128: I/O pin capacitance */
+	uint16_t timing_mode;		/**
+					 * Byte 129-130: Timing mode support
+					 * - 6-15   Reserved (0)
+					 * - 5      1 = supports timing mode 5
+					 * - 4      1 = supports timing mode 4
+					 * - 3      1 = supports timing mode 3
+					 * - 2      1 = supports timing mode 2
+					 * - 1      1 = supports timing mode 1
+					 * - 0      1 = supports timing mode 0,
+					 *		shall be 1
+					 */
+	uint16_t cache_timing_mode;	/**
+					 * Byte 131-132: Program cache timing
+					 * mode support
+					 * - 6-15   Reserved (0)
+					 * - 5      1 = supports timing mode 5
+					 * - 4      1 = supports timing mode 4
+					 * - 3      1 = supports timing mode 3
+					 * - 2      1 = supports timing mode 2
+					 * - 1      1 = supports timing mode 1
+					 * - 0      1 = supports timing mode 0
+					 */
+	uint16_t t_prog;		/**
+					 * Byte 133-134: Maximum page program
+					 * time (us)
+					 */
+	uint16_t t_bers;		/**
+					 * Byte 135-136: Maximum block erase
+					 * time (us)
+					 */
+	uint16_t t_r;			/**
+					 * Byte 137-148: Maximum page read time
+					 * (us)
+					 */
+	uint16_t t_ccs;			/**
+					 * Byte 139-140: Minimum change column
+					 * setup time (ns)
+					 */
+	uint8_t reserved_141_163[23];	/** Byte 141-163: Reserved (0) */
+	uint16_t vendor_revision;	/**
+					 * Byte 164-165: Vendor specific
+					 * Revision number
+					 */
+	uint8_t vendor_specific[88];	/** Byte 166-253: Vendor specific */
+	uint16_t crc;			/** Byte 254-255: Integrity CRC */
 } cvmx_nand_onfi_param_page_t;
 
 /**
- * Called to initialize the NAND controller for use. Note that
- * you must be running out of L2 or memory and not NAND before
- * calling this function.
- * When probing for NAND chips, this function attempts to autoconfigure based on the NAND parts detected.
- * It currently supports autodetection for ONFI parts (with valid parameter pages), and some Samsung NAND
- * parts (decoding ID bits.)  If autoconfiguration fails, the defaults set with __set_chip_defaults()
- * prior to calling cvmx_nand_initialize() are used.
- * If defaults are set and the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is provided, the defaults are used
- * for all chips in the active_chips mask.
+ * Called to initialize the NAND controller for use.  Note that you must be
+ * running out of L2 or memory and not NAND before calling this function.
+ * When probing for NAND chips, this function attempts to autoconfigure based
+ * on the NAND parts detected.  It currently supports autodetection for ONFI
+ * parts (with valid parameter pages), and some Samsung NAND parts (decoding ID
+ * bits).  If autoconfiguration fails, the defaults set with
+ * __set_chip_defaults() prior to calling cvmx_nand_initialize() are used.
+ * If defaults are set and the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is
+ * provided, the defaults are used for all chips in the active_chips mask.
  *
  * @param flags  Optional initialization flags
- *               If the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is passed, chips are not probed,
- *               and the default parameters (if set with cvmx_nand_set_defaults) are used for all chips
+ *               If the CVMX_NAND_INITIALIZE_FLAGS_DONT_PROBE flag is passed,
+ *		 chips are not probed and the default parameters, if set with
+ *		 cvmx_nand_set_defaults, are used for all chips
  *               in the active_chips mask.
  * @param active_chips
  *               Each bit in this parameter represents a chip select that might
@@ -500,17 +576,20 @@ typedef struct __attribute__ ((packed)) {
  *
  * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
-extern cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags, int active_chips);
+extern cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags,
+					       int active_chips);
 
 /**
- * This function may be called before cvmx_nand_initialize to set default values that will be used
- * for NAND chips that do not identify themselves in a way that allows autoconfiguration. (ONFI chip with
- * missing parameter page, for example.)
- * The parameters set by this function will be used by _all_ non-autoconfigured NAND chips.
+ * This function may be called before cvmx_nand_initialize to set default values
+ * that will be used for NAND chips that do not identify themselves in a way
+ * that allows autoconfiguration. (ONFI chip with missing parameter page, for
+ * example).
+ * The parameters set by this function will be used by _all_ non-autoconfigured
+ * NAND chips.
  *
  *
- *   NOTE:  This function signature is _NOT_ stable, and will change in the future as required to support
- *          various NAND chips.
+ *   NOTE:  This function signature is _NOT_ stable, and will change in the
+ *          future as required to support various NAND chips.
  *
  * @param page_size page size in bytes
  * @param oob_size  Out of band size in bytes (per page)
@@ -522,7 +601,10 @@ extern cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flag
  *
  * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
-extern cvmx_nand_status_t cvmx_nand_set_defaults(int page_size, int oob_size, int pages_per_block, int blocks, int onfi_timing_mode);
+extern cvmx_nand_status_t cvmx_nand_set_defaults(int page_size, int oob_size,
+						 int pages_per_block,
+						 int blocks,
+						 int onfi_timing_mode);
 
 /**
  * Call to shutdown the NAND controller after all transactions
@@ -533,10 +615,10 @@ extern cvmx_nand_status_t cvmx_nand_set_defaults(int page_size, int oob_size, in
 extern cvmx_nand_status_t cvmx_nand_shutdown(void);
 
 /**
- * Returns a bitmask representing the chip selects that are
- * connected to NAND chips. This can be called after the
- * initialize to determine the actual number of NAND chips
- * found. Each bit in the response coresponds to a chip select.
+ * Returns a bitmask representing the chip selects that are connected to NAND
+ * chips.  This can be called after initializing to determine the actual
+ * number of NAND chips found.  Each bit in the response coresponds to a chip
+ * select.
  *
  * @return Zero if no NAND chips were found. Otherwise a bit is set for
  *         each chip select (1<<chip).
@@ -556,7 +638,10 @@ extern int cvmx_nand_get_active_chips(void);
  *
  * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
-extern cvmx_nand_status_t cvmx_nand_set_timing(int chip, int tim_mult, int tim_par[7], int clen[4], int alen[4], int rdn[4], int wrn[2]);
+extern cvmx_nand_status_t cvmx_nand_set_timing(int chip, int tim_mult,
+					       int tim_par[7], int clen[4],
+					       int alen[4], int rdn[4],
+					       int wrn[2]);
 
 /**
  * Submit a command to the NAND command queue. Generally this
@@ -581,9 +666,11 @@ extern cvmx_nand_status_t cvmx_nand_submit(cvmx_nand_cmd_t cmd);
  * @param buffer_length
  *               Number of bytes to read
  *
- * @return Bytes read on success, a negative cvmx_nand_status_t error code on failure
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code on
+ *	   failure
  */
-extern int cvmx_nand_page_read(int chip, uint64_t nand_address, uint64_t buffer_address, int buffer_length);
+extern int cvmx_nand_page_read(int chip, uint64_t nand_address,
+			       uint64_t buffer_address, int buffer_length);
 
 /**
  * Read random data from NAND.  This adjusts the column address before starting
@@ -616,7 +703,8 @@ extern int cvmx_nand_random_data_out(int chip, uint64_t nand_address,
  *
  * @return Zero on success, a negative cvmx_nand_status_t error code on failure
  */
-extern cvmx_nand_status_t cvmx_nand_page_write(int chip, uint64_t nand_address, uint64_t buffer_address);
+extern cvmx_nand_status_t cvmx_nand_page_write(int chip, uint64_t nand_address,
+					       uint64_t buffer_address);
 
 /**
  * Erase a NAND block. A single block contains multiple pages.
@@ -634,15 +722,18 @@ extern cvmx_nand_status_t cvmx_nand_block_erase(int chip, uint64_t nand_address)
  *
  * @param chip   Chip select for NAND flash
  * @param nand_address
- *               NAND address to read ID from. Usually this is either 0x0 or 0x20.
+ *               NAND address to read ID from. Usually this is either 0x0 or
+ *		 0x20.
  * @param buffer_address
  *               Physical address to store data in
  * @param buffer_length
  *               Length of the buffer. Usually this is 4 bytes
  *
- * @return Bytes read on success, a negative cvmx_nand_status_t error code on failure
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code on
+ *         failure
  */
-extern int cvmx_nand_read_id(int chip, uint64_t nand_address, uint64_t buffer_address, int buffer_length);
+extern int cvmx_nand_read_id(int chip, uint64_t nand_address,
+			     uint64_t buffer_address, int buffer_length);
 
 /**
  * Read the NAND parameter page
@@ -653,21 +744,25 @@ extern int cvmx_nand_read_id(int chip, uint64_t nand_address, uint64_t buffer_ad
  * @param buffer_length
  *               Length of the buffer. Usually this is 4 bytes
  *
- * @return Bytes read on success, a negative cvmx_nand_status_t error code on failure
+ * @return Bytes read on success, a negative cvmx_nand_status_t error code on
+ *         failure
  */
-extern int cvmx_nand_read_param_page(int chip, uint64_t buffer_address, int buffer_length);
+extern int cvmx_nand_read_param_page(int chip, uint64_t buffer_address,
+				     int buffer_length);
 
 /**
- * Validate the ONFI parameter page and return a pointer to
- * the config values.
+ * Validate the ONFI parameter page and return a pointer to the config values.
  *
- * @param param_page Pointer to the raw NAND data returned after a parameter page read. It will
- *                   contain at least 3 copies of the parameter structure.
+ * @param param_page Pointer to the raw NAND data returned after a parameter
+ *                   page read.  It will contain at least 3 copies of the
+ *                   parameter structure.
  *
- * @return Pointer to a validated paramter page, or NULL if one couldn't be found.
+ * @return Pointer to a validated paramter page, or NULL if one couldn't be
+ *         found.
  */
 extern cvmx_nand_onfi_param_page_t *
-	cvmx_nand_onfi_process(cvmx_nand_onfi_param_page_t param_page[3]);
+cvmx_nand_onfi_process(cvmx_nand_onfi_param_page_t param_page[3]);
+
 /**
  * Get the status of the NAND flash
  *
@@ -679,11 +774,11 @@ extern int cvmx_nand_get_status(int chip);
 
 /**
  * Gets the specified feature number
- * 
+ *
  * @param chip     Chip select for NAND flash
  * @param feat_num Feature number to get
  * @param feature  P1 - P4 of the feature data
- * 
+ *
  * @return cvmx_nand_status_t error code
  */
 cvmx_nand_status_t cvmx_nand_get_feature(int chip, uint8_t feat_num,
@@ -691,11 +786,11 @@ cvmx_nand_status_t cvmx_nand_get_feature(int chip, uint8_t feat_num,
 
 /**
  * Sets the specified feature number
- * 
+ *
  * @param chip     Chip select for NAND flash
  * @param feat_num Feature number to get
  * @param feature  P1 - P4 of the feature data
- * 
+ *
  * @return cvmx_nand_status_t error code
  */
 cvmx_nand_status_t cvmx_nand_set_feature(int chip, uint8_t feat_num,
@@ -707,7 +802,8 @@ cvmx_nand_status_t cvmx_nand_set_feature(int chip, uint8_t feat_num,
  *
  * @param chip   Chip select for NAND flash
  *
- * @return Page size in bytes or a negative cvmx_nand_status_t error code on failure
+ * @return Page size in bytes or a negative cvmx_nand_status_t error code on
+ *         failure
  */
 extern int cvmx_nand_get_page_size(int chip);
 
@@ -725,7 +821,8 @@ extern int cvmx_nand_get_oob_size(int chip);
  *
  * @param chip   Chip select for NAND flash
  *
- * @return Numboer of pages in each block or a negative cvmx_nand_status_t error code on failure
+ * @return Numboer of pages in each block or a negative cvmx_nand_status_t
+ *         error code on failure
  */
 extern int cvmx_nand_get_pages_per_block(int chip);
 
@@ -734,7 +831,8 @@ extern int cvmx_nand_get_pages_per_block(int chip);
  *
  * @param chip   Chip select for NAND flash
  *
- * @return Number of blocks or a negative cvmx_nand_status_t error code on failure
+ * @return Number of blocks or a negative cvmx_nand_status_t error code on
+ *         failure
  */
 extern int cvmx_nand_get_blocks(int chip);
 
@@ -754,7 +852,8 @@ extern cvmx_nand_status_t cvmx_nand_reset(int chip);
  * @param block  pointer to 256 bytes of data
  * @param eccp   pointer to where 8 bytes of ECC data will be stored
  */
-extern void cvmx_nand_compute_boot_ecc(unsigned char *block, unsigned char *eccp);
+extern void cvmx_nand_compute_boot_ecc(unsigned char *block,
+				       unsigned char *eccp);
 
 extern int cvmx_nand_correct_boot_ecc(uint8_t *block);
 #ifdef	__cplusplus

@@ -5,8 +5,6 @@
 #include "asm/octeon/cvmx-bootmem.h"
 #include "asm/octeon/cvmx.h"
 #include "asm/octeon/cvmx-helper-cfg.h"
-#include "asm/octeon/cvmx-fpa.h"
-#include "asm/octeon/cvmx-fau.h"
 #include "asm/octeon/cvmx-range.h"
 #else
 #include "cvmx.h"
@@ -14,8 +12,6 @@
 #include "cvmx-global-resources.h"
 #include "cvmx-bootmem.h"
 #include "cvmx-helper-cfg.h"
-#include "cvmx-fpa.h"
-#include "cvmx-fau.h"
 #include "cvmx-range.h"
 #endif
 
@@ -113,11 +109,16 @@ typedef struct cvmx_global_resources
 } cvmx_global_resources_t;
 
 /* Not the right place, putting it here for now */
-CVMX_SHARED int cvmx_enable_helper_flag = 0;
+CVMX_SHARED int cvmx_enable_helper_flag;
+CVMX_SHARED uint64_t cvmx_app_id;
 
-static int dbg = 0;
+static const int dbg = 0;
+
 extern int __cvmx_bootmem_phy_free(uint64_t phy_addr, uint64_t size, uint32_t flags);
 
+/*
+ * Global named memory can be accessed anywhere even in 32-bit mode
+ */
 static CVMX_SHARED uint64_t __cvmx_global_resources_addr = 0;
 
 /**
@@ -247,7 +248,7 @@ static uint64_t __cvmx_global_resources_init(void)
 						      CVMX_BOOTMEM_FLAG_NO_LOCKING);
 	if (!block_desc) {
 		if (dbg)
-			cvmx_dprintf("%s: allocating global resources\n", __FUNCTION__);
+			cvmx_dprintf("%s: allocating global resources\n", __func__);
 
 		tmp_phys = cvmx_bootmem_phy_named_block_alloc(sz, 0, 0, CVMX_CACHE_LINE_SIZE,
 							      CVMX_GLOBAL_RESOURCES_DATA_NAME,
@@ -259,7 +260,7 @@ static uint64_t __cvmx_global_resources_init(void)
 		__cvmx_global_resources_addr = (uint64_t) tmp_phys;
 
 		if (dbg)
-			cvmx_dprintf("%s: memset global resources %llu\n", __FUNCTION__,
+			cvmx_dprintf("%s: memset global resources %llu\n", __func__,
 				     CAST_ULL(__cvmx_global_resources_addr));
 
 		base = (1ull << 63) | __cvmx_global_resources_addr;
@@ -269,7 +270,7 @@ static uint64_t __cvmx_global_resources_init(void)
 		}
 	} else {
 		if (dbg)
-			cvmx_dprintf("%s:found global resource\n", __FUNCTION__);
+			cvmx_dprintf("%s:found global resource\n", __func__);
 		__cvmx_global_resources_addr = block_desc->base_addr;
 	}
  end:
@@ -301,7 +302,7 @@ uint64_t cvmx_get_global_resource(struct global_resource_tag tag, int no_lock)
 
 		if (tag_lo == tag.lo && tag_hi == tag.hi) {
 			if (dbg)
-				cvmx_dprintf("%s: Found global resource entry\n", __FUNCTION__);
+				cvmx_dprintf("%s: Found global resource entry\n", __func__);
 			break;
 		}
 		entry_cnt--;
@@ -310,7 +311,7 @@ uint64_t cvmx_get_global_resource(struct global_resource_tag tag, int no_lock)
 
 	if (entry_cnt == 0) {
 		if (dbg)
-			cvmx_dprintf("%s: no matching global resource entry found\n", __FUNCTION__);
+			cvmx_dprintf("%s: no matching global resource entry found\n", __func__);
 		if (!no_lock)
 			__cvmx_global_resource_unlock();
 		return 0;
@@ -434,6 +435,24 @@ int cvmx_resource_alloc_many(struct global_resource_tag tag,
 	return rv;
 }
 
+int cvmx_resource_alloc_reverse(struct global_resource_tag tag,
+				uint64_t owner)
+{
+	uint64_t addr = cvmx_get_global_resource(tag, 1);
+	int rv;
+
+	if (addr == 0) {
+		char tagname[256];
+		__cvmx_get_tagname(&tag, tagname);
+		cvmx_dprintf("ERROR: cannot find resource %s\n", tagname);
+		return -1;
+	}
+	__cvmx_global_resource_lock();
+	rv = cvmx_range_alloc_ordered(addr, owner, 1, 1, 1);
+	__cvmx_global_resource_unlock();
+	return rv;
+}
+
 int cvmx_reserve_global_resource_range(struct global_resource_tag tag,
 				       uint64_t owner, int base,
 				       int nelements)
@@ -497,11 +516,8 @@ int free_global_resources(void)
 	int i, entry_cnt;
 	uint64_t resource_entry_addr, phys_addr, size;
 
-	if (!__cvmx_global_resources_addr) {
-		if (dbg)
-			cvmx_dprintf("%s: __cvmx_global_resources_addr is null\n", __FUNCTION__);
-		return 0;
-	}
+	if (__cvmx_global_resources_addr == 0)
+		__cvmx_global_resources_init();
 
 	__cvmx_global_resource_lock();
 
@@ -515,7 +531,7 @@ int free_global_resources(void)
 		/* free the resource */
 		rc = __cvmx_bootmem_phy_free(phys_addr, size, 0);
 		if (!rc) {
-			cvmx_dprintf("ERROR: %s: could not free memory to bootmem\n", __FUNCTION__);
+			cvmx_dprintf("ERROR: %s: could not free memory to bootmem\n", __func__);
 		}
 	}
 
@@ -525,9 +541,17 @@ int free_global_resources(void)
 	if (dbg)
 		cvmx_dprintf("freed global resources named block rc=%d \n",rc);
 
+	__cvmx_global_resources_addr = 0;
+
 	return 0;
 }
 
+uint64_t cvmx_get_global_resource_owner(struct global_resource_tag tag, int base)
+{
+	uint64_t addr = cvmx_get_global_resource(tag, 1);
+
+	return cvmx_range_get_owner(addr, base);
+}
 
 void cvmx_global_resources_show(void)
 {
@@ -546,18 +570,50 @@ void cvmx_global_resources_show(void)
 	entry_cnt = CVMX_GLOBAL_RESOURCES_GET_FIELD(entry_cnt);
 	memset (tagname, 0, MAX_RESOURCE_TAG_LEN + 1);
 
-	cvmx_dprintf("%s: cvmx-global-resources: \n",__FUNCTION__);
+	if (dbg)
+		cvmx_dprintf("%s: cvmx-global-resources: \n", __func__);
 	for (count = 0; count < entry_cnt; count++) {
 		p = CVMX_GET_RESOURCE_ENTRY(count);
 		phys_addr = CVMX_RESOURCE_ENTRY_GET_FIELD(p, phys_addr);
 		rtag.lo = CVMX_RESOURCE_TAG_GET_FIELD(p, lo);
 		rtag.hi = CVMX_RESOURCE_TAG_GET_FIELD(p, hi);
 		__cvmx_get_tagname(&rtag, tagname);
-		cvmx_dprintf("Global Resource tag name: %s Resource Address: %llx\n",
-			     tagname, CAST_ULL(phys_addr));
+		if (dbg)
+			cvmx_dprintf("Global Resource tag name: %s Resource Address: %llx\n",
+				     tagname, CAST_ULL(phys_addr));
 	}
 
 	__cvmx_global_resource_unlock();
 
 }
 EXPORT_SYMBOL(free_global_resources);
+
+void cvmx_app_id_init(void *bootmem)
+{
+	uint64_t *p = (uint64_t *) bootmem;
+
+	*p = 0;
+}
+
+uint64_t cvmx_allocate_app_id(void)
+{
+	uint64_t *vptr;
+
+	vptr = (uint64_t *)cvmx_bootmem_alloc_named_range_once(
+		sizeof(cvmx_app_id), 0, 1<<31, 128,
+		"cvmx_app_id", cvmx_app_id_init);
+
+	cvmx_app_id = __atomic_add_fetch(vptr, 1, __ATOMIC_SEQ_CST);
+
+	if (dbg)
+		cvmx_dprintf("CVMX_APP_ID = %lx.\n",
+			     (unsigned long)cvmx_app_id);
+	return cvmx_app_id;
+}
+
+uint64_t cvmx_get_app_id(void)
+{
+	if (cvmx_app_id == 0)
+		cvmx_allocate_app_id();
+	return cvmx_app_id;
+}

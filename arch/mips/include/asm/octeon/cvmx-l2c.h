@@ -43,7 +43,7 @@
  * Interface to the Level 2 Cache (L2C) control, measurement, and debugging
  * facilities.
  *
- * <hr>$Revision: 89914 $<hr>
+ * <hr>$Revision: 92683 $<hr>
  *
  */
 
@@ -113,7 +113,7 @@ union cvmx_l2c_tag {
 };
 typedef union cvmx_l2c_tag cvmx_l2c_tag_t;
 
-  /* L2C Performance Counter events. */
+  /* L2C Performance Counter events for Octeon1(Plus) */
 enum cvmx_l2c_event {
 	CVMX_L2C_EVENT_CYCLES = 0,		 /**< Cycles */
 	CVMX_L2C_EVENT_INSTRUCTION_MISS = 1,	 /**< L2 Instruction Miss */
@@ -173,7 +173,7 @@ enum cvmx_l2c_event {
 };
 typedef enum cvmx_l2c_event cvmx_l2c_event_t;
 
-/* L2C Performance Counter events for Octeon2. */
+/* L2C TAD Performance Counter events for Octeon2/3. */
 enum cvmx_l2c_tad_event {
 	CVMX_L2C_TAD_EVENT_NONE = 0,	/* None */
 	CVMX_L2C_TAD_EVENT_TAG_HIT = 1,	/* L2 Tag Hit */

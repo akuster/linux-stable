@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -70,8 +70,16 @@
  *               number should work.
  * @return Zero on success, non-zero if out of memory
  */
-extern int cvmx_helper_initialize_fpa(int packet_buffers, int work_queue_entries, int pko_buffers, int tim_buffers, int dfa_buffers);
+extern int cvmx_helper_initialize_fpa(int packet_buffers,
+				      int work_queue_entries, int pko_buffers,
+				      int tim_buffers, int dfa_buffers);
 
-extern int __cvmx_helper_initialize_fpa_pool(int pool, uint64_t buffer_size, uint64_t buffers, const char *name);
+extern int __cvmx_helper_initialize_fpa_pool(int pool, uint64_t buffer_size,
+					     uint64_t buffers,
+					     const char *name);
+
+extern int cvmx_helper_shutdown_fpa_pools(int node);
+
+extern void cvmx_helper_fpa_dump(int node);
 
 #endif /* __CVMX_HELPER_H__ */

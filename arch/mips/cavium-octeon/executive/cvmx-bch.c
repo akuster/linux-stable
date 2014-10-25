@@ -20,7 +20,7 @@
  *     derived from this software without specific prior written
  *     permission.
  *
- * This Software, including technical data, may be subject to U.S. export  control
+ * This Software, including technical data, may be subject to U.S. export control
  * laws, including the U.S. Export Administration Act and its  associated
  * regulations, and may be subject to export or import  regulations in other
  * countries.
@@ -28,8 +28,8 @@
  * TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
  * AND WITH ALL FAULTS AND CAVIUM INC. MAKES NO PROMISES, REPRESENTATIONS OR
  * WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT TO
- * THE SOFTWARE, INCLUDING ITS CONDITION, ITS CONFORMITY TO ANY REPRESENTATION OR
- * DESCRIPTION, OR THE EXISTENCE OF ANY LATENT OR PATENT DEFECTS, AND CAVIUM
+ * THE SOFTWARE, INCLUDING ITS CONDITION, ITS CONFORMITY TO ANY REPRESENTATION
+ * OR DESCRIPTION, OR THE EXISTENCE OF ANY LATENT OR PATENT DEFECTS, AND CAVIUM
  * SPECIFICALLY DISCLAIMS ALL IMPLIED (IF ANY) WARRANTIES OF TITLE,
  * MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A PARTICULAR PURPOSE, LACK OF
  * VIRUSES, ACCURACY OR COMPLETENESS, QUIET ENJOYMENT, QUIET POSSESSION OR
@@ -53,7 +53,11 @@
 # include <asm/octeon/cvmx-fpa.h>
 # include <asm/octeon/cvmx-helper-fpa.h>
 # include <asm/octeon/cvmx-cmd-queue.h>
+# include <linux/kernel.h>
+# include <linux/slab.h>
+
 #elif defined(CVMX_BUILD_FOR_UBOOT)
+
 # include <common.h>
 # include <asm/arch/cvmx.h>
 # include <asm/arch/cvmx-bch-defs.h>
@@ -84,7 +88,6 @@ CVMX_SHARED cvmx_bch_app_config_t bch_config = {
 };
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
-extern int cvm_oct_mem_fill_fpa(int pool, int elements);
 extern int cvm_oct_alloc_fpa_pool(int pool, int size);
 #endif
 
@@ -103,19 +106,23 @@ int cvmx_bch_initialize(void)
 
 	/* Initialize FPA pool for BCH pool buffers */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+	int i;
 	bch_pool = CVMX_FPA_OUTPUT_BUFFER_POOL;
 	bch_pool_size = CVMX_FPA_OUTPUT_BUFFER_POOL_SIZE;
 
 	debug("pool: %d, pool size: %llu\n", bch_pool, bch_pool_size);
 	/* Setup the FPA */
-	cvmx_fpa_enable();
+	cvmx_fpa1_enable();
 
 	bch_pool = cvm_oct_alloc_fpa_pool(bch_pool, bch_pool_size);
 	if (bch_pool < 0) {
-		pr_err("cvm_oct_alloc_fpa_pool(%d, %lld)\n", bch_pool, bch_pool_size);
+		pr_err("cvm_oct_alloc_fpa_pool(%d, %lld)\n",
+		       bch_pool, bch_pool_size);
 		return -ENOMEM;
 	}
-	cvm_oct_mem_fill_fpa(bch_pool, 128);
+
+	for (i = 0; i < 16; i++)
+		cvmx_fpa1_free(kmalloc(bch_pool_size, GFP_KERNEL), bch_pool, 0);
 #else
 	bch_pool = (int)cvmx_fpa_get_bch_pool();
 	bch_pool_size = cvmx_fpa_get_bch_pool_block_size();
@@ -147,8 +154,8 @@ int cvmx_bch_initialize(void)
 	bch_cmd_buf.s.dwb = bch_pool_size / 128;
 	bch_cmd_buf.s.pool = bch_pool;
 	bch_cmd_buf.s.size = bch_pool_size / 8;
-	bch_cmd_buf.s.ptr =
-		cvmx_ptr_to_phys(cvmx_cmd_queue_buffer(CVMX_CMD_QUEUE_BCH)) >> 7;
+	bch_cmd_buf.s.ptr = cvmx_ptr_to_phys(
+		cvmx_cmd_queue_buffer(CVMX_CMD_QUEUE_BCH)) >> 7;
 	cvmx_write_csr(CVMX_BCH_CMD_BUF, bch_cmd_buf.u64);
 	cvmx_write_csr(CVMX_BCH_GEN_INT, 7);
 	cvmx_write_csr(CVMX_BCH_GEN_INT_EN, 0);
@@ -160,6 +167,7 @@ int cvmx_bch_initialize(void)
 	cvmx_read_csr(CVMX_BCH_CMD_BUF);
 	return 0;
 }
+EXPORT_SYMBOL(cvmx_bch_initialize);
 
 /**
  * Shutdown the BCH block
@@ -169,6 +177,7 @@ int cvmx_bch_initialize(void)
 int cvmx_bch_shutdown(void)
 {
 	cvmx_bch_ctl_t bch_ctl;
+	int bch_pool;
 
 	debug("%s: ENTER\n", __func__);
 	bch_ctl.u64 = cvmx_read_csr(CVMX_BCH_CTL);
@@ -176,10 +185,27 @@ int cvmx_bch_shutdown(void)
 	cvmx_write_csr(CVMX_BCH_CTL, bch_ctl.u64);
 	cvmx_wait(4);
 
+#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+	bch_pool = CVMX_FPA_OUTPUT_BUFFER_POOL;
+#else
+	bch_pool = (int)cvmx_fpa_get_bch_pool();
+#endif
 	cvmx_cmd_queue_shutdown(CVMX_CMD_QUEUE_BCH);
 
+#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+	/* FIXME: BCH cleanup in SE : AJ */
+	{
+		int i;
+		for (i = 0; i < 16; i++)
+			kfree(cvmx_fpa1_alloc(bch_pool));
+	}
+#else
+	cvmx_fpa_shutdown_pool(bch_pool);
+#endif
+	/* AJ: Fix for FPA3 */
 	return 0;
 }
+EXPORT_SYMBOL(cvmx_bch_shutdown);
 
 /**
  * Sets the internal FPA pool data structure for bch pool.
@@ -187,7 +213,7 @@ int cvmx_bch_shutdown(void)
  * @param buffer_size	buffer size of pool
  * @param buffer_count	number of buffers to allocate to pool
  */
-void cvmx_bch_set_cmd_que_pool_config (int64_t pool, uint64_t buffer_size,
+void cvmx_bch_set_cmd_que_pool_config(int64_t pool, uint64_t buffer_size,
 				       uint64_t buffer_count)
 {
 	bch_config.command_queue_pool.pool_num = pool;
@@ -210,8 +236,8 @@ void cvmx_bch_get_cmd_que_pool_config(cvmx_fpa_pool_config_t *bch_pool)
  * @param[in] block	8-byte aligned pointer to data block to calculate ECC
  * @param block_size	Size of block in bytes, must be a multiple of two.
  * @param ecc_level	Number of errors that must be corrected.  The number of
- * 			parity bytes is equal to ((15 * ecc_level) + 7) / 8.
- * 			Must be 4, 8, 16, 24, 32, 40, 48, 56, 60 or 64.
+ *			parity bytes is equal to ((15 * ecc_level) + 7) / 8.
+ *			Must be 4, 8, 16, 24, 32, 40, 48, 56, 60 or 64.
  * @param[out] ecc	8-byte aligned pointer to where ecc data should go
  * @param[in] response	pointer to where responses will be written.
  *
@@ -235,7 +261,7 @@ int cvmx_bch_encode(const void *block, uint16_t block_size,
 	command.s.oword.ptr = cvmx_ptr_to_phys(ecc);
 	command.s.iword.ptr = cvmx_ptr_to_phys((void *)block);
 	command.s.resp.ptr = cvmx_ptr_to_phys((void *)response);
-	debug("Command: cword: 0x%llx, oword: 0x%llx, iword: 0x%llx, resp: 0x%llx\n",
+	debug("Cmd: cword:0x%llx, oword:0x%llx, iword:0x%llx, resp:0x%llx\n",
 	      command.u64[0], command.u64[1], command.u64[2], command.u64[3]);
 	result = cvmx_cmd_queue_write(CVMX_CMD_QUEUE_BCH, 1,
 				      sizeof(command) / sizeof(uint64_t),
@@ -249,6 +275,7 @@ int cvmx_bch_encode(const void *block, uint16_t block_size,
 
 	return 0;
 }
+EXPORT_SYMBOL(cvmx_bch_encode);
 
 /**
  * Given a data block and ecc data correct the data block
@@ -260,9 +287,9 @@ int cvmx_bch_encode(const void *block, uint16_t block_size,
  * @param ecc_level		Number of errors that must be corrected.  The
  *				number of parity bytes is equal to
  *				((15 * ecc_level) + 7) / 8.
- * 				Must be 4, 8, 16, 24, 32, 40, 48, 56, 60 or 64.
+ *				Must be 4, 8, 16, 24, 32, 40, 48, 56, 60 or 64.
  * @param[out] block_out	8-byte aligned pointer to corrected data buffer.
- * 				This should not be the same as block_ecc_in.
+ *				This should not be the same as block_ecc_in.
  * @param[in] response		pointer to where responses will be written.
  *
  * @return Zero on success, negative on failure.
@@ -283,9 +310,9 @@ int cvmx_bch_decode(const void *block_ecc_in, uint16_t block_size,
 	command.s.cword.size = block_size;
 
 	command.s.oword.ptr = cvmx_ptr_to_phys((void *)block_out);
- 	command.s.iword.ptr = cvmx_ptr_to_phys((void *)block_ecc_in);
+	command.s.iword.ptr = cvmx_ptr_to_phys((void *)block_ecc_in);
 	command.s.resp.ptr = cvmx_ptr_to_phys((void *)response);
-	debug("Command: cword: 0x%llx, oword: 0x%llx, iword: 0x%llx, resp: 0x%llx\n",
+	debug("Cmd: cword:0x%llx, oword:0x%llx, iword:0x%llx, resp:0x%llx\n",
 	      command.u64[0], command.u64[1], command.u64[2], command.u64[3]);
 	result = cvmx_cmd_queue_write(CVMX_CMD_QUEUE_BCH, 1,
 				      sizeof(command) / sizeof(uint64_t),
@@ -298,3 +325,4 @@ int cvmx_bch_decode(const void *block_ecc_in, uint16_t block_size,
 	cvmx_bch_write_doorbell(1);
 	return 0;
 }
+EXPORT_SYMBOL(cvmx_bch_decode);

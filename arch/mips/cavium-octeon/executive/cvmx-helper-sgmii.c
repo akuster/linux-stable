@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -43,7 +43,7 @@
  * Functions for SGMII initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 89030 $<hr>
+ * <hr>$Revision: 102466 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -52,14 +52,10 @@
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-board.h>
 #include <asm/octeon/cvmx-helper-cfg.h>
-#include <asm/octeon/cvmx-bgxx-defs.h>
 #include <asm/octeon/cvmx-gserx-defs.h>
 #include <asm/octeon/cvmx-pcsx-defs.h>
 #include <asm/octeon/cvmx-gmxx-defs.h>
 #include <asm/octeon/cvmx-ciu-defs.h>
-#include <asm/octeon/cvmx-bgxx-defs.h>
-#include <asm/octeon/cvmx-gser.h>
-#include <asm/octeon/cvmx-bgx.h>
 #else
 
 #include "cvmx.h"
@@ -69,8 +65,6 @@
 #include "cvmx-helper-board.h"
 #include "cvmx-helper-cfg.h"
 #include "cvmx-qlm.h"
-#include "cvmx-gser.h"
-#include "cvmx-bgx.h"
 #endif
 
 
@@ -187,7 +181,8 @@ static int __cvmx_helper_sgmii_hardware_init_link(int interface, int index)
 	union cvmx_pcsx_mrx_control_reg control_reg;
 	union cvmx_pcsx_miscx_ctl_reg pcsx_miscx_ctl_reg;
 	bool phy_mode;
-	bool mode_1000x;
+	bool an_disable;	/** Disable autonegotiation */
+	bool mode_1000x;	/** 1000Base-X mode */
 
 	if (!cvmx_helper_is_port_valid(interface, index))
 		return 0;
@@ -210,7 +205,7 @@ static int __cvmx_helper_sgmii_hardware_init_link(int interface, int index)
 		control_reg.s.reset = 1;
 		cvmx_write_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface), control_reg.u64);
 		if (CVMX_WAIT_FOR_FIELD64(CVMX_PCSX_MRX_CONTROL_REG(index, interface), cvmx_pcsx_mrx_control_reg_t, reset, ==, 0, 10000)) {
-			cvmx_dprintf("SGMII%d: Timeout waiting for port %d to finish reset\n", interface, index);
+			cvmx_dprintf("SGMII%x: Timeout waiting for port %d to finish reset\n", interface, index);
 			return -1;
 		}
 	}
@@ -219,20 +214,53 @@ static int __cvmx_helper_sgmii_hardware_init_link(int interface, int index)
 	 * Write PCS*_MR*_CONTROL_REG[RST_AN]=1 to ensure a fresh
 	 * sgmii negotiation starts.
 	 */
-	control_reg.s.an_en = 1;
+	phy_mode = cvmx_helper_get_mac_phy_mode(interface, index);
+	an_disable = (phy_mode ||
+		      !cvmx_helper_get_port_autonegotiation(interface, index));
+
+	control_reg.s.an_en = !an_disable;
+
+	/* Force a PCS reset by powering down the PCS interface
+	 * This is needed to deal with broken Qualcomm/Atheros PHYs and switches
+	 * which never recover if PCS is not power cycled.  The alternative
+	 * is to power cycle or hardware reset the Qualcomm devices whenever
+	 * SGMII is initialized.
+	 *
+	 * This is needed for the QCA8033 PHYs as well as the QCA833X switches
+	 * to work.  The QCA8337 switch has additional SGMII problems and is
+	 * best avoided if at all possible.  Failure to power cycle PCS prevents
+	 * any traffic from flowing between Octeon and Qualcomm devices if there
+	 * is a warm reset.  Even a software reset to the Qualcomm device will
+	 * not work.
+	 *
+	 * Note that this problem has been reported between Qualcomm and other
+	 * vendor's processors as well so this problem is not unique to
+	 * Qualcomm and Octeon.
+	 *
+	 * Power cycling PCS doesn't hurt anything with non-Qualcomm devices
+	 * other than adding a 25ms delay during initialization.
+	 */
+	control_reg.s.pwr_dn = 1;
+	cvmx_write_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface),
+		       control_reg.u64);
+	cvmx_read_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface));
+
+	if (cvmx_sysinfo_get()->board_type != CVMX_BOARD_TYPE_SIM)
+		/* 25ms should be enough, 10ms is too short */
+		cvmx_wait_usec(25000);
+
 	control_reg.s.pwr_dn = 0;
 	cvmx_write_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface),
 		       control_reg.u64);
 
 	/* The Cortina PHY runs in 1000base-X mode */
-	phy_mode = cvmx_helper_get_mac_phy_mode(interface, index);
 	mode_1000x = cvmx_helper_get_1000x_mode(interface, index);
 	pcsx_miscx_ctl_reg.u64 =
 		cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
 	pcsx_miscx_ctl_reg.s.mode = mode_1000x;
 	pcsx_miscx_ctl_reg.s.mac_phy = phy_mode;
 	cvmx_write_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface), pcsx_miscx_ctl_reg.u64);
-	if (phy_mode)
+	if (an_disable)
 		/* In PHY mode we can't query the link status so we just
 		 * assume that the link is up.
 		 */
@@ -248,7 +276,7 @@ static int __cvmx_helper_sgmii_hardware_init_link(int interface, int index)
 	    CVMX_WAIT_FOR_FIELD64(CVMX_PCSX_MRX_STATUS_REG(index, interface),
 				  union cvmx_pcsx_mrx_status_reg, an_cpt, ==, 1,
 				  10000)) {
-		cvmx_dprintf("SGMII%d: Port %d link timeout\n", interface, index);
+		cvmx_dprintf("SGMII%x: Port %d link timeout\n", interface, index);
 		return -1;
 	}
 	return 0;
@@ -431,12 +459,13 @@ static int __cvmx_helper_sgmii_hardware_init(int interface, int num_ports)
 	return 0;
 }
 
-int __cvmx_helper_sgmii_enumerate(int interface)
+int __cvmx_helper_sgmii_enumerate(int xiface)
 {
 	if (OCTEON_IS_MODEL(OCTEON_CNF71XX))
 		return 2;
 	if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
-		enum cvmx_qlm_mode qlm_mode = cvmx_qlm_get_dlm_mode(0, interface);
+		struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+		enum cvmx_qlm_mode qlm_mode = cvmx_qlm_get_dlm_mode(0, xi.interface);
 
 		if (qlm_mode == CVMX_QLM_MODE_SGMII)
 			return 1;
@@ -457,8 +486,10 @@ int __cvmx_helper_sgmii_enumerate(int interface)
  *
  * @return Number of ports on the interface. Zero to disable.
  */
-int __cvmx_helper_sgmii_probe(int interface)
+int __cvmx_helper_sgmii_probe(int xiface)
 {
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	int interface = xi.interface;
 	union cvmx_gmxx_inf_mode mode;
 	int ports;
 
@@ -467,14 +498,14 @@ int __cvmx_helper_sgmii_probe(int interface)
 	 * speed as well as mode.
 	 */
 	if (OCTEON_IS_OCTEON2()) {
-		int qlm = cvmx_qlm_interface(interface);
+		int qlm = cvmx_qlm_interface(xiface);
 
 		if (cvmx_qlm_get_mode(qlm) != CVMX_QLM_MODE_SGMII)
 			return 0;
 	}
 
 	/* Do not enable the interface if is not in SGMII mode */
-	ports = __cvmx_helper_sgmii_enumerate(interface);
+	ports = __cvmx_helper_sgmii_enumerate(xiface);
 
 	if (ports <= 0)
 		return 0;
@@ -501,9 +532,11 @@ int __cvmx_helper_sgmii_probe(int interface)
  *
  * @return Zero on success, negative on failure
  */
-int __cvmx_helper_sgmii_enable(int interface)
+int __cvmx_helper_sgmii_enable(int xiface)
 {
-	int num_ports = cvmx_helper_ports_on_interface(interface);
+	int num_ports = cvmx_helper_ports_on_interface(xiface);
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	int interface = xi.interface;
 	int index;
 
 	/* Setup PKND and BPID */
@@ -628,7 +661,10 @@ cvmx_helper_link_info_t __cvmx_helper_sgmii_link_get(int ipd_port)
 		speed = cvmx_qlm_get_gbaud_mhz(0) * 8 / 10;
 	} else if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
 		speed = cvmx_qlm_get_gbaud_mhz(0) * 8 / 10;
-		speed >>= 2;
+		if (cvmx_qlm_get_dlm_mode(0, interface) == CVMX_QLM_MODE_SGMII)
+			speed >>= 1;
+		else
+			speed >>= 2;
 	}
 
 	pcsx_mrx_control_reg.u64 = cvmx_read_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface));
@@ -673,31 +709,40 @@ cvmx_helper_link_info_t __cvmx_helper_sgmii_link_get(int ipd_port)
 int __cvmx_helper_sgmii_link_set(int ipd_port,
 				 cvmx_helper_link_info_t link_info)
 {
+	union cvmx_pcsx_mrx_control_reg control_reg;
 	int interface = cvmx_helper_get_interface_num(ipd_port);
 	int index = cvmx_helper_get_interface_index_num(ipd_port);
 
 	if (!cvmx_helper_is_port_valid(interface, index))
 		return 0;
 
+	/* For some devices, i.e. the Qualcomm QCA8337 switch we need to power
+	 * down the PCS interface when the link goes down and power it back
+	 * up when the link returns.
+	 */
 	if (link_info.s.link_up || !__cvmx_helper_need_g15618()) {
 		__cvmx_helper_sgmii_hardware_init_link(interface, index);
 	} else {
 		union cvmx_pcsx_miscx_ctl_reg pcsx_miscx_ctl_reg;
 
-		pcsx_miscx_ctl_reg.u64 = cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG
-						(index, interface));
+		pcsx_miscx_ctl_reg.u64 = cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
 
-		/* Disable autonegotiation only when MAC mode. */
-		if (pcsx_miscx_ctl_reg.s.mac_phy == 0) {
-			union cvmx_pcsx_mrx_control_reg control_reg;
-			control_reg.u64 = cvmx_read_csr(
-						CVMX_PCSX_MRX_CONTROL_REG(
-							index, interface));
+		/* Disable autonegotiation when MAC mode is enabled or
+		 * autonegotiation is disabled.
+		 */
+		control_reg.u64 = cvmx_read_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface));
+		if (pcsx_miscx_ctl_reg.s.mac_phy == 0 ||
+		    !cvmx_helper_get_port_autonegotiation(interface, index)) {
+
 			control_reg.s.an_en = 0;
-			cvmx_write_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface),
-					control_reg.u64);
-			cvmx_read_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface));
+			control_reg.s.spdmsb = 1;
+			control_reg.s.spdlsb = 0;
+			control_reg.s.dup = 1;
+
 		}
+		cvmx_write_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface),
+			       control_reg.u64);
+		cvmx_read_csr(CVMX_PCSX_MRX_CONTROL_REG(index, interface));
 		/*
 		 * Use GMXENO to force the link down it will get
 		 * reenabled later...
@@ -750,131 +795,3 @@ int __cvmx_helper_sgmii_configure_loopback(int ipd_port, int enable_internal,
 	return 0;
 }
 
-/**
- * @INTERNAL
- * Probe a SGMII interface and determine the number of ports
- * connected to it. The SGMII interface should still be down after
- * this call. This is used by interfaces using the bgx mac.
- *
- * @param interface Interface to probe
- *
- * @return Number of ports on the interface. Zero to disable.
- */
-int __cvmx_helper_bgx_sgmii_probe(int interface)
-{
-	int	qlm;
-
-	/*
-	 * Check the QLM is configured correctly for SGMII, verify the
-	 * speed as well as the mode.
-	 */
-	qlm = cvmx_qlm_interface(interface);
-	if (cvmx_qlm_get_mode(qlm) != CVMX_QLM_MODE_SGMII)
-		return 0;
-
-	return __cvmx_helper_sgmii_enumerate(interface);
-}
-
-/**
- * @INTERNAL
- * Bringup and enable a SGMII interface. After this call packet
- * I/O should be fully functional. This is called with IPD
- * enabled but PKO disabled. This is used by interfaces using
- * the bgx mac.
- *
- * @param interface Interface to bring up
- *
- * @return Zero on success, negative on failure
- */
-int __cvmx_helper_bgx_sgmii_enable(int interface)
-{
-	cvmx_bgxx_cmrx_rx_id_map_t	bgx_cmr_rx_id_map;
-	int				num_ports;
-	int				pknd;
-	int				i;
-
-	num_ports = cvmx_helper_ports_on_interface(interface);
-
-	/* Configure the gser */
-	gser_init(interface, CVMX_HELPER_INTERFACE_MODE_SGMII);
-
-	/* Configure the bgx mac */
-	bgx_init(interface, CVMX_HELPER_INTERFACE_MODE_SGMII);
-
-	/* Setup pkind */
-	for (i = 0; i < num_ports; i++) {
-		pknd = cvmx_helper_get_pknd(interface, i);
-		bgx_cmr_rx_id_map.u64 = 0;
-		bgx_cmr_rx_id_map.s.rid = 2 + i;
-		bgx_cmr_rx_id_map.s.pknd = pknd;
-		cvmx_write_csr(CVMX_BGXX_CMRX_RX_ID_MAP(i, interface),
-			       bgx_cmr_rx_id_map.u64);
-	}
-
-	return 0;
-}
-
-/**
- * @INTERNAL
- * Return the link state of an IPD/PKO port as returned by
- * auto negotiation. The result of this function may not match
- * Octeon's link config if auto negotiation has changed since
- * the last call to cvmx_helper_link_set(). This is used by
- * interfaces using the bgx mac.
- *
- * @param ipd_port IPD/PKO port to query
- *
- * @return Link state
- */
-cvmx_helper_link_info_t __cvmx_helper_bgx_sgmii_link_get(int ipd_port)
-{
-	cvmx_helper_link_info_t result;
-
-	/* Hardcoded for now. TODO */
-	result.s.link_up = 1;
-	result.s.full_duplex = 1;
-	result.s.speed = 1000;
-
-	return result;
-}
-
-/**
- * @INTERNAL
- * Configure an IPD/PKO port for the specified link state. This
- * function does not influence auto negotiation at the PHY level.
- * The passed link state must always match the link state returned
- * by cvmx_helper_link_get(). It is normally best to use
- * cvmx_helper_link_autoconf() instead. This is used by interfaces
- * using the bgx mac.
- *
- * @param ipd_port  IPD/PKO port to configure
- * @param link_info The new link state
- *
- * @return Zero on success, negative on failure
- */
-int __cvmx_helper_bgx_sgmii_link_set(int ipd_port,
-				 cvmx_helper_link_info_t link_info)
-{
-	return 0;
-}
-
-/**
- * @INTERNAL
- * Configure a port for internal and/or external loopback. Internal loopback
- * causes packets sent by the port to be received by Octeon. External loopback
- * causes packets received from the wire to sent out again. This is used by
- * interfaces using the bgx mac.
- *
- * @param ipd_port IPD/PKO port to loopback.
- * @param enable_internal
- *                 Non zero if you want internal loopback
- * @param enable_external
- *                 Non zero if you want external loopback
- *
- * @return Zero on success, negative on failure.
- */
-int __cvmx_helper_bgx_sgmii_configure_loopback(int ipd_port, int enable_internal,
-					   int enable_external)
-{
-	return 0;
-}

@@ -42,7 +42,7 @@
  *
  * Interface to the hardware Input Packet Data unit.
  *
- * <hr>$Revision: 79509 $<hr>
+ * <hr>$Revision: 98855 $<hr>
  */
 
 #ifndef __CVMX_IPD_H__
@@ -51,10 +51,11 @@
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-ipd-defs.h>
+#include <asm/octeon/cvmx-helper-pki.h>
 #else
-#ifndef CVMX_DONT_INCLUDE_CONFIG
+#include "cvmx-helper-pki.h"
 #endif
-#endif
+
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
@@ -108,6 +109,10 @@ extern CVMX_SHARED cvmx_ipd_config_t cvmx_ipd_cfg;
  */
 static inline int64_t cvmx_fpa_get_packet_pool(void)
 {
+	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+		int node = cvmx_get_node_num();
+		return pki_dflt_aura[node].aura_num;
+	}
 	return (cvmx_ipd_cfg.packet_pool.pool_num);
 }
 
@@ -116,6 +121,10 @@ static inline int64_t cvmx_fpa_get_packet_pool(void)
  */
 static inline uint64_t cvmx_fpa_get_packet_pool_block_size(void)
 {
+	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+		int node = cvmx_get_node_num();
+		return pki_dflt_pool[node].buffer_size;
+	}
 	return (cvmx_ipd_cfg.packet_pool.buffer_size);
 }
 
@@ -124,6 +133,10 @@ static inline uint64_t cvmx_fpa_get_packet_pool_block_size(void)
  */
 static inline uint64_t cvmx_fpa_get_packet_pool_buffer_count(void)
 {
+	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+		int node = cvmx_get_node_num();
+		return pki_dflt_pool[node].buffer_count;
+	}
 	return (cvmx_ipd_cfg.packet_pool.buffer_count);
 }
 
@@ -132,6 +145,10 @@ static inline uint64_t cvmx_fpa_get_packet_pool_buffer_count(void)
  */
 static inline int64_t cvmx_fpa_get_wqe_pool(void)
 {
+	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+		int node = cvmx_get_node_num();
+		return pki_dflt_aura[node].aura_num;
+	}
 	return (cvmx_ipd_cfg.wqe_pool.pool_num);
 }
 
@@ -140,6 +157,10 @@ static inline int64_t cvmx_fpa_get_wqe_pool(void)
  */
 static inline uint64_t cvmx_fpa_get_wqe_pool_block_size(void)
 {
+	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+		int node = cvmx_get_node_num();
+		return pki_dflt_pool[node].buffer_size;
+	}
 	return (cvmx_ipd_cfg.wqe_pool.buffer_size);
 }
 
@@ -148,6 +169,10 @@ static inline uint64_t cvmx_fpa_get_wqe_pool_block_size(void)
  */
 static inline uint64_t cvmx_fpa_get_wqe_pool_buffer_count(void)
 {
+	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+		int node = cvmx_get_node_num();
+		return pki_dflt_pool[node].buffer_count;
+	}
 	return (cvmx_ipd_cfg.wqe_pool.buffer_count);
 }
 
@@ -214,6 +239,36 @@ void cvmx_ipd_enable(void);
 void cvmx_ipd_disable(void);
 
 void __cvmx_ipd_free_ptr(void);
+
+void cvmx_ipd_set_packet_pool_buffer_count(uint64_t buffer_count);
+void cvmx_ipd_set_wqe_pool_buffer_count(uint64_t buffer_count);
+
+/**
+ * Setup Random Early Drop on a specific input queue
+ *
+ * @param queue  Input queue to setup RED on (0-7)
+ * @param pass_thresh
+ *               Packets will begin slowly dropping when there are less than
+ *               this many packet buffers free in FPA 0.
+ * @param drop_thresh
+ *               All incomming packets will be dropped when there are less
+ *               than this many free packet buffers in FPA 0.
+ * @return Zero on success. Negative on failure
+ */
+extern int cvmx_ipd_setup_red_queue(int queue, int pass_thresh, int drop_thresh);
+
+/**
+ * Setup Random Early Drop to automatically begin dropping packets.
+ *
+ * @param pass_thresh
+ *               Packets will begin slowly dropping when there are less than
+ *               this many packet buffers free in FPA 0.
+ * @param drop_thresh
+ *               All incomming packets will be dropped when there are less
+ *               than this many free packet buffers in FPA 0.
+ * @return Zero on success. Negative on failure
+ */
+extern int cvmx_ipd_setup_red(int pass_thresh, int drop_thresh);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

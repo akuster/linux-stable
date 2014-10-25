@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -246,6 +246,17 @@ static inline uint64_t CVMX_MIO_BOOT_REG_TIMX(unsigned long offset)
 #endif
 #define CVMX_MIO_BOOT_THR (CVMX_ADD_IO_SEG(0x00011800000000B0ull))
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_MIO_EMM_ACCESS_WDOG CVMX_MIO_EMM_ACCESS_WDOG_FUNC()
+static inline uint64_t CVMX_MIO_EMM_ACCESS_WDOG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_MIO_EMM_ACCESS_WDOG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011800000020F0ull);
+}
+#else
+#define CVMX_MIO_EMM_ACCESS_WDOG (CVMX_ADD_IO_SEG(0x00011800000020F0ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_MIO_EMM_BUF_DAT CVMX_MIO_EMM_BUF_DAT_FUNC()
 static inline uint64_t CVMX_MIO_EMM_BUF_DAT_FUNC(void)
 {
@@ -321,6 +332,39 @@ static inline uint64_t CVMX_MIO_EMM_DMA_CFG_FUNC(void)
 }
 #else
 #define CVMX_MIO_EMM_DMA_CFG (CVMX_ADD_IO_SEG(0x0001180000000180ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_MIO_EMM_DMA_FIFO_ADR CVMX_MIO_EMM_DMA_FIFO_ADR_FUNC()
+static inline uint64_t CVMX_MIO_EMM_DMA_FIFO_ADR_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_MIO_EMM_DMA_FIFO_ADR not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180000000170ull);
+}
+#else
+#define CVMX_MIO_EMM_DMA_FIFO_ADR (CVMX_ADD_IO_SEG(0x0001180000000170ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_MIO_EMM_DMA_FIFO_CFG CVMX_MIO_EMM_DMA_FIFO_CFG_FUNC()
+static inline uint64_t CVMX_MIO_EMM_DMA_FIFO_CFG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_MIO_EMM_DMA_FIFO_CFG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180000000160ull);
+}
+#else
+#define CVMX_MIO_EMM_DMA_FIFO_CFG (CVMX_ADD_IO_SEG(0x0001180000000160ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_MIO_EMM_DMA_FIFO_CMD CVMX_MIO_EMM_DMA_FIFO_CMD_FUNC()
+static inline uint64_t CVMX_MIO_EMM_DMA_FIFO_CMD_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_MIO_EMM_DMA_FIFO_CMD not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180000000178ull);
+}
+#else
+#define CVMX_MIO_EMM_DMA_FIFO_CMD (CVMX_ADD_IO_SEG(0x0001180000000178ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_MIO_EMM_DMA_INT CVMX_MIO_EMM_DMA_INT_FUNC()
@@ -2195,13 +2239,14 @@ union cvmx_mio_boot_bist_stat {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} cn70xx;
+	struct cvmx_mio_boot_bist_stat_cn70xx cn70xxp1;
 	struct cvmx_mio_boot_bist_stat_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_7_63                : 57;
-	uint64_t stat                         : 7;  /**< BIST status. */
+	uint64_t reserved_8_63                : 56;
+	uint64_t stat                         : 8;  /**< BIST status. */
 #else
-	uint64_t stat                         : 7;
-	uint64_t reserved_7_63                : 57;
+	uint64_t stat                         : 8;
+	uint64_t reserved_8_63                : 56;
 #endif
 	} cn78xx;
 	struct cvmx_mio_boot_bist_stat_cn61xx cnf71xx;
@@ -2267,6 +2312,7 @@ union cvmx_mio_boot_comp {
 	uint64_t reserved_11_63               : 53;
 #endif
 	} cn70xx;
+	struct cvmx_mio_boot_comp_cn70xx      cn70xxp1;
 	struct cvmx_mio_boot_comp_cn70xx      cn78xx;
 	struct cvmx_mio_boot_comp_cn61xx      cnf71xx;
 };
@@ -2306,6 +2352,7 @@ union cvmx_mio_boot_ctl {
 #endif
 	} s;
 	struct cvmx_mio_boot_ctl_s            cn70xx;
+	struct cvmx_mio_boot_ctl_s            cn70xxp1;
 };
 typedef union cvmx_mio_boot_ctl cvmx_mio_boot_ctl_t;
 
@@ -2335,7 +2382,15 @@ typedef union cvmx_mio_boot_dma_adrx cvmx_mio_boot_dma_adrx_t;
  * cvmx_mio_boot_dma_cfg#
  *
  * This is the DMA engine n configuration register (one register for each of two engines).
- *
+ * Care must be taken to insure that the DMA duration not exceed the processor timeout of 2^29
+ * core clocks or the RML timeout specified in SLI_WINDOW_CTL[TIME] coprocessor clocks if
+ * accesses to the bootbus occur while DMA operations are in progress.
+ * The DMA operation duration in coprocessor clocks as:
+ * MIO_BOOT_DMA_CFG()[SIZE] * MIO_BOOT_DMA_TIM()[TIM_MULT] * CYCLE_TIME.
+ * Where:
+ * CYCLE_TIME = MIO_BOOT_DMA_TIM()[RD_DLY+PAUSE+DMACK_H+WE_N+WE_A+OE_N+OE_A+DMACK_S].
+ * Coprocessor clocks can be converted to core clocks by multiplying the value by the clock ratio
+ * RST_BOOT[C_MUL] / RST_BOOT[PNR_MUL].
  */
 union cvmx_mio_boot_dma_cfgx {
 	uint64_t u64;
@@ -2385,13 +2440,12 @@ union cvmx_mio_boot_dma_cfgx {
 	uint64_t swap8                        : 1;  /**< DMA engine 0-1 8-bit swap. */
 	uint64_t endian                       : 1;  /**< DMA engine 0-1 IOB endian mode (0 = big, 1 = little). */
 	uint64_t size                         : 20; /**< DMA engine 0-1 size. SIZE is specified in number of bus transfers, where one transfer is
-                                                         equal to the following number of bytes, dependent on MIO_BOOT_DMA_TIMn[WIDTH] and
-                                                         MIO_BOOT_DMA_TIMn[DDR]:
-                                                         WIDTH DDR  Transfer Size (bytes)
-                                                         0 0 2
-                                                         0 1 4
-                                                         1 0 4
-                                                         1 1 8 */
+                                                         equal to the following number of bytes, dependent on MIO_BOOT_DMA_TIM()[WIDTH] and
+                                                         MIO_BOOT_DMA_TIM()[DDR]:
+                                                         _ If WIDTH=0, DDR=0, then transfer is 2 bytes.
+                                                         _ If WIDTH=0, DDR=1, then transfer is 4 bytes.
+                                                         _ If WIDTH=1, DDR=0, then transfer is 4 bytes.
+                                                         _ If WIDTH=1, DDR=1, then transfer is 8 bytes. */
 	uint64_t reserved_0_35                : 36;
 #else
 	uint64_t reserved_0_35                : 36;
@@ -2572,6 +2626,7 @@ union cvmx_mio_boot_err {
 	struct cvmx_mio_boot_err_s            cn68xx;
 	struct cvmx_mio_boot_err_s            cn68xxp1;
 	struct cvmx_mio_boot_err_s            cn70xx;
+	struct cvmx_mio_boot_err_s            cn70xxp1;
 	struct cvmx_mio_boot_err_s            cn78xx;
 	struct cvmx_mio_boot_err_s            cnf71xx;
 };
@@ -2614,6 +2669,7 @@ union cvmx_mio_boot_int {
 	struct cvmx_mio_boot_int_s            cn68xx;
 	struct cvmx_mio_boot_int_s            cn68xxp1;
 	struct cvmx_mio_boot_int_s            cn70xx;
+	struct cvmx_mio_boot_int_s            cn70xxp1;
 	struct cvmx_mio_boot_int_s            cnf71xx;
 };
 typedef union cvmx_mio_boot_int cvmx_mio_boot_int_t;
@@ -2624,7 +2680,9 @@ typedef union cvmx_mio_boot_int cvmx_mio_boot_int_t;
  * The local-region memory-address register specifies the address for reading or writing the
  * local memory. This address post-increments following an access to the MIO boot local-memory
  * data register.
+ *
  * Local-memory region 0 is addresses 0x00-0x78.
+ *
  * Local-memory region 1 is addresses 0x80-0xF8.
  */
 union cvmx_mio_boot_loc_adr {
@@ -2658,6 +2716,7 @@ union cvmx_mio_boot_loc_adr {
 	struct cvmx_mio_boot_loc_adr_s        cn68xx;
 	struct cvmx_mio_boot_loc_adr_s        cn68xxp1;
 	struct cvmx_mio_boot_loc_adr_s        cn70xx;
+	struct cvmx_mio_boot_loc_adr_s        cn70xxp1;
 	struct cvmx_mio_boot_loc_adr_s        cn78xx;
 	struct cvmx_mio_boot_loc_adr_s        cnf71xx;
 };
@@ -2705,6 +2764,7 @@ union cvmx_mio_boot_loc_cfgx {
 	struct cvmx_mio_boot_loc_cfgx_s       cn68xx;
 	struct cvmx_mio_boot_loc_cfgx_s       cn68xxp1;
 	struct cvmx_mio_boot_loc_cfgx_s       cn70xx;
+	struct cvmx_mio_boot_loc_cfgx_s       cn70xxp1;
 	struct cvmx_mio_boot_loc_cfgx_s       cn78xx;
 	struct cvmx_mio_boot_loc_cfgx_s       cnf71xx;
 };
@@ -2743,6 +2803,7 @@ union cvmx_mio_boot_loc_dat {
 	struct cvmx_mio_boot_loc_dat_s        cn68xx;
 	struct cvmx_mio_boot_loc_dat_s        cn68xxp1;
 	struct cvmx_mio_boot_loc_dat_s        cn70xx;
+	struct cvmx_mio_boot_loc_dat_s        cn70xxp1;
 	struct cvmx_mio_boot_loc_dat_s        cn78xx;
 	struct cvmx_mio_boot_loc_dat_s        cnf71xx;
 };
@@ -2881,6 +2942,7 @@ union cvmx_mio_boot_pin_defs {
 	uint64_t reserved_33_63               : 31;
 #endif
 	} cn70xx;
+	struct cvmx_mio_boot_pin_defs_cn70xx  cn70xxp1;
 	struct cvmx_mio_boot_pin_defs_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_54_63               : 10;
@@ -2895,28 +2957,28 @@ union cvmx_mio_boot_pin_defs {
                                                          0x8 = 3.3V.
                                                          else Reserved. */
 	uint64_t reserved_33_47               : 15;
-	uint64_t vrm_disable                  : 1;  /**< VRM disabled */
-	uint64_t user1                        : 13; /**< BOOT_AD<31:19> latched during power up */
+	uint64_t vrm_disable                  : 1;  /**< VRM disabled. */
+	uint64_t user1                        : 13; /**< BOOT_AD<31:19> latched during power up. */
 	uint64_t device                       : 3;  /**< BOOT_AD<18:16> latched during power up. Indicates boot device:
-                                                         0 = Parallel NOR.
-                                                         1 = Reserved.
-                                                         2 = eMMC/SD.
-                                                         3 = Reserved.
-                                                         4 = SPI Boot (16-bit address).
-                                                         5 = SPI Boot (24-bit address).
-                                                         6 = SPI Boot (32-bit address).
-                                                         7 = Reserved. */
-	uint64_t ale                          : 1;  /**< Region 0 default ALE mode */
-	uint64_t width                        : 1;  /**< Region 0 default bus width */
-	uint64_t user13                       : 1;  /**< BOOT_AD<13> latched during power up */
-	uint64_t dmack_p1                     : 1;  /**< BOOT_DMACK<1> default polarity */
-	uint64_t dmack_p0                     : 1;  /**< BOOT_DMACK<0> default polarity */
+                                                         0x0 = Parallel NOR.
+                                                         0x1 = Reserved.
+                                                         0x2 = eMMC/SD.
+                                                         0x3 = Reserved.
+                                                         0x4 = SPI Boot (16-bit address).
+                                                         0x5 = SPI Boot (24-bit address).
+                                                         0x6 = SPI Boot (32-bit address).
+                                                         0x7 = Reserved. */
+	uint64_t ale                          : 1;  /**< Region 0 default ALE mode. */
+	uint64_t width                        : 1;  /**< Region 0 default bus width. */
+	uint64_t user13                       : 1;  /**< BOOT_AD<13> latched during power up. */
+	uint64_t dmack_p1                     : 1;  /**< BOOT_DMACK<1> default polarity. */
+	uint64_t dmack_p0                     : 1;  /**< BOOT_DMACK<0> default polarity. */
 	uint64_t term                         : 2;  /**< Selects default boot-bus driver termination.
-                                                         00 = full strength
-                                                         01 = 25ohm
-                                                         10 = 50ohm
-                                                         11 = 65ohm */
-	uint64_t user0                        : 9;  /**< BOOT_AD<8:0> latched during power up */
+                                                         0x0 = full strength.
+                                                         0x1 = 25ohm.
+                                                         0x2 = 50ohm.
+                                                         0x3 = 65ohm. */
+	uint64_t user0                        : 9;  /**< BOOT_AD<8:0> latched during power up. */
 #else
 	uint64_t user0                        : 9;
 	uint64_t term                         : 2;
@@ -3063,6 +3125,7 @@ union cvmx_mio_boot_reg_cfgx {
 	struct cvmx_mio_boot_reg_cfgx_s       cn68xx;
 	struct cvmx_mio_boot_reg_cfgx_s       cn68xxp1;
 	struct cvmx_mio_boot_reg_cfgx_s       cn70xx;
+	struct cvmx_mio_boot_reg_cfgx_s       cn70xxp1;
 	struct cvmx_mio_boot_reg_cfgx_s       cn78xx;
 	struct cvmx_mio_boot_reg_cfgx_s       cnf71xx;
 };
@@ -3155,6 +3218,7 @@ union cvmx_mio_boot_reg_timx {
 	struct cvmx_mio_boot_reg_timx_s       cn68xx;
 	struct cvmx_mio_boot_reg_timx_s       cn68xxp1;
 	struct cvmx_mio_boot_reg_timx_s       cn70xx;
+	struct cvmx_mio_boot_reg_timx_s       cn70xxp1;
 	struct cvmx_mio_boot_reg_timx_s       cn78xx;
 	struct cvmx_mio_boot_reg_timx_s       cnf71xx;
 };
@@ -3215,10 +3279,32 @@ union cvmx_mio_boot_thr {
 	struct cvmx_mio_boot_thr_s            cn68xx;
 	struct cvmx_mio_boot_thr_s            cn68xxp1;
 	struct cvmx_mio_boot_thr_s            cn70xx;
+	struct cvmx_mio_boot_thr_s            cn70xxp1;
 	struct cvmx_mio_boot_thr_s            cn78xx;
 	struct cvmx_mio_boot_thr_s            cnf71xx;
 };
 typedef union cvmx_mio_boot_thr cvmx_mio_boot_thr_t;
+
+/**
+ * cvmx_mio_emm_access_wdog
+ */
+union cvmx_mio_emm_access_wdog {
+	uint64_t u64;
+	struct cvmx_mio_emm_access_wdog_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t clk_cnt                      : 32; /**< Number of coprocessor-clocks to allow for a store operation to the device to complete
+                                                         before hardware will halt the operation.
+                                                         Hardware will inject an error on the next 512-byte block boundary.   The pending DMA
+                                                         operation can be resumed or terminated. A value of zero disables timer. */
+#else
+	uint64_t clk_cnt                      : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_mio_emm_access_wdog_s     cn78xx;
+};
+typedef union cvmx_mio_emm_access_wdog cvmx_mio_emm_access_wdog_t;
 
 /**
  * cvmx_mio_emm_buf_dat
@@ -3238,6 +3324,7 @@ union cvmx_mio_emm_buf_dat {
 	} s;
 	struct cvmx_mio_emm_buf_dat_s         cn61xx;
 	struct cvmx_mio_emm_buf_dat_s         cn70xx;
+	struct cvmx_mio_emm_buf_dat_s         cn70xxp1;
 	struct cvmx_mio_emm_buf_dat_s         cn78xx;
 	struct cvmx_mio_emm_buf_dat_s         cnf71xx;
 };
@@ -3270,6 +3357,7 @@ union cvmx_mio_emm_buf_idx {
 	} s;
 	struct cvmx_mio_emm_buf_idx_s         cn61xx;
 	struct cvmx_mio_emm_buf_idx_s         cn70xx;
+	struct cvmx_mio_emm_buf_idx_s         cn70xxp1;
 	struct cvmx_mio_emm_buf_idx_s         cn78xx;
 	struct cvmx_mio_emm_buf_idx_s         cnf71xx;
 };
@@ -3289,17 +3377,12 @@ union cvmx_mio_emm_cfg {
 	uint64_t boot_fail                    : 1;  /**< SW should set BOOT_FAIL when an unrecoverable error occurs
                                                          while attempt to boot from eMMC or NOR Flash.   When set, the
                                                          following pattern will be output:
-                                                           BOOT_AD[7:0] pulled up to 1
+                                                           BOOT_AD[31:0] driven to a 0
                                                            BOOT_CE_N[7:0] driven to 1
-                                                           BOOT_ALE driven to 0
-                                                           BOOT_OE_L driven to 1
-                                                           BOOT_WE_L driven to 1 */
-	uint64_t reserved_5_15                : 11;
-	uint64_t lockout                      : 1;  /**< eMMC Lockout.  Setting this bit keeps the eMMC controller from
-                                                         requesting the boot bus.  This setting will allow NDF
-                                                         even when the BUS_ENA bits have been set.  Care must be taken
-                                                         to only set this bit when both the eMMC controller and the
-                                                         shared NDF DMA engine are idle. */
+                                                           BOOT_ALE driven to 1
+                                                           BOOT_OE_L driven to 0
+                                                           BOOT_WE_L driven to 0 */
+	uint64_t reserved_4_15                : 12;
 	uint64_t bus_ena                      : 4;  /**< eMMC bus enable mask.
 
                                                          Setting bit0 of BUS_ENA causes BOOT_CE[1] to become dedicated
@@ -3318,50 +3401,16 @@ union cvmx_mio_emm_cfg {
                                                          clock for both bus0 and bus1. */
 #else
 	uint64_t bus_ena                      : 4;
-	uint64_t lockout                      : 1;
-	uint64_t reserved_5_15                : 11;
+	uint64_t reserved_4_15                : 12;
 	uint64_t boot_fail                    : 1;
 	uint64_t reserved_17_63               : 47;
 #endif
 	} s;
-	struct cvmx_mio_emm_cfg_cn61xx {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_17_63               : 47;
-	uint64_t boot_fail                    : 1;  /**< SW should set BOOT_FAIL when an unrecoverable error occurs
-                                                         while attempt to boot from eMMC or NOR Flash.   When set, the
-                                                         following pattern will be output:
-                                                           BOOT_AD[7:0] pulled up to 1
-                                                           BOOT_CE_N[7:0] driven to 1
-                                                           BOOT_ALE driven to 0
-                                                           BOOT_OE_L driven to 1
-                                                           BOOT_WE_L driven to 1 */
-	uint64_t reserved_4_15                : 12;
-	uint64_t bus_ena                      : 4;  /**< eMMC bus enable mask.
-
-                                                         Setting bit0 of BUS_ENA causes BOOT_CE[1] to become dedicated
-                                                         eMMC bus 0 command (ie. disabling any NOR use)
-
-                                                         Setting bit1 of BUS_ENA causes BOOT_CE[2] to become dedicated
-                                                         eMMC bus 1 command (ie. disabling any NOR use).
-
-                                                         Setting bit2 of BUS_ENA causes BOOT_CE[3] to become dedicated
-                                                         eMMC bus 2 command (ie. disabling any NOR use).
-
-                                                         Setting bit3 of BUS_ENA causes BOOT_CE[4] to become dedicated
-                                                         eMMC bus 3 command (ie. disabling any NOR use).
-
-                                                         Setting any bit of BUS_ENA causes BOOT_CE[5] to become the eMMC
-                                                         clock for both bus0 and bus1. */
-#else
-	uint64_t bus_ena                      : 4;
-	uint64_t reserved_4_15                : 12;
-	uint64_t boot_fail                    : 1;
-	uint64_t reserved_17_63               : 47;
-#endif
-	} cn61xx;
+	struct cvmx_mio_emm_cfg_s             cn61xx;
 	struct cvmx_mio_emm_cfg_s             cn70xx;
-	struct cvmx_mio_emm_cfg_cn61xx        cn78xx;
-	struct cvmx_mio_emm_cfg_cn61xx        cnf71xx;
+	struct cvmx_mio_emm_cfg_s             cn70xxp1;
+	struct cvmx_mio_emm_cfg_s             cn78xx;
+	struct cvmx_mio_emm_cfg_s             cnf71xx;
 };
 typedef union cvmx_mio_emm_cfg cvmx_mio_emm_cfg_t;
 
@@ -3374,6 +3423,55 @@ typedef union cvmx_mio_emm_cfg cvmx_mio_emm_cfg_t;
 union cvmx_mio_emm_cmd {
 	uint64_t u64;
 	struct cvmx_mio_emm_cmd_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_63_63               : 1;
+	uint64_t skip_busy                    : 1;  /**< Controls when command is completed.
+                                                         0 = Command doesn't complete until card has dropped the BUSY signal.
+                                                         1 = Complete command regardless of the BUSY signal. Status of signal can be read in
+                                                         MIO_EMM_RSP_STS[RSP_BUSYBIT]. */
+	uint64_t bus_id                       : 2;  /**< Specify the eMMC bus */
+	uint64_t cmd_val                      : 1;  /**< Request valid.  SW writes this bit to a 1.   HW clears it when
+                                                         the operation completes. */
+	uint64_t reserved_56_58               : 3;
+	uint64_t dbuf                         : 1;  /**< Specify the data buffer to be used for a block transfer. */
+	uint64_t offset                       : 6;  /**< Debug only.  Specify the number of 8 byte transfers in the
+                                                         used in the command.  Value is 64-OFFSET.  The block transfer
+                                                         will still start at the first btye in the 512B data buffer.
+                                                         SW must ensure CMD16 has updated the card block length. */
+	uint64_t reserved_43_48               : 6;
+	uint64_t ctype_xor                    : 2;  /**< Command Type Override.  Typically Zero.  Value is XOR'd with
+                                                         default command type.  See table of Command Types per CMD#.
+                                                          Types are:  00 = No Data
+                                                                      01 = Read data into Dbuf
+                                                                      10 = Write data from Dbuf
+                                                                      11 = Reserved */
+	uint64_t rtype_xor                    : 3;  /**< Response Type Override.  Typically Zero.  Value is XOR'd with
+                                                         default response type.  See table of Response Types per CMD#.
+                                                          Types are 000 = No Response
+                                                                    001 = R1, 48 bits,
+                                                                    010 = R2, 136 bits
+                                                                    011 = R3, 48 bits,
+                                                                    100 = R4, 48 bits,
+                                                                    101 = R5, 48 bits,
+                                                                    110, 111 = Reserved */
+	uint64_t cmd_idx                      : 6;  /**< eMMC command */
+	uint64_t arg                          : 32; /**< eMMC command argument */
+#else
+	uint64_t arg                          : 32;
+	uint64_t cmd_idx                      : 6;
+	uint64_t rtype_xor                    : 3;
+	uint64_t ctype_xor                    : 2;
+	uint64_t reserved_43_48               : 6;
+	uint64_t offset                       : 6;
+	uint64_t dbuf                         : 1;
+	uint64_t reserved_56_58               : 3;
+	uint64_t cmd_val                      : 1;
+	uint64_t bus_id                       : 2;
+	uint64_t skip_busy                    : 1;
+	uint64_t reserved_63_63               : 1;
+#endif
+	} s;
+	struct cvmx_mio_emm_cmd_cn61xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_62_63               : 2;
 	uint64_t bus_id                       : 2;  /**< Specify the eMMC bus */
@@ -3416,11 +3514,11 @@ union cvmx_mio_emm_cmd {
 	uint64_t bus_id                       : 2;
 	uint64_t reserved_62_63               : 2;
 #endif
-	} s;
-	struct cvmx_mio_emm_cmd_s             cn61xx;
-	struct cvmx_mio_emm_cmd_s             cn70xx;
+	} cn61xx;
+	struct cvmx_mio_emm_cmd_cn61xx        cn70xx;
+	struct cvmx_mio_emm_cmd_cn61xx        cn70xxp1;
 	struct cvmx_mio_emm_cmd_s             cn78xx;
-	struct cvmx_mio_emm_cmd_s             cnf71xx;
+	struct cvmx_mio_emm_cmd_cn61xx        cnf71xx;
 };
 typedef union cvmx_mio_emm_cmd cvmx_mio_emm_cmd_t;
 
@@ -3433,6 +3531,51 @@ typedef union cvmx_mio_emm_cmd cvmx_mio_emm_cmd_t;
 union cvmx_mio_emm_dma {
 	uint64_t u64;
 	struct cvmx_mio_emm_dma_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_63_63               : 1;
+	uint64_t skip_busy                    : 1;  /**< Controls when DMA is completed.
+                                                         0 = DMA doesn't complete until card has dropped the BUSY signal.
+                                                         1 = Complete DMA after last transfer regardless of the BUSY signal. Status of signal can
+                                                         be read in MIO_EMM_RSP_STS[RSP_BUSYBIT]. */
+	uint64_t bus_id                       : 2;  /**< Specify the eMMC bus */
+	uint64_t dma_val                      : 1;  /**< SW writes this bit to a 1 to indicate that HW should perform
+                                                         the DMA transfer.   HW clears when DMA operation completes or
+                                                         is terminated. */
+	uint64_t sector                       : 1;  /**< Specify CARD_ADDR and eMMC are using sector (512B) addressing. */
+	uint64_t dat_null                     : 1;  /**< Do not perform any eMMC commands.   A DMA read will return all
+                                                         0s.  A DMA write tosses the data.  In the case of a failure,
+                                                         this can be used to unwind the DMA engine. */
+	uint64_t thres                        : 6;  /**< Number of 8B blocks of data that must exist in the DBUF before
+                                                         the starting the 512B block transfer.  0 indicates to wait for
+                                                         the entire block. */
+	uint64_t rel_wr                       : 1;  /**< Set the reliable write parameter when performing CMD23
+                                                         (SET_BLOCK_COUNT) for a multiple block */
+	uint64_t rw                           : 1;  /**< R/W bit (0 = read, 1 = write) */
+	uint64_t multi                        : 1;  /**< Perform operation using a multiple block command instead of a
+                                                         series of single block commands. */
+	uint64_t block_cnt                    : 16; /**< Number of blocks to read/write.  Hardware decrements the block
+                                                         count after each successful block transfer. */
+	uint64_t card_addr                    : 32; /**< Data address for media =<2GB is a 32bit byte address and data
+                                                         address for media > 2GB is a 32bit sector (512B) address.
+                                                         Hardware advances the card address after each successful block
+                                                         transfer by 512 for byte addressing and by 1 for sector
+                                                         addressing. */
+#else
+	uint64_t card_addr                    : 32;
+	uint64_t block_cnt                    : 16;
+	uint64_t multi                        : 1;
+	uint64_t rw                           : 1;
+	uint64_t rel_wr                       : 1;
+	uint64_t thres                        : 6;
+	uint64_t dat_null                     : 1;
+	uint64_t sector                       : 1;
+	uint64_t dma_val                      : 1;
+	uint64_t bus_id                       : 2;
+	uint64_t skip_busy                    : 1;
+	uint64_t reserved_63_63               : 1;
+#endif
+	} s;
+	struct cvmx_mio_emm_dma_cn61xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_62_63               : 2;
 	uint64_t bus_id                       : 2;  /**< Specify the eMMC bus */
@@ -3471,11 +3614,11 @@ union cvmx_mio_emm_dma {
 	uint64_t bus_id                       : 2;
 	uint64_t reserved_62_63               : 2;
 #endif
-	} s;
-	struct cvmx_mio_emm_dma_s             cn61xx;
-	struct cvmx_mio_emm_dma_s             cn70xx;
+	} cn61xx;
+	struct cvmx_mio_emm_dma_cn61xx        cn70xx;
+	struct cvmx_mio_emm_dma_cn61xx        cn70xxp1;
 	struct cvmx_mio_emm_dma_s             cn78xx;
-	struct cvmx_mio_emm_dma_s             cnf71xx;
+	struct cvmx_mio_emm_dma_cn61xx        cnf71xx;
 };
 typedef union cvmx_mio_emm_dma cvmx_mio_emm_dma_t;
 
@@ -3503,8 +3646,8 @@ typedef union cvmx_mio_emm_dma_adr cvmx_mio_emm_dma_adr_t;
 /**
  * cvmx_mio_emm_dma_cfg
  *
- * This register controls the DMA engine used with the eMMC/SD flash controller. Sixty-four-bit
- * operations must be used to access this register.
+ * This register controls the internal DMA engine used with the eMMC/SD flash controller. Sixty-
+ * four-bit operations must be used to access this register.
  */
 union cvmx_mio_emm_dma_cfg {
 	uint64_t u64;
@@ -3539,6 +3682,106 @@ union cvmx_mio_emm_dma_cfg {
 typedef union cvmx_mio_emm_dma_cfg cvmx_mio_emm_dma_cfg_t;
 
 /**
+ * cvmx_mio_emm_dma_fifo_adr
+ *
+ * This register specifies the internal address that is loaded into the eMMC internal DMA FIFO.
+ * The FIFO is used to queue up operations for the MIO_EMM_DMA_CFG/MIO_EMM_DMA_ADR when the DMA
+ * completes successfully.
+ */
+union cvmx_mio_emm_dma_fifo_adr {
+	uint64_t u64;
+	struct cvmx_mio_emm_dma_fifo_adr_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_42_63               : 22;
+	uint64_t adr                          : 39; /**< DMA engine address. Must be 64-bit aligned. */
+	uint64_t reserved_0_2                 : 3;
+#else
+	uint64_t reserved_0_2                 : 3;
+	uint64_t adr                          : 39;
+	uint64_t reserved_42_63               : 22;
+#endif
+	} s;
+	struct cvmx_mio_emm_dma_fifo_adr_s    cn78xx;
+};
+typedef union cvmx_mio_emm_dma_fifo_adr cvmx_mio_emm_dma_fifo_adr_t;
+
+/**
+ * cvmx_mio_emm_dma_fifo_cfg
+ *
+ * This register controls DMA FIFO Operations.
+ *
+ */
+union cvmx_mio_emm_dma_fifo_cfg {
+	uint64_t u64;
+	struct cvmx_mio_emm_dma_fifo_cfg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_17_63               : 47;
+	uint64_t clr                          : 1;  /**< DMA FIFO Clear. When set erases all commands in the DMA FIFO. Must be zero for normal operation. */
+	uint64_t reserved_13_15               : 3;
+	uint64_t int_lvl                      : 5;  /**< Interrupt threshold that specifies the number of entries remaining in the DMA FIFO. A
+                                                         value of 16 or more disables the interrupt. See MIO_EMM_DMA_INT[FIFO]. */
+	uint64_t reserved_5_7                 : 3;
+	uint64_t count                        : 5;  /**< Number of entries in the DMA FIFO. This count is incremented by writes to the
+                                                         MIO_EMM_DMA_FIFO_CMD register and decremented each time the internal DMA engine completes
+                                                         the previous command successfully.
+                                                         Up to 16 entries can be placed in the FIFO. Entries written to a full FIFO will be
+                                                         ignored. */
+#else
+	uint64_t count                        : 5;
+	uint64_t reserved_5_7                 : 3;
+	uint64_t int_lvl                      : 5;
+	uint64_t reserved_13_15               : 3;
+	uint64_t clr                          : 1;
+	uint64_t reserved_17_63               : 47;
+#endif
+	} s;
+	struct cvmx_mio_emm_dma_fifo_cfg_s    cn78xx;
+};
+typedef union cvmx_mio_emm_dma_fifo_cfg cvmx_mio_emm_dma_fifo_cfg_t;
+
+/**
+ * cvmx_mio_emm_dma_fifo_cmd
+ *
+ * This register specifies a command that is loaded into the eMMC internal DMA FIFO.  The FIFO is
+ * used to queue up operations for the MIO_EMM_DMA_CFG/MIO_EMM_DMA_ADR when the DMA completes
+ * successfully. Writes to this register store both the MIO_EMM_DMA_FIFO_CMD and the
+ * MIO_EMM_DMA_FIFO_ADR contents into the FIFO and increment the MIO_EMM_DMA_FIFO_CFG[COUNT]
+ * field.
+ *
+ * Note: This register has a similar format to the MIO_EMM_DMA_CFG register with the exception
+ * that the EN and CLR fields are absent. These are supported in the MIO_EMM_DMA_FIFO_CFG.
+ */
+union cvmx_mio_emm_dma_fifo_cmd {
+	uint64_t u64;
+	struct cvmx_mio_emm_dma_fifo_cmd_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_63_63               : 1;
+	uint64_t rw                           : 1;  /**< DMA engine R/W bit: 0 = read, 1 = write. */
+	uint64_t reserved_60_61               : 2;
+	uint64_t swap32                       : 1;  /**< DMA engine 32-bit swap. */
+	uint64_t swap16                       : 1;  /**< DMA engine enable 16-bit swap. */
+	uint64_t swap8                        : 1;  /**< DMA engine enable 8-bit swap. */
+	uint64_t endian                       : 1;  /**< DMA engine endian mode: 0 = big-endian, 1 = little-endian. */
+	uint64_t size                         : 20; /**< DMA engine size. Specified in the number of 64-bit transfers (encoded in -1 notation). For
+                                                         example, to transfer 512 bytes, SIZE = 64 - 1 = 63. */
+	uint64_t reserved_0_35                : 36;
+#else
+	uint64_t reserved_0_35                : 36;
+	uint64_t size                         : 20;
+	uint64_t endian                       : 1;
+	uint64_t swap8                        : 1;
+	uint64_t swap16                       : 1;
+	uint64_t swap32                       : 1;
+	uint64_t reserved_60_61               : 2;
+	uint64_t rw                           : 1;
+	uint64_t reserved_63_63               : 1;
+#endif
+	} s;
+	struct cvmx_mio_emm_dma_fifo_cmd_s    cn78xx;
+};
+typedef union cvmx_mio_emm_dma_fifo_cmd cvmx_mio_emm_dma_fifo_cmd_t;
+
+/**
  * cvmx_mio_emm_dma_int
  *
  * Sixty-four-bit operations must be used to access this register.
@@ -3548,11 +3791,16 @@ union cvmx_mio_emm_dma_int {
 	uint64_t u64;
 	struct cvmx_mio_emm_dma_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
-	uint64_t done                         : 1;  /**< DMA engine request completion interrupt. Throws MIO_EMM_INTSN_E::MIO_EMM_DMA_DONE. */
+	uint64_t reserved_2_63                : 62;
+	uint64_t fifo                         : 1;  /**< INIERNAL Set as reserved in HRM
+                                                         Internal DMA FIFO has dropped to level specified by MIO_EMM_DMA_FIFO_CFG[INT_LVL]. Throws
+                                                         MIO_EMM_INTSN_E::MIO_EMM_DMA_FIFO. */
+	uint64_t done                         : 1;  /**< Internal DMA engine request completion interrupt. Throws
+                                                         MIO_EMM_INTSN_E::MIO_EMM_DMA_DONE. */
 #else
 	uint64_t done                         : 1;
-	uint64_t reserved_1_63                : 63;
+	uint64_t fifo                         : 1;
+	uint64_t reserved_2_63                : 62;
 #endif
 	} s;
 	struct cvmx_mio_emm_dma_int_s         cn78xx;
@@ -3595,6 +3843,7 @@ union cvmx_mio_emm_int {
 	} s;
 	struct cvmx_mio_emm_int_s             cn61xx;
 	struct cvmx_mio_emm_int_s             cn70xx;
+	struct cvmx_mio_emm_int_s             cn70xxp1;
 	struct cvmx_mio_emm_int_s             cn78xx;
 	struct cvmx_mio_emm_int_s             cnf71xx;
 };
@@ -3633,6 +3882,7 @@ union cvmx_mio_emm_int_en {
 	} s;
 	struct cvmx_mio_emm_int_en_s          cn61xx;
 	struct cvmx_mio_emm_int_en_s          cn70xx;
+	struct cvmx_mio_emm_int_en_s          cn70xxp1;
 	struct cvmx_mio_emm_int_en_s          cnf71xx;
 };
 typedef union cvmx_mio_emm_int_en cvmx_mio_emm_int_en_t;
@@ -3681,6 +3931,7 @@ union cvmx_mio_emm_modex {
 	} s;
 	struct cvmx_mio_emm_modex_s           cn61xx;
 	struct cvmx_mio_emm_modex_s           cn70xx;
+	struct cvmx_mio_emm_modex_s           cn70xxp1;
 	struct cvmx_mio_emm_modex_s           cn78xx;
 	struct cvmx_mio_emm_modex_s           cnf71xx;
 };
@@ -3704,6 +3955,7 @@ union cvmx_mio_emm_rca {
 	} s;
 	struct cvmx_mio_emm_rca_s             cn61xx;
 	struct cvmx_mio_emm_rca_s             cn70xx;
+	struct cvmx_mio_emm_rca_s             cn70xxp1;
 	struct cvmx_mio_emm_rca_s             cn78xx;
 	struct cvmx_mio_emm_rca_s             cnf71xx;
 };
@@ -3732,6 +3984,7 @@ union cvmx_mio_emm_rsp_hi {
 	} s;
 	struct cvmx_mio_emm_rsp_hi_s          cn61xx;
 	struct cvmx_mio_emm_rsp_hi_s          cn70xx;
+	struct cvmx_mio_emm_rsp_hi_s          cn70xxp1;
 	struct cvmx_mio_emm_rsp_hi_s          cn78xx;
 	struct cvmx_mio_emm_rsp_hi_s          cnf71xx;
 };
@@ -3792,6 +4045,7 @@ union cvmx_mio_emm_rsp_lo {
 	} s;
 	struct cvmx_mio_emm_rsp_lo_s          cn61xx;
 	struct cvmx_mio_emm_rsp_lo_s          cn70xx;
+	struct cvmx_mio_emm_rsp_lo_s          cn70xxp1;
 	struct cvmx_mio_emm_rsp_lo_s          cn78xx;
 	struct cvmx_mio_emm_rsp_lo_s          cnf71xx;
 };
@@ -3806,6 +4060,85 @@ typedef union cvmx_mio_emm_rsp_lo cvmx_mio_emm_rsp_lo_t;
 union cvmx_mio_emm_rsp_sts {
 	uint64_t u64;
 	struct cvmx_mio_emm_rsp_sts_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_62_63               : 2;
+	uint64_t bus_id                       : 2;  /**< eMMC bus id to which the response status corresponds. */
+	uint64_t cmd_val                      : 1;  /**< Read-only copy of MIO_EMM_CMD[CMD_VAL].  CMD_VAL=1 indicates a
+                                                         direct operation is in progress. */
+	uint64_t switch_val                   : 1;  /**< Read-only copy of MIO_EMM_SWITCH[SWITCH_EXE].   SWITCH_VAL=1
+                                                         indicates a switch operation is in progress. */
+	uint64_t dma_val                      : 1;  /**< Read-only copy of MIO_EMM_DMA[DMA_VAL].   DMA_VAL=1 indicates a
+                                                         DMA operation is in progress. */
+	uint64_t dma_pend                     : 1;  /**< The DMA engine has a pending transfer resulting from an error.
+                                                         SW can resume the transfer by writing MIO_EMM_DMA[DMA_VAL]=1.
+                                                         SW can terminate the transfer by writing MIO_EMM_DMA[DMA_VAL]=1
+                                                         and MIO_EMM_DMA[DAT_NULL]=1.   HW will clear DMA_PEND and
+                                                         perform the DMA operation. */
+	uint64_t acc_timeout                  : 1;  /**< The store operation to the device took longer than MIO_EMM_ACCESS_WDOG[CLK_CNT]
+                                                         coprocessor-clocks to complete.
+                                                         Valid when DMA_PEND=1. */
+	uint64_t reserved_29_54               : 26;
+	uint64_t dbuf_err                     : 1;  /**< For CMD_TYPE=1, indicates a DMA read data arrived from card
+                                                         without a free DBUF.
+
+                                                         For CMD_TYPE=2, indicates a DBUF underflow occurred during a
+                                                         DMA write.    See MIO_EMM_DMA[THRES]. */
+	uint64_t reserved_24_27               : 4;
+	uint64_t dbuf                         : 1;  /**< DBUF corresponding to the most recently attempted block
+                                                         transfer. */
+	uint64_t blk_timeout                  : 1;  /**< Timeout waiting for read data or 3bit CRC token */
+	uint64_t blk_crc_err                  : 1;  /**< For CMD_TYPE=1, indicates a card read data CRC mismatch.
+                                                         MIO_EMM_RSP_STS[DBUF] indicates the failing data buffer.
+
+                                                         For CMD_TYPE=2, indicates card returned 3-bit CRC status token
+                                                         indicating the card encountered a write data CRC check
+                                                         mismatch.  MIO_EMM_RSP_STS[DBUF] indicates the failing data
+                                                         buffer. */
+	uint64_t rsp_busybit                  : 1;  /**< Debug only.  eMMC protocol utilizes DAT0 as a busy signal
+                                                         during block writes and R1b responses. */
+	uint64_t stp_timeout                  : 1;  /**< Stop transmission response timeout. */
+	uint64_t stp_crc_err                  : 1;  /**< Stop transmission response had a CRC error */
+	uint64_t stp_bad_sts                  : 1;  /**< Stop transmission response had bad status. */
+	uint64_t stp_val                      : 1;  /**< Stop transmission response valid. */
+	uint64_t rsp_timeout                  : 1;  /**< Response timeout */
+	uint64_t rsp_crc_err                  : 1;  /**< Response CRC error */
+	uint64_t rsp_bad_sts                  : 1;  /**< Response bad status */
+	uint64_t rsp_val                      : 1;  /**< Response id.   See MIO_EMM_RSP_HI/LO */
+	uint64_t rsp_type                     : 3;  /**< Indicates the response type. See MIO_EMM_RSP_HI/LO */
+	uint64_t cmd_type                     : 2;  /**< eMMC command type (0=no data, 1=read, 2=write) */
+	uint64_t cmd_idx                      : 6;  /**< eMMC command index most recently attempted */
+	uint64_t cmd_done                     : 1;  /**< eMMC command completed.   Once the command has complete, the
+                                                         status is final and can be examined by SW. */
+#else
+	uint64_t cmd_done                     : 1;
+	uint64_t cmd_idx                      : 6;
+	uint64_t cmd_type                     : 2;
+	uint64_t rsp_type                     : 3;
+	uint64_t rsp_val                      : 1;
+	uint64_t rsp_bad_sts                  : 1;
+	uint64_t rsp_crc_err                  : 1;
+	uint64_t rsp_timeout                  : 1;
+	uint64_t stp_val                      : 1;
+	uint64_t stp_bad_sts                  : 1;
+	uint64_t stp_crc_err                  : 1;
+	uint64_t stp_timeout                  : 1;
+	uint64_t rsp_busybit                  : 1;
+	uint64_t blk_crc_err                  : 1;
+	uint64_t blk_timeout                  : 1;
+	uint64_t dbuf                         : 1;
+	uint64_t reserved_24_27               : 4;
+	uint64_t dbuf_err                     : 1;
+	uint64_t reserved_29_54               : 26;
+	uint64_t acc_timeout                  : 1;
+	uint64_t dma_pend                     : 1;
+	uint64_t dma_val                      : 1;
+	uint64_t switch_val                   : 1;
+	uint64_t cmd_val                      : 1;
+	uint64_t bus_id                       : 2;
+	uint64_t reserved_62_63               : 2;
+#endif
+	} s;
+	struct cvmx_mio_emm_rsp_sts_cn61xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_62_63               : 2;
 	uint64_t bus_id                       : 2;  /**< eMMC bus id to which the response status corresponds. */
@@ -3879,11 +4212,11 @@ union cvmx_mio_emm_rsp_sts {
 	uint64_t bus_id                       : 2;
 	uint64_t reserved_62_63               : 2;
 #endif
-	} s;
-	struct cvmx_mio_emm_rsp_sts_s         cn61xx;
-	struct cvmx_mio_emm_rsp_sts_s         cn70xx;
+	} cn61xx;
+	struct cvmx_mio_emm_rsp_sts_cn61xx    cn70xx;
+	struct cvmx_mio_emm_rsp_sts_cn61xx    cn70xxp1;
 	struct cvmx_mio_emm_rsp_sts_s         cn78xx;
-	struct cvmx_mio_emm_rsp_sts_s         cnf71xx;
+	struct cvmx_mio_emm_rsp_sts_cn61xx    cnf71xx;
 };
 typedef union cvmx_mio_emm_rsp_sts cvmx_mio_emm_rsp_sts_t;
 
@@ -3909,6 +4242,7 @@ union cvmx_mio_emm_sample {
 	} s;
 	struct cvmx_mio_emm_sample_s          cn61xx;
 	struct cvmx_mio_emm_sample_s          cn70xx;
+	struct cvmx_mio_emm_sample_s          cn70xxp1;
 	struct cvmx_mio_emm_sample_s          cn78xx;
 	struct cvmx_mio_emm_sample_s          cnf71xx;
 };
@@ -3931,6 +4265,7 @@ union cvmx_mio_emm_sts_mask {
 	} s;
 	struct cvmx_mio_emm_sts_mask_s        cn61xx;
 	struct cvmx_mio_emm_sts_mask_s        cn70xx;
+	struct cvmx_mio_emm_sts_mask_s        cn70xxp1;
 	struct cvmx_mio_emm_sts_mask_s        cn78xx;
 	struct cvmx_mio_emm_sts_mask_s        cnf71xx;
 };
@@ -4000,6 +4335,7 @@ union cvmx_mio_emm_switch {
 	} s;
 	struct cvmx_mio_emm_switch_s          cn61xx;
 	struct cvmx_mio_emm_switch_s          cn70xx;
+	struct cvmx_mio_emm_switch_s          cn70xxp1;
 	struct cvmx_mio_emm_switch_s          cn78xx;
 	struct cvmx_mio_emm_switch_s          cnf71xx;
 };
@@ -4025,6 +4361,7 @@ union cvmx_mio_emm_wdog {
 	} s;
 	struct cvmx_mio_emm_wdog_s            cn61xx;
 	struct cvmx_mio_emm_wdog_s            cn70xx;
+	struct cvmx_mio_emm_wdog_s            cn70xxp1;
 	struct cvmx_mio_emm_wdog_s            cn78xx;
 	struct cvmx_mio_emm_wdog_s            cnf71xx;
 };
@@ -4061,6 +4398,7 @@ union cvmx_mio_fus_bnk_datx {
 	struct cvmx_mio_fus_bnk_datx_s        cn68xx;
 	struct cvmx_mio_fus_bnk_datx_s        cn68xxp1;
 	struct cvmx_mio_fus_bnk_datx_s        cn70xx;
+	struct cvmx_mio_fus_bnk_datx_s        cn70xxp1;
 	struct cvmx_mio_fus_bnk_datx_s        cn78xx;
 	struct cvmx_mio_fus_bnk_datx_s        cnf71xx;
 };
@@ -4098,6 +4436,7 @@ union cvmx_mio_fus_dat0 {
 	struct cvmx_mio_fus_dat0_s            cn68xx;
 	struct cvmx_mio_fus_dat0_s            cn68xxp1;
 	struct cvmx_mio_fus_dat0_s            cn70xx;
+	struct cvmx_mio_fus_dat0_s            cn70xxp1;
 	struct cvmx_mio_fus_dat0_s            cn78xx;
 	struct cvmx_mio_fus_dat0_s            cnf71xx;
 };
@@ -4135,6 +4474,7 @@ union cvmx_mio_fus_dat1 {
 	struct cvmx_mio_fus_dat1_s            cn68xx;
 	struct cvmx_mio_fus_dat1_s            cn68xxp1;
 	struct cvmx_mio_fus_dat1_s            cn70xx;
+	struct cvmx_mio_fus_dat1_s            cn70xxp1;
 	struct cvmx_mio_fus_dat1_s            cn78xx;
 	struct cvmx_mio_fus_dat1_s            cnf71xx;
 };
@@ -4561,10 +4901,10 @@ union cvmx_mio_fus_dat2 {
 	uint64_t nomul                        : 1;  /**< Fuse information - VMUL disable. */
 	uint64_t nocrypto                     : 1;  /**< Fuse information - DORM_CRYPTO and NOCRYPTO together select one of four mutually-exclusive
                                                          modes:
-                                                         DORM_CRYPTO = 0, NOCRYPTO = 0 AES/DES/HASH enabled.
-                                                         DORM_CRYPTO = 0, NOCRYPTO = 1 AES/DES/HASH disabled.
-                                                         DORM_CRYPTO = 1, NOCRYPTO = 0 Dormant encryption enable.
-                                                         DORM_CRYPTO = 1, NOCRYPTO = 1 Authenik mode. */
+                                                         _ DORM_CRYPTO = 0, NOCRYPTO = 0 AES/DES/HASH enabled.
+                                                         _ DORM_CRYPTO = 0, NOCRYPTO = 1 AES/DES/HASH disabled.
+                                                         _ DORM_CRYPTO = 1, NOCRYPTO = 0 Dormant encryption enable.
+                                                         _ DORM_CRYPTO = 1, NOCRYPTO = 1 Authentik mode. */
 	uint64_t reserved_24_25               : 2;
 	uint64_t chip_id                      : 8;  /**< Fuse information - chip ID. */
 	uint64_t reserved_0_15                : 16;
@@ -4585,6 +4925,7 @@ union cvmx_mio_fus_dat2 {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} cn70xx;
+	struct cvmx_mio_fus_dat2_cn70xx       cn70xxp1;
 	struct cvmx_mio_fus_dat2_cn70xx       cn78xx;
 	struct cvmx_mio_fus_dat2_cn61xx       cnf71xx;
 };
@@ -4597,20 +4938,18 @@ union cvmx_mio_fus_dat3 {
 	uint64_t u64;
 	struct cvmx_mio_fus_dat3_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ema0                         : 6;  /**< Fuse information - EMA0. */
+	uint64_t ema0                         : 6;  /**< Fuse information - EMA0. INTERNAL: dflt value is 0x02. Soft or hard blow of these fuses
+                                                         will XOR with this value. */
 	uint64_t pll_ctl                      : 10; /**< Fuse information - PLL control */
 	uint64_t dfa_info_dte                 : 3;  /**< Fuse information - DFA information (DTE) */
 	uint64_t dfa_info_clm                 : 4;  /**< Fuse information - DFA information (Cluster mask) */
-	uint64_t reserved_40_40               : 1;
-	uint64_t ema                          : 2;  /**< Fuse information - EMA */
+	uint64_t pll_alt_matrix               : 1;  /**< Select alternate PLL matrix. Added in pass 2. */
+	uint64_t reserved_38_39               : 2;
 	uint64_t efus_lck_rsv                 : 1;  /**< Fuse information - efuse lockdown */
 	uint64_t efus_lck_man                 : 1;  /**< Fuse information - efuse lockdown */
 	uint64_t pll_half_dis                 : 1;  /**< Fuse information - RCLK PLL control */
 	uint64_t l2c_crip                     : 3;  /**< Fuse information - L2C Cripple (1/8, 1/4, 1/2) */
-	uint64_t pll_div4                     : 1;  /**< Fuse information - PLL DIV4 mode
-                                                         (laser fuse only) */
-	uint64_t reserved_29_30               : 2;
-	uint64_t bar2_en                      : 1;  /**< Fuse information - BAR2 Present (when blown '1') */
+	uint64_t reserved_28_31               : 4;
 	uint64_t efus_lck                     : 1;  /**< Fuse information - efuse lockdown */
 	uint64_t efus_ign                     : 1;  /**< Fuse information - efuse ignore */
 	uint64_t nozip                        : 1;  /**< Fuse information - ZIP disable */
@@ -4622,15 +4961,13 @@ union cvmx_mio_fus_dat3 {
 	uint64_t nozip                        : 1;
 	uint64_t efus_ign                     : 1;
 	uint64_t efus_lck                     : 1;
-	uint64_t bar2_en                      : 1;
-	uint64_t reserved_29_30               : 2;
-	uint64_t pll_div4                     : 1;
+	uint64_t reserved_28_31               : 4;
 	uint64_t l2c_crip                     : 3;
 	uint64_t pll_half_dis                 : 1;
 	uint64_t efus_lck_man                 : 1;
 	uint64_t efus_lck_rsv                 : 1;
-	uint64_t ema                          : 2;
-	uint64_t reserved_40_40               : 1;
+	uint64_t reserved_38_39               : 2;
+	uint64_t pll_alt_matrix               : 1;
 	uint64_t dfa_info_clm                 : 4;
 	uint64_t dfa_info_dte                 : 3;
 	uint64_t pll_ctl                      : 10;
@@ -4804,28 +5141,36 @@ union cvmx_mio_fus_dat3 {
 	struct cvmx_mio_fus_dat3_cn61xx       cn68xxp1;
 	struct cvmx_mio_fus_dat3_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ema0                         : 6;  /**< Fuse information - EMA0. */
+	uint64_t ema0                         : 6;  /**< Fuse information - EMA0. INTERNAL: dflt value is 0x02. Soft or hard blow of these fuses
+                                                         will XOR with this value. */
 	uint64_t pll_ctl                      : 10; /**< Fuse information - PLL control. */
 	uint64_t dfa_info_dte                 : 3;  /**< Fuse information - HFA information (HTE). */
 	uint64_t dfa_info_clm                 : 4;  /**< Fuse information - HFA information (cluster mask). */
-	uint64_t reserved_38_40               : 3;
+	uint64_t pll_alt_matrix               : 1;  /**< Select alternate PLL matrix. Added in pass 2. */
+	uint64_t pll_bwadj_denom              : 2;  /**< Select CLKF denominator for BWADJ value. Added in pass 2.
+                                                         0x0 = Selects CLKF/4.
+                                                         0x1 = Selects CLKF/2.
+                                                         0x2 = Selects CLKF/8. */
 	uint64_t efus_lck_rsv                 : 1;  /**< Fuse information - efuse lockdown. */
 	uint64_t efus_lck_man                 : 1;  /**< Fuse information - efuse lockdown. */
 	uint64_t pll_half_dis                 : 1;  /**< Fuse information - Coprocessor-clock PLL control. */
 	uint64_t l2c_crip                     : 3;  /**< Fuse information - L2C cripple:
-                                                         0 -- full cache (4-way 512KB)
-                                                         1 -- 3/4 ways   (3-way 384KB)
-                                                         2 -- 1/2 ways   (2-way 256KB)
-                                                         3 -- 1/4 ways   (1-way 128KB)
-                                                         4-7 -- illegal */
-	uint64_t reserved_31_31               : 1;
-	uint64_t zip_info                     : 2;  /**< Fuse information - Zip information */
-	uint64_t bar2_en                      : 1;  /**< Fuse information - BAR2 present (when blown `1') */
-	uint64_t efus_lck                     : 1;  /**< Fuse information - efuse lockdown */
-	uint64_t efus_ign                     : 1;  /**< Fuse information - efuse ignore */
-	uint64_t nozip                        : 1;  /**< Fuse information - ZIP disable */
-	uint64_t nodfa_dte                    : 1;  /**< Fuse information - HFA disable (HTE) */
-	uint64_t ema1                         : 6;  /**< Fuse information - EMA1. */
+                                                         0x0 = Full cache (4-way 512 KB).
+                                                         0x1 = 3/4 ways (3-way 384 KB).
+                                                         0x2 = 1/2 ways (2-way 256 KB).
+                                                         0x3 = 1/4 ways (1-way 128 KB).
+                                                         0x4-0x7 = Reserved. */
+	uint64_t use_int_refclk               : 1;  /**< If set use the PLL output as the low-jitter reference clock to the rclk DLLs. Default is
+                                                         to use the external input reference clock.
+                                                         Added in pass 2. */
+	uint64_t zip_info                     : 2;  /**< Fuse information - Zip information. */
+	uint64_t bar2_sz_conf                 : 1;  /**< Fuse information - When 0, BAR2 size conforms to PCIE specification. */
+	uint64_t efus_lck                     : 1;  /**< Fuse information - efuse lockdown. */
+	uint64_t efus_ign                     : 1;  /**< Fuse information - efuse ignore. */
+	uint64_t nozip                        : 1;  /**< Fuse information - ZIP disable. */
+	uint64_t nodfa_dte                    : 1;  /**< Fuse information - HFA disable (HTE). */
+	uint64_t ema1                         : 6;  /**< Fuse information - EMA1. INTERNAL: dflt value is 0x11. Soft or hard blow
+                                                         of these fuses will XOR with this value. */
 	uint64_t reserved_0_17                : 18;
 #else
 	uint64_t reserved_0_17                : 18;
@@ -4834,7 +5179,56 @@ union cvmx_mio_fus_dat3 {
 	uint64_t nozip                        : 1;
 	uint64_t efus_ign                     : 1;
 	uint64_t efus_lck                     : 1;
-	uint64_t bar2_en                      : 1;
+	uint64_t bar2_sz_conf                 : 1;
+	uint64_t zip_info                     : 2;
+	uint64_t use_int_refclk               : 1;
+	uint64_t l2c_crip                     : 3;
+	uint64_t pll_half_dis                 : 1;
+	uint64_t efus_lck_man                 : 1;
+	uint64_t efus_lck_rsv                 : 1;
+	uint64_t pll_bwadj_denom              : 2;
+	uint64_t pll_alt_matrix               : 1;
+	uint64_t dfa_info_clm                 : 4;
+	uint64_t dfa_info_dte                 : 3;
+	uint64_t pll_ctl                      : 10;
+	uint64_t ema0                         : 6;
+#endif
+	} cn70xx;
+	struct cvmx_mio_fus_dat3_cn70xxp1 {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t ema0                         : 6;  /**< Fuse information - EMA0. INTERNAL: dflt value is 0x02. Soft or hard blow of these fuses
+                                                         will XOR with this value. */
+	uint64_t pll_ctl                      : 10; /**< Fuse information - PLL control. */
+	uint64_t dfa_info_dte                 : 3;  /**< Fuse information - HFA information (HTE). */
+	uint64_t dfa_info_clm                 : 4;  /**< Fuse information - HFA information (cluster mask). */
+	uint64_t reserved_38_40               : 3;
+	uint64_t efus_lck_rsv                 : 1;  /**< Fuse information - efuse lockdown. */
+	uint64_t efus_lck_man                 : 1;  /**< Fuse information - efuse lockdown. */
+	uint64_t pll_half_dis                 : 1;  /**< Fuse information - Coprocessor-clock PLL control. */
+	uint64_t l2c_crip                     : 3;  /**< Fuse information - L2C cripple:
+                                                         0x0 = Full cache (4-way 512 KB).
+                                                         0x1 = 3/4 ways (3-way 384 KB).
+                                                         0x2 = 1/2 ways (2-way 256 KB).
+                                                         0x3 = 1/4 ways (1-way 128 KB).
+                                                         0x4-0x7 = Reserved. */
+	uint64_t reserved_31_31               : 1;
+	uint64_t zip_info                     : 2;  /**< Fuse information - Zip information. */
+	uint64_t bar2_sz_conf                 : 1;  /**< Fuse information - When 0, BAR2 size conforms to PCIE specification. */
+	uint64_t efus_lck                     : 1;  /**< Fuse information - efuse lockdown. */
+	uint64_t efus_ign                     : 1;  /**< Fuse information - efuse ignore. */
+	uint64_t nozip                        : 1;  /**< Fuse information - ZIP disable. */
+	uint64_t nodfa_dte                    : 1;  /**< Fuse information - HFA disable (HTE). */
+	uint64_t ema1                         : 6;  /**< Fuse information - EMA1. INTERNAL: dflt value is 0x11. Soft or hard blow
+                                                         of these fuses will XOR with this value. */
+	uint64_t reserved_0_17                : 18;
+#else
+	uint64_t reserved_0_17                : 18;
+	uint64_t ema1                         : 6;
+	uint64_t nodfa_dte                    : 1;
+	uint64_t nozip                        : 1;
+	uint64_t efus_ign                     : 1;
+	uint64_t efus_lck                     : 1;
+	uint64_t bar2_sz_conf                 : 1;
 	uint64_t zip_info                     : 2;
 	uint64_t reserved_31_31               : 1;
 	uint64_t l2c_crip                     : 3;
@@ -4847,10 +5241,11 @@ union cvmx_mio_fus_dat3 {
 	uint64_t pll_ctl                      : 10;
 	uint64_t ema0                         : 6;
 #endif
-	} cn70xx;
+	} cn70xxp1;
 	struct cvmx_mio_fus_dat3_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ema0                         : 6;  /**< Fuse information - EMA0. */
+	uint64_t ema0                         : 6;  /**< Fuse information - EMA0. INTERNAL: dflt value is 0x02. Soft or hard blow of these fuses
+                                                         will XOR with this value. */
 	uint64_t pll_ctl                      : 10; /**< Fuse information - PLL control. */
 	uint64_t dfa_info_dte                 : 3;  /**< Fuse information - HFA information (HTE). */
 	uint64_t dfa_info_clm                 : 4;  /**< Fuse information - HFA information (cluster mask). */
@@ -4859,19 +5254,20 @@ union cvmx_mio_fus_dat3 {
 	uint64_t efus_lck_man                 : 1;  /**< Fuse information - efuse lockdown. */
 	uint64_t pll_half_dis                 : 1;  /**< Fuse information - Coprocessor-clock PLL control. */
 	uint64_t l2c_crip                     : 3;  /**< Fuse information - L2C cripple:
-                                                         0x0 = Full cache (16-way, 16 MB)
-                                                         0x1 = 3/4 ways (12-way, 12 MB)
-                                                         0x2 = 1/2 ways (8-way, 8 MB)
-                                                         0x3 = 1/4 ways (4-way, 4MB)
-                                                         0x4-0x7 = Reserved */
+                                                         0x0 = Full cache (16-way, 16 MB).
+                                                         0x1 = 3/4 ways (12-way, 12 MB).
+                                                         0x2 = 1/2 ways (8-way, 8 MB).
+                                                         0x3 = 1/4 ways (4-way, 4MB).
+                                                         0x4-0x7 = Reserved. */
 	uint64_t reserved_31_31               : 1;
-	uint64_t zip_info                     : 2;  /**< Fuse information - Zip information */
-	uint64_t bar2_en                      : 1;  /**< Fuse information - BAR2 present (when blown `1') */
-	uint64_t efus_lck                     : 1;  /**< Fuse information - efuse lockdown */
-	uint64_t efus_ign                     : 1;  /**< Fuse information - efuse ignore */
-	uint64_t nozip                        : 1;  /**< Fuse information - ZIP disable */
-	uint64_t nodfa_dte                    : 1;  /**< Fuse information - HFA disable (HTE) */
-	uint64_t ema1                         : 6;  /**< Fuse information - EMA1. */
+	uint64_t zip_info                     : 2;  /**< Fuse information - Zip information. */
+	uint64_t bar2_sz_conf                 : 1;  /**< Fuse information - When 0, BAR2 size conforms to PCIe specification. */
+	uint64_t efus_lck                     : 1;  /**< Fuse information - efuse lockdown. */
+	uint64_t efus_ign                     : 1;  /**< Fuse information - efuse ignore. */
+	uint64_t nozip                        : 1;  /**< Fuse information - ZIP disable. */
+	uint64_t nodfa_dte                    : 1;  /**< Fuse information - HFA disable (HTE). */
+	uint64_t ema1                         : 6;  /**< Fuse information - EMA1. INTERNAL: Default value is 0x11. Soft or hard blow of these fuses
+                                                         will XOR with this value. */
 	uint64_t nohna_dte                    : 1;  /**< Fuse information - HNA disable (DTE). */
 	uint64_t hna_info_dte                 : 3;  /**< Fuse information - HNA information (DTE). */
 	uint64_t hna_info_clm                 : 4;  /**< Fuse information - HNA information (cluster mask). */
@@ -4886,7 +5282,7 @@ union cvmx_mio_fus_dat3 {
 	uint64_t nozip                        : 1;
 	uint64_t efus_ign                     : 1;
 	uint64_t efus_lck                     : 1;
-	uint64_t bar2_en                      : 1;
+	uint64_t bar2_sz_conf                 : 1;
 	uint64_t zip_info                     : 2;
 	uint64_t reserved_31_31               : 1;
 	uint64_t l2c_crip                     : 3;
@@ -4911,7 +5307,8 @@ union cvmx_mio_fus_dat4 {
 	uint64_t u64;
 	struct cvmx_mio_fus_dat4_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_52_63               : 12;
+	uint64_t global_rclk_byp_select       : 1;  /**< Reserved. */
+	uint64_t global_rclk_byp_setting      : 11; /**< Bits<11:1>. Reserved. */
 	uint64_t east_rclk_byp_select         : 1;  /**< Reserved. */
 	uint64_t east_rclk_byp_setting        : 12; /**< Reserved. */
 	uint64_t cmb_rclk_byp_select          : 1;  /**< Reserved. */
@@ -4929,10 +5326,12 @@ union cvmx_mio_fus_dat4 {
 	uint64_t cmb_rclk_byp_select          : 1;
 	uint64_t east_rclk_byp_setting        : 12;
 	uint64_t east_rclk_byp_select         : 1;
-	uint64_t reserved_52_63               : 12;
+	uint64_t global_rclk_byp_setting      : 11;
+	uint64_t global_rclk_byp_select       : 1;
 #endif
 	} s;
 	struct cvmx_mio_fus_dat4_s            cn70xx;
+	struct cvmx_mio_fus_dat4_s            cn70xxp1;
 	struct cvmx_mio_fus_dat4_s            cn78xx;
 };
 typedef union cvmx_mio_fus_dat4 cvmx_mio_fus_dat4_t;
@@ -5000,6 +5399,7 @@ union cvmx_mio_fus_int {
 #endif
 	} s;
 	struct cvmx_mio_fus_int_s             cn70xx;
+	struct cvmx_mio_fus_int_s             cn70xxp1;
 	struct cvmx_mio_fus_int_s             cn78xx;
 };
 typedef union cvmx_mio_fus_int cvmx_mio_fus_int_t;
@@ -5029,6 +5429,7 @@ union cvmx_mio_fus_pdf {
 	struct cvmx_mio_fus_pdf_s             cn68xx;
 	struct cvmx_mio_fus_pdf_s             cn68xxp1;
 	struct cvmx_mio_fus_pdf_s             cn70xx;
+	struct cvmx_mio_fus_pdf_s             cn70xxp1;
 	struct cvmx_mio_fus_pdf_s             cn78xx;
 	struct cvmx_mio_fus_pdf_s             cnf71xx;
 };
@@ -5054,9 +5455,9 @@ union cvmx_mio_fus_pll {
 	uint64_t rclk_align_r                 : 8;  /**< RCLK right alignment settings */
 	uint64_t rclk_align_l                 : 8;  /**< RCLK left alignment settings */
 	uint64_t reserved_15_31               : 17;
-	uint64_t core_status                  : 3;  /**< Core clock PLL status information. */
+	uint64_t core_status                  : 3;  /**< Core-clock PLL status information. */
 	uint64_t reserved_11_11               : 1;
-	uint64_t pnr_status                   : 3;  /**< PNR clock PLL status information. */
+	uint64_t pnr_status                   : 3;  /**< Coprocessor-clock PLL status information. */
 	uint64_t c_cout_rst                   : 1;  /**< Core clkout postscaler reset */
 	uint64_t c_cout_sel                   : 2;  /**< Core clkout select
                                                          0=RCLK,1=PS output,2=PLL output,3=undivided RCLK |   $PR
@@ -5164,14 +5565,18 @@ union cvmx_mio_fus_pll {
                                                          least 10 ref-clock cycles prior to changing C_COUT_SEL. The core clockout postscaler
                                                          should remain under reset for at least 10 ref-clock cycles after C_COUT_SEL changes. */
 	uint64_t c_cout_sel                   : 2;  /**< Core clockout select:
-                                                         0x0 = core clock 0x2 = PLL output
-                                                         0x1 = PS output 0x3 = undivided core clock */
+                                                         0x0 = Core clock.
+                                                         0x1 = PS output.
+                                                         0x2 = PLL output.
+                                                         0x3 = Undivided core clock. */
 	uint64_t pnr_cout_rst                 : 1;  /**< PNR clockout postscaler reset. The PNR clockout postscaler should be placed in reset at
                                                          least 10 ref-clock cycles prior to changing PNR_COUT_SEL. The PNR clockout postscaler
                                                          should remain under reset for at least 10 ref-clock cycles after PNR_COUT_SEL changes. */
 	uint64_t pnr_cout_sel                 : 2;  /**< PNR clockout select:
-                                                         0x0 = coprocessor clock 0x2 = PLL output
-                                                         0x1 = PS output 0x3 = undivided core clock */
+                                                         0x0 = Coprocessor clock.
+                                                         0x1 = PS output.
+                                                         0x2 = PLL output.
+                                                         0x3 = Undivided core clock. */
 	uint64_t reserved_0_1                 : 2;
 #else
 	uint64_t reserved_0_1                 : 2;
@@ -5185,6 +5590,7 @@ union cvmx_mio_fus_pll {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} cn70xx;
+	struct cvmx_mio_fus_pll_cn70xx        cn70xxp1;
 	struct cvmx_mio_fus_pll_cn70xx        cn78xx;
 	struct cvmx_mio_fus_pll_cn61xx        cnf71xx;
 };
@@ -5213,6 +5619,28 @@ union cvmx_mio_fus_prog {
 	uint64_t u64;
 	struct cvmx_mio_fus_prog_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_1_63                : 63;
+	uint64_t prog                         : 1;  /**< Blow the fuse bank
+                                                         SW will set PROG, and then the HW will clear
+                                                         when the program operation is complete */
+#else
+	uint64_t prog                         : 1;
+	uint64_t reserved_1_63                : 63;
+#endif
+	} s;
+	struct cvmx_mio_fus_prog_s            cn30xx;
+	struct cvmx_mio_fus_prog_s            cn31xx;
+	struct cvmx_mio_fus_prog_s            cn38xx;
+	struct cvmx_mio_fus_prog_s            cn38xxp2;
+	struct cvmx_mio_fus_prog_s            cn50xx;
+	struct cvmx_mio_fus_prog_s            cn52xx;
+	struct cvmx_mio_fus_prog_s            cn52xxp1;
+	struct cvmx_mio_fus_prog_s            cn56xx;
+	struct cvmx_mio_fus_prog_s            cn56xxp1;
+	struct cvmx_mio_fus_prog_s            cn58xx;
+	struct cvmx_mio_fus_prog_s            cn58xxp1;
+	struct cvmx_mio_fus_prog_cn61xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
 	uint64_t soft                         : 1;  /**< When set with PROG, causes only the local storeage
                                                          to change.  Will not really blow any fuses.  HW
@@ -5225,36 +5653,34 @@ union cvmx_mio_fus_prog {
 	uint64_t soft                         : 1;
 	uint64_t reserved_2_63                : 62;
 #endif
-	} s;
-	struct cvmx_mio_fus_prog_cn30xx {
+	} cn61xx;
+	struct cvmx_mio_fus_prog_cn61xx       cn63xx;
+	struct cvmx_mio_fus_prog_cn61xx       cn63xxp1;
+	struct cvmx_mio_fus_prog_cn61xx       cn66xx;
+	struct cvmx_mio_fus_prog_cn61xx       cn68xx;
+	struct cvmx_mio_fus_prog_cn61xx       cn68xxp1;
+	struct cvmx_mio_fus_prog_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
-	uint64_t prog                         : 1;  /**< Blow the fuse
-                                                         SW will set PROG, hold it for 10us, then clear it */
+	uint64_t reserved_2_63                : 62;
+	uint64_t sft                          : 1;  /**< INTERNAL: When set with PROG, causes only the local storage to change and will not blow
+                                                         any fuses. Hardware will clear when the program operation is complete. */
+	uint64_t prog                         : 1;  /**< INTERNAL: When written to one by software, blow the fuse bank. Hardware will clear when
+                                                         the program operation is complete.
+                                                         To write a bank of fuses, software must set MIO_FUS_WADR[ADDR] to the bank to be
+                                                         programmed and then set each bit within MIO_FUS_BNK_DATX to indicate which fuses to blow.
+                                                         Once ADDR, and DAT are setup, SW can write to MIO_FUS_PROG[PROG] to start the bank write
+                                                         and poll on PROG. Once PROG is clear, the bank write is complete. A soft blow is still
+                                                         subject to lockdown fuses. After a soft/warm reset, the chip will behave as though the
+                                                         fuses were actually blown. A cold reset restores the actual fuse values. */
 #else
 	uint64_t prog                         : 1;
-	uint64_t reserved_1_63                : 63;
+	uint64_t sft                          : 1;
+	uint64_t reserved_2_63                : 62;
 #endif
-	} cn30xx;
-	struct cvmx_mio_fus_prog_cn30xx       cn31xx;
-	struct cvmx_mio_fus_prog_cn30xx       cn38xx;
-	struct cvmx_mio_fus_prog_cn30xx       cn38xxp2;
-	struct cvmx_mio_fus_prog_cn30xx       cn50xx;
-	struct cvmx_mio_fus_prog_cn30xx       cn52xx;
-	struct cvmx_mio_fus_prog_cn30xx       cn52xxp1;
-	struct cvmx_mio_fus_prog_cn30xx       cn56xx;
-	struct cvmx_mio_fus_prog_cn30xx       cn56xxp1;
-	struct cvmx_mio_fus_prog_cn30xx       cn58xx;
-	struct cvmx_mio_fus_prog_cn30xx       cn58xxp1;
-	struct cvmx_mio_fus_prog_s            cn61xx;
-	struct cvmx_mio_fus_prog_s            cn63xx;
-	struct cvmx_mio_fus_prog_s            cn63xxp1;
-	struct cvmx_mio_fus_prog_s            cn66xx;
-	struct cvmx_mio_fus_prog_s            cn68xx;
-	struct cvmx_mio_fus_prog_s            cn68xxp1;
-	struct cvmx_mio_fus_prog_s            cn70xx;
-	struct cvmx_mio_fus_prog_s            cn78xx;
-	struct cvmx_mio_fus_prog_s            cnf71xx;
+	} cn70xx;
+	struct cvmx_mio_fus_prog_cn70xx       cn70xxp1;
+	struct cvmx_mio_fus_prog_cn70xx       cn78xx;
+	struct cvmx_mio_fus_prog_cn61xx       cnf71xx;
 };
 typedef union cvmx_mio_fus_prog cvmx_mio_fus_prog_t;
 
@@ -5383,6 +5809,7 @@ union cvmx_mio_fus_prog_times {
 	uint64_t reserved_35_63               : 29;
 #endif
 	} cn70xx;
+	struct cvmx_mio_fus_prog_times_cn70xx cn70xxp1;
 	struct cvmx_mio_fus_prog_times_cn70xx cn78xx;
 	struct cvmx_mio_fus_prog_times_cn61xx cnf71xx;
 };
@@ -5485,6 +5912,7 @@ union cvmx_mio_fus_rcmd {
 	struct cvmx_mio_fus_rcmd_cn52xx       cn68xx;
 	struct cvmx_mio_fus_rcmd_cn52xx       cn68xxp1;
 	struct cvmx_mio_fus_rcmd_s            cn70xx;
+	struct cvmx_mio_fus_rcmd_s            cn70xxp1;
 	struct cvmx_mio_fus_rcmd_s            cn78xx;
 	struct cvmx_mio_fus_rcmd_cn52xx       cnf71xx;
 };
@@ -5496,6 +5924,7 @@ typedef union cvmx_mio_fus_rcmd cvmx_mio_fus_rcmd_t;
  * IFB fuses are 0 to 1791. The reset values are for IFB fuses for PLL_REF_CLK up to 100MHz when
  * core PLL is engaged. If any of the formulas below result in a value less than zero, the
  * corresponding timing parameter should be set to zero.
+ *
  * Prior to issuing a read to the fuse banks (via MIO_FUS_RCMD), this register should be written
  * with the timing parameters that will be read.
  * This register should not be written while MIO_FUS_RCMD[PEND] = 1.
@@ -5584,7 +6013,7 @@ union cvmx_mio_fus_read_times {
                                                          PLL_REF_CLK of 50 MHz, 20ns at 100MHz. */
 	uint64_t setup                        : 4;  /**< Setup of CSB, PGENB, LOAD to rising edge of STROBE in read and write modes in PLL_REF_CLK
                                                          + 1 cycles. tsu_CS = 16ns, tsu_PG = 14ns, tsu_LD_r = 10ns. Default of 0x0 yields 20 ns
-                                                         plush ASU cycles at PLL_REF_CLK of 50 MHz, 10ns + ASU at 100MHz. */
+                                                         plus ASU cycles at PLL_REF_CLK of 50 MHz, 10ns + ASU at 100MHz. */
 #else
 	uint64_t setup                        : 4;
 	uint64_t asu                          : 4;
@@ -5595,6 +6024,7 @@ union cvmx_mio_fus_read_times {
 	uint64_t reserved_32_63               : 32;
 #endif
 	} cn70xx;
+	struct cvmx_mio_fus_read_times_cn70xx cn70xxp1;
 	struct cvmx_mio_fus_read_times_cn70xx cn78xx;
 	struct cvmx_mio_fus_read_times_cn61xx cnf71xx;
 };
@@ -5696,6 +6126,7 @@ union cvmx_mio_fus_rpr_datx {
 #endif
 	} s;
 	struct cvmx_mio_fus_rpr_datx_s        cn70xx;
+	struct cvmx_mio_fus_rpr_datx_s        cn70xxp1;
 	struct cvmx_mio_fus_rpr_datx_s        cn78xx;
 };
 typedef union cvmx_mio_fus_rpr_datx cvmx_mio_fus_rpr_datx_t;
@@ -5728,6 +6159,7 @@ union cvmx_mio_fus_soft_repair {
 #endif
 	} s;
 	struct cvmx_mio_fus_soft_repair_s     cn70xx;
+	struct cvmx_mio_fus_soft_repair_s     cn70xxp1;
 	struct cvmx_mio_fus_soft_repair_s     cn78xx;
 };
 typedef union cvmx_mio_fus_soft_repair cvmx_mio_fus_soft_repair_t;
@@ -5813,9 +6245,17 @@ typedef union cvmx_mio_fus_spr_repair_sum cvmx_mio_fus_spr_repair_sum_t;
 /**
  * cvmx_mio_fus_tgg
  *
- * Notes:
- * The TGG fuses are fuses[831:768].  The valid bit (TGG[63]) is fuse[831].
+ * This register exists to support Authentik. Authentik code should read this register, then
+ * clear VAL to prevent other software from observing the value of the TGG fuses.
  *
+ * INTERNAL: It is never possible to read the TGG fuses via MIO_FUS_RCMD. Whenever the fuse
+ * corresponding to VAL (TGG<63>) is blown, it is not possible to blow any of TGG<62:0>. The fuse
+ * corresponding to VAL must be the one and only lock down bit for TGG<62:0> - no other fuse
+ * lockdown bit can prevent blowing TGG<62:0>. It must always be possible to blow the fuse
+ * corresponding to VAL when it is not already blown. If an Authentik part may be converted to a
+ * non-Authentik part (via some JTAG mechanism or any other mechanism), it must not be possible
+ * to read the TGG fuse values from the Authentik part by performing this conversion -> the reset
+ * value of VAL should be zero in this converted case.
  */
 union cvmx_mio_fus_tgg {
 	uint64_t u64;
@@ -5854,6 +6294,7 @@ union cvmx_mio_fus_tgg {
 	struct cvmx_mio_fus_tgg_s             cn61xx;
 	struct cvmx_mio_fus_tgg_s             cn66xx;
 	struct cvmx_mio_fus_tgg_s             cn70xx;
+	struct cvmx_mio_fus_tgg_s             cn70xxp1;
 	struct cvmx_mio_fus_tgg_s             cn78xx;
 	struct cvmx_mio_fus_tgg_s             cnf71xx;
 };
@@ -5943,6 +6384,7 @@ union cvmx_mio_fus_wadr {
 	uint64_t reserved_6_63                : 58;
 #endif
 	} cn70xx;
+	struct cvmx_mio_fus_wadr_cn70xx       cn70xxp1;
 	struct cvmx_mio_fus_wadr_cn70xx       cn78xx;
 	struct cvmx_mio_fus_wadr_cn61xx       cnf71xx;
 };
@@ -5995,6 +6437,7 @@ union cvmx_mio_gpio_comp {
 	uint64_t reserved_11_63               : 53;
 #endif
 	} cn70xx;
+	struct cvmx_mio_gpio_comp_cn70xx      cn70xxp1;
 	struct cvmx_mio_gpio_comp_cn61xx      cnf71xx;
 };
 typedef union cvmx_mio_gpio_comp cvmx_mio_gpio_comp_t;
@@ -6040,6 +6483,7 @@ union cvmx_mio_ndf_dma_cfg {
 	struct cvmx_mio_ndf_dma_cfg_s         cn68xx;
 	struct cvmx_mio_ndf_dma_cfg_s         cn68xxp1;
 	struct cvmx_mio_ndf_dma_cfg_s         cn70xx;
+	struct cvmx_mio_ndf_dma_cfg_s         cn70xxp1;
 	struct cvmx_mio_ndf_dma_cfg_s         cnf71xx;
 };
 typedef union cvmx_mio_ndf_dma_cfg cvmx_mio_ndf_dma_cfg_t;
@@ -6069,6 +6513,7 @@ union cvmx_mio_ndf_dma_int {
 	struct cvmx_mio_ndf_dma_int_s         cn68xx;
 	struct cvmx_mio_ndf_dma_int_s         cn68xxp1;
 	struct cvmx_mio_ndf_dma_int_s         cn70xx;
+	struct cvmx_mio_ndf_dma_int_s         cn70xxp1;
 	struct cvmx_mio_ndf_dma_int_s         cnf71xx;
 };
 typedef union cvmx_mio_ndf_dma_int cvmx_mio_ndf_dma_int_t;
@@ -6098,6 +6543,7 @@ union cvmx_mio_ndf_dma_int_en {
 	struct cvmx_mio_ndf_dma_int_en_s      cn68xx;
 	struct cvmx_mio_ndf_dma_int_en_s      cn68xxp1;
 	struct cvmx_mio_ndf_dma_int_en_s      cn70xx;
+	struct cvmx_mio_ndf_dma_int_en_s      cn70xxp1;
 	struct cvmx_mio_ndf_dma_int_en_s      cnf71xx;
 };
 typedef union cvmx_mio_ndf_dma_int_en cvmx_mio_ndf_dma_int_en_t;
@@ -6161,6 +6607,7 @@ union cvmx_mio_ptp_ckout_hi_incr {
 	struct cvmx_mio_ptp_ckout_hi_incr_s   cn66xx;
 	struct cvmx_mio_ptp_ckout_hi_incr_s   cn68xx;
 	struct cvmx_mio_ptp_ckout_hi_incr_s   cn70xx;
+	struct cvmx_mio_ptp_ckout_hi_incr_s   cn70xxp1;
 	struct cvmx_mio_ptp_ckout_hi_incr_s   cn78xx;
 	struct cvmx_mio_ptp_ckout_hi_incr_s   cnf71xx;
 };
@@ -6187,6 +6634,7 @@ union cvmx_mio_ptp_ckout_lo_incr {
 	struct cvmx_mio_ptp_ckout_lo_incr_s   cn66xx;
 	struct cvmx_mio_ptp_ckout_lo_incr_s   cn68xx;
 	struct cvmx_mio_ptp_ckout_lo_incr_s   cn70xx;
+	struct cvmx_mio_ptp_ckout_lo_incr_s   cn70xxp1;
 	struct cvmx_mio_ptp_ckout_lo_incr_s   cn78xx;
 	struct cvmx_mio_ptp_ckout_lo_incr_s   cnf71xx;
 };
@@ -6212,6 +6660,7 @@ union cvmx_mio_ptp_ckout_thresh_hi {
 	struct cvmx_mio_ptp_ckout_thresh_hi_s cn66xx;
 	struct cvmx_mio_ptp_ckout_thresh_hi_s cn68xx;
 	struct cvmx_mio_ptp_ckout_thresh_hi_s cn70xx;
+	struct cvmx_mio_ptp_ckout_thresh_hi_s cn70xxp1;
 	struct cvmx_mio_ptp_ckout_thresh_hi_s cn78xx;
 	struct cvmx_mio_ptp_ckout_thresh_hi_s cnf71xx;
 };
@@ -6238,6 +6687,7 @@ union cvmx_mio_ptp_ckout_thresh_lo {
 	struct cvmx_mio_ptp_ckout_thresh_lo_s cn66xx;
 	struct cvmx_mio_ptp_ckout_thresh_lo_s cn68xx;
 	struct cvmx_mio_ptp_ckout_thresh_lo_s cn70xx;
+	struct cvmx_mio_ptp_ckout_thresh_lo_s cn70xxp1;
 	struct cvmx_mio_ptp_ckout_thresh_lo_s cn78xx;
 	struct cvmx_mio_ptp_ckout_thresh_lo_s cnf71xx;
 };
@@ -6517,9 +6967,9 @@ union cvmx_mio_ptp_clock_cfg {
                                                          0x21      : GPIO[17]
                                                          0x22      : GPIO[18]
                                                          0x23      : GPIO[19]
-                                                         0x10      : QLM0_REF_CLK
-                                                         0x11      : QLM1_REF_CLK
-                                                         0x12      : QLM2_REF_CLK
+                                                         0x10      : DLM0_REF_CLK
+                                                         0x11      : DLM1_REF_CLK
+                                                         0x12      : DLM2_REF_CLK
                                                          0x13-0x1f : Reserved
                                                          0x24-0x3f : Reserved */
 	uint64_t evcnt_edge                   : 1;  /**< Event counter input edge
@@ -6532,9 +6982,9 @@ union cvmx_mio_ptp_clock_cfg {
                                                          0x21      : GPIO[17]
                                                          0x22      : GPIO[18]
                                                          0x23      : GPIO[19]
-                                                         0x10      : QLM0_REF_CLK
-                                                         0x11      : QLM1_REF_CLK
-                                                         0x12      : QLM2_REF_CLK
+                                                         0x10      : DLM0_REF_CLK
+                                                         0x11      : DLM1_REF_CLK
+                                                         0x12      : DLM2_REF_CLK
                                                          0x13-0x1f : Reserved
                                                          0x24-0x3f : Reserved */
 	uint64_t tstmp_edge                   : 1;  /**< External timestamp input edge
@@ -6547,9 +6997,9 @@ union cvmx_mio_ptp_clock_cfg {
                                                          0x21      : GPIO[17]
                                                          0x22      : GPIO[18]
                                                          0x23      : GPIO[19]
-                                                         0x10      : QLM0_EF_CLK
-                                                         0x11      : QLM1_REF_CLK
-                                                         0x12      : QLM2_REF_CLK
+                                                         0x10      : DLM0_REF_CLK
+                                                         0x11      : DLM1_REF_CLK
+                                                         0x12      : DLM2_REF_CLK
                                                          0x13-0x1f : Reserved
                                                          0x24-0x3f : Reserved */
 	uint64_t ext_clk_en                   : 1;  /**< Use external clock */
@@ -6576,6 +7026,7 @@ union cvmx_mio_ptp_clock_cfg {
 	uint64_t reserved_42_63               : 22;
 #endif
 	} cn70xx;
+	struct cvmx_mio_ptp_clock_cfg_cn70xx  cn70xxp1;
 	struct cvmx_mio_ptp_clock_cfg_cn70xx  cn78xx;
 	struct cvmx_mio_ptp_clock_cfg_s       cnf71xx;
 };
@@ -6584,8 +7035,8 @@ typedef union cvmx_mio_ptp_clock_cfg cvmx_mio_ptp_clock_cfg_t;
 /**
  * cvmx_mio_ptp_clock_comp
  *
- * This register provides the compensation value the PTP clock.
- *
+ * This register provides the compensation value the PTP clock. MIO_PTP_CLOCK_CFG[PTP_EN] needs
+ * to be enabled before writing this register.
  */
 union cvmx_mio_ptp_clock_comp {
 	uint64_t u64;
@@ -6605,6 +7056,7 @@ union cvmx_mio_ptp_clock_comp {
 	struct cvmx_mio_ptp_clock_comp_s      cn68xx;
 	struct cvmx_mio_ptp_clock_comp_s      cn68xxp1;
 	struct cvmx_mio_ptp_clock_comp_s      cn70xx;
+	struct cvmx_mio_ptp_clock_comp_s      cn70xxp1;
 	struct cvmx_mio_ptp_clock_comp_s      cn78xx;
 	struct cvmx_mio_ptp_clock_comp_s      cnf71xx;
 };
@@ -6615,6 +7067,7 @@ typedef union cvmx_mio_ptp_clock_comp cvmx_mio_ptp_clock_comp_t;
  *
  * This register provides bits<95:32> of the PTP clock. Writes to MIO_PTP_CLOCK_HI also clear
  * MIO_PTP_CLOCK_LO. To update all 96 bits, write MIO_PTP_CLOCK_HI followed by MIO_PTP_CLOCK_LO.
+ * MIO_PTP_CLOCK_CFG[PTP_EN] needs to be enabled before writing this register.
  */
 union cvmx_mio_ptp_clock_hi {
 	uint64_t u64;
@@ -6632,6 +7085,7 @@ union cvmx_mio_ptp_clock_hi {
 	struct cvmx_mio_ptp_clock_hi_s        cn68xx;
 	struct cvmx_mio_ptp_clock_hi_s        cn68xxp1;
 	struct cvmx_mio_ptp_clock_hi_s        cn70xx;
+	struct cvmx_mio_ptp_clock_hi_s        cn70xxp1;
 	struct cvmx_mio_ptp_clock_hi_s        cn78xx;
 	struct cvmx_mio_ptp_clock_hi_s        cnf71xx;
 };
@@ -6640,8 +7094,8 @@ typedef union cvmx_mio_ptp_clock_hi cvmx_mio_ptp_clock_hi_t;
 /**
  * cvmx_mio_ptp_clock_lo
  *
- * This register provides bits<31:0> of the PTP clock.
- *
+ * This register provides bits<31:0> of the PTP clock.  MIO_PTP_CLOCK_CFG[PTP_EN] needs to be
+ * enabled before writing this register.
  */
 union cvmx_mio_ptp_clock_lo {
 	uint64_t u64;
@@ -6661,6 +7115,7 @@ union cvmx_mio_ptp_clock_lo {
 	struct cvmx_mio_ptp_clock_lo_s        cn68xx;
 	struct cvmx_mio_ptp_clock_lo_s        cn68xxp1;
 	struct cvmx_mio_ptp_clock_lo_s        cn70xx;
+	struct cvmx_mio_ptp_clock_lo_s        cn70xxp1;
 	struct cvmx_mio_ptp_clock_lo_s        cn78xx;
 	struct cvmx_mio_ptp_clock_lo_s        cnf71xx;
 };
@@ -6678,7 +7133,7 @@ union cvmx_mio_ptp_dpll_err_int {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t n_sclk                       : 32; /**< Latest number of Digital PLL coprocessor clocks in one compensation period. */
 	uint64_t reserved_1_31                : 31;
-	uint64_t dpll_int                     : 1;  /**< Digital PLL error. Throws MIO_PTP_INTSN_E::MIO_PTP_DPLL_ERR_INT. */
+	uint64_t dpll_int                     : 1;  /**< Digital PLL error. Throws MIO_PTP_INTSN_E::MIO_PTP_DPLL_INT. */
 #else
 	uint64_t dpll_int                     : 1;
 	uint64_t reserved_1_31                : 31;
@@ -6753,6 +7208,7 @@ union cvmx_mio_ptp_evt_cnt {
 	struct cvmx_mio_ptp_evt_cnt_s         cn68xx;
 	struct cvmx_mio_ptp_evt_cnt_s         cn68xxp1;
 	struct cvmx_mio_ptp_evt_cnt_s         cn70xx;
+	struct cvmx_mio_ptp_evt_cnt_s         cn70xxp1;
 	struct cvmx_mio_ptp_evt_cnt_s         cn78xx;
 	struct cvmx_mio_ptp_evt_cnt_s         cnf71xx;
 };
@@ -6827,6 +7283,7 @@ union cvmx_mio_ptp_pps_hi_incr {
 	struct cvmx_mio_ptp_pps_hi_incr_s     cn66xx;
 	struct cvmx_mio_ptp_pps_hi_incr_s     cn68xx;
 	struct cvmx_mio_ptp_pps_hi_incr_s     cn70xx;
+	struct cvmx_mio_ptp_pps_hi_incr_s     cn70xxp1;
 	struct cvmx_mio_ptp_pps_hi_incr_s     cn78xx;
 	struct cvmx_mio_ptp_pps_hi_incr_s     cnf71xx;
 };
@@ -6853,6 +7310,7 @@ union cvmx_mio_ptp_pps_lo_incr {
 	struct cvmx_mio_ptp_pps_lo_incr_s     cn66xx;
 	struct cvmx_mio_ptp_pps_lo_incr_s     cn68xx;
 	struct cvmx_mio_ptp_pps_lo_incr_s     cn70xx;
+	struct cvmx_mio_ptp_pps_lo_incr_s     cn70xxp1;
 	struct cvmx_mio_ptp_pps_lo_incr_s     cn78xx;
 	struct cvmx_mio_ptp_pps_lo_incr_s     cnf71xx;
 };
@@ -6878,6 +7336,7 @@ union cvmx_mio_ptp_pps_thresh_hi {
 	struct cvmx_mio_ptp_pps_thresh_hi_s   cn66xx;
 	struct cvmx_mio_ptp_pps_thresh_hi_s   cn68xx;
 	struct cvmx_mio_ptp_pps_thresh_hi_s   cn70xx;
+	struct cvmx_mio_ptp_pps_thresh_hi_s   cn70xxp1;
 	struct cvmx_mio_ptp_pps_thresh_hi_s   cn78xx;
 	struct cvmx_mio_ptp_pps_thresh_hi_s   cnf71xx;
 };
@@ -6904,6 +7363,7 @@ union cvmx_mio_ptp_pps_thresh_lo {
 	struct cvmx_mio_ptp_pps_thresh_lo_s   cn66xx;
 	struct cvmx_mio_ptp_pps_thresh_lo_s   cn68xx;
 	struct cvmx_mio_ptp_pps_thresh_lo_s   cn70xx;
+	struct cvmx_mio_ptp_pps_thresh_lo_s   cn70xxp1;
 	struct cvmx_mio_ptp_pps_thresh_lo_s   cn78xx;
 	struct cvmx_mio_ptp_pps_thresh_lo_s   cnf71xx;
 };
@@ -6931,6 +7391,7 @@ union cvmx_mio_ptp_timestamp {
 	struct cvmx_mio_ptp_timestamp_s       cn68xx;
 	struct cvmx_mio_ptp_timestamp_s       cn68xxp1;
 	struct cvmx_mio_ptp_timestamp_s       cn70xx;
+	struct cvmx_mio_ptp_timestamp_s       cn70xxp1;
 	struct cvmx_mio_ptp_timestamp_s       cn78xx;
 	struct cvmx_mio_ptp_timestamp_s       cnf71xx;
 };
@@ -8490,6 +8951,7 @@ union cvmx_mio_twsx_int {
 	struct cvmx_mio_twsx_int_s            cn68xx;
 	struct cvmx_mio_twsx_int_s            cn68xxp1;
 	struct cvmx_mio_twsx_int_s            cn70xx;
+	struct cvmx_mio_twsx_int_s            cn70xxp1;
 	struct cvmx_mio_twsx_int_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
@@ -8499,11 +8961,11 @@ union cvmx_mio_twsx_int {
 	uint64_t sda_ovr                      : 1;  /**< SDA override. */
 	uint64_t reserved_3_7                 : 5;
 	uint64_t core_int                     : 1;  /**< TWSI core interrupt. Ignored when the HLC is enabled. Throws
-                                                         TWS_INTSN_E::MIO_TWS_INT_CORE. */
-	uint64_t ts_int                       : 1;  /**< MIO_TWS_TWSI_SW register-update interrupt. Ignored when the HLC is disabled. Throws
-                                                         TWS_INTSN_E::MIO_TWS_INT_TS. */
-	uint64_t st_int                       : 1;  /**< MIO_TWS_SW_TWSI register-update interrupt. Ignored when the HLC is disabled. Throws
-                                                         TWS_INTSN_E::MIO_TWS_INT_ST. */
+                                                         TWS_INTSN_E::MIO_TWS()_INT_CORE. */
+	uint64_t ts_int                       : 1;  /**< MIO_TWS()_TWSI_SW register-update interrupt. Ignored when the HLC is disabled. Throws
+                                                         TWS_INTSN_E::MIO_TWS()_INT_TS. */
+	uint64_t st_int                       : 1;  /**< MIO_TWS()_SW_TWSI register-update interrupt. Ignored when the HLC is disabled. Throws
+                                                         TWS_INTSN_E::MIO_TWS()_INT_ST. */
 #else
 	uint64_t st_int                       : 1;
 	uint64_t ts_int                       : 1;
@@ -8524,12 +8986,13 @@ typedef union cvmx_mio_twsx_int cvmx_mio_twsx_int_t;
  * cvmx_mio_tws#_sw_twsi
  *
  * This register allows software to:
- * Initiate master-mode operations with a write operation, and read the result with a
+ * * Initiate master-mode operations with a write operation, and read the result with a
  * read operation.
- * Load four bytes for later retrieval (slave mode) with a write operation and check validity
+ * * Load four bytes for later retrieval (slave mode) with a write operation and check validity
  * with a read operation.
- * Launch a configuration read/write operation with a write operation and read the result with a
- * read operation.
+ * * Launch a configuration read/write operation with a write operation and read the result with
+ * a read operation.
+ *
  * This register should be read or written by software, and read by the TWSI device. The TWSI
  * device can use either two-byte or five-byte read operations to reference this register.
  * The TWSI device considers this register valid when [V] = 1 and [SLONLY] = 1.
@@ -8652,6 +9115,7 @@ union cvmx_mio_twsx_sw_twsi {
 	struct cvmx_mio_twsx_sw_twsi_s        cn68xx;
 	struct cvmx_mio_twsx_sw_twsi_s        cn68xxp1;
 	struct cvmx_mio_twsx_sw_twsi_s        cn70xx;
+	struct cvmx_mio_twsx_sw_twsi_s        cn70xxp1;
 	struct cvmx_mio_twsx_sw_twsi_s        cn78xx;
 	struct cvmx_mio_twsx_sw_twsi_s        cnf71xx;
 };
@@ -8662,10 +9126,11 @@ typedef union cvmx_mio_twsx_sw_twsi cvmx_mio_twsx_sw_twsi_t;
  *
  * This register contains an additional byte of internal address and four additional bytes of
  * data to be used with TWSI master-mode operations.
+ *
  * The IA field is sent as the first byte of internal address when performing master-mode
- * combined-read/write-with-IA operations and MIO_TWS_SW_TWSI[EIA] is set. The D field extends
- * the data field of MIO_TWS_SW_TWSI for a total of 8 bytes (SOVR must be set to perform
- * operations greater than 4 bytes).
+ * combined-read/write-with-IA operations and MIO_TWS()_SW_TWSI[EIA] is set. The D field
+ * extends the data field of MIO_TWS()_SW_TWSI for a total of 8 bytes (SOVR must be set to
+ * perform operations greater than 4 bytes).
  */
 union cvmx_mio_twsx_sw_twsi_ext {
 	uint64_t u64;
@@ -8698,6 +9163,7 @@ union cvmx_mio_twsx_sw_twsi_ext {
 	struct cvmx_mio_twsx_sw_twsi_ext_s    cn68xx;
 	struct cvmx_mio_twsx_sw_twsi_ext_s    cn68xxp1;
 	struct cvmx_mio_twsx_sw_twsi_ext_s    cn70xx;
+	struct cvmx_mio_twsx_sw_twsi_ext_s    cn70xxp1;
 	struct cvmx_mio_twsx_sw_twsi_ext_s    cn78xx;
 	struct cvmx_mio_twsx_sw_twsi_ext_s    cnf71xx;
 };
@@ -8708,6 +9174,7 @@ typedef union cvmx_mio_twsx_sw_twsi_ext cvmx_mio_twsx_sw_twsi_ext_t;
  *
  * This register allows the TWSI device to transfer data to software and later check that
  * software has received the information.
+ *
  * This register should be read or written by the TWSI device, and read by software. The TWSI
  * device can use one-byte or four-byte payload write operations, and two-byte payload read
  * operations. The TWSI device considers this register valid when V = 1.
@@ -8757,6 +9224,7 @@ union cvmx_mio_twsx_twsi_sw {
 	struct cvmx_mio_twsx_twsi_sw_cn30xx   cn68xx;
 	struct cvmx_mio_twsx_twsi_sw_cn30xx   cn68xxp1;
 	struct cvmx_mio_twsx_twsi_sw_cn30xx   cn70xx;
+	struct cvmx_mio_twsx_twsi_sw_cn30xx   cn70xxp1;
 	struct cvmx_mio_twsx_twsi_sw_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t v                            : 2;  /**< Valid bits. These bits are not directly writable. They are set to 11 on any write
@@ -8815,6 +9283,7 @@ union cvmx_mio_uartx_dlh {
 	struct cvmx_mio_uartx_dlh_s           cn68xx;
 	struct cvmx_mio_uartx_dlh_s           cn68xxp1;
 	struct cvmx_mio_uartx_dlh_s           cn70xx;
+	struct cvmx_mio_uartx_dlh_s           cn70xxp1;
 	struct cvmx_mio_uartx_dlh_s           cn78xx;
 	struct cvmx_mio_uartx_dlh_s           cnf71xx;
 };
@@ -8863,6 +9332,7 @@ union cvmx_mio_uartx_dll {
 	struct cvmx_mio_uartx_dll_s           cn68xx;
 	struct cvmx_mio_uartx_dll_s           cn68xxp1;
 	struct cvmx_mio_uartx_dll_s           cn70xx;
+	struct cvmx_mio_uartx_dll_s           cn70xxp1;
 	struct cvmx_mio_uartx_dll_s           cn78xx;
 	struct cvmx_mio_uartx_dll_s           cnf71xx;
 };
@@ -8908,6 +9378,7 @@ union cvmx_mio_uartx_far {
 	struct cvmx_mio_uartx_far_s           cn68xx;
 	struct cvmx_mio_uartx_far_s           cn68xxp1;
 	struct cvmx_mio_uartx_far_s           cn70xx;
+	struct cvmx_mio_uartx_far_s           cn70xxp1;
 	struct cvmx_mio_uartx_far_s           cn78xx;
 	struct cvmx_mio_uartx_far_s           cnf71xx;
 };
@@ -8960,6 +9431,7 @@ union cvmx_mio_uartx_fcr {
 	struct cvmx_mio_uartx_fcr_s           cn68xx;
 	struct cvmx_mio_uartx_fcr_s           cn68xxp1;
 	struct cvmx_mio_uartx_fcr_s           cn70xx;
+	struct cvmx_mio_uartx_fcr_s           cn70xxp1;
 	struct cvmx_mio_uartx_fcr_s           cn78xx;
 	struct cvmx_mio_uartx_fcr_s           cnf71xx;
 };
@@ -9002,6 +9474,7 @@ union cvmx_mio_uartx_htx {
 	struct cvmx_mio_uartx_htx_s           cn68xx;
 	struct cvmx_mio_uartx_htx_s           cn68xxp1;
 	struct cvmx_mio_uartx_htx_s           cn70xx;
+	struct cvmx_mio_uartx_htx_s           cn70xxp1;
 	struct cvmx_mio_uartx_htx_s           cn78xx;
 	struct cvmx_mio_uartx_htx_s           cnf71xx;
 };
@@ -9013,9 +9486,9 @@ typedef cvmx_mio_uartx_htx_t cvmx_uart_htx_t;
  *
  * The interrupt-enable register is a read/write register that contains four bits that enable the
  * generation of interrupts:
- * enable received data available interrupt (ERBFI)
- * enable transmitter holding register empty interrupt (ETBEI)
- * enable receiver line status interrupt (ELSI)
+ * * enable received data available interrupt (ERBFI).
+ * * enable transmitter holding register empty interrupt (ETBEI).
+ * * enable receiver line status interrupt (ELSI).
  * enable modem status interrupt (EDSSI).
  * The IER also contains the enable bit for the programmable transmit holding register empty
  * (THRE) interrupt mode (PTIME).
@@ -9059,6 +9532,7 @@ union cvmx_mio_uartx_ier {
 	struct cvmx_mio_uartx_ier_s           cn68xx;
 	struct cvmx_mio_uartx_ier_s           cn68xxp1;
 	struct cvmx_mio_uartx_ier_s           cn70xx;
+	struct cvmx_mio_uartx_ier_s           cn70xxp1;
 	struct cvmx_mio_uartx_ier_s           cn78xx;
 	struct cvmx_mio_uartx_ier_s           cnf71xx;
 };
@@ -9104,6 +9578,7 @@ union cvmx_mio_uartx_iir {
 	struct cvmx_mio_uartx_iir_s           cn68xx;
 	struct cvmx_mio_uartx_iir_s           cn68xxp1;
 	struct cvmx_mio_uartx_iir_s           cn70xx;
+	struct cvmx_mio_uartx_iir_s           cn70xxp1;
 	struct cvmx_mio_uartx_iir_s           cn78xx;
 	struct cvmx_mio_uartx_iir_s           cnf71xx;
 };
@@ -9157,6 +9632,7 @@ union cvmx_mio_uartx_lcr {
 	struct cvmx_mio_uartx_lcr_s           cn68xx;
 	struct cvmx_mio_uartx_lcr_s           cn68xxp1;
 	struct cvmx_mio_uartx_lcr_s           cn70xx;
+	struct cvmx_mio_uartx_lcr_s           cn70xxp1;
 	struct cvmx_mio_uartx_lcr_s           cn78xx;
 	struct cvmx_mio_uartx_lcr_s           cnf71xx;
 };
@@ -9212,6 +9688,7 @@ union cvmx_mio_uartx_lsr {
 	struct cvmx_mio_uartx_lsr_s           cn68xx;
 	struct cvmx_mio_uartx_lsr_s           cn68xxp1;
 	struct cvmx_mio_uartx_lsr_s           cn70xx;
+	struct cvmx_mio_uartx_lsr_s           cn70xxp1;
 	struct cvmx_mio_uartx_lsr_s           cn78xx;
 	struct cvmx_mio_uartx_lsr_s           cnf71xx;
 };
@@ -9264,6 +9741,7 @@ union cvmx_mio_uartx_mcr {
 	struct cvmx_mio_uartx_mcr_s           cn68xx;
 	struct cvmx_mio_uartx_mcr_s           cn68xxp1;
 	struct cvmx_mio_uartx_mcr_s           cn70xx;
+	struct cvmx_mio_uartx_mcr_s           cn70xxp1;
 	struct cvmx_mio_uartx_mcr_s           cn78xx;
 	struct cvmx_mio_uartx_mcr_s           cnf71xx;
 };
@@ -9319,6 +9797,7 @@ union cvmx_mio_uartx_msr {
 	struct cvmx_mio_uartx_msr_s           cn68xx;
 	struct cvmx_mio_uartx_msr_s           cn68xxp1;
 	struct cvmx_mio_uartx_msr_s           cn70xx;
+	struct cvmx_mio_uartx_msr_s           cn70xxp1;
 	struct cvmx_mio_uartx_msr_s           cn78xx;
 	struct cvmx_mio_uartx_msr_s           cnf71xx;
 };
@@ -9361,6 +9840,7 @@ union cvmx_mio_uartx_rbr {
 	struct cvmx_mio_uartx_rbr_s           cn68xx;
 	struct cvmx_mio_uartx_rbr_s           cn68xxp1;
 	struct cvmx_mio_uartx_rbr_s           cn70xx;
+	struct cvmx_mio_uartx_rbr_s           cn70xxp1;
 	struct cvmx_mio_uartx_rbr_s           cn78xx;
 	struct cvmx_mio_uartx_rbr_s           cnf71xx;
 };
@@ -9402,6 +9882,7 @@ union cvmx_mio_uartx_rfl {
 	struct cvmx_mio_uartx_rfl_s           cn68xx;
 	struct cvmx_mio_uartx_rfl_s           cn68xxp1;
 	struct cvmx_mio_uartx_rfl_s           cn70xx;
+	struct cvmx_mio_uartx_rfl_s           cn70xxp1;
 	struct cvmx_mio_uartx_rfl_s           cn78xx;
 	struct cvmx_mio_uartx_rfl_s           cnf71xx;
 };
@@ -9447,6 +9928,7 @@ union cvmx_mio_uartx_rfw {
 	struct cvmx_mio_uartx_rfw_s           cn68xx;
 	struct cvmx_mio_uartx_rfw_s           cn68xxp1;
 	struct cvmx_mio_uartx_rfw_s           cn70xx;
+	struct cvmx_mio_uartx_rfw_s           cn70xxp1;
 	struct cvmx_mio_uartx_rfw_s           cn78xx;
 	struct cvmx_mio_uartx_rfw_s           cnf71xx;
 };
@@ -9489,6 +9971,7 @@ union cvmx_mio_uartx_sbcr {
 	struct cvmx_mio_uartx_sbcr_s          cn68xx;
 	struct cvmx_mio_uartx_sbcr_s          cn68xxp1;
 	struct cvmx_mio_uartx_sbcr_s          cn70xx;
+	struct cvmx_mio_uartx_sbcr_s          cn70xxp1;
 	struct cvmx_mio_uartx_sbcr_s          cn78xx;
 	struct cvmx_mio_uartx_sbcr_s          cnf71xx;
 };
@@ -9530,6 +10013,7 @@ union cvmx_mio_uartx_scr {
 	struct cvmx_mio_uartx_scr_s           cn68xx;
 	struct cvmx_mio_uartx_scr_s           cn68xxp1;
 	struct cvmx_mio_uartx_scr_s           cn70xx;
+	struct cvmx_mio_uartx_scr_s           cn70xxp1;
 	struct cvmx_mio_uartx_scr_s           cn78xx;
 	struct cvmx_mio_uartx_scr_s           cnf71xx;
 };
@@ -9573,6 +10057,7 @@ union cvmx_mio_uartx_sfe {
 	struct cvmx_mio_uartx_sfe_s           cn68xx;
 	struct cvmx_mio_uartx_sfe_s           cn68xxp1;
 	struct cvmx_mio_uartx_sfe_s           cn70xx;
+	struct cvmx_mio_uartx_sfe_s           cn70xxp1;
 	struct cvmx_mio_uartx_sfe_s           cn78xx;
 	struct cvmx_mio_uartx_sfe_s           cnf71xx;
 };
@@ -9618,6 +10103,7 @@ union cvmx_mio_uartx_srr {
 	struct cvmx_mio_uartx_srr_s           cn68xx;
 	struct cvmx_mio_uartx_srr_s           cn68xxp1;
 	struct cvmx_mio_uartx_srr_s           cn70xx;
+	struct cvmx_mio_uartx_srr_s           cn70xxp1;
 	struct cvmx_mio_uartx_srr_s           cn78xx;
 	struct cvmx_mio_uartx_srr_s           cnf71xx;
 };
@@ -9661,6 +10147,7 @@ union cvmx_mio_uartx_srt {
 	struct cvmx_mio_uartx_srt_s           cn68xx;
 	struct cvmx_mio_uartx_srt_s           cn68xxp1;
 	struct cvmx_mio_uartx_srt_s           cn70xx;
+	struct cvmx_mio_uartx_srt_s           cn70xxp1;
 	struct cvmx_mio_uartx_srt_s           cn78xx;
 	struct cvmx_mio_uartx_srt_s           cnf71xx;
 };
@@ -9703,6 +10190,7 @@ union cvmx_mio_uartx_srts {
 	struct cvmx_mio_uartx_srts_s          cn68xx;
 	struct cvmx_mio_uartx_srts_s          cn68xxp1;
 	struct cvmx_mio_uartx_srts_s          cn70xx;
+	struct cvmx_mio_uartx_srts_s          cn70xxp1;
 	struct cvmx_mio_uartx_srts_s          cn78xx;
 	struct cvmx_mio_uartx_srts_s          cnf71xx;
 };
@@ -9746,6 +10234,7 @@ union cvmx_mio_uartx_stt {
 	struct cvmx_mio_uartx_stt_s           cn68xx;
 	struct cvmx_mio_uartx_stt_s           cn68xxp1;
 	struct cvmx_mio_uartx_stt_s           cn70xx;
+	struct cvmx_mio_uartx_stt_s           cn70xxp1;
 	struct cvmx_mio_uartx_stt_s           cn78xx;
 	struct cvmx_mio_uartx_stt_s           cnf71xx;
 };
@@ -9787,6 +10276,7 @@ union cvmx_mio_uartx_tfl {
 	struct cvmx_mio_uartx_tfl_s           cn68xx;
 	struct cvmx_mio_uartx_tfl_s           cn68xxp1;
 	struct cvmx_mio_uartx_tfl_s           cn70xx;
+	struct cvmx_mio_uartx_tfl_s           cn70xxp1;
 	struct cvmx_mio_uartx_tfl_s           cn78xx;
 	struct cvmx_mio_uartx_tfl_s           cnf71xx;
 };
@@ -9828,6 +10318,7 @@ union cvmx_mio_uartx_tfr {
 	struct cvmx_mio_uartx_tfr_s           cn68xx;
 	struct cvmx_mio_uartx_tfr_s           cn68xxp1;
 	struct cvmx_mio_uartx_tfr_s           cn70xx;
+	struct cvmx_mio_uartx_tfr_s           cn70xxp1;
 	struct cvmx_mio_uartx_tfr_s           cn78xx;
 	struct cvmx_mio_uartx_tfr_s           cnf71xx;
 };
@@ -9870,6 +10361,7 @@ union cvmx_mio_uartx_thr {
 	struct cvmx_mio_uartx_thr_s           cn68xx;
 	struct cvmx_mio_uartx_thr_s           cn68xxp1;
 	struct cvmx_mio_uartx_thr_s           cn70xx;
+	struct cvmx_mio_uartx_thr_s           cn70xxp1;
 	struct cvmx_mio_uartx_thr_s           cn78xx;
 	struct cvmx_mio_uartx_thr_s           cnf71xx;
 };
@@ -9919,6 +10411,7 @@ union cvmx_mio_uartx_usr {
 	struct cvmx_mio_uartx_usr_s           cn68xx;
 	struct cvmx_mio_uartx_usr_s           cn68xxp1;
 	struct cvmx_mio_uartx_usr_s           cn70xx;
+	struct cvmx_mio_uartx_usr_s           cn70xxp1;
 	struct cvmx_mio_uartx_usr_s           cn78xx;
 	struct cvmx_mio_uartx_usr_s           cnf71xx;
 };

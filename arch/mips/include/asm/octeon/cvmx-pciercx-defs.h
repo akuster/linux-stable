@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -3719,7 +3719,7 @@ static inline uint64_t CVMX_PCIERCX_CFG558(unsigned long block_id)
 /**
  * cvmx_pcierc#_cfg000
  *
- * PCIE_CFG000 = First 32-bits of PCIE type 1 config space (Device ID and Vendor ID Register)
+ * This register contains the first 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg000 {
@@ -3746,6 +3746,7 @@ union cvmx_pciercx_cfg000 {
 	struct cvmx_pciercx_cfg000_s          cn68xx;
 	struct cvmx_pciercx_cfg000_s          cn68xxp1;
 	struct cvmx_pciercx_cfg000_s          cn70xx;
+	struct cvmx_pciercx_cfg000_s          cn70xxp1;
 	struct cvmx_pciercx_cfg000_s          cn78xx;
 	struct cvmx_pciercx_cfg000_s          cnf71xx;
 };
@@ -3754,7 +3755,7 @@ typedef union cvmx_pciercx_cfg000 cvmx_pciercx_cfg000_t;
 /**
  * cvmx_pcierc#_cfg001
  *
- * PCIE_CFG001 = Second 32-bits of PCIE type 1 config space (Command/Status Register)
+ * This register contains the second 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg001 {
@@ -3833,6 +3834,7 @@ union cvmx_pciercx_cfg001 {
 	struct cvmx_pciercx_cfg001_s          cn68xx;
 	struct cvmx_pciercx_cfg001_s          cn68xxp1;
 	struct cvmx_pciercx_cfg001_s          cn70xx;
+	struct cvmx_pciercx_cfg001_s          cn70xxp1;
 	struct cvmx_pciercx_cfg001_s          cn78xx;
 	struct cvmx_pciercx_cfg001_s          cnf71xx;
 };
@@ -3841,7 +3843,7 @@ typedef union cvmx_pciercx_cfg001 cvmx_pciercx_cfg001_t;
 /**
  * cvmx_pcierc#_cfg002
  *
- * PCIE_CFG002 = Third 32-bits of PCIE type 1 config space (Revision ID/Class Code Register)
+ * This register contains the third 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg002 {
@@ -3874,6 +3876,7 @@ union cvmx_pciercx_cfg002 {
 	struct cvmx_pciercx_cfg002_s          cn68xx;
 	struct cvmx_pciercx_cfg002_s          cn68xxp1;
 	struct cvmx_pciercx_cfg002_s          cn70xx;
+	struct cvmx_pciercx_cfg002_s          cn70xxp1;
 	struct cvmx_pciercx_cfg002_s          cn78xx;
 	struct cvmx_pciercx_cfg002_s          cnf71xx;
 };
@@ -3882,8 +3885,8 @@ typedef union cvmx_pciercx_cfg002 cvmx_pciercx_cfg002_t;
 /**
  * cvmx_pcierc#_cfg003
  *
- * PCIE_CFG003 = Fourth 32-bits of PCIE type 1 config space (Cache Line Size/Master Latency
- * Timer/Header Type Register/BIST Register)
+ * This register contains the fourth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg003 {
 	uint32_t u32;
@@ -3922,6 +3925,7 @@ union cvmx_pciercx_cfg003 {
 	struct cvmx_pciercx_cfg003_s          cn68xx;
 	struct cvmx_pciercx_cfg003_s          cn68xxp1;
 	struct cvmx_pciercx_cfg003_s          cn70xx;
+	struct cvmx_pciercx_cfg003_s          cn70xxp1;
 	struct cvmx_pciercx_cfg003_s          cn78xx;
 	struct cvmx_pciercx_cfg003_s          cnf71xx;
 };
@@ -3930,7 +3934,7 @@ typedef union cvmx_pciercx_cfg003 cvmx_pciercx_cfg003_t;
 /**
  * cvmx_pcierc#_cfg004
  *
- * PCIE_CFG004 = Fifth 32-bits of PCIE type 1 config space (Base Address Register 0 - Low)
+ * This register contains the fifth 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg004 {
@@ -3953,6 +3957,7 @@ union cvmx_pciercx_cfg004 {
 	struct cvmx_pciercx_cfg004_s          cn68xx;
 	struct cvmx_pciercx_cfg004_s          cn68xxp1;
 	struct cvmx_pciercx_cfg004_s          cn70xx;
+	struct cvmx_pciercx_cfg004_s          cn70xxp1;
 	struct cvmx_pciercx_cfg004_s          cn78xx;
 	struct cvmx_pciercx_cfg004_s          cnf71xx;
 };
@@ -3961,7 +3966,7 @@ typedef union cvmx_pciercx_cfg004 cvmx_pciercx_cfg004_t;
 /**
  * cvmx_pcierc#_cfg005
  *
- * PCIE_CFG005 = Sixth 32-bits of PCIE type 1 config space (Base Address Register 0 - High)
+ * This register contains the sixth 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg005 {
@@ -3984,6 +3989,7 @@ union cvmx_pciercx_cfg005 {
 	struct cvmx_pciercx_cfg005_s          cn68xx;
 	struct cvmx_pciercx_cfg005_s          cn68xxp1;
 	struct cvmx_pciercx_cfg005_s          cn70xx;
+	struct cvmx_pciercx_cfg005_s          cn70xxp1;
 	struct cvmx_pciercx_cfg005_s          cn78xx;
 	struct cvmx_pciercx_cfg005_s          cnf71xx;
 };
@@ -3992,7 +3998,7 @@ typedef union cvmx_pciercx_cfg005 cvmx_pciercx_cfg005_t;
 /**
  * cvmx_pcierc#_cfg006
  *
- * PCIE_CFG006 = Seventh 32-bits of PCIE type 1 config space (Bus Number Registers)
+ * This register contains the seventh 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg006 {
@@ -4022,6 +4028,7 @@ union cvmx_pciercx_cfg006 {
 	struct cvmx_pciercx_cfg006_s          cn68xx;
 	struct cvmx_pciercx_cfg006_s          cn68xxp1;
 	struct cvmx_pciercx_cfg006_s          cn70xx;
+	struct cvmx_pciercx_cfg006_s          cn70xxp1;
 	struct cvmx_pciercx_cfg006_s          cn78xx;
 	struct cvmx_pciercx_cfg006_s          cnf71xx;
 };
@@ -4030,8 +4037,8 @@ typedef union cvmx_pciercx_cfg006 cvmx_pciercx_cfg006_t;
 /**
  * cvmx_pcierc#_cfg007
  *
- * PCIE_CFG007 = Eighth 32-bits of PCIE type 1 config space (IO Base and IO Limit/Secondary
- * Status Register)
+ * This register contains the eighth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg007 {
 	uint32_t u32;
@@ -4095,6 +4102,7 @@ union cvmx_pciercx_cfg007 {
 	struct cvmx_pciercx_cfg007_s          cn68xx;
 	struct cvmx_pciercx_cfg007_s          cn68xxp1;
 	struct cvmx_pciercx_cfg007_s          cn70xx;
+	struct cvmx_pciercx_cfg007_s          cn70xxp1;
 	struct cvmx_pciercx_cfg007_s          cn78xx;
 	struct cvmx_pciercx_cfg007_s          cnf71xx;
 };
@@ -4103,7 +4111,7 @@ typedef union cvmx_pciercx_cfg007 cvmx_pciercx_cfg007_t;
 /**
  * cvmx_pcierc#_cfg008
  *
- * PCIE_CFG008 = Ninth 32-bits of PCIE type 1 config space (Memory Base and Memory Limit Register)
+ * This register contains the ninth 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg008 {
@@ -4132,6 +4140,7 @@ union cvmx_pciercx_cfg008 {
 	struct cvmx_pciercx_cfg008_s          cn68xx;
 	struct cvmx_pciercx_cfg008_s          cn68xxp1;
 	struct cvmx_pciercx_cfg008_s          cn70xx;
+	struct cvmx_pciercx_cfg008_s          cn70xxp1;
 	struct cvmx_pciercx_cfg008_s          cn78xx;
 	struct cvmx_pciercx_cfg008_s          cnf71xx;
 };
@@ -4140,8 +4149,8 @@ typedef union cvmx_pciercx_cfg008 cvmx_pciercx_cfg008_t;
 /**
  * cvmx_pcierc#_cfg009
  *
- * PCIE_CFG009 = Tenth 32-bits of PCIE type 1 config space (Prefetchable Memory Base and Limit
- * Register)
+ * This register contains the tenth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg009 {
 	uint32_t u32;
@@ -4182,6 +4191,7 @@ union cvmx_pciercx_cfg009 {
 	struct cvmx_pciercx_cfg009_s          cn68xx;
 	struct cvmx_pciercx_cfg009_s          cn68xxp1;
 	struct cvmx_pciercx_cfg009_s          cn70xx;
+	struct cvmx_pciercx_cfg009_s          cn70xxp1;
 	struct cvmx_pciercx_cfg009_s          cn78xx;
 	struct cvmx_pciercx_cfg009_s          cnf71xx;
 };
@@ -4190,8 +4200,8 @@ typedef union cvmx_pciercx_cfg009 cvmx_pciercx_cfg009_t;
 /**
  * cvmx_pcierc#_cfg010
  *
- * PCIE_CFG010 = Eleventh 32-bits of PCIE type 1 config space (Prefetchable Base Upper 32 Bits
- * Register)
+ * This register contains the eleventh 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg010 {
 	uint32_t u32;
@@ -4215,6 +4225,7 @@ union cvmx_pciercx_cfg010 {
 	struct cvmx_pciercx_cfg010_s          cn68xx;
 	struct cvmx_pciercx_cfg010_s          cn68xxp1;
 	struct cvmx_pciercx_cfg010_s          cn70xx;
+	struct cvmx_pciercx_cfg010_s          cn70xxp1;
 	struct cvmx_pciercx_cfg010_s          cn78xx;
 	struct cvmx_pciercx_cfg010_s          cnf71xx;
 };
@@ -4223,8 +4234,8 @@ typedef union cvmx_pciercx_cfg010 cvmx_pciercx_cfg010_t;
 /**
  * cvmx_pcierc#_cfg011
  *
- * PCIE_CFG011 = Twelfth 32-bits of PCIE type 1 config space (Prefetchable Limit Upper 32 Bits
- * Register)
+ * This register contains the twelfth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg011 {
 	uint32_t u32;
@@ -4248,6 +4259,7 @@ union cvmx_pciercx_cfg011 {
 	struct cvmx_pciercx_cfg011_s          cn68xx;
 	struct cvmx_pciercx_cfg011_s          cn68xxp1;
 	struct cvmx_pciercx_cfg011_s          cn70xx;
+	struct cvmx_pciercx_cfg011_s          cn70xxp1;
 	struct cvmx_pciercx_cfg011_s          cn78xx;
 	struct cvmx_pciercx_cfg011_s          cnf71xx;
 };
@@ -4256,8 +4268,8 @@ typedef union cvmx_pciercx_cfg011 cvmx_pciercx_cfg011_t;
 /**
  * cvmx_pcierc#_cfg012
  *
- * PCIE_CFG012 = Thirteenth 32-bits of PCIE type 1 config space (IO Base and Limit Upper 16 Bits
- * Register)
+ * This register contains the thirteenth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg012 {
 	uint32_t u32;
@@ -4283,6 +4295,7 @@ union cvmx_pciercx_cfg012 {
 	struct cvmx_pciercx_cfg012_s          cn68xx;
 	struct cvmx_pciercx_cfg012_s          cn68xxp1;
 	struct cvmx_pciercx_cfg012_s          cn70xx;
+	struct cvmx_pciercx_cfg012_s          cn70xxp1;
 	struct cvmx_pciercx_cfg012_s          cn78xx;
 	struct cvmx_pciercx_cfg012_s          cnf71xx;
 };
@@ -4291,7 +4304,7 @@ typedef union cvmx_pciercx_cfg012 cvmx_pciercx_cfg012_t;
 /**
  * cvmx_pcierc#_cfg013
  *
- * PCIE_CFG013 = Fourteenth 32-bits of PCIE type 1 config space (Capability Pointer Register)
+ * This register contains the fourteenth 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg013 {
@@ -4319,6 +4332,7 @@ union cvmx_pciercx_cfg013 {
 	struct cvmx_pciercx_cfg013_s          cn68xx;
 	struct cvmx_pciercx_cfg013_s          cn68xxp1;
 	struct cvmx_pciercx_cfg013_s          cn70xx;
+	struct cvmx_pciercx_cfg013_s          cn70xxp1;
 	struct cvmx_pciercx_cfg013_s          cn78xx;
 	struct cvmx_pciercx_cfg013_s          cnf71xx;
 };
@@ -4327,7 +4341,7 @@ typedef union cvmx_pciercx_cfg013 cvmx_pciercx_cfg013_t;
 /**
  * cvmx_pcierc#_cfg014
  *
- * PCIE_CFG014 = Fifteenth 32-bits of PCIE type 1 config space (Expansion ROM Base Address Register)
+ * This register contains the fifteenth 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg014 {
@@ -4350,6 +4364,7 @@ union cvmx_pciercx_cfg014 {
 	struct cvmx_pciercx_cfg014_s          cn68xx;
 	struct cvmx_pciercx_cfg014_s          cn68xxp1;
 	struct cvmx_pciercx_cfg014_s          cn70xx;
+	struct cvmx_pciercx_cfg014_s          cn70xxp1;
 	struct cvmx_pciercx_cfg014_s          cn78xx;
 	struct cvmx_pciercx_cfg014_s          cnf71xx;
 };
@@ -4358,8 +4373,8 @@ typedef union cvmx_pciercx_cfg014 cvmx_pciercx_cfg014_t;
 /**
  * cvmx_pcierc#_cfg015
  *
- * PCIE_CFG015 = Sixteenth 32-bits of PCIE type 1 config space (Interrupt Line Register/Interrupt
- * Pin/Bridge Control Register)
+ * This register contains the sixteenth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg015 {
 	uint32_t u32;
@@ -4426,6 +4441,7 @@ union cvmx_pciercx_cfg015 {
 	struct cvmx_pciercx_cfg015_s          cn68xx;
 	struct cvmx_pciercx_cfg015_s          cn68xxp1;
 	struct cvmx_pciercx_cfg015_s          cn70xx;
+	struct cvmx_pciercx_cfg015_s          cn70xxp1;
 	struct cvmx_pciercx_cfg015_s          cn78xx;
 	struct cvmx_pciercx_cfg015_s          cnf71xx;
 };
@@ -4434,10 +4450,8 @@ typedef union cvmx_pciercx_cfg015 cvmx_pciercx_cfg015_t;
 /**
  * cvmx_pcierc#_cfg016
  *
- * PCIE_CFG016 = Seventeenth 32-bits of PCIE type 1 config space
- * (Power Management Capability ID/
- * Power Management Next Item Pointer/
- * Power Management Capabilities Register)
+ * This register contains the seventeenth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg016 {
 	uint32_t u32;
@@ -4494,6 +4508,7 @@ union cvmx_pciercx_cfg016 {
 	struct cvmx_pciercx_cfg016_s          cn68xx;
 	struct cvmx_pciercx_cfg016_s          cn68xxp1;
 	struct cvmx_pciercx_cfg016_s          cn70xx;
+	struct cvmx_pciercx_cfg016_s          cn70xxp1;
 	struct cvmx_pciercx_cfg016_s          cn78xx;
 	struct cvmx_pciercx_cfg016_s          cnf71xx;
 };
@@ -4502,8 +4517,8 @@ typedef union cvmx_pciercx_cfg016 cvmx_pciercx_cfg016_t;
 /**
  * cvmx_pcierc#_cfg017
  *
- * PCIE_CFG017 = Eighteenth 32-bits of PCIE type 1 config space (Power Management Control and
- * Status Register)
+ * This register contains the eighteenth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg017 {
 	uint32_t u32;
@@ -4558,6 +4573,7 @@ union cvmx_pciercx_cfg017 {
 	struct cvmx_pciercx_cfg017_s          cn68xx;
 	struct cvmx_pciercx_cfg017_s          cn68xxp1;
 	struct cvmx_pciercx_cfg017_s          cn70xx;
+	struct cvmx_pciercx_cfg017_s          cn70xxp1;
 	struct cvmx_pciercx_cfg017_s          cn78xx;
 	struct cvmx_pciercx_cfg017_s          cnf71xx;
 };
@@ -4566,10 +4582,8 @@ typedef union cvmx_pciercx_cfg017 cvmx_pciercx_cfg017_t;
 /**
  * cvmx_pcierc#_cfg020
  *
- * PCIE_CFG020 = Twenty-first 32-bits of PCIE type 1 config space
- * (MSI Capability ID/
- * MSI Next Item Pointer/
- * MSI Control Register)
+ * This register contains the twenty-first 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg020 {
 	uint32_t u32;
@@ -4647,28 +4661,24 @@ union cvmx_pciercx_cfg020 {
 	struct cvmx_pciercx_cfg020_s          cn68xx;
 	struct cvmx_pciercx_cfg020_s          cn68xxp1;
 	struct cvmx_pciercx_cfg020_cn61xx     cn70xx;
+	struct cvmx_pciercx_cfg020_cn61xx     cn70xxp1;
 	struct cvmx_pciercx_cfg020_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_25_31               : 7;
-	uint32_t pvms                         : 1;  /**< PCI PVM Support */
-	uint32_t m64                          : 1;  /**< "64-bit Address Capable, writable through PEM#_CFG_WR
-                                                         However, the application must not change this field." */
-	uint32_t mme                          : 3;  /**< Multiple Message Enabled
-                                                         Indicates that multiple Message mode is enabled by system
-                                                         software. The number of Messages enabled must be less than
-                                                         or equal to the Multiple Message Capable value. */
-	uint32_t mmc                          : 3;  /**< "Multiple Message Capable, writable through PEM#_CFG_WR
-                                                         However, the application must not change this field." */
-	uint32_t msien                        : 1;  /**< MSI Enabled
-                                                         When set, INTx must be disabled.
-                                                         This bit must never be set, as internal-MSI is not supported in
-                                                         RC mode. (Note that this has no effect on external MSI, which
-                                                         will be commonly used in RC mode.) */
-	uint32_t ncp                          : 8;  /**< "Next Capability Pointer
-                                                         Points to PCI Express Capabilities by default,
-                                                         writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t msicid                       : 8;  /**< MSI Capability ID */
+	uint32_t pvms                         : 1;  /**< Per-vector masking capable. */
+	uint32_t m64                          : 1;  /**< 64-bit address capable, writable through PEM()_CFG_WR. However, the application must
+                                                         not change this field. */
+	uint32_t mme                          : 3;  /**< Multiple message enabled. Indicates that multiple message mode is enabled by system
+                                                         software. The number of messages enabled must be less than or equal to the multiple
+                                                         message capable (MMC) value. */
+	uint32_t mmc                          : 3;  /**< Multiple message capable, writable through PEM()_CFG_WR. However, the application must
+                                                         not change this field. */
+	uint32_t msien                        : 1;  /**< MSI enabled. When set, INTx must be disabled. This bit must never be set, as internal-MSI
+                                                         is not supported in RC mode. (Note that this has no effect on external MSI, which is
+                                                         commonly used in RC mode.) */
+	uint32_t ncp                          : 8;  /**< Next capability pointer. Points to PCI Express capabilities by default, writable through
+                                                         PEM()_CFG_WR. However, the application must not change this field. */
+	uint32_t msicid                       : 8;  /**< MSI capability ID. */
 #else
 	uint32_t msicid                       : 8;
 	uint32_t ncp                          : 8;
@@ -4687,8 +4697,8 @@ typedef union cvmx_pciercx_cfg020 cvmx_pciercx_cfg020_t;
 /**
  * cvmx_pcierc#_cfg021
  *
- * PCIE_CFG021 = Twenty-second 32-bits of PCIE type 1 config space (MSI Lower 32 Bits Address
- * Register)
+ * This register contains the twenty-second 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg021 {
 	uint32_t u32;
@@ -4712,6 +4722,7 @@ union cvmx_pciercx_cfg021 {
 	struct cvmx_pciercx_cfg021_s          cn68xx;
 	struct cvmx_pciercx_cfg021_s          cn68xxp1;
 	struct cvmx_pciercx_cfg021_s          cn70xx;
+	struct cvmx_pciercx_cfg021_s          cn70xxp1;
 	struct cvmx_pciercx_cfg021_s          cn78xx;
 	struct cvmx_pciercx_cfg021_s          cnf71xx;
 };
@@ -4720,7 +4731,7 @@ typedef union cvmx_pciercx_cfg021 cvmx_pciercx_cfg021_t;
 /**
  * cvmx_pcierc#_cfg022
  *
- * PCIE_CFG022 = Twenty-third 32-bits of PCIE type 1 config space (MSI Upper 32 bits Address Register)
+ * This register contains the twenty-third 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg022 {
@@ -4743,6 +4754,7 @@ union cvmx_pciercx_cfg022 {
 	struct cvmx_pciercx_cfg022_s          cn68xx;
 	struct cvmx_pciercx_cfg022_s          cn68xxp1;
 	struct cvmx_pciercx_cfg022_s          cn70xx;
+	struct cvmx_pciercx_cfg022_s          cn70xxp1;
 	struct cvmx_pciercx_cfg022_s          cn78xx;
 	struct cvmx_pciercx_cfg022_s          cnf71xx;
 };
@@ -4751,7 +4763,7 @@ typedef union cvmx_pciercx_cfg022 cvmx_pciercx_cfg022_t;
 /**
  * cvmx_pcierc#_cfg023
  *
- * PCIE_CFG023 = Twenty-fourth 32-bits of PCIE type 1 config space (MSI Data Register)
+ * This register contains the twenty-fourth 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg023 {
@@ -4778,6 +4790,7 @@ union cvmx_pciercx_cfg023 {
 	struct cvmx_pciercx_cfg023_s          cn68xx;
 	struct cvmx_pciercx_cfg023_s          cn68xxp1;
 	struct cvmx_pciercx_cfg023_s          cn70xx;
+	struct cvmx_pciercx_cfg023_s          cn70xxp1;
 	struct cvmx_pciercx_cfg023_s          cn78xx;
 	struct cvmx_pciercx_cfg023_s          cnf71xx;
 };
@@ -4786,9 +4799,8 @@ typedef union cvmx_pciercx_cfg023 cvmx_pciercx_cfg023_t;
 /**
  * cvmx_pcierc#_cfg028
  *
- * PCIE_CFG028 = Twenty-ninth 32-bits of PCIE type 1 config space
- * (PCI Express Capabilities List Register/
- * PCI Express Capabilities Register)
+ * This register contains the twenty-ninth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg028 {
 	uint32_t u32;
@@ -4830,6 +4842,7 @@ union cvmx_pciercx_cfg028 {
 	struct cvmx_pciercx_cfg028_s          cn68xx;
 	struct cvmx_pciercx_cfg028_s          cn68xxp1;
 	struct cvmx_pciercx_cfg028_s          cn70xx;
+	struct cvmx_pciercx_cfg028_s          cn70xxp1;
 	struct cvmx_pciercx_cfg028_s          cn78xx;
 	struct cvmx_pciercx_cfg028_s          cnf71xx;
 };
@@ -4838,7 +4851,7 @@ typedef union cvmx_pciercx_cfg028 cvmx_pciercx_cfg028_t;
 /**
  * cvmx_pcierc#_cfg029
  *
- * PCIE_CFG029 = Thirtieth 32-bits of PCIE type 1 config space (Device Capabilities Register)
+ * This register contains the thirtieth 32-bits of PCIe type 1 configuration space.
  *
  */
 union cvmx_pciercx_cfg029 {
@@ -4894,6 +4907,7 @@ union cvmx_pciercx_cfg029 {
 	struct cvmx_pciercx_cfg029_s          cn68xx;
 	struct cvmx_pciercx_cfg029_s          cn68xxp1;
 	struct cvmx_pciercx_cfg029_s          cn70xx;
+	struct cvmx_pciercx_cfg029_s          cn70xxp1;
 	struct cvmx_pciercx_cfg029_s          cn78xx;
 	struct cvmx_pciercx_cfg029_s          cnf71xx;
 };
@@ -4902,8 +4916,8 @@ typedef union cvmx_pciercx_cfg029 cvmx_pciercx_cfg029_t;
 /**
  * cvmx_pcierc#_cfg030
  *
- * PCIE_CFG030 = Thirty-first 32-bits of PCIE type 1 config space
- * (Device Control Register/Device Status Register)
+ * This register contains the thirty-first 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg030 {
 	uint32_t u32;
@@ -5010,6 +5024,7 @@ union cvmx_pciercx_cfg030 {
 	struct cvmx_pciercx_cfg030_s          cn68xx;
 	struct cvmx_pciercx_cfg030_s          cn68xxp1;
 	struct cvmx_pciercx_cfg030_s          cn70xx;
+	struct cvmx_pciercx_cfg030_s          cn70xxp1;
 	struct cvmx_pciercx_cfg030_s          cn78xx;
 	struct cvmx_pciercx_cfg030_s          cnf71xx;
 };
@@ -5018,8 +5033,8 @@ typedef union cvmx_pciercx_cfg030 cvmx_pciercx_cfg030_t;
 /**
  * cvmx_pcierc#_cfg031
  *
- * PCIE_CFG031 = Thirty-second 32-bits of PCIE type 1 config space
- * (Link Capabilities Register)
+ * This register contains the thirty-second 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg031 {
 	uint32_t u32;
@@ -5140,6 +5155,7 @@ union cvmx_pciercx_cfg031 {
 	struct cvmx_pciercx_cfg031_s          cn68xx;
 	struct cvmx_pciercx_cfg031_cn52xx     cn68xxp1;
 	struct cvmx_pciercx_cfg031_s          cn70xx;
+	struct cvmx_pciercx_cfg031_s          cn70xxp1;
 	struct cvmx_pciercx_cfg031_s          cn78xx;
 	struct cvmx_pciercx_cfg031_s          cnf71xx;
 };
@@ -5148,8 +5164,8 @@ typedef union cvmx_pciercx_cfg031 cvmx_pciercx_cfg031_t;
 /**
  * cvmx_pcierc#_cfg032
  *
- * PCIE_CFG032 = Thirty-third 32-bits of PCIE type 1 config space
- * (Link Control Register/Link Status Register)
+ * This register contains the thirty-third 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg032 {
 	uint32_t u32;
@@ -5242,6 +5258,7 @@ union cvmx_pciercx_cfg032 {
 	struct cvmx_pciercx_cfg032_s          cn68xx;
 	struct cvmx_pciercx_cfg032_s          cn68xxp1;
 	struct cvmx_pciercx_cfg032_s          cn70xx;
+	struct cvmx_pciercx_cfg032_s          cn70xxp1;
 	struct cvmx_pciercx_cfg032_s          cn78xx;
 	struct cvmx_pciercx_cfg032_s          cnf71xx;
 };
@@ -5250,8 +5267,8 @@ typedef union cvmx_pciercx_cfg032 cvmx_pciercx_cfg032_t;
 /**
  * cvmx_pcierc#_cfg033
  *
- * PCIE_CFG033 = Thirty-fourth 32-bits of PCIE type 1 config space
- * (Slot Capabilities Register)
+ * This register contains the thirty-fourth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg033 {
 	uint32_t u32;
@@ -5305,6 +5322,7 @@ union cvmx_pciercx_cfg033 {
 	struct cvmx_pciercx_cfg033_s          cn68xx;
 	struct cvmx_pciercx_cfg033_s          cn68xxp1;
 	struct cvmx_pciercx_cfg033_s          cn70xx;
+	struct cvmx_pciercx_cfg033_s          cn70xxp1;
 	struct cvmx_pciercx_cfg033_s          cn78xx;
 	struct cvmx_pciercx_cfg033_s          cnf71xx;
 };
@@ -5313,8 +5331,8 @@ typedef union cvmx_pciercx_cfg033 cvmx_pciercx_cfg033_t;
 /**
  * cvmx_pcierc#_cfg034
  *
- * PCIE_CFG034 = Thirty-fifth 32-bits of PCIE type 1 config space
- * (Slot Control Register/Slot Status Register)
+ * This register contains the thirty-fifth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg034 {
 	uint32_t u32;
@@ -5378,6 +5396,7 @@ union cvmx_pciercx_cfg034 {
 	struct cvmx_pciercx_cfg034_s          cn68xx;
 	struct cvmx_pciercx_cfg034_s          cn68xxp1;
 	struct cvmx_pciercx_cfg034_s          cn70xx;
+	struct cvmx_pciercx_cfg034_s          cn70xxp1;
 	struct cvmx_pciercx_cfg034_s          cn78xx;
 	struct cvmx_pciercx_cfg034_s          cnf71xx;
 };
@@ -5386,8 +5405,8 @@ typedef union cvmx_pciercx_cfg034 cvmx_pciercx_cfg034_t;
 /**
  * cvmx_pcierc#_cfg035
  *
- * PCIE_CFG035 = Thirty-sixth 32-bits of PCIE type 1 config space
- * (Root Control Register/Root Capabilities Register)
+ * This register contains the thirty-sixth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg035 {
 	uint32_t u32;
@@ -5425,6 +5444,7 @@ union cvmx_pciercx_cfg035 {
 	struct cvmx_pciercx_cfg035_s          cn68xx;
 	struct cvmx_pciercx_cfg035_s          cn68xxp1;
 	struct cvmx_pciercx_cfg035_s          cn70xx;
+	struct cvmx_pciercx_cfg035_s          cn70xxp1;
 	struct cvmx_pciercx_cfg035_s          cn78xx;
 	struct cvmx_pciercx_cfg035_s          cnf71xx;
 };
@@ -5433,8 +5453,8 @@ typedef union cvmx_pciercx_cfg035 cvmx_pciercx_cfg035_t;
 /**
  * cvmx_pcierc#_cfg036
  *
- * PCIE_CFG036 = Thirty-seventh 32-bits of PCIE type 1 config space
- * (Root Status Register)
+ * This register contains the thirty-seventh 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg036 {
 	uint32_t u32;
@@ -5462,6 +5482,7 @@ union cvmx_pciercx_cfg036 {
 	struct cvmx_pciercx_cfg036_s          cn68xx;
 	struct cvmx_pciercx_cfg036_s          cn68xxp1;
 	struct cvmx_pciercx_cfg036_s          cn70xx;
+	struct cvmx_pciercx_cfg036_s          cn70xxp1;
 	struct cvmx_pciercx_cfg036_s          cn78xx;
 	struct cvmx_pciercx_cfg036_s          cnf71xx;
 };
@@ -5470,23 +5491,21 @@ typedef union cvmx_pciercx_cfg036 cvmx_pciercx_cfg036_t;
 /**
  * cvmx_pcierc#_cfg037
  *
- * PCIE_CFG037 = Thirty-eighth 32-bits of PCIE type 1 config space
- * (Device Capabilities 2 Register)
+ * This register contains the thirty-eighth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg037 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg037_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_24_31               : 8;
-	uint32_t meetp                        : 2;  /**< Max End-End TLP Prefixes
-                                                         o 01: 1
-                                                         o 10: 2
-                                                         o 11: 3
-                                                         0 00: 4 */
-	uint32_t eetps                        : 1;  /**< End-End TLP Prefix Supported
-                                                         (Not Supported) */
-	uint32_t effs                         : 1;  /**< Extended Fmt Field Supported
-                                                         (Not Supported) */
+	uint32_t meetp                        : 2;  /**< Max end-end TLP prefixes.
+                                                         0x1 = 1.
+                                                         0x2 = 2.
+                                                         0x3 = 3.
+                                                         0x0 = 4. */
+	uint32_t eetps                        : 1;  /**< End-end TLP prefix supported (not supported). */
+	uint32_t effs                         : 1;  /**< Extended fmt field supported (not supported). */
 	uint32_t obffs                        : 2;  /**< Optimized Buffer Flush Fill (OBFF) Supported
                                                          (Not Supported) */
 	uint32_t reserved_12_17               : 6;
@@ -5616,36 +5635,30 @@ union cvmx_pciercx_cfg037 {
 	struct cvmx_pciercx_cfg037_cn66xx     cn68xx;
 	struct cvmx_pciercx_cfg037_cn66xx     cn68xxp1;
 	struct cvmx_pciercx_cfg037_cn61xx     cn70xx;
+	struct cvmx_pciercx_cfg037_cn61xx     cn70xxp1;
 	struct cvmx_pciercx_cfg037_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_24_31               : 8;
-	uint32_t meetp                        : 2;  /**< Max End-End TLP Prefixes
-                                                         o 01: 1
-                                                         o 10: 2
-                                                         o 11: 3
-                                                         0 00: 4 */
-	uint32_t eetps                        : 1;  /**< End-End TLP Prefix Supported
-                                                         (Not Supported) */
-	uint32_t effs                         : 1;  /**< Extended Fmt Field Supported
-                                                         (Not Supported) */
-	uint32_t obffs                        : 2;  /**< Optimized Buffer Flush Fill (OBFF) Supported
-                                                         (Not Supported) */
+	uint32_t meetp                        : 2;  /**< Max end-end TLP prefixes.
+                                                         0x1 = 1.
+                                                         0x2 = 2.
+                                                         0x3 = 3.
+                                                         0x0 = 4. */
+	uint32_t eetps                        : 1;  /**< End-end TLP prefix supported (not supported). */
+	uint32_t effs                         : 1;  /**< Extended fmt field supported (not supported). */
+	uint32_t obffs                        : 2;  /**< Optimized buffer flush fill (OBFF) supported (not supported). */
 	uint32_t reserved_14_17               : 4;
-	uint32_t tph                          : 2;  /**< TPH Completer Supported
-                                                         (Not Supported) */
-	uint32_t ltrs                         : 1;  /**< Latency Tolerance Reporting (LTR) Mechanism Supported
-                                                         (Not Supported) */
-	uint32_t noroprpr                     : 1;  /**< No RO-enabled PR-PR Passing
-                                                         When set, the routing element never carries out the passing
-                                                         permitted in the Relaxed Ordering Model. */
-	uint32_t atom128s                     : 1;  /**< 128-bit AtomicOp Supported
-                                                         (Not Supported) */
-	uint32_t atom64s                      : 1;  /**< 64-bit AtomicOp Supported */
-	uint32_t atom32s                      : 1;  /**< 32-bit AtomicOp Supported */
-	uint32_t atom_ops                     : 1;  /**< AtomicOp Routing Supported */
-	uint32_t ari_fw                       : 1;  /**< ARI Forwarding Supported */
-	uint32_t ctds                         : 1;  /**< Completion Timeout Disable Supported */
-	uint32_t ctrs                         : 4;  /**< Completion Timeout Ranges Supported */
+	uint32_t tph                          : 2;  /**< TPH completer supported (not supported). */
+	uint32_t ltrs                         : 1;  /**< Latency tolerance reporting (LTR) mechanism supported (not supported). */
+	uint32_t noroprpr                     : 1;  /**< No RO-enabled PR-PR passing. When set, the routing element never carries out the passing
+                                                         permitted in the relaxed ordering model. */
+	uint32_t atom128s                     : 1;  /**< 128-bit AtomicOp supported (not supported). */
+	uint32_t atom64s                      : 1;  /**< 64-bit AtomicOp supported. */
+	uint32_t atom32s                      : 1;  /**< 32-bit AtomicOp supported. */
+	uint32_t atom_ops                     : 1;  /**< AtomicOp routing supported. */
+	uint32_t ari_fw                       : 1;  /**< Alternate routing ID forwarding supported. */
+	uint32_t ctds                         : 1;  /**< Completion timeout disable supported. */
+	uint32_t ctrs                         : 4;  /**< Completion timeout ranges supported. */
 #else
 	uint32_t ctrs                         : 4;
 	uint32_t ctds                         : 1;
@@ -5712,15 +5725,15 @@ typedef union cvmx_pciercx_cfg037 cvmx_pciercx_cfg037_t;
 /**
  * cvmx_pcierc#_cfg038
  *
- * PCIE_CFG038 = Thirty-ninth 32-bits of PCIE type 1 config space
- * (Device Control 2 Register)
+ * This register contains the thirty-ninth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg038 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg038_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_16_31               : 16;
-	uint32_t eetpb                        : 1;  /**< Unsupported End-End TLP Prefix Blocking */
+	uint32_t eetpb                        : 1;  /**< Unsupported end-end TLP prefix blocking. */
 	uint32_t obffe                        : 2;  /**< Optimized Buffer Flush Fill (OBFF) Enable
                                                          (Not Supported) */
 	uint32_t reserved_11_12               : 2;
@@ -5821,6 +5834,7 @@ union cvmx_pciercx_cfg038 {
 	struct cvmx_pciercx_cfg038_cn61xx     cn68xx;
 	struct cvmx_pciercx_cfg038_cn61xx     cn68xxp1;
 	struct cvmx_pciercx_cfg038_cn61xx     cn70xx;
+	struct cvmx_pciercx_cfg038_cn61xx     cn70xxp1;
 	struct cvmx_pciercx_cfg038_s          cn78xx;
 	struct cvmx_pciercx_cfg038_cnf71xx {
 #ifdef __BIG_ENDIAN_BITFIELD
@@ -5872,8 +5886,8 @@ typedef union cvmx_pciercx_cfg038 cvmx_pciercx_cfg038_t;
 /**
  * cvmx_pcierc#_cfg039
  *
- * PCIE_CFG039 = Fourtieth 32-bits of PCIE type 1 config space
- * (Link Capabilities 2 Register)
+ * This register contains the fortieth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg039 {
 	uint32_t u32;
@@ -5921,6 +5935,7 @@ union cvmx_pciercx_cfg039 {
 	struct cvmx_pciercx_cfg039_s          cn68xx;
 	struct cvmx_pciercx_cfg039_s          cn68xxp1;
 	struct cvmx_pciercx_cfg039_s          cn70xx;
+	struct cvmx_pciercx_cfg039_s          cn70xxp1;
 	struct cvmx_pciercx_cfg039_s          cn78xx;
 	struct cvmx_pciercx_cfg039_s          cnf71xx;
 };
@@ -5929,19 +5944,19 @@ typedef union cvmx_pciercx_cfg039 cvmx_pciercx_cfg039_t;
 /**
  * cvmx_pcierc#_cfg040
  *
- * PCIE_CFG040 = Fourty-first 32-bits of PCIE type 1 config space
- * (Link Control 2 Register/Link Status 2 Register)
+ * This register contains the forty-first 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg040 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg040_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_22_31               : 10;
-	uint32_t ler                          : 1;  /**< Link Equalization Request */
-	uint32_t ep3s                         : 1;  /**< Equalization Phase 3 Successful */
-	uint32_t ep2s                         : 1;  /**< Equalization Phase 2 Successful */
-	uint32_t ep1s                         : 1;  /**< Equalization Phase 1 Successful */
-	uint32_t eqc                          : 1;  /**< Equalization Complete */
+	uint32_t ler                          : 1;  /**< Link equalization request */
+	uint32_t ep3s                         : 1;  /**< Equalization phase 3 successful */
+	uint32_t ep2s                         : 1;  /**< Equalization phase 2 successful */
+	uint32_t ep1s                         : 1;  /**< Equalization phase 1 successful */
+	uint32_t eqc                          : 1;  /**< Equalization complete */
 	uint32_t cdl                          : 1;  /**< Current De-emphasis Level
                                                          When the Link is operating at 5 GT/s speed, this bit
                                                          reflects the level of de-emphasis. Encodings:
@@ -6148,6 +6163,7 @@ union cvmx_pciercx_cfg040 {
 	struct cvmx_pciercx_cfg040_cn61xx     cn68xx;
 	struct cvmx_pciercx_cfg040_cn61xx     cn68xxp1;
 	struct cvmx_pciercx_cfg040_cn61xx     cn70xx;
+	struct cvmx_pciercx_cfg040_cn61xx     cn70xxp1;
 	struct cvmx_pciercx_cfg040_s          cn78xx;
 	struct cvmx_pciercx_cfg040_cn61xx     cnf71xx;
 };
@@ -6156,8 +6172,8 @@ typedef union cvmx_pciercx_cfg040 cvmx_pciercx_cfg040_t;
 /**
  * cvmx_pcierc#_cfg041
  *
- * PCIE_CFG041 = Fourty-second 32-bits of PCIE type 1 config space
- * (Slot Capabilities 2 Register)
+ * This register contains the forty-second 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg041 {
 	uint32_t u32;
@@ -6179,6 +6195,7 @@ union cvmx_pciercx_cfg041 {
 	struct cvmx_pciercx_cfg041_s          cn68xx;
 	struct cvmx_pciercx_cfg041_s          cn68xxp1;
 	struct cvmx_pciercx_cfg041_s          cn70xx;
+	struct cvmx_pciercx_cfg041_s          cn70xxp1;
 	struct cvmx_pciercx_cfg041_s          cn78xx;
 	struct cvmx_pciercx_cfg041_s          cnf71xx;
 };
@@ -6187,8 +6204,8 @@ typedef union cvmx_pciercx_cfg041 cvmx_pciercx_cfg041_t;
 /**
  * cvmx_pcierc#_cfg042
  *
- * PCIE_CFG042 = Fourty-third 32-bits of PCIE type 1 config space
- * (Slot Control 2 Register/Slot Status 2 Register)
+ * This register contains the forty-third 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg042 {
 	uint32_t u32;
@@ -6210,6 +6227,7 @@ union cvmx_pciercx_cfg042 {
 	struct cvmx_pciercx_cfg042_s          cn68xx;
 	struct cvmx_pciercx_cfg042_s          cn68xxp1;
 	struct cvmx_pciercx_cfg042_s          cn70xx;
+	struct cvmx_pciercx_cfg042_s          cn70xxp1;
 	struct cvmx_pciercx_cfg042_s          cn78xx;
 	struct cvmx_pciercx_cfg042_s          cnf71xx;
 };
@@ -6218,29 +6236,23 @@ typedef union cvmx_pciercx_cfg042 cvmx_pciercx_cfg042_t;
 /**
  * cvmx_pcierc#_cfg044
  *
- * PCIE_CFG044 = Fourty-fifth 32-bits of PCIE type 1 config space
- * (MSI-X Capability ID/
- * MSI-X Next Item Pointer/
- * MSI-X Control Register)
+ * This register contains the forty-fifth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg044 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg044_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t msixen                       : 1;  /**< MSI-X Enable
-                                                         If MSI-X is enabled, MIS and INTx must be disabled. */
-	uint32_t funm                         : 1;  /**< Function Mask
-                                                         1b: All vectors associated with the function are masked,
-                                                         regardless of their respective per-vector mask bits.
-                                                         0b: Each vectors Mask bit determines whether the vector
-                                                         is masked or not. */
+	uint32_t msixen                       : 1;  /**< MSI-X enable. If MSI-X is enabled, MSI and INTx must be disabled. */
+	uint32_t funm                         : 1;  /**< Function mask.
+                                                         0 = Each vectors mask bit determines whether the vector is masked or not.
+                                                         1 = All vectors associated with the function are masked, regardless of their respective
+                                                         per-vector mask bits. */
 	uint32_t reserved_27_29               : 3;
-	uint32_t msixts                       : 11; /**< MSI-X Table Size
-                                                         Encoded as (Table Size - 1) */
-	uint32_t ncp                          : 8;  /**< "Next Capability Pointer
-                                                         writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t msixcid                      : 8;  /**< MSI-X Capability ID */
+	uint32_t msixts                       : 11; /**< MSI-X table size encoded as (table size - 1). */
+	uint32_t ncp                          : 8;  /**< "Next capability pointer. Writable through PEM#_CFG_WR. However, the application must not
+                                                         change this field." */
+	uint32_t msixcid                      : 8;  /**< MSI-X capability ID. */
 #else
 	uint32_t msixcid                      : 8;
 	uint32_t ncp                          : 8;
@@ -6257,25 +6269,19 @@ typedef union cvmx_pciercx_cfg044 cvmx_pciercx_cfg044_t;
 /**
  * cvmx_pcierc#_cfg045
  *
- * PCIE_CFG045 = Fourty-sixth 32-bits of PCIE type 1 config space
- * (MSI-X Table Offset and BIR Register)
+ * This register contains the forty-sixth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg045 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg045_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t msixtoffs                    : 29; /**< "MSI-X Table Offset Register
-                                                         Base address of the MSI-X Table, as an offset from the base
-                                                         address of te BAR indicated by the Table BIR bits.
-                                                         writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t msixtbir                     : 3;  /**< "MSI-X Table BAR Indicator Register (BIR)
-                                                         Indicates which BAR is used to map the MSI-X Table
-                                                         into memory space
-                                                         000 - 100: BAR#
-                                                         110 - 111: Reserved
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t msixtoffs                    : 29; /**< MSI-X table offset register. Base address of the MSI-X Table, as an offset from the base
+                                                         address of the BAR indicated by the table BIR bits. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t msixtbir                     : 3;  /**< "MSI-X table BAR indicator register (BIR). Indicates which BAR is used to map the MSI-X
+                                                         table into memory space.
+                                                         Writable through PEM()_CFG_WR. However, the application must not change this field." */
 #else
 	uint32_t msixtbir                     : 3;
 	uint32_t msixtoffs                    : 29;
@@ -6288,25 +6294,19 @@ typedef union cvmx_pciercx_cfg045 cvmx_pciercx_cfg045_t;
 /**
  * cvmx_pcierc#_cfg046
  *
- * PCIE_CFG046 = Fourty-seventh 32-bits of PCIE type 1 config space
- * (MSI-X PBA Offset and BIR Register)
+ * This register contains the forty-seventh 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg046 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg046_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t msixpoffs                    : 29; /**< "MSI-X Table Offset Register
-                                                         Base address of the MSI-X PBA, as an offset from the base
-                                                         address of te BAR indicated by the Table PBA bits.
-                                                         writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t msixpbir                     : 3;  /**< "MSI-X PBA BAR Indicator Register (BIR)
-                                                         Indicates which BAR is used to map the MSI-X Pending Bit Array
-                                                         into memory space
-                                                         000 - 100: BAR#
-                                                         110 - 111: Reserved
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t msixpoffs                    : 29; /**< MSI-X table offset register. Base address of the MSI-X PBA, as an offset from the base
+                                                         address of the BAR indicated by the table PBA bits. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t msixpbir                     : 3;  /**< "MSI-X PBA BAR indicator register (BIR). Indicates which BAR is used to map the MSI-X
+                                                         pending bit array into memory space.
+                                                         Writable through PEM()_CFG_WR. However, the application must not change this field." */
 #else
 	uint32_t msixpbir                     : 3;
 	uint32_t msixpoffs                    : 29;
@@ -6319,8 +6319,8 @@ typedef union cvmx_pciercx_cfg046 cvmx_pciercx_cfg046_t;
 /**
  * cvmx_pcierc#_cfg064
  *
- * PCIE_CFG064 = Sixty-fifth 32-bits of PCIE type 1 config space
- * (PCI Express Extended Capability Header)
+ * This register contains the sixty-fifth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg064 {
 	uint32_t u32;
@@ -6346,6 +6346,7 @@ union cvmx_pciercx_cfg064 {
 	struct cvmx_pciercx_cfg064_s          cn68xx;
 	struct cvmx_pciercx_cfg064_s          cn68xxp1;
 	struct cvmx_pciercx_cfg064_s          cn70xx;
+	struct cvmx_pciercx_cfg064_s          cn70xxp1;
 	struct cvmx_pciercx_cfg064_s          cn78xx;
 	struct cvmx_pciercx_cfg064_s          cnf71xx;
 };
@@ -6354,15 +6355,15 @@ typedef union cvmx_pciercx_cfg064 cvmx_pciercx_cfg064_t;
 /**
  * cvmx_pcierc#_cfg065
  *
- * PCIE_CFG065 = Sixty-sixth 32-bits of PCIE type 1 config space
- * (Uncorrectable Error Status Register)
+ * This register contains the sixty-sixth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg065 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg065_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_26_31               : 6;
-	uint32_t tpbes                        : 1;  /**< Unsupported TLP Prefix Blocked Error Status */
+	uint32_t tpbes                        : 1;  /**< Unsupported TLP prefix blocked error status. */
 	uint32_t uatombs                      : 1;  /**< Unsupported AtomicOp Egress Blocked Status */
 	uint32_t reserved_23_23               : 1;
 	uint32_t ucies                        : 1;  /**< Uncorrectable Internal Error Status */
@@ -6521,6 +6522,7 @@ union cvmx_pciercx_cfg065 {
 	uint32_t reserved_25_31               : 7;
 #endif
 	} cn70xx;
+	struct cvmx_pciercx_cfg065_cn70xx     cn70xxp1;
 	struct cvmx_pciercx_cfg065_s          cn78xx;
 	struct cvmx_pciercx_cfg065_cn70xx     cnf71xx;
 };
@@ -6529,15 +6531,15 @@ typedef union cvmx_pciercx_cfg065 cvmx_pciercx_cfg065_t;
 /**
  * cvmx_pcierc#_cfg066
  *
- * PCIE_CFG066 = Sixty-seventh 32-bits of PCIE type 1 config space
- * (Uncorrectable Error Mask Register)
+ * This register contains the sixty-seventh 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg066 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg066_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_26_31               : 6;
-	uint32_t tpbem                        : 1;  /**< Unsupported TLP Prefix Blocked Error Mask */
+	uint32_t tpbem                        : 1;  /**< Unsupported TLP prefix blocked error mask. */
 	uint32_t uatombm                      : 1;  /**< Unsupported AtomicOp Egress Blocked Mask */
 	uint32_t reserved_23_23               : 1;
 	uint32_t uciem                        : 1;  /**< Uncorrectable Internal Error Mask */
@@ -6696,6 +6698,7 @@ union cvmx_pciercx_cfg066 {
 	uint32_t reserved_25_31               : 7;
 #endif
 	} cn70xx;
+	struct cvmx_pciercx_cfg066_cn70xx     cn70xxp1;
 	struct cvmx_pciercx_cfg066_s          cn78xx;
 	struct cvmx_pciercx_cfg066_cn70xx     cnf71xx;
 };
@@ -6704,15 +6707,15 @@ typedef union cvmx_pciercx_cfg066 cvmx_pciercx_cfg066_t;
 /**
  * cvmx_pcierc#_cfg067
  *
- * PCIE_CFG067 = Sixty-eighth 32-bits of PCIE type 1 config space
- * (Uncorrectable Error Severity Register)
+ * This register contains the sixty-eighth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg067 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg067_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_26_31               : 6;
-	uint32_t tpbes                        : 1;  /**< Unsupported TLP Prefix Blocked Error Severity */
+	uint32_t tpbes                        : 1;  /**< Unsupported TLP prefix blocked error severity. */
 	uint32_t uatombs                      : 1;  /**< Unsupported AtomicOp Egress Blocked Severity */
 	uint32_t reserved_21_23               : 3;
 	uint32_t ures                         : 1;  /**< Unsupported Request Error Severity */
@@ -6867,24 +6870,25 @@ union cvmx_pciercx_cfg067 {
 	uint32_t reserved_25_31               : 7;
 #endif
 	} cn70xx;
+	struct cvmx_pciercx_cfg067_cn70xx     cn70xxp1;
 	struct cvmx_pciercx_cfg067_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_26_31               : 6;
-	uint32_t tpbes                        : 1;  /**< Unsupported TLP Prefix Blocked Error Severity */
-	uint32_t uatombs                      : 1;  /**< Unsupported AtomicOp Egress Blocked Severity */
+	uint32_t tpbes                        : 1;  /**< Unsupported TLP prefix blocked error severity. */
+	uint32_t uatombs                      : 1;  /**< Unsupported AtomicOp egress blocked severity. */
 	uint32_t unsuperr                     : 3;  /**< Reserved. */
-	uint32_t ures                         : 1;  /**< Unsupported Request Error Severity */
-	uint32_t ecrces                       : 1;  /**< ECRC Error Severity */
-	uint32_t mtlps                        : 1;  /**< Malformed TLP Severity */
-	uint32_t ros                          : 1;  /**< Receiver Overflow Severity */
-	uint32_t ucs                          : 1;  /**< Unexpected Completion Severity */
-	uint32_t cas                          : 1;  /**< Completer Abort Severity */
-	uint32_t cts                          : 1;  /**< Completion Timeout Severity */
-	uint32_t fcpes                        : 1;  /**< Flow Control Protocol Error Severity */
-	uint32_t ptlps                        : 1;  /**< Poisoned TLP Severity */
+	uint32_t ures                         : 1;  /**< Unsupported request error severity. */
+	uint32_t ecrces                       : 1;  /**< ECRC error severity. */
+	uint32_t mtlps                        : 1;  /**< Malformed TLP severity. */
+	uint32_t ros                          : 1;  /**< Receiver overflow severity. */
+	uint32_t ucs                          : 1;  /**< Unexpected completion severity. */
+	uint32_t cas                          : 1;  /**< Completer abort severity. */
+	uint32_t cts                          : 1;  /**< Completion timeout severity. */
+	uint32_t fcpes                        : 1;  /**< Flow control protocol error severity. */
+	uint32_t ptlps                        : 1;  /**< Poisoned TLP severity. */
 	uint32_t reserved_6_11                : 6;
-	uint32_t sdes                         : 1;  /**< Surprise Down Error Severity (not supported) */
-	uint32_t dlpes                        : 1;  /**< Data Link Protocol Error Severity */
+	uint32_t sdes                         : 1;  /**< Surprise down error severity (not supported). */
+	uint32_t dlpes                        : 1;  /**< Data link protocol error severity. */
 	uint32_t reserved_0_3                 : 4;
 #else
 	uint32_t reserved_0_3                 : 4;
@@ -6913,8 +6917,8 @@ typedef union cvmx_pciercx_cfg067 cvmx_pciercx_cfg067_t;
 /**
  * cvmx_pcierc#_cfg068
  *
- * PCIE_CFG068 = Sixty-ninth 32-bits of PCIE type 1 config space
- * (Correctable Error Status Register)
+ * This register contains the sixty-ninth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg068 {
 	uint32_t u32;
@@ -6976,6 +6980,7 @@ union cvmx_pciercx_cfg068 {
 	struct cvmx_pciercx_cfg068_cn52xx     cn68xx;
 	struct cvmx_pciercx_cfg068_cn52xx     cn68xxp1;
 	struct cvmx_pciercx_cfg068_s          cn70xx;
+	struct cvmx_pciercx_cfg068_s          cn70xxp1;
 	struct cvmx_pciercx_cfg068_s          cn78xx;
 	struct cvmx_pciercx_cfg068_s          cnf71xx;
 };
@@ -6984,8 +6989,8 @@ typedef union cvmx_pciercx_cfg068 cvmx_pciercx_cfg068_t;
 /**
  * cvmx_pcierc#_cfg069
  *
- * PCIE_CFG069 = Seventieth 32-bits of PCIE type 1 config space
- * (Correctable Error Mask Register)
+ * This register contains the seventieth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg069 {
 	uint32_t u32;
@@ -7047,6 +7052,7 @@ union cvmx_pciercx_cfg069 {
 	struct cvmx_pciercx_cfg069_cn52xx     cn68xx;
 	struct cvmx_pciercx_cfg069_cn52xx     cn68xxp1;
 	struct cvmx_pciercx_cfg069_s          cn70xx;
+	struct cvmx_pciercx_cfg069_s          cn70xxp1;
 	struct cvmx_pciercx_cfg069_s          cn78xx;
 	struct cvmx_pciercx_cfg069_s          cnf71xx;
 };
@@ -7055,15 +7061,15 @@ typedef union cvmx_pciercx_cfg069 cvmx_pciercx_cfg069_t;
 /**
  * cvmx_pcierc#_cfg070
  *
- * PCIE_CFG070 = Seventy-first 32-bits of PCIE type 1 config space
- * (Advanced Capabilities and Control Register)
+ * This register contains the seventy-first 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg070 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg070_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_12_31               : 20;
-	uint32_t tplp                         : 1;  /**< TLP Prefix Log Present */
+	uint32_t tplp                         : 1;  /**< TLP prefix log present. */
 	uint32_t reserved_9_10                : 2;
 	uint32_t ce                           : 1;  /**< ECRC Check Enable */
 	uint32_t cc                           : 1;  /**< ECRC Check Capable */
@@ -7108,6 +7114,7 @@ union cvmx_pciercx_cfg070 {
 	struct cvmx_pciercx_cfg070_cn52xx     cn68xx;
 	struct cvmx_pciercx_cfg070_cn52xx     cn68xxp1;
 	struct cvmx_pciercx_cfg070_cn52xx     cn70xx;
+	struct cvmx_pciercx_cfg070_cn52xx     cn70xxp1;
 	struct cvmx_pciercx_cfg070_s          cn78xx;
 	struct cvmx_pciercx_cfg070_cn52xx     cnf71xx;
 };
@@ -7116,9 +7123,8 @@ typedef union cvmx_pciercx_cfg070 cvmx_pciercx_cfg070_t;
 /**
  * cvmx_pcierc#_cfg071
  *
- * PCIE_CFG071 = Seventy-second 32-bits of PCIE type 1 config space
- * (Header Log Register 1)
- * The Header Log registers collect the header for the TLP corresponding to a detected error.
+ * This register contains the seventy-second 32-bits of PCIe type 1 configuration space.  The
+ * header log registers collect the header for the TLP corresponding to a detected error.
  */
 union cvmx_pciercx_cfg071 {
 	uint32_t u32;
@@ -7140,6 +7146,7 @@ union cvmx_pciercx_cfg071 {
 	struct cvmx_pciercx_cfg071_s          cn68xx;
 	struct cvmx_pciercx_cfg071_s          cn68xxp1;
 	struct cvmx_pciercx_cfg071_s          cn70xx;
+	struct cvmx_pciercx_cfg071_s          cn70xxp1;
 	struct cvmx_pciercx_cfg071_s          cn78xx;
 	struct cvmx_pciercx_cfg071_s          cnf71xx;
 };
@@ -7148,9 +7155,8 @@ typedef union cvmx_pciercx_cfg071 cvmx_pciercx_cfg071_t;
 /**
  * cvmx_pcierc#_cfg072
  *
- * PCIE_CFG072 = Seventy-third 32-bits of PCIE type 1 config space
- * (Header Log Register 2)
- * The Header Log registers collect the header for the TLP corresponding to a detected error.
+ * This register contains the seventy-third 32-bits of PCIe type 1 configuration space.  The
+ * header log registers collect the header for the TLP corresponding to a detected error.
  */
 union cvmx_pciercx_cfg072 {
 	uint32_t u32;
@@ -7172,6 +7178,7 @@ union cvmx_pciercx_cfg072 {
 	struct cvmx_pciercx_cfg072_s          cn68xx;
 	struct cvmx_pciercx_cfg072_s          cn68xxp1;
 	struct cvmx_pciercx_cfg072_s          cn70xx;
+	struct cvmx_pciercx_cfg072_s          cn70xxp1;
 	struct cvmx_pciercx_cfg072_s          cn78xx;
 	struct cvmx_pciercx_cfg072_s          cnf71xx;
 };
@@ -7180,9 +7187,8 @@ typedef union cvmx_pciercx_cfg072 cvmx_pciercx_cfg072_t;
 /**
  * cvmx_pcierc#_cfg073
  *
- * PCIE_CFG073 = Seventy-fourth 32-bits of PCIE type 1 config space
- * (Header Log Register 3)
- * The Header Log registers collect the header for the TLP corresponding to a detected error.
+ * This register contains the seventy-fourth 32-bits of PCIe type 1 configuration space.  The
+ * header log registers collect the header for the TLP corresponding to a detected error.
  */
 union cvmx_pciercx_cfg073 {
 	uint32_t u32;
@@ -7204,6 +7210,7 @@ union cvmx_pciercx_cfg073 {
 	struct cvmx_pciercx_cfg073_s          cn68xx;
 	struct cvmx_pciercx_cfg073_s          cn68xxp1;
 	struct cvmx_pciercx_cfg073_s          cn70xx;
+	struct cvmx_pciercx_cfg073_s          cn70xxp1;
 	struct cvmx_pciercx_cfg073_s          cn78xx;
 	struct cvmx_pciercx_cfg073_s          cnf71xx;
 };
@@ -7212,9 +7219,8 @@ typedef union cvmx_pciercx_cfg073 cvmx_pciercx_cfg073_t;
 /**
  * cvmx_pcierc#_cfg074
  *
- * PCIE_CFG074 = Seventy-fifth 32-bits of PCIE type 1 config space
- * (Header Log Register 4)
- * The Header Log registers collect the header for the TLP corresponding to a detected error.
+ * This register contains the seventy-fifth 32-bits of PCIe type 1 configuration space.  The
+ * header log registers collect the header for the TLP corresponding to a detected error.
  */
 union cvmx_pciercx_cfg074 {
 	uint32_t u32;
@@ -7236,6 +7242,7 @@ union cvmx_pciercx_cfg074 {
 	struct cvmx_pciercx_cfg074_s          cn68xx;
 	struct cvmx_pciercx_cfg074_s          cn68xxp1;
 	struct cvmx_pciercx_cfg074_s          cn70xx;
+	struct cvmx_pciercx_cfg074_s          cn70xxp1;
 	struct cvmx_pciercx_cfg074_s          cn78xx;
 	struct cvmx_pciercx_cfg074_s          cnf71xx;
 };
@@ -7244,8 +7251,8 @@ typedef union cvmx_pciercx_cfg074 cvmx_pciercx_cfg074_t;
 /**
  * cvmx_pcierc#_cfg075
  *
- * PCIE_CFG075 = Seventy-sixth 32-bits of PCIE type 1 config space
- * (Root Error Command Register)
+ * This register contains the seventy-sixth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg075 {
 	uint32_t u32;
@@ -7273,6 +7280,7 @@ union cvmx_pciercx_cfg075 {
 	struct cvmx_pciercx_cfg075_s          cn68xx;
 	struct cvmx_pciercx_cfg075_s          cn68xxp1;
 	struct cvmx_pciercx_cfg075_s          cn70xx;
+	struct cvmx_pciercx_cfg075_s          cn70xxp1;
 	struct cvmx_pciercx_cfg075_s          cn78xx;
 	struct cvmx_pciercx_cfg075_s          cnf71xx;
 };
@@ -7281,8 +7289,8 @@ typedef union cvmx_pciercx_cfg075 cvmx_pciercx_cfg075_t;
 /**
  * cvmx_pcierc#_cfg076
  *
- * PCIE_CFG076 = Seventy-seventh 32-bits of PCIE type 1 config space
- * (Root Error Status Register)
+ * This register contains the seventy-seventh 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg076 {
 	uint32_t u32;
@@ -7321,6 +7329,7 @@ union cvmx_pciercx_cfg076 {
 	struct cvmx_pciercx_cfg076_s          cn68xx;
 	struct cvmx_pciercx_cfg076_s          cn68xxp1;
 	struct cvmx_pciercx_cfg076_s          cn70xx;
+	struct cvmx_pciercx_cfg076_s          cn70xxp1;
 	struct cvmx_pciercx_cfg076_s          cn78xx;
 	struct cvmx_pciercx_cfg076_s          cnf71xx;
 };
@@ -7329,8 +7338,8 @@ typedef union cvmx_pciercx_cfg076 cvmx_pciercx_cfg076_t;
 /**
  * cvmx_pcierc#_cfg077
  *
- * PCIE_CFG077 = Seventy-eighth 32-bits of PCIE type 1 config space
- * (Error Source Identification Register)
+ * This register contains the seventy-eighth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg077 {
 	uint32_t u32;
@@ -7354,6 +7363,7 @@ union cvmx_pciercx_cfg077 {
 	struct cvmx_pciercx_cfg077_s          cn68xx;
 	struct cvmx_pciercx_cfg077_s          cn68xxp1;
 	struct cvmx_pciercx_cfg077_s          cn70xx;
+	struct cvmx_pciercx_cfg077_s          cn70xxp1;
 	struct cvmx_pciercx_cfg077_s          cn78xx;
 	struct cvmx_pciercx_cfg077_s          cnf71xx;
 };
@@ -7362,16 +7372,16 @@ typedef union cvmx_pciercx_cfg077 cvmx_pciercx_cfg077_t;
 /**
  * cvmx_pcierc#_cfg086
  *
- * PCIE_CFG086 = Eighty-seventh 32-bits of PCIE type 0 config space
- * (PCI Express Secondary Capability (Gen3) Header)
+ * This register contains the eighty-ninth 32-bits of type 0 PCIe configuration space.
+ *
  */
 union cvmx_pciercx_cfg086 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg086_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t nco                          : 12; /**< Next Capability Offset */
-	uint32_t cv                           : 4;  /**< Capability Version */
-	uint32_t pcieec                       : 16; /**< PCIE Express Extended Capability */
+	uint32_t nco                          : 12; /**< Next capability offset. */
+	uint32_t cv                           : 4;  /**< Capability version. */
+	uint32_t pcieec                       : 16; /**< PCIE Express extended capability. */
 #else
 	uint32_t pcieec                       : 16;
 	uint32_t cv                           : 4;
@@ -7385,16 +7395,16 @@ typedef union cvmx_pciercx_cfg086 cvmx_pciercx_cfg086_t;
 /**
  * cvmx_pcierc#_cfg087
  *
- * PCIE_CFG087 = Eighty-eighth 32-bits of PCIE type 0 config space
- * (Link Control 3)
+ * This register contains the eighty-eighth 32-bits of type 0 PCIe configuration space.
+ *
  */
 union cvmx_pciercx_cfg087 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg087_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_2_31                : 30;
-	uint32_t ler                          : 1;  /**< Link Equalization Request Interrupt Enable */
-	uint32_t pe                           : 1;  /**< Perform Equalization */
+	uint32_t ler                          : 1;  /**< Link equalization request interrupt enable. */
+	uint32_t pe                           : 1;  /**< Perform equalization. */
 #else
 	uint32_t pe                           : 1;
 	uint32_t ler                          : 1;
@@ -7408,15 +7418,15 @@ typedef union cvmx_pciercx_cfg087 cvmx_pciercx_cfg087_t;
 /**
  * cvmx_pcierc#_cfg088
  *
- * PCIE_CFG088 = Eighty-ninth 32-bits of PCIE type 0 config space
- * (Lane Error Status)
+ * This register contains the eighty-ninth 32-bits of type 0 PCIe configuration space.
+ *
  */
 union cvmx_pciercx_cfg088 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg088_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_8_31                : 24;
-	uint32_t les                          : 8;  /**< Lane Error Status Bits */
+	uint32_t les                          : 8;  /**< Lane error status bits. */
 #else
 	uint32_t les                          : 8;
 	uint32_t reserved_8_31                : 24;
@@ -7429,42 +7439,33 @@ typedef union cvmx_pciercx_cfg088 cvmx_pciercx_cfg088_t;
 /**
  * cvmx_pcierc#_cfg089
  *
- * PCIE_CFG089 = Ninetieth 32-bits of PCIE type 0 config space
- * (Equalization Control Lane 0/
- * Equalization Control Lane 1)
+ * This register contains the ninetieth 32-bits of type 0 PCIe configuration space.
+ *
  */
 union cvmx_pciercx_cfg089 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg089_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_31_31               : 1;
-	uint32_t l1urph                       : 3;  /**< "Lane 1 Upstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l1utp                        : 4;  /**< "Lane 1 Upstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l1urph                       : 3;  /**< Lane 1 upstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l1utp                        : 4;  /**< Lane 1 upstream component transmitter preset. Writable through PEM()_CFG_WR. However,
+                                                         the application must not change this field. */
 	uint32_t reserved_23_23               : 1;
-	uint32_t l1drph                       : 3;  /**< "Lane 1 Downstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l1ddtp                       : 4;  /**< "Lane 1 Downstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l1drph                       : 3;  /**< Lane 1 downstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l1ddtp                       : 4;  /**< Lane 1 downstream component transmitter preset. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
 	uint32_t reserved_15_15               : 1;
-	uint32_t l0urph                       : 3;  /**< "Lane 0 Upstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l0utp                        : 4;  /**< "Lane 0 Upstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l0urph                       : 3;  /**< Lane 0 upstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l0utp                        : 4;  /**< Lane 0 upstream component transmitter preset. Writable through PEM()_CFG_WR. However,
+                                                         the application must not change this field. */
 	uint32_t reserved_7_7                 : 1;
-	uint32_t l0drph                       : 3;  /**< "Lane 0 Downstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l0dtp                        : 4;  /**< "Lane 0 Downstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l0drph                       : 3;  /**< Lane 0 downstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l0dtp                        : 4;  /**< Lane 0 downstream component transmitter preset. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
 #else
 	uint32_t l0dtp                        : 4;
 	uint32_t l0drph                       : 3;
@@ -7487,42 +7488,33 @@ typedef union cvmx_pciercx_cfg089 cvmx_pciercx_cfg089_t;
 /**
  * cvmx_pcierc#_cfg090
  *
- * PCIE_CFG090 = Ninety-first 32-bits of PCIE type 0 config space
- * (Equalization Control Lane 2/
- * Equalization Control Lane 3)
+ * This register contains the ninety-first 32-bits of type 0 PCIe configuration space.
+ *
  */
 union cvmx_pciercx_cfg090 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg090_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_31_31               : 1;
-	uint32_t l3urph                       : 3;  /**< "Lane 3 Upstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l3utp                        : 4;  /**< "Lane 3 Upstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l3urph                       : 3;  /**< Lane 3 upstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l3utp                        : 4;  /**< Lane 3 upstream component transmitter preset. Writable through PEM()_CFG_WR. However,
+                                                         the application must not change this field. */
 	uint32_t reserved_23_23               : 1;
-	uint32_t l3drph                       : 3;  /**< "Lane 3 Downstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l3dtp                        : 4;  /**< "Lane 3 Downstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l3drph                       : 3;  /**< Lane 3 downstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l3dtp                        : 4;  /**< Lane 3 downstream component transmitter preset. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
 	uint32_t reserved_15_15               : 1;
-	uint32_t l2urph                       : 3;  /**< "Lane 2 Upstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l2utp                        : 4;  /**< "Lane 2 Upstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l2urph                       : 3;  /**< Lane 2 upstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l2utp                        : 4;  /**< Lane 2 upstream component transmitter preset. Writable through PEM()_CFG_WR. However,
+                                                         the application must not change this field. */
 	uint32_t reserved_7_7                 : 1;
-	uint32_t l2drph                       : 3;  /**< "Lane 2 Downstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l2dtp                        : 4;  /**< "Lane 2 Downstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l2drph                       : 3;  /**< Lane 2 downstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l2dtp                        : 4;  /**< Lane 2 downstream component transmitter preset. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
 #else
 	uint32_t l2dtp                        : 4;
 	uint32_t l2drph                       : 3;
@@ -7545,42 +7537,33 @@ typedef union cvmx_pciercx_cfg090 cvmx_pciercx_cfg090_t;
 /**
  * cvmx_pcierc#_cfg091
  *
- * PCIE_CFG091 = Ninety-second 32-bits of PCIE type 0 config space
- * (Equalization Control Lane 4/
- * Equalization Control Lane 5)
+ * This register contains the ninety-second 32-bits of type 0 PCIe configuration space.
+ *
  */
 union cvmx_pciercx_cfg091 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg091_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_31_31               : 1;
-	uint32_t l5urph                       : 3;  /**< "Lane 5 Upstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l5utp                        : 4;  /**< "Lane 5 Upstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l5urph                       : 3;  /**< Lane 5 upstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l5utp                        : 4;  /**< Lane 5 upstream component transmitter preset. Writable through PEM()_CFG_WR. However,
+                                                         the application must not change this field. */
 	uint32_t reserved_23_23               : 1;
-	uint32_t l5drph                       : 3;  /**< "Lane 5 Downstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l5dtp                        : 4;  /**< "Lane 5 Downstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l5drph                       : 3;  /**< Lane 5 downstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l5dtp                        : 4;  /**< Lane 5 downstream component transmitter preset. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
 	uint32_t reserved_15_15               : 1;
-	uint32_t l4urph                       : 3;  /**< "Lane 4 Upstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l4utp                        : 4;  /**< "Lane 4 Upstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l4urph                       : 3;  /**< Lane 4 upstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l4utp                        : 4;  /**< Lane 4 upstream component transmitter preset. Writable through PEM()_CFG_WR. However,
+                                                         the application must not change this field. */
 	uint32_t reserved_7_7                 : 1;
-	uint32_t l4drph                       : 3;  /**< "Lane 4 Downstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l4dtp                        : 4;  /**< "Lane 4 Downstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l4drph                       : 3;  /**< Lane 4 downstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l4dtp                        : 4;  /**< Lane 4 downstream component transmitter preset. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
 #else
 	uint32_t l4dtp                        : 4;
 	uint32_t l4drph                       : 3;
@@ -7603,42 +7586,33 @@ typedef union cvmx_pciercx_cfg091 cvmx_pciercx_cfg091_t;
 /**
  * cvmx_pcierc#_cfg092
  *
- * PCIE_CFG092 = Ninety-third 32-bits of PCIE type 0 config space
- * (Equalization Control Lane 6/
- * Equalization Control Lane 7)
+ * This register contains the ninety-third 32-bits of type 0 PCIe configuration space.
+ *
  */
 union cvmx_pciercx_cfg092 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg092_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_31_31               : 1;
-	uint32_t l7urph                       : 3;  /**< "Lane 7 Upstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l7utp                        : 4;  /**< "Lane 7 Upstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l7urph                       : 3;  /**< Lane 7 upstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l7utp                        : 4;  /**< Lane 7 upstream component transmitter preset. Writable through PEM()_CFG_WR. However,
+                                                         the application must not change this field. */
 	uint32_t reserved_23_23               : 1;
-	uint32_t l7drph                       : 3;  /**< "Lane 7 Downstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l7dtp                        : 4;  /**< "Lane 7 Downstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l7drph                       : 3;  /**< Lane 7 downstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l7dtp                        : 4;  /**< Lane 7 downstream component transmitter preset. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
 	uint32_t reserved_15_15               : 1;
-	uint32_t l6urph                       : 3;  /**< "Lane 6 Upstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l6utp                        : 4;  /**< "Lane 6 Upstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l6urph                       : 3;  /**< Lane 6 upstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l6utp                        : 4;  /**< Lane 6 upstream component transmitter preset. Writable through PEM()_CFG_WR. However,
+                                                         the application must not change this field. */
 	uint32_t reserved_7_7                 : 1;
-	uint32_t l6drph                       : 3;  /**< "Lane 6 Downstream Component Receiver Preset Hint
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
-	uint32_t l6dtp                        : 4;  /**< "Lane 6 Downstream Component Transmitter Preset
-                                                         Writable through PEM#_CFG_WR.
-                                                         However, the application must not change this field." */
+	uint32_t l6drph                       : 3;  /**< Lane 6 downstream component receiver preset hint. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
+	uint32_t l6dtp                        : 4;  /**< Lane 6 downstream component transmitter preset. Writable through PEM()_CFG_WR.
+                                                         However, the application must not change this field. */
 #else
 	uint32_t l6dtp                        : 4;
 	uint32_t l6drph                       : 3;
@@ -7661,8 +7635,8 @@ typedef union cvmx_pciercx_cfg092 cvmx_pciercx_cfg092_t;
 /**
  * cvmx_pcierc#_cfg448
  *
- * PCIE_CFG448 = Four hundred forty-ninth 32-bits of PCIE type 1 config space
- * (Ack Latency Timer and Replay Timer Register)
+ * This register contains the four hundred forty-ninth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg448 {
 	uint32_t u32;
@@ -7700,6 +7674,7 @@ union cvmx_pciercx_cfg448 {
 	struct cvmx_pciercx_cfg448_s          cn68xx;
 	struct cvmx_pciercx_cfg448_s          cn68xxp1;
 	struct cvmx_pciercx_cfg448_s          cn70xx;
+	struct cvmx_pciercx_cfg448_s          cn70xxp1;
 	struct cvmx_pciercx_cfg448_s          cn78xx;
 	struct cvmx_pciercx_cfg448_s          cnf71xx;
 };
@@ -7708,8 +7683,8 @@ typedef union cvmx_pciercx_cfg448 cvmx_pciercx_cfg448_t;
 /**
  * cvmx_pcierc#_cfg449
  *
- * PCIE_CFG449 = Four hundred fiftieth 32-bits of PCIE type 1 config space
- * (Other Message Register)
+ * This register contains the four hundred fiftieth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg449 {
 	uint32_t u32;
@@ -7742,6 +7717,7 @@ union cvmx_pciercx_cfg449 {
 	struct cvmx_pciercx_cfg449_s          cn68xx;
 	struct cvmx_pciercx_cfg449_s          cn68xxp1;
 	struct cvmx_pciercx_cfg449_s          cn70xx;
+	struct cvmx_pciercx_cfg449_s          cn70xxp1;
 	struct cvmx_pciercx_cfg449_s          cn78xx;
 	struct cvmx_pciercx_cfg449_s          cnf71xx;
 };
@@ -7750,8 +7726,8 @@ typedef union cvmx_pciercx_cfg449 cvmx_pciercx_cfg449_t;
 /**
  * cvmx_pcierc#_cfg450
  *
- * PCIE_CFG450 = Four hundred fifty-first 32-bits of PCIE type 1 config space
- * (Port Force Link Register)
+ * This register contains the four hundred fifty-first 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg450 {
 	uint32_t u32;
@@ -7911,6 +7887,7 @@ union cvmx_pciercx_cfg450 {
 	struct cvmx_pciercx_cfg450_cn52xx     cn68xx;
 	struct cvmx_pciercx_cfg450_cn52xx     cn68xxp1;
 	struct cvmx_pciercx_cfg450_s          cn70xx;
+	struct cvmx_pciercx_cfg450_s          cn70xxp1;
 	struct cvmx_pciercx_cfg450_cn52xx     cn78xx;
 	struct cvmx_pciercx_cfg450_cn52xx     cnf71xx;
 };
@@ -7919,8 +7896,8 @@ typedef union cvmx_pciercx_cfg450 cvmx_pciercx_cfg450_t;
 /**
  * cvmx_pcierc#_cfg451
  *
- * PCIE_CFG451 = Four hundred fifty-second 32-bits of PCIE type 1 config space
- * (Ack Frequency Register)
+ * This register contains the four hundred fifty-second 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg451 {
 	uint32_t u32;
@@ -8034,6 +8011,7 @@ union cvmx_pciercx_cfg451 {
 	struct cvmx_pciercx_cfg451_s          cn68xx;
 	struct cvmx_pciercx_cfg451_s          cn68xxp1;
 	struct cvmx_pciercx_cfg451_s          cn70xx;
+	struct cvmx_pciercx_cfg451_s          cn70xxp1;
 	struct cvmx_pciercx_cfg451_s          cn78xx;
 	struct cvmx_pciercx_cfg451_s          cnf71xx;
 };
@@ -8042,8 +8020,8 @@ typedef union cvmx_pciercx_cfg451 cvmx_pciercx_cfg451_t;
 /**
  * cvmx_pcierc#_cfg452
  *
- * PCIE_CFG452 = Four hundred fifty-third 32-bits of PCIE type 1 config space
- * (Port Link Control Register)
+ * This register contains the four hundred fifty-third 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg452 {
 	uint32_t u32;
@@ -8306,6 +8284,7 @@ union cvmx_pciercx_cfg452 {
 	uint32_t reserved_22_31               : 10;
 #endif
 	} cn70xx;
+	struct cvmx_pciercx_cfg452_cn70xx     cn70xxp1;
 	struct cvmx_pciercx_cfg452_cn70xx     cn78xx;
 	struct cvmx_pciercx_cfg452_cn61xx     cnf71xx;
 };
@@ -8314,8 +8293,8 @@ typedef union cvmx_pciercx_cfg452 cvmx_pciercx_cfg452_t;
 /**
  * cvmx_pcierc#_cfg453
  *
- * PCIE_CFG453 = Four hundred fifty-fourth 32-bits of PCIE type 1 config space
- * (Lane Skew Register)
+ * This register contains the four hundred fifty-fourth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg453 {
 	uint32_t u32;
@@ -8353,6 +8332,7 @@ union cvmx_pciercx_cfg453 {
 	struct cvmx_pciercx_cfg453_s          cn68xx;
 	struct cvmx_pciercx_cfg453_s          cn68xxp1;
 	struct cvmx_pciercx_cfg453_s          cn70xx;
+	struct cvmx_pciercx_cfg453_s          cn70xxp1;
 	struct cvmx_pciercx_cfg453_s          cn78xx;
 	struct cvmx_pciercx_cfg453_s          cnf71xx;
 };
@@ -8361,8 +8341,8 @@ typedef union cvmx_pciercx_cfg453 cvmx_pciercx_cfg453_t;
 /**
  * cvmx_pcierc#_cfg454
  *
- * PCIE_CFG454 = Four hundred fifty-fifth 32-bits of PCIE type 1 config space
- * (Symbol Number Register)
+ * This register contains the four hundred fifty-fifth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg454 {
 	uint32_t u32;
@@ -8474,20 +8454,19 @@ union cvmx_pciercx_cfg454 {
 	uint32_t reserved_24_31               : 8;
 #endif
 	} cn70xx;
+	struct cvmx_pciercx_cfg454_cn70xx     cn70xxp1;
 	struct cvmx_pciercx_cfg454_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_29_31               : 3;
-	uint32_t tmfcwt                       : 5;  /**< Used to be "Timer Modifier for Flow Control Watchdog Timer"
-                                                         No longer used. Repl and enhanced func moved to "Queue Status"
-                                                         register - CFG463. Kept for now to prevent s/w from breaking. */
-	uint32_t tmanlt                       : 5;  /**< Timer Modifier for Ack/Nak Latency Timer
-                                                         Increases the timer value for the Ack/Nak latency timer, in
+	uint32_t tmfcwt                       : 5;  /**< Used to be 'timer modifier for flow control watchdog timer.' This field is no longer used.
+                                                         and has moved to the queue status register -- PCIEEP()_CFG463. This field remains to
+                                                         prevent software from breaking. */
+	uint32_t tmanlt                       : 5;  /**< Timer modifier for Ack/Nak latency timer. Increases the timer value for the Ack/Nak
+                                                         latency timer, in increments of 64 clock cycles. */
+	uint32_t tmrt                         : 5;  /**< Timer modifier for replay timer. Increases the timer value for the replay timer, in
                                                          increments of 64 clock cycles. */
-	uint32_t tmrt                         : 5;  /**< Timer Modifier for Replay Timer
-                                                         Increases the timer value for the replay timer, in increments
-                                                         of 64 clock cycles. */
 	uint32_t reserved_8_13                : 6;
-	uint32_t mfuncn                       : 8;  /**< Max Number of Functions Supported */
+	uint32_t mfuncn                       : 8;  /**< Max number of functions supported. */
 #else
 	uint32_t mfuncn                       : 8;
 	uint32_t reserved_8_13                : 6;
@@ -8504,8 +8483,8 @@ typedef union cvmx_pciercx_cfg454 cvmx_pciercx_cfg454_t;
 /**
  * cvmx_pcierc#_cfg455
  *
- * PCIE_CFG455 = Four hundred fifty-sixth 32-bits of PCIE type 1 config space
- * (Symbol Timer Register/Filter Mask Register 1)
+ * This register contains the four hundred fifty-sixth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg455 {
 	uint32_t u32;
@@ -8564,6 +8543,7 @@ union cvmx_pciercx_cfg455 {
 	struct cvmx_pciercx_cfg455_s          cn68xx;
 	struct cvmx_pciercx_cfg455_s          cn68xxp1;
 	struct cvmx_pciercx_cfg455_s          cn70xx;
+	struct cvmx_pciercx_cfg455_s          cn70xxp1;
 	struct cvmx_pciercx_cfg455_s          cn78xx;
 	struct cvmx_pciercx_cfg455_s          cnf71xx;
 };
@@ -8572,8 +8552,8 @@ typedef union cvmx_pciercx_cfg455 cvmx_pciercx_cfg455_t;
 /**
  * cvmx_pcierc#_cfg456
  *
- * PCIE_CFG456 = Four hundred fifty-seventh 32-bits of PCIE type 1 config space
- * (Filter Mask Register 2)
+ * This register contains the four hundred fifty-seventh 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg456 {
 	uint32_t u32;
@@ -8613,6 +8593,7 @@ union cvmx_pciercx_cfg456 {
 	struct cvmx_pciercx_cfg456_s          cn68xx;
 	struct cvmx_pciercx_cfg456_cn52xx     cn68xxp1;
 	struct cvmx_pciercx_cfg456_s          cn70xx;
+	struct cvmx_pciercx_cfg456_s          cn70xxp1;
 	struct cvmx_pciercx_cfg456_s          cn78xx;
 	struct cvmx_pciercx_cfg456_s          cnf71xx;
 };
@@ -8621,8 +8602,8 @@ typedef union cvmx_pciercx_cfg456 cvmx_pciercx_cfg456_t;
 /**
  * cvmx_pcierc#_cfg458
  *
- * PCIE_CFG458 = Four hundred fifty-ninth 32-bits of PCIE type 1 config space
- * (Debug Register 0)
+ * This register contains the four hundred fifty-ninth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg458 {
 	uint32_t u32;
@@ -8644,6 +8625,7 @@ union cvmx_pciercx_cfg458 {
 	struct cvmx_pciercx_cfg458_s          cn68xx;
 	struct cvmx_pciercx_cfg458_s          cn68xxp1;
 	struct cvmx_pciercx_cfg458_s          cn70xx;
+	struct cvmx_pciercx_cfg458_s          cn70xxp1;
 	struct cvmx_pciercx_cfg458_s          cn78xx;
 	struct cvmx_pciercx_cfg458_s          cnf71xx;
 };
@@ -8652,8 +8634,8 @@ typedef union cvmx_pciercx_cfg458 cvmx_pciercx_cfg458_t;
 /**
  * cvmx_pcierc#_cfg459
  *
- * PCIE_CFG459 = Four hundred sixtieth 32-bits of PCIE type 1 config space
- * (Debug Register 1)
+ * This register contains the four hundred sixtieth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg459 {
 	uint32_t u32;
@@ -8675,6 +8657,7 @@ union cvmx_pciercx_cfg459 {
 	struct cvmx_pciercx_cfg459_s          cn68xx;
 	struct cvmx_pciercx_cfg459_s          cn68xxp1;
 	struct cvmx_pciercx_cfg459_s          cn70xx;
+	struct cvmx_pciercx_cfg459_s          cn70xxp1;
 	struct cvmx_pciercx_cfg459_s          cn78xx;
 	struct cvmx_pciercx_cfg459_s          cnf71xx;
 };
@@ -8683,8 +8666,8 @@ typedef union cvmx_pciercx_cfg459 cvmx_pciercx_cfg459_t;
 /**
  * cvmx_pcierc#_cfg460
  *
- * PCIE_CFG460 = Four hundred sixty-first 32-bits of PCIE type 1 config space
- * (Transmit Posted FC Credit Status)
+ * This register contains the four hundred sixty-first 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg460 {
 	uint32_t u32;
@@ -8714,6 +8697,7 @@ union cvmx_pciercx_cfg460 {
 	struct cvmx_pciercx_cfg460_s          cn68xx;
 	struct cvmx_pciercx_cfg460_s          cn68xxp1;
 	struct cvmx_pciercx_cfg460_s          cn70xx;
+	struct cvmx_pciercx_cfg460_s          cn70xxp1;
 	struct cvmx_pciercx_cfg460_s          cn78xx;
 	struct cvmx_pciercx_cfg460_s          cnf71xx;
 };
@@ -8722,8 +8706,8 @@ typedef union cvmx_pciercx_cfg460 cvmx_pciercx_cfg460_t;
 /**
  * cvmx_pcierc#_cfg461
  *
- * PCIE_CFG461 = Four hundred sixty-second 32-bits of PCIE type 1 config space
- * (Transmit Non-Posted FC Credit Status)
+ * This register contains the four hundred sixty-second 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg461 {
 	uint32_t u32;
@@ -8753,6 +8737,7 @@ union cvmx_pciercx_cfg461 {
 	struct cvmx_pciercx_cfg461_s          cn68xx;
 	struct cvmx_pciercx_cfg461_s          cn68xxp1;
 	struct cvmx_pciercx_cfg461_s          cn70xx;
+	struct cvmx_pciercx_cfg461_s          cn70xxp1;
 	struct cvmx_pciercx_cfg461_s          cn78xx;
 	struct cvmx_pciercx_cfg461_s          cnf71xx;
 };
@@ -8761,8 +8746,8 @@ typedef union cvmx_pciercx_cfg461 cvmx_pciercx_cfg461_t;
 /**
  * cvmx_pcierc#_cfg462
  *
- * PCIE_CFG462 = Four hundred sixty-third 32-bits of PCIE type 1 config space
- * (Transmit Completion FC Credit Status )
+ * This register contains the four hundred sixty-third 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg462 {
 	uint32_t u32;
@@ -8792,6 +8777,7 @@ union cvmx_pciercx_cfg462 {
 	struct cvmx_pciercx_cfg462_s          cn68xx;
 	struct cvmx_pciercx_cfg462_s          cn68xxp1;
 	struct cvmx_pciercx_cfg462_s          cn70xx;
+	struct cvmx_pciercx_cfg462_s          cn70xxp1;
 	struct cvmx_pciercx_cfg462_s          cn78xx;
 	struct cvmx_pciercx_cfg462_s          cnf71xx;
 };
@@ -8800,22 +8786,20 @@ typedef union cvmx_pciercx_cfg462 cvmx_pciercx_cfg462_t;
 /**
  * cvmx_pcierc#_cfg463
  *
- * PCIE_CFG463 = Four hundred sixty-fourth 32-bits of PCIE type 1 config space
- * (Queue Status)
+ * This register contains the four hundred sixty-fourth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg463 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg463_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t fcltoe                       : 1;  /**< FC Latency Timer Override Enable
-                                                         When this bit is set, the value from the "FC Latency Timer Override
-                                                         Value" field in this register will override the FC latency timer
-                                                         value that the core calculates according to the PCIe specification. */
+	uint32_t fcltoe                       : 1;  /**< FC latency timer override enable. When this bit is set, the value in
+                                                         PCIERC()_CFG453[FCLTOV] will override the FC latency timer value that the core
+                                                         calculates according to the PCIe specification. */
 	uint32_t reserved_29_30               : 2;
-	uint32_t fcltov                       : 13; /**< FC Latency Timer Override Value
-                                                         When you set the "FC Latency Timer Override Enable" in this register,
-                                                         the value in this field will override the FC latency timer value
-                                                         that the core calculates according to the PCIe specification. */
+	uint32_t fcltov                       : 13; /**< FC latency timer override value. When you set PCIERC()_CFG453[FCLTOE], the value in
+                                                         this field will override the FC latency timer value that the core calculates according to
+                                                         the PCIe specification. */
 	uint32_t reserved_3_15                : 13;
 	uint32_t rqne                         : 1;  /**< Received Queue Not Empty
                                                          Indicates there is data in one or more of the receive buffers. */
@@ -8865,6 +8849,7 @@ union cvmx_pciercx_cfg463 {
 	struct cvmx_pciercx_cfg463_cn52xx     cn68xx;
 	struct cvmx_pciercx_cfg463_cn52xx     cn68xxp1;
 	struct cvmx_pciercx_cfg463_cn52xx     cn70xx;
+	struct cvmx_pciercx_cfg463_cn52xx     cn70xxp1;
 	struct cvmx_pciercx_cfg463_s          cn78xx;
 	struct cvmx_pciercx_cfg463_cn52xx     cnf71xx;
 };
@@ -8873,8 +8858,8 @@ typedef union cvmx_pciercx_cfg463 cvmx_pciercx_cfg463_t;
 /**
  * cvmx_pcierc#_cfg464
  *
- * PCIE_CFG464 = Four hundred sixty-fifth 32-bits of PCIE type 1 config space
- * (VC Transmit Arbitration Register 1)
+ * This register contains the four hundred sixty-fifth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg464 {
 	uint32_t u32;
@@ -8902,6 +8887,7 @@ union cvmx_pciercx_cfg464 {
 	struct cvmx_pciercx_cfg464_s          cn68xx;
 	struct cvmx_pciercx_cfg464_s          cn68xxp1;
 	struct cvmx_pciercx_cfg464_s          cn70xx;
+	struct cvmx_pciercx_cfg464_s          cn70xxp1;
 	struct cvmx_pciercx_cfg464_s          cn78xx;
 	struct cvmx_pciercx_cfg464_s          cnf71xx;
 };
@@ -8910,8 +8896,8 @@ typedef union cvmx_pciercx_cfg464 cvmx_pciercx_cfg464_t;
 /**
  * cvmx_pcierc#_cfg465
  *
- * PCIE_CFG465 = Four hundred sixty-sixth 32-bits of config space
- * (VC Transmit Arbitration Register 2)
+ * This register contains the four hundred sixty-sixth 32-bits of configuration space.
+ *
  */
 union cvmx_pciercx_cfg465 {
 	uint32_t u32;
@@ -8939,6 +8925,7 @@ union cvmx_pciercx_cfg465 {
 	struct cvmx_pciercx_cfg465_s          cn68xx;
 	struct cvmx_pciercx_cfg465_s          cn68xxp1;
 	struct cvmx_pciercx_cfg465_s          cn70xx;
+	struct cvmx_pciercx_cfg465_s          cn70xxp1;
 	struct cvmx_pciercx_cfg465_s          cn78xx;
 	struct cvmx_pciercx_cfg465_s          cnf71xx;
 };
@@ -8947,8 +8934,8 @@ typedef union cvmx_pciercx_cfg465 cvmx_pciercx_cfg465_t;
 /**
  * cvmx_pcierc#_cfg466
  *
- * PCIE_CFG466 = Four hundred sixty-seventh 32-bits of PCIE type 1 config space
- * (VC0 Posted Receive Queue Control)
+ * This register contains the four hundred sixty-seventh 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg466 {
 	uint32_t u32;
@@ -9012,6 +8999,7 @@ union cvmx_pciercx_cfg466 {
 	struct cvmx_pciercx_cfg466_s          cn68xx;
 	struct cvmx_pciercx_cfg466_s          cn68xxp1;
 	struct cvmx_pciercx_cfg466_s          cn70xx;
+	struct cvmx_pciercx_cfg466_s          cn70xxp1;
 	struct cvmx_pciercx_cfg466_s          cn78xx;
 	struct cvmx_pciercx_cfg466_s          cnf71xx;
 };
@@ -9020,8 +9008,8 @@ typedef union cvmx_pciercx_cfg466 cvmx_pciercx_cfg466_t;
 /**
  * cvmx_pcierc#_cfg467
  *
- * PCIE_CFG467 = Four hundred sixty-eighth 32-bits of PCIE type 1 config space
- * (VC0 Non-Posted Receive Queue Control)
+ * This register contains the four hundred sixty-eighth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg467 {
 	uint32_t u32;
@@ -9067,6 +9055,7 @@ union cvmx_pciercx_cfg467 {
 	struct cvmx_pciercx_cfg467_s          cn68xx;
 	struct cvmx_pciercx_cfg467_s          cn68xxp1;
 	struct cvmx_pciercx_cfg467_s          cn70xx;
+	struct cvmx_pciercx_cfg467_s          cn70xxp1;
 	struct cvmx_pciercx_cfg467_s          cn78xx;
 	struct cvmx_pciercx_cfg467_s          cnf71xx;
 };
@@ -9075,8 +9064,8 @@ typedef union cvmx_pciercx_cfg467 cvmx_pciercx_cfg467_t;
 /**
  * cvmx_pcierc#_cfg468
  *
- * PCIE_CFG468 = Four hundred sixty-ninth 32-bits of PCIE type 1 config space
- * (VC0 Completion Receive Queue Control)
+ * This register contains the four hundred sixty-ninth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg468 {
 	uint32_t u32;
@@ -9122,6 +9111,7 @@ union cvmx_pciercx_cfg468 {
 	struct cvmx_pciercx_cfg468_s          cn68xx;
 	struct cvmx_pciercx_cfg468_s          cn68xxp1;
 	struct cvmx_pciercx_cfg468_s          cn70xx;
+	struct cvmx_pciercx_cfg468_s          cn70xxp1;
 	struct cvmx_pciercx_cfg468_s          cn78xx;
 	struct cvmx_pciercx_cfg468_s          cnf71xx;
 };
@@ -9167,6 +9157,7 @@ union cvmx_pciercx_cfg490 {
 	struct cvmx_pciercx_cfg490_s          cn68xx;
 	struct cvmx_pciercx_cfg490_s          cn68xxp1;
 	struct cvmx_pciercx_cfg490_s          cn70xx;
+	struct cvmx_pciercx_cfg490_s          cn70xxp1;
 	struct cvmx_pciercx_cfg490_s          cnf71xx;
 };
 typedef union cvmx_pciercx_cfg490 cvmx_pciercx_cfg490_t;
@@ -9211,6 +9202,7 @@ union cvmx_pciercx_cfg491 {
 	struct cvmx_pciercx_cfg491_s          cn68xx;
 	struct cvmx_pciercx_cfg491_s          cn68xxp1;
 	struct cvmx_pciercx_cfg491_s          cn70xx;
+	struct cvmx_pciercx_cfg491_s          cn70xxp1;
 	struct cvmx_pciercx_cfg491_s          cnf71xx;
 };
 typedef union cvmx_pciercx_cfg491 cvmx_pciercx_cfg491_t;
@@ -9255,6 +9247,7 @@ union cvmx_pciercx_cfg492 {
 	struct cvmx_pciercx_cfg492_s          cn68xx;
 	struct cvmx_pciercx_cfg492_s          cn68xxp1;
 	struct cvmx_pciercx_cfg492_s          cn70xx;
+	struct cvmx_pciercx_cfg492_s          cn70xxp1;
 	struct cvmx_pciercx_cfg492_s          cnf71xx;
 };
 typedef union cvmx_pciercx_cfg492 cvmx_pciercx_cfg492_t;
@@ -9262,8 +9255,8 @@ typedef union cvmx_pciercx_cfg492 cvmx_pciercx_cfg492_t;
 /**
  * cvmx_pcierc#_cfg515
  *
- * PCIE_CFG515 = Five hundred sixteenth 32-bits of PCIE type 1 config space
- * (Port Logic Register (Gen2))
+ * This register contains the five hundred sixteenth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg515 {
 	uint32_t u32;
@@ -9313,6 +9306,7 @@ union cvmx_pciercx_cfg515 {
 	struct cvmx_pciercx_cfg515_s          cn68xx;
 	struct cvmx_pciercx_cfg515_s          cn68xxp1;
 	struct cvmx_pciercx_cfg515_s          cn70xx;
+	struct cvmx_pciercx_cfg515_s          cn70xxp1;
 	struct cvmx_pciercx_cfg515_s          cn78xx;
 	struct cvmx_pciercx_cfg515_s          cnf71xx;
 };
@@ -9321,8 +9315,8 @@ typedef union cvmx_pciercx_cfg515 cvmx_pciercx_cfg515_t;
 /**
  * cvmx_pcierc#_cfg516
  *
- * PCIE_CFG516 = Five hundred seventeenth 32-bits of PCIE type 1 config space
- * (PHY Status Register)
+ * This register contains the five hundred seventeenth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg516 {
 	uint32_t u32;
@@ -9344,6 +9338,7 @@ union cvmx_pciercx_cfg516 {
 	struct cvmx_pciercx_cfg516_s          cn68xx;
 	struct cvmx_pciercx_cfg516_s          cn68xxp1;
 	struct cvmx_pciercx_cfg516_s          cn70xx;
+	struct cvmx_pciercx_cfg516_s          cn70xxp1;
 	struct cvmx_pciercx_cfg516_s          cn78xx;
 	struct cvmx_pciercx_cfg516_s          cnf71xx;
 };
@@ -9352,8 +9347,8 @@ typedef union cvmx_pciercx_cfg516 cvmx_pciercx_cfg516_t;
 /**
  * cvmx_pcierc#_cfg517
  *
- * PCIE_CFG517 = Five hundred eighteenth 32-bits of PCIE type 1 config space
- * (PHY Control Register)
+ * This register contains the five hundred eighteenth 32-bits of PCIe type 1 configuration space.
+ *
  */
 union cvmx_pciercx_cfg517 {
 	uint32_t u32;
@@ -9375,6 +9370,7 @@ union cvmx_pciercx_cfg517 {
 	struct cvmx_pciercx_cfg517_s          cn68xx;
 	struct cvmx_pciercx_cfg517_s          cn68xxp1;
 	struct cvmx_pciercx_cfg517_s          cn70xx;
+	struct cvmx_pciercx_cfg517_s          cn70xxp1;
 	struct cvmx_pciercx_cfg517_s          cn78xx;
 	struct cvmx_pciercx_cfg517_s          cnf71xx;
 };
@@ -9383,33 +9379,27 @@ typedef union cvmx_pciercx_cfg517 cvmx_pciercx_cfg517_t;
 /**
  * cvmx_pcierc#_cfg548
  *
- * PCIE_CFG548 = Five hundred forty ninth 32-bits of PCIE type 0 config space
- * (Gen3 Control Register)
+ * This register contains the five hundred forty-ninth 32-bits of type 0 PCIe configuration space.
+ *
  */
 union cvmx_pciercx_cfg548 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg548_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_19_31               : 13;
-	uint32_t dcbd                         : 1;  /**< Disable Balance Disable
-                                                         Disable DC Balance feature */
-	uint32_t dtdd                         : 1;  /**< DLLP Transmission Delay Disable
-                                                         Disable delay transmission of DLLPs before Equalization */
-	uint32_t ed                           : 1;  /**< Equalization Disable
-                                                         Disable Equalization feature */
+	uint32_t dcbd                         : 1;  /**< Disable balance disable. Disable DC balance feature. */
+	uint32_t dtdd                         : 1;  /**< DLLP transmission delay disable. Disable delay transmission of DLLPs before equalization. */
+	uint32_t ed                           : 1;  /**< Equalization disable. Disable equalization feature. */
 	uint32_t reserved_12_15               : 4;
-	uint32_t erd                          : 1;  /**< Equalization Redo Disable
-                                                         Disable requesting reset of EIEOS count during Equalization */
-	uint32_t ecrd                         : 1;  /**< Equalization EIEOS Count Reset Disable
-                                                         Disable requesting reset of EIEOS count during Equalization */
-	uint32_t ep2p3d                       : 1;  /**< Equalization Phase 2 and Phase 3 Disable
-                                                         This applies to Downstream Ports only */
-	uint32_t dsg3                         : 1;  /**< Disable Scrambler for Gen3 Data Rate
-                                                         The Gen3 scrambler/descrambler within the core needs to be
-                                                         disabled when the scrambling function is implemented outside
-                                                         of the core (within the PHY) */
+	uint32_t erd                          : 1;  /**< Equalization redo disable. Disable requesting reset of EIEOS count during equalization. */
+	uint32_t ecrd                         : 1;  /**< Equalization EIEOS count reset disable. Disable requesting reset of EIEOS count during
+                                                         equalization. */
+	uint32_t ep2p3d                       : 1;  /**< Equalization phase 2 and phase 3 disable. This applies to downstream ports only. */
+	uint32_t dsg3                         : 1;  /**< Disable scrambler for Gen3 data rate. The Gen3 scrambler/descrambler within the core needs
+                                                         to be disabled when the scrambling function is implemented outside of the core (within the
+                                                         PHY). */
 	uint32_t reserved_1_7                 : 7;
-	uint32_t grizdnc                      : 1;  /**< Gen3 Receiver Impedance ZRX-DC Not Compliant. */
+	uint32_t grizdnc                      : 1;  /**< Gen3 receiver impedance ZRX-DC not compliant. */
 #else
 	uint32_t grizdnc                      : 1;
 	uint32_t reserved_1_7                 : 7;
@@ -9431,69 +9421,62 @@ typedef union cvmx_pciercx_cfg548 cvmx_pciercx_cfg548_t;
 /**
  * cvmx_pcierc#_cfg554
  *
- * PCIE_CFG554 = Five hundred fifty fifth 32-bits of PCIE type 0 config space
- * (Gen3 EQ Control Register)
+ * This register contains the five hundred fifty-fifth 32-bits of type 0 PCIe configuration space.
+ *
  */
 union cvmx_pciercx_cfg554 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg554_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t reserved_24_31               : 8;
-	uint32_t prv                          : 16; /**< Preset Request Vector
-                                                         Requesting of Presets during the intial part of the EQ Master
-                                                         Phase. Encoding Scheme as follows:
-                                                         Bit [15:0] = 0x0: No preset will be requested and evaluated
-                                                         in the EQ Master Phase
-                                                         Bit [i] = 1: Preset=i will be requested and evaluated in the
-                                                         EQ Master Phase
-                                                         o 0000000000000000: No preset req/evaluated in EQ Master Phase
-                                                         o 00000xxxxxxxxxx1: Preset 0 req/evaluated in EQ Master Phase
-                                                         o 00000xxxxxxxxx1x: Preset 1 req/evaluated in EQ Master Phase
-                                                         o 00000xxxxxxxx1xx: Preset 2 req/evaluated in EQ Master Phase
-                                                         o 00000xxxxxxx1xxx: Preset 3 req/evaluated in EQ Master Phase
-                                                         o 00000xxxxxx1xxxx: Preset 4 req/evaluated in EQ Master Phase
-                                                         o 00000xxxxx1xxxxx: Preset 5 req/evaluated in EQ Master Phase
-                                                         o 00000xxxx1xxxxxx: Preset 6 req/evaluated in EQ Master Phase
-                                                         o 00000xxx1xxxxxxx: Preset 7 req/evaluated in EQ Master Phase
-                                                         o 00000xx1xxxxxxxx: Preset 8 req/evaluated in EQ Master Phase
-                                                         o 00000x1xxxxxxxxx: Preset 9 req/evaluated in EQ Master Phase
-                                                         o 000001xxxxxxxxxx: Preset 10 req/evaluated in EQ Master Phase
-                                                         o all other encodings: Reserved */
+	uint32_t reserved_25_31               : 7;
+	uint32_t iif                          : 1;  /**< Include initial FOM. Include, or not, the FOM feedback from the initial preset evaluation
+                                                         performed in the EQ Master, when finding the highest FOM among all preset evaluations. */
+	uint32_t prv                          : 16; /**< Preset request vector. Requesting of presets during the initial part of the EQ master
+                                                         phase. Encoding scheme as follows:
+                                                         Bit [15:0] = 0x0: No preset is requested and evaluated in the EQ master phase.
+                                                         Bit [i] = 1: Preset=i is requested and evaluated in the EQ master phase.
+                                                         _ 0b0000000000000000 = No preset req/evaluated in EQ master phase.
+                                                         _ 0b00000xxxxxxxxxx1 = Preset 0 req/evaluated in EQ master phase.
+                                                         _ 0b00000xxxxxxxxx1x = Preset 1 req/evaluated in EQ master phase.
+                                                         _ 0b00000xxxxxxxx1xx = Preset 2 req/evaluated in EQ master phase.
+                                                         _ 0b00000xxxxxxx1xxx = Preset 3 req/evaluated in EQ master phase.
+                                                         _ 0b00000xxxxxx1xxxx = Preset 4 req/evaluated in EQ master phase.
+                                                         _ 0b00000xxxxx1xxxxx = Preset 5 req/evaluated in EQ master phase.
+                                                         _ 0b00000xxxx1xxxxxx = Preset 6 req/evaluated in EQ master phase.
+                                                         _ 0b00000xxx1xxxxxxx = Preset 7 req/evaluated in EQ master phase.
+                                                         _ 0b00000xx1xxxxxxxx = Preset 8 req/evaluated in EQ master phase.
+                                                         _ 0b00000x1xxxxxxxxx = Preset 9 req/evaluated in EQ master phase.
+                                                         _ 0b000001xxxxxxxxxx = Preset 10 req/evaluated in EQ master phase.
+                                                         _ All other encodings = Reserved. */
 	uint32_t reserved_6_7                 : 2;
-	uint32_t p23td                        : 1;  /**< Phase2_3 2 ms Timeout Disable
-                                                         Determine behavior in Phase2 for USP (Phase3 if DSP) when the
-                                                         PHY does not respond within 2ms to the assertion of RxEqEval:
-                                                         o 0: abort the current evaluation, stop any attempt to
-                                                         modify the remote transmitter settings, Phase2 will be
-                                                         terminated by the 24ms timeout
-                                                         o 1: ignore the 2ms timeout and continue as normal. This is
-                                                         used to support PHYs that require more than 2ms to
-                                                         respond to the assertion of RxEqEval. */
-	uint32_t bt                           : 1;  /**< Behavior After 24ms Timeout (When Optimal settings are not found)
-                                                         FOR a USP:
-                                                         Determine the next LTSSM state from Phase2
-                                                         o 0: Recovery.Speed
-                                                         o 1: Recovry.Equalization.Phase3
-                                                         FOR a DSP:
-                                                         Determine the next LTSSM state from Phase3
-                                                         o 0: Recovery.Speed
-                                                         o 1: Recovry.Equalization.RcrLock
-                                                         When optimal settings are not found then
-                                                         o Equalization Phase 3 Successful status bit is not set in the
-                                                         Link Status Register
-                                                         o Equalization Phase 3 Complete status bit is set in the
-                                                         Link Status Register */
-	uint32_t fm                           : 4;  /**< Feedback Mode
-                                                         - 0: Direction of Change
-                                                         - 1: Figure of Merit
-                                                         - 2-15: Reserved */
+	uint32_t p23td                        : 1;  /**< Phase2_3 2 ms timeout disable. Determine behavior in Phase2 for USP (Phase3 if DSP) when
+                                                         the PHY does not respond within 2 ms to the assertion of RxEqEval:
+                                                         0 = Abort the current evaluation; stop any attempt to modify the remote transmitter
+                                                         settings. Phase2 will be terminated by the 24 ms timeout.
+                                                         1 = Ignore the 2 ms timeout and continue as normal. This is used to support PHYs that
+                                                         require more than 2 ms to respond to the assertion of RxEqEval. */
+	uint32_t bt                           : 1;  /**< Behavior after 24 ms timeout (when optimal settings are not found).
+                                                         For a USP: determine the next LTSSM state from Phase2:
+                                                         0 = Recovery.Speed.
+                                                         1 = Recovry.Equalization.Phase3.
+                                                         For a DSP: determine the next LTSSM state from Phase3:
+                                                         0 = Recovery.Speed.
+                                                         1 = Recovry.Equalization.RcrLock.
+                                                         When optimal settings are not found:
+                                                         * Equalization phase 3 successful status bit is not set in the Link Status Register
+                                                         * Equalization phase 3 complete status bit is set in the Link Status Register */
+	uint32_t fm                           : 4;  /**< Feedback mode.
+                                                         0 = Direction of change (not supported).
+                                                         1 = Figure of merit.
+                                                         2-15 = Reserved. */
 #else
 	uint32_t fm                           : 4;
 	uint32_t bt                           : 1;
 	uint32_t p23td                        : 1;
 	uint32_t reserved_6_7                 : 2;
 	uint32_t prv                          : 16;
-	uint32_t reserved_24_31               : 8;
+	uint32_t iif                          : 1;
+	uint32_t reserved_25_31               : 7;
 #endif
 	} s;
 	struct cvmx_pciercx_cfg554_s          cn78xx;
@@ -9503,14 +9486,14 @@ typedef union cvmx_pciercx_cfg554 cvmx_pciercx_cfg554_t;
 /**
  * cvmx_pcierc#_cfg558
  *
- * PCIE_CFG558 = Five hundred fifty ninth 32-bits of PCIE type 0 config space
- * (Gen3 PIPE Loopback Register)
+ * This register contains the five hundred fifty-ninth 32-bits of type 0 PCIe configuration space.
+ *
  */
 union cvmx_pciercx_cfg558 {
 	uint32_t u32;
 	struct cvmx_pciercx_cfg558_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint32_t ple                          : 1;  /**< Pipe Loopback Enable */
+	uint32_t ple                          : 1;  /**< Pipe loopback enable. */
 	uint32_t rxstatus                     : 31; /**< Reserved. */
 #else
 	uint32_t rxstatus                     : 31;

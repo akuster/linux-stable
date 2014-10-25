@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2012  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -42,7 +42,7 @@
  *
  * Small helper utilities.
  *
- * <hr>$Revision: 86308 $<hr>
+ * <hr>$Revision: 104282 $<hr>
  */
 
 #ifndef __CVMX_HELPER_UTIL_H__
@@ -50,7 +50,8 @@
 
 #include "cvmx.h"
 #include "cvmx-mio-defs.h"
-
+#include "cvmx-helper.h"
+#include "cvmx-fpa.h"
 
 typedef char cvmx_pknd_t;
 typedef char cvmx_bpid_t;
@@ -60,8 +61,197 @@ typedef char cvmx_bpid_t;
 #define CVMX_MAX_PKND		((cvmx_pknd_t) 64)
 #define CVMX_MAX_BPID		((cvmx_bpid_t) 64)
 
-#define CVMX_HELPER_MAX_IFACE		10
+#define CVMX_HELPER_MAX_IFACE		11
 #define CVMX_HELPER_MAX_PORTS		16
+
+
+/* Maximum range for normalized (a.k.a. IPD) port numbers (12-bit field) */
+#define	CVMX_PKO3_IPD_NUM_MAX	0x1000	//FIXME- take it from someplace else ?
+
+#define CVMX_PKO3_IPD_PORT_NULL (CVMX_PKO3_IPD_NUM_MAX-1)
+
+struct cvmx_xport {
+	int node;
+	int port;
+};
+typedef struct cvmx_xport cvmx_xport_t;
+
+static inline struct cvmx_xport cvmx_helper_ipd_port_to_xport(int ipd_port)
+{
+	struct cvmx_xport r;
+	r.port = ipd_port & (CVMX_PKO3_IPD_NUM_MAX - 1);
+	r.node = (ipd_port >> 12) & CVMX_NODE_MASK;
+	return r;
+}
+
+static inline int cvmx_helper_node_to_ipd_port(int node, int index)
+{
+	return (node << 12) + index;
+}
+
+struct cvmx_xiface {
+	int node;
+	int interface;
+};
+typedef struct cvmx_xiface cvmx_xiface_t;
+
+/**
+ * Return node and interface number from XIFACE.
+ *
+ * @param xiface interface with node information
+ *
+ * @return struct that contains node and interface number.
+ */
+static inline struct cvmx_xiface cvmx_helper_xiface_to_node_interface(int xiface)
+{
+	cvmx_xiface_t interface_node;
+	/*
+	 * If the majic number 0xde0000 is not present in the
+	 * interface, then assume it is node 0.
+	 */
+
+	if (((xiface >> 0x8) & 0xff) == 0xde) {
+		interface_node.node = (xiface >> 16) & CVMX_NODE_MASK;
+		interface_node.interface = xiface & 0xff;
+	} else {
+		interface_node.node = cvmx_get_node_num();
+		interface_node.interface = xiface & 0xff;
+	}
+	return interface_node;
+}
+
+/* Used internally only*/
+static inline bool __cvmx_helper_xiface_is_null(int xiface)
+{
+	return (xiface & 0xff) == 0xff;
+}
+
+#define __CVMX_XIFACE_NULL 0xff
+
+/**
+ * Return interface with majic number and node information (XIFACE)
+ *
+ * @param node       node of the interface referred to
+ * @param interface  interface to use.
+ *
+ * @return
+ */
+static inline int cvmx_helper_node_interface_to_xiface(int node, int interface)
+{
+	return ((node & CVMX_NODE_MASK) << 16) | (0xde << 8) | (interface & 0xff);
+}
+
+/**
+ * Free the pip packet buffers contained in a work queue entry.
+ * The work queue entry is not freed.
+ *
+ * @param work   Work queue entry with packet to free
+ */
+static inline void cvmx_helper_free_pip_pkt_data(cvmx_wqe_t *work)
+{
+	uint64_t        number_buffers;
+	cvmx_buf_ptr_t  buffer_ptr;
+	cvmx_buf_ptr_t  next_buffer_ptr;
+	uint64_t        start_of_buffer;
+
+	number_buffers = work->word2.s.bufs;
+	if (number_buffers == 0)
+		return;
+	buffer_ptr = work->packet_ptr;
+
+    /* Since the number of buffers is not zero, we know this is not a dynamic
+	short packet. We need to check if it is a packet received with
+	IPD_CTL_STATUS[NO_WPTR]. If this is true, we need to free all buffers
+	except for the first one. The caller doesn't expect their WQE pointer
+	to be freed */
+	start_of_buffer = ((buffer_ptr.s.addr >> 7) - buffer_ptr.s.back) << 7;
+	if (cvmx_ptr_to_phys(work) == start_of_buffer)
+	{
+		next_buffer_ptr = *(cvmx_buf_ptr_t*)cvmx_phys_to_ptr(buffer_ptr.s.addr - 8);
+		buffer_ptr = next_buffer_ptr;
+		number_buffers--;
+	}
+
+	while (number_buffers--)
+	{
+		/* Remember the back pointer is in cache lines, not 64bit words */
+		start_of_buffer = ((buffer_ptr.s.addr >> 7) - buffer_ptr.s.back) << 7;
+		/* Read pointer to next buffer before we free the current buffer. */
+		next_buffer_ptr = *(cvmx_buf_ptr_t*)cvmx_phys_to_ptr(buffer_ptr.s.addr - 8);
+		cvmx_fpa_free(cvmx_phys_to_ptr(start_of_buffer), buffer_ptr.s.pool, 0);
+		buffer_ptr = next_buffer_ptr;
+	}
+}
+
+/**
+ * Free the pki packet buffers contained in a work queue entry.
+ * If first packet buffer contains wqe, wqe gets freed too so do not access
+ * wqe after calling this function.
+ * This function asssumes that buffers to be freed are from
+ * Naturally aligned pool/aura.
+ * It does not use don't write back.
+ * @param work   Work queue entry with packet to free
+ */
+static inline void cvmx_helper_free_pki_pkt_data(cvmx_wqe_t *work)
+{
+	uint64_t        number_buffers;
+	uint64_t        start_of_buffer;
+	cvmx_buf_ptr_pki_t  next_buffer_ptr;
+	cvmx_buf_ptr_pki_t  buffer_ptr;
+	cvmx_wqe_78xx_t *wqe = (cvmx_wqe_78xx_t*)work;
+
+	if (!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_dprintf("ERROR: free_pki_pkt_data: Supported only on 78xx\n");
+		return;
+	}
+	/* Make sure errata pki-20776 has been applied*/
+	cvmx_wqe_pki_errata_20776(work);
+	buffer_ptr = wqe->packet_ptr;
+	number_buffers = cvmx_wqe_get_bufs(work);
+
+	while (number_buffers--) {
+		/* FIXME: change WQE function prototype */
+		unsigned x = cvmx_wqe_get_aura(work);
+		cvmx_fpa3_gaura_t aura = __cvmx_fpa3_gaura(x >> 10, x & 0x3ff);
+		/* XXX- assumes the buffer is cache-line aligned and naturally aligned mode*/
+		start_of_buffer = (buffer_ptr.addr >> 7) << 7;
+		/* Read pointer to next buffer before we free the current buffer. */
+		next_buffer_ptr = *(cvmx_buf_ptr_pki_t *)
+			cvmx_phys_to_ptr(buffer_ptr.addr - 8);
+		/* FPA AURA comes from WQE, includes node */
+		cvmx_fpa3_free(cvmx_phys_to_ptr(start_of_buffer), aura, 0);
+		buffer_ptr = next_buffer_ptr;
+	}
+}
+
+/**
+ * Free the pki wqe entry buffer.
+ * If wqe buffers contains first packet buffer, wqe does not get freed here.
+ * This function asssumes that buffers to be freed are from
+ * Naturally aligned pool/aura.
+ * It does not use don't write back.
+ * @param work   Work queue entry to free
+ */
+static inline void cvmx_wqe_pki_free(cvmx_wqe_t *work)
+{
+	cvmx_wqe_78xx_t *wqe = (cvmx_wqe_78xx_t *)work;
+	unsigned x;
+	cvmx_fpa3_gaura_t aura;
+
+	if (!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_dprintf("ERROR: cvmx_wqe_free: Supported only on 78xx\n");
+		return;
+	}
+	/* Do nothing if the first packet buffer shares WQE buffer */
+	if (!wqe->packet_ptr.packet_outside_wqe)
+		return;
+
+	/* FIXME change WQE function prototype */
+	x = cvmx_wqe_get_aura(work);
+	aura = __cvmx_fpa3_gaura(x >> 10, x & 0x3ff);
+
+	cvmx_fpa3_free(work, aura, 0);
+}
 
 /**
  * Convert a interface mode into a human readable string
@@ -78,34 +268,7 @@ extern const char *cvmx_helper_interface_mode_to_string(cvmx_helper_interface_mo
  * @param work   Work queue entry containing the packet to dump
  * @return
  */
-extern int cvmx_helper_dump_packet(cvmx_wqe_t * work);
-
-/**
- * Setup Random Early Drop on a specific input queue
- *
- * @param queue  Input queue to setup RED on (0-7)
- * @param pass_thresh
- *               Packets will begin slowly dropping when there are less than
- *               this many packet buffers free in FPA 0.
- * @param drop_thresh
- *               All incomming packets will be dropped when there are less
- *               than this many free packet buffers in FPA 0.
- * @return Zero on success. Negative on failure
- */
-extern int cvmx_helper_setup_red_queue(int queue, int pass_thresh, int drop_thresh);
-
-/**
- * Setup Random Early Drop to automatically begin dropping packets.
- *
- * @param pass_thresh
- *               Packets will begin slowly dropping when there are less than
- *               this many packet buffers free in FPA 0.
- * @param drop_thresh
- *               All incomming packets will be dropped when there are less
- *               than this many free packet buffers in FPA 0.
- * @return Zero on success. Negative on failure
- */
-extern int cvmx_helper_setup_red(int pass_thresh, int drop_thresh);
+extern int cvmx_helper_dump_packet(cvmx_wqe_t *work);
 
 /**
  * Get the version of the CVMX libraries.
@@ -126,17 +289,7 @@ extern const char *cvmx_helper_get_version(void);
  *
  * @return Zero on success, negative on failure
  */
-extern int __cvmx_helper_setup_gmx(int interface, int num_ports);
-
-/**
- * @INTERNAL
- * Get the number of ipd_ports on an interface.
- *
- * @param interface
- *
- * @return the number of ipd_ports on the interface and -1 for error.
- */
-extern int __cvmx_helper_get_num_ipd_ports(int interface);
+extern int __cvmx_helper_setup_gmx(int xiface, int num_ports);
 
 /**
  * @INTERNAL
@@ -148,55 +301,6 @@ extern int __cvmx_helper_get_num_ipd_ports(int interface);
  */
 extern int __cvmx_helper_get_num_pko_ports(int interface);
 
-/*
- * @INTERNAL
- *
- * @param interface
- * @param port
- * @param link_info
- *
- * @return 0 for success and -1 for failure
- */
-extern int __cvmx_helper_set_link_info(int interface, int port, cvmx_helper_link_info_t link_info);
-
-/**
- * @INTERNAL
- *
- * @param interface
- * @param port
- *
- * @return valid link_info on success or -1 on failure
- */
-extern cvmx_helper_link_info_t __cvmx_helper_get_link_info(int interface, int port);
-
-enum cvmx_pko_padding {
-	CVMX_PKO_PADDING_NONE = 0,
-	CVMX_PKO_PADDING_60 = 1,
-};
-
-/**
- * @INTERNAL
- *
- * @param interface
- * @param num_ipd_ports is the number of ipd_ports on the interface
- * @param has_fcs indicates if PKO does FCS for the ports on this
- * @param pad The padding that PKO should apply.
- * interface.
- *
- * @return 0 for success and -1 for failure
- */
-extern int __cvmx_helper_init_interface(int interface, int num_ipd_ports, int has_fcs, enum cvmx_pko_padding pad);
-
-/**
- * @INTERNAL
- *
- * @param interface
- *
- * @return 0 if PKO does not do FCS and 1 otherwise.
- */
-extern int __cvmx_helper_get_has_fcs(int interface);
-
-extern enum cvmx_pko_padding __cvmx_helper_get_pko_padding(int interface);
 
 /**
  * Returns the IPD port number for a port on the given
@@ -259,51 +363,14 @@ static inline int cvmx_helper_get_last_ipd_port(int interface)
 /**
  * Free the packet buffers contained in a work queue entry.
  * The work queue entry is not freed.
+ * Note that this function will not free the work queue entry
+ * even if it contains a non-redundant data packet, and hence
+ * it is not really comparable to how the PKO would free a packet
+ * buffers if requested.
  *
  * @param work   Work queue entry with packet to free
  */
-static inline void cvmx_helper_free_packet_data(cvmx_wqe_t * work)
-{
-	uint64_t number_buffers;
-	cvmx_buf_ptr_t buffer_ptr;
-	cvmx_buf_ptr_t next_buffer_ptr;
-	uint64_t start_of_buffer;
-
-	number_buffers = cvmx_wqe_get_bufs(work);
-	if (number_buffers == 0)
-		return;
-	buffer_ptr = work->packet_ptr;
-
-	/* Since the number of buffers is not zero, we know this is not a dynamic
-	   short packet. We need to check if it is a packet received with
-	   IPD_CTL_STATUS[NO_WPTR]. If this is true, we need to free all buffers
-	   except for the first one. The caller doesn't expect their WQE pointer
-	   to be freed */
-	start_of_buffer = ((buffer_ptr.s.addr >> 7) - buffer_ptr.s.back) << 7;
-	if (cvmx_ptr_to_phys(work) == start_of_buffer) {
-		next_buffer_ptr = *(cvmx_buf_ptr_t *) cvmx_phys_to_ptr(buffer_ptr.s.addr - 8);
-		buffer_ptr = next_buffer_ptr;
-		number_buffers--;
-	}
-
-	while (number_buffers--) {
-		if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
-			start_of_buffer = (buffer_ptr.s.addr >> 7) << 7;
-			/* Read pointer to next buffer before we free the current buffer. */
-			next_buffer_ptr = *(cvmx_buf_ptr_t *) cvmx_phys_to_ptr(buffer_ptr.s_cn78xx.addr - 8);
-			cvmx_fpa_free(cvmx_phys_to_ptr(start_of_buffer), cvmx_wqe_get_aura(work), 0);
-		}
-		else {
-		/* Remember the back pointer is in cache lines, not 64bit words */
-		start_of_buffer = ((buffer_ptr.s.addr >> 7) - buffer_ptr.s.back) << 7;
-		/* Read pointer to next buffer before we free the current buffer. */
-		next_buffer_ptr = *(cvmx_buf_ptr_t *) cvmx_phys_to_ptr(buffer_ptr.s.addr - 8);
-		cvmx_fpa_free(cvmx_phys_to_ptr(start_of_buffer), buffer_ptr.s.pool, 0);
-		}
-		buffer_ptr = next_buffer_ptr;
-	}
-}
-
+void cvmx_helper_free_packet_data(cvmx_wqe_t *work);
 
 /**
  * Returns the interface number for an IPD/PKO port number.
@@ -332,7 +399,7 @@ extern int cvmx_helper_get_interface_index_num(int ipd_port);
  *
  * @return port kind on sucicess  and -1 on failure
  */
-extern int cvmx_helper_get_pknd(int interface, int port);
+extern int cvmx_helper_get_pknd(int xiface, int index);
 
 /**
  * Get bpid for a given port in an interface.
@@ -348,30 +415,12 @@ extern int cvmx_helper_get_bpid(int interface, int port);
  * Internal functions.
  */
 extern int __cvmx_helper_post_init_interfaces(void);
-extern void __cvmx_helper_shutdown_interfaces(void);
-
+extern int cvmx_helper_setup_red(int pass_thresh, int drop_thresh);
 extern void cvmx_helper_show_stats(int port);
 
-/**
- * This function sets up aura QOS for RED, backpressure and tail-drop.
- *
- * @param node       node number.
- * @param aura       aura to configure.
- * @param ena_red       enable RED based on [DROP] and [PASS] levels
-                        1: enable 0:disable
- * @param pass_thresh   pass threshold for RED.
- * @param drop_thresh   drop threshold for RED
- * @param ena_bp        enable backpressure based on [BP] level.
-                        1:enable 0:disable
- * @param bp_thresh     backpressure threshold.
- * @param ena_drop      enable tail drop.
- *                      1:enable 0:disable
- * @return Zero on success. Negative on failure
+/*
+ * Return number of array alements
  */
-int cvmx_helper_setup_aura_qos(int node, int aura, bool ena_red,bool ena_drop,
-			       uint64_t pass_thresh, uint64_t drop_thresh,
-			       bool ena_bp,uint64_t bp_thresh);
-int cvmx_helper_map_aura_channel_bpid(int node, int aura_map[], int aura_cnt,
-				      int chl_map[],int chl_cnt, int bpid);
+#define	NUM_ELEMENTS(arr) (sizeof(arr)/sizeof((arr)[0]))
 
 #endif /* __CVMX_HELPER_H__ */

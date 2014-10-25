@@ -42,7 +42,7 @@
  * Simple allocate only memory allocator.  Used to allocate memory at application
  * start time.
  *
- * <hr>$Revision: 83129 $<hr>
+ * <hr>$Revision: 96253 $<hr>
  *
  */
 
@@ -181,6 +181,19 @@ extern int cvmx_bootmem_init(uint64_t mem_desc_addr);
  * @return pointer to block of memory, NULL on error
  */
 extern void *cvmx_bootmem_alloc(uint64_t size, uint64_t alignment);
+
+/**
+ * Allocate a block of memory from the free list that was passed
+ * to the application by the bootloader from a specific node.
+ * This is an allocate-only algorithm, so freeing memory is not possible.
+ *
+ * @param node	The node to allocate memory from
+ * @param size  Size in bytes of block to allocate
+ * @param alignment Alignment required - must be power of 2
+ *
+ * @return pointer to block of memory, NULL on error
+ */
+extern void *cvmx_bootmem_alloc_node(uint64_t node, uint64_t size, uint64_t alignment);
 
 /**
  * Allocate a block of memory from the free list that was
@@ -528,6 +541,27 @@ int64_t cvmx_bootmem_phy_mem_list_init(uint64_t mem_size,
 				       uint32_t low_reserved_bytes,
 				       cvmx_bootmem_desc_t * desc_buffer);
 
+/**
+ * This function initializes the free memory list used by cvmx_bootmem.
+ * This must be called before any allocations can be done.
+ *
+ * @param nodemask Nodemask - one bit per node (bit0->node0, bit1->node1,...)
+ *
+ * @param mem_size[] Array of memory sizes in MBytes per node ([0]->node0,...)
+ *
+ * @param low_reserved_bytes Number of bytes to reserve (leave out of
+ * free list) at address 0x0.
+ *
+ * @param desc_buffer Buffer for the bootmem descriptor.  This must be
+ *                 a 32 bit addressable address.
+ *
+ * @return 1 on success
+ *         0 on failure
+ */
+int64_t cvmx_bootmem_phy_mem_list_init_multi(uint8_t nodemask,
+				       uint32_t mem_size[],
+				       uint32_t low_reserved_bytes,
+				       cvmx_bootmem_desc_t * desc_buffer);
 /**
  * Locks the bootmem allocator.  This is useful in certain situations
  * where multiple allocations must be made without being interrupted.

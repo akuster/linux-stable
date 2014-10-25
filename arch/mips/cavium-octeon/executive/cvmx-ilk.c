@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -48,7 +48,7 @@
 #include <linux/export.h>
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-sysinfo.h>
-#include <asm/octeon/cvmx-pko.h>
+#include <asm/octeon/cvmx-hwpko.h>
 #include <asm/octeon/cvmx-ilk.h>
 #include <asm/octeon/cvmx-qlm.h>
 #include <asm/octeon/cvmx-ilk-defs.h>
@@ -59,7 +59,7 @@
 #else
 #include "cvmx.h"
 #include "cvmx-sysinfo.h"
-#include "cvmx-pko.h"
+#include "cvmx-hwpko.h"
 #include "cvmx-ilk.h"
 #include "cvmx-qlm.h"
 #include "cvmx-helper-util.h"
@@ -74,10 +74,8 @@
  * for cn68, the default is {0xf, 0xf0}. to disable the 2nd ILK, set
  * cvmx_ilk_lane_mask[CVMX_NUM_ILK_INTF] = {0xff, 0x0} and
  * cvmx_ilk_chans[CVMX_NUM_ILK_INTF] = {8, 0}
- *
- * for cn78, the default is {0xff, 0xf000}.
  */
-CVMX_SHARED unsigned short cvmx_ilk_lane_mask[CVMX_NUM_ILK_INTF] = {0xf, 0xf0};
+CVMX_SHARED unsigned short cvmx_ilk_lane_mask[CVMX_NUM_ILK_INTF] = {0x000f, 0x00f0};
 
 CVMX_SHARED unsigned char cvmx_ilk_chans[CVMX_NUM_ILK_INTF] = {8,8};
 
@@ -89,48 +87,6 @@ static cvmx_ilk_intf_t cvmx_ilk_intf_cfg[CVMX_NUM_ILK_INTF];
 
 CVMX_SHARED cvmx_ilk_LA_mode_t cvmx_ilk_LA_mode[CVMX_NUM_ILK_INTF] = {{0, 0},
 									{0, 0}};
-
-void cvmx_ilk_config_set_LA_mode(int interface, int mode)
-{
-	if(interface >= CVMX_NUM_ILK_INTF || interface < 0)
-		cvmx_dprintf("ERROR: Invalid interface=%d in cvmx_ilk_config_set_LA_mode\n",
-			     interface);
-	else
-		cvmx_ilk_LA_mode[interface].ilk_LA_mode = mode;
-}
-
-void cvmx_ilk_config_set_LA_mode_cal(int interface, int mode)
-{
-	if(interface >= CVMX_NUM_ILK_INTF || interface < 0)
-		cvmx_dprintf("ERROR: Invalid interface=%d in cvmx_ilk_config_set_LA_mode_cal\n",
-			     interface);
-	else
-		cvmx_ilk_LA_mode[interface].ilk_LA_mode_cal_ena = mode;
-}
-
-void cvmx_ilk_config_set_lane_mask(int interface, unsigned char mask)
-{
-	if(interface >= CVMX_NUM_ILK_INTF || interface < 0)
-		cvmx_dprintf("ERROR: Invalid interface=%d in cvmx_ilk_set_lane_mask\n",
-			     interface);
-	else
-		cvmx_ilk_lane_mask[interface] = mask << (4*interface);
-}
-
-void cvmx_ilk_config_set_max_channels(int interface, unsigned char channels)
-{
-	if(interface >= CVMX_NUM_ILK_INTF || interface < 0) {
-		cvmx_dprintf("ERROR: Invalid interface=%d in cvmx_ilk_config_set_max_channels\n",
-			     interface);
-		return;
-	}
-	if(channels > CVMX_ILK_MAX_CHANS){
-		cvmx_dprintf("ERROR: Invalid channel=%d in cvmx_ilk_config_set_max_channels",channels);
-		return;
-	}
-	cvmx_ilk_chans[interface] = channels;
-}
-
 /**
  * User-overrideable callback function that returns whether or not an interface
  * should use look-aside mode.
@@ -193,13 +149,11 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 	int res = -1;
 	int other_intf, this_qlm, other_qlm;
 	unsigned short uni_mask;
-	cvmx_mio_qlmx_cfg_t mio_qlmx_cfg, other_mio_qlmx_cfg;
 	cvmx_ilk_txx_cfg0_t ilk_txx_cfg0;
 	cvmx_ilk_rxx_cfg0_t ilk_rxx_cfg0;
 	cvmx_ilk_ser_cfg_t ilk_ser_cfg;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -211,7 +165,7 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 	/* check conflicts between 2 ilk interfaces. 1 lane can be assigned to 1
 	 * interface only */
 	other_intf = !interface;
-	if (cvmx_ilk_intf_cfg[other_intf].lane_en_mask & lane_mask) {
+	if (cvmx_ilk_lane_mask[other_intf] & lane_mask) {
 		cvmx_dprintf("ILK%d: %s: lane assignment conflict\n", interface, __func__);
 		return res;
 	}
@@ -220,26 +174,15 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 	 * while interface 1 can have 4 lanes at most */
 	uni_mask = lane_mask >> (interface * 4);
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
-		if ((uni_mask != 0x1 && uni_mask != 0x3 && uni_mask != 0xf && uni_mask != 0xff) || (interface == 1 && lane_mask > 0xf0)) {
+		cvmx_mio_qlmx_cfg_t mio_qlmx_cfg, other_mio_qlmx_cfg;
+		if ((uni_mask != 0x1 && uni_mask != 0x3 && uni_mask != 0xf
+		     && uni_mask != 0xff)
+		    || (interface == 1 && lane_mask > 0xf0)) {
 			cvmx_dprintf("ILK%d: %s: incorrect lane mask: 0x%x \n", interface, __func__, uni_mask);
 			return res;
 		}
-	}
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		if ((uni_mask != 0x1 && uni_mask != 0x3 && uni_mask != 0xf &&
-		     uni_mask != 0xff && uni_mask != 0x100 &&
-		     uni_mask != 0x300 && uni_mask != 0xf00 &&
-		     uni_mask != 0xff0 && uni_mask != 0xfff) ||
-		     (interface == 0 && lane_mask > 0xff) ||
-		     (interface == 1 && lane_mask > 0xfff0)) {
-			cvmx_dprintf("ILK%d: %s: incorrect lane mask: 0x%x \n", interface, __func__, uni_mask);
-			return res;
-		}
-	}
-
-	/* check the availability of qlms. qlm_cfg = 001 means the chip is fused
-	 * to give this qlm to ilk */
-	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+		/* check the availability of qlms. qlm_cfg = 001 means the chip is fused
+	 	* to give this qlm to ilk */
 		this_qlm = interface + CVMX_ILK_QLM_BASE();
 		other_qlm = other_intf + CVMX_ILK_QLM_BASE();
 		mio_qlmx_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(this_qlm));
@@ -248,60 +191,35 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 			cvmx_dprintf("ILK%d: %s: qlm unavailable\n", interface, __func__);
 			return res;
 		}
+		/* Has 8 lanes */
+		lane_mask &= 0xff;
 	}
+
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		uint8_t 		qlm, i;
-		cvmx_mio_qlmx_cfg_t 	mio_qlmx_cfg[4];
-		cvmx_gserx_cfg_t	cvmx_gserx_cfg;
-		cvmx_gserx_phy_ctl_t	cvmx_gserx_phy_ctl;
+		int qlm;
+		unsigned short lane_mask_all = 0;
 
-		for (i = 0, qlm = CVMX_ILK_QLM_BASE(); i < 4; i++, qlm++)
-			mio_qlmx_cfg[i].u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(qlm));
+		/* QLM 4 - QLM 7 can be configured for ILK. Get the lane mask
+ 		   of all the qlms that are configured for ilk */
+		for (qlm = 4; qlm < 8; qlm++) {
+			cvmx_gserx_cfg_t gserx_cfg;
+			cvmx_gserx_phy_ctl_t phy_ctl;
 
-		/*
-		 * QLM registers are not modelled yet. So hardcore the expected
-		 * value here. This must be removed once the hardware is ready
-		 * or the simulator has qlm support. TODO
-		 */
-		mio_qlmx_cfg[0].s.qlm_cfg = 1;
-		if (interface == 0) {
-			if ((uni_mask <= 0xf && mio_qlmx_cfg[0].s.qlm_cfg != 1) ||
-			    (uni_mask == 0xff &&
-			     (mio_qlmx_cfg[0].s.qlm_cfg != 1 || mio_qlmx_cfg[1].s.qlm_cfg != 1))) {
-				cvmx_dprintf("ILK%d: %s: qlm unavailable\n", interface, __func__);
-				return res;
-			} 
-		}
-			      
-		if (interface == 1) {
-			if ((uni_mask >= 0x100 && uni_mask <= 0xf00 && mio_qlmx_cfg[3].s.qlm_cfg != 1) ||
-			    (uni_mask == 0xff0 && 
-			     (mio_qlmx_cfg[3].s.qlm_cfg != 1 || mio_qlmx_cfg[2].s.qlm_cfg != 1)) ||
-			    (uni_mask == 0xfff &&
-			     (mio_qlmx_cfg[3].s.qlm_cfg != 1 || mio_qlmx_cfg[2].s.qlm_cfg != 1 || mio_qlmx_cfg[1].s.qlm_cfg != 1))) {
-				cvmx_dprintf("ILK%d: %s: qlm unavailable\n", interface, __func__);
-				return res;
-			} 
+			/* Make sure QLM is powered and out of reset */
+			phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(qlm));
+			if (phy_ctl.s.phy_pd || phy_ctl.s.phy_reset)
+				continue;
+
+			/* Make sure QLM is in ILK mode */
+			gserx_cfg.u64 = cvmx_read_csr(CVMX_GSERX_CFG(qlm));
+			if (gserx_cfg.s.ila)
+				lane_mask_all |= ((1 << 4) - 1) << (4 * (qlm - 4));	
 		}
 
-		/*
-		 * Configure the GSER.
-		 * For now, we configured the minimum needed to work with the
-		 * simulator. TODO
-		 */
-		qlm = CVMX_ILK_QLM_BASE() + interface;
-		cvmx_gserx_phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(qlm));
-		cvmx_gserx_phy_ctl.s.phy_pd = 0;
-		cvmx_gserx_phy_ctl.s.phy_reset = 1;
-		cvmx_write_csr(CVMX_GSERX_PHY_CTL(qlm), cvmx_gserx_phy_ctl.u64);
-
-		cvmx_gserx_cfg.u64 = cvmx_read_csr(CVMX_GSERX_CFG(qlm));
-		cvmx_gserx_cfg.s.ila = 1;
-		cvmx_write_csr(CVMX_GSERX_CFG(qlm), cvmx_gserx_cfg.u64);
-
-		cvmx_gserx_phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(qlm));
-		cvmx_gserx_phy_ctl.s.phy_reset = 0;
-		cvmx_write_csr(CVMX_GSERX_PHY_CTL(qlm), cvmx_gserx_phy_ctl.u64);
+		if ((lane_mask_all & lane_mask) != lane_mask) {
+			cvmx_dprintf("ILK%d: %s: incorrect lane mask: 0x%x \n", interface, __func__, lane_mask);
+			return res;
+		}
 	}
 
 	/* power up the serdes */
@@ -320,6 +238,7 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 		ilk_ser_cfg.cn78xx.ser_rxpol_auto = 1;
 		ilk_ser_cfg.cn78xx.ser_rxpol = 0;
 		ilk_ser_cfg.cn78xx.ser_txpol = 0;
+		ilk_ser_cfg.cn78xx.ser_reset_n = 0xffff;
 	}
 	cvmx_write_csr(CVMX_ILK_SER_CFG, ilk_ser_cfg.u64);
 
@@ -397,7 +316,6 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 	/* write to local cache. for lane speed, if interface 0 has 8 lanes,
 	 * assume both qlms have the same speed */
 	cvmx_ilk_intf_cfg[interface].intf_en = 1;
-	cvmx_ilk_intf_cfg[interface].lane_en_mask = lane_mask;
 	res = 0;
 
 	return res;
@@ -510,8 +428,7 @@ int cvmx_ilk_rx_set_pknd(int interface, cvmx_ilk_chan_pknd_t * chpknd, unsigned 
 	cvmx_ilk_rxf_idx_pmap_t ilk_rxf_idx_pmap;
 	unsigned int i;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -562,8 +479,7 @@ int cvmx_ilk_rx_cal_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pe
 	cvmx_ilk_rxx_cfg0_t ilk_rxx_cfg0;
 	int num_entries;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -587,7 +503,7 @@ int cvmx_ilk_rx_cal_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pe
 		     cvmx_ilk_la_mode_enable_rx_calendar(interface))) {
 			for (i = 0; i < cal_depth; i++) {
 				__cvmx_ilk_write_rx_cal_entry(interface, i,
-							     pent[i].pipe_bpid);
+							      pent[i].pipe_bpid);
 			}
 		}
 
@@ -604,20 +520,23 @@ int cvmx_ilk_rx_cal_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pe
 	}
 
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		cvmx_ilk_rxx_cal_entryx_t rxx_cal_entryx;
-
 		ilk_rxx_cfg0.u64 = cvmx_read_csr(CVMX_ILK_RXX_CFG0(interface));
-		ilk_rxx_cfg0.s.cal_depth = cal_depth;
+		/* 
+		 * Make sure cal_ena is 0 for programming the calender table,
+		 * as per Errata ILK-19398
+		 */
+		ilk_rxx_cfg0.s.cal_ena = 0;
 		cvmx_write_csr(CVMX_ILK_RXX_CFG0(interface), ilk_rxx_cfg0.u64);
 
 		for (i = 0; i < cal_depth; i++) {
-			rxx_cal_entryx.u64 = 0;
-			rxx_cal_entryx.s.ctl = pent->ent_ctrl;
-			rxx_cal_entryx.s.channel = pent->pipe_bpid;
-
-			cvmx_write_csr(CVMX_ILK_RXX_CAL_ENTRYX(i, interface), rxx_cal_entryx.u64);
-			pent++;
+				__cvmx_ilk_write_rx_cal_entry(interface, i,
+							      pent[i].pipe_bpid);
 		}
+
+		ilk_rxx_cfg0.u64 = cvmx_read_csr(CVMX_ILK_RXX_CFG0(interface));
+		num_entries = 1 + cal_depth + (cal_depth - 1) / 15;
+		ilk_rxx_cfg0.s.cal_depth = num_entries;
+		cvmx_write_csr(CVMX_ILK_RXX_CFG0(interface), ilk_rxx_cfg0.u64);
 	}
 
 	return 0;
@@ -639,8 +558,7 @@ int cvmx_ilk_rx_set_hwm(int interface, int hi_wm)
 	int res = -1;
 	cvmx_ilk_rxx_cfg1_t ilk_rxx_cfg1;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -674,8 +592,7 @@ int cvmx_ilk_rx_cal_ena(int interface, unsigned char cal_ena)
 	int res = -1;
 	cvmx_ilk_rxx_cfg0_t ilk_rxx_cfg0;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -712,8 +629,7 @@ int cvmx_ilk_cal_setup_rx(int interface, int cal_depth, cvmx_ilk_cal_entry_t * p
 {
 	int res = -1;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -751,8 +667,7 @@ int cvmx_ilk_tx_cal_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pe
 	cvmx_ilk_txx_cfg0_t ilk_txx_cfg0;
 	int num_entries;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -784,20 +699,25 @@ int cvmx_ilk_tx_cal_conf(int interface, int cal_depth, cvmx_ilk_cal_entry_t * pe
 	}
 
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		cvmx_ilk_txx_cal_entryx_t txx_cal_entryx;
-
 		ilk_txx_cfg0.u64 = cvmx_read_csr(CVMX_ILK_TXX_CFG0(interface));
-		ilk_txx_cfg0.s.cal_depth = cal_depth;
+		/* 
+		 * Make sure cal_ena is 0 for programming the calender table,
+		 * as per Errata ILK-19398
+		 */
+		ilk_txx_cfg0.s.cal_ena = 0;
 		cvmx_write_csr(CVMX_ILK_TXX_CFG0(interface), ilk_txx_cfg0.u64);
 
 		for (i = 0; i < cal_depth; i++) {
-			txx_cal_entryx.u64 = 0;
-			txx_cal_entryx.s.ctl = pent->ent_ctrl;
-			txx_cal_entryx.s.channel = pent->pipe_bpid;
-
-			cvmx_write_csr(CVMX_ILK_TXX_CAL_ENTRYX(i, interface), txx_cal_entryx.u64);
+			__cvmx_ilk_write_tx_cal_entry(interface, i,
+						      pent[i].pipe_bpid);
 			pent++;
 		}
+
+		ilk_txx_cfg0.u64 = cvmx_read_csr(CVMX_ILK_TXX_CFG0(interface));
+		num_entries = 1 + cal_depth + (cal_depth - 1) / 15;
+		/* cal_depth[2:0] needs to be zero, round up */
+		ilk_txx_cfg0.s.cal_depth = (num_entries + 7) & 0x1f8;
+		cvmx_write_csr(CVMX_ILK_TXX_CFG0(interface), ilk_txx_cfg0.u64);
 	}
 
 	return 0;
@@ -819,8 +739,7 @@ int cvmx_ilk_tx_cal_ena(int interface, unsigned char cal_ena)
 	int res = -1;
 	cvmx_ilk_txx_cfg0_t ilk_txx_cfg0;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -853,8 +772,7 @@ int cvmx_ilk_cal_setup_tx(int interface, int cal_depth, cvmx_ilk_cal_entry_t * p
 {
 	int res = -1;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -1129,8 +1047,7 @@ int cvmx_ilk_enable(int interface)
 	cvmx_ilk_txx_cfg0_t ilk_txx_cfg0;
 #endif
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -1218,8 +1135,7 @@ int cvmx_ilk_disable(int interface)
 	cvmx_ilk_txx_cfg0_t ilk_txx_cfg0;
 #endif
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -1264,19 +1180,6 @@ int cvmx_ilk_get_intf_ena(int interface)
 }
 
 /**
- * Provide interface lane mask
- *
- * @param interface The identifier of the packet interface to disable. cn68xx
- *                  has 2 interfaces: ilk0 and ilk1.
- *
- * @return lane mask
- */
-unsigned char cvmx_ilk_get_intf_ln_msk(int interface)
-{
-	return cvmx_ilk_intf_cfg[interface].lane_en_mask;
-}
-
-/**
  * Provide channel info
  *
  * @param interface The identifier of the packet interface to disable. cn68xx
@@ -1304,12 +1207,15 @@ int cvmx_ilk_get_chan_info(int interface, unsigned char **chans, unsigned char *
  *
  * @return ILK header
  */
-cvmx_ilk_la_nsp_compact_hdr_t cvmx_ilk_enable_la_header(int port, int mode)
+cvmx_ilk_la_nsp_compact_hdr_t cvmx_ilk_enable_la_header(int ipd_port, int mode)
 {
 	cvmx_ilk_la_nsp_compact_hdr_t ilk_header;
 	cvmx_pip_prt_cfgx_t pip_config;
-	int interface = cvmx_helper_get_interface_num(port);
-	int ilk_interface = interface - CVMX_ILK_GBL_BASE();
+	struct cvmx_xport xp = cvmx_helper_ipd_port_to_xport(ipd_port);
+	int xiface = cvmx_helper_get_interface_num(ipd_port);
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	
+	int ilk_interface = xi.interface - CVMX_ILK_GBL_BASE();
 	int skip = 0;
 	int crc = 1;
 	int len_chk = 1;
@@ -1323,7 +1229,7 @@ cvmx_ilk_la_nsp_compact_hdr_t cvmx_ilk_enable_la_header(int port, int mode)
 
 	if (mode) {
 		ilk_header.s.la_mode = 1;
-		ilk_header.s.ilk_channel = port & 1;
+		ilk_header.s.ilk_channel = xp.port & 1;
 		skip = sizeof(ilk_header);
 		crc = 0;
 	}
@@ -1338,8 +1244,8 @@ cvmx_ilk_la_nsp_compact_hdr_t cvmx_ilk_enable_la_header(int port, int mode)
 	}
 
 	/* SKIP ILK header only for first 2 ports */
-	if ((port & 0x7) < 2) {
-		int pknd = cvmx_helper_get_pknd(interface, port & 1);
+	if ((xp.port & 0x7) < 2) {
+		int pknd = cvmx_helper_get_pknd(xiface, xp.port & 1);
 		int ipko_port;
 		cvmx_pko_reg_read_idx_t pko_reg;
 		cvmx_pko_mem_iport_ptrs_t pko_mem_iport;
@@ -1363,7 +1269,7 @@ cvmx_ilk_la_nsp_compact_hdr_t cvmx_ilk_enable_la_header(int port, int mode)
 		ipko_port = ilk_interface + 0x1c;
 
 		pko_reg.u64 = cvmx_read_csr(CVMX_PKO_REG_READ_IDX);
-		pko_reg.s.index = cvmx_helper_get_pko_port(interface, port & 1);
+		pko_reg.s.index = cvmx_helper_get_pko_port(xiface, xp.port & 1);
 		cvmx_write_csr(CVMX_PKO_REG_READ_IDX, pko_reg.u64);
 
 		pko_mem_iport.u64 = cvmx_read_csr(CVMX_PKO_MEM_IPORT_PTRS);
@@ -1398,8 +1304,7 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 	cvmx_ilk_txx_mem_stat0_t ilk_txx_mem_stat0;
 	cvmx_ilk_txx_mem_stat1_t ilk_txx_mem_stat1;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return;
 
 	if (interface >= CVMX_NUM_ILK_INTF)
@@ -1410,8 +1315,8 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 
 	/* discrete channels */
 	if (pstats->chan_list != NULL) {
+		unsigned int *chan_list = pstats->chan_list;
 		for (i = 0; i < pstats->num_chans; i++) {
-
 			if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 				/* get the number of rx packets */
 				ilk_rxx_idx_stat0.u64 = 0;
@@ -1422,22 +1327,21 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 	
 				/* get the number of rx bytes */
 				ilk_rxx_idx_stat1.u64 = 0;
-				ilk_rxx_idx_stat1.s.index = *pstats->chan_list;
+				ilk_rxx_idx_stat1.s.index = *chan_list;
 				ilk_rxx_idx_stat1.s.clr = pstats->clr_on_rd;
 				cvmx_write_csr(CVMX_ILK_RXX_IDX_STAT1(interface), ilk_rxx_idx_stat1.u64);
 				ilk_rxx_mem_stat1.u64 = cvmx_read_csr(CVMX_ILK_RXX_MEM_STAT1(interface));
 
 				cvmx_dprintf("ILK%d Channel%d Rx: %d packets %d bytes\n", interface,
-					     *pstats->chan_list, ilk_rxx_mem_stat0.s.rx_pkt, (unsigned int)ilk_rxx_mem_stat1.s.rx_bytes);
+					     *chan_list, ilk_rxx_mem_stat0.s.rx_pkt, (unsigned int)ilk_rxx_mem_stat1.s.rx_bytes);
 			}
 			if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 				cvmx_ilk_rxx_pkt_cntx_t rxx_pkt_cntx;
 				cvmx_ilk_rxx_byte_cntx_t rxx_byte_cntx;
-
-				rxx_pkt_cntx.u64 = cvmx_read_csr(CVMX_ILK_RXX_PKT_CNTX(*pstats->chan_list, interface));
-				rxx_byte_cntx.u64 = cvmx_read_csr(CVMX_ILK_RXX_BYTE_CNTX(*pstats->chan_list, interface));
+				rxx_pkt_cntx.u64 = cvmx_read_csr(CVMX_ILK_RXX_PKT_CNTX(*chan_list, interface));
+				rxx_byte_cntx.u64 = cvmx_read_csr(CVMX_ILK_RXX_BYTE_CNTX(*chan_list, interface));
 				cvmx_dprintf("ILK%d Channel%d Rx: %llu packets %llu bytes\n", interface,
-					     *pstats->chan_list, 
+					     *chan_list, 
 					     (unsigned long long)rxx_pkt_cntx.s.rx_pkt,
 					     (unsigned long long)rxx_byte_cntx.s.rx_bytes);
 			}
@@ -1445,7 +1349,7 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 			if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 				/* get the number of tx packets */
 				ilk_txx_idx_stat0.u64 = 0;
-				ilk_txx_idx_stat0.s.index = *pstats->chan_list;
+				ilk_txx_idx_stat0.s.index = *chan_list;
 				ilk_txx_idx_stat0.s.clr = pstats->clr_on_rd;
 				cvmx_write_csr(CVMX_ILK_TXX_IDX_STAT0(interface), ilk_txx_idx_stat0.u64);
 				ilk_txx_mem_stat0.u64 = cvmx_read_csr(CVMX_ILK_TXX_MEM_STAT0(interface));
@@ -1458,21 +1362,21 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 				ilk_txx_mem_stat1.u64 = cvmx_read_csr(CVMX_ILK_TXX_MEM_STAT1(interface));
 	
 				cvmx_dprintf("ILK%d Channel%d Tx: %d packets %d bytes\n", interface,
-					     *pstats->chan_list, ilk_txx_mem_stat0.s.tx_pkt, (unsigned int)ilk_txx_mem_stat1.s.tx_bytes);
+					     *chan_list, ilk_txx_mem_stat0.s.tx_pkt, (unsigned int)ilk_txx_mem_stat1.s.tx_bytes);
 			}
 			if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 				cvmx_ilk_txx_pkt_cntx_t txx_pkt_cntx;
 				cvmx_ilk_txx_byte_cntx_t txx_byte_cntx;
 
-				txx_pkt_cntx.u64 = cvmx_read_csr(CVMX_ILK_TXX_PKT_CNTX(*pstats->chan_list, interface));
-				txx_byte_cntx.u64 = cvmx_read_csr(CVMX_ILK_TXX_BYTE_CNTX(*pstats->chan_list, interface));
+				txx_pkt_cntx.u64 = cvmx_read_csr(CVMX_ILK_TXX_PKT_CNTX(*chan_list, interface));
+				txx_byte_cntx.u64 = cvmx_read_csr(CVMX_ILK_TXX_BYTE_CNTX(*chan_list, interface));
 				cvmx_dprintf("ILK%d Channel%d Tx: %llu packets %llu bytes\n", interface,
-					     *pstats->chan_list,
+					     *chan_list,
 					     (unsigned long long)txx_pkt_cntx.s.tx_pkt,
 					     (unsigned long long)txx_byte_cntx.s.tx_bytes);
 			}
 
-			pstats++;
+			chan_list++;
 		}
 		return;
 	}
@@ -1553,8 +1457,7 @@ int cvmx_ilk_lpbk(int interface, cvmx_ilk_lpbk_ena_t enable, cvmx_ilk_lpbk_mode_
 	cvmx_ilk_txx_cfg0_t ilk_txx_cfg0;
 	cvmx_ilk_rxx_cfg0_t ilk_rxx_cfg0;
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX)) &&
-	    !(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
 		return res;
 
 	if (interface >= CVMX_NUM_ILK_INTF)

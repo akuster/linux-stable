@@ -43,7 +43,7 @@
  * File defining functions for working with different Octeon
  * models.
  *
- * <hr>$Revision: 83576 $<hr>
+ * <hr>$Revision: 102057 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/octeon.h>
@@ -144,17 +144,15 @@ static const char *__init octeon_model_get_string_buffer(uint32_t chip_id,
 	cvmx_mio_fus_dat2_t fus_dat2;
 	cvmx_mio_fus_dat3_t fus_dat3;
 	char fuse_model[10];
-	uint32_t fuse_data = 0;
+	char fuse_suffix[4] = {0};
+	uint64_t fuse_data = 0;
 
 	fus3.u64 = 0;
 	if (OCTEON_IS_MODEL(OCTEON_CN3XXX) || OCTEON_IS_MODEL(OCTEON_CN5XXX))
 		fus3.u64 = cvmx_read_csr(CVMX_L2D_FUS3);
 	fus_dat2.u64 = cvmx_read_csr(CVMX_MIO_FUS_DAT2);
 	fus_dat3.u64 = cvmx_read_csr(CVMX_MIO_FUS_DAT3);
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
-		num_cores = cvmx_pop(cvmx_read_csr(CVMX_CIU3_FUSE));
-	else
-		num_cores = cvmx_pop(cvmx_read_csr(CVMX_CIU_FUSE));
+	num_cores = cvmx_octeon_num_cores();
 
 	/* Make sure the non existent devices look disabled */
 	switch ((chip_id >> 8) & 0xff) {
@@ -197,6 +195,9 @@ static const char *__init octeon_model_get_string_buffer(uint32_t chip_id,
 	/* Use the number of cores to determine the last 2 digits of the model
 	   number. There are some exceptions that are fixed later */
 	switch (num_cores) {
+	case 48:
+		core_model = "90";
+		break;
 	case 32:
 		core_model = "80";
 		break;
@@ -361,7 +362,7 @@ static const char *__init octeon_model_get_string_buffer(uint32_t chip_id,
 				if (fus_dat3.s.nozip)
 					suffix = "SCP";
 
-				if (fus_dat3.s.bar2_en)
+				if (fus_dat3.cn56xx.bar2_en)
 					suffix = "NSPB2";
 			}
 			if (fus3.cn56xx.crip_1024k)
@@ -443,15 +444,26 @@ static const char *__init octeon_model_get_string_buffer(uint32_t chip_id,
 			suffix = "AAP";
 		break;
 	case 0x95:		/* CN78XX */
-		family = "78";
-		if (fus_dat3.cn70xx.nozip)
+		if (OCTEON_IS_MODEL(OCTEON_CN76XX))
+			family = "76";
+		else
+			family = "78";
+		if (fus_dat3.cn78xx.l2c_crip == 2)
+			family = "77";
+		if (fus_dat3.cn78xx.nozip
+		    && fus_dat3.cn78xx.nodfa_dte
+		    && fus_dat3.cn78xx.nohna_dte)
 			suffix = "SCP";
 		else
 			suffix = "AAP";
 		break;
 	case 0x96:		/* CN70XX */
 		family = "70";
-		if (fus_dat3.cn70xx.nozip)
+		if (cvmx_read_csr(CVMX_MIO_FUS_PDF) & (0x1ULL << 32))
+			family = "71";
+		if (fus_dat2.cn70xx.nocrypto)
+			suffix = "CP";
+		else if (fus_dat3.cn70xx.nodfa_dte)
 			suffix = "SCP";
 		else
 			suffix = "AAP";
@@ -469,34 +481,82 @@ static const char *__init octeon_model_get_string_buffer(uint32_t chip_id,
 #endif
 
 	if (family[0] != '3') {
-		int fuse_base = 384 / 8;
-		if (family[0] == '6')
-			fuse_base = 832 / 8;
+		if (OCTEON_IS_OCTEON1PLUS() || OCTEON_IS_OCTEON2()) {
+			int fuse_base = 384 / 8;
+			if (family[0] == '6')
+				fuse_base = 832 / 8;
+			/* Check for model in fuses, overrides normal decode */
+			/* This is _not_ valid for Octeon CN3XXX models */
+			fuse_data |= cvmx_fuse_read_byte(fuse_base + 5);
+			fuse_data = fuse_data << 8;
+			fuse_data |= cvmx_fuse_read_byte(fuse_base + 4);
+			fuse_data = fuse_data << 8;
+			fuse_data |= cvmx_fuse_read_byte(fuse_base + 3);
+			fuse_data = fuse_data << 8;
+			fuse_data |= cvmx_fuse_read_byte(fuse_base + 2);
+			fuse_data = fuse_data << 8;
+			fuse_data |= cvmx_fuse_read_byte(fuse_base + 1);
+			fuse_data = fuse_data << 8;
+			fuse_data |= cvmx_fuse_read_byte(fuse_base);
+			if (fuse_data & 0x7ffff) {
+				int model = fuse_data & 0x3fff;
+				int suffix = (fuse_data >> 14) & 0x1f;
+				if (suffix && model) {      /* Have both number and suffix in fuses, so both */
+					sprintf(fuse_model, "%d%c", model, 'A' + suffix - 1);
+					core_model = "";
+					family = fuse_model;
+				} else if (suffix && !model) {      /* Only have suffix, so add suffix to 'normal' model number */
+					sprintf(fuse_model, "%s%c", core_model, 'A' + suffix - 1);
+					core_model = fuse_model;
+				} else {    /* Don't have suffix, so just use model from fuses */
 
-		/* Check for model in fuses, overrides normal decode */
-		/* This is _not_ valid for Octeon CN3XXX models */
-		fuse_data |= cvmx_fuse_read_byte(fuse_base + 3);
-		fuse_data = fuse_data << 8;
-		fuse_data |= cvmx_fuse_read_byte(fuse_base + 2);
-		fuse_data = fuse_data << 8;
-		fuse_data |= cvmx_fuse_read_byte(fuse_base + 1);
-		fuse_data = fuse_data << 8;
-		fuse_data |= cvmx_fuse_read_byte(fuse_base);
-		if (fuse_data & 0x7ffff) {
-			int model = fuse_data & 0x3fff;
-			int suffix = (fuse_data >> 14) & 0x1f;
-			if (suffix && model) {	/* Have both number and suffix in fuses, so both */
-				sprintf(fuse_model, "%d%c", model, 'A' + suffix - 1);
-				core_model = "";
-				family = fuse_model;
-			} else if (suffix && !model) {	/* Only have suffix, so add suffix to 'normal' model number */
-				sprintf(fuse_model, "%s%c", core_model, 'A' + suffix - 1);
-				core_model = fuse_model;
-			} else {	/* Don't have suffix, so just use model from fuses */
+					sprintf(fuse_model, "%d", model);
+					core_model = "";
+					family = fuse_model;
+				}
+			}
+		} else {
+			/* Format for Octeon 3. */
+			fuse_data = cvmx_read_csr(CVMX_MIO_FUS_PDF);
+			if (fuse_data & ((1ULL << 48) - 1)) {
+				char suffix_str[4] = {0};
+				int i;
+				int model = fuse_data & ((1ULL << 17) - 1);
+				int suf_bits = (fuse_data >> 17) & ((1ULL << 15) - 1);
+				for (i = 0; i < 3; i++) {
+					/* A-Z are encoded 1-26, 27-31 are
+					   reserved values. */
+					if ((suf_bits & 0x1f) && (suf_bits & 0x1f) <= 26)
+						suffix_str[i] = 'A' + (suf_bits & 0x1f) - 1;
+					suf_bits = suf_bits >> 5;
+				}
+				if (strlen(suffix_str) && model) {      /* Have both number and suffix in fuses, so both */
+					sprintf(fuse_model, "%d%s", model, suffix_str);
+					core_model = "";
+					family = fuse_model;
+				} else if (strlen(suffix_str) && !model) {      /* Only have suffix, so add suffix to 'normal' model number */
+					sprintf(fuse_model, "%s%s", core_model, suffix_str);
+					core_model = fuse_model;
+				} else if (model) {    /* Don't have suffix, so just use model from fuses */
+					sprintf(fuse_model, "%d", model);
+					core_model = "";
+					family = fuse_model;
+				}
+				/* in case of invalid model suffix bits
+				   only set, we do nothing. */
 
-				sprintf(fuse_model, "%d", model);
-				core_model = "";
-				family = fuse_model;
+				/* Check to see if we have a custom type
+				   suffix. */
+				suf_bits = (fuse_data >> 33) & ((1ULL << 15) - 1);
+				for (i = 0; i < 3; i++) {
+					/* A-Z are encoded 1-26, 27-31 are
+					   reserved values. */
+					if ((suf_bits & 0x1f) && (suf_bits & 0x1f) <= 26)
+						fuse_suffix[i] = 'A' + (suf_bits & 0x1f) - 1;
+					suf_bits = suf_bits >> 5;
+				}
+				if (strlen(fuse_suffix))
+					suffix = fuse_suffix;
 			}
 		}
 	}

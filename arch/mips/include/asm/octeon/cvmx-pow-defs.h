@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -664,6 +664,7 @@ union cvmx_pow_bist_stat {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} cn70xx;
+	struct cvmx_pow_bist_stat_cn70xx      cn70xxp1;
 	struct cvmx_pow_bist_stat_cn61xx      cnf71xx;
 };
 typedef union cvmx_pow_bist_stat cvmx_pow_bist_stat_t;
@@ -701,6 +702,7 @@ union cvmx_pow_ds_pc {
 	struct cvmx_pow_ds_pc_s               cn63xxp1;
 	struct cvmx_pow_ds_pc_s               cn66xx;
 	struct cvmx_pow_ds_pc_s               cn70xx;
+	struct cvmx_pow_ds_pc_s               cn70xxp1;
 	struct cvmx_pow_ds_pc_s               cnf71xx;
 };
 typedef union cvmx_pow_ds_pc cvmx_pow_ds_pc_t;
@@ -809,6 +811,7 @@ union cvmx_pow_ecc_err {
 	struct cvmx_pow_ecc_err_s             cn63xxp1;
 	struct cvmx_pow_ecc_err_s             cn66xx;
 	struct cvmx_pow_ecc_err_s             cn70xx;
+	struct cvmx_pow_ecc_err_s             cn70xxp1;
 	struct cvmx_pow_ecc_err_s             cnf71xx;
 };
 typedef union cvmx_pow_ecc_err cvmx_pow_ecc_err_t;
@@ -846,6 +849,7 @@ union cvmx_pow_iq_cntx {
 	struct cvmx_pow_iq_cntx_s             cn63xxp1;
 	struct cvmx_pow_iq_cntx_s             cn66xx;
 	struct cvmx_pow_iq_cntx_s             cn70xx;
+	struct cvmx_pow_iq_cntx_s             cn70xxp1;
 	struct cvmx_pow_iq_cntx_s             cnf71xx;
 };
 typedef union cvmx_pow_iq_cntx cvmx_pow_iq_cntx_t;
@@ -883,6 +887,7 @@ union cvmx_pow_iq_com_cnt {
 	struct cvmx_pow_iq_com_cnt_s          cn63xxp1;
 	struct cvmx_pow_iq_com_cnt_s          cn66xx;
 	struct cvmx_pow_iq_com_cnt_s          cn70xx;
+	struct cvmx_pow_iq_com_cnt_s          cn70xxp1;
 	struct cvmx_pow_iq_com_cnt_s          cnf71xx;
 };
 typedef union cvmx_pow_iq_com_cnt cvmx_pow_iq_com_cnt_t;
@@ -914,6 +919,7 @@ union cvmx_pow_iq_int {
 	struct cvmx_pow_iq_int_s              cn63xxp1;
 	struct cvmx_pow_iq_int_s              cn66xx;
 	struct cvmx_pow_iq_int_s              cn70xx;
+	struct cvmx_pow_iq_int_s              cn70xxp1;
 	struct cvmx_pow_iq_int_s              cnf71xx;
 };
 typedef union cvmx_pow_iq_int cvmx_pow_iq_int_t;
@@ -944,6 +950,7 @@ union cvmx_pow_iq_int_en {
 	struct cvmx_pow_iq_int_en_s           cn63xxp1;
 	struct cvmx_pow_iq_int_en_s           cn66xx;
 	struct cvmx_pow_iq_int_en_s           cn70xx;
+	struct cvmx_pow_iq_int_en_s           cn70xxp1;
 	struct cvmx_pow_iq_int_en_s           cnf71xx;
 };
 typedef union cvmx_pow_iq_int_en cvmx_pow_iq_int_en_t;
@@ -974,6 +981,7 @@ union cvmx_pow_iq_thrx {
 	struct cvmx_pow_iq_thrx_s             cn63xxp1;
 	struct cvmx_pow_iq_thrx_s             cn66xx;
 	struct cvmx_pow_iq_thrx_s             cn70xx;
+	struct cvmx_pow_iq_thrx_s             cn70xxp1;
 	struct cvmx_pow_iq_thrx_s             cnf71xx;
 };
 typedef union cvmx_pow_iq_thrx cvmx_pow_iq_thrx_t;
@@ -1043,6 +1051,7 @@ union cvmx_pow_nos_cnt {
 	struct cvmx_pow_nos_cnt_cn63xx        cn63xxp1;
 	struct cvmx_pow_nos_cnt_cn63xx        cn66xx;
 	struct cvmx_pow_nos_cnt_cn52xx        cn70xx;
+	struct cvmx_pow_nos_cnt_cn52xx        cn70xxp1;
 	struct cvmx_pow_nos_cnt_cn52xx        cnf71xx;
 };
 typedef union cvmx_pow_nos_cnt cvmx_pow_nos_cnt_t;
@@ -1112,6 +1121,7 @@ union cvmx_pow_nw_tim {
 	struct cvmx_pow_nw_tim_s              cn63xxp1;
 	struct cvmx_pow_nw_tim_s              cn66xx;
 	struct cvmx_pow_nw_tim_s              cn70xx;
+	struct cvmx_pow_nw_tim_s              cn70xxp1;
 	struct cvmx_pow_nw_tim_s              cnf71xx;
 };
 typedef union cvmx_pow_nw_tim cvmx_pow_nw_tim_t;
@@ -1146,6 +1156,7 @@ union cvmx_pow_pf_rst_msk {
 	struct cvmx_pow_pf_rst_msk_s          cn63xxp1;
 	struct cvmx_pow_pf_rst_msk_s          cn66xx;
 	struct cvmx_pow_pf_rst_msk_s          cn70xx;
+	struct cvmx_pow_pf_rst_msk_s          cn70xxp1;
 	struct cvmx_pow_pf_rst_msk_s          cnf71xx;
 };
 typedef union cvmx_pow_pf_rst_msk cvmx_pow_pf_rst_msk_t;
@@ -1216,6 +1227,7 @@ union cvmx_pow_pp_grp_mskx {
 	struct cvmx_pow_pp_grp_mskx_s         cn63xxp1;
 	struct cvmx_pow_pp_grp_mskx_s         cn66xx;
 	struct cvmx_pow_pp_grp_mskx_s         cn70xx;
+	struct cvmx_pow_pp_grp_mskx_s         cn70xxp1;
 	struct cvmx_pow_pp_grp_mskx_s         cnf71xx;
 };
 typedef union cvmx_pow_pp_grp_mskx cvmx_pow_pp_grp_mskx_t;
@@ -1269,6 +1281,7 @@ union cvmx_pow_qos_rndx {
 	struct cvmx_pow_qos_rndx_s            cn63xxp1;
 	struct cvmx_pow_qos_rndx_s            cn66xx;
 	struct cvmx_pow_qos_rndx_s            cn70xx;
+	struct cvmx_pow_qos_rndx_s            cn70xxp1;
 	struct cvmx_pow_qos_rndx_s            cnf71xx;
 };
 typedef union cvmx_pow_qos_rndx cvmx_pow_qos_rndx_t;
@@ -1422,6 +1435,7 @@ union cvmx_pow_qos_thrx {
 	struct cvmx_pow_qos_thrx_cn63xx       cn63xxp1;
 	struct cvmx_pow_qos_thrx_cn63xx       cn66xx;
 	struct cvmx_pow_qos_thrx_cn52xx       cn70xx;
+	struct cvmx_pow_qos_thrx_cn52xx       cn70xxp1;
 	struct cvmx_pow_qos_thrx_cn52xx       cnf71xx;
 };
 typedef union cvmx_pow_qos_thrx cvmx_pow_qos_thrx_t;
@@ -1459,6 +1473,7 @@ union cvmx_pow_ts_pc {
 	struct cvmx_pow_ts_pc_s               cn63xxp1;
 	struct cvmx_pow_ts_pc_s               cn66xx;
 	struct cvmx_pow_ts_pc_s               cn70xx;
+	struct cvmx_pow_ts_pc_s               cn70xxp1;
 	struct cvmx_pow_ts_pc_s               cnf71xx;
 };
 typedef union cvmx_pow_ts_pc cvmx_pow_ts_pc_t;
@@ -1496,6 +1511,7 @@ union cvmx_pow_wa_com_pc {
 	struct cvmx_pow_wa_com_pc_s           cn63xxp1;
 	struct cvmx_pow_wa_com_pc_s           cn66xx;
 	struct cvmx_pow_wa_com_pc_s           cn70xx;
+	struct cvmx_pow_wa_com_pc_s           cn70xxp1;
 	struct cvmx_pow_wa_com_pc_s           cnf71xx;
 };
 typedef union cvmx_pow_wa_com_pc cvmx_pow_wa_com_pc_t;
@@ -1533,6 +1549,7 @@ union cvmx_pow_wa_pcx {
 	struct cvmx_pow_wa_pcx_s              cn63xxp1;
 	struct cvmx_pow_wa_pcx_s              cn66xx;
 	struct cvmx_pow_wa_pcx_s              cn70xx;
+	struct cvmx_pow_wa_pcx_s              cn70xxp1;
 	struct cvmx_pow_wa_pcx_s              cnf71xx;
 };
 typedef union cvmx_pow_wa_pcx cvmx_pow_wa_pcx_t;
@@ -1594,6 +1611,7 @@ union cvmx_pow_wq_int {
 	struct cvmx_pow_wq_int_s              cn63xxp1;
 	struct cvmx_pow_wq_int_s              cn66xx;
 	struct cvmx_pow_wq_int_s              cn70xx;
+	struct cvmx_pow_wq_int_s              cn70xxp1;
 	struct cvmx_pow_wq_int_s              cnf71xx;
 };
 typedef union cvmx_pow_wq_int cvmx_pow_wq_int_t;
@@ -1764,6 +1782,7 @@ union cvmx_pow_wq_int_cntx {
 	struct cvmx_pow_wq_int_cntx_cn63xx    cn63xxp1;
 	struct cvmx_pow_wq_int_cntx_cn63xx    cn66xx;
 	struct cvmx_pow_wq_int_cntx_cn52xx    cn70xx;
+	struct cvmx_pow_wq_int_cntx_cn52xx    cn70xxp1;
 	struct cvmx_pow_wq_int_cntx_cn52xx    cnf71xx;
 };
 typedef union cvmx_pow_wq_int_cntx cvmx_pow_wq_int_cntx_t;
@@ -1809,6 +1828,7 @@ union cvmx_pow_wq_int_pc {
 	struct cvmx_pow_wq_int_pc_s           cn63xxp1;
 	struct cvmx_pow_wq_int_pc_s           cn66xx;
 	struct cvmx_pow_wq_int_pc_s           cn70xx;
+	struct cvmx_pow_wq_int_pc_s           cn70xxp1;
 	struct cvmx_pow_wq_int_pc_s           cnf71xx;
 };
 typedef union cvmx_pow_wq_int_pc cvmx_pow_wq_int_pc_t;
@@ -1954,6 +1974,7 @@ union cvmx_pow_wq_int_thrx {
 	struct cvmx_pow_wq_int_thrx_cn63xx    cn63xxp1;
 	struct cvmx_pow_wq_int_thrx_cn63xx    cn66xx;
 	struct cvmx_pow_wq_int_thrx_cn52xx    cn70xx;
+	struct cvmx_pow_wq_int_thrx_cn52xx    cn70xxp1;
 	struct cvmx_pow_wq_int_thrx_cn52xx    cnf71xx;
 };
 typedef union cvmx_pow_wq_int_thrx cvmx_pow_wq_int_thrx_t;
@@ -1991,6 +2012,7 @@ union cvmx_pow_ws_pcx {
 	struct cvmx_pow_ws_pcx_s              cn63xxp1;
 	struct cvmx_pow_ws_pcx_s              cn66xx;
 	struct cvmx_pow_ws_pcx_s              cn70xx;
+	struct cvmx_pow_ws_pcx_s              cn70xxp1;
 	struct cvmx_pow_ws_pcx_s              cnf71xx;
 };
 typedef union cvmx_pow_ws_pcx cvmx_pow_ws_pcx_t;

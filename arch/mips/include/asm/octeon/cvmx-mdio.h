@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -43,7 +43,7 @@
  * Interface to the SMI/MDIO hardware, including support for both IEEE 802.3
  * clause 22 and clause 45 operations.
  *
- * <hr>$Revision: 79232 $<hr>
+ * <hr>$Revision: 95160 $<hr>
  */
 
 #ifndef __CVMX_MIO_H__
@@ -291,25 +291,47 @@ typedef union {
 
 #define CVMX_MDIO_TIMEOUT   100000	/* 100 millisec */
 
+static inline int cvmx_mdio_bus_id_to_node(int bus_id)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return (bus_id >> 2) & CVMX_NODE_MASK;
+	else
+		return 0;
+}
+
+static inline int cvmx_mdio_bus_id_to_bus(int bus_id)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return bus_id & 3;
+	else
+		return bus_id;
+}
+
 /* Helper function to put MDIO interface into clause 45 mode */
 static inline void __cvmx_mdio_set_clause45_mode(int bus_id)
 {
 	cvmx_smix_clk_t smi_clk;
+	int node = cvmx_mdio_bus_id_to_node(bus_id);
+	int bus = cvmx_mdio_bus_id_to_bus(bus_id);
+
 	/* Put bus into clause 45 mode */
-	smi_clk.u64 = cvmx_read_csr(CVMX_SMIX_CLK(bus_id));
+	smi_clk.u64 = cvmx_read_csr_node(node, CVMX_SMIX_CLK(bus));
 	smi_clk.s.mode = 1;
 	smi_clk.s.preamble = 1;
-	cvmx_write_csr(CVMX_SMIX_CLK(bus_id), smi_clk.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_CLK(bus), smi_clk.u64);
 }
 
 /* Helper function to put MDIO interface into clause 22 mode */
 static inline void __cvmx_mdio_set_clause22_mode(int bus_id)
 {
 	cvmx_smix_clk_t smi_clk;
+	int node = cvmx_mdio_bus_id_to_node(bus_id);
+	int bus = cvmx_mdio_bus_id_to_bus(bus_id);
+
 	/* Put bus into clause 22 mode */
-	smi_clk.u64 = cvmx_read_csr(CVMX_SMIX_CLK(bus_id));
+	smi_clk.u64 = cvmx_read_csr_node(node, CVMX_SMIX_CLK(bus));
 	smi_clk.s.mode = 0;
-	cvmx_write_csr(CVMX_SMIX_CLK(bus_id), smi_clk.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_CLK(bus), smi_clk.u64);
 }
 
 /**
@@ -325,11 +347,19 @@ static inline void __cvmx_mdio_set_clause22_mode(int bus_id)
 static inline cvmx_smix_rd_dat_t __cvmx_mdio_read_rd_dat(int bus_id)
 {
 	cvmx_smix_rd_dat_t smi_rd;
-	uint64_t done = cvmx_get_cycle() + (uint64_t) CVMX_MDIO_TIMEOUT * cvmx_clock_get_rate(CVMX_CLOCK_CORE) / 1000000;
+	int node = cvmx_mdio_bus_id_to_node(bus_id);
+	int bus = cvmx_mdio_bus_id_to_bus(bus_id);
+	uint64_t done;
+
+	done = (uint64_t)CVMX_MDIO_TIMEOUT * cvmx_clock_get_rate(CVMX_CLOCK_CORE);
+	done /= 1000000;
+	done += cvmx_get_cycle();
+
 	do {
 		cvmx_wait(1000);
-		smi_rd.u64 = cvmx_read_csr(CVMX_SMIX_RD_DAT(bus_id));
+		smi_rd.u64 = cvmx_read_csr_node(node, CVMX_SMIX_RD_DAT(bus));
 	} while (smi_rd.s.pending && (cvmx_get_cycle() < done));
+
 	return smi_rd;
 }
 
@@ -349,6 +379,8 @@ static inline int cvmx_mdio_read(int bus_id, int phy_id, int location)
 #if defined(CVMX_BUILD_FOR_LINUX_KERNEL) && defined(CONFIG_PHYLIB)
 	return -1;
 #else
+	int node = cvmx_mdio_bus_id_to_node(bus_id);
+	int bus = cvmx_mdio_bus_id_to_bus(bus_id);
 	cvmx_smix_cmd_t smi_cmd;
 	cvmx_smix_rd_dat_t smi_rd;
 
@@ -359,7 +391,7 @@ static inline int cvmx_mdio_read(int bus_id, int phy_id, int location)
 	smi_cmd.s.phy_op = MDIO_CLAUSE_22_READ;
 	smi_cmd.s.phy_adr = phy_id;
 	smi_cmd.s.reg_adr = location;
-	cvmx_write_csr(CVMX_SMIX_CMD(bus_id), smi_cmd.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_CMD(bus), smi_cmd.u64);
 
 	smi_rd = __cvmx_mdio_read_rd_dat(bus_id);
 	if (smi_rd.s.val)
@@ -387,6 +419,8 @@ static inline int cvmx_mdio_write(int bus_id, int phy_id, int location, int val)
 #if defined(CVMX_BUILD_FOR_LINUX_KERNEL) && defined(CONFIG_PHYLIB)
 	return -1;
 #else
+	int node = cvmx_mdio_bus_id_to_node(bus_id);
+	int bus = cvmx_mdio_bus_id_to_bus(bus_id);
 	cvmx_smix_cmd_t smi_cmd;
 	cvmx_smix_wr_dat_t smi_wr;
 
@@ -395,15 +429,17 @@ static inline int cvmx_mdio_write(int bus_id, int phy_id, int location, int val)
 
 	smi_wr.u64 = 0;
 	smi_wr.s.dat = val;
-	cvmx_write_csr(CVMX_SMIX_WR_DAT(bus_id), smi_wr.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_WR_DAT(bus), smi_wr.u64);
 
 	smi_cmd.u64 = 0;
 	smi_cmd.s.phy_op = MDIO_CLAUSE_22_WRITE;
 	smi_cmd.s.phy_adr = phy_id;
 	smi_cmd.s.reg_adr = location;
-	cvmx_write_csr(CVMX_SMIX_CMD(bus_id), smi_cmd.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_CMD(bus), smi_cmd.u64);
 
-	if (CVMX_WAIT_FOR_FIELD64(CVMX_SMIX_WR_DAT(bus_id), cvmx_smix_wr_dat_t, pending, ==, 0, CVMX_MDIO_TIMEOUT))
+	if (CVMX_WAIT_FOR_FIELD64_NODE(node, CVMX_SMIX_WR_DAT(bus),
+				       cvmx_smix_wr_dat_t, pending, ==, 0,
+				       CVMX_MDIO_TIMEOUT))
 		return -1;
 
 	return 0;
@@ -432,6 +468,8 @@ static inline int cvmx_mdio_45_read(int bus_id, int phy_id, int device, int loca
 	cvmx_smix_cmd_t smi_cmd;
 	cvmx_smix_rd_dat_t smi_rd;
 	cvmx_smix_wr_dat_t smi_wr;
+	int node = cvmx_mdio_bus_id_to_node(bus_id);
+	int bus = cvmx_mdio_bus_id_to_bus(bus_id);
 
 	if (!octeon_has_feature(OCTEON_FEATURE_MDIO_CLAUSE_45))
 		return -1;
@@ -440,15 +478,17 @@ static inline int cvmx_mdio_45_read(int bus_id, int phy_id, int device, int loca
 
 	smi_wr.u64 = 0;
 	smi_wr.s.dat = location;
-	cvmx_write_csr(CVMX_SMIX_WR_DAT(bus_id), smi_wr.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_WR_DAT(bus), smi_wr.u64);
 
 	smi_cmd.u64 = 0;
 	smi_cmd.s.phy_op = MDIO_CLAUSE_45_ADDRESS;
 	smi_cmd.s.phy_adr = phy_id;
 	smi_cmd.s.reg_adr = device;
-	cvmx_write_csr(CVMX_SMIX_CMD(bus_id), smi_cmd.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_CMD(bus), smi_cmd.u64);
 
-	if (CVMX_WAIT_FOR_FIELD64(CVMX_SMIX_WR_DAT(bus_id), cvmx_smix_wr_dat_t, pending, ==, 0, CVMX_MDIO_TIMEOUT)) {
+	if (CVMX_WAIT_FOR_FIELD64_NODE(node, CVMX_SMIX_WR_DAT(bus),
+				       cvmx_smix_wr_dat_t, pending, ==, 0,
+				       CVMX_MDIO_TIMEOUT)) {
 		cvmx_dprintf("cvmx_mdio_45_read: bus_id %d phy_id %2d device %2d register %2d   TIME OUT(address)\n", bus_id, phy_id, device, location);
 		return -1;
 	}
@@ -457,7 +497,7 @@ static inline int cvmx_mdio_45_read(int bus_id, int phy_id, int device, int loca
 	smi_cmd.s.phy_op = MDIO_CLAUSE_45_READ;
 	smi_cmd.s.phy_adr = phy_id;
 	smi_cmd.s.reg_adr = device;
-	cvmx_write_csr(CVMX_SMIX_CMD(bus_id), smi_cmd.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_CMD(bus), smi_cmd.u64);
 
 	smi_rd = __cvmx_mdio_read_rd_dat(bus_id);
 	if (smi_rd.s.pending) {
@@ -495,6 +535,8 @@ static inline int cvmx_mdio_45_write(int bus_id, int phy_id, int device, int loc
 #else
 	cvmx_smix_cmd_t smi_cmd;
 	cvmx_smix_wr_dat_t smi_wr;
+	int node = cvmx_mdio_bus_id_to_node(bus_id);
+	int bus = cvmx_mdio_bus_id_to_bus(bus_id);
 
 	if (!octeon_has_feature(OCTEON_FEATURE_MDIO_CLAUSE_45))
 		return -1;
@@ -503,28 +545,32 @@ static inline int cvmx_mdio_45_write(int bus_id, int phy_id, int device, int loc
 
 	smi_wr.u64 = 0;
 	smi_wr.s.dat = location;
-	cvmx_write_csr(CVMX_SMIX_WR_DAT(bus_id), smi_wr.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_WR_DAT(bus), smi_wr.u64);
 
 	smi_cmd.u64 = 0;
 	smi_cmd.s.phy_op = MDIO_CLAUSE_45_ADDRESS;
 	smi_cmd.s.phy_adr = phy_id;
 	smi_cmd.s.reg_adr = device;
-	cvmx_write_csr(CVMX_SMIX_CMD(bus_id), smi_cmd.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_CMD(bus), smi_cmd.u64);
 
-	if (CVMX_WAIT_FOR_FIELD64(CVMX_SMIX_WR_DAT(bus_id), cvmx_smix_wr_dat_t, pending, ==, 0, CVMX_MDIO_TIMEOUT))
+	if (CVMX_WAIT_FOR_FIELD64_NODE(node, CVMX_SMIX_WR_DAT(bus),
+				       cvmx_smix_wr_dat_t, pending, ==, 0,
+				       CVMX_MDIO_TIMEOUT))
 		return -1;
 
 	smi_wr.u64 = 0;
 	smi_wr.s.dat = val;
-	cvmx_write_csr(CVMX_SMIX_WR_DAT(bus_id), smi_wr.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_WR_DAT(bus), smi_wr.u64);
 
 	smi_cmd.u64 = 0;
 	smi_cmd.s.phy_op = MDIO_CLAUSE_45_WRITE;
 	smi_cmd.s.phy_adr = phy_id;
 	smi_cmd.s.reg_adr = device;
-	cvmx_write_csr(CVMX_SMIX_CMD(bus_id), smi_cmd.u64);
+	cvmx_write_csr_node(node, CVMX_SMIX_CMD(bus), smi_cmd.u64);
 
-	if (CVMX_WAIT_FOR_FIELD64(CVMX_SMIX_WR_DAT(bus_id), cvmx_smix_wr_dat_t, pending, ==, 0, CVMX_MDIO_TIMEOUT))
+	if (CVMX_WAIT_FOR_FIELD64_NODE(node, CVMX_SMIX_WR_DAT(bus),
+				       cvmx_smix_wr_dat_t, pending, ==, 0,
+				       CVMX_MDIO_TIMEOUT))
 		return -1;
 
 	return 0;

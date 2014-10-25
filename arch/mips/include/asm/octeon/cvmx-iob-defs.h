@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -514,6 +514,7 @@ union cvmx_iob_bist_status {
 	} cn68xx;
 	struct cvmx_iob_bist_status_cn68xx    cn68xxp1;
 	struct cvmx_iob_bist_status_cn61xx    cn70xx;
+	struct cvmx_iob_bist_status_cn61xx    cn70xxp1;
 	struct cvmx_iob_bist_status_cn61xx    cnf71xx;
 };
 typedef union cvmx_iob_bist_status cvmx_iob_bist_status_t;
@@ -546,6 +547,7 @@ union cvmx_iob_chip_cur_pwr {
 #endif
 	} s;
 	struct cvmx_iob_chip_cur_pwr_s        cn70xx;
+	struct cvmx_iob_chip_cur_pwr_s        cn70xxp1;
 };
 typedef union cvmx_iob_chip_cur_pwr cvmx_iob_chip_cur_pwr_t;
 
@@ -600,6 +602,7 @@ union cvmx_iob_chip_glb_pwr_throttle {
 #endif
 	} s;
 	struct cvmx_iob_chip_glb_pwr_throttle_s cn70xx;
+	struct cvmx_iob_chip_glb_pwr_throttle_s cn70xxp1;
 };
 typedef union cvmx_iob_chip_glb_pwr_throttle cvmx_iob_chip_glb_pwr_throttle_t;
 
@@ -636,6 +639,7 @@ union cvmx_iob_chip_pwr_out {
 #endif
 	} s;
 	struct cvmx_iob_chip_pwr_out_s        cn70xx;
+	struct cvmx_iob_chip_pwr_out_s        cn70xxp1;
 };
 typedef union cvmx_iob_chip_pwr_out cvmx_iob_chip_pwr_out_t;
 
@@ -836,6 +840,7 @@ union cvmx_iob_ctl_status {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} cn70xx;
+	struct cvmx_iob_ctl_status_cn70xx     cn70xxp1;
 	struct cvmx_iob_ctl_status_cn61xx     cnf71xx;
 };
 typedef union cvmx_iob_ctl_status cvmx_iob_ctl_status_t;
@@ -875,6 +880,7 @@ union cvmx_iob_dwb_pri_cnt {
 	struct cvmx_iob_dwb_pri_cnt_s         cn63xxp1;
 	struct cvmx_iob_dwb_pri_cnt_s         cn66xx;
 	struct cvmx_iob_dwb_pri_cnt_s         cn70xx;
+	struct cvmx_iob_dwb_pri_cnt_s         cn70xxp1;
 	struct cvmx_iob_dwb_pri_cnt_s         cnf71xx;
 };
 typedef union cvmx_iob_dwb_pri_cnt cvmx_iob_dwb_pri_cnt_t;
@@ -927,6 +933,7 @@ union cvmx_iob_fau_timeout {
 	struct cvmx_iob_fau_timeout_s         cn68xx;
 	struct cvmx_iob_fau_timeout_s         cn68xxp1;
 	struct cvmx_iob_fau_timeout_s         cn70xx;
+	struct cvmx_iob_fau_timeout_s         cn70xxp1;
 	struct cvmx_iob_fau_timeout_s         cnf71xx;
 };
 typedef union cvmx_iob_fau_timeout cvmx_iob_fau_timeout_t;
@@ -966,6 +973,7 @@ union cvmx_iob_i2c_pri_cnt {
 	struct cvmx_iob_i2c_pri_cnt_s         cn63xxp1;
 	struct cvmx_iob_i2c_pri_cnt_s         cn66xx;
 	struct cvmx_iob_i2c_pri_cnt_s         cn70xx;
+	struct cvmx_iob_i2c_pri_cnt_s         cn70xxp1;
 	struct cvmx_iob_i2c_pri_cnt_s         cnf71xx;
 };
 typedef union cvmx_iob_i2c_pri_cnt cvmx_iob_i2c_pri_cnt_t;
@@ -1011,6 +1019,7 @@ union cvmx_iob_inb_control_match {
 	struct cvmx_iob_inb_control_match_s   cn68xx;
 	struct cvmx_iob_inb_control_match_s   cn68xxp1;
 	struct cvmx_iob_inb_control_match_s   cn70xx;
+	struct cvmx_iob_inb_control_match_s   cn70xxp1;
 	struct cvmx_iob_inb_control_match_s   cnf71xx;
 };
 typedef union cvmx_iob_inb_control_match cvmx_iob_inb_control_match_t;
@@ -1056,6 +1065,7 @@ union cvmx_iob_inb_control_match_enb {
 	struct cvmx_iob_inb_control_match_enb_s cn68xx;
 	struct cvmx_iob_inb_control_match_enb_s cn68xxp1;
 	struct cvmx_iob_inb_control_match_enb_s cn70xx;
+	struct cvmx_iob_inb_control_match_enb_s cn70xxp1;
 	struct cvmx_iob_inb_control_match_enb_s cnf71xx;
 };
 typedef union cvmx_iob_inb_control_match_enb cvmx_iob_inb_control_match_enb_t;
@@ -1093,6 +1103,7 @@ union cvmx_iob_inb_data_match {
 	struct cvmx_iob_inb_data_match_s      cn68xx;
 	struct cvmx_iob_inb_data_match_s      cn68xxp1;
 	struct cvmx_iob_inb_data_match_s      cn70xx;
+	struct cvmx_iob_inb_data_match_s      cn70xxp1;
 	struct cvmx_iob_inb_data_match_s      cnf71xx;
 };
 typedef union cvmx_iob_inb_data_match cvmx_iob_inb_data_match_t;
@@ -1130,6 +1141,7 @@ union cvmx_iob_inb_data_match_enb {
 	struct cvmx_iob_inb_data_match_enb_s  cn68xx;
 	struct cvmx_iob_inb_data_match_enb_s  cn68xxp1;
 	struct cvmx_iob_inb_data_match_enb_s  cn70xx;
+	struct cvmx_iob_inb_data_match_enb_s  cn70xxp1;
 	struct cvmx_iob_inb_data_match_enb_s  cnf71xx;
 };
 typedef union cvmx_iob_inb_data_match_enb cvmx_iob_inb_data_match_enb_t;
@@ -1257,6 +1269,7 @@ union cvmx_iob_int_enb {
 	} cn68xx;
 	struct cvmx_iob_int_enb_cn68xx        cn68xxp1;
 	struct cvmx_iob_int_enb_s             cn70xx;
+	struct cvmx_iob_int_enb_s             cn70xxp1;
 	struct cvmx_iob_int_enb_cn50xx        cnf71xx;
 };
 typedef union cvmx_iob_int_enb cvmx_iob_int_enb_t;
@@ -1414,6 +1427,7 @@ union cvmx_iob_int_sum {
 	} cn68xx;
 	struct cvmx_iob_int_sum_cn68xx        cn68xxp1;
 	struct cvmx_iob_int_sum_s             cn70xx;
+	struct cvmx_iob_int_sum_s             cn70xxp1;
 	struct cvmx_iob_int_sum_cn50xx        cnf71xx;
 };
 typedef union cvmx_iob_int_sum cvmx_iob_int_sum_t;
@@ -1453,6 +1467,7 @@ union cvmx_iob_n2c_l2c_pri_cnt {
 	struct cvmx_iob_n2c_l2c_pri_cnt_s     cn63xxp1;
 	struct cvmx_iob_n2c_l2c_pri_cnt_s     cn66xx;
 	struct cvmx_iob_n2c_l2c_pri_cnt_s     cn70xx;
+	struct cvmx_iob_n2c_l2c_pri_cnt_s     cn70xxp1;
 	struct cvmx_iob_n2c_l2c_pri_cnt_s     cnf71xx;
 };
 typedef union cvmx_iob_n2c_l2c_pri_cnt cvmx_iob_n2c_l2c_pri_cnt_t;
@@ -1493,6 +1508,7 @@ union cvmx_iob_n2c_rsp_pri_cnt {
 	struct cvmx_iob_n2c_rsp_pri_cnt_s     cn63xxp1;
 	struct cvmx_iob_n2c_rsp_pri_cnt_s     cn66xx;
 	struct cvmx_iob_n2c_rsp_pri_cnt_s     cn70xx;
+	struct cvmx_iob_n2c_rsp_pri_cnt_s     cn70xxp1;
 	struct cvmx_iob_n2c_rsp_pri_cnt_s     cnf71xx;
 };
 typedef union cvmx_iob_n2c_rsp_pri_cnt cvmx_iob_n2c_rsp_pri_cnt_t;
@@ -1534,6 +1550,7 @@ union cvmx_iob_outb_com_pri_cnt {
 	struct cvmx_iob_outb_com_pri_cnt_s    cn68xx;
 	struct cvmx_iob_outb_com_pri_cnt_s    cn68xxp1;
 	struct cvmx_iob_outb_com_pri_cnt_s    cn70xx;
+	struct cvmx_iob_outb_com_pri_cnt_s    cn70xxp1;
 	struct cvmx_iob_outb_com_pri_cnt_s    cnf71xx;
 };
 typedef union cvmx_iob_outb_com_pri_cnt cvmx_iob_outb_com_pri_cnt_t;
@@ -1579,6 +1596,7 @@ union cvmx_iob_outb_control_match {
 	struct cvmx_iob_outb_control_match_s  cn68xx;
 	struct cvmx_iob_outb_control_match_s  cn68xxp1;
 	struct cvmx_iob_outb_control_match_s  cn70xx;
+	struct cvmx_iob_outb_control_match_s  cn70xxp1;
 	struct cvmx_iob_outb_control_match_s  cnf71xx;
 };
 typedef union cvmx_iob_outb_control_match cvmx_iob_outb_control_match_t;
@@ -1624,6 +1642,7 @@ union cvmx_iob_outb_control_match_enb {
 	struct cvmx_iob_outb_control_match_enb_s cn68xx;
 	struct cvmx_iob_outb_control_match_enb_s cn68xxp1;
 	struct cvmx_iob_outb_control_match_enb_s cn70xx;
+	struct cvmx_iob_outb_control_match_enb_s cn70xxp1;
 	struct cvmx_iob_outb_control_match_enb_s cnf71xx;
 };
 typedef union cvmx_iob_outb_control_match_enb cvmx_iob_outb_control_match_enb_t;
@@ -1661,6 +1680,7 @@ union cvmx_iob_outb_data_match {
 	struct cvmx_iob_outb_data_match_s     cn68xx;
 	struct cvmx_iob_outb_data_match_s     cn68xxp1;
 	struct cvmx_iob_outb_data_match_s     cn70xx;
+	struct cvmx_iob_outb_data_match_s     cn70xxp1;
 	struct cvmx_iob_outb_data_match_s     cnf71xx;
 };
 typedef union cvmx_iob_outb_data_match cvmx_iob_outb_data_match_t;
@@ -1698,6 +1718,7 @@ union cvmx_iob_outb_data_match_enb {
 	struct cvmx_iob_outb_data_match_enb_s cn68xx;
 	struct cvmx_iob_outb_data_match_enb_s cn68xxp1;
 	struct cvmx_iob_outb_data_match_enb_s cn70xx;
+	struct cvmx_iob_outb_data_match_enb_s cn70xxp1;
 	struct cvmx_iob_outb_data_match_enb_s cnf71xx;
 };
 typedef union cvmx_iob_outb_data_match_enb cvmx_iob_outb_data_match_enb_t;
@@ -1739,6 +1760,7 @@ union cvmx_iob_outb_fpa_pri_cnt {
 	struct cvmx_iob_outb_fpa_pri_cnt_s    cn68xx;
 	struct cvmx_iob_outb_fpa_pri_cnt_s    cn68xxp1;
 	struct cvmx_iob_outb_fpa_pri_cnt_s    cn70xx;
+	struct cvmx_iob_outb_fpa_pri_cnt_s    cn70xxp1;
 	struct cvmx_iob_outb_fpa_pri_cnt_s    cnf71xx;
 };
 typedef union cvmx_iob_outb_fpa_pri_cnt cvmx_iob_outb_fpa_pri_cnt_t;
@@ -1780,6 +1802,7 @@ union cvmx_iob_outb_req_pri_cnt {
 	struct cvmx_iob_outb_req_pri_cnt_s    cn68xx;
 	struct cvmx_iob_outb_req_pri_cnt_s    cn68xxp1;
 	struct cvmx_iob_outb_req_pri_cnt_s    cn70xx;
+	struct cvmx_iob_outb_req_pri_cnt_s    cn70xxp1;
 	struct cvmx_iob_outb_req_pri_cnt_s    cnf71xx;
 };
 typedef union cvmx_iob_outb_req_pri_cnt cvmx_iob_outb_req_pri_cnt_t;
@@ -1819,6 +1842,7 @@ union cvmx_iob_p2c_req_pri_cnt {
 	struct cvmx_iob_p2c_req_pri_cnt_s     cn63xxp1;
 	struct cvmx_iob_p2c_req_pri_cnt_s     cn66xx;
 	struct cvmx_iob_p2c_req_pri_cnt_s     cn70xx;
+	struct cvmx_iob_p2c_req_pri_cnt_s     cn70xxp1;
 	struct cvmx_iob_p2c_req_pri_cnt_s     cnf71xx;
 };
 typedef union cvmx_iob_p2c_req_pri_cnt cvmx_iob_p2c_req_pri_cnt_t;
@@ -1872,6 +1896,7 @@ union cvmx_iob_pkt_err {
 	struct cvmx_iob_pkt_err_s             cn63xxp1;
 	struct cvmx_iob_pkt_err_s             cn66xx;
 	struct cvmx_iob_pkt_err_s             cn70xx;
+	struct cvmx_iob_pkt_err_s             cn70xxp1;
 	struct cvmx_iob_pkt_err_s             cnf71xx;
 };
 typedef union cvmx_iob_pkt_err cvmx_iob_pkt_err_t;
@@ -1894,6 +1919,7 @@ union cvmx_iob_pp_bist_status {
 #endif
 	} s;
 	struct cvmx_iob_pp_bist_status_s      cn70xx;
+	struct cvmx_iob_pp_bist_status_s      cn70xxp1;
 };
 typedef union cvmx_iob_pp_bist_status cvmx_iob_pp_bist_status_t;
 
@@ -1956,6 +1982,7 @@ union cvmx_iob_to_cmb_credits {
 	} cn68xx;
 	struct cvmx_iob_to_cmb_credits_cn68xx cn68xxp1;
 	struct cvmx_iob_to_cmb_credits_cn52xx cn70xx;
+	struct cvmx_iob_to_cmb_credits_cn52xx cn70xxp1;
 	struct cvmx_iob_to_cmb_credits_cn52xx cnf71xx;
 };
 typedef union cvmx_iob_to_cmb_credits cvmx_iob_to_cmb_credits_t;

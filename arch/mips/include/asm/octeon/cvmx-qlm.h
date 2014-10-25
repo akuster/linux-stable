@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2011-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2011-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 90025 $<hr>
+ * <hr>$Revision: 102508 $<hr>
  */
 
 #ifndef __CVMX_QLM_H__
@@ -160,13 +160,14 @@ extern void __cvmx_qlm_pcie_cfg_rxd_set_tweak(int qlm, int lane);
  * @return Speed in Mhz
  */
 extern int cvmx_qlm_get_gbaud_mhz(int qlm);
+extern int cvmx_qlm_get_gbaud_mhz_node(int node, int qlm);
 
 enum cvmx_qlm_mode {
 	CVMX_QLM_MODE_DISABLED = -1,
 	CVMX_QLM_MODE_SGMII = 1,
 	CVMX_QLM_MODE_XAUI,
 	CVMX_QLM_MODE_RXAUI,
-	CVMX_QLM_MODE_PCIE,	/* gen2 / gen1 */
+	CVMX_QLM_MODE_PCIE,	/* gen3 / gen2 / gen1 */
 	CVMX_QLM_MODE_PCIE_1X2,	/* 1x2 gen2 / gen1 */
 	CVMX_QLM_MODE_PCIE_2X1,	/* 2x1 gen2 / gen1 */
 	CVMX_QLM_MODE_PCIE_1X1,	/* 1x1 gen2 / gen1 */
@@ -185,6 +186,12 @@ enum cvmx_qlm_mode {
 	CVMX_QLM_MODE_QSGMII_SGMII,
 	CVMX_QLM_MODE_RXAUI_1X2,
 	CVMX_QLM_MODE_SATA_2X1,
+	CVMX_QLM_MODE_XLAUI,
+	CVMX_QLM_MODE_XFI,
+	CVMX_QLM_MODE_10G_KR,
+	CVMX_QLM_MODE_40G_KR4,
+	CVMX_QLM_MODE_PCIE_1X8,  /* 1x8 gen3 / gen2 / gen1 */
+	CVMX_QLM_MODE_OCI
 };
 
 enum cvmx_gmx_inf_mode {
@@ -219,7 +226,9 @@ enum cvmx_pemx_cfg_mode {
  * Read QLM and return mode.
  */
 extern enum cvmx_qlm_mode cvmx_qlm_get_mode(int qlm);
+enum cvmx_qlm_mode cvmx_qlm_get_mode_cn78xx(int node, int qlm);
 extern enum cvmx_qlm_mode cvmx_qlm_get_dlm_mode(int dlm_mode, int interface);
+extern void __cvmx_qlm_set_mult(int qlm, int baud_mhz, int old_multiplier);
 
 extern void cvmx_qlm_display_registers(int qlm);
 

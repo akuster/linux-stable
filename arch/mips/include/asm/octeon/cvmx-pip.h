@@ -42,23 +42,22 @@
  *
  * Interface to the hardware Packet Input Processing unit.
  *
- * <hr>$Revision: 82059 $<hr>
+ * <hr>$Revision: 103836 $<hr>
  */
 
 #ifndef __CVMX_PIP_H__
 #define __CVMX_PIP_H__
 
 #include "cvmx-wqe.h"
-#include "cvmx-fpa.h"
+#include "cvmx-pki.h"
+#include "cvmx-helper-pki.h"
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include "cvmx-pip-defs.h"
-#else
-#ifndef CVMX_DONT_INCLUDE_CONFIG
-#endif
 #endif
 
 #include "cvmx-helper.h"
 #include "cvmx-helper-util.h"
+#include "cvmx-pki-resources.h"
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
@@ -67,6 +66,7 @@ extern "C" {
 #endif
 
 #define CVMX_PIP_NUM_INPUT_PORTS                46
+#define CVMX_PIP_NUM_WATCHERS                   8
 
 /*
  * Encodes the different error and exception codes
@@ -174,14 +174,14 @@ typedef struct {
 	uint32_t packets;		/**< Number of packets processed by PIP */
 	uint32_t multicast_packets;
 					/**< Number of indentified L2 multicast packets.
-                                            Does not include broadcast packets.
-                                            Only includes packets whose parse mode is
-                                            SKIP_TO_L2 */
+					Does not include broadcast packets.
+					Only includes packets whose parse mode is
+					SKIP_TO_L2 */
 	uint32_t broadcast_packets;
 					/**< Number of indentified L2 broadcast packets.
-                                            Does not include multicast packets.
-                                            Only includes packets whose parse mode is
-                                            SKIP_TO_L2 */
+					Does not include multicast packets.
+					Only includes packets whose parse mode is
+					SKIP_TO_L2 */
 	uint32_t len_64_packets;	/**< Number of 64B packets */
 	uint32_t len_65_127_packets;
 					/**< Number of 65-127B packets */
@@ -209,42 +209,42 @@ typedef struct {
 	uint16_t inb_errors;		/**< Number of packets with GMX/SPX/PCI errors received by PIP */
 	uint32_t mcast_l2_red_packets;
 					/**< Number of packets with L2 Multicast DMAC
-                                             that were dropped due to RED.
-                                             The HW will consider a packet to be an L2
-                                             multicast packet when the least-significant bit
-                                             of the first byte of the DMAC is set and the
-                                             packet is not an L2 broadcast packet.
-                                             Only applies when the parse mode for the packets
-                                             is SKIP-TO-L2 */
+					that were dropped due to RED.
+					The HW will consider a packet to be an L2
+					multicast packet when the least-significant bit
+					of the first byte of the DMAC is set and the
+					packet is not an L2 broadcast packet.
+					Only applies when the parse mode for the packets
+					is SKIP-TO-L2 */
 	uint32_t bcast_l2_red_packets;
 					/**< Number of packets with L2 Broadcast DMAC
-                                             that were dropped due to RED.
-                                             The HW will consider a packet to be an L2
-                                             broadcast packet when the 48-bit DMAC is all 1's.
-                                             Only applies when the parse mode for the packets
-                                             is SKIP-TO-L2 */
+					that were dropped due to RED.
+					The HW will consider a packet to be an L2
+					broadcast packet when the 48-bit DMAC is all 1's.
+					Only applies when the parse mode for the packets
+					is SKIP-TO-L2 */
 	uint32_t mcast_l3_red_packets;
 					/**< Number of packets with L3 Multicast Dest Address
-                                             that were dropped due to RED.
-                                             The HW considers an IPv4 packet to be multicast
-                                             when the most-significant nibble of the 32-bit
-                                             destination address is 0xE (i.e it is a class D
-                                             address). The HW considers an IPv6 packet to be 
-                                             multicast when the most-significant byte of the
-                                             128-bit destination address is all 1's.
-                                             Only applies when the parse mode for the packets
-                                             is SKIP-TO-L2 and the packet is IP or the parse
-                                             mode for the packet is SKIP-TO-IP */
+					that were dropped due to RED.
+					The HW considers an IPv4 packet to be multicast
+					when the most-significant nibble of the 32-bit
+					destination address is 0xE (i.e it is a class D
+					address). The HW considers an IPv6 packet to be
+					multicast when the most-significant byte of the
+					128-bit destination address is all 1's.
+					Only applies when the parse mode for the packets
+					is SKIP-TO-L2 and the packet is IP or the parse
+					mode for the packet is SKIP-TO-IP */
 	uint32_t bcast_l3_red_packets;
 					/**< Number of packets with L3 Broadcast Dest Address
-                                             that were dropped due to RED.
-                                             The HW considers an IPv4 packet to be broadcast
-                                             when all bits are set in the MSB of the
-                                             destination address. IPv6 does not have the 
-                                             concept of a broadcast packets.
-                                             Only applies when the parse mode for the packet
-                                             is SKIP-TO-L2 and the packet is IP or the parse
-                                             mode for the packet is SKIP-TO-IP */
+					that were dropped due to RED.
+					The HW considers an IPv4 packet to be broadcast
+					when all bits are set in the MSB of the
+					destination address. IPv6 does not have the
+					concept of a broadcast packets.
+					Only applies when the parse mode for the packet
+					is SKIP-TO-L2 and the packet is IP or the parse
+					mode for the packet is SKIP-TO-IP */
 } cvmx_pip_port_status_t;
 
 /**
@@ -255,31 +255,31 @@ typedef union {
 	uint64_t u64;
 	struct {
 		uint64_t rawfull:1;			/**< Documented as R - Set if the Packet is RAWFULL. If set,
-                                                            this header must be the full 8 bytes */
+							this header must be the full 8 bytes */
 		uint64_t reserved0:5;			/**< Must be zero */
 		cvmx_pip_port_parse_mode_t parse_mode:2;
 							/**< PIP parse mode for this packet */
 		uint64_t reserved1:1;			/**< Must be zero */
 		uint64_t skip_len:7;			/**< Skip amount, including this header, to the beginning of the packet */
 		uint64_t grpext:2;			/**< These bits get concatenated with the
-                                                             PKT_INST_HDR[GRP] bits, creating a 6-bit
-                                                             GRP field. Added in pass2. */
+							PKT_INST_HDR[GRP] bits, creating a 6-bit
+							GRP field. Added in pass2. */
 		uint64_t nqos:1;			/**< Must be 0 when PKT_INST_HDR[R] = 0.
-                                                             When set to 1, NQOS prevents PIP from directly using
-                                                             PKT_INST_HDR[QOS] for the QOS value in WQE.
-                                                             When PIP_GBL_CTL[IHMSK_DIS] = 1, Octeon2 does not use NQOS */
+							When set to 1, NQOS prevents PIP from directly using
+							PKT_INST_HDR[QOS] for the QOS value in WQE.
+							When PIP_GBL_CTL[IHMSK_DIS] = 1, Octeon2 does not use NQOS */
 		uint64_t ngrp:1;			/**< Must be 0 when PKT_INST_HDR[R] = 0.
-                                                             When set to 1, NGPR prevents PIP from directly using
-                                                             PKT_INST_HDR[GPR] for the GPR value in WQE.
-                                                             When PIP_GBL_CTL[IHMSK_DIS] = 1, Octeon2 does not use NGRP */
+							When set to 1, NGPR prevents PIP from directly using
+							PKT_INST_HDR[GPR] for the GPR value in WQE.
+							When PIP_GBL_CTL[IHMSK_DIS] = 1, Octeon2 does not use NGRP */
 		uint64_t ntt:1;				/**< Must be 0 when PKT_INST_HDR[R] = 0.
-                                                             When set to 1, NTT prevents PIP from directly using
-                                                             PKT_INST_HDR[TT] for the TT value in WQE.
-                                                             When PIP_GBL_CTL[IHMSK_DIS] = 1, Octeon2 does not use NTT */
+							When set to 1, NTT prevents PIP from directly using
+							PKT_INST_HDR[TT] for the TT value in WQE.
+							When PIP_GBL_CTL[IHMSK_DIS] = 1, Octeon2 does not use NTT */
 		uint64_t ntag:1;			/**< Must be 0 when PKT_INST_HDR[R] = 0.
-                                                             When set to 1, NTAG prevents PIP from directly using
-                                                             PKT_INST_HDR[TAG] for the TAG value in WQE.
-                                                             When PIP_GBL_CTL[IHMSK_DIS] = 1, Octeon2 does not use NTAG */
+							When set to 1, NTAG prevents PIP from directly using
+							PKT_INST_HDR[TAG] for the TAG value in WQE.
+							When PIP_GBL_CTL[IHMSK_DIS] = 1, Octeon2 does not use NTAG */
 		uint64_t qos:3;				/**< POW input queue for this packet */
 		uint64_t grp:4;				/**< POW input group for this packet */
 		uint64_t rs:1;				/**< Flag to store this packet in the work queue entry, if possible */
@@ -288,31 +288,373 @@ typedef union {
 	} s;
 } cvmx_pip_pkt_inst_hdr_t;
 
+enum cvmx_pki_pcam_match {
+	CVMX_PKI_PCAM_MATCH_IP,
+	CVMX_PKI_PCAM_MATCH_IPV4,
+	CVMX_PKI_PCAM_MATCH_IPV6,
+	CVMX_PKI_PCAM_MATCH_TCP
+};
+
 /* CSR typedefs have been moved to cvmx-pip-defs.h */
+static inline int cvmx_pip_config_watcher(int index, int type, uint16_t match,
+		    uint16_t mask, int grp, int qos)
+{
+	if (index >= CVMX_PIP_NUM_WATCHERS) {
+		cvmx_dprintf("ERROR: pip watcher %d is > than supported\n", index);
+		return -1;
+	}
+	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+		/* store in software for now, only when the watcher is enabled program the entry*/
+		if (type == CVMX_PIP_QOS_WATCH_PROTNH) {
+			qos_watcher[index].field = CVMX_PKI_PCAM_TERM_L3_FLAGS;
+			qos_watcher[index].data = (uint32_t)(match << 16);
+			qos_watcher[index].data_mask = (uint32_t)(mask << 16);
+			qos_watcher[index].advance = 0;
+		} else if (type == CVMX_PIP_QOS_WATCH_TCP) {
+			qos_watcher[index].field = CVMX_PKI_PCAM_TERM_L4_PORT;
+			qos_watcher[index].data = 0x060000;
+			qos_watcher[index].data |= (uint32_t)match;
+			qos_watcher[index].data_mask = (uint32_t)(mask);
+			qos_watcher[index].advance = 0;
+		} else if (type == CVMX_PIP_QOS_WATCH_UDP) {
+			qos_watcher[index].field = CVMX_PKI_PCAM_TERM_L4_PORT;
+			qos_watcher[index].data = 0x110000;
+			qos_watcher[index].data |= (uint32_t)match;
+			qos_watcher[index].data_mask = (uint32_t)(mask);
+			qos_watcher[index].advance = 0;
+		} else if (type == 0x4 /*CVMX_PIP_QOS_WATCH_ETHERTYPE*/) {
+			qos_watcher[index].field = CVMX_PKI_PCAM_TERM_ETHTYPE0;
+			if (match == 0x8100) {
+				cvmx_dprintf("ERROR: default vlan entry already exist, cant set watcher\n");
+				return -1;
+			}
+			qos_watcher[index].data = (uint32_t)(match << 16);
+			qos_watcher[index].data_mask = (uint32_t)(mask << 16);
+			qos_watcher[index].advance = 4;
+		} else {
+			cvmx_dprintf("ERROR: Unsupported watcher type %d\n", type);
+			return -1;
+		}
+		if (grp >= 32) {
+			cvmx_dprintf("ERROR: grp %d out of range for backward compat 78xx\n", grp);
+			return -1;
+		}
+		qos_watcher[index].sso_grp = (uint8_t)(grp << 3 | qos);
+		qos_watcher[index].configured = 1;
+	} else {
+		/* Implement it later */
+	}
+	return 0;
+}
+
+static inline int __cvmx_pip_set_tag_type(int node, int style,
+	int tag_type, int field)
+{
+	struct cvmx_pki_style_config style_cfg;
+	int style_num;
+	int pcam_offset;
+	int bank;
+	struct cvmx_pki_pcam_input pcam_input;
+	struct cvmx_pki_pcam_action pcam_action;
+
+	/* All other style parameters remain same except tag type */
+	cvmx_pki_read_style_config(node, style, CVMX_PKI_CLUSTER_ALL, &style_cfg);
+	style_cfg.parm_cfg.tag_type = tag_type;
+	style_num = cvmx_pki_style_alloc(node, -1);
+	if (style_num < 0) {
+		cvmx_dprintf("ERROR: style not available to set tag type\n");
+		return -1;
+	}
+	cvmx_pki_write_style_config(node, style_num, CVMX_PKI_CLUSTER_ALL, &style_cfg);
+	memset(&pcam_input, 0, sizeof(pcam_input));
+	memset(&pcam_action, 0, sizeof(pcam_action));
+	pcam_input.style = style;
+	pcam_input.style_mask = 0xff;
+	if (field == CVMX_PKI_PCAM_MATCH_IP) {
+		pcam_input.field = CVMX_PKI_PCAM_TERM_ETHTYPE0;
+		pcam_input.field_mask = 0xff;
+		pcam_input.data = 0x08000000;
+		pcam_input.data_mask = 0xffff0000;
+		pcam_action.pointer_advance = 4;
+		/* legacy will write to all clusters*/
+		bank = 0;
+		pcam_offset = cvmx_pki_pcam_entry_alloc(node, CVMX_PKI_FIND_AVAL_ENTRY, bank, CVMX_PKI_CLUSTER_ALL);
+		if (pcam_offset < 0) {
+			cvmx_dprintf("ERROR: pcam entry not available to enable qos watcher\n");
+			cvmx_pki_style_free(node, style_num);
+			return -1;
+		}
+		pcam_action.parse_mode_chg = CVMX_PKI_PARSE_NO_CHG;
+		pcam_action.layer_type_set = CVMX_PKI_LTYPE_E_NONE;
+		pcam_action.style_add = (uint8_t)(style_num - style);
+		cvmx_pki_pcam_write_entry(node, pcam_offset, CVMX_PKI_CLUSTER_ALL, pcam_input, pcam_action);
+		field = CVMX_PKI_PCAM_MATCH_IPV6;
+	}
+	if (field == CVMX_PKI_PCAM_MATCH_IPV4) {
+		pcam_input.field = CVMX_PKI_PCAM_TERM_ETHTYPE0;
+		pcam_input.field_mask = 0xff;
+		pcam_input.data = 0x08000000;
+		pcam_input.data_mask = 0xffff0000;
+		pcam_action.pointer_advance = 4;
+	} else if (field == CVMX_PKI_PCAM_MATCH_IPV6) {
+		pcam_input.field = CVMX_PKI_PCAM_TERM_ETHTYPE0;
+		pcam_input.field_mask = 0xff;
+		pcam_input.data = 0x86dd00000;
+		pcam_input.data_mask = 0xffff0000;
+		pcam_action.pointer_advance = 4;
+	} else if (field == CVMX_PKI_PCAM_MATCH_TCP) {
+		pcam_input.field = CVMX_PKI_PCAM_TERM_L4_PORT;
+		pcam_input.field_mask = 0xff;
+		pcam_input.data = 0x60000;
+		pcam_input.data_mask = 0xff0000;
+		pcam_action.pointer_advance = 0;
+	}
+	pcam_action.parse_mode_chg = CVMX_PKI_PARSE_NO_CHG;
+	pcam_action.layer_type_set = CVMX_PKI_LTYPE_E_NONE;
+	pcam_action.style_add = (uint8_t)(style_num - style);
+	bank = pcam_input.field & 0x01;
+	pcam_offset = cvmx_pki_pcam_entry_alloc(node, CVMX_PKI_FIND_AVAL_ENTRY, bank, CVMX_PKI_CLUSTER_ALL);
+	if (pcam_offset < 0) {
+		cvmx_dprintf("ERROR: pcam entry not available to enable qos watcher\n");
+		cvmx_pki_style_free(node, style_num);
+		return -1;
+	}
+	cvmx_pki_pcam_write_entry(node, pcam_offset, CVMX_PKI_CLUSTER_ALL, pcam_input, pcam_action);
+	return style_num;
+	}
+
+/* Only for legacy internal use */
+static inline int __cvmx_pip_enable_watcher_78xx(int node, int index, int style)
+	{
+	struct cvmx_pki_style_config style_cfg;
+	struct cvmx_pki_qpg_config qpg_cfg;
+	struct cvmx_pki_pcam_input pcam_input;
+	struct cvmx_pki_pcam_action pcam_action;
+	int style_num;
+	int qpg_offset;
+	int pcam_offset;
+	int bank;
+
+	if (!qos_watcher[index].configured) {
+		cvmx_dprintf("ERROR: qos watcher %d should be configured before enable\n", index);
+		return -1;
+	}
+	/* All other style parameters remain same except grp and qos and qps base */
+	cvmx_pki_read_style_config(node, style, CVMX_PKI_CLUSTER_ALL, &style_cfg);
+	cvmx_pki_read_qpg_entry(node, style_cfg.parm_cfg.qpg_base, &qpg_cfg);
+	qpg_cfg.grp_ok = qos_watcher[index].sso_grp;
+	qpg_cfg.grp_bad = qos_watcher[index].sso_grp;
+	qpg_offset = cvmx_helper_pki_set_qpg_entry(node, &qpg_cfg);
+	if (qpg_offset == -1) {
+		cvmx_dprintf("Warning: no new qpg entry available to enable watcher\n");
+		return -1;
+	}
+	/* try to reserve the style, if it is not configured already, reserve
+	and configure it */
+	style_cfg.parm_cfg.qpg_base = qpg_offset;
+	style_num = cvmx_pki_style_alloc(node, -1);
+	if (style_num < 0) {
+		cvmx_dprintf("ERROR: style not available to enable qos watcher\n");
+		cvmx_pki_qpg_entry_free(node, qpg_offset, 1);
+		return -1;
+	}
+	cvmx_pki_write_style_config(node, style_num, CVMX_PKI_CLUSTER_ALL, &style_cfg);
+	/* legacy will write to all clusters*/
+	bank = qos_watcher[index].field & 0x01;
+	pcam_offset = cvmx_pki_pcam_entry_alloc(node, CVMX_PKI_FIND_AVAL_ENTRY, bank, CVMX_PKI_CLUSTER_ALL);
+	if (pcam_offset < 0) {
+		cvmx_dprintf("ERROR: pcam entry not available to enable qos watcher\n");
+		cvmx_pki_style_free(node, style_num);
+		cvmx_pki_qpg_entry_free(node, qpg_offset, 1);
+		return -1;
+	}
+	memset(&pcam_input, 0, sizeof(pcam_input));
+	memset(&pcam_action, 0, sizeof(pcam_action));
+	pcam_input.style = style;
+	pcam_input.style_mask = 0xff;
+	pcam_input.field = qos_watcher[index].field;
+	pcam_input.field_mask = 0xff;
+	pcam_input.data = qos_watcher[index].data;
+	pcam_input.data_mask = qos_watcher[index].data_mask;
+	pcam_action.parse_mode_chg = CVMX_PKI_PARSE_NO_CHG;
+	pcam_action.layer_type_set = CVMX_PKI_LTYPE_E_NONE;
+	pcam_action.style_add = (uint8_t)(style_num - style);
+	pcam_action.pointer_advance = qos_watcher[index].advance;
+	cvmx_pki_pcam_write_entry(node, pcam_offset, CVMX_PKI_CLUSTER_ALL, pcam_input, pcam_action);
+	return 0;
+	}
 
 /**
  * Configure an ethernet input port
  *
- * @param port_num Port number to configure
+ * @param ipd_port Port number to configure
  * @param port_cfg Port hardware configuration
- * @param port_tag_cfg
- *                 Port POW tagging configuration
+ * @param port_tag_cfg Port POW tagging configuration
  */
-static inline void cvmx_pip_config_port(uint64_t port_num, cvmx_pip_prt_cfgx_t port_cfg, cvmx_pip_prt_tagx_t port_tag_cfg)
-{
+static inline void cvmx_pip_config_port(uint64_t ipd_port, cvmx_pip_prt_cfgx_t port_cfg, cvmx_pip_prt_tagx_t port_tag_cfg)
+	{
+	struct cvmx_pki_qpg_config qpg_cfg;
+	int qpg_offset;
+	uint8_t tcp_tag = 0xff;
+	uint8_t ip_tag = 0xaa;
+	int style, nstyle, n4style, n6style;
 
-	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
-		int interface, index, pknd;
+	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+		struct cvmx_pki_port_config pki_prt_cfg;
+		struct cvmx_xport xp = cvmx_helper_ipd_port_to_xport(ipd_port);
 
-		interface = cvmx_helper_get_interface_num(port_num);
-		index = cvmx_helper_get_interface_index_num(port_num);
-		pknd = cvmx_helper_get_pknd(interface, index);
+		cvmx_pki_get_port_config(ipd_port, &pki_prt_cfg);
+		style = pki_prt_cfg.pkind_cfg.initial_style;
+		if (port_cfg.s.ih_pri || port_cfg.s.vlan_len || port_cfg.s.pad_len)
+			cvmx_dprintf("Warning: 78xx: use different config for this option\n");
+		pki_prt_cfg.style_cfg.parm_cfg.minmax_sel = port_cfg.s.len_chk_sel;
+		pki_prt_cfg.style_cfg.parm_cfg.lenerr_en = port_cfg.s.lenerr_en;
+		pki_prt_cfg.style_cfg.parm_cfg.maxerr_en = port_cfg.s.maxerr_en;
+		pki_prt_cfg.style_cfg.parm_cfg.minerr_en = port_cfg.s.minerr_en;
+		pki_prt_cfg.style_cfg.parm_cfg.fcs_chk = port_cfg.s.crc_en;
+		if (port_cfg.s.grp_wat || port_cfg.s.qos_wat ||
+		    port_cfg.s.grp_wat_47 || port_cfg.s.qos_wat_47) {
+			uint8_t group_mask = (uint8_t)(port_cfg.s.grp_wat | (uint8_t)(port_cfg.s.grp_wat_47 << 4));
+			uint8_t qos_mask = (uint8_t)(port_cfg.s.qos_wat | (uint8_t)(port_cfg.s.qos_wat_47 << 4));
+			int i;
+			for (i=0; i<CVMX_PIP_NUM_WATCHERS; i++) {
+				if ((group_mask & (1 << i)) || (qos_mask & (1 << i)))
+					__cvmx_pip_enable_watcher_78xx(xp.node, i, style);
+			}
+		}
+		if (port_tag_cfg.s.tag_mode) {
+			if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
+				cvmx_printf("Warning: mask tag is not supported in 78xx pass1\n");
+			else {}
+				/* need to implement for 78xx*/
+		}
+		if (port_cfg.s.tag_inc)
+			cvmx_dprintf("Warning: 78xx uses differnet method for tag generation\n");
+		pki_prt_cfg.style_cfg.parm_cfg.rawdrp = port_cfg.s.rawdrp;
+		pki_prt_cfg.pkind_cfg.parse_en.inst_hdr = port_cfg.s.inst_hdr;
+		if (port_cfg.s.hg_qos)
+			pki_prt_cfg.style_cfg.parm_cfg.qpg_qos = CVMX_PKI_QPG_QOS_HIGIG;
+		else if (port_cfg.s.qos_vlan)
+			pki_prt_cfg.style_cfg.parm_cfg.qpg_qos = CVMX_PKI_QPG_QOS_VLAN;
+		else if (port_cfg.s.qos_diff)
+			pki_prt_cfg.style_cfg.parm_cfg.qpg_qos = CVMX_PKI_QPG_QOS_DIFFSERV;
+		if (port_cfg.s.qos_vod)
+			cvmx_dprintf("Warning: 78xx needs pcam entries installed to achieve qos_vod\n");
+		if (port_cfg.s.qos) {
+			cvmx_pki_read_qpg_entry(xp.node,
+				pki_prt_cfg.style_cfg.parm_cfg.qpg_base, &qpg_cfg);
+			qpg_cfg.grp_ok |= port_cfg.s.qos;
+			qpg_cfg.grp_bad |= port_cfg.s.qos;
+			qpg_offset = cvmx_helper_pki_set_qpg_entry(xp.node, &qpg_cfg);
+			if (qpg_offset == -1)
+				cvmx_dprintf("Warning: no new qpg entry available, will not modify qos\n");
+			else
+				pki_prt_cfg.style_cfg.parm_cfg.qpg_base = qpg_offset;
+		}
+		if (port_tag_cfg.s.grp != pki_dflt_sso_grp[xp.node].group) {
+			cvmx_pki_read_qpg_entry(xp.node,
+					pki_prt_cfg.style_cfg.parm_cfg.qpg_base, &qpg_cfg);
+			qpg_cfg.grp_ok |= (uint8_t)(port_tag_cfg.s.grp << 3);
+			qpg_cfg.grp_bad |= (uint8_t)(port_tag_cfg.s.grp << 3);
+			qpg_offset = cvmx_helper_pki_set_qpg_entry(xp.node, &qpg_cfg);
+			if (qpg_offset == -1)
+				cvmx_dprintf("Warning: no new qpg entry available, will not modify group\n");
+			else
+				pki_prt_cfg.style_cfg.parm_cfg.qpg_base = qpg_offset;
+		}
+		pki_prt_cfg.pkind_cfg.parse_en.dsa_en = port_cfg.s.dsa_en;
+		pki_prt_cfg.pkind_cfg.parse_en.hg_en = port_cfg.s.higig_en;
+		pki_prt_cfg.style_cfg.tag_cfg.tag_fields.layer_c_src = port_tag_cfg.s.ip6_src_flag |
+				port_tag_cfg.s.ip4_src_flag;
+		pki_prt_cfg.style_cfg.tag_cfg.tag_fields.layer_c_dst = port_tag_cfg.s.ip6_dst_flag |
+				port_tag_cfg.s.ip4_dst_flag;
+		pki_prt_cfg.style_cfg.tag_cfg.tag_fields.ip_prot_nexthdr = port_tag_cfg.s.ip6_nxth_flag |
+				port_tag_cfg.s.ip4_pctl_flag;
+		pki_prt_cfg.style_cfg.tag_cfg.tag_fields.layer_d_src = port_tag_cfg.s.ip6_sprt_flag |
+				port_tag_cfg.s.ip4_sprt_flag;
+		pki_prt_cfg.style_cfg.tag_cfg.tag_fields.layer_d_dst = port_tag_cfg.s.ip6_dprt_flag |
+				port_tag_cfg.s.ip4_dprt_flag;
+		pki_prt_cfg.style_cfg.tag_cfg.tag_fields.input_port = port_tag_cfg.s.inc_prt_flag;
+		pki_prt_cfg.style_cfg.tag_cfg.tag_fields.first_vlan = port_tag_cfg.s.inc_vlan;
+		pki_prt_cfg.style_cfg.tag_cfg.tag_fields.second_vlan = port_tag_cfg.s.inc_vs;
 
-		port_num = pknd;	/* overload port_num with pknd */
+		if (port_tag_cfg.s.tcp6_tag_type == port_tag_cfg.s.tcp4_tag_type)
+			tcp_tag = port_tag_cfg.s.tcp6_tag_type;
+		if (port_tag_cfg.s.ip6_tag_type == port_tag_cfg.s.ip4_tag_type)
+			ip_tag = port_tag_cfg.s.ip6_tag_type;
+		pki_prt_cfg.style_cfg.parm_cfg.tag_type = port_tag_cfg.s.non_tag_type;
+		if (tcp_tag == ip_tag && tcp_tag == port_tag_cfg.s.non_tag_type)
+			pki_prt_cfg.style_cfg.parm_cfg.tag_type = tcp_tag;
+		else if (tcp_tag == ip_tag) {
+			/* allocate and copy style */
+			/* modify tag type */
+			/*pcam entry for ip6 && ip4 match*/
+			/* default is non tag type */
+			__cvmx_pip_set_tag_type(xp.node, style, ip_tag, CVMX_PKI_PCAM_MATCH_IP);
+		}
+		else if (ip_tag == port_tag_cfg.s.non_tag_type)
+		{
+			/* allocate and copy style */
+			/* modify tag type */
+			/*pcam entry for tcp6 & tcp4 match*/
+			/* default is non tag type */
+			__cvmx_pip_set_tag_type(xp.node, style, tcp_tag, CVMX_PKI_PCAM_MATCH_TCP);
+		}
+		else {
+			if (ip_tag != 0xaa) {
+				nstyle = __cvmx_pip_set_tag_type(xp.node, style, ip_tag, CVMX_PKI_PCAM_MATCH_IP);
+				if (tcp_tag != 0xff)
+					__cvmx_pip_set_tag_type(xp.node, nstyle, tcp_tag, CVMX_PKI_PCAM_MATCH_TCP);
+				else {
+					n4style = __cvmx_pip_set_tag_type(xp.node, nstyle, ip_tag,
+							CVMX_PKI_PCAM_MATCH_IPV4);
+					__cvmx_pip_set_tag_type(xp.node, n4style, port_tag_cfg.s.tcp4_tag_type,
+							CVMX_PKI_PCAM_MATCH_TCP);
+					n6style = __cvmx_pip_set_tag_type(xp.node, nstyle, ip_tag,
+							CVMX_PKI_PCAM_MATCH_IPV6);
+					__cvmx_pip_set_tag_type(xp.node, n6style, port_tag_cfg.s.tcp6_tag_type,
+							CVMX_PKI_PCAM_MATCH_TCP);
+				}
+			}
+			else {
+				n4style = __cvmx_pip_set_tag_type(xp.node, style, port_tag_cfg.s.ip4_tag_type,
+						CVMX_PKI_PCAM_MATCH_IPV4);
+				n6style = __cvmx_pip_set_tag_type(xp.node, style, port_tag_cfg.s.ip6_tag_type,
+						CVMX_PKI_PCAM_MATCH_IPV6);
+				if (tcp_tag != 0xff) {
+					__cvmx_pip_set_tag_type(xp.node, n4style, tcp_tag, CVMX_PKI_PCAM_MATCH_TCP);
+					__cvmx_pip_set_tag_type(xp.node, n6style, tcp_tag, CVMX_PKI_PCAM_MATCH_TCP);
+				} else {
+					__cvmx_pip_set_tag_type(xp.node, n4style, port_tag_cfg.s.tcp4_tag_type,
+							CVMX_PKI_PCAM_MATCH_TCP);
+					__cvmx_pip_set_tag_type(xp.node, n6style, port_tag_cfg.s.tcp6_tag_type,
+							CVMX_PKI_PCAM_MATCH_TCP);
+				}
+			}
+		}
+		pki_prt_cfg.style_cfg.parm_cfg.qpg_dis_padd = !port_tag_cfg.s.portadd_en;
+
+		if (port_cfg.s.mode == 0x1)
+			pki_prt_cfg.pkind_cfg.initial_parse_mode = CVMX_PKI_PARSE_LA_TO_LG;
+		else if (port_cfg.s.mode == 0x2)
+			pki_prt_cfg.pkind_cfg.initial_parse_mode = CVMX_PKI_PARSE_LC_TO_LG;
+		else
+			pki_prt_cfg.pkind_cfg.initial_parse_mode = CVMX_PKI_PARSE_NOTHING;
+		/* This is only for backward compatibility, not all the parameters are supported in 78xx */
+		cvmx_pki_set_port_config(ipd_port, &pki_prt_cfg);
+	} else {
+		if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
+			int interface, index, pknd;
+
+			interface = cvmx_helper_get_interface_num(ipd_port);
+			index = cvmx_helper_get_interface_index_num(ipd_port);
+			pknd = cvmx_helper_get_pknd(interface, index);
+
+			ipd_port = pknd;	/* overload port_num with pknd */
+		}
+		cvmx_write_csr(CVMX_PIP_PRT_CFGX(ipd_port), port_cfg.u64);
+		cvmx_write_csr(CVMX_PIP_PRT_TAGX(ipd_port), port_tag_cfg.u64);
 	}
-
-	cvmx_write_csr(CVMX_PIP_PRT_CFGX(port_num), port_cfg.u64);
-	cvmx_write_csr(CVMX_PIP_PRT_TAGX(port_num), port_tag_cfg.u64);
 }
 
 /**
@@ -353,13 +695,13 @@ static inline void cvmx_pip_config_diffserv_qos(uint64_t diffserv, uint64_t qos)
 }
 
 /**
- * Get the status counters for a port.
+ * Get the status counters for a port for older non PKI chips.
  *
  * @param port_num Port number (ipd_port) to get statistics for.
  * @param clear    Set to 1 to clear the counters after they are read
  * @param status   Where to put the results.
  */
-static inline void cvmx_pip_get_port_status(uint64_t port_num, uint64_t clear, cvmx_pip_port_status_t * status)
+static inline void cvmx_pip_get_port_stats(uint64_t port_num, uint64_t clear, cvmx_pip_port_status_t *status)
 {
 	cvmx_pip_stat_ctl_t pip_stat_ctl;
 	cvmx_pip_stat0_prtx_t stat0;
@@ -483,6 +825,23 @@ static inline void cvmx_pip_get_port_status(uint64_t port_num, uint64_t clear, c
 }
 
 /**
+ * Get the status counters for a port.
+ *
+ * @param port_num Port number (ipd_port) to get statistics for.
+ * @param clear    Set to 1 to clear the counters after they are read
+ * @param status   Where to put the results.
+ */
+static inline void cvmx_pip_get_port_status(uint64_t port_num, uint64_t clear, cvmx_pip_port_status_t *status)
+{
+	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+		unsigned int node = cvmx_get_node_num();
+		cvmx_pki_get_port_stats(node, port_num, (struct cvmx_pki_port_stats *)status);
+	} else {
+		cvmx_pip_get_port_stats(port_num, clear, status);
+	}
+}
+
+/**
  * Configure the hardware CRC engine
  *
  * @param interface Interface to configure (0 or 1)
@@ -572,18 +931,24 @@ static inline void cvmx_pip_set_frame_check(int interface, uint32_t max_size)
 	   PIP_PRT_CFG[len_chk_sel] selects which set of
 	   MAXLEN/MINLEN to use. */
 	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
-		cvmx_pip_prt_cfgx_t config;
 		int port;
 		int num_ports = cvmx_helper_ports_on_interface(interface);
 		for (port = 0; port < num_ports; port++) {
-			int pknd = cvmx_helper_get_pknd(interface, port);
-			int sel;
-
-			config.u64 = cvmx_read_csr(CVMX_PIP_PRT_CFGX(pknd));
-			sel = config.s.len_chk_sel;
-			frm_len.u64 = cvmx_read_csr(CVMX_PIP_FRM_LEN_CHKX(sel));
-			frm_len.s.maxlen = max_size;
-			cvmx_write_csr(CVMX_PIP_FRM_LEN_CHKX(sel), frm_len.u64);
+			if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
+				int ipd_port;
+				ipd_port = cvmx_helper_get_ipd_port(interface, port);
+				cvmx_pki_set_max_frm_len(ipd_port, max_size);
+			} else {
+				int pknd;
+				int sel;
+				cvmx_pip_prt_cfgx_t config;
+				pknd = cvmx_helper_get_pknd(interface, port);
+				config.u64 = cvmx_read_csr(CVMX_PIP_PRT_CFGX(pknd));
+				sel = config.s.len_chk_sel;
+				frm_len.u64 = cvmx_read_csr(CVMX_PIP_FRM_LEN_CHKX(sel));
+				frm_len.s.maxlen = max_size;
+				cvmx_write_csr(CVMX_PIP_FRM_LEN_CHKX(sel), frm_len.u64);
+			}
 		}
 	}
 	/* Update for each interface */
@@ -606,7 +971,7 @@ static inline void cvmx_pip_set_frame_check(int interface, uint32_t max_size)
 /**
  * Initialize Bit Select Extractor config. Their are 8 bit positions and valids
  * to be used when using the corresponding extractor.
- * 
+ *
  * @param bit     Bit Select Extractor to use
  * @param pos     Which position to update
  * @param val     The value to update the position with
@@ -668,10 +1033,10 @@ static inline void cvmx_pip_set_bsel_pos(int bit, int pos, int val)
 /**
  * Initialize offset and skip values to use by bit select extractor.
 
- * @param bit     Bit Select Extractor to use
- * @param offset  Offset to add to extractor mem addr to get final address
-                  to lookup table.
- * @param skip    Number of bytes to skip from start of packet 0-64
+ * @param bit     	Bit Select Extractor to use
+ * @param offset	Offset to add to extractor mem addr to get final address
+ *			to lookup table.
+ * @param skip		Number of bytes to skip from start of packet 0-64
  */
 static inline void cvmx_pip_bsel_config(int bit, int offset, int skip)
 {
@@ -688,11 +1053,11 @@ static inline void cvmx_pip_bsel_config(int bit, int offset, int skip)
 }
 
 /**
- * Get the entry for the Bit Select Extractor Table. 
+ * Get the entry for the Bit Select Extractor Table.
  * @param work   pointer to work queue entry
  * @return       Index of the Bit Select Extractor Table
  */
-static inline int cvmx_pip_get_bsel_table_index(cvmx_wqe_t * work)
+static inline int cvmx_pip_get_bsel_table_index(cvmx_wqe_t *work)
 {
 	int bit = cvmx_wqe_get_port(work) & 0x3;
 	/* Get the Bit select table index. */
@@ -756,7 +1121,7 @@ static inline int cvmx_pip_get_bsel_table_index(cvmx_wqe_t * work)
 	return index;
 }
 
-static inline int cvmx_pip_get_bsel_qos(cvmx_wqe_t * work)
+static inline int cvmx_pip_get_bsel_qos(cvmx_wqe_t *work)
 {
 	int index = cvmx_pip_get_bsel_table_index(work);
 	cvmx_pip_bsel_tbl_entx_t bsel_tbl;
@@ -770,7 +1135,7 @@ static inline int cvmx_pip_get_bsel_qos(cvmx_wqe_t * work)
 	return bsel_tbl.s.qos;
 }
 
-static inline int cvmx_pip_get_bsel_grp(cvmx_wqe_t * work)
+static inline int cvmx_pip_get_bsel_grp(cvmx_wqe_t *work)
 {
 	int index = cvmx_pip_get_bsel_table_index(work);
 	cvmx_pip_bsel_tbl_entx_t bsel_tbl;
@@ -784,7 +1149,7 @@ static inline int cvmx_pip_get_bsel_grp(cvmx_wqe_t * work)
 	return bsel_tbl.s.grp;
 }
 
-static inline int cvmx_pip_get_bsel_tt(cvmx_wqe_t * work)
+static inline int cvmx_pip_get_bsel_tt(cvmx_wqe_t *work)
 {
 	int index = cvmx_pip_get_bsel_table_index(work);
 	cvmx_pip_bsel_tbl_entx_t bsel_tbl;
@@ -798,7 +1163,7 @@ static inline int cvmx_pip_get_bsel_tt(cvmx_wqe_t * work)
 	return bsel_tbl.s.tt;
 }
 
-static inline int cvmx_pip_get_bsel_tag(cvmx_wqe_t * work)
+static inline int cvmx_pip_get_bsel_tag(cvmx_wqe_t *work)
 {
 	int index = cvmx_pip_get_bsel_table_index(work);
 	int port = cvmx_wqe_get_port(work);
@@ -818,7 +1183,7 @@ static inline int cvmx_pip_get_bsel_tag(cvmx_wqe_t * work)
 	prt_tag.u64 = cvmx_read_csr(CVMX_PIP_PRT_TAGX(port));
 	if (prt_tag.s.inc_prt_flag == 0)
 		upper_tag = bsel_cfg.s.upper_tag;
-	return (bsel_tbl.s.tag | ((bsel_cfg.s.tag << 8) & 0xff00) | ((upper_tag << 16) & 0xffff0000));
+	return bsel_tbl.s.tag | ((bsel_cfg.s.tag << 8) & 0xff00) | ((upper_tag << 16) & 0xffff0000);
 }
 
 #ifdef	__cplusplus

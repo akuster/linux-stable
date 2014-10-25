@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -439,6 +439,7 @@ union cvmx_smix_clk {
 	struct cvmx_smix_clk_s                cn68xx;
 	struct cvmx_smix_clk_s                cn68xxp1;
 	struct cvmx_smix_clk_s                cn70xx;
+	struct cvmx_smix_clk_s                cn70xxp1;
 	struct cvmx_smix_clk_s                cn78xx;
 	struct cvmx_smix_clk_s                cnf71xx;
 };
@@ -514,6 +515,7 @@ union cvmx_smix_cmd {
 	struct cvmx_smix_cmd_s                cn68xx;
 	struct cvmx_smix_cmd_s                cn68xxp1;
 	struct cvmx_smix_cmd_s                cn70xx;
+	struct cvmx_smix_cmd_s                cn70xxp1;
 	struct cvmx_smix_cmd_s                cn78xx;
 	struct cvmx_smix_cmd_s                cnf71xx;
 };
@@ -556,6 +558,7 @@ union cvmx_smix_en {
 	struct cvmx_smix_en_s                 cn68xx;
 	struct cvmx_smix_en_s                 cn68xxp1;
 	struct cvmx_smix_en_s                 cn70xx;
+	struct cvmx_smix_en_s                 cn70xxp1;
 	struct cvmx_smix_en_s                 cn78xx;
 	struct cvmx_smix_en_s                 cnf71xx;
 };
@@ -600,6 +603,7 @@ union cvmx_smix_rd_dat {
 	struct cvmx_smix_rd_dat_s             cn68xx;
 	struct cvmx_smix_rd_dat_s             cn68xxp1;
 	struct cvmx_smix_rd_dat_s             cn70xx;
+	struct cvmx_smix_rd_dat_s             cn70xxp1;
 	struct cvmx_smix_rd_dat_s             cn78xx;
 	struct cvmx_smix_rd_dat_s             cnf71xx;
 };
@@ -644,6 +648,7 @@ union cvmx_smix_wr_dat {
 	struct cvmx_smix_wr_dat_s             cn68xx;
 	struct cvmx_smix_wr_dat_s             cn68xxp1;
 	struct cvmx_smix_wr_dat_s             cn70xx;
+	struct cvmx_smix_wr_dat_s             cn70xxp1;
 	struct cvmx_smix_wr_dat_s             cn78xx;
 	struct cvmx_smix_wr_dat_s             cnf71xx;
 };
