@@ -1165,7 +1165,7 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	if (r)
 		return -ENODEV;
 
-	r = __cvmx_pko3_helper_dqs_activate(priv->xiface, priv->port_index);
+	r = __cvmx_pko3_helper_dqs_activate(priv->xiface, priv->port_index, false);
 	if (r < 0)
 		return -ENODEV;
 
