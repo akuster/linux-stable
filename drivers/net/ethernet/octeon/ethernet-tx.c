@@ -42,10 +42,10 @@
 #include "octeon-ethernet.h"
 
 #include <asm/octeon/cvmx-wqe.h>
-#include <asm/octeon/cvmx-fau.h>
+#include <asm/octeon/cvmx-hwfau.h>
 #include <asm/octeon/cvmx-ipd.h>
 #include <asm/octeon/cvmx-pip.h>
-#include <asm/octeon/cvmx-pko.h>
+#include <asm/octeon/cvmx-hwpko.h>
 #include <asm/octeon/cvmx-helper.h>
 
 #include <asm/octeon/cvmx-gmxx-defs.h>
@@ -210,7 +210,7 @@ int cvm_oct_transmit_qos(struct net_device *dev,
 		pko_command.s.ipoffp1 = sizeof(struct ethhdr) + 1;
 
 	/* Send the packet to the output queue */
-	if (unlikely(cvmx_pko_send_packet_finish_pkoid(priv->pko_port, priv->tx_queue[qos].queue, pko_command, hw_buffer, lock_type))) {
+	if (unlikely(cvmx_hwpko_send_packet_finish_pkoid(priv->pko_port, priv->tx_queue[qos].queue, pko_command, hw_buffer, lock_type))) {
 		netdev_err(dev, "Error: Failed to send the packet\n");
 		dropped = -1;
 	}
@@ -222,7 +222,7 @@ int cvm_oct_transmit_qos(struct net_device *dev,
 		dev->stats.tx_dropped++;
 	} else
 	if (do_free)
-		cvmx_fpa_free(work, wqe_pool, DONT_WRITEBACK(1));
+		cvmx_fpa1_free(work, wqe_pool, DONT_WRITEBACK(1));
 
 	return dropped;
 }
