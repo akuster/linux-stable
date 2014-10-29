@@ -22,7 +22,7 @@
 #include <asm/octeon/cvmx-pexp-defs.h>
 #include <asm/octeon/cvmx-sriomaintx-defs.h>
 #include <asm/octeon/cvmx-dma-engine.h>
-#include <asm/octeon/cvmx-fpa.h>
+#include <asm/octeon/cvmx-fpa1.h>
 #include <asm/octeon/cvmx-config.h>
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-qlm.h>
@@ -315,12 +315,12 @@ int octeon_rio_dma_mem(struct rio_dev *rdev, u64 local_addr,
 	sli_address += memmap & 0x3ffffffffull;
 
 	/* Create the DMA header */
-	header.u64 = 0;
-	header.s.fport = 0;
-	header.s.lport = rdev->net->hport->id;
-	header.s.type = (is_outbound) ? CVMX_DMA_ENGINE_TRANSFER_OUTBOUND :
+	header.word0.u64 = 0;
+	header.word0.cn38xx.fport = 0;
+	header.word0.cn38xx.lport = rdev->net->hport->id;
+	header.word0.cn38xx.type = (is_outbound) ? CVMX_DMA_ENGINE_TRANSFER_OUTBOUND :
 		CVMX_DMA_ENGINE_TRANSFER_INBOUND;
-	header.s.addr = virt_to_phys(&dma_busy);
+	header.word0.cn38xx.addr = virt_to_phys(&dma_busy);
 
 	/* Do the DMA */
 	result = cvmx_dma_engine_transfer(0, header, local_addr,
@@ -816,7 +816,7 @@ static int __init octeon_rio_init(void)
 	}
 	if (count) {
 		int r;
-		cvmx_fpa_enable();
+		cvmx_fpa1_enable();
 		r = cvm_oct_alloc_fpa_pool(CVMX_FPA_OUTPUT_BUFFER_POOL,
 					   CVMX_FPA_OUTPUT_BUFFER_POOL_SIZE);
 		if (r < 0)

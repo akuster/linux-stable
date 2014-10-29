@@ -30,7 +30,7 @@
 #include <linux/slab.h>
 
 #include <asm/octeon/octeon.h>
-#include <asm/octeon/cvmx-fpa.h>
+#include <asm/octeon/cvmx-fpa1.h>
 
 #include "ethernet-defines.h"
 #include "octeon-ethernet.h"
@@ -77,7 +77,7 @@ static int cvm_oct_fill_hw_skbuff(struct fpa_pool *pool, int elements)
 		extra_reserve = desired_data - skb->data;
 		skb_reserve(skb, extra_reserve);
 		*(struct sk_buff **)(skb->data - sizeof(void *)) = skb;
-		cvmx_fpa_free(skb->data, pool_num, DONT_WRITEBACK(size / 128));
+		cvmx_fpa1_free(skb->data, pool_num, DONT_WRITEBACK(size / 128));
 		freed--;
 	}
 	return elements - freed;
@@ -96,7 +96,7 @@ static int cvm_oct_free_hw_skbuff(struct fpa_pool *pool, int elements)
 	int pool_num = pool->pool;
 
 	while (elements) {
-		memory = cvmx_fpa_alloc(pool_num);
+		memory = cvmx_fpa1_alloc(pool_num);
 		if (!memory)
 			break;
 		skb = *cvm_oct_packet_to_skb(memory);
@@ -131,7 +131,7 @@ static int cvm_oct_fill_hw_kmem(struct fpa_pool *pool, int elements)
 			       elements * pool->size, pool->pool);
 			break;
 		}
-		cvmx_fpa_free(memory, pool->pool, 0);
+		cvmx_fpa1_free(memory, pool->pool, 0);
 		freed--;
 	}
 	return elements - freed;
@@ -147,7 +147,7 @@ static int cvm_oct_free_hw_kmem(struct fpa_pool *pool, int elements)
 {
 	char *fpa;
 	while (elements) {
-		fpa = cvmx_fpa_alloc(pool->pool);
+		fpa = cvmx_fpa1_alloc(pool->pool);
 		if (!fpa)
 			break;
 		elements--;
