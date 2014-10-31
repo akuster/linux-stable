@@ -65,8 +65,7 @@
 static int debug = 0;	/* 1 for basic, 2 for detailed trace */
 
 /* Minimum MTU assumed for shaping configuration */
-static unsigned __pko3_min_mtu = 9080;
-/* FIXME: The above could be made a per-port config param */
+static unsigned __pko3_min_mtu = 9080;	/* Could be per-port in the future */
 
 struct cvmx_pko3_dq {
 #ifdef __BIG_ENDIAN_BITFIELD
@@ -108,7 +107,8 @@ int cvmx_pko3_get_queue_base(int ipd_port)
 	dq_table = __cvmx_pko3_dq_table + CVMX_PKO3_IPD_NUM_MAX * xp.node;
 
 	if(dq_table[i].dq_count > 0)
-		ret = cvmx_helper_node_to_ipd_port(xp.node, dq_table[i].dq_base);
+		ret = xp.node << 10 |
+		    cvmx_helper_node_to_ipd_port(xp.node, dq_table[i].dq_base);
 
 	return ret;
 }
@@ -1261,6 +1261,12 @@ void cvmx_pko3_dq_red(unsigned node, unsigned dq_num, red_action_t red_act,
 	dq_num &= (1<<10)-1;
 
 	dqx_shape.u64 = 0;
+
+        if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) {
+		if (len_adjust < 0)
+			len_adjust = 0;
+	}
+
         dqx_shape.s.adjust = len_adjust;
 
 	switch(red_act) {

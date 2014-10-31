@@ -42,7 +42,7 @@
  *
  * Helper Functions for the PKO
  *
- * $Id: cvmx-helper-pko.c 103836 2014-09-03 02:00:52Z lrosenboim $
+ * $Id: cvmx-helper-pko.c 106502 2014-10-22 16:28:44Z cchavva $
  */
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
@@ -143,7 +143,7 @@ static int cvmx_helper_pko_pool_init(void)
 			"pool %d already initialized\n",
 			__func__, pool);
 #endif
-		/* FIXME: Should check available buffer count */
+		/* It is up to the app to have sufficient buffer count */
 		return pool;
 	}
 
@@ -201,7 +201,7 @@ int cvmx_helper_pko_init(void)
  *
  * @return Zero on success, negative on failure
  *
- * FIXME: This is for PKO1 only.
+ * @note This is for PKO1/PKO2, and is not used for PKO3.
  */
 int __cvmx_helper_interface_setup_pko(int interface)
 {

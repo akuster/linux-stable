@@ -87,7 +87,7 @@ struct cvmx_pki_prt_schd {
 	cvmx_fpa3_pool_t _pool;	/* FPA3 POOL handle */
 	cvmx_fpa3_gaura_t _aura;/* FPA3 AURA handle */
 	bool cfg_port;          /* Set to 1 if this port on the interface is not used */
-	int style;              /* If style_per_prt is TRUE in interface schd */
+	int style;              /* If port is using its own style and not interfcae style */
 	bool pool_per_prt; 	/* Port will use its own pool, if FALSE use interface pool */
 	int pool_num;		/* pool number to use, if -1 allocated by sdk otherwise software should alloc it*/
 	char *pool_name;
@@ -108,8 +108,7 @@ struct cvmx_pki_prt_schd {
 struct cvmx_pki_intf_schd {
 	cvmx_fpa3_pool_t _pool;	/* FPA3 POOL handle */
 	cvmx_fpa3_gaura_t _aura;/* FPA3 AURA handle */
-	bool style_per_prt;	/* Every port will use different style/profile */
-	bool style_per_intf;	/* otherwise all ports on this interface will use same style/profile */
+	bool style_per_intf;	/* 1: all ports on this interface will use same style; 0:ports on this intf will use their own style */
 	int style;              /* style number to use, if -1 allocated by sdk otherwise software should alloc it*/
 	bool pool_per_intf; 	/* Ports will use either this shared pool or their own pool*/
 	int pool_num;		/* pool number to use, if -1 allocated by sdk otherwise software should alloc it*/

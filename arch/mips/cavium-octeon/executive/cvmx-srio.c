@@ -745,7 +745,7 @@ int cvmx_srio_initialize(int srio_port, cvmx_srio_initialize_flags_t flags)
 	sli_mem_access_ctl.s.timer = 127;	/* Wait up to 127 cycles for more data */
 	cvmx_write_csr(CVMX_PEXP_SLI_MEM_ACCESS_CTL, sli_mem_access_ctl.u64);
 
-	/* FIXME: Disable sending a link request when the SRIO link is
+	/* Disable sending a link request when the SRIO link is
 	   brought up. For unknown reasons this code causes issues with some SRIO
 	   devices. As we currently don't support hotplug in software, this code
 	   should never be needed.  Without link down/up events, the ACKs should
@@ -1479,7 +1479,7 @@ uint64_t cvmx_srio_physical_map(int srio_port, cvmx_srio_write_mode_t write_op,
 	needed_subid.s.port = srio_port;
 	needed_subid.s.nmerge = 0;
 
-	/* FIXME: We might want to use the device ID swapping modes so the device
+	/* We might want to use the device ID swapping modes so the device
 	   ID is part of the lower address bits. This would allow many more
 	   devices to share S2M_TYPE indexes. This would require "base+size-1"
 	   to fit in bits [17:0] or bits[25:0] for 8 bits of device ID */

@@ -129,7 +129,7 @@ int __cvmx_helper_agl_probe(int interface)
 	/* MII clocks counts are based on the 125Mhz reference, so our
 	 * delays need to be scaled to match the core clock rate. The
 	 * "+1" is to make sure rounding always waits a little too
-	 * long. FIXME.
+	 * long.
 	 */
 	clock_scale = cvmx_clock_get_rate(CVMX_CLOCK_CORE) / 125000000 + 1;
 

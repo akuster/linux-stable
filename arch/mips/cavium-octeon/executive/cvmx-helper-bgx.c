@@ -80,7 +80,6 @@ int __cvmx_helper_bgx_enumerate(int xiface)
 
 	mode = cvmx_qlm_get_mode_cn78xx(node, qlm);
 	if (mode == CVMX_QLM_MODE_SGMII) {
-	/* FIXME: Check here if SGMII is a MIX interface */
 		return 4;
 	} else if (mode == CVMX_QLM_MODE_XAUI
 		   || mode == CVMX_QLM_MODE_XLAUI
@@ -129,14 +128,13 @@ void cvmx_helper_bgx_disable(int xipd_port)
  *
  * @param mode      Mode to configure the bgx mac as
  */
-static void __cvmx_helper_bgx_common_init(int xiface)
+static void __cvmx_bgx_common_init(int xiface, int index)
 {
 	cvmx_bgxx_cmrx_config_t	cmr_config;
 	cvmx_bgxx_cmr_rx_lmacs_t bgx_cmr_rx_lmacs;
 	cvmx_bgxx_cmr_tx_lmacs_t bgx_cmr_tx_lmacs;
 	cvmx_helper_interface_mode_t mode;
 	int num_ports;
-	int index;
 	int lmac_type = 0;
 	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
 	int interface = xi.interface;
@@ -173,27 +171,26 @@ static void __cvmx_helper_bgx_common_init(int xiface)
 	}
 
 	/* Set mode and lanes for all interface ports */
-	for (index = 0; index < num_ports; index++) {
-		cmr_config.u64 =
-			cvmx_read_csr_node(node, CVMX_BGXX_CMRX_CONFIG(index, interface));
-		cmr_config.s.enable = 0;
-		cmr_config.s.data_pkt_tx_en = 0;
-		cmr_config.s.data_pkt_rx_en = 0;
-		cmr_config.s.lmac_type = lmac_type;
-		cmr_config.s.lane_to_sds = ((lane_to_sds == 1) ? index
-					     : ((lane_to_sds == 0)
-						 ? (index ? 0xe : 4) : lane_to_sds));
-		cvmx_write_csr_node(node, CVMX_BGXX_CMRX_CONFIG(index, interface), cmr_config.u64);
+	cmr_config.u64 =
+		cvmx_read_csr_node(node, CVMX_BGXX_CMRX_CONFIG(index, interface));
+	cmr_config.s.enable = 0;
+	cmr_config.s.data_pkt_tx_en = 0;
+	cmr_config.s.data_pkt_rx_en = 0;
+	cmr_config.s.lmac_type = lmac_type;
+	cmr_config.s.lane_to_sds = ((lane_to_sds == 1) ? index
+				: ((lane_to_sds == 0)
+				? (index ? 0xe : 4) : lane_to_sds));
+	cvmx_write_csr_node(node, CVMX_BGXX_CMRX_CONFIG(index, interface), cmr_config.u64);
+
+	if (index == 0) {
+		bgx_cmr_rx_lmacs.u64 = 0;
+		bgx_cmr_rx_lmacs.s.lmacs = num_ports;
+		cvmx_write_csr_node(node, CVMX_BGXX_CMR_RX_LMACS(interface), bgx_cmr_rx_lmacs.u64);
+
+		bgx_cmr_tx_lmacs.u64 = 0;
+		bgx_cmr_tx_lmacs.s.lmacs = num_ports;
+		cvmx_write_csr_node(node, CVMX_BGXX_CMR_TX_LMACS(interface), bgx_cmr_tx_lmacs.u64);
 	}
-
-	bgx_cmr_rx_lmacs.u64 = 0;
-	bgx_cmr_rx_lmacs.s.lmacs = num_ports;
-	cvmx_write_csr_node(node, CVMX_BGXX_CMR_RX_LMACS(interface), bgx_cmr_rx_lmacs.u64);
-
-	bgx_cmr_tx_lmacs.u64 = 0;
-	bgx_cmr_tx_lmacs.s.lmacs = num_ports;
-	cvmx_write_csr_node(node, CVMX_BGXX_CMR_TX_LMACS(interface), bgx_cmr_tx_lmacs.u64);
-
 }
 
 static void __cvmx_bgx_common_init_pknd(int xiface, int index)
@@ -244,7 +241,11 @@ static void __cvmx_bgx_common_init_pknd(int xiface, int index)
  */
 int __cvmx_helper_bgx_probe(int xiface)
 {
-	__cvmx_helper_bgx_common_init(xiface);
+	int num_ports = cvmx_helper_ports_on_interface(xiface);
+	int index;
+
+	for (index = 0; index < num_ports; index++)
+		__cvmx_bgx_common_init(xiface, index);
 	return __cvmx_helper_bgx_enumerate(xiface);
 }
 EXPORT_SYMBOL(__cvmx_helper_bgx_probe);
@@ -581,8 +582,10 @@ static int __cvmx_helper_bgx_sgmii_hardware_init_link_speed(int xiface,
 	cmr_config.u64 = cvmx_read_csr_node(node, CVMX_BGXX_CMRX_CONFIG(index, interface));
 	if (!OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X) || index)
 		cmr_config.s.enable = is_enabled;
+#ifndef CVMX_BUILD_FOR_UBOOT
 	cmr_config.s.data_pkt_tx_en = 1;
 	cmr_config.s.data_pkt_rx_en = 1;
+#endif
 	cvmx_write_csr_node(node, CVMX_BGXX_CMRX_CONFIG(index, interface), cmr_config.u64);
 
 	return 0;
@@ -787,7 +790,6 @@ static int __cvmx_helper_bgx_xaui_init(int index, int xiface)
 	if (mode == CVMX_HELPER_INTERFACE_MODE_10G_KR
 	    || mode == CVMX_HELPER_INTERFACE_MODE_40G_KR4) {
 		use_training = 1;
-		/* FIXME: disabled as it currently doesn't work */
 		use_auto_neg = 0;
 	}
 
@@ -847,7 +849,6 @@ static int __cvmx_helper_bgx_xaui_init(int index, int xiface)
 
 		/* 4b. Write BGX(0..5)_SPU(0..3)_CONTROL1[LO_PWR] = 1 and
 		     BGX(0..5)_SPU(0..3)_MISC_CONTROL[RX_PACKET_DIS] = 1. */
-		/* FIXME it is already dine in step 2 */
 		spu_control1.u64 = cvmx_read_csr_node(node, CVMX_BGXX_SPUX_CONTROL1(index, interface));
 		spu_control1.s.lo_pwr = 1;
 		cvmx_write_csr_node(node, CVMX_BGXX_SPUX_CONTROL1(index, interface), spu_control1.u64);
@@ -869,6 +870,10 @@ static int __cvmx_helper_bgx_xaui_init(int index, int xiface)
 			cvmx_write_csr_node(node, CVMX_BGXX_SPUX_BR_PMD_CONTROL(index, interface), spu_br_pmd_control.u64);
 
 		}
+	} else { /* enable for simulator */
+		cmr_config.u64 = cvmx_read_csr_node(node, CVMX_BGXX_CMRX_CONFIG(index, interface));
+		cmr_config.s.enable = 1;
+		cvmx_write_csr_node(node, CVMX_BGXX_CMRX_CONFIG(index, interface), cmr_config.u64);
 	}
 
 	/* 4d. Program all other relevant BGX configuration while
@@ -957,46 +962,9 @@ int __cvmx_helper_bgx_port_init(int xipd_port, int phy_pres)
 	int interface = xi.interface;
 	int node = xi.node;
 	int index = cvmx_helper_get_interface_index_num(xp.port);
-	int lmac_type = 0;
-	int lane_to_sds = 0;
 	cvmx_helper_interface_mode_t mode;
-	cvmx_bgxx_cmrx_config_t cmr_config;
 
 	mode = cvmx_helper_interface_get_mode(xiface);
-	switch (mode) {
-	case CVMX_HELPER_INTERFACE_MODE_SGMII:
-		lmac_type = 0;
-		lane_to_sds = 1;
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_XAUI:
-		lmac_type = 1;
-		lane_to_sds = 0xe4;
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_RXAUI:
-		lmac_type = 2;
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_XFI:
-	case CVMX_HELPER_INTERFACE_MODE_10G_KR:
-		lmac_type = 3;
-		lane_to_sds = 1;
-		break;
-	case CVMX_HELPER_INTERFACE_MODE_XLAUI:
-	case CVMX_HELPER_INTERFACE_MODE_40G_KR4:
-		lmac_type = 4;
-		lane_to_sds = 0xe4;
-		break;
-	default:
-		break;
-	}
-	cmr_config.u64 = cvmx_read_csr_node(node, CVMX_BGXX_CMRX_CONFIG(index, interface));
-	cmr_config.s.enable = 0;
-	cmr_config.s.data_pkt_tx_en = 0;
-	cmr_config.s.data_pkt_rx_en = 0;
-	cmr_config.s.lmac_type = lmac_type;
-	cmr_config.s.lane_to_sds = ((lane_to_sds == 1) ? index
-	: ((lane_to_sds == 0)
-			? (index ? 0xe : 4) : lane_to_sds));
-	cvmx_write_csr_node(node, CVMX_BGXX_CMRX_CONFIG(index, interface), cmr_config.u64);
 
 	__cvmx_bgx_common_init_pknd(xiface, index);
 
@@ -1010,7 +978,7 @@ int __cvmx_helper_bgx_port_init(int xipd_port, int phy_pres)
 		gmi_tx_thresh.s.cnt = 0x20;
 		cvmx_write_csr_node(node, CVMX_BGXX_GMP_GMI_TXX_THRESH(index, interface),
 				    gmi_tx_thresh.u64);
-		__cvmx_helper_bgx_sgmii_hardware_init_one_time(interface, index);
+		__cvmx_helper_bgx_sgmii_hardware_init_one_time(xiface, index);
 		gmp_txx_append.u64 = cvmx_read_csr_node(node,
 					CVMX_BGXX_GMP_GMI_TXX_APPEND(index, interface));
 		gmp_sgmii_ctl.u64 = cvmx_read_csr_node(node, CVMX_BGXX_GMP_GMI_TXX_SGMII_CTL(index, interface));
@@ -1021,6 +989,12 @@ int __cvmx_helper_bgx_port_init(int xipd_port, int phy_pres)
 	} else {
 		int res;
 		cvmx_bgxx_smux_tx_thresh_t smu_tx_thresh;
+
+		res = __cvmx_helper_bgx_xaui_init(index, xiface);
+		if (res == -1) {
+			cvmx_dprintf("Failed to enable XAUI for %d:BGX(%d,%d)\n", node, interface, index);
+			return res;
+		}
 
 		smu_tx_thresh.u64 = 0;
 		/* Hopefully big enough to avoid underrun, but not too
@@ -1038,11 +1012,6 @@ int __cvmx_helper_bgx_port_init(int xipd_port, int phy_pres)
 			misc_control.s.intlv_rdisp = 1;
 			cvmx_write_csr_node(node, CVMX_BGXX_SPUX_MISC_CONTROL(index, interface),
 					    misc_control.u64);
-		}
-		res = __cvmx_helper_bgx_xaui_init(index, xiface);
-		if (res == -1) {
-			cvmx_dprintf("Failed to enable XAUI for %d:BGX(%d,%d)\n", node, interface, index);
-			return res;
 		}
 	}
 	return 0;
@@ -1261,7 +1230,7 @@ int __cvmx_helper_bgx_xaui_enable(int xiface)
 		int phy_pres;
 
 		/* Set disparity for RXAUI interface as described in the
-		Marvell RXAUI Interface specification. */
+		   Marvell RXAUI Interface specification. */
 		if (mode == CVMX_HELPER_INTERFACE_MODE_RXAUI &&
 				  (cvmx_helper_get_port_phy_present(xiface, index)))
 			phy_pres = 1;

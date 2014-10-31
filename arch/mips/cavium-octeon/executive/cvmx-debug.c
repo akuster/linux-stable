@@ -335,6 +335,9 @@ void cvmx_debug_init(void)
 	cvmx_spinlock_t *lock;
 	cvmx_coremask_t *pcm = cvmx_debug_core_mask();
 
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+	  return;
+
 	if (!cvmx_debug_enabled())
 		return;
 
@@ -1327,9 +1330,9 @@ static int cvmx_debug_event_loop(cvmx_debug_register_t * debug_reg, volatile cvm
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 			cvmx_coremask_t cm = CVMX_COREMASK_EMPTY;
 
-			/* FIXME: Debugger is limited at 64 cores */
+			/* Note: Debugger is limited at 64 cores */
 			cvmx_coremask_set64(&cm, state.handler_cores);
-			/* FIXME, this should a sync not based on cvmx_coremask_barrier_sync.  */
+			/* This should a sync not based on cvmx_coremask_barrier_sync.  */
 			/* Sync up.  */
 			cvmx_coremask_barrier_sync(&cm);
 #endif
@@ -1624,7 +1627,7 @@ void cvmx_debug_finish(void)
 	if (state.ever_been_in_debug)
 		cvmx_debug_putcorepacket("finished.", coreid);
 
-	/* FIXME: Debugger is limited at 64 cores */
+	/* Note: The Debugger is limited at 64 cores */
 	cvmx_coremask_set64(&cm, state.core_finished);
 
 	/* Notify the debugger if all cores have completed the program */

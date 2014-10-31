@@ -276,9 +276,6 @@ static int __cvmx_pko3_config_ilk_interface(int xiface,
 		/* map channels to l2 queues */
 		cvmx_pko3_map_channel(xi.node, l1_q_num, l2_q_num+i, ipd_port);
 
-		//FIXME- can not convert it to a loop because
-		// of CVMX_PKO_Lx_QUEUES are enumerated
-
 		l3_q = cvmx_pko_alloc_queues(xi.node, CVMX_PKO_L3_QUEUES,
 			res_owner, -1, 1);
 		if(l3_q < 0) goto _fail;
@@ -322,8 +319,8 @@ static int __cvmx_pko3_config_ilk_interface(int xiface,
 /** Initialize a channelized port
  * This is intended for LOOP and NPI interfaces which have one MAC
  * per interface and need a channel per subinterface (e.g. ring).
- *
- * FIXME: Consider merging this function with the ILK configuration code
+ * This function is somewhat similar to __cvmx_pko3_config_ilk_interface()
+ * but are kept separate for easier maintenance.
  */
 static int __cvmx_pko3_config_chan_interface( int xiface, unsigned num_chans,
 	uint8_t num_queues, bool prioritized)

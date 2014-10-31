@@ -604,7 +604,7 @@ cvmx_pko_return_value_t cvmx_pko_config_port(int port, int base_queue,
 			port, base_queue, (base_queue+num_queues-1),
 			priority[0],priority[1], priority[2], priority[3]);
 
-	/* FIXME: the need to handle ILLEGAL_PID port argument
+	/* The need to handle ILLEGAL_PID port argument
 	 * is obsolete now, the code here can be simplified.
 	 */
 
@@ -784,7 +784,7 @@ cvmx_pko_return_value_t cvmx_pko_config_port(int port, int base_queue,
  * Configure queues for an internal port.
  * @INTERNAL
  * @param pko_port PKO internal port number
- * FIXME: for PKO2 only, equivalent to cvmx_pko_config_port()
+ * @note this is the PKO2 equivalent to cvmx_pko_config_port()
  */
 static cvmx_pko_return_value_t cvmx_pko2_config_port(short ipd_port, int base_queue,
 				       int num_queues,
@@ -932,7 +932,7 @@ static cvmx_pko_return_value_t cvmx_pko2_config_port(short ipd_port, int base_qu
 		cvmx_write_csr(CVMX_PKO_MEM_IQUEUE_PTRS, config.u64);
 	}
 
-// FIXME: detect errors
+	/* Error detection is resirable here */
 	return 0;
 }
 

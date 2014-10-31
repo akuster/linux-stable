@@ -43,7 +43,7 @@
  * File defining functions for working with different Octeon
  * models.
  *
- * <hr>$Revision: 102057 $<hr>
+ * <hr>$Revision: 105060 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/octeon.h>
@@ -187,6 +187,12 @@ const char *octeon_model_get_string_buffer(uint32_t chip_id, char *buffer)
 	switch (num_cores) {
 	case 48:
 		core_model = "90";
+		break;
+	case 44:
+		core_model = "88";
+		break;
+	case 40:
+		core_model = "85";
 		break;
 	case 32:
 		core_model = "80";
@@ -442,8 +448,18 @@ const char *octeon_model_get_string_buffer(uint32_t chip_id, char *buffer)
 			family = "77";
 		if (fus_dat3.cn78xx.nozip
 		    && fus_dat3.cn78xx.nodfa_dte
-		    && fus_dat3.cn78xx.nohna_dte)
-			suffix = "SCP";
+		    && fus_dat3.cn78xx.nohna_dte) {
+			if (fus_dat3.cn78xx.nozip && 
+				!fus_dat2.cn78xx.raid_en &&
+				fus_dat3.cn78xx.nohna_dte) {
+				suffix = "CP";
+			}
+			else {
+				suffix = "SCP";
+			}
+		}
+		else if (fus_dat2.cn78xx.raid_en == 0)
+			suffix = "HCP";
 		else
 			suffix = "AAP";
 		break;

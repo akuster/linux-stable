@@ -43,7 +43,7 @@
  * Interface to the Level 2 Cache (L2C) control, measurement, and debugging
  * facilities.
  *
- * <hr>$Revision: 92683 $<hr>
+ * <hr>$Revision: 106657 $<hr>
  *
  */
 
@@ -376,8 +376,8 @@ int cvmx_l2c_unlock_mem_region(uint64_t start, uint64_t len);
  * @param index  Which way to read from.
  *
  * @return l2c tag structure for line requested.
- * 
- * NOTE: This function is deprecated and cannot be used on devices with 
+ *
+ * NOTE: This function is deprecated and cannot be used on devices with
  *       multiple L2C interfaces such as the OCTEON CN68XX.
  *       Please use cvmx_l2c_get_tag_v2 instead.
  */
@@ -391,7 +391,7 @@ cvmx_l2c_tag_t cvmx_l2c_get_tag(uint32_t association, uint32_t index)
  * @param association
  *               Which association to read line from
  * @param index  Which way to read from.
- * 
+ *
  * @param tad    Which TAD to read from, set to 0 except on OCTEON CN68XX.
  *
  * @return l2c tag structure for line requested.
@@ -402,7 +402,7 @@ cvmx_l2c_tag_t cvmx_l2c_get_tag_v2(uint32_t association, uint32_t index, uint32_
  * Find the TAD for the specified address
  *
  * @param addr   physical address to get TAD for
- * 
+ *
  * @return TAD number for address.
  */
 int cvmx_l2c_address_to_tad(uint64_t addr);
@@ -433,6 +433,14 @@ uint32_t cvmx_l2c_v2_address_to_tag(uint64_t addr);
 void cvmx_l2c_flush(void);
 
 /**
+ * Flushes (and unlocks) the entire L2 cache.  Unlike cvmx_l2c_flush this
+ * function also flushes and unlocks the remote L2 cache.
+ * IMPORTANT: Must only be run by one core at a time due to use
+ * of L2C debug features.
+ */
+void cvmx_l2c_flush_ocx(void);
+
+/**
  *
  * @return Returns the size of the L2 cache in bytes,
  * -1 on error (unrecognized model)
@@ -451,6 +459,7 @@ int cvmx_l2c_get_num_sets(void);
  * @return
  */
 int cvmx_l2c_get_set_bits(void);
+
 /**
  * Return the number of associations in the L2 Cache
  *
@@ -470,12 +479,22 @@ void cvmx_l2c_flush_line(uint32_t assoc, uint32_t index);
 
 /**
  * Initialize the BIG address in L2C+DRAM to generate proper error
- * on reading/writing to an non-existant memory location. 
+ * on reading/writing to an non-existant memory location.
  *
  * @param mem_size  Amount of DRAM configured in MB.
  * @param mode      Allow/Disallow reporting errors L2C_INT_SUM[BIGRD,BIGWR].
  */
 void cvmx_l2c_set_big_size(uint64_t mem_size, int mode);
+
+/**
+ * Initialize the BIG address in L2C+DRAM to generate proper error
+ * on reading/writing to an non-existant memory location.
+ *
+ * @param node      OCX CPU node number
+ * @param mem_size  Amount of DRAM configured in MB.
+ * @param mode      Allow/Disallow reporting errors L2C_INT_SUM[BIGRD,BIGWR].
+ */
+void cvmx_l2c_set_big_size_node(int node, uint64_t mem_size, int mode);
 
 #if !defined(CVMX_BUILD_FOR_LINUX_HOST) && !defined(CVMX_BUILD_FOR_LINUX_KERNEL)
 

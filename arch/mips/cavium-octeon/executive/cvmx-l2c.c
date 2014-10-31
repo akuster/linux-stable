@@ -43,7 +43,7 @@
  * Implementation of the Level 2 Cache (L2C) control,
  * measurement, and debugging facilities.
  *
- * <hr>$Revision: 97778 $<hr>
+ * <hr>$Revision: 106657 $<hr>
  *
  */
 
@@ -1062,6 +1062,7 @@ int cvmx_l2c_get_num_sets(void)
 int cvmx_l2c_get_num_assoc(void)
 {
 	int l2_assoc;
+
 	if (OCTEON_IS_MODEL(OCTEON_CN56XX)
 		|| OCTEON_IS_MODEL(OCTEON_CN52XX)
 		|| OCTEON_IS_MODEL(OCTEON_CN58XX)
@@ -1202,10 +1203,11 @@ void cvmx_l2c_flush_line(uint32_t assoc, uint32_t index)
  * Initialize the BIG address in L2C+DRAM to generate proper error
  * on reading/writing to an non-existant memory location.
  *
+ * @param node      OCX CPU node number
  * @param mem_size  Amount of DRAM configured in MB.
  * @param mode      Allow/Disallow reporting errors L2C_INT_SUM[BIGRD,BIGWR].
  */
-void cvmx_l2c_set_big_size(uint64_t mem_size, int mode)
+void cvmx_l2c_set_big_size_node(int node, uint64_t mem_size, int mode)
 {
 	if ((OCTEON_IS_OCTEON2() || OCTEON_IS_OCTEON3())
 	    && !OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_X)) {
@@ -1242,9 +1244,22 @@ void cvmx_l2c_set_big_size(uint64_t mem_size, int mode)
 		big_ctl.u64 = 0;
 		big_ctl.s.maxdram = bits - 9;
 		big_ctl.cn61xx.disable = mode;
-		cvmx_write_csr(CVMX_L2C_BIG_CTL, big_ctl.u64);
+		cvmx_write_csr_node(node, CVMX_L2C_BIG_CTL, big_ctl.u64);
 	}
 }
+
+/**
+ * Initialize the BIG address in L2C+DRAM to generate proper error
+ * on reading/writing to an non-existant memory location.
+ *
+ * @param mem_size  Amount of DRAM configured in MB.
+ * @param mode      Allow/Disallow reporting errors L2C_INT_SUM[BIGRD,BIGWR].
+ */
+void cvmx_l2c_set_big_size(uint64_t mem_size, int mode)
+{
+	cvmx_l2c_set_big_size_node(0, mem_size, mode);
+}
+
 
 #if !defined(CVMX_BUILD_FOR_LINUX_HOST) && !defined(CVMX_BUILD_FOR_LINUX_KERNEL)
 /* L2C Virtualization APIs. These APIs are based on Octeon II documentation. */

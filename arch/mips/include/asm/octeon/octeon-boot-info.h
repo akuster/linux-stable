@@ -122,7 +122,6 @@ typedef struct  boot_init_vector boot_init_vector_t;
 #undef GD_TMP_STR_SIZE
 #define GD_TMP_STR_SIZE 32
 
-/* FIXME: This structure is not endianness-neutral */
 /* This structure is deprecated, use sysinfo instead */
 struct linux_app_global_data {
 #if	_MIPS_SZPTR == 32

@@ -85,7 +85,6 @@ CVMX_SHARED cvmx_ipd_config_t cvmx_ipd_cfg = {.first_mbuf_skip = 184,
 					};
 EXPORT_SYMBOL(cvmx_ipd_cfg);
 
-/* FIXME- review these values, convert to params ? */
 #define IPD_RED_AVG_DLY	1000
 #define IPD_RED_PRB_DLY	1000
 
@@ -525,7 +524,6 @@ int cvmx_ipd_setup_red(int pass_thresh, int drop_thresh)
 	int interface;
 	int port;
 
-	/*vinita_to_do modify for 78xx*/
 	if (octeon_has_feature(OCTEON_FEATURE_PKI))
 		return -1;
 	/*

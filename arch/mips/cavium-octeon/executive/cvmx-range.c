@@ -203,8 +203,7 @@ int cvmx_range_reserve(uint64_t range_addr, uint64_t owner, uint64_t base, uint6
 
 	size = cvmx_read64_uint64(addr_of_size(range_addr));
 	if (up > size) {
-		if (debug)
-			cvmx_dprintf("ERROR: invalid base or cnt. "
+		cvmx_dprintf("ERROR: invalid base or cnt. "
 			    "range_addr=0x%llx, owner=0x%llx, size=%d base+cnt=%d\n",
 			     (unsigned long long)range_addr,
 			     (unsigned long long)owner,
@@ -261,8 +260,9 @@ int __cvmx_range_is_allocated(uint64_t range_addr, int bases[], int count)
 		}
 		r_owner = cvmx_read64_uint64(addr_of_element(range_addr,base));
 		if (r_owner == CVMX_RANGE_AVAILABLE) {
-			cvmx_dprintf("ERROR: i=%d:base=%d is available\n",
-				     (int) i, (int) base);
+		    if (debug)
+			cvmx_dprintf("%s: i=%d:base=%d is available\n",
+				     __func__, (int) i, (int) base);
 			return 0;
 		}
 	}

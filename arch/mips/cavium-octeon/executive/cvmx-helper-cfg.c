@@ -472,8 +472,10 @@ void cvmx_helper_cfg_init_pko_port_map(void)
 		for (j = 0; j < cvmx_helper_interface_enumerate(i); j++) {
 			pko_port_base = cvmx_cfg_port[0][i][j].ccpp_pko_port_base;
 			pko_port_max = pko_port_base + cvmx_cfg_port[0][i][j].ccpp_pko_num_ports;
-			cvmx_helper_cfg_assert(pko_port_base != CVMX_HELPER_CFG_INVALID_VALUE);
-			cvmx_helper_cfg_assert(pko_port_max >= pko_port_base);
+			if (!octeon_has_feature(OCTEON_FEATURE_PKO3)) {
+				cvmx_helper_cfg_assert(pko_port_base != CVMX_HELPER_CFG_INVALID_VALUE);
+				cvmx_helper_cfg_assert(pko_port_max >= pko_port_base);
+			}
 			for (k = pko_port_base; k < pko_port_max; k++) {
 				cvmx_cfg_pko_port_map[k].ccppl_interface = i;
 				cvmx_cfg_pko_port_map[k].ccppl_index = j;
@@ -493,7 +495,8 @@ void cvmx_helper_cfg_init_pko_port_map(void)
 	/*
 	 * Legal pko_eids [0, 0x13] should not be exhausted.
 	 */
-	cvmx_helper_cfg_assert(pko_eid <= 0x14);
+	if (!octeon_has_feature(OCTEON_FEATURE_PKO3))
+		cvmx_helper_cfg_assert(pko_eid <= 0x14);
 
 	cvmx_cfg_max_pko_engines = pko_eid;
 }
@@ -700,7 +703,7 @@ int cvmx_helper_cfg_ipd2pko_port_num(int ipd_port)
 	int ipd_y, ipd_x;
 
 	ipd_y = IPD2PKO_CACHE_Y(ipd_port);
-	ipd_x = IPD2PKO_CACHE_X(ipd_port);
+	ipd_x = __cvmx_helper_cfg_ipd2pko_cachex(ipd_port);
 
 	return ipd2pko_port_cache[ipd_y][ipd_x].ccppp_nports;
 }

@@ -41,7 +41,7 @@
  * @file
  * Header file for simple executive application initialization.  This defines
  * part of the ABI between the bootloader and the application.
- * <hr>$Revision: 101905 $<hr>
+ * <hr>$Revision: 105233 $<hr>
  *
  */
 
@@ -280,8 +280,14 @@ enum cvmx_board_types_enum {
 	CVMX_BOARD_TYPE_NIC401NVG = 62,
 	CVMX_BOARD_TYPE_NIC210NVG = 63,
 	CVMX_BOARD_TYPE_SFF7000 = 64,
-	CVMX_BOARD_TYPE_EBB7800_CFG1 = 65,
+	CVMX_BOARD_TYPE_EBB7800_CFG1 = 65, /* Only required to support cn78xx p1.0 */
 	CVMX_BOARD_TYPE_TB7600 = 66,
+	CVMX_BOARD_TYPE_EBB7804 = 67,
+	CVMX_BOARD_TYPE_EBB7804_CFG1 = 68, /* Only required to support cn78xx p1.0 */
+	CVMX_BOARD_TYPE_TB7000 = 69,
+	CVMX_BOARD_TYPE_EBB7800_CFG0 = 70, /* Only required to support cn78xx p1.0 */
+	CVMX_BOARD_TYPE_EBB7804_CFG0 = 71, /* Only required to support cn78xx p1.0 */
+	CVMX_BOARD_TYPE_SWORDFISH = 72,
 	CVMX_BOARD_TYPE_MAX,
 	/* NOTE:  256-257 are being used by a customer. */
 
@@ -416,6 +422,12 @@ static inline const char *cvmx_board_type_to_string(enum cvmx_board_types_enum t
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_SFF7000)
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_EBB7800_CFG1)
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_TB7600)
+		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_EBB7804)
+		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_EBB7804_CFG1)
+		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_TB7000)
+		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_EBB7800_CFG0)
+		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_EBB7804_CFG0)
+		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_SWORDFISH)
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_MAX)
 
 		/* Customer boards listed here */

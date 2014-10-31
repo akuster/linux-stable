@@ -298,7 +298,7 @@ int cvmx_pki_pcam_entry_alloc(int node, int index, int bank, uint64_t cluster_ma
 		}
 	}
 	index = rs;
-	/*vinita to_do , implement cluster handle, for now assume
+	/* implement cluster handle for pass2, for now assume
 	all clusters will have same base index*/
 	return index;
 }
@@ -417,6 +417,11 @@ void __cvmx_pki_global_rsrc_free(int node)
 		cvmx_printf("ERROR pki-rsrc:Failed to release all qpg entries\n");
 	}
 
+	cnt = CVMX_PKI_NUM_BPID;
+	if (cvmx_free_global_resource_range_with_base(CVMX_GR_TAG_BPID(node), 0, cnt) == -1) {
+		cvmx_printf("ERROR pki-rsrc:Failed to release all bpids\n");
+	}
+
 	cnt = CVMX_PKI_NUM_PCAM_ENTRY;
 	for (cluster = 0; cluster < CVMX_PKI_NUM_CLUSTER; cluster++) {
 		for (bank = 0; bank < CVMX_PKI_NUM_PCAM_BANK; bank++) {
@@ -428,3 +433,62 @@ void __cvmx_pki_global_rsrc_free(int node)
 	}
 
 }
+
+/**
+ * This function allocates/reserves a bpid from pool of global bpid per node.
+ * @param node	node to allocate bpid from.
+ * @param bpid	bpid  to allocate, if -1 it will be allocated
+ *		first available boid from bpid resource. If index is positive
+ *		number and in range, it will try to allocate specified bpid.
+ * @return 	bpid number on success,
+ *		-1 on alloc failure.
+ *		-2 on resource already reserved.
+ */
+int cvmx_pki_bpid_alloc(int node, int bpid)
+{
+	int rs;
+
+	if (cvmx_create_global_resource_range(CVMX_GR_TAG_BPID(node), CVMX_PKI_NUM_BPID)) {
+		cvmx_printf("ERROR: Failed to create bpid global resource\n");
+		return -1;
+	}
+	if (bpid >= 0) {
+		rs = cvmx_reserve_global_resource_range(CVMX_GR_TAG_BPID(node),
+				bpid, bpid, 1);
+		if (rs == -1) {
+			cvmx_dprintf("INFO: bpid %d is already reserved\n", (int)bpid);
+			return CVMX_RESOURCE_ALREADY_RESERVED;
+		}
+	} else {
+		rs = cvmx_allocate_global_resource_range(CVMX_GR_TAG_BPID(node), bpid, 1, 1);
+		if (rs == -1) {
+			cvmx_printf("ERROR: Failed to allocate bpid\n");
+			return CVMX_RESOURCE_ALLOC_FAILED;
+		}
+		if (rs == 0) { /* don't use bpid 0 */
+			rs = cvmx_allocate_global_resource_range(CVMX_GR_TAG_BPID(node), bpid, 1, 1);
+			if (rs == -1) {
+				cvmx_printf("ERROR: Failed to allocate bpid\n");
+				return CVMX_RESOURCE_ALLOC_FAILED;
+			}
+		}
+	}
+	bpid = rs;
+	return bpid;
+}
+
+/**
+ * This function frees a bpid from pool of global bpid per node.
+ * @param node	 node to free bpid from.
+ * @param style	 bpid to free
+ * @return 	 0 on success, -1 on failure or
+ */
+int cvmx_pki_bpid_free(int node, int bpid)
+{
+	if (cvmx_free_global_resource_range_with_base(CVMX_GR_TAG_BPID(node), bpid, 1) == -1) {
+		cvmx_printf("ERROR Failed to release bpid %d\n", (int)bpid);
+		return -1;
+	}
+	return 0;
+}
+

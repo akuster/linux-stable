@@ -43,7 +43,7 @@
  * Functions for SGMII initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 102466 $<hr>
+ * <hr>$Revision: 105303 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -156,9 +156,7 @@ static int __cvmx_helper_sgmii_hardware_init_one_time(int interface, int index)
 static int __cvmx_helper_need_g15618(void)
 {
 	if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM ||
-	    OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_X) ||
-	    OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_0) ||
-	    OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_1) ||
+	    OCTEON_IS_MODEL(OCTEON_CN63XX) ||
 	    OCTEON_IS_MODEL(OCTEON_CN66XX_PASS1_X) ||
 	    OCTEON_IS_MODEL(OCTEON_CN68XX_PASS1_X))
 		return 1;

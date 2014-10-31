@@ -89,6 +89,8 @@ int __cvmx_import_app_config_from_named_block(char * block_name);
  */
 void __cvmx_export_app_config_cleanup(void);
 
+int __cvmx_export_config(void);
+
 #ifdef  __cplusplus
 /* *INDENT-OFF* */
 }

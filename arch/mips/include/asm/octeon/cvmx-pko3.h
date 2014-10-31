@@ -74,9 +74,10 @@ extern "C" {
 
 #define	CVMX_PKO3_DQ_MAX_DEPTH	(48*256)
 
-/* dwords are from 1-16 */
+/* dwords count from 1-16 */
 /* scratch line for LMT operations */
-#define CVMX_PKO_LMTLINE 2ull	//FIXME- should go somewhere else ?
+/* Should be unique wrt other uses of CVMSEG, e.g. IOBDMA */
+#define CVMX_PKO_LMTLINE 2ull
 
 enum {
 	CVMX_PKO_PORT_QUEUES = 0,
@@ -202,9 +203,9 @@ union cvmx_pko_send_free {
 	uint64_t u64;
 	struct {
                 CVMX_BITFIELD_FIELD(uint64_t rsvd_48_63 : 16,
-                CVMX_BITFIELD_FIELD(uint64_t subdc4 	: 4, /* NODE+LAURA */
-                CVMX_BITFIELD_FIELD(uint64_t ns 	: 2,
-                CVMX_BITFIELD_FIELD(uint64_t addr 	: 42,
+                CVMX_BITFIELD_FIELD(uint64_t subdc4	: 4, /* 0x9 */
+                CVMX_BITFIELD_FIELD(uint64_t rsvd	: 2,
+                CVMX_BITFIELD_FIELD(uint64_t addr	: 42,
 			))));
 	} s;
 };

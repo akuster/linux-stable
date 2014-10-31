@@ -1079,7 +1079,7 @@ static inline void cvmx_wqe_set_xgrp(cvmx_wqe_t *work, int grp)
 {
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
 		work->word1.cn78xx.grp = grp;
-	if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE))
+	else if (octeon_has_feature(OCTEON_FEATURE_CN68XX_WQE))
 		work->word1.cn68xx.grp = grp;
 	else
 		work->word1.cn38xx.grp = grp;
@@ -1395,13 +1395,32 @@ static inline int cvmx_wqe_is_l2_mcast(cvmx_wqe_t *work)
 		return (work->word2.s_cn38xx.is_mcast);
 }
 
+static inline void cvmx_wqe_set_l2_bcast(cvmx_wqe_t *work, bool bcast)
+{
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_wqe_78xx_t* wqe = (void *)work;
+		wqe->word2.is_l2_bcast = bcast;
+	} else
+		work->word2.s_cn38xx.is_bcast = bcast;
+}
+
+static inline void cvmx_wqe_set_l2_mcast(cvmx_wqe_t *work, bool mcast)
+{
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_wqe_78xx_t* wqe = (void *)work;
+		wqe->word2.is_l2_mcast = mcast;
+	} else
+		work->word2.s_cn38xx.is_mcast = mcast;
+}
+
 static inline int cvmx_wqe_is_l3_bcast(cvmx_wqe_t *work)
 {
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		cvmx_wqe_78xx_t* wqe = (void *)work;
 		return (wqe->word2.is_l3_bcast);
-	} else
-		cvmx_dprintf("%s: ERROR: not supported for model\n",__func__);
+	}
+	cvmx_dprintf("%s: ERROR: not supported for model\n",__func__);
+	return 0;
 }
 
 static inline int cvmx_wqe_is_l3_mcast(cvmx_wqe_t *work)
@@ -1409,8 +1428,9 @@ static inline int cvmx_wqe_is_l3_mcast(cvmx_wqe_t *work)
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)){
 		cvmx_wqe_78xx_t* wqe = (void *)work;
 		return (wqe->word2.is_l3_mcast);
-	} else
-		cvmx_dprintf("%s: ERROR: not supported for model\n",__func__);
+	}
+	cvmx_dprintf("%s: ERROR: not supported for model\n",__func__);
+	return 0;
 }
 
 /**

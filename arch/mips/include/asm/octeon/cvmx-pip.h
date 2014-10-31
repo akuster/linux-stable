@@ -42,7 +42,7 @@
  *
  * Interface to the hardware Packet Input Processing unit.
  *
- * <hr>$Revision: 103836 $<hr>
+ * <hr>$Revision: 106617 $<hr>
  */
 
 #ifndef __CVMX_PIP_H__
@@ -666,9 +666,7 @@ static inline void cvmx_pip_config_port(uint64_t ipd_port, cvmx_pip_prt_cfgx_t p
  */
 static inline void cvmx_pip_config_vlan_qos(uint64_t vlan_priority, uint64_t qos)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
-		/* FIXME for 68xx. */
-	} else {
+	if (!octeon_has_feature(OCTEON_FEATURE_PKND)) {
 		cvmx_pip_qos_vlanx_t pip_qos_vlanx;
 		pip_qos_vlanx.u64 = 0;
 		pip_qos_vlanx.s.qos = qos;
@@ -684,9 +682,7 @@ static inline void cvmx_pip_config_vlan_qos(uint64_t vlan_priority, uint64_t qos
  */
 static inline void cvmx_pip_config_diffserv_qos(uint64_t diffserv, uint64_t qos)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
-		/* FIXME for 68xx. */
-	} else {
+	if (!octeon_has_feature(OCTEON_FEATURE_PKND)) {
 		cvmx_pip_qos_diffx_t pip_qos_diffx;
 		pip_qos_diffx.u64 = 0;
 		pip_qos_diffx.s.qos = qos;

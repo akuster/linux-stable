@@ -364,7 +364,7 @@ static int __cvmx_ipd_mode_no_wptr(void)
 }
 
 static CVMX_TLS cvmx_buf_ptr_t __cvmx_packet_short_ptr[4];
-static CVMX_TLS uint8_t __cvmx_wqe_pool;
+static CVMX_TLS int8_t __cvmx_wqe_pool = -1;
 
 /**
  * @INTERNAL
@@ -560,25 +560,46 @@ cvmx_buf_ptr_t cvmx_wqe_get_packet_ptr(cvmx_wqe_t *work)
 
 void cvmx_wqe_free(cvmx_wqe_t *work)
 {
-	unsigned ncl = 1;
-	cvmx_wqe_78xx_t * wqe = (void *) work;
+	unsigned bufs, ncl = 1;
+	uint64_t paddr, paddr1;
 
-	/* Free native untranslated 78xx WQE */
-	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE) &&
-		!wqe->pki_wqe_translated) {
+	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
+		cvmx_wqe_78xx_t * wqe = (void *) work;
+		cvmx_fpa3_gaura_t aura;
 		cvmx_buf_ptr_pki_t bptr;
 
-		bptr = wqe->packet_ptr;
+		bufs = wqe->word0.bufs;
 
-		/* Do nothing if the first packet buffer shares WQE buffer */
-		if (!bptr.packet_outside_wqe)
-			return;
+		if (!wqe->pki_wqe_translated && bufs != 0) {
+			/* Handle cn78xx native untralsated WQE */
+
+			bptr = wqe->packet_ptr;
+
+			/* Do nothing - first packet buffer shares WQE buffer */
+			if (!bptr.packet_outside_wqe)
+				return;
+		} else if (cvmx_likely(bufs != 0)) {
+			/* Handle translated 78XX WQE */
+			paddr = (work->packet_ptr.s.addr & (~0x7full)) -
+				(work->packet_ptr.s.back << 7);
+			paddr1 = cvmx_ptr_to_phys(work);
+
+			/* do not free WQE if contains first data buffer */
+			if (paddr == paddr1)
+				return;
+		}
+
+		/* WQE is separate from packet buffer, free it */
+		aura = __cvmx_fpa3_gaura(
+				wqe->word0.aura >> 10,
+				wqe->word0.aura * 0x3ff);
+
+		cvmx_fpa3_free(work, aura, ncl);
 	} else {
-		uint64_t paddr, paddr1;
+		/* handle legacy WQE */
+		bufs = work->word2.s_cn38xx.bufs;
 
-		/* check for unconverted RS */
-		if (cvmx_likely(work->word2.s_cn38xx.bufs != 0)) {
-
+		if (cvmx_likely(bufs != 0)) {
 			/* Check if the first data buffer is inside WQE */
 			paddr = (work->packet_ptr.s.addr & (~0x7full)) -
 				(work->packet_ptr.s.back << 7);
@@ -589,20 +610,10 @@ void cvmx_wqe_free(cvmx_wqe_t *work)
 				return;
 		}
 
+		/* precalculate packet_ptr, WQE pool number */
+		if (cvmx_unlikely(__cvmx_wqe_pool < 0))
+			cvmx_packet_short_ptr_calculate();
 		cvmx_fpa1_free(work, __cvmx_wqe_pool, ncl);
-		return;
-	}
-
-	/* At this point it is clear the WQE needs to be freed */
-	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
-		cvmx_fpa3_gaura_t aura =
-			__cvmx_fpa3_gaura(
-				wqe->word0.aura >> 10,
-				wqe->word0.aura * 0x3ff);
-		/* First buffer outside WQE, but WQE comes from the same AURA */
-		/* Only a few words have been touched, not entire buf */
-		ncl = 1;
-		cvmx_fpa3_free(work, aura, ncl);
 	}
 }
 
