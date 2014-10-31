@@ -415,7 +415,7 @@ void cvmx_pki_read_tag_config(int node, int style, uint64_t cluster_mask,
 	tag_cfg->tag_fields.mpls_label = style_alg_reg.s.tag_mpls0;
 	tag_cfg->tag_fields.input_port = style_alg_reg.s.tag_prt;
 
-	/** vinita_to_do get mask tag*/
+	/** TO_DO get mask tag*/
 }
 
  /** This function writes/configures parameters associated with tag configuration in hardware.
@@ -462,7 +462,7 @@ void cvmx_pki_write_tag_config(int node, int style, uint64_t cluster_mask,
 			style_alg_reg.s.tag_prt = tag_cfg->tag_fields.input_port;
 			cvmx_write_csr_node(node, CVMX_PKI_CLX_STYLEX_ALG(style, cluster), style_alg_reg.u64);
 
-			/* vinita_to_do add mask tag */
+			/* TO_DO add mask tag */
 		}
 		cluster++;
 	}

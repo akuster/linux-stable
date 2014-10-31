@@ -332,6 +332,18 @@ void __cvmx_export_app_config_cleanup(void)
 EXPORT_SYMBOL(__cvmx_export_app_config_cleanup);
 
 /**
+ * Called by kernel modules to update appconfig
+ * @return 0 if export successful, -1 on failure
+ */
+int __cvmx_export_config(void)
+{
+	if (cvmx_export_app_config)
+		return (*cvmx_export_app_config)();
+	return -1;
+}
+EXPORT_SYMBOL(__cvmx_export_config);
+
+/**
  * @INTERNAL
  * Imports fpa config using named block.
  *

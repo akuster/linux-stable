@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 103883 $<hr>
+ * <hr>$Revision: 105521 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -293,7 +293,7 @@ void cvmx_qlm_init(void)
 	int qlm;
 	int qlm_jtag_length;
 	char *qlm_jtag_name = "cvmx_qlm_jtag";
-	int qlm_jtag_size = CVMX_QLM_JTAG_UINT32 * 8 * sizeof(uint32_t);
+	int qlm_jtag_size = CVMX_QLM_JTAG_UINT32 * 8 * sizeof(uint32_t) * 5;
 	static uint64_t qlm_base = 0;
 	const cvmx_bootmem_named_block_desc_t *desc;
 

@@ -71,7 +71,7 @@ static int cvmx_debug_remote_mem_wait_for_resume(volatile cvmx_debug_core_contex
 
 static void cvmx_debug_memory_change_core(int oldcore, int newcore)
 {
-	/* FIXME, this should change the core on the host side too. */
+	/* This should cause the host gdb to change the core but there is no way to signal to it, the core has changed. */
 }
 
 cvmx_debug_comm_t cvmx_debug_remote_comm = {

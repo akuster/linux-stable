@@ -63,7 +63,7 @@
  * Support functions for managing command queues used for
  * various hardware blocks.
  *
- * <hr>$Revision: 103822 $<hr>
+ * <hr>$Revision: 106617 $<hr>
  */
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
@@ -283,7 +283,7 @@ int cvmx_cmd_queue_length(cvmx_cmd_queue_id_t queue_id)
 	switch ((cvmx_cmd_queue_id_t) (queue_id & 0xff0000)) {
 	case CVMX_CMD_QUEUE_PKO_BASE:
 		/*
-		 * FIXME: Need atomic lock on
+		 * Really need atomic lock on
 		 * CVMX_PKO_REG_READ_IDX. Right now we are normally
 		 * called with the queue lock, so that is a SLIGHT
 		 * amount of protection.
@@ -305,7 +305,7 @@ int cvmx_cmd_queue_length(cvmx_cmd_queue_id_t queue_id)
 	case CVMX_CMD_QUEUE_DFA:
 	case CVMX_CMD_QUEUE_HNA:
 	case CVMX_CMD_QUEUE_RAID:
-		/* FIXME: Implement other lengths */
+		/* Still need to implement other lengths */
 		return 0;
 	case CVMX_CMD_QUEUE_DMA_BASE:
 		if (octeon_has_feature(OCTEON_FEATURE_NPEI)) {

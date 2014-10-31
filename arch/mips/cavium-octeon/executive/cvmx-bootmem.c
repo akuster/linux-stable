@@ -43,7 +43,7 @@
  * Simple allocate only memory allocator.  Used to allocate memory at
  * application start time.
  *
- * <hr>$Revision: 104081 $<hr>
+ * <hr>$Revision: 106502 $<hr>
  *
  */
 
@@ -648,10 +648,20 @@ int cvmx_bootmem_free_named(const char *name)
 }
 #endif
 
+/**
+ * Find a named block with flags
+ *
+ * @param name is the block name
+ * @param flags indicates the need to use locking during search
+ * @return pointer to named block descriptor
+ *
+ * Note: this function returns a pointer to a static structure,
+ * and is therefore not re-entrant.
+ * Making this function re-entrant will break backward compatibility.
+ */
 const cvmx_bootmem_named_block_desc_t *
 __cvmx_bootmem_find_named_block_flags(const char *name, uint32_t flags)
 {
-	/* FIXME: Returning a single static object is probably a bad thing */
 	static cvmx_bootmem_named_block_desc_t desc;
 	uint64_t named_addr = cvmx_bootmem_phy_named_block_find(name, flags);
 	if (named_addr) {

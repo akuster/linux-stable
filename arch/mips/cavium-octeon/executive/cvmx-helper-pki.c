@@ -66,7 +66,7 @@
 #include "cvmx-global-resources.h"
 #endif
 
-static CVMX_SHARED int pki_helper_debug = 0;
+static CVMX_SHARED int pki_helper_debug;
 
 CVMX_SHARED bool cvmx_pki_dflt_init[CVMX_MAX_NODES] = {[0 ... CVMX_MAX_NODES-1] = 1};
 
@@ -217,7 +217,7 @@ int __cvmx_helper_pki_install_dflt_vlan(int node)
 		pcam_action.style_add = 0;
 		pcam_action.pointer_advance = 4;
 		cvmx_pki_pcam_write_entry(node, index, cl_mask,
-			pcam_input, pcam_action);/*vinita_to_do, cluster_mask*/
+			pcam_input, pcam_action);/*cluster_mask in pass2*/
 
 		index = cvmx_pki_pcam_entry_alloc(node,
 			CVMX_PKI_FIND_AVAL_ENTRY, bank, cl_mask);
@@ -228,7 +228,7 @@ int __cvmx_helper_pki_install_dflt_vlan(int node)
 		}
 		pcam_input.data = 0x88a80000;
 		cvmx_pki_pcam_write_entry(node, index, cl_mask, pcam_input,
-			pcam_action);/*vinita_to_do, cluster_mask*/
+			pcam_action);
 
 		index = cvmx_pki_pcam_entry_alloc(node,
 			CVMX_PKI_FIND_AVAL_ENTRY, bank, cl_mask);
@@ -239,7 +239,7 @@ int __cvmx_helper_pki_install_dflt_vlan(int node)
 		}
 		pcam_input.data = 0x92000000;
 		cvmx_pki_pcam_write_entry(node, index, cl_mask, pcam_input,
-			pcam_action);/*vinita_to_do, cluster_mask*/
+			pcam_action);/* cluster_mask in pass2*/
 
 		index = cvmx_pki_pcam_entry_alloc(node,
 			CVMX_PKI_FIND_AVAL_ENTRY, bank, cl_mask);
@@ -250,7 +250,7 @@ int __cvmx_helper_pki_install_dflt_vlan(int node)
 		}
 		pcam_input.data = 0x91000000;
 		cvmx_pki_pcam_write_entry(node, index, cl_mask, pcam_input,
-			pcam_action);/*vinita_to_do, cluster_mask*/
+			pcam_action);
 	}
 	return 0;
 }
@@ -538,7 +538,7 @@ void cvmx_helper_pki_enable(int node)
 int cvmx_helper_pki_port_shutdown(int ipd_port)
 {
 	/* remove pcam entries */
-	/* vinita_to_do implemet later */
+	/* implemet if needed */
 	/* __cvmx_pki_port_rsrc_free(node); */
 	return 0;
 }
@@ -573,7 +573,7 @@ int cvmx_helper_pki_get_num_qpg_entry(enum cvmx_pki_qpg_qos qpg_qos)
 		return 1;
 	else if (qpg_qos == CVMX_PKI_QPG_QOS_VLAN || qpg_qos == CVMX_PKI_QPG_QOS_MPLS)
 		return 8;
-	else if (qpg_qos == CVMX_PKI_QPG_QOS_DSA_SRC) /*vinita_to_do for higig2*/
+	else if (qpg_qos == CVMX_PKI_QPG_QOS_DSA_SRC)
 		return 32;
 	else if (qpg_qos == CVMX_PKI_QPG_QOS_DIFFSERV || qpg_qos == CVMX_PKI_QPG_QOS_HIGIG)
 		return 64;
@@ -595,7 +595,7 @@ int cvmx_helper_pki_set_qpg_entry(int node, struct cvmx_pki_qpg_config *qpg_cfg)
 
 	offset = cvmx_pki_qpg_entry_alloc(node, qpg_cfg->qpg_base, 1);
 	if (pki_helper_debug)
-		cvmx_dprintf("at offset %d \n", offset);
+		cvmx_dprintf("pki-helper:set qpg entry at offset %d \n", offset);
 	if (offset == CVMX_RESOURCE_ALREADY_RESERVED) {
 		cvmx_dprintf("INFO:setup_qpg_table: offset %d already reserved\n", qpg_cfg->qpg_base);
 		return CVMX_RESOURCE_ALREADY_RESERVED;
@@ -623,6 +623,8 @@ int cvmx_helper_pki_set_qpg_entry(int node, struct cvmx_pki_qpg_config *qpg_cfg)
  * @param ena_drop      enable tail drop.
  *			1:enable 0:disable
  * @return Zero on success. Negative on failure
+ * @note the 'node' and 'aura' arguments may be combined in the future
+ * to use a compaund cvmx_fpa3_gaura_t structure argument.
  */
 int cvmx_helper_setup_aura_qos(int node, int aura, bool ena_red, bool ena_drop,
 			       uint64_t pass_thresh, uint64_t drop_thresh,
@@ -630,7 +632,6 @@ int cvmx_helper_setup_aura_qos(int node, int aura, bool ena_red, bool ena_drop,
 {
 	cvmx_fpa3_gaura_t gaura;
 
-	/* FIXME: change upper-layer arguments to new handle types */
 	gaura = __cvmx_fpa3_gaura(node, aura);
 
 	ena_red = ena_red | ena_drop;
@@ -708,7 +709,7 @@ int __cvmx_helper_pki_qos_rsrcs(int node, struct cvmx_pki_qos_schd *qossch)
 	/* Reserve pool resources */
 	if (qossch->pool_per_qos && qossch->pool_num < 0) {
 		if (pki_helper_debug)
-			cvmx_dprintf("pki-helper:qos: setup pool %d buff_size %d blocks %d\n",
+			cvmx_dprintf("pki-helper:qos-rsrc: setup pool %d buff_size %d blocks %d\n",
 				     qossch->pool_num, (int)qossch->pool_buff_size, (int)qossch->pool_max_buff);
 
 		qossch->_pool = cvmx_fpa3_setup_fill_pool(node,
@@ -729,7 +730,7 @@ int __cvmx_helper_pki_qos_rsrcs(int node, struct cvmx_pki_qos_schd *qossch)
 	/* Reserve aura resources */
 	if (qossch->aura_per_qos && qossch->aura_num < 0) {
 		if (pki_helper_debug)
-			cvmx_dprintf("pki-helper:qos setup aura %d pool %d blocks %d\n",
+			cvmx_dprintf("pki-helper:qos-rsrc: setup aura %d pool %d blocks %d\n",
 				     qossch->aura_num, qossch->pool_num,
 				     (int)qossch->aura_buff_cnt);
 
@@ -753,12 +754,12 @@ int __cvmx_helper_pki_qos_rsrcs(int node, struct cvmx_pki_qos_schd *qossch)
 	if (qossch->sso_grp_per_qos && qossch->sso_grp < 0) {
 		rs = cvmx_sso_allocate_group(node);
 		if (rs < 0) {
-			cvmx_dprintf("pki-helper:qos ERROR: sso grp not available\n");
+			cvmx_dprintf("pki-helper:qos-rsrc: ERROR: sso grp not available\n");
 			return rs;
 		}
 		qossch->sso_grp = rs;
 		if (pki_helper_debug)
-			cvmx_dprintf("pki-helper:qos: sso grp alloced is %d\n", qossch->sso_grp);
+			cvmx_dprintf("pki-helper:qos-rsrc: sso grp alloced is %d\n", qossch->sso_grp);
 	}
 #endif /* CVMX_BUILD_FOR_LINUX_KERNEL */
 	return 0;
@@ -772,7 +773,7 @@ int __cvmx_helper_pki_port_rsrcs(int node, struct cvmx_pki_prt_schd *prtsch)
 	/* Reserve pool resources */
 	if (prtsch->pool_per_prt && prtsch->pool_num < 0) {
 		if (pki_helper_debug)
-			cvmx_dprintf("pki-helper:port setup pool %d buff_size %d blocks %d\n",
+			cvmx_dprintf("pki-helper:port-rsrc: setup pool %d buff_size %d blocks %d\n",
 				     prtsch->pool_num, (int)prtsch->pool_buff_size, (int)prtsch->pool_max_buff);
 
 		prtsch->_pool = cvmx_fpa3_setup_fill_pool(node,
@@ -791,7 +792,7 @@ int __cvmx_helper_pki_port_rsrcs(int node, struct cvmx_pki_prt_schd *prtsch)
 	/* Reserve aura resources */
 	if (prtsch->aura_per_prt && prtsch->aura_num < 0) {
 		if (pki_helper_debug)
-			cvmx_dprintf("pki-helper:port setup aura %d pool %d blocks %d\n",
+			cvmx_dprintf("pki-helper:port-rsrc; setup aura %d pool %d blocks %d\n",
 				     prtsch->aura_num, prtsch->pool_num, (int)prtsch->aura_buff_cnt);
 		prtsch->_aura = cvmx_fpa3_set_aura_for_pool(prtsch->_pool,
 			prtsch->aura_num, prtsch->aura_name,
@@ -803,7 +804,6 @@ int __cvmx_helper_pki_port_rsrcs(int node, struct cvmx_pki_prt_schd *prtsch)
 				__func__, prtsch->aura_num);
 			return -1;
 		}
-
 		prtsch->aura_num = prtsch->_aura.laura;
 
 		if (pki_helper_debug)
@@ -813,12 +813,12 @@ int __cvmx_helper_pki_port_rsrcs(int node, struct cvmx_pki_prt_schd *prtsch)
 	if (prtsch->sso_grp_per_prt && prtsch->sso_grp < 0) {
 		rs = cvmx_sso_allocate_group(node);
 		if (rs < 0) {
-			cvmx_dprintf("pki-helper:port:ERROR: sso grp not available\n");
+			cvmx_printf("ERROR: %s: sso grp not available\n", __func__);
 			return rs;
 		}
 		prtsch->sso_grp = rs;
 		if (pki_helper_debug)
-			cvmx_dprintf("pki-helper:port: sso grp alloced is %d\n", prtsch->sso_grp);
+			cvmx_dprintf("pki-helper:port-rsrc: sso grp alloced is %d\n", prtsch->sso_grp);
 	}
 #endif /* CVMX_BUILD_FOR_LINUX_KERNEL */
 	return 0;
@@ -831,7 +831,7 @@ int __cvmx_helper_pki_intf_rsrcs(int node, struct cvmx_pki_intf_schd *intf)
 
 	if (intf->pool_per_intf && intf->pool_num < 0) {
 		if (pki_helper_debug)
-			cvmx_dprintf("pki-helper:intf: setup pool %d buff_size %d blocks %d\n",
+			cvmx_dprintf("pki-helper:intf-rsrc: setup pool %d buff_size %d blocks %d\n",
 				     intf->pool_num, (int)intf->pool_buff_size, (int)intf->pool_max_buff);
 		intf->_pool = cvmx_fpa3_setup_fill_pool(node, intf->pool_num,
 			intf->pool_name, intf->pool_buff_size,
@@ -850,7 +850,7 @@ int __cvmx_helper_pki_intf_rsrcs(int node, struct cvmx_pki_intf_schd *intf)
 	}
 	if (intf->aura_per_intf && intf->aura_num < 0) {
 		if (pki_helper_debug)
-			cvmx_dprintf("pki-helper:intf: setup aura %d pool %d blocks %d\n",
+			cvmx_dprintf("pki-helper:intf-rsrc: setup aura %d pool %d blocks %d\n",
 			     intf->aura_num, intf->pool_num, (int)intf->aura_buff_cnt);
 		intf->_aura = cvmx_fpa3_set_aura_for_pool(intf->_pool,
 			intf->aura_num, intf->aura_name,
@@ -872,7 +872,7 @@ int __cvmx_helper_pki_intf_rsrcs(int node, struct cvmx_pki_intf_schd *intf)
 	if (intf->sso_grp_per_intf && intf->sso_grp < 0) {
 		rs = cvmx_sso_allocate_group(node);
 		if (rs < 0) {
-			cvmx_dprintf("pki-helper:intf:ERROR: sso grp not available\n");
+			cvmx_printf("ERROR: %s: sso grp not available\n", __func__);
 			return rs;
 		}
 		intf->sso_grp = rs;
@@ -976,7 +976,7 @@ int cvmx_helper_pki_set_gbl_schd(int node, struct cvmx_pki_global_schd *gblsch)
 	if (gblsch->setup_sso_grp) {
 		rs = cvmx_sso_allocate_group(node);
 		if (rs < 0) {
-			cvmx_dprintf("pki-helper:gbl ERROR: sso grp not available\n");
+			cvmx_dprintf("pki-helper:gbl: ERROR: sso grp not available\n");
 			return rs;
 		}
 		gblsch->sso_grp = rs;
@@ -1020,12 +1020,12 @@ int cvmx_helper_pki_init_port(int ipd_port, struct cvmx_pki_prt_schd *prtsch)
 	if (prtsch->qpg_base < 0) {
 		rs = cvmx_pki_qpg_entry_alloc(xp.node, prtsch->qpg_base, num_qos);
 		if (rs < 0) {
-			cvmx_dprintf("pki-helper:port:ERROR: qpg entries not available\n");
+			cvmx_dprintf("pki-helper:port%d:ERROR: qpg entries not available\n", ipd_port);
 			return CVMX_RESOURCE_ALLOC_FAILED;
 		}
 		prtsch->qpg_base = rs;
 		if (pki_helper_debug)
-			cvmx_dprintf("port %d qpg_base %d allocated\n",
+			cvmx_dprintf("pki-helper:port-init: to port %d, qpg_base %d allocated\n",
 				ipd_port, prtsch->qpg_base);
 	}
 
@@ -1051,7 +1051,7 @@ int cvmx_helper_pki_init_port(int ipd_port, struct cvmx_pki_prt_schd *prtsch)
 			qpg_cfg.grp_bad = qossch->sso_grp;
 			cvmx_pki_write_qpg_entry(xp.node, prtsch->qpg_base + qos, &qpg_cfg);
 			if (pki_helper_debug)
-				cvmx_dprintf("port %d qos %d has port_add %d aura %d grp %d\n",
+				cvmx_dprintf("pki-helper:port-init: port %d qos %d has port_add %d aura %d grp %d\n",
 				ipd_port, qos, qossch->port_add,
 				qossch->aura_num, qossch->sso_grp);
 		}
@@ -1071,7 +1071,7 @@ int cvmx_helper_pki_init_port(int ipd_port, struct cvmx_pki_prt_schd *prtsch)
 		} else {
 			prtsch->style = rs;
 			if (pki_helper_debug)
-				cvmx_dprintf("port %d has style %d\n",
+				cvmx_dprintf("pki-helper:port-init: port %d has style %d\n",
 					ipd_port, prtsch->style);
 			style_cfg = pki_dflt_style[xp.node];
 			style_cfg.parm_cfg.qpg_qos = prtsch->qpg_qos;
@@ -1127,17 +1127,20 @@ int cvmx_helper_pki_init_interface(const int xiface, struct cvmx_pki_intf_schd *
 	has_fcs = __cvmx_helper_get_has_fcs(xiface);
 	memset(&qpg_cfg, 0, sizeof(qpg_cfg));
 
+	if (pki_helper_debug)
+		cvmx_dprintf("pki-helper:intf-init:intf%d initialize\n", xiface);
+
 	if (!intfsch->pool_per_intf) {
 		if (gblsch != NULL) {
 			intfsch->_pool = gblsch->_pool;
 			intfsch->pool_num = gblsch->pool_num;
 		} else {
-			cvmx_dprintf("ERROR: global scheduling is in use but is NULL\n");
+			cvmx_dprintf("ERROR:pki-helper:intf-init:intf%d: global scheduling is in use but is NULL\n", xiface);
 			return -1;
 		}
 	} else {
 		if (intfsch == NULL) {
-			cvmx_dprintf("ERROR: interface scheduling pointer is NULL\n");
+			cvmx_dprintf("ERROR:pki-helper:intf-init:intf%d: interface scheduling pointer is NULL\n", xiface);
 			return -1;
 		}
 		mbuff_size = intfsch->pool_buff_size;
@@ -1179,12 +1182,15 @@ int cvmx_helper_pki_init_interface(const int xiface, struct cvmx_pki_intf_schd *
 
 		/* Port is using qpg qos to schedule packets to differnet aura or sso group */
 		num_qos = cvmx_helper_pki_get_num_qpg_entry(prtsch->qpg_qos);
+		if (pki_helper_debug)
+			cvmx_dprintf("pki-helper:intf-init:intf%d: port %d used qpg_qos=%d\n",
+				     xiface, port, prtsch->qpg_qos);
 
 		/* All ports will share the aura from port 0 for the respective qos */
 		/* Port 0 should never have this set to TRUE **/
 		if (intfsch->qos_share_aura && (port != 0)) {
 			if (pki_helper_debug)
-				cvmx_dprintf("All ports will share same aura for all qos\n");
+				cvmx_dprintf("pki-helper:intf-init:intf%d All ports will share same aura for all qos\n", xiface);
 			for (qos = 0; qos < num_qos; qos++) {
 				qossch = &prtsch->qos_s[qos];
 				prtsch->qpg_qos = intfsch->prt_s[0].qpg_qos;
@@ -1199,7 +1205,7 @@ int cvmx_helper_pki_init_interface(const int xiface, struct cvmx_pki_intf_schd *
 		}
 		if (intfsch->qos_share_grp && (port != 0)) {
 			if (pki_helper_debug)
-				cvmx_dprintf("All ports will share same sso group for all qos\n");
+				cvmx_dprintf("pki-helper:intf-init:intf%d: All ports will share same sso group for all qos\n",xiface);
 			for (qos = 0; qos < num_qos; qos++) {
 				qossch = &prtsch->qos_s[qos];
 				qossch->sso_grp_per_qos =
@@ -1214,8 +1220,8 @@ int cvmx_helper_pki_init_interface(const int xiface, struct cvmx_pki_intf_schd *
 				qossch->pool_num = prtsch->pool_num;
 				qossch->_pool = prtsch->_pool;
 				if (pki_helper_debug)
-					cvmx_dprintf("qos %d pool %d\n",
-						qos, prtsch->pool_num);
+					cvmx_dprintf("pki-helper:intf-init:intf%d: qos %d has pool %d\n",
+						xiface, qos, prtsch->pool_num);
 			} else if (qossch->pool_buff_size < mbuff_size ||
 				    !mbuff_size)
 				mbuff_size = qossch->pool_buff_size;
@@ -1261,7 +1267,7 @@ int cvmx_helper_pki_init_interface(const int xiface, struct cvmx_pki_intf_schd *
 				port_shift = __cvmx_helper_pki_port_shift(xiface, intfsch->prt_s[0].qpg_qos);
 				if (pki_helper_debug) {
 					cvmx_dprintf("pki-helper: num qpg entry needed %d\n", (int)num_entry);
-					cvmx_dprintf("pki-helper:port_msb= %d port_shift=%d\n", port_msb, port_shift);
+					cvmx_dprintf("pki-helper:port_msb=%d port_shift=%d\n", port_msb, port_shift);
 				}
 				num_entry = num_qos;
 				for (port = 0; port < num_ports; port++) {
@@ -1344,7 +1350,7 @@ int cvmx_helper_pki_init_interface(const int xiface, struct cvmx_pki_intf_schd *
 				return -1;
 			}
 			mbuff_size = gblsch->pool_buff_size;
-			cvmx_dprintf("interface %d is using global pool\n", xiface);
+			cvmx_dprintf("interface %d on node %d is using global pool\n", xi.interface, xi.node);
 		}
 		/* Allocate style here and map it to all ports on interface */
 		rs = cvmx_pki_style_alloc(xi.node, intfsch->style);
@@ -1380,7 +1386,7 @@ int cvmx_helper_pki_init_interface(const int xiface, struct cvmx_pki_intf_schd *
 			pknd_cfg.fcs_pres = has_fcs;
 			cvmx_pki_write_pkind_config(xi.node, pknd, &pknd_cfg);
 		}
-	} else if (intfsch->style_per_prt) {
+	} else {
 		port_msb = 0;
 		port_shift = 0;
 		for (port = 0; port < num_ports; port++) {
@@ -1408,7 +1414,7 @@ int cvmx_helper_pki_init_interface(const int xiface, struct cvmx_pki_intf_schd *
 /**
  * This function gets all the PKI parameters related to that
  * particular port from hardware.
- * @param ipd_port	ipd port number to get parameter of
+ * @param ipd_port	ipd port number with node to get parameter of
  * @param port_cfg	pointer to structure where to store read parameters
  */
 void cvmx_pki_get_port_config(int ipd_port, struct cvmx_pki_port_config *port_cfg)
@@ -1434,7 +1440,7 @@ EXPORT_SYMBOL(cvmx_pki_get_port_config);
 /**
  * This function sets all the PKI parameters related to that
  * particular port in hardware.
- * @param ipd_port	ipd port number to get parameter of
+ * @param ipd_port	ipd port number with node to get parameter of
  * @param port_cfg	pointer to structure containing port parameters
  */
 void cvmx_pki_set_port_config(int ipd_port, struct cvmx_pki_port_config *port_cfg)
@@ -1679,7 +1685,7 @@ void cvmx_helper_pki_set_fcs_op(int node, int interface, int nports, int has_fcs
 	for (index = 0; index < nports; index++) {
 		pknd = cvmx_helper_get_pknd(interface, index);
 		while (cluster < CVMX_PKI_NUM_CLUSTER) {
-			/*vinita_to_do; find the cluster in use*/
+			/*find the cluster in use pass2*/
 			pkind_cfg.u64 = cvmx_read_csr_node(node, CVMX_PKI_CLX_PKINDX_CFG(pknd, cluster));
 			pkind_cfg.s.fcs_pres = has_fcs;
 			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_CFG(pknd, cluster), pkind_cfg.u64);

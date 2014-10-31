@@ -57,6 +57,7 @@
 #include <asm/octeon/cvmx-pip-defs.h>
 #include <asm/octeon/cvmx-asxx-defs.h>
 #include <asm/octeon/cvmx-gmxx-defs.h>
+#include <asm/octeon/cvmx-gserx-defs.h>
 #include <asm/octeon/cvmx-smix-defs.h>
 #include <asm/octeon/cvmx-dbg-defs.h>
 #include <asm/octeon/cvmx-sso-defs.h>
@@ -803,7 +804,15 @@ static cvmx_helper_interface_mode_t __cvmx_get_mode_cn78xx(int xiface)
 				iface_node_ops[xi.node][xi.interface] = &iface_ops_dis;
 		}
 	} else if (xi.interface == 8) { /* DPI */
-		iface_node_ops[xi.node][xi.interface] = &iface_ops_npi;
+		int qlm = 0;
+		for (qlm = 0; qlm < 5; qlm++) {
+			/* if GSERX_CFG[pcie] == 1, then enable npi */
+			if (cvmx_read_csr_node(xi.node, CVMX_GSERX_CFG(qlm)) & 0x1) {
+				iface_node_ops[xi.node][xi.interface] = &iface_ops_npi;
+				return iface_node_ops[xi.node][xi.interface]->mode;
+			}
+		}
+		iface_node_ops[xi.node][xi.interface] = &iface_ops_dis;
 	} else if (xi.interface == 9) { /* LOOP */
 		iface_node_ops[xi.node][xi.interface] = &iface_ops_loop;
 	} else
@@ -1871,10 +1880,6 @@ int cvmx_helper_ipd_and_packet_input_enable_node(int node)
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		; // cvmx_pko_enable_78xx(0); already enabled
 	} else {
-		/* FIXME:
-		 * 		 This call was in cvmx-pko.c,
-		 * 		 not sure if this is right either
-		 */
 #ifdef CVMX_BUILD_FOR_STANDALONE
 		__cvmx_install_gmx_error_handler_for_xaui();
 #endif
@@ -1967,7 +1972,6 @@ int cvmx_helper_initialize_packet_io_node(unsigned int node)
 
 	/* PKO3 init precedes that of interfaces */
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
-		//FIXME- ILK needs this config data for now - must fix!
 		__cvmx_helper_init_port_config_data();
 		result = cvmx_helper_pko3_init_global(node);
 	}
@@ -1987,7 +1991,7 @@ int cvmx_helper_initialize_packet_io_node(unsigned int node)
 			    cvmx_helper_ports_on_interface(interface),
 			    cvmx_helper_interface_mode_to_string(cvmx_helper_interface_get_mode(interface)));
 
-		result |= __cvmx_helper_ipd_setup_interface(interface);/* vinita_to_do separate pki */
+		result |= __cvmx_helper_ipd_setup_interface(interface);
 		if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
 			result |= cvmx_helper_pko3_init_interface(cvmx_helper_node_interface_to_xiface(node, interface));
 		else
@@ -2196,7 +2200,6 @@ static int __cvmx_helper_shutdown_packet_io_global_cn78xx(int node)
 			for (index = 0; index < num_ports; index++) {
 				if (!cvmx_helper_is_port_valid(interface, index))
 					continue;
-		//FIXME: Move this code to cvmx-bgxx.c
 				/* Disable GMX before we make any changes. Remember the enable state */
 				cmr_config.u64 = cvmx_read_csr(CVMX_BGXX_CMRX_CONFIG(index, interface));
 				cmr_config.s.enable = 0;
@@ -2861,7 +2864,7 @@ void cvmx_helper_setup_simulator_io_buffer_counts(int node, int num_packet_buffe
 void *cvmx_helper_mem_alloc(int node, uint64_t alloc_size, uint64_t align)
 {
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
-	return kmalloc(alloc_size, GFP_NOIO | GFP_DMA); //FIXME alignment
+	return kmalloc(alloc_size, GFP_NOIO | GFP_DMA);
 #else
 	return cvmx_phys_to_ptr(cvmx_bootmem_phy_alloc_range(alloc_size, align,
 							     cvmx_addr_on_node(node, 0ull),

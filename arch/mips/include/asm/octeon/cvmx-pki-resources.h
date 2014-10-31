@@ -161,6 +161,26 @@ int cvmx_pki_cluster_free(int node, uint64_t cluster_mask);
 int cvmx_pki_pcam_entry_free(int node, int index, int bank, uint64_t cluster_mask);
 
 /**
+ * This function allocates/reserves a bpid from pool of global bpid per node.
+ * @param node	node to allocate bpid from.
+ * @param bpid	bpid  to allocate, if -1 it will be allocated
+ *		first available boid from bpid resource. If index is positive
+ *		number and in range, it will try to allocate specified bpid.
+ * @return 	bpid number on success,
+ *		-1 on alloc failure.
+ *		-2 on resource already reserved.
+ */
+int cvmx_pki_bpid_alloc(int node, int bpid);
+
+/**
+ * This function frees a bpid from pool of global bpid per node.
+ * @param node	 node to free bpid from.
+ * @param style	 bpid to free
+ * @return 	 0 on success, -1 on failure or
+ */
+int cvmx_pki_bpid_free(int node, int bpid);
+
+/**
  * This function frees all the PKI software resources
  * (clusters, styles, qpg_entry, pcam_entry etc) for the specified node
  */

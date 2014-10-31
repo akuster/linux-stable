@@ -254,7 +254,8 @@ static uint64_t __cvmx_global_resources_init(void)
 							      CVMX_GLOBAL_RESOURCES_DATA_NAME,
 							      CVMX_BOOTMEM_FLAG_NO_LOCKING);
 		if (tmp_phys < 0) {
-			cvmx_dprintf("ERROR : failed to allocate global resource name block. sz=%d \n", sz);
+			cvmx_printf("ERROR: %s: failed to allocate global resource name block. sz=%d\n",
+				__func__, sz);
 			goto end;
 		}
 		__cvmx_global_resources_addr = (uint64_t) tmp_phys;
@@ -346,7 +347,11 @@ uint64_t cvmx_create_global_resource(struct global_resource_tag tag, uint64_t si
 	*new = 1;
 	entry_count = CVMX_GLOBAL_RESOURCES_GET_FIELD(entry_cnt);
 	if (entry_count >= CVMX_MAX_GLOBAL_RESOURCES) {
-		cvmx_dprintf("ERROR: reached max global resources limit\n");
+		char tagname[MAX_RESOURCE_TAG_LEN+1];
+
+		__cvmx_get_tagname(&tag, tagname);
+		cvmx_printf("ERROR: %s: reached global resources limit for %s\n",
+			__func__, tagname);
 		phys_addr = 0;
 		goto end;
 	}
@@ -354,7 +359,11 @@ uint64_t cvmx_create_global_resource(struct global_resource_tag tag, uint64_t si
         /* Allocate bootmem for the resource*/
 	phys_addr = __cvmx_alloc_bootmem_for_global_resources(size);
 	if (!phys_addr) {
-		cvmx_dprintf("ERROR: unable to bootmem size=%d \n", (int) size);
+		char tagname[MAX_RESOURCE_TAG_LEN+1];
+
+		__cvmx_get_tagname(&tag, tagname);
+		cvmx_dprintf("ERROR: %s: out of memory %s, size=%d\n",
+			__func__, tagname, (int) size);
 		goto end;
 	}
 
@@ -407,7 +416,8 @@ int cvmx_allocate_global_resource_range(struct global_resource_tag tag, uint64_t
 	if (addr == 0) {
 		char tagname[256];
 		__cvmx_get_tagname(&tag, tagname);
-		cvmx_dprintf("ERROR: cannot find resource %s\n", tagname);
+		cvmx_printf("ERROR: %s: cannot find resource %s\n", 
+			__func__, tagname);
 		return -1;
 	}
 	__cvmx_global_resource_lock();
@@ -472,6 +482,10 @@ int cvmx_free_global_resource_range_with_base(struct global_resource_tag tag,
 	uint64_t addr = cvmx_get_global_resource(tag,1);
 	int rv;
 
+	/* Resource was not created, nothing to release */
+	if (addr == 0)
+		return 0;
+
 	__cvmx_global_resource_lock();
 	rv = cvmx_range_free_with_base(addr, base, nelements);
 	__cvmx_global_resource_unlock();
@@ -484,6 +498,10 @@ int cvmx_free_global_resource_range_multiple(struct global_resource_tag tag,
 	uint64_t addr = cvmx_get_global_resource(tag,1);
 	int rv;
 
+	/* Resource was not created, nothing to release */
+	if (addr == 0)
+		return 0;
+
 	__cvmx_global_resource_lock();
 	rv = cvmx_range_free_mutiple(addr, bases, nelements);
 	__cvmx_global_resource_unlock();
@@ -495,6 +513,10 @@ int cvmx_free_global_resource_range_with_owner(struct global_resource_tag tag,
 {
 	uint64_t addr = cvmx_get_global_resource(tag,1);
 	int rv;
+
+	/* Resource was not created, nothing to release */
+	if (addr == 0)
+		return 0;
 
 	__cvmx_global_resource_lock();
 	rv = cvmx_range_free_with_owner(addr, owner);
@@ -550,6 +572,10 @@ uint64_t cvmx_get_global_resource_owner(struct global_resource_tag tag, int base
 {
 	uint64_t addr = cvmx_get_global_resource(tag, 1);
 
+	/* Resource was not created, return "available" special owner code */
+	if (addr == 0)
+		return -88LL;
+
 	return cvmx_range_get_owner(addr, base);
 }
 
@@ -570,8 +596,6 @@ void cvmx_global_resources_show(void)
 	entry_cnt = CVMX_GLOBAL_RESOURCES_GET_FIELD(entry_cnt);
 	memset (tagname, 0, MAX_RESOURCE_TAG_LEN + 1);
 
-	if (dbg)
-		cvmx_dprintf("%s: cvmx-global-resources: \n", __func__);
 	for (count = 0; count < entry_cnt; count++) {
 		p = CVMX_GET_RESOURCE_ENTRY(count);
 		phys_addr = CVMX_RESOURCE_ENTRY_GET_FIELD(p, phys_addr);

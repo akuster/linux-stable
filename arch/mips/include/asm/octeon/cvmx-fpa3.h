@@ -42,7 +42,7 @@
  *
  * Interface to the CN78XX Free Pool Allocator, a.k.a. FPA3
  *
- * <hr>$Revision: 104195 $<hr>
+ * <hr>$Revision: 106503 $<hr>
  *
  */
 
@@ -529,13 +529,12 @@ static inline long long cvmx_fpa3_get_available(cvmx_fpa3_gaura_t aura)
 /**
  * Configure the QoS parameters of an FPA3 AURA
  *
- * @para aura is the FPA3 AURA handle
+ * @param aura is the FPA3 AURA handle
  * @param ena_bp enables backpressure when outstanding count exceeds 'bp_thresh'
- * @param ena_red enables random early discard when outstanding count
- * exceeds 'pass_thresh'
+ * @param ena_red enables random early discard when outstanding count exceeds 'pass_thresh'
  * @param pass_thresh is the maximum count to invoke flow control
  * @param drop_thresh is the count threshold to begin dropping packets
- * @para, bp_thresh is the back-pressure threshold
+ * @param bp_thresh is the back-pressure threshold
  *
  */
 static inline void cvmx_fpa3_setup_aura_qos(cvmx_fpa3_gaura_t aura, bool ena_red,
@@ -595,10 +594,32 @@ extern cvmx_fpa3_pool_t cvmx_fpa3_setup_fill_pool(
 	int node, int desired_pool, const char *name,
 	unsigned block_size, unsigned num_blocks, void *buffer);
 
+/**
+ * Function to attach an aura to an existing pool
+ *
+ * @param node - configure fpa on this node
+ * @param pool - configured pool to attach aura to
+ * @param desired_aura - pointer to aura to use, set to -1 to allocate
+ * @param name - name to register
+ * @param block_size - size of buffers to use
+ * @param num_blocks - number of blocks to allocate
+ *
+ * @return configured gaura on success, CVMX_FPA3_INVALID_GAURA on failure
+ */
 extern cvmx_fpa3_gaura_t cvmx_fpa3_set_aura_for_pool
 	(cvmx_fpa3_pool_t pool, int desired_aura,
 	const char *name, unsigned block_size, unsigned num_blocks);
 
+
+/**
+ * Function to setup and initialize a pool.
+ *
+ * @param node - configure fpa on this node
+ * @param desired_aura - aura to use, -1 for dynamic allocation
+ * @param name - name to register
+ * @param block_size - size of buffers in pool
+ * @param num_blocks - max number of buffers allowed
+ */
 extern cvmx_fpa3_gaura_t cvmx_fpa3_setup_aura_and_pool(
 		int node, int desired_aura,
 		const char *name, void *buffer,

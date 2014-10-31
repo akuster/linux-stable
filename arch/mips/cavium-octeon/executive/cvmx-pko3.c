@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2013  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -718,8 +718,6 @@ static int cvmx_pko_setup_macs(int node)
 		unsigned mac_fifo_cnt;
 		unsigned tmp;
 
-		/* FIXME- this section has no basis in HRM, revisit */
-		/* Loosely based on packet/clear78.x */
 		pko_fifo_cnt = cvmx_pko3_mac_table[mac_num].fifo_cnt;
 		mac_fifo_cnt = cvmx_pko3_mac_table[mac_num].mac_fifo_cnt;
 
@@ -734,7 +732,6 @@ static int cvmx_pko_setup_macs(int node)
 		fifo_size = (2 * 1024) + (1024 / 2); /* 2.5KiB */
 		fifo_credit = pko_fifo_cnt * fifo_size;
 
-		/* FIXME- This code is chip-dependent, not portable! */
 		switch (mac_num) {
 			case 0: /* loopback */
 				mac_credit = 4096; /* From HRM Sec 13.0 */
@@ -1156,8 +1153,10 @@ int cvmx_pko3_pdesc_from_wqe(cvmx_pko3_pdesc_t *pdesc, cvmx_wqe_78xx_t *wqe,
 	hdr_s->s.format = 0;	/* Only 0 works for Pass1 */
 	hdr_s->s.ds = 0;	/* don't send, never used */
 
-	/* TODO: n2 is not currently supported in simulator */
-	hdr_s->s.n2 = 0;	/* No L2 allocate */
+        if(OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
+		hdr_s->s.n2 = 0;	/* L2 allocate everything */
+	else
+		hdr_s->s.n2 = 1;	/* No L2 allocate works faster */
 
 	/* Default buffer freeing setting, may be overriden by "i" */
 	hdr_s->s.df = !free_bufs;
@@ -1358,8 +1357,8 @@ int cvmx_pko3_pdesc_transmit(cvmx_pko3_pdesc_t *pdesc, uint16_t dq)
 	}
 
         /* Derive destination node from dq */
-        port_node = dq >> 14;
-        dq &= (1<<10)-1;
+	port_node = dq >> 10;
+	dq &= (1<<10)-1;
 
         /* Send the PKO3 command into the Descriptor Queue */
         pko_status = __cvmx_pko3_do_dma(port_node, dq,
@@ -1376,6 +1375,34 @@ int cvmx_pko3_pdesc_transmit(cvmx_pko3_pdesc_t *pdesc, uint16_t dq)
 #endif
 
 	return -1;
+}
+
+int cvmx_pko3_pdesc_append_free(cvmx_pko3_pdesc_t *pdesc, uint64_t addr,
+			     unsigned gaura)
+{
+	cvmx_pko_send_hdr_t *hdr_s;
+	cvmx_pko_send_free_t free_s;
+	cvmx_pko_send_aura_t aura_s;
+
+	hdr_s = (void *) &pdesc->word[0];
+
+	if (pdesc->last_aura == -1) {
+		pdesc->last_aura = hdr_s->s.aura = gaura;
+	} else if (pdesc->last_aura != (short) gaura) {
+		aura_s.s.aura = gaura;
+		aura_s.s.offset = 0;
+		aura_s.s.alg = AURAALG_NOP;
+		aura_s.s.subdc4 = CVMX_PKO_SENDSUBDC_AURA;
+		pdesc->last_aura = gaura;
+		if (cvmx_pko3_pdesc_subdc_add(pdesc, aura_s.u64) < 0)
+			return -1;
+	}
+
+	free_s.u64 = 0;
+	free_s.s.subdc4 = CVMX_PKO_SENDSUBDC_FREE;
+	free_s.s.addr = addr;
+
+	return cvmx_pko3_pdesc_subdc_add(pdesc, free_s.u64);
 }
 
 /**
@@ -1617,8 +1644,8 @@ int cvmx_pko3_pdesc_notify_memclr(cvmx_pko3_pdesc_t *pdesc,
  * software-based decoding to handle modified or originated
  * packets correctly.
  *
- * FIXME:
- * Add simple accessors to read the decoded protocol fields.
+ * @note
+ * Need to add simple accessors to read the decoded protocol fields.
  */
 static int cvmx_pko3_pdesc_hdr_offsets(cvmx_pko3_pdesc_t *pdesc)
 {
@@ -1648,7 +1675,7 @@ static int cvmx_pko3_pdesc_hdr_offsets(cvmx_pko3_pdesc_t *pdesc)
 		if (pdesc->pki_word2.lf_hdr_type == CVMX_PKI_LTYPE_E_SCTP)
 			pdesc->ckl4_alg = CKL4ALG_SCTP;
 	}
-	/* FIXME: consider ARP as L3 too ? what about IPfrag ? */
+	/* May need to add logic for ARP, IPfrag packets here */
 
 	pdesc->hdr_offsets = 1;	/* make sure its done once */
 	return 0;
@@ -1785,8 +1812,6 @@ int cvmx_pko3_pdesc_hdr_push(cvmx_pko3_pdesc_t *pdesc,
 	if (layer >= 3) {
 		hdr_s->s.ckl3 = 1;
 		hdr_s->s.ckl4 = pdesc->ckl4_alg;
-		/* FIXME: decode L4 alg in case the header was generated */
-		/* FIXME: CKL4 not supported in simulator */
 	}
 
 	return headroom;

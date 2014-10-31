@@ -43,7 +43,7 @@
  * Functions for XAUI initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 100545 $<hr>
+ * <hr>$Revision: 106617 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -77,7 +77,6 @@ int __cvmx_helper_xaui_enumerate(int xiface)
 		if (qlm_mode == CVMX_QLM_MODE_RXAUI)
 			return 1;
 		return 0;
-		/* FIXME for higig2 */
 	}
 	/* If HiGig2 is enabled return 16 ports, otherwise return 1 port */
 	gmx_hg2_control.u64 = cvmx_read_csr(CVMX_GMXX_HG2_CONTROL(interface));
@@ -238,9 +237,7 @@ int __cvmx_helper_xaui_link_init(int interface)
 	 * Errata G-15618 requires disabling PCS soft reset in some
 	 * OCTEON II models.
 	 */
-	if (!OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_X) &&
-	    !OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_0) &&
-	    !OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_1) &&
+	if (!OCTEON_IS_MODEL(OCTEON_CN63XX) &&
 	    !OCTEON_IS_MODEL(OCTEON_CN66XX_PASS1_X) &&
 	    !OCTEON_IS_MODEL(OCTEON_CN68XX))
 		xaui_ctl.s.reset = 1;

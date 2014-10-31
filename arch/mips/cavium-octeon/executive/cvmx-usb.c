@@ -2400,7 +2400,7 @@ static int __cvmx_usb_submit_transaction(cvmx_usb_internal_state_t * usb,
 	transaction->buffer = buffer;
 	transaction->buffer_length = buffer_length;
 	transaction->control_header = control_header;
-	transaction->iso_start_frame = iso_start_frame;	// FIXME: This is not used, implement it
+	transaction->iso_start_frame = iso_start_frame;	// This is not used, need to implement it.
 	transaction->iso_number_packets = iso_number_packets;
 	transaction->iso_packets = iso_packets;
 	transaction->callback = callback;

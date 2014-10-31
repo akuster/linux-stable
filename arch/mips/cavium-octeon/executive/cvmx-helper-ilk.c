@@ -781,7 +781,7 @@ retry:
 			 */
 			cvmx_write_csr(CVMX_ILK_RXX_INT_EN(interface), 0x1e2);
 		}
-		/* FIXME: Enable ILK interrupts for 78xx */
+		/* Need to enable ILK interrupts for 78xx */
 
 		for (i = 0; i < CVMX_ILK_MAX_LANES(); i++) {
 			if ((1 << i) & lane_mask) {

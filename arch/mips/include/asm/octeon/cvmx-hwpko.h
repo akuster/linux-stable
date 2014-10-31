@@ -473,12 +473,12 @@ extern int cvmx_pko_get_num_queues(int port);
  * @param pool	fpa pool number yo use
  * @param buffer_size	buffer size of pool
  * @param buffer_count	number of buufers to allocate to pool
+ *
+ * @note the caller is responsable for setting up the pool with
+ * an appropriate buffer size and sufficient buffer count.
  */
 void cvmx_pko_set_cmd_que_pool_config(int64_t pool, uint64_t buffer_size,
 					   uint64_t buffer_count);
-//FIXME- reconsider:
-// Helper should setup the pool, then call PKO (pko_init?) with the
-// pool number to use.
 
 /**
  * Get the status counters for a port.

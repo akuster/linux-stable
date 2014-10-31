@@ -198,6 +198,12 @@ int cvmx_fpa3_release_pool(cvmx_fpa3_pool_t pool)
 	if (!__cvmx_fpa3_pool_valid(pool))
 		return -1;
 
+	if (cvmx_create_global_resource_range(tag, CVMX_FPA3_NUM_POOLX) != 0) {
+		cvmx_printf("ERROR: %s: global resource create node=%u\n",
+			__func__, pool.node);
+		return -1;
+	}
+
 	return
 		cvmx_free_global_resource_range_multiple(tag, &lpool, 1);
 }
@@ -242,10 +248,9 @@ int cvmx_fpa1_release_pool(cvmx_fpa1_pool_t pool)
 		cvmx_free_global_resource_range_multiple(tag, &pool, 1);
 }
 
-/* 
- * FIXME:
- * An easier way to acheive the same would be to
- * query the block size of a "pool"
+/**
+ * Query if an FPA pool is available for reservation
+ * using global resources
  */
 int cvmx_fpa1_is_pool_available(cvmx_fpa1_pool_t pool)
 {

@@ -516,7 +516,7 @@ typedef enum {
 	CVMX_USB_COMPLETE_SUCCESS,
 				    /**< The transaction / operation finished without any errors */
 	CVMX_USB_COMPLETE_SHORT,
-				    /**< FIXME: This is currently not implemented */
+				    /**< This is currently not implemented */
 	CVMX_USB_COMPLETE_CANCEL,
 				    /**< The transaction was canceled while in flight by a user call to cvmx_usb_cancel* */
 	CVMX_USB_COMPLETE_ERROR,

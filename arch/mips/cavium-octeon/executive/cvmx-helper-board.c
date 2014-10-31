@@ -90,7 +90,7 @@
 CVMX_SHARED cvmx_helper_link_info_t(*cvmx_override_board_link_get)(int ipd_port) = NULL;
 
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-
+/** Set this to 1 to enable lots of debugging output */
 static const int device_tree_dbg = 0;
 #endif
 
@@ -195,7 +195,8 @@ int __pip_eth_node(const void *fdt_addr, int aliases, int ipd_port)
 	}
 	pip = fdt_path_offset(fdt_addr, pip_path);
 	if (dbg)
-		cvmx_dprintf("ipdd_port=%d pip_path=%s pip=%d ", ipd_port, pip_path, pip);
+		cvmx_dprintf("ipdd_port=%d pip_path=%s pip=%d ",
+			     ipd_port, pip_path, pip);
 	if (pip < 0) {
 		cvmx_dprintf("ERROR: pip not found in device tree\n");
 		if (dbg)
@@ -272,51 +273,38 @@ static int __get_muxed_mdio_info_from_dt(cvmx_phy_info_t *phy_info,
 					 int mdio_offset, int mux_offset)
 {
 	static void *fdt_addr = 0;
-	uint32_t *psmi_handle;
 	int phandle;
-	uint32_t *pgpio_handle;
 	int smi_offset;
 	int gpio_offset;
-	uint64_t *smi_addrp;
 	uint64_t smi_addr = 0;
 	int len;
+	uint32_t *pgpio_handle;
 	int gpio_count = 0;
 	uint32_t *prop_val;
 	int offset;
 	const char *prop_name;
 
+	if (device_tree_dbg)
+		cvmx_dprintf("%s(%p, 0x%x, 0x%x)\n", __func__, phy_info,
+			     mdio_offset, mux_offset);
 	if (fdt_addr == 0)
 		fdt_addr = __cvmx_phys_addr_to_ptr(cvmx_sysinfo_get()->fdt_addr,
 						   OCTEON_FDT_MAX_SIZE);
 
-	prop_val = (uint32_t *)fdt_getprop(fdt_addr, mdio_offset, "reg", NULL);
-	if (!prop_val) {
+	/* Get register value to put onto the GPIO lines to select */
+	phy_info->gpio_value = cvmx_fdt_get_int(fdt_addr, mdio_offset, "reg", -1);
+	if (phy_info->gpio_value < 0) {
 		cvmx_dprintf("Could not get register value for muxed MDIO bus from DT\n");
 		return -1;
 	}
-	/* Get register value to put onto the GPIO lines to select */
-	phy_info->gpio_value = fdt32_to_cpu(*prop_val);
 
-	psmi_handle = (uint32_t *)fdt_getprop(fdt_addr, mux_offset,
-					      "mdio-parent-bus", NULL);
-	if (psmi_handle == NULL) {
-		cvmx_dprintf("Could not get MDIO parent bus for multiplexed bus from device tree\n");
-		return -1;
-	}
-
-	phandle = fdt32_to_cpu(*psmi_handle);
-	smi_offset = fdt_node_offset_by_phandle(fdt_addr, phandle);
+	smi_offset = cvmx_fdt_lookup_phandle(fdt_addr, mux_offset,
+					   "mdio-parent-bus");
 	if (smi_offset < 0) {
 		cvmx_dprintf("Invalid SMI offset for muxed MDIO interface in device tree\n");
 		return -1;
 	}
-	smi_addrp = (uint64_t *)fdt_getprop(fdt_addr, smi_offset, "reg", &len);
-	if ((len < (int)sizeof(uint64_t)) || smi_addrp == NULL) {
-		cvmx_dprintf("Could not get register information for SMI interface from DT\n");
-		return -1;
-	}
-	memcpy(&smi_addr, smi_addrp, sizeof(uint64_t));
-	smi_addr = fdt64_to_cpu(smi_addr);
+	smi_addr = cvmx_fdt_get_uint64(fdt_addr, smi_offset, "reg", 0);
 
 	/* Convert SMI address to a MDIO interface */
 	switch (smi_addr) {
@@ -510,7 +498,7 @@ static int __cvmx_helper_dt_process_mdio_mux(void *fdt_addr, int mdio_offset,
 	}
 	mux_info->direct_connect = 0;
 
-	smi_offset = cvmx_fdt_lookup_phandle(fdt_addr, mux_offset,
+	smi_offset = (fdt_addr, mux_offset,
 					     "mdio-parent-bus");
 	if (smi_offset < 0) {
 		cvmx_printf("Could not get parent mdio bus\n");
@@ -972,20 +960,15 @@ int __cvmx_helper_board_get_port_from_dt(void *fdt_addr, int ipd_port)
 int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 {
 	static void *fdt_addr = 0;
-	uint32_t *phy_handle;
-	int aliases, eth, phy, phy_parent, phandle, ret, len, i;
+	int aliases, eth, phy, phy_parent, ret, i;
 	int mdio_parent;
 	const char *phy_compatible_str;
 	const char *host_mode_str = NULL;
-	uint32_t *phy_addr_ptr;
-	uint32_t *psmi_handle;
-	int smi_offset;
-	uint64_t *smi_addrp;
-	uint64_t smi_addr = 0;
 	int dbg = device_tree_dbg;
 	int interface;
+	int phy_addr_offset = 0;
 
-	if (device_tree_dbg)
+	if (dbg)
 		cvmx_dprintf("%s(%p, %d)\n", __func__, phy_info, ipd_port);
 
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
@@ -995,8 +978,6 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 		fdt_addr = __cvmx_phys_addr_to_ptr(cvmx_sysinfo_get()->fdt_addr,
 						   OCTEON_FDT_MAX_SIZE);
 
-	if (device_tree_dbg)
-		cvmx_dprintf("%s(%p, %d)\n", __func__, phy_info, ipd_port);
 	phy_info->phy_addr = -1;
 	phy_info->phy_sub_addr = 0;
 	phy_info->ipd_port = ipd_port;
@@ -1034,12 +1015,15 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 
 	interface = cvmx_helper_get_interface_num(ipd_port);
 	/* Get handle to phy */
-	phy_handle = (uint32_t *) fdt_getprop(fdt_addr, eth, "phy-handle", NULL);
-	if (!phy_handle) {
+	phy = cvmx_fdt_lookup_phandle(fdt_addr, eth, "phy-handle");
+	if (phy < 0) {
 		cvmx_helper_interface_mode_t if_mode;
 		/* Note that it's OK for RXAUI and ILK to not have a PHY
 		 * connected (i.e. EBB boards in loopback).
 		 */
+		if (dbg)
+			cvmx_dprintf("Cannot get phy-handle for ipd_port: %d\n",
+				     ipd_port);
 		if_mode = cvmx_helper_interface_get_mode(interface);
 		if (if_mode != CVMX_HELPER_INTERFACE_MODE_RXAUI &&
 		    if_mode != CVMX_HELPER_INTERFACE_MODE_ILK) {
@@ -1051,13 +1035,6 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 			return -2;
 		}
 	}
-	phandle = fdt32_to_cpu(*phy_handle);
-	phy = fdt_node_offset_by_phandle(fdt_addr, phandle);
-	if (phy < 0) {
-		cvmx_dprintf("ERROR : cannot find phy for ipd_port=%d ret=%d\n",
-			     ipd_port, phy);
-		return -1;
-	}
 
 	phy_compatible_str = (const char *)fdt_getprop(fdt_addr, phy,
 						       "compatible", NULL);
@@ -1065,11 +1042,11 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 		cvmx_dprintf("ERROR: no compatible prop in phy\n");
 		return -1;
 	}
-	if (device_tree_dbg)
+	if (dbg)
 		cvmx_dprintf("Checking compatible string \"%s\" for ipd port %d\n",
 			     phy_compatible_str, ipd_port);
 	if (!memcmp("marvell", phy_compatible_str, strlen("marvell"))) {
-		if (device_tree_dbg)
+		if (dbg)
 			cvmx_dprintf("Marvell PHY detected for ipd_port %d\n",
 				     ipd_port);
 		phy_info->phy_type = MARVELL_GENERIC_PHY;
@@ -1077,25 +1054,25 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 	} else if (!memcmp("broadcom", phy_compatible_str, strlen("broadcom"))) {
 		phy_info->phy_type = BROADCOM_GENERIC_PHY;
 		phy_info->link_function = __get_broadcom_phy_link_state;
-		if (device_tree_dbg)
+		if (dbg)
 			cvmx_dprintf("Broadcom PHY detected for ipd_port %d\n",
 				     ipd_port);
 	} else if (!memcmp("vitesse", phy_compatible_str, strlen("vitesse"))) {
-		if (device_tree_dbg)
+		if (dbg)
 			cvmx_dprintf("Vitesse PHY detected for ipd_port %d\n",
 				     ipd_port);
 		if (!fdt_node_check_compatible(fdt_addr, phy,
 					       "ethernet-phy-ieee802.3-c22")) {
 			phy_info->phy_type = GENERIC_8023_C22_PHY;
 			phy_info->link_function =
-					__get_generic_8023_c45_phy_link_state;
-			if (device_tree_dbg)
+					__cvmx_get_generic_8023_c22_phy_link_state;
+			if (dbg)
 				cvmx_dprintf("Vitesse 802.3 c22 detected\n");
 		} else {
 			phy_info->phy_type = GENERIC_8023_C45_PHY;
 			phy_info->link_function =
-				__cvmx_get_generic_8023_c22_phy_link_state;
-			if (device_tree_dbg)
+				__get_generic_8023_c45_phy_link_state;
+			if (dbg)
 				cvmx_dprintf("Vitesse 802.3 c45 detected\n");
 		}
 	} else if (!memcmp("cortina", phy_compatible_str, strlen("cortina"))) {
@@ -1104,13 +1081,13 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 		host_mode_str = (const char *)fdt_getprop(fdt_addr, phy,
 							  "cortina,host-mode",
 							  NULL);
-		if (device_tree_dbg)
+		if (dbg)
 			cvmx_dprintf("Cortina PHY detected for ipd_port %d\n",
 				     ipd_port);
 	} else if (!memcmp("ti", phy_compatible_str, strlen("ti"))) {
 		phy_info->phy_type = GENERIC_8023_C45_PHY;
 		phy_info->link_function = __get_generic_8023_c45_phy_link_state;
-		if (device_tree_dbg)
+		if (dbg)
 			cvmx_dprintf("TI PHY detected for ipd_port %d\n",
 				     ipd_port);
 	} else if (!fdt_node_check_compatible(fdt_addr, phy, "atheros,ar8334") ||
@@ -1119,20 +1096,20 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 		   !fdt_node_check_compatible(fdt_addr, phy, "qualcomm,qca8337")) {
 		phy_info->phy_type = QUALCOMM_S17;
 		phy_info->link_function = __cvmx_get_qualcomm_s17_phy_link_state;
-		if (device_tree_dbg)
+		if (dbg)
 			cvmx_dprintf("Qualcomm QCA833X switch detected\n");
 	} else if (!fdt_node_check_compatible(fdt_addr, phy,
 					      "ethernet-phy-ieee802.3-c22")) {
 		phy_info->phy_type = GENERIC_8023_C22_PHY;
 		phy_info->link_function =
 				__cvmx_get_generic_8023_c22_phy_link_state;
-		if (device_tree_dbg)
+		if (dbg)
 			cvmx_dprintf("Generic 802.3 c22 PHY detected\n");
 	} else if (!fdt_node_check_compatible(fdt_addr, phy,
 					      "ethernet-phy-ieee802.3-c45")) {
 		phy_info->phy_type = GENERIC_8023_C45_PHY;
 		phy_info->link_function = __get_generic_8023_c45_phy_link_state;
-		if (device_tree_dbg)
+		if (dbg)
 			cvmx_dprintf("Generic 802.3 c45 PHY detected\n");
 	} else {
 		cvmx_dprintf("Unknown PHY compatibility\n");
@@ -1166,8 +1143,12 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 	/* For multi-phy devices and devices on a MUX, go to the parent */
 	ret = fdt_node_check_compatible(fdt_addr, phy_parent,
 					"ethernet-phy-nexus");
-	if (ret == 0)
+	if (ret == 0) {
+		/* It's a nexus so check the grandparent. */
+		phy_addr_offset = cvmx_fdt_get_int(fdt_addr, phy_parent,
+						 "reg", 0);
 		phy_parent = fdt_parent_offset(fdt_addr, phy_parent);
+	}
 
 	/* Check for a muxed MDIO interface */
 	mdio_parent = fdt_parent_offset(fdt_addr, phy_parent);
@@ -1176,36 +1157,18 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 	if (ret == 0) {
 		ret = __get_muxed_mdio_info_from_dt(phy_info, phy_parent,
 						    mdio_parent);
-		/* Find the parent MDIO bus */
-		psmi_handle = (uint32_t *)fdt_getprop(fdt_addr, mdio_parent,
-						      "mdio-parent-bus", NULL);
-		if (psmi_handle) {
-			phandle = fdt32_to_cpu(*psmi_handle);
-			smi_offset = fdt_node_offset_by_phandle(fdt_addr,
-								phandle);
-			if (smi_offset > 0) {
-				smi_addrp = (uint64_t *)fdt_getprop(fdt_addr,
-								    smi_offset,
-								    "reg",
-								    &len);
-				if (smi_addrp != NULL && len > 8) {
-					memcpy(&smi_addr, smi_addrp,
-					       sizeof(uint64_t));
-					smi_addr = fdt64_to_cpu(smi_addr);
-				}
-			} else {
-				cvmx_dprintf("Could not find SMI handler for mux\n");
-			}
-		} else {
-			cvmx_dprintf("%s: Could not get parent mdio bus\n",
-				     __func__);
+		if (ret) {
+			printf("Error reading mdio mux information for ipd port %d\n",
+			       ipd_port);
+			return -1;
 		}
-		/* Find the GPIO MUX controller */
 	}
 	ret = fdt_node_check_compatible(fdt_addr, phy_parent,
 					"cavium,octeon-3860-mdio");
 	if (ret == 0) {
-		uint32_t *mdio_reg_base = (uint32_t *) fdt_getprop(fdt_addr, phy_parent, "reg", 0);
+		uint32_t *mdio_reg_base = (uint32_t *) fdt_getprop(fdt_addr,
+								   phy_parent,
+								   "reg", 0);
 		phy_info->direct_connect = 1;
 		if (mdio_reg_base == 0) {
 			cvmx_dprintf("ERROR : unable to get reg property in phy mdio\n");
@@ -1230,13 +1193,16 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 				      __func__, phy_info->phy_addr);
 	}
 
-	phy_addr_ptr = (uint32_t *) fdt_getprop(fdt_addr, phy, "reg", NULL);
-	if (!phy_addr_ptr) {
+	phy_info->phy_addr = cvmx_fdt_get_int(fdt_addr, phy, "reg", -1);
+	if (phy_info->phy_addr < 0) {
 		cvmx_dprintf("ERROR: Could not read phy address from reg in DT\n");
 		return -1;
 	}
-	phy_info->phy_addr = fdt32_to_cpu(*phy_addr_ptr) |
-				phy_info->mdio_unit << 8;
+	phy_info->phy_addr += phy_addr_offset;
+	phy_info->phy_addr |= phy_info->mdio_unit << 8;
+	if (dbg)
+		cvmx_dprintf("%s(%p, %d) => 0x%x\n", __func__,
+			     phy_info, ipd_port, phy_info->phy_addr);
 	return phy_info->phy_addr;
 }
 
@@ -2133,6 +2099,7 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get_from_dt(int ipd_port)
 			case CVMX_HELPER_INTERFACE_MODE_GMII:
 			case CVMX_HELPER_INTERFACE_MODE_SGMII:
 			case CVMX_HELPER_INTERFACE_MODE_QSGMII:
+			case CVMX_HELPER_INTERFACE_MODE_AGL:
 			case CVMX_HELPER_INTERFACE_MODE_SPI:
 				result.s.speed = 1000;
 				break;
@@ -2142,6 +2109,7 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get_from_dt(int ipd_port)
 				result.s.speed = 10000;
 				break;
 			case CVMX_HELPER_INTERFACE_MODE_XFI:
+			case CVMX_HELPER_INTERFACE_MODE_XLAUI:
 			case CVMX_HELPER_INTERFACE_MODE_40G_KR4:
 				result.s.speed = 40000;
 				break;
@@ -2758,7 +2726,6 @@ enum cvmx_helper_board_usb_clock_types __cvmx_helper_board_usb_get_clock_type(vo
 	return USB_CLOCK_TYPE_REF_48;
 }
 EXPORT_SYMBOL(__cvmx_helper_board_usb_get_clock_type);
-
 /**
  * @INTERNAL
  * Adjusts the number of available USB ports on Octeon based on board
