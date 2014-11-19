@@ -99,9 +99,9 @@ void __init mem_init(void)
 	tmp = nr_free_pages();
 	pr_info("Memory: %luk/%luk available (%ldk kernel code, %ldk reserved, %ldk data, %ldk init)\n",
 	       tmp << (PAGE_SHIFT-10),
-	       num_physpages << (PAGE_SHIFT-10),
+	       totalram_pages << (PAGE_SHIFT-10),
 	       codesize >> 10,
-	       (num_physpages - tmp) << (PAGE_SHIFT-10),
+	       (totalram_pages - tmp) << (PAGE_SHIFT-10),
 	       datasize >> 10,
 	       initsize >> 10);
 }
