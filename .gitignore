@@ -45,6 +45,7 @@ Module.symvers
 /linux
 /vmlinux
 /vmlinux-gdb.py
+/vmlinux.64
 /vmlinuz
 /System.map
 /Module.markers
