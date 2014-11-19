@@ -766,7 +766,7 @@ void cvmx_helper_setup_legacy_red(int pass_thresh, int drop_thresh)
  *               All incomming packets will be dropped when there are less
  *               than this many free packet buffers in FPA 0.
  * @return Zero on success. Negative on failure
- 
+ */
 int cvmx_helper_setup_red(int pass_thresh, int drop_thresh)
 {
 	if (octeon_has_feature(OCTEON_FEATURE_PKI))
