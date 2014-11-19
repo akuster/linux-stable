@@ -2704,7 +2704,7 @@ int __cvmx_helper_board_hardware_enable(int interface)
  *
  * Return USB clock type enumeration
  */
-enum cvmx_helper_board_usb_clock_types __cvmx_helper_board_usb_get_clock_type(void)
+cvmx_helper_board_usb_clock_types_t __cvmx_helper_board_usb_get_clock_type(void)
 {
 	switch (cvmx_sysinfo_get()->board_type) {
 	case CVMX_BOARD_TYPE_BBGW_REF:
