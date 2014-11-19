@@ -361,7 +361,7 @@ void output_pm_defines(void)
 void output_kvm_defines(void)
 {
 	COMMENT(" KVM/MIPS Specfic offsets. ");
-	OFFSET(KVM_ARCH_IMPL, kvm, arch.impl);
+	//OFFSET(KVM_ARCH_IMPL, kvm, arch.impl);
 	OFFSET(KVM_VCPU_KVM, kvm_vcpu, kvm);
 	DEFINE(VCPU_ARCH_SIZE, sizeof(struct kvm_vcpu_arch));
 	OFFSET(VCPU_RUN, kvm_vcpu, run);
