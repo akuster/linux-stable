@@ -1197,7 +1197,6 @@ static int octeon_irq_ciu_map(struct irq_domain *d,
 	int rv;
 	unsigned int line = hw >> 6;
 	unsigned int bit = hw & 63;
-	struct octeon_irq_ciu_domain_data *dd = d->host_data;
 
 	/* Don't map irq if it is reserved for GPIO. */
 	if (line == 0 && bit >= 16 && bit <32)
