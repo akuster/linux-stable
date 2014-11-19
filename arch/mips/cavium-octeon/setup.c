@@ -1135,7 +1135,7 @@ void __init mach_bootmem_init(void)
 		if (is_usable && (nd->startmempfn == 0 || start < nd->startmempfn))
 			nd->startmempfn = start;
 	}
-	num_physpages = 0;
+	totalram_pages = 0;
 
 	for_each_online_node(node) {
 		unsigned long bootmap_size;
@@ -1167,7 +1167,7 @@ void __init mach_bootmem_init(void)
 				       PFN_DOWN(boot_mem_map.map[i].addr),
 				       PFN_UP(boot_mem_map.map[i].addr + boot_mem_map.map[i].size));
 			if (!is_init) {
-				num_physpages += PFN_DOWN(boot_mem_map.map[i].size);
+				totalram_pages += PFN_DOWN(boot_mem_map.map[i].size);
 				memblock_add_node(boot_mem_map.map[i].addr, boot_mem_map.map[i].size, node);
 				free_bootmem_node(NODE_DATA(node), boot_mem_map.map[i].addr, boot_mem_map.map[i].size);
 			}
