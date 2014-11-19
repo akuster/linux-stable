@@ -182,9 +182,6 @@ config CAVIUM_OCTEON_RAPIDIO
 	  as appropriate. After configuring this option, you will likely want
 	  to enable the RapidIO network adapter under the devices menu.
 
-config RAPIDIO
-	bool
-
 config CAVIUM_OCTEON_ERROR_TREE
 	bool "OCTEON hardware error reporting"
 	default y
