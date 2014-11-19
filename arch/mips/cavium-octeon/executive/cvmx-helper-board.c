@@ -2704,7 +2704,7 @@ int __cvmx_helper_board_hardware_enable(int interface)
  *
  * Return USB clock type enumeration
  */
-enum cvmx_helper_board_usb_clock_types __cvmx_helper_board_usb_get_clock_type(void)
+cvmx_helper_board_usb_clock_types_t __cvmx_helper_board_usb_get_clock_type(void)
 {
 	switch (cvmx_sysinfo_get()->board_type) {
 	case CVMX_BOARD_TYPE_BBGW_REF:
@@ -2721,7 +2721,7 @@ enum cvmx_helper_board_usb_clock_types __cvmx_helper_board_usb_get_clock_type(vo
 		break;
 	}
 	/* Most boards except NIC10e use a 12MHz crystal */
-	if (OCTEON_IS_MODEL(OCTEON_FAM_2))
+	if (OCTEON_IS_OCTEON2())
 		return USB_CLOCK_TYPE_CRYSTAL_12;
 	return USB_CLOCK_TYPE_REF_48;
 }
