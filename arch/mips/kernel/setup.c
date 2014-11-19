@@ -705,9 +705,9 @@ static void __init arch_mem_init(char **cmdline_p)
 				BOOTMEM_DEFAULT);
 	}
 #endif
-
-	mips_parse_crashkernel();
 #ifdef CONFIG_KEXEC
+	mips_parse_crashkernel();
+
 	if (crashk_res.start != crashk_res.end)
 		reserve_bootmem(crashk_res.start,
 				crashk_res.end - crashk_res.start + 1,
