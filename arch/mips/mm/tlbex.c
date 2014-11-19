@@ -1520,7 +1520,7 @@ static void build_setup_pgd(void)
 		uasm_i_nop(&p);
 		uasm_i_dinsm(&p, a0, 0, 29, 64 - 29);
 #endif /* CONFIG_MAPPED_KERNEL */
-#endif
+
 		uasm_l_tlbl_goaround1(&l, p);
 		UASM_i_SLL(&p, a0, a0, 11);
 		uasm_i_jr(&p, 31);
