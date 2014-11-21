@@ -64,6 +64,7 @@ struct dw8250_data {
 	struct clk		*pclk;
 	struct reset_control	*rst;
 	struct uart_8250_dma	dma;
+	bool			no_ucv;
 };
 
 #define BYT_PRV_CLK			0x800
@@ -98,6 +99,42 @@ static void dw8250_force_idle(struct uart_port *p)
 	serial8250_clear_and_reinit_fifos(up);
 	(void)p->serial_in(p, UART_RX);
 }
+
+#ifdef CONFIG_64BIT
+static unsigned int dw8250_serial_inq(struct uart_port *p, int offset)
+{
+	offset <<= p->regshift;
+
+	return (u8)__raw_readq(p->membase + offset);
+}
+
+static void dw8250_serial_outq(struct uart_port *p, int offset, int value)
+{
+	struct dw8250_data *d = p->private_data;
+
+	if (offset == UART_MCR)
+		d->last_mcr = value;
+
+	offset <<= p->regshift;
+	value &= 0xff;
+	__raw_writeq(value, p->membase + offset);
+	/* Read back to ensure the register write ordering. */
+	 __raw_readq(p->membase + (UART_LCR << p->regshift));
+
+	/* Make sure LCR write wasn't ignored */
+	if (offset == UART_LCR) {
+		int tries = 1000;
+		while (tries--) {
+			unsigned int lcr = p->serial_in(p, UART_LCR);
+			if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
+				return;
+			dw8250_force_idle(p);
+			__raw_writeq(value, p->membase + (UART_LCR << p->regshift));
+		}
+		dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+	}
+}
+#endif /* CONFIG_64BIT */
 
 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
 {
@@ -331,8 +368,6 @@ static int dw8250_probe_of(struct uart_port *p,
 			return -EINVAL;
 		}
 	}
-	if (has_ucv)
-		dw8250_setup_port(up);
 
 	/* if we have a valid fifosize, try hooking up DMA here */
 	if (p->fifosize) {
@@ -505,6 +540,9 @@ static int dw8250_probe(struct platform_device *pdev)
 		err = -ENODEV;
 		goto err_reset;
 	}
+
+	if (!data->no_ucv)
+		dw8250_setup_port(&uart);
 
 	data->line = serial8250_register_8250_port(&uart);
 	if (data->line < 0) {
