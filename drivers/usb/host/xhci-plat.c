@@ -235,6 +235,7 @@ static const struct dev_pm_ops xhci_plat_pm_ops = {
 #ifdef CONFIG_OF
 static const struct of_device_id usb_xhci_of_match[] = {
 	{ .compatible = "xhci-platform" },
+	{ .compatible = "cavium,octeon-7130-xhci"},
 	{ },
 };
 MODULE_DEVICE_TABLE(of, usb_xhci_of_match);
