@@ -720,6 +720,7 @@ config CAVIUM_OCTEON_SOC
 	select ZONE_DMA32
 	select USB_ARCH_HAS_OHCI
 	select USB_ARCH_HAS_EHCI
+    select MIPS_NR_CPU_NR_MAP_1024
 	select HOLES_IN_ZONE
 	select ARCH_REQUIRE_GPIOLIB
 	help
@@ -2222,6 +2223,14 @@ config NR_CPUS
 
 config MIPS_PERF_SHARED_TC_COUNTERS
 	bool
+
+config  MIPS_NR_CPU_NR_MAP_1024
+	  bool
+
+config MIPS_NR_CPU_NR_MAP
+	  int
+	  default 1024 if MIPS_NR_CPU_NR_MAP_1024
+	  default NR_CPUS if !MIPS_NR_CPU_NR_MAP_1024
 
 #
 # Timer Interrupt Frequency Configuration
