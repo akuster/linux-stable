@@ -573,7 +573,7 @@ static void kfree_skbmem(struct sk_buff *skb)
 	}
 }
 
-static void skb_release_head_state(struct sk_buff *skb)
+void skb_release_head_state(struct sk_buff *skb)
 {
 	skb_dst_drop(skb);
 #ifdef CONFIG_XFRM
@@ -597,6 +597,7 @@ static void skb_release_head_state(struct sk_buff *skb)
 #endif
 #endif
 }
+EXPORT_SYMBOL(skb_release_head_state);
 
 /* Free everything but the sk_buff shell. */
 static void skb_release_all(struct sk_buff *skb)
