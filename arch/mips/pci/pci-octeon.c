@@ -23,6 +23,7 @@
 #include <asm/octeon/pci-octeon.h>
 
 #include <dma-coherence.h>
+
 /* Module parameter to disable PCI probing */
 static int pci_disable;
 module_param(pci_disable, int, S_IRUGO);
@@ -585,22 +586,14 @@ static int __init octeon_pci_setup(void)
 	/* Point pcibios_map_irq() to the PCI version of it */
 	octeon_pcibios_map_irq = octeon_pci_pcibios_map_irq;
 
-	/* Only use the big bars on chips that support it */
-	if (OCTEON_IS_MODEL(OCTEON_CN31XX) ||
-	    OCTEON_IS_MODEL(OCTEON_CN38XX_PASS2))
-		octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_SMALL;
-	else
-		octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_BIG;
-
-	if (!octeon_is_pci_host()) {
-		pr_notice("Not in host mode, PCI Controller not initialized\n");
-		return 0;
-	}
-
 	/* PCI I/O and PCI MEM values */
 	set_io_port_base(OCTEON_PCI_IOSPACE_BASE);
 	ioport_resource.start = 0;
 	ioport_resource.end = OCTEON_PCI_IOSPACE_SIZE - 1;
+	if (!octeon_is_pci_host()) {
+		pr_notice("Not in host mode, PCI Controller not initialized\n");
+		return 0;
+	}
 
 	pr_notice("%s Octeon big bar support\n",
 		  (octeon_dma_bar_type ==
