@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2011-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2011-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 107050 $<hr>
+ * <hr>$Revision: 122066 $<hr>
  */
 
 #ifndef __CVMX_QLM_H__
@@ -83,9 +83,28 @@ extern int cvmx_qlm_get_num(void);
 /**
  * Return the qlm number based on the interface
  *
- * @param xiface  Interface to look up
+ * @param xiface  Interface to look
  */
 extern int cvmx_qlm_interface(int xiface);
+
+/**
+ * Return the qlm number based for a port in the interface
+ *
+ * @param xiface  interface to look up
+ * @param index  index in an interface
+ *
+ * @return the qlm number based on the xiface
+ */
+extern int cvmx_qlm_lmac(int xiface, int index);
+
+/**
+ * Return if only DLM5/DLM6/DLM5+DLM6 is used by BGX
+ *
+ * @param BGX  BGX to search for.
+ *
+ * @return muxes used 0 = DLM5+DLM6, 1 = DLM5, 2 = DLM6.
+ */
+extern int cvmx_qlm_mux_interface(int bgx);
 
 /**
  * Return number of lanes for a given qlm
@@ -201,6 +220,20 @@ enum cvmx_qlm_mode {
 	CVMX_QLM_MODE_10G_KR,
 	CVMX_QLM_MODE_40G_KR4,
 	CVMX_QLM_MODE_PCIE_1X8,  /* 1x8 gen3 / gen2 / gen1 */
+	CVMX_QLM_MODE_RGMII_SGMII,
+	CVMX_QLM_MODE_RGMII_XFI,
+	CVMX_QLM_MODE_RGMII_10G_KR,
+	CVMX_QLM_MODE_RGMII_RXAUI,
+	CVMX_QLM_MODE_RGMII_XAUI,
+	CVMX_QLM_MODE_RGMII_XLAUI,
+	CVMX_QLM_MODE_RGMII_40G_KR4,
+	CVMX_QLM_MODE_MIXED,      /* BGX2 is mixed mode, DLM5(SGMII) & DLM6(XFI) */
+	CVMX_QLM_MODE_SGMII_2X1,  /* Configure BGX2 separate for DLM5 & DLM6 */ 
+	CVMX_QLM_MODE_10G_KR_1X2, /* Configure BGX2 separate for DLM5 & DLM6 */
+	CVMX_QLM_MODE_XFI_1X2,    /* Configure BGX2 separate for DLM5 & DLM6 */
+	CVMX_QLM_MODE_RGMII_SGMII_1X1, /* Configure BGX2, applies to DLM5 */
+	CVMX_QLM_MODE_RGMII_10G_KR_1X1, /* Configure BGX2, applies to DLM6 */
+	CVMX_QLM_MODE_RGMII_XFI_1X1, /* Configure BGX2, applies to DLM6 */
 	CVMX_QLM_MODE_OCI
 };
 
@@ -236,12 +269,52 @@ enum cvmx_pemx_cfg_mode {
  * Read QLM and return mode.
  */
 extern enum cvmx_qlm_mode cvmx_qlm_get_mode(int qlm);
-enum cvmx_qlm_mode cvmx_qlm_get_mode_cn78xx(int node, int qlm);
+extern enum cvmx_qlm_mode cvmx_qlm_get_mode_cn78xx(int node, int qlm);
 extern enum cvmx_qlm_mode cvmx_qlm_get_dlm_mode(int dlm_mode, int interface);
 extern void __cvmx_qlm_set_mult(int qlm, int baud_mhz, int old_multiplier);
 
 extern void cvmx_qlm_display_registers(int qlm);
 
 extern int cvmx_qlm_measure_clock(int qlm);
+
+/**
+ * Measure the reference clock of a QLM on a multi-node setup
+ *
+ * @param node   node to measure
+ * @param qlm    QLM to measure
+ *
+ * @return Clock rate in Hz
+ */
+extern int cvmx_qlm_measure_clock_node(int node, int qlm);
+
+/*
+ * Perform RX equalization on a QLM
+ *
+ * @param node	Node the QLM is on
+ * @param qlm	QLM to perform RX equalization on
+ * @param lane	Lane to use, or -1 for all lanes
+ *
+ * @return Zero on sucess, negative if any lane failed RX equalization
+ */
+extern int __cvmx_qlm_rx_equalization(int node, int qlm, int lane);
+
+#ifdef CVMX_DUMP_GSER
+/**
+ * Dump GSER configuration for node 0
+ */
+int cvmx_dump_gser_config(unsigned gser);
+/**
+ * Dump GSER status for node 0
+ */
+int cvmx_dump_gser_status(unsigned gser);
+/**
+ * Dump GSER configuration
+ */
+int cvmx_dump_gser_config_node(unsigned node, unsigned gser);
+/**
+ * Dump GSER status
+ */
+int cvmx_dump_gser_status_node(unsigned node, unsigned gser);
+#endif
 
 #endif /* __CVMX_QLM_H__ */

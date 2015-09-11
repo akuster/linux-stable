@@ -197,6 +197,17 @@ extern int __cvmx_helper_bgx_xaui_link_set(int xipd_port,
 extern int __cvmx_helper_bgx_xaui_configure_loopback(int xipd_port,
 						     int enable_internal,
 						     int enable_external);
+
+extern int __cvmx_helper_bgx_mixed_enable(int xiface);
+
+extern cvmx_helper_link_info_t __cvmx_helper_bgx_mixed_link_get(int xipd_port);
+
+extern int __cvmx_helper_bgx_mixed_link_set(int xipd_port, cvmx_helper_link_info_t link_info);
+
+extern int __cvmx_helper_bgx_mixed_configure_loopback(int xipd_port,
+						     int enable_internal,
+						     int enable_external);
+
 /**
  * @INTERNAL
  * Configure Priority-Based Flow Control (a.k.a. PFC/CBFC)
@@ -256,5 +267,30 @@ extern void cvmx_helper_bgx_tx_options(unsigned node,
  * @param mac       mac address for the ipd_port
  */
 extern void cvmx_helper_bgx_set_mac(int xipd_port, int bcst, int mcst, uint64_t mac);
+
+
 extern int __cvmx_helper_bgx_port_init(int xipd_port, int phy_pres);
+extern void cvmx_helper_bgx_set_jabber(int xiface, unsigned index, unsigned size);
+extern int cvmx_helper_bgx_shutdown_port(int xiface, int index);
+extern int cvmx_bgx_set_backpressure_override(int xiface, unsigned port_mask);
+
+#ifdef CVMX_DUMP_BGX
+/**
+ * Dump BGX configuration for node 0
+ */
+int cvmx_dump_bgx_config(unsigned bgx);
+/**
+ * Dump BGX status for node 0
+ */
+int cvmx_dump_bgx_status(unsigned bgx);
+/**
+ * Dump BGX configuration
+ */
+int cvmx_dump_bgx_config_node(unsigned node, unsigned bgx);
+/**
+ * Dump BGX status
+ */
+int cvmx_dump_bgx_status_node(unsigned node, unsigned bgx);
+#endif
+
 #endif

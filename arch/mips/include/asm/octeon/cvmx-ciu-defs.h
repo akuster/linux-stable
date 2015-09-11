@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -65,26 +65,26 @@ static inline uint64_t CVMX_CIU_BLOCK_INT_FUNC(void)
 #define CVMX_CIU_BLOCK_INT (CVMX_ADD_IO_SEG(0x00010700000007C0ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU_CIB_L2C_ENX(unsigned long block_id)
+static inline uint64_t CVMX_CIU_CIB_L2C_ENX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_CIU_CIB_L2C_ENX(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_CIU_CIB_L2C_ENX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x000107000000E100ull);
 }
 #else
-#define CVMX_CIU_CIB_L2C_ENX(block_id) (CVMX_ADD_IO_SEG(0x000107000000E100ull))
+#define CVMX_CIU_CIB_L2C_ENX(offset) (CVMX_ADD_IO_SEG(0x000107000000E100ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU_CIB_L2C_RAWX(unsigned long block_id)
+static inline uint64_t CVMX_CIU_CIB_L2C_RAWX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_CIU_CIB_L2C_RAWX(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_CIU_CIB_L2C_RAWX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x000107000000E000ull);
 }
 #else
-#define CVMX_CIU_CIB_L2C_RAWX(block_id) (CVMX_ADD_IO_SEG(0x000107000000E000ull))
+#define CVMX_CIU_CIB_L2C_RAWX(offset) (CVMX_ADD_IO_SEG(0x000107000000E000ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_CIU_CIB_LMCX_ENX(unsigned long offset, unsigned long block_id)
@@ -131,48 +131,48 @@ static inline uint64_t CVMX_CIU_CIB_OCLAX_RAWX(unsigned long offset, unsigned lo
 #define CVMX_CIU_CIB_OCLAX_RAWX(offset, block_id) (CVMX_ADD_IO_SEG(0x000107000000EC00ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU_CIB_RST_ENX(unsigned long block_id)
+static inline uint64_t CVMX_CIU_CIB_RST_ENX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_CIU_CIB_RST_ENX(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_CIU_CIB_RST_ENX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x000107000000E500ull);
 }
 #else
-#define CVMX_CIU_CIB_RST_ENX(block_id) (CVMX_ADD_IO_SEG(0x000107000000E500ull))
+#define CVMX_CIU_CIB_RST_ENX(offset) (CVMX_ADD_IO_SEG(0x000107000000E500ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU_CIB_RST_RAWX(unsigned long block_id)
+static inline uint64_t CVMX_CIU_CIB_RST_RAWX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_CIU_CIB_RST_RAWX(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_CIU_CIB_RST_RAWX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x000107000000E400ull);
 }
 #else
-#define CVMX_CIU_CIB_RST_RAWX(block_id) (CVMX_ADD_IO_SEG(0x000107000000E400ull))
+#define CVMX_CIU_CIB_RST_RAWX(offset) (CVMX_ADD_IO_SEG(0x000107000000E400ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU_CIB_SATA_ENX(unsigned long block_id)
+static inline uint64_t CVMX_CIU_CIB_SATA_ENX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_CIU_CIB_SATA_ENX(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_CIU_CIB_SATA_ENX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x000107000000E700ull);
 }
 #else
-#define CVMX_CIU_CIB_SATA_ENX(block_id) (CVMX_ADD_IO_SEG(0x000107000000E700ull))
+#define CVMX_CIU_CIB_SATA_ENX(offset) (CVMX_ADD_IO_SEG(0x000107000000E700ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU_CIB_SATA_RAWX(unsigned long block_id)
+static inline uint64_t CVMX_CIU_CIB_SATA_RAWX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_CIU_CIB_SATA_RAWX(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_CIU_CIB_SATA_RAWX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x000107000000E600ull);
 }
 #else
-#define CVMX_CIU_CIB_SATA_RAWX(block_id) (CVMX_ADD_IO_SEG(0x000107000000E600ull))
+#define CVMX_CIU_CIB_SATA_RAWX(offset) (CVMX_ADD_IO_SEG(0x000107000000E600ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_CIU_CIB_USBDRDX_ENX(unsigned long offset, unsigned long block_id)
@@ -216,12 +216,14 @@ static inline uint64_t CVMX_CIU_DINT_FUNC(void)
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000720ull);
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000000180ull);
 			break;
 	}
 	cvmx_warn("CVMX_CIU_DINT not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001070000000720ull);
+	return CVMX_ADD_IO_SEG(0x0001010000000180ull);
 }
 #else
 #define CVMX_CIU_DINT CVMX_CIU_DINT_FUNC()
@@ -242,10 +244,12 @@ static inline uint64_t CVMX_CIU_DINT_FUNC(void)
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000720ull);
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000000180ull);
 	}
-	return CVMX_ADD_IO_SEG(0x0001070000000720ull);
+	return CVMX_ADD_IO_SEG(0x0001010000000180ull);
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -436,12 +440,14 @@ static inline uint64_t CVMX_CIU_FUSE_FUNC(void)
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000728ull);
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00010100000001A0ull);
 			break;
 	}
 	cvmx_warn("CVMX_CIU_FUSE not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001070000000728ull);
+	return CVMX_ADD_IO_SEG(0x00010100000001A0ull);
 }
 #else
 #define CVMX_CIU_FUSE CVMX_CIU_FUSE_FUNC()
@@ -462,10 +468,12 @@ static inline uint64_t CVMX_CIU_FUSE_FUNC(void)
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000728ull);
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00010100000001A0ull);
 	}
-	return CVMX_ADD_IO_SEG(0x0001070000000728ull);
+	return CVMX_ADD_IO_SEG(0x00010100000001A0ull);
 }
 #endif
 #define CVMX_CIU_GSTOP (CVMX_ADD_IO_SEG(0x0001070000000710ull))
@@ -961,12 +969,14 @@ static inline uint64_t CVMX_CIU_PP_DBG_FUNC(void)
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000708ull);
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000000120ull);
 			break;
 	}
 	cvmx_warn("CVMX_CIU_PP_DBG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001070000000708ull);
+	return CVMX_ADD_IO_SEG(0x0001010000000120ull);
 }
 #else
 #define CVMX_CIU_PP_DBG CVMX_CIU_PP_DBG_FUNC()
@@ -987,10 +997,12 @@ static inline uint64_t CVMX_CIU_PP_DBG_FUNC(void)
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000708ull);
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000000120ull);
 	}
-	return CVMX_ADD_IO_SEG(0x0001070000000708ull);
+	return CVMX_ADD_IO_SEG(0x0001010000000120ull);
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -1030,6 +1042,11 @@ static inline uint64_t CVMX_CIU_PP_POKEX(unsigned long offset)
 			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001070000000580ull) + ((offset) & 0) * 8;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 15))
+				return CVMX_ADD_IO_SEG(0x0001010000030000ull) + ((offset) & 15) * 8;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 47))
 				return CVMX_ADD_IO_SEG(0x0001010000030000ull) + ((offset) & 63) * 8;
@@ -1040,7 +1057,7 @@ static inline uint64_t CVMX_CIU_PP_POKEX(unsigned long offset)
 			break;
 	}
 	cvmx_warn("CVMX_CIU_PP_POKEX (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001070000000580ull) + ((offset) & 3) * 8;
+	return CVMX_ADD_IO_SEG(0x0001010000030000ull) + ((offset) & 15) * 8;
 }
 #else
 static inline uint64_t CVMX_CIU_PP_POKEX(unsigned long offset)
@@ -1065,12 +1082,15 @@ static inline uint64_t CVMX_CIU_PP_POKEX(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001070000000580ull) + (offset) * 8;
 		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000580ull) + (offset) * 8;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000030000ull) + (offset) * 8;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000030000ull) + (offset) * 8;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070100100200ull) + (offset) * 8;
 	}
-	return CVMX_ADD_IO_SEG(0x0001070000000580ull) + (offset) * 8;
+	return CVMX_ADD_IO_SEG(0x0001010000030000ull) + (offset) * 8;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -1093,12 +1113,14 @@ static inline uint64_t CVMX_CIU_PP_RST_FUNC(void)
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000700ull);
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000000100ull);
 			break;
 	}
 	cvmx_warn("CVMX_CIU_PP_RST not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001070000000700ull);
+	return CVMX_ADD_IO_SEG(0x0001010000000100ull);
 }
 #else
 #define CVMX_CIU_PP_RST CVMX_CIU_PP_RST_FUNC()
@@ -1119,10 +1141,12 @@ static inline uint64_t CVMX_CIU_PP_RST_FUNC(void)
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000700ull);
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000000100ull);
 	}
-	return CVMX_ADD_IO_SEG(0x0001070000000700ull);
+	return CVMX_ADD_IO_SEG(0x0001010000000100ull);
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -1130,11 +1154,13 @@ static inline uint64_t CVMX_CIU_PP_RST_FUNC(void)
 static inline uint64_t CVMX_CIU_PP_RST_PENDING_FUNC(void)
 {
 	switch(cvmx_get_octeon_family()) {
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001070000000740ull);
-			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000000110ull);
+			break;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000740ull);
 			break;
 	}
 	cvmx_warn("CVMX_CIU_PP_RST_PENDING not supported on this chip\n");
@@ -1145,10 +1171,12 @@ static inline uint64_t CVMX_CIU_PP_RST_PENDING_FUNC(void)
 static inline uint64_t CVMX_CIU_PP_RST_PENDING_FUNC(void)
 {
 	switch(cvmx_get_octeon_family()) {
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001070000000740ull);
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000000110ull);
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000740ull);
 	}
 	return CVMX_ADD_IO_SEG(0x0001010000000110ull);
 }
@@ -1481,6 +1509,11 @@ static inline uint64_t CVMX_CIU_WDOGX(unsigned long offset)
 			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001070000000500ull) + ((offset) & 0) * 8;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 15))
+				return CVMX_ADD_IO_SEG(0x0001010000020000ull) + ((offset) & 15) * 8;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 47))
 				return CVMX_ADD_IO_SEG(0x0001010000020000ull) + ((offset) & 63) * 8;
@@ -1491,7 +1524,7 @@ static inline uint64_t CVMX_CIU_WDOGX(unsigned long offset)
 			break;
 	}
 	cvmx_warn("CVMX_CIU_WDOGX (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001070000000500ull) + ((offset) & 3) * 8;
+	return CVMX_ADD_IO_SEG(0x0001010000020000ull) + ((offset) & 15) * 8;
 }
 #else
 static inline uint64_t CVMX_CIU_WDOGX(unsigned long offset)
@@ -1516,12 +1549,15 @@ static inline uint64_t CVMX_CIU_WDOGX(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001070000000500ull) + (offset) * 8;
 		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000500ull) + (offset) * 8;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001010000020000ull) + (offset) * 8;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001010000020000ull) + (offset) * 8;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070100100000ull) + (offset) * 8;
 	}
-	return CVMX_ADD_IO_SEG(0x0001070000000500ull) + (offset) * 8;
+	return CVMX_ADD_IO_SEG(0x0001010000020000ull) + (offset) * 8;
 }
 #endif
 
@@ -1534,8 +1570,8 @@ union cvmx_ciu_bist {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_7_63                : 57;
 	uint64_t bist                         : 7;  /**< BIST Results.
-							HW sets a bit in BIST for for memory that fails
-							BIST. */
+                                                         HW sets a bit in BIST for for memory that fails
+                                                         BIST. */
 #else
 	uint64_t bist                         : 7;
 	uint64_t reserved_7_63                : 57;
@@ -1545,8 +1581,8 @@ union cvmx_ciu_bist {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
 	uint64_t bist                         : 4;  /**< BIST Results.
-							HW sets a bit in BIST for for memory that fails
-							BIST. */
+                                                         HW sets a bit in BIST for for memory that fails
+                                                         BIST. */
 #else
 	uint64_t bist                         : 4;
 	uint64_t reserved_4_63                : 60;
@@ -1559,8 +1595,8 @@ union cvmx_ciu_bist {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
 	uint64_t bist                         : 2;  /**< BIST Results.
-							HW sets a bit in BIST for for memory that fails
-							BIST. */
+                                                         HW sets a bit in BIST for for memory that fails
+                                                         BIST. */
 #else
 	uint64_t bist                         : 2;
 	uint64_t reserved_2_63                : 62;
@@ -1570,8 +1606,8 @@ union cvmx_ciu_bist {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
 	uint64_t bist                         : 3;  /**< BIST Results.
-							HW sets a bit in BIST for for memory that fails
-							BIST. */
+                                                         HW sets a bit in BIST for for memory that fails
+                                                         BIST. */
 #else
 	uint64_t bist                         : 3;
 	uint64_t reserved_3_63                : 61;
@@ -2670,7 +2706,7 @@ union cvmx_ciu_dint {
 	struct cvmx_ciu_dint_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t dint                         : 48; /**< Send DINT pulse to PP vector */
+	uint64_t dint                         : 48; /**< Writing a 1 to a bit sends a DINT pulse to corresponding core vector. */
 #else
 	uint64_t dint                         : 48;
 	uint64_t reserved_48_63               : 16;
@@ -2759,8 +2795,11 @@ union cvmx_ciu_dint {
 	struct cvmx_ciu_dint_cn68xx           cn68xxp1;
 	struct cvmx_ciu_dint_cn52xx           cn70xx;
 	struct cvmx_ciu_dint_cn52xx           cn70xxp1;
+	struct cvmx_ciu_dint_cn38xx           cn73xx;
 	struct cvmx_ciu_dint_s                cn78xx;
+	struct cvmx_ciu_dint_s                cn78xxp2;
 	struct cvmx_ciu_dint_cn52xx           cnf71xx;
+	struct cvmx_ciu_dint_cn38xx           cnf75xx;
 };
 typedef union cvmx_ciu_dint cvmx_ciu_dint_t;
 
@@ -3847,7 +3886,8 @@ union cvmx_ciu_fuse {
 	struct cvmx_ciu_fuse_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t fuse                         : 48; /**< Physical PP is present */
+	uint64_t fuse                         : 48; /**< Each bit set indicates a physical core is present. FUSE bits <15..0> correspond to PP core
+                                                         PP15, 14, 13 ... 2, 1, 0. */
 #else
 	uint64_t fuse                         : 48;
 	uint64_t reserved_48_63               : 16;
@@ -3936,8 +3976,11 @@ union cvmx_ciu_fuse {
 	struct cvmx_ciu_fuse_cn68xx           cn68xxp1;
 	struct cvmx_ciu_fuse_cn52xx           cn70xx;
 	struct cvmx_ciu_fuse_cn52xx           cn70xxp1;
+	struct cvmx_ciu_fuse_cn38xx           cn73xx;
 	struct cvmx_ciu_fuse_s                cn78xx;
+	struct cvmx_ciu_fuse_s                cn78xxp2;
 	struct cvmx_ciu_fuse_cn52xx           cnf71xx;
+	struct cvmx_ciu_fuse_cn38xx           cnf75xx;
 };
 typedef union cvmx_ciu_fuse cvmx_ciu_fuse_t;
 
@@ -5737,7 +5780,7 @@ union cvmx_ciu_intx_en1 {
 	uint64_t agl                          : 1;  /**< AGL interrupt enable */
 	uint64_t reserved_41_45               : 5;
 	uint64_t dpi_dma                      : 1;  /**< DPI_DMA interrupt enable */
-	uint64_t reserved_38_39               : 2;
+	uint64_t reserved_39_38               : 2;
 	uint64_t agx1                         : 1;  /**< GMX1 interrupt enable */
 	uint64_t agx0                         : 1;  /**< GMX0 interrupt enable */
 	uint64_t dpi                          : 1;  /**< DPI interrupt enable */
@@ -5785,7 +5828,7 @@ union cvmx_ciu_intx_en1 {
 	uint64_t dpi                          : 1;
 	uint64_t agx0                         : 1;
 	uint64_t agx1                         : 1;
-	uint64_t reserved_38_39               : 2;
+	uint64_t reserved_39_38               : 2;
 	uint64_t dpi_dma                      : 1;
 	uint64_t reserved_41_45               : 5;
 	uint64_t agl                          : 1;
@@ -8526,7 +8569,7 @@ union cvmx_ciu_intx_en4_1 {
 	uint64_t agl                          : 1;  /**< AGL interrupt enable */
 	uint64_t reserved_41_45               : 5;
 	uint64_t dpi_dma                      : 1;  /**< DPI_DMA interrupt enable */
-	uint64_t reserved_38_39               : 2;
+	uint64_t reserved_39_38               : 2;
 	uint64_t agx1                         : 1;  /**< GMX1 interrupt enable */
 	uint64_t agx0                         : 1;  /**< GMX0 interrupt enable */
 	uint64_t dpi                          : 1;  /**< DPI interrupt enable */
@@ -8574,7 +8617,7 @@ union cvmx_ciu_intx_en4_1 {
 	uint64_t dpi                          : 1;
 	uint64_t agx0                         : 1;
 	uint64_t agx1                         : 1;
-	uint64_t reserved_38_39               : 2;
+	uint64_t reserved_39_38               : 2;
 	uint64_t dpi_dma                      : 1;
 	uint64_t reserved_41_45               : 5;
 	uint64_t agl                          : 1;
@@ -11608,7 +11651,7 @@ union cvmx_ciu_int33_sum0 {
                                                          Set any time PIP/IPD drops a packet */
 	uint64_t gmx_drp                      : 2;  /**< GMX packet drop interrupt
                                                          Set any time corresponding GMX drops a packet */
-	uint64_t reserved_46_47               : 2;
+	uint64_t reserved_47_46               : 2;
 	uint64_t twsi                         : 1;  /**< TWSI Interrupt
                                                          See MIO_TWS0_INT */
 	uint64_t wdog_sum                     : 1;  /**< SUM1&EN1 summary bit
@@ -11653,7 +11696,7 @@ union cvmx_ciu_int33_sum0 {
 	uint64_t pci_msi                      : 4;
 	uint64_t wdog_sum                     : 1;
 	uint64_t twsi                         : 1;
-	uint64_t reserved_46_47               : 2;
+	uint64_t reserved_47_46               : 2;
 	uint64_t gmx_drp                      : 2;
 	uint64_t ipd_drp                      : 1;
 	uint64_t sum2                         : 1;
@@ -12388,7 +12431,8 @@ union cvmx_ciu_int_sum1 {
 	uint64_t pem0                         : 1;  /**< PEM0 interrupt
                                                          See PEM0_INT_SUM (enabled by PEM0_INT_ENB) */
 	uint64_t ptp                          : 1;  /**< PTP interrupt
-                                                         Set when HW decrements MIO_PTP_EVT_CNT to zero */
+                                                         Set when HW decrements MIO_PTP_EVT_CNT to zero
+                                                         See MIO_PTP_EVT_CNT for details. */
 	uint64_t agl                          : 1;  /**< AGL interrupt
                                                          See AGL_GMX_RX*_INT_REG, AGL_GMX_TX_INT_REG */
 	uint64_t reserved_38_45               : 8;
@@ -12821,8 +12865,7 @@ union cvmx_ciu_pp_dbg {
 	struct cvmx_ciu_pp_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t ppdbg                        : 48; /**< Debug[DM] value for each PP
-                                                         whether the PP's are in debug mode or not */
+	uint64_t ppdbg                        : 48; /**< Debug[DM] value for each core, whether the cores are in debug mode or not. */
 #else
 	uint64_t ppdbg                        : 48;
 	uint64_t reserved_48_63               : 16;
@@ -12919,8 +12962,11 @@ union cvmx_ciu_pp_dbg {
 	struct cvmx_ciu_pp_dbg_cn68xx         cn68xxp1;
 	struct cvmx_ciu_pp_dbg_cn52xx         cn70xx;
 	struct cvmx_ciu_pp_dbg_cn52xx         cn70xxp1;
+	struct cvmx_ciu_pp_dbg_cn38xx         cn73xx;
 	struct cvmx_ciu_pp_dbg_s              cn78xx;
+	struct cvmx_ciu_pp_dbg_s              cn78xxp2;
 	struct cvmx_ciu_pp_dbg_cn52xx         cnf71xx;
+	struct cvmx_ciu_pp_dbg_cn38xx         cnf75xx;
 };
 typedef union cvmx_ciu_pp_dbg cvmx_ciu_pp_dbg_t;
 
@@ -12934,7 +12980,11 @@ union cvmx_ciu_pp_pokex {
 	uint64_t u64;
 	struct cvmx_ciu_pp_pokex_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t poke                         : 64; /**< Reserved */
+	uint64_t poke                         : 64; /**< Core poke. Writing any value to this register does the following:
+                                                         * clears any pending interrupt generated by the associated watchdog.
+                                                         * resets CIU_WDOG()[STATE] to 0x0.
+                                                         * sets CIU_WDOG()[CNT] to ( CIU_WDOG()[LEN] << 8).
+                                                         Reading this register returns the associated CIU_WDOG() register. */
 #else
 	uint64_t poke                         : 64;
 #endif
@@ -12958,7 +13008,7 @@ union cvmx_ciu_pp_pokex {
 	struct cvmx_ciu_pp_pokex_s            cn68xxp1;
 	struct cvmx_ciu_pp_pokex_s            cn70xx;
 	struct cvmx_ciu_pp_pokex_s            cn70xxp1;
-	struct cvmx_ciu_pp_pokex_cn78xx {
+	struct cvmx_ciu_pp_pokex_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
 	uint64_t poke                         : 1;  /**< Core poke. Writing any value to this register does the following:
@@ -12970,8 +13020,11 @@ union cvmx_ciu_pp_pokex {
 	uint64_t poke                         : 1;
 	uint64_t reserved_1_63                : 63;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_ciu_pp_pokex_cn73xx       cn78xx;
+	struct cvmx_ciu_pp_pokex_cn73xx       cn78xxp2;
 	struct cvmx_ciu_pp_pokex_s            cnf71xx;
+	struct cvmx_ciu_pp_pokex_cn73xx       cnf75xx;
 };
 typedef union cvmx_ciu_pp_pokex cvmx_ciu_pp_pokex_t;
 
@@ -12988,9 +13041,9 @@ union cvmx_ciu_pp_rst {
 	struct cvmx_ciu_pp_rst_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t rst                          : 47; /**< PP Rst for PP's 3-1 */
-	uint64_t rst0                         : 1;  /**< PP Rst for PP0
-                                                         depends on standalone mode */
+	uint64_t rst                          : 47; /**< Core reset for cores 1 and above. Writing a 1 holds the corresponding core in reset,
+                                                         writing a 0 releases from reset. */
+	uint64_t rst0                         : 1;  /**< Core reset for core 0, depends on standalone mode. */
 #else
 	uint64_t rst0                         : 1;
 	uint64_t rst                          : 47;
@@ -13102,8 +13155,11 @@ union cvmx_ciu_pp_rst {
 	struct cvmx_ciu_pp_rst_cn68xx         cn68xxp1;
 	struct cvmx_ciu_pp_rst_cn52xx         cn70xx;
 	struct cvmx_ciu_pp_rst_cn52xx         cn70xxp1;
+	struct cvmx_ciu_pp_rst_cn38xx         cn73xx;
 	struct cvmx_ciu_pp_rst_s              cn78xx;
+	struct cvmx_ciu_pp_rst_s              cn78xxp2;
 	struct cvmx_ciu_pp_rst_cn52xx         cnf71xx;
+	struct cvmx_ciu_pp_rst_cn38xx         cnf75xx;
 };
 typedef union cvmx_ciu_pp_rst cvmx_ciu_pp_rst_t;
 
@@ -13129,7 +13185,21 @@ union cvmx_ciu_pp_rst_pending {
 	} s;
 	struct cvmx_ciu_pp_rst_pending_s      cn70xx;
 	struct cvmx_ciu_pp_rst_pending_s      cn70xxp1;
+	struct cvmx_ciu_pp_rst_pending_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t pend                         : 16; /**< Set if corresponding core is waiting to change its reset state. Normally a reset change
+                                                         occurs immediately but if RST_PP_POWER[GATE] bit is set and the core is released from
+                                                         reset a delay of 64K core clocks between each core reset will apply to satisfy power
+                                                         management. */
+#else
+	uint64_t pend                         : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
 	struct cvmx_ciu_pp_rst_pending_s      cn78xx;
+	struct cvmx_ciu_pp_rst_pending_s      cn78xxp2;
+	struct cvmx_ciu_pp_rst_pending_cn73xx cnf75xx;
 };
 typedef union cvmx_ciu_pp_rst_pending cvmx_ciu_pp_rst_pending_t;
 
@@ -14305,7 +14375,8 @@ union cvmx_ciu_sum1_iox_int {
 	uint64_t pem0                         : 1;  /**< PEM0 interrupt
                                                          See PEM0_INT_SUM (enabled by PEM0_INT_ENB) */
 	uint64_t ptp                          : 1;  /**< PTP interrupt
-                                                         Set when HW decrements MIO_PTP_EVT_CNT to zero */
+                                                         Set when HW decrements MIO_PTP_EVT_CNT to zero.
+                                                         See MIO_PTP_EVT_CNT for details. */
 	uint64_t agl                          : 1;  /**< AGL interrupt
                                                          See AGL_GMX_RX*_INT_REG, AGL_GMX_TX_INT_REG */
 	uint64_t reserved_41_45               : 5;
@@ -14840,7 +14911,8 @@ union cvmx_ciu_sum1_ppx_ip2 {
 	uint64_t pem0                         : 1;  /**< PEM0 interrupt
                                                          See PEM0_INT_SUM (enabled by PEM0_INT_ENB) */
 	uint64_t ptp                          : 1;  /**< PTP interrupt
-                                                         Set when HW decrements MIO_PTP_EVT_CNT to zero */
+                                                         Set when HW decrements MIO_PTP_EVT_CNT to zero.
+                                                         See MIO_PTP_EVT_CNT for details. */
 	uint64_t agl                          : 1;  /**< AGL interrupt
                                                          See AGL_GMX_RX*_INT_REG, AGL_GMX_TX_INT_REG */
 	uint64_t reserved_41_45               : 5;
@@ -15376,7 +15448,8 @@ union cvmx_ciu_sum1_ppx_ip3 {
 	uint64_t pem0                         : 1;  /**< PEM0 interrupt
                                                          See PEM0_INT_SUM (enabled by PEM0_INT_ENB) */
 	uint64_t ptp                          : 1;  /**< PTP interrupt
-                                                         Set when HW decrements MIO_PTP_EVT_CNT to zero */
+                                                         Set when HW decrements MIO_PTP_EVT_CNT to zero.
+                                                         See MIO_PTP_EVT_CNT for details. */
 	uint64_t agl                          : 1;  /**< AGL interrupt
                                                          See AGL_GMX_RX*_INT_REG, AGL_GMX_TX_INT_REG */
 	uint64_t reserved_41_45               : 5;
@@ -15912,7 +15985,8 @@ union cvmx_ciu_sum1_ppx_ip4 {
 	uint64_t pem0                         : 1;  /**< PEM0 interrupt
                                                          See PEM0_INT_SUM (enabled by PEM0_INT_ENB) */
 	uint64_t ptp                          : 1;  /**< PTP interrupt
-                                                         Set when HW decrements MIO_PTP_EVT_CNT to zero */
+                                                         Set when HW decrements MIO_PTP_EVT_CNT to zero.
+                                                         See MIO_PTP_EVT_CNT for details. */
 	uint64_t agl                          : 1;  /**< AGL interrupt
                                                          See AGL_GMX_RX*_INT_REG, AGL_GMX_TX_INT_REG */
 	uint64_t reserved_41_45               : 5;
@@ -16707,25 +16781,19 @@ union cvmx_ciu_wdogx {
 	struct cvmx_ciu_wdogx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_46_63               : 18;
-	uint64_t gstopen                      : 1;  /**< GSTOPEN */
-	uint64_t dstop                        : 1;  /**< DSTOP */
-	uint64_t cnt                          : 24; /**< Number of 256-cycle intervals until next watchdog
-                                                         expiration.  Cleared on write to associated
-                                                         CIU_PP_POKE register. */
-	uint64_t len                          : 16; /**< Watchdog time expiration length
-                                                         The 16 bits of LEN represent the most significant
-                                                         bits of a 24 bit decrementer that decrements
-                                                         every 256 cycles.
-                                                         LEN must be set > 0 */
-	uint64_t state                        : 2;  /**< Watchdog state
-                                                         number of watchdog time expirations since last
-                                                         PP poke.  Cleared on write to associated
-                                                         CIU_PP_POKE register. */
-	uint64_t mode                         : 2;  /**< Watchdog mode
-                                                         0 = Off
-                                                         1 = Interrupt Only
-                                                         2 = Interrupt + NMI
-                                                         3 = Interrupt + NMI + Soft-Reset */
+	uint64_t gstopen                      : 1;  /**< Global-stop enable. */
+	uint64_t dstop                        : 1;  /**< Debug-stop enable. */
+	uint64_t cnt                          : 24; /**< Number of 1024-cycle intervals until next watchdog expiration. Cleared on write to
+                                                         associated CIU_PP_POKE() register. */
+	uint64_t len                          : 16; /**< Watchdog time-expiration length. The most-significant 16 bits of a 24-bit decrementer that
+                                                         decrements every 1024 cycles. Must be set > 0. */
+	uint64_t state                        : 2;  /**< Watchdog state. The number of watchdog time expirations since last core poke. Cleared on
+                                                         write to associated CIU_PP_POKE() register. */
+	uint64_t mode                         : 2;  /**< Watchdog mode:
+                                                         0x0 = Off.
+                                                         0x1 = Interrupt only.
+                                                         0x2 = Interrupt + NMI.
+                                                         0x3 = Interrupt + NMI + soft reset. */
 #else
 	uint64_t mode                         : 2;
 	uint64_t state                        : 2;
@@ -16755,8 +16823,11 @@ union cvmx_ciu_wdogx {
 	struct cvmx_ciu_wdogx_s               cn68xxp1;
 	struct cvmx_ciu_wdogx_s               cn70xx;
 	struct cvmx_ciu_wdogx_s               cn70xxp1;
+	struct cvmx_ciu_wdogx_s               cn73xx;
 	struct cvmx_ciu_wdogx_s               cn78xx;
+	struct cvmx_ciu_wdogx_s               cn78xxp2;
 	struct cvmx_ciu_wdogx_s               cnf71xx;
+	struct cvmx_ciu_wdogx_s               cnf75xx;
 };
 typedef union cvmx_ciu_wdogx cvmx_ciu_wdogx_t;
 

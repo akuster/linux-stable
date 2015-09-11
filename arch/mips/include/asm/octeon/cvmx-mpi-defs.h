@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -56,7 +56,7 @@
 #define CVMX_MPI_CFG CVMX_MPI_CFG_FUNC()
 static inline uint64_t CVMX_MPI_CFG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN30XX) || OCTEON_IS_MODEL(OCTEON_CN31XX) || OCTEON_IS_MODEL(OCTEON_CN50XX) || OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN30XX) || OCTEON_IS_MODEL(OCTEON_CN31XX) || OCTEON_IS_MODEL(OCTEON_CN50XX) || OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
 		cvmx_warn("CVMX_MPI_CFG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001070000001000ull);
 }
@@ -73,6 +73,7 @@ static inline uint64_t CVMX_MPI_DATX(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 8))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 8))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 8))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 8))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 8))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 8)))))
 		cvmx_warn("CVMX_MPI_DATX(%lu) is invalid on this chip\n", offset);
@@ -85,7 +86,7 @@ static inline uint64_t CVMX_MPI_DATX(unsigned long offset)
 #define CVMX_MPI_STS CVMX_MPI_STS_FUNC()
 static inline uint64_t CVMX_MPI_STS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN30XX) || OCTEON_IS_MODEL(OCTEON_CN31XX) || OCTEON_IS_MODEL(OCTEON_CN50XX) || OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN30XX) || OCTEON_IS_MODEL(OCTEON_CN31XX) || OCTEON_IS_MODEL(OCTEON_CN50XX) || OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
 		cvmx_warn("CVMX_MPI_STS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001070000001008ull);
 }
@@ -93,10 +94,21 @@ static inline uint64_t CVMX_MPI_STS_FUNC(void)
 #define CVMX_MPI_STS (CVMX_ADD_IO_SEG(0x0001070000001008ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_MPI_STS_W1S CVMX_MPI_STS_W1S_FUNC()
+static inline uint64_t CVMX_MPI_STS_W1S_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_MPI_STS_W1S not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001070000001018ull);
+}
+#else
+#define CVMX_MPI_STS_W1S (CVMX_ADD_IO_SEG(0x0001070000001018ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_MPI_TX CVMX_MPI_TX_FUNC()
 static inline uint64_t CVMX_MPI_TX_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN30XX) || OCTEON_IS_MODEL(OCTEON_CN31XX) || OCTEON_IS_MODEL(OCTEON_CN50XX) || OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN30XX) || OCTEON_IS_MODEL(OCTEON_CN31XX) || OCTEON_IS_MODEL(OCTEON_CN50XX) || OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
 		cvmx_warn("CVMX_MPI_TX not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001070000001010ull);
 }
@@ -107,7 +119,7 @@ static inline uint64_t CVMX_MPI_TX_FUNC(void)
 #define CVMX_MPI_WIDE_DAT CVMX_MPI_WIDE_DAT_FUNC()
 static inline uint64_t CVMX_MPI_WIDE_DAT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_MPI_WIDE_DAT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001070000001040ull);
 }
@@ -511,7 +523,7 @@ union cvmx_mpi_cfg {
 #endif
 	} cn70xx;
 	struct cvmx_mpi_cfg_cn70xx            cn70xxp1;
-	struct cvmx_mpi_cfg_cn78xx {
+	struct cvmx_mpi_cfg_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_29_63               : 35;
 	uint64_t clkdiv                       : 13; /**< Clock divisor.
@@ -579,7 +591,9 @@ union cvmx_mpi_cfg {
 	uint64_t clkdiv                       : 13;
 	uint64_t reserved_29_63               : 35;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_mpi_cfg_cn73xx            cn78xx;
+	struct cvmx_mpi_cfg_cn73xx            cn78xxp2;
 	struct cvmx_mpi_cfg_cn61xx            cnf71xx;
 };
 typedef union cvmx_mpi_cfg cvmx_mpi_cfg_t;
@@ -605,7 +619,9 @@ union cvmx_mpi_datx {
 	struct cvmx_mpi_datx_s                cn66xx;
 	struct cvmx_mpi_datx_s                cn70xx;
 	struct cvmx_mpi_datx_s                cn70xxp1;
+	struct cvmx_mpi_datx_s                cn73xx;
 	struct cvmx_mpi_datx_s                cn78xx;
+	struct cvmx_mpi_datx_s                cn78xxp2;
 	struct cvmx_mpi_datx_s                cnf71xx;
 };
 typedef union cvmx_mpi_datx cvmx_mpi_datx_t;
@@ -651,10 +667,36 @@ union cvmx_mpi_sts {
 	struct cvmx_mpi_sts_cn30xx            cn66xx;
 	struct cvmx_mpi_sts_cn30xx            cn70xx;
 	struct cvmx_mpi_sts_cn30xx            cn70xxp1;
+	struct cvmx_mpi_sts_s                 cn73xx;
 	struct cvmx_mpi_sts_s                 cn78xx;
+	struct cvmx_mpi_sts_s                 cn78xxp2;
 	struct cvmx_mpi_sts_cn30xx            cnf71xx;
 };
 typedef union cvmx_mpi_sts cvmx_mpi_sts_t;
+
+/**
+ * cvmx_mpi_sts_w1s
+ *
+ * This register sets MPI_STS() interrupts.
+ *
+ */
+union cvmx_mpi_sts_w1s {
+	uint64_t u64;
+	struct cvmx_mpi_sts_w1s_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_2_63                : 62;
+	uint64_t mpi_intr_w1s                 : 1;  /**< Reads or sets MPI_STS[MPI_INTR]. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t mpi_intr_w1s                 : 1;
+	uint64_t reserved_2_63                : 62;
+#endif
+	} s;
+	struct cvmx_mpi_sts_w1s_s             cn73xx;
+	struct cvmx_mpi_sts_w1s_s             cn78xxp2;
+};
+typedef union cvmx_mpi_sts_w1s cvmx_mpi_sts_w1s_t;
 
 /**
  * cvmx_mpi_tx
@@ -726,9 +768,32 @@ union cvmx_mpi_tx {
 #endif
 	} cn61xx;
 	struct cvmx_mpi_tx_s                  cn66xx;
-	struct cvmx_mpi_tx_s                  cn70xx;
-	struct cvmx_mpi_tx_s                  cn70xxp1;
+	struct cvmx_mpi_tx_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_63_22               : 42;
+	uint64_t csid                         : 2;  /**< Which CS to assert for this transaction */
+	uint64_t reserved_19_17               : 3;
+	uint64_t leavecs                      : 1;  /**< If 0, deassert CS after transaction is done
+                                                         1, leave CS asserted after transactrion is done */
+	uint64_t reserved_15_13               : 3;
+	uint64_t txnum                        : 5;  /**< Number of bytes to transmit */
+	uint64_t reserved_7_5                 : 3;
+	uint64_t totnum                       : 5;  /**< Number of bytes to shift (transmit + receive) */
+#else
+	uint64_t totnum                       : 5;
+	uint64_t reserved_7_5                 : 3;
+	uint64_t txnum                        : 5;
+	uint64_t reserved_15_13               : 3;
+	uint64_t leavecs                      : 1;
+	uint64_t reserved_19_17               : 3;
+	uint64_t csid                         : 2;
+	uint64_t reserved_63_22               : 42;
+#endif
+	} cn70xx;
+	struct cvmx_mpi_tx_cn70xx             cn70xxp1;
+	struct cvmx_mpi_tx_s                  cn73xx;
 	struct cvmx_mpi_tx_s                  cn78xx;
+	struct cvmx_mpi_tx_s                  cn78xxp2;
 	struct cvmx_mpi_tx_cn61xx             cnf71xx;
 };
 typedef union cvmx_mpi_tx cvmx_mpi_tx_t;
@@ -750,7 +815,9 @@ union cvmx_mpi_wide_dat {
 	} s;
 	struct cvmx_mpi_wide_dat_s            cn70xx;
 	struct cvmx_mpi_wide_dat_s            cn70xxp1;
+	struct cvmx_mpi_wide_dat_s            cn73xx;
 	struct cvmx_mpi_wide_dat_s            cn78xx;
+	struct cvmx_mpi_wide_dat_s            cn78xxp2;
 };
 typedef union cvmx_mpi_wide_dat cvmx_mpi_wide_dat_t;
 

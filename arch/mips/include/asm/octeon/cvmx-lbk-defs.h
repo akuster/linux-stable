@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -56,7 +56,7 @@
 #define CVMX_LBK_BIST_RESULT CVMX_LBK_BIST_RESULT_FUNC()
 static inline uint64_t CVMX_LBK_BIST_RESULT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_LBK_BIST_RESULT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180012000020ull);
 }
@@ -67,7 +67,9 @@ static inline uint64_t CVMX_LBK_BIST_RESULT_FUNC(void)
 static inline uint64_t CVMX_LBK_CHX_PKIND(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 63))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 63)))))
 		cvmx_warn("CVMX_LBK_CHX_PKIND(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180012000200ull) + ((offset) & 63) * 8;
 }
@@ -75,10 +77,21 @@ static inline uint64_t CVMX_LBK_CHX_PKIND(unsigned long offset)
 #define CVMX_LBK_CHX_PKIND(offset) (CVMX_ADD_IO_SEG(0x0001180012000200ull) + ((offset) & 63) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_LBK_CLK_GATE_CTL CVMX_LBK_CLK_GATE_CTL_FUNC()
+static inline uint64_t CVMX_LBK_CLK_GATE_CTL_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_LBK_CLK_GATE_CTL not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001180012000008ull);
+}
+#else
+#define CVMX_LBK_CLK_GATE_CTL (CVMX_ADD_IO_SEG(0x0001180012000008ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_LBK_DAT_ERR_INFO CVMX_LBK_DAT_ERR_INFO_FUNC()
 static inline uint64_t CVMX_LBK_DAT_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_LBK_DAT_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180012000050ull);
 }
@@ -89,7 +102,7 @@ static inline uint64_t CVMX_LBK_DAT_ERR_INFO_FUNC(void)
 #define CVMX_LBK_ECC_CFG CVMX_LBK_ECC_CFG_FUNC()
 static inline uint64_t CVMX_LBK_ECC_CFG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_LBK_ECC_CFG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180012000060ull);
 }
@@ -100,7 +113,7 @@ static inline uint64_t CVMX_LBK_ECC_CFG_FUNC(void)
 #define CVMX_LBK_INT CVMX_LBK_INT_FUNC()
 static inline uint64_t CVMX_LBK_INT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_LBK_INT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180012000040ull);
 }
@@ -111,7 +124,7 @@ static inline uint64_t CVMX_LBK_INT_FUNC(void)
 #define CVMX_LBK_SFT_RST CVMX_LBK_SFT_RST_FUNC()
 static inline uint64_t CVMX_LBK_SFT_RST_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_LBK_SFT_RST not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180012000000ull);
 }
@@ -136,7 +149,10 @@ union cvmx_lbk_bist_result {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_lbk_bist_result_s         cn73xx;
 	struct cvmx_lbk_bist_result_s         cn78xx;
+	struct cvmx_lbk_bist_result_s         cn78xxp2;
+	struct cvmx_lbk_bist_result_s         cnf75xx;
 };
 typedef union cvmx_lbk_bist_result cvmx_lbk_bist_result_t;
 
@@ -154,9 +170,36 @@ union cvmx_lbk_chx_pkind {
 	uint64_t reserved_6_63                : 58;
 #endif
 	} s;
+	struct cvmx_lbk_chx_pkind_s           cn73xx;
 	struct cvmx_lbk_chx_pkind_s           cn78xx;
+	struct cvmx_lbk_chx_pkind_s           cn78xxp2;
+	struct cvmx_lbk_chx_pkind_s           cnf75xx;
 };
 typedef union cvmx_lbk_chx_pkind cvmx_lbk_chx_pkind_t;
+
+/**
+ * cvmx_lbk_clk_gate_ctl
+ *
+ * This register is for diagnostic use only.
+ *
+ */
+union cvmx_lbk_clk_gate_ctl {
+	uint64_t u64;
+	struct cvmx_lbk_clk_gate_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_1_63                : 63;
+	uint64_t dis                          : 1;  /**< Clock gate disable. When set, forces gated clock to always on. */
+#else
+	uint64_t dis                          : 1;
+	uint64_t reserved_1_63                : 63;
+#endif
+	} s;
+	struct cvmx_lbk_clk_gate_ctl_s        cn73xx;
+	struct cvmx_lbk_clk_gate_ctl_s        cn78xx;
+	struct cvmx_lbk_clk_gate_ctl_s        cn78xxp2;
+	struct cvmx_lbk_clk_gate_ctl_s        cnf75xx;
+};
+typedef union cvmx_lbk_clk_gate_ctl cvmx_lbk_clk_gate_ctl_t;
 
 /**
  * cvmx_lbk_dat_err_info
@@ -190,7 +233,10 @@ union cvmx_lbk_dat_err_info {
 	uint64_t reserved_58_63               : 6;
 #endif
 	} s;
+	struct cvmx_lbk_dat_err_info_s        cn73xx;
 	struct cvmx_lbk_dat_err_info_s        cn78xx;
+	struct cvmx_lbk_dat_err_info_s        cn78xxp2;
+	struct cvmx_lbk_dat_err_info_s        cnf75xx;
 };
 typedef union cvmx_lbk_dat_err_info cvmx_lbk_dat_err_info_t;
 
@@ -211,7 +257,10 @@ union cvmx_lbk_ecc_cfg {
 	uint64_t reserved_3_63                : 61;
 #endif
 	} s;
+	struct cvmx_lbk_ecc_cfg_s             cn73xx;
 	struct cvmx_lbk_ecc_cfg_s             cn78xx;
+	struct cvmx_lbk_ecc_cfg_s             cn78xxp2;
+	struct cvmx_lbk_ecc_cfg_s             cnf75xx;
 };
 typedef union cvmx_lbk_ecc_cfg cvmx_lbk_ecc_cfg_t;
 
@@ -243,7 +292,10 @@ union cvmx_lbk_int {
 	uint64_t reserved_6_63                : 58;
 #endif
 	} s;
+	struct cvmx_lbk_int_s                 cn73xx;
 	struct cvmx_lbk_int_s                 cn78xx;
+	struct cvmx_lbk_int_s                 cn78xxp2;
+	struct cvmx_lbk_int_s                 cnf75xx;
 };
 typedef union cvmx_lbk_int cvmx_lbk_int_t;
 
@@ -261,7 +313,10 @@ union cvmx_lbk_sft_rst {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_lbk_sft_rst_s             cn73xx;
 	struct cvmx_lbk_sft_rst_s             cn78xx;
+	struct cvmx_lbk_sft_rst_s             cn78xxp2;
+	struct cvmx_lbk_sft_rst_s             cnf75xx;
 };
 typedef union cvmx_lbk_sft_rst cvmx_lbk_sft_rst_t;
 

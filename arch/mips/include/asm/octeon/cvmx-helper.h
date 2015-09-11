@@ -42,7 +42,7 @@
  *
  * Helper functions for common, but complicated tasks.
  *
- * <hr>$Revision: 107050 $<hr>
+ * <hr>$Revision: 117608 $<hr>
  */
 
 #ifndef __CVMX_HELPER_H__
@@ -61,8 +61,11 @@ extern "C" {
 #endif
 
 /* Max number of GMXX */
-#define CVMX_HELPER_MAX_GMX             (OCTEON_IS_MODEL(OCTEON_CN78XX) ? 6 \
-					 : (OCTEON_IS_MODEL(OCTEON_CN68XX) ? 5 : 2))
+#define CVMX_HELPER_MAX_GMX	(OCTEON_IS_MODEL(OCTEON_CN78XX) ? 6 \
+				 : (OCTEON_IS_MODEL(OCTEON_CN68XX) ? 5 \
+				    : (OCTEON_IS_MODEL(OCTEON_CN73XX) ? 3 \
+				       : (OCTEON_IS_MODEL(OCTEON_CNF75XX) ? 1 \
+					  : 2))))
 
 #define CVMX_HELPER_CSR_INIT0           0	/* Do not change as
 						   CVMX_HELPER_WRITE_CSR()
@@ -132,6 +135,7 @@ typedef enum {
 	CVMX_HELPER_INTERFACE_MODE_XFI,
 	CVMX_HELPER_INTERFACE_MODE_10G_KR,
 	CVMX_HELPER_INTERFACE_MODE_40G_KR4,
+	CVMX_HELPER_INTERFACE_MODE_MIXED,
 } cvmx_helper_interface_mode_t;
 
 typedef union {
@@ -279,6 +283,11 @@ extern int cvmx_helper_initialize_packet_io_local(void);
  * @return Zero on success, negative on failure.
  */
 extern int cvmx_helper_shutdown_packet_io_global(void);
+
+/**
+ * Helper function for 78xx global packet IO shutdown
+ */
+extern int cvmx_helper_shutdown_packet_io_global_cn78xx(int node);
 
 /**
  * Does core local shutdown of packet io

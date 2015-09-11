@@ -93,6 +93,8 @@ extern "C" {
 	    }								\
 	} while (0)
 
+extern int cvmx_npi_max_pknds;
+
 /*
  * Config Options
  *

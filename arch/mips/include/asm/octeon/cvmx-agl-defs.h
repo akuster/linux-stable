@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -1240,8 +1240,8 @@ union cvmx_agl_gmx_bad_reg {
 	uint64_t statovr                      : 1;  /**< TX Statistics overflow */
 	uint64_t reserved_24_25               : 2;
 	uint64_t loststat                     : 2;  /**< TX Statistics data was over-written
-							In RGMII, one bit per port
-							TX Stats are corrupted */
+                                                         In RGMII, one bit per port
+                                                         TX Stats are corrupted */
 	uint64_t reserved_4_21                : 18;
 	uint64_t out_ovr                      : 2;  /**< Outbound data FIFO overflow */
 	uint64_t reserved_0_1                 : 2;
@@ -1275,7 +1275,7 @@ union cvmx_agl_gmx_bad_reg {
 	uint64_t statovr                      : 1;  /**< TX Statistics overflow */
 	uint64_t reserved_23_25               : 3;
 	uint64_t loststat                     : 1;  /**< TX Statistics data was over-written
-							TX Stats are corrupted */
+                                                         TX Stats are corrupted */
 	uint64_t reserved_4_21                : 18;
 	uint64_t out_ovr                      : 2;  /**< Outbound data FIFO overflow */
 	uint64_t reserved_0_1                 : 2;
@@ -1307,7 +1307,7 @@ union cvmx_agl_gmx_bad_reg {
 	uint64_t statovr                      : 1;  /**< TX Statistics overflow */
 	uint64_t reserved_23_25               : 3;
 	uint64_t loststat                     : 1;  /**< TX Statistics data was over-written
-							TX Stats are corrupted */
+                                                         TX Stats are corrupted */
 	uint64_t reserved_3_21                : 19;
 	uint64_t out_ovr                      : 1;  /**< Outbound data FIFO overflow */
 	uint64_t reserved_0_1                 : 2;
@@ -1353,32 +1353,32 @@ union cvmx_agl_gmx_bist {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
 	uint64_t status                       : 25; /**< "BIST Results.
-							HW sets a bit in BIST for for memory that fails
-							- 0: gmx#.inb.fif_bnk0
-							- 1: gmx#.inb.fif_bnk1
-							- 2: gmx#.inb.fif_bnk2
-							- 3: gmx#.inb.fif_bnk3
-							- 4: gmx#.inb.fif_bnk_ext0
-							- 5: gmx#.inb.fif_bnk_ext1
-							- 6: gmx#.inb.fif_bnk_ext2
-							- 7: gmx#.inb.fif_bnk_ext3
-							- 8: gmx#.outb.fif.fif_bnk0
-							- 9: gmx#.outb.fif.fif_bnk1
-							- 10: RAZ
-							- 11: RAZ
-							- 12: gmx#.outb.fif.fif_bnk_ext0
-							- 13: gmx#.outb.fif.fif_bnk_ext1
-							- 14: RAZ
-							- 15: RAZ
-							- 16: RAZ
-							- 17: RAZ
-							- 18: RAZ
-							- 19: RAZ
-							- 20: gmx#.csr.drf20x32m2_bist
-							- 21: gmx#.csr.drf20x48m2_bist
-							- 22: gmx#.outb.stat.drf16x27m1_bist
-							- 23: gmx#.outb.stat.drf40x64m1_bist
-							- 24: RAZ" */
+                                                          HW sets a bit in BIST for for memory that fails
+                                                         - 0: gmx#.inb.fif_bnk0
+                                                         - 1: gmx#.inb.fif_bnk1
+                                                         - 2: gmx#.inb.fif_bnk2
+                                                         - 3: gmx#.inb.fif_bnk3
+                                                         - 4: gmx#.inb.fif_bnk_ext0
+                                                         - 5: gmx#.inb.fif_bnk_ext1
+                                                         - 6: gmx#.inb.fif_bnk_ext2
+                                                         - 7: gmx#.inb.fif_bnk_ext3
+                                                         - 8: gmx#.outb.fif.fif_bnk0
+                                                         - 9: gmx#.outb.fif.fif_bnk1
+                                                          - 10: RAZ
+                                                          - 11: RAZ
+                                                          - 12: gmx#.outb.fif.fif_bnk_ext0
+                                                          - 13: gmx#.outb.fif.fif_bnk_ext1
+                                                          - 14: RAZ
+                                                          - 15: RAZ
+                                                          - 16: RAZ
+                                                          - 17: RAZ
+                                                          - 18: RAZ
+                                                          - 19: RAZ
+                                                          - 20: gmx#.csr.drf20x32m2_bist
+                                                          - 21: gmx#.csr.drf20x48m2_bist
+                                                          - 22: gmx#.outb.stat.drf16x27m1_bist
+                                                          - 23: gmx#.outb.stat.drf40x64m1_bist
+                                                          - 24: RAZ" */
 #else
 	uint64_t status                       : 25;
 	uint64_t reserved_25_63               : 39;
@@ -1388,17 +1388,17 @@ union cvmx_agl_gmx_bist {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
 	uint64_t status                       : 10; /**< BIST Results.
-							HW sets a bit in BIST for for memory that fails
-							- 0: gmx#.inb.drf128x78m1_bist
-							- 1: gmx#.outb.fif.drf128x71m1_bist
-							- 2: gmx#.csr.gmi0.srf8x64m1_bist
-							- 3: gmx#.csr.gmi1.srf8x64m1_bist
-							- 4: 0
-							- 5: 0
-							- 6: gmx#.csr.drf20x80m1_bist
-							- 7: gmx#.outb.stat.drf16x27m1_bist
-							- 8: gmx#.outb.stat.drf40x64m1_bist
-							- 9: 0 */
+                                                          HW sets a bit in BIST for for memory that fails
+                                                         - 0: gmx#.inb.drf128x78m1_bist
+                                                         - 1: gmx#.outb.fif.drf128x71m1_bist
+                                                         - 2: gmx#.csr.gmi0.srf8x64m1_bist
+                                                         - 3: gmx#.csr.gmi1.srf8x64m1_bist
+                                                         - 4: 0
+                                                         - 5: 0
+                                                         - 6: gmx#.csr.drf20x80m1_bist
+                                                         - 7: gmx#.outb.stat.drf16x27m1_bist
+                                                         - 8: gmx#.outb.stat.drf40x64m1_bist
+                                                         - 9: 0 */
 #else
 	uint64_t status                       : 10;
 	uint64_t reserved_10_63               : 54;
@@ -1531,42 +1531,42 @@ union cvmx_agl_gmx_prtx_cfg {
 	uint64_t rx_idle                      : 1;  /**< RX Machine is idle */
 	uint64_t reserved_9_11                : 3;
 	uint64_t speed_msb                    : 1;  /**< Link Speed MSB [SPEED_MSB:SPEED]
-							10 = 10Mbs operation
-							00 = 100Mbs operation
-							01 = 1000Mbs operation
-							11 = Reserved */
+                                                         10 = 10Mbs operation
+                                                         00 = 100Mbs operation
+                                                         01 = 1000Mbs operation
+                                                         11 = Reserved */
 	uint64_t reserved_7_7                 : 1;
 	uint64_t burst                        : 1;  /**< Half-Duplex Burst Enable
-							Only valid for 1000Mbs half-duplex operation
-							0 = burst length of 0x2000 (halfdup / 1000Mbs)
-							1 = burst length of 0x0    (all other modes) */
+                                                         Only valid for 1000Mbs half-duplex operation
+                                                         0 = burst length of 0x2000 (halfdup / 1000Mbs)
+                                                         1 = burst length of 0x0    (all other modes) */
 	uint64_t tx_en                        : 1;  /**< Port enable.  Must be set for Octane to send
-							RMGII traffic.   When this bit clear on a given
-							port, then all packet cycles will appear as
-							inter-frame cycles. */
+                                                         RMGII traffic.   When this bit clear on a given
+                                                         port, then all packet cycles will appear as
+                                                         inter-frame cycles. */
 	uint64_t rx_en                        : 1;  /**< Port enable.  Must be set for Octane to receive
-							RMGII traffic.  When this bit clear on a given
-							port, then the all packet cycles will appear as
-							inter-frame cycles. */
+                                                         RMGII traffic.  When this bit clear on a given
+                                                         port, then the all packet cycles will appear as
+                                                         inter-frame cycles. */
 	uint64_t slottime                     : 1;  /**< Slot Time for Half-Duplex operation
-							0 = 512 bitimes (10/100Mbs operation)
-							1 = 4096 bitimes (1000Mbs operation) */
+                                                         0 = 512 bitimes (10/100Mbs operation)
+                                                         1 = 4096 bitimes (1000Mbs operation) */
 	uint64_t duplex                       : 1;  /**< Duplex
-							0 = Half Duplex (collisions/extentions/bursts)
-							1 = Full Duplex */
+                                                         0 = Half Duplex (collisions/extentions/bursts)
+                                                         1 = Full Duplex */
 	uint64_t speed                        : 1;  /**< Link Speed LSB [SPEED_MSB:SPEED]
-							10 = 10Mbs operation
-							00 = 100Mbs operation
-							01 = 1000Mbs operation
-							11 = Reserved */
+                                                         10 = 10Mbs operation
+                                                         00 = 100Mbs operation
+                                                         01 = 1000Mbs operation
+                                                         11 = Reserved */
 	uint64_t en                           : 1;  /**< Link Enable
-							When EN is clear, packets will not be received
-							or transmitted (including PAUSE and JAM packets).
-							If EN is cleared while a packet is currently
-							being received or transmitted, the packet will
-							be allowed to complete before the bus is idled.
-							On the RX side, subsequent packets in a burst
-							will be ignored. */
+                                                         When EN is clear, packets will not be received
+                                                         or transmitted (including PAUSE and JAM packets).
+                                                         If EN is cleared while a packet is currently
+                                                         being received or transmitted, the packet will
+                                                         be allowed to complete before the bus is idled.
+                                                         On the RX side, subsequent packets in a burst
+                                                         will be ignored. */
 #else
 	uint64_t en                           : 1;
 	uint64_t speed                        : 1;
@@ -1587,30 +1587,30 @@ union cvmx_agl_gmx_prtx_cfg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_6_63                : 58;
 	uint64_t tx_en                        : 1;  /**< Port enable.  Must be set for Octane to send
-							RMGII traffic.   When this bit clear on a given
-							port, then all MII cycles will appear as
-							inter-frame cycles. */
+                                                         RMGII traffic.   When this bit clear on a given
+                                                         port, then all MII cycles will appear as
+                                                         inter-frame cycles. */
 	uint64_t rx_en                        : 1;  /**< Port enable.  Must be set for Octane to receive
-							RMGII traffic.  When this bit clear on a given
-							port, then the all MII cycles will appear as
-							inter-frame cycles. */
+                                                         RMGII traffic.  When this bit clear on a given
+                                                         port, then the all MII cycles will appear as
+                                                         inter-frame cycles. */
 	uint64_t slottime                     : 1;  /**< Slot Time for Half-Duplex operation
-							0 = 512 bitimes (10/100Mbs operation)
-							1 = Reserved */
+                                                         0 = 512 bitimes (10/100Mbs operation)
+                                                         1 = Reserved */
 	uint64_t duplex                       : 1;  /**< Duplex
-							0 = Half Duplex (collisions/extentions/bursts)
-							1 = Full Duplex */
+                                                         0 = Half Duplex (collisions/extentions/bursts)
+                                                         1 = Full Duplex */
 	uint64_t speed                        : 1;  /**< Link Speed
-							0 = 10/100Mbs operation
-							1 = Reserved */
+                                                         0 = 10/100Mbs operation
+                                                         1 = Reserved */
 	uint64_t en                           : 1;  /**< Link Enable
-							When EN is clear, packets will not be received
-							or transmitted (including PAUSE and JAM packets).
-							If EN is cleared while a packet is currently
-							being received or transmitted, the packet will
-							be allowed to complete before the bus is idled.
-							On the RX side, subsequent packets in a burst
-							will be ignored. */
+                                                         When EN is clear, packets will not be received
+                                                         or transmitted (including PAUSE and JAM packets).
+                                                         If EN is cleared while a packet is currently
+                                                         being received or transmitted, the packet will
+                                                         be allowed to complete before the bus is idled.
+                                                         On the RX side, subsequent packets in a burst
+                                                         will be ignored. */
 #else
 	uint64_t en                           : 1;
 	uint64_t speed                        : 1;
@@ -1646,9 +1646,9 @@ union cvmx_agl_gmx_rxx_adr_cam0 {
 	struct cvmx_agl_gmx_rxx_adr_cam0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t adr                          : 64; /**< The DMAC address to match on
-							Each entry contributes 8bits to one of 8 matchers.
-							The CAM matches against unicst or multicst DMAC
-							addresses. */
+                                                         Each entry contributes 8bits to one of 8 matchers.
+                                                         The CAM matches against unicst or multicst DMAC
+                                                         addresses. */
 #else
 	uint64_t adr                          : 64;
 #endif
@@ -1679,9 +1679,9 @@ union cvmx_agl_gmx_rxx_adr_cam1 {
 	struct cvmx_agl_gmx_rxx_adr_cam1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t adr                          : 64; /**< The DMAC address to match on
-							Each entry contributes 8bits to one of 8 matchers.
-							The CAM matches against unicst or multicst DMAC
-							addresses. */
+                                                         Each entry contributes 8bits to one of 8 matchers.
+                                                         The CAM matches against unicst or multicst DMAC
+                                                         addresses. */
 #else
 	uint64_t adr                          : 64;
 #endif
@@ -1712,9 +1712,9 @@ union cvmx_agl_gmx_rxx_adr_cam2 {
 	struct cvmx_agl_gmx_rxx_adr_cam2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t adr                          : 64; /**< The DMAC address to match on
-							Each entry contributes 8bits to one of 8 matchers.
-							The CAM matches against unicst or multicst DMAC
-							addresses. */
+                                                         Each entry contributes 8bits to one of 8 matchers.
+                                                         The CAM matches against unicst or multicst DMAC
+                                                         addresses. */
 #else
 	uint64_t adr                          : 64;
 #endif
@@ -1745,9 +1745,9 @@ union cvmx_agl_gmx_rxx_adr_cam3 {
 	struct cvmx_agl_gmx_rxx_adr_cam3_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t adr                          : 64; /**< The DMAC address to match on
-							Each entry contributes 8bits to one of 8 matchers.
-							The CAM matches against unicst or multicst DMAC
-							addresses. */
+                                                         Each entry contributes 8bits to one of 8 matchers.
+                                                         The CAM matches against unicst or multicst DMAC
+                                                         addresses. */
 #else
 	uint64_t adr                          : 64;
 #endif
@@ -1778,9 +1778,9 @@ union cvmx_agl_gmx_rxx_adr_cam4 {
 	struct cvmx_agl_gmx_rxx_adr_cam4_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t adr                          : 64; /**< The DMAC address to match on
-							Each entry contributes 8bits to one of 8 matchers.
-							The CAM matches against unicst or multicst DMAC
-							addresses. */
+                                                         Each entry contributes 8bits to one of 8 matchers.
+                                                         The CAM matches against unicst or multicst DMAC
+                                                         addresses. */
 #else
 	uint64_t adr                          : 64;
 #endif
@@ -1811,9 +1811,9 @@ union cvmx_agl_gmx_rxx_adr_cam5 {
 	struct cvmx_agl_gmx_rxx_adr_cam5_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t adr                          : 64; /**< The DMAC address to match on
-							Each entry contributes 8bits to one of 8 matchers.
-							The CAM matches against unicst or multicst DMAC
-							addresses. */
+                                                         Each entry contributes 8bits to one of 8 matchers.
+                                                         The CAM matches against unicst or multicst DMAC
+                                                         addresses. */
 #else
 	uint64_t adr                          : 64;
 #endif
@@ -1919,13 +1919,13 @@ union cvmx_agl_gmx_rxx_adr_ctl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
 	uint64_t cam_mode                     : 1;  /**< Allow or deny DMAC address filter
-							0 = reject the packet on DMAC address match
-							1 = accept the packet on DMAC address match */
+                                                         0 = reject the packet on DMAC address match
+                                                         1 = accept the packet on DMAC address match */
 	uint64_t mcst                         : 2;  /**< Multicast Mode
-							0 = Use the Address Filter CAM
-							1 = Force reject all multicast packets
-							2 = Force accept all multicast packets	
-							3 = Reserved */
+                                                         0 = Use the Address Filter CAM
+                                                         1 = Force reject all multicast packets
+                                                         2 = Force accept all multicast packets
+                                                         3 = Reserved */
 	uint64_t bcst                         : 1;  /**< Accept All Broadcast Packets */
 #else
 	uint64_t bcst                         : 1;
@@ -1984,7 +1984,7 @@ union cvmx_agl_gmx_rxx_decision {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
 	uint64_t cnt                          : 5;  /**< The byte count to decide when to accept or filter
-							a packet. */
+                                                         a packet. */
 #else
 	uint64_t cnt                          : 5;
 	uint64_t reserved_5_63                : 59;
@@ -2025,8 +2025,8 @@ union cvmx_agl_gmx_rxx_frm_chk {
 	uint64_t skperr                       : 1;  /**< Skipper error */
 	uint64_t rcverr                       : 1;  /**< Frame was received with packet data reception error */
 	uint64_t lenerr                       : 1;  /**< Frame was received with length error
-							Most systems should use the checking in PKI/PIP
-							for checking the L2 length field. */
+                                                         Most systems should use the checking in PKI/PIP
+                                                         for checking the L2 length field. */
 	uint64_t alnerr                       : 1;  /**< Frame was received with an alignment error */
 	uint64_t fcserr                       : 1;  /**< Frame was received with FCS/CRC error */
 	uint64_t jabber                       : 1;  /**< Frame was received with length > sys_length */
@@ -2123,51 +2123,51 @@ union cvmx_agl_gmx_rxx_frm_ctl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_13_63               : 51;
 	uint64_t ptp_mode                     : 1;  /**< Timestamp mode
-							When PTP_MODE is set, a 64-bit timestamp will be
-							prepended to every incoming packet. The timestamp
-							bytes are added to the packet in such a way as to
-							not modify the packet's receive byte count.  This
-							implies that the AGL_GMX_RX_JABBER,
-							AGL_GMX_RX_FRM_MIN, AGL_GMX_RX_FRM_MAX,
-							AGL_GMX_RX_DECISION, AGL_GMX_RX_UDD_SKP, and the
-							AGL_GMX_RX_STATS_* do not require any adjustment
-							as they operate on the received packet size.
-							If PTP_MODE=1 and PRE_CHK=1, PRE_STRP must be 1. */
+                                                         When PTP_MODE is set, a 64-bit timestamp will be
+                                                         prepended to every incoming packet. The timestamp
+                                                         bytes are added to the packet in such a way as to
+                                                         not modify the packet's receive byte count.  This
+                                                         implies that the AGL_GMX_RX_JABBER,
+                                                         AGL_GMX_RX_FRM_MIN, AGL_GMX_RX_FRM_MAX,
+                                                         AGL_GMX_RX_DECISION, AGL_GMX_RX_UDD_SKP, and the
+                                                         AGL_GMX_RX_STATS_* do not require any adjustment
+                                                         as they operate on the received packet size.
+                                                         If PTP_MODE=1 and PRE_CHK=1, PRE_STRP must be 1. */
 	uint64_t reserved_11_11               : 1;
 	uint64_t null_dis                     : 1;  /**< When set, do not modify the MOD bits on NULL ticks
-							due to PARITAL packets */
+                                                         due to PARITAL packets */
 	uint64_t pre_align                    : 1;  /**< When set, PREAMBLE parser aligns the the SFD byte
-							regardless of the number of previous PREAMBLE
-							nibbles.  In this mode, PRE_STRP should be set to
-							account for the variable nature of the PREAMBLE.
-							PRE_CHK must be set to enable this and all
-							PREAMBLE features. */
+                                                         regardless of the number of previous PREAMBLE
+                                                         nibbles.  In this mode, PRE_STRP should be set to
+                                                         account for the variable nature of the PREAMBLE.
+                                                         PRE_CHK must be set to enable this and all
+                                                         PREAMBLE features. */
 	uint64_t pad_len                      : 1;  /**< When set, disables the length check for non-min
-							sized pkts with padding in the client data */
+                                                         sized pkts with padding in the client data */
 	uint64_t vlan_len                     : 1;  /**< When set, disables the length check for VLAN pkts */
 	uint64_t pre_free                     : 1;  /**< When set, PREAMBLE checking is less strict.
-							AGL will begin the frame at the first SFD.
-							PRE_FREE must be set if PRE_ALIGN is set.
-							PRE_CHK must be set to enable this and all
-							PREAMBLE features. */
+                                                         AGL will begin the frame at the first SFD.
+                                                         PRE_FREE must be set if PRE_ALIGN is set.
+                                                         PRE_CHK must be set to enable this and all
+                                                         PREAMBLE features. */
 	uint64_t ctl_smac                     : 1;  /**< Control Pause Frames can match station SMAC */
 	uint64_t ctl_mcst                     : 1;  /**< Control Pause Frames can match globally assign
-							Multicast address */
+                                                         Multicast address */
 	uint64_t ctl_bck                      : 1;  /**< Forward pause information to TX block */
 	uint64_t ctl_drp                      : 1;  /**< Drop Control Pause Frames */
 	uint64_t pre_strp                     : 1;  /**< Strip off the preamble (when present)
-							0=PREAMBLE+SFD is sent to core as part of frame
-							1=PREAMBLE+SFD is dropped
-							PRE_STRP must be set if PRE_ALIGN is set.
-							PRE_CHK must be set to enable this and all
-							PREAMBLE features. */
+                                                         0=PREAMBLE+SFD is sent to core as part of frame
+                                                         1=PREAMBLE+SFD is dropped
+                                                         PRE_STRP must be set if PRE_ALIGN is set.
+                                                         PRE_CHK must be set to enable this and all
+                                                         PREAMBLE features. */
 	uint64_t pre_chk                      : 1;  /**< This port is configured to send a valid 802.3
-							PREAMBLE to begin every frame. AGL checks that a
-							valid PREAMBLE is received (based on PRE_FREE).
-							When a problem does occur within the PREAMBLE
-							seqeunce, the frame is marked as bad and not sent
-							into the core.  The AGL_GMX_RX_INT_REG[PCTERR]
-							interrupt is also raised. */
+                                                         PREAMBLE to begin every frame. AGL checks that a
+                                                         valid PREAMBLE is received (based on PRE_FREE).
+                                                         When a problem does occur within the PREAMBLE
+                                                         seqeunce, the frame is marked as bad and not sent
+                                                         into the core.  The AGL_GMX_RX_INT_REG[PCTERR]
+                                                         interrupt is also raised. */
 #else
 	uint64_t pre_chk                      : 1;
 	uint64_t pre_strp                     : 1;
@@ -2189,34 +2189,34 @@ union cvmx_agl_gmx_rxx_frm_ctl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
 	uint64_t pre_align                    : 1;  /**< When set, PREAMBLE parser aligns the the SFD byte
-							regardless of the number of previous PREAMBLE
-							nibbles.  In this mode, PREAMBLE can be consumed
-							by the HW so when PRE_ALIGN is set, PRE_FREE,
-							PRE_STRP must be set for correct operation.
-							PRE_CHK must be set to enable this and all
-							PREAMBLE features. */
+                                                         regardless of the number of previous PREAMBLE
+                                                         nibbles.  In this mode, PREAMBLE can be consumed
+                                                         by the HW so when PRE_ALIGN is set, PRE_FREE,
+                                                         PRE_STRP must be set for correct operation.
+                                                         PRE_CHK must be set to enable this and all
+                                                         PREAMBLE features. */
 	uint64_t pad_len                      : 1;  /**< When set, disables the length check for non-min
-							sized pkts with padding in the client data */
+                                                         sized pkts with padding in the client data */
 	uint64_t vlan_len                     : 1;  /**< When set, disables the length check for VLAN pkts */
 	uint64_t pre_free                     : 1;  /**< When set, PREAMBLE checking is  less strict.
-							0 - 254 cycles of PREAMBLE followed by SFD
-							PRE_FREE must be set if PRE_ALIGN is set.
-							PRE_CHK must be set to enable this and all
-							PREAMBLE features. */
+                                                         0 - 254 cycles of PREAMBLE followed by SFD
+                                                         PRE_FREE must be set if PRE_ALIGN is set.
+                                                         PRE_CHK must be set to enable this and all
+                                                         PREAMBLE features. */
 	uint64_t ctl_smac                     : 1;  /**< Control Pause Frames can match station SMAC */
 	uint64_t ctl_mcst                     : 1;  /**< Control Pause Frames can match globally assign
-							Multicast address */
+                                                         Multicast address */
 	uint64_t ctl_bck                      : 1;  /**< Forward pause information to TX block */
 	uint64_t ctl_drp                      : 1;  /**< Drop Control Pause Frames */
 	uint64_t pre_strp                     : 1;  /**< Strip off the preamble (when present)
-							0=PREAMBLE+SFD is sent to core as part of frame
-							1=PREAMBLE+SFD is dropped
-							PRE_STRP must be set if PRE_ALIGN is set.
-							PRE_CHK must be set to enable this and all
-							PREAMBLE features. */
+                                                         0=PREAMBLE+SFD is sent to core as part of frame
+                                                         1=PREAMBLE+SFD is dropped
+                                                         PRE_STRP must be set if PRE_ALIGN is set.
+                                                         PRE_CHK must be set to enable this and all
+                                                         PREAMBLE features. */
 	uint64_t pre_chk                      : 1;  /**< This port is configured to send PREAMBLE+SFD
-							to begin every frame.  GMX checks that the
-							PREAMBLE is sent correctly */
+                                                         to begin every frame.  GMX checks that the
+                                                         PREAMBLE is sent correctly */
 #else
 	uint64_t pre_chk                      : 1;
 	uint64_t pre_strp                     : 1;
@@ -2267,13 +2267,13 @@ union cvmx_agl_gmx_rxx_frm_max {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t len                          : 16; /**< Byte count for Max-sized frame check
-							AGL_GMX_RXn_FRM_CHK[MAXERR] enables the check
-							for port n.
-							If enabled, failing packets set the MAXERR
-							interrupt and the WQE opcode is set to OVER_FCS
-							(0x3, if packet has bad FCS) or OVER_ERR (0x4, if
-							packet has good FCS).
-							LEN <= AGL_GMX_RX_JABBER[CNT] */
+                                                         AGL_GMX_RXn_FRM_CHK[MAXERR] enables the check
+                                                         for port n.
+                                                         If enabled, failing packets set the MAXERR
+                                                         interrupt and the WQE opcode is set to OVER_FCS
+                                                         (0x3, if packet has bad FCS) or OVER_ERR (0x4, if
+                                                         packet has good FCS).
+                                                         LEN <= AGL_GMX_RX_JABBER[CNT] */
 #else
 	uint64_t len                          : 16;
 	uint64_t reserved_16_63               : 48;
@@ -2310,12 +2310,12 @@ union cvmx_agl_gmx_rxx_frm_min {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t len                          : 16; /**< Byte count for Min-sized frame check
-							AGL_GMX_RXn_FRM_CHK[MINERR] enables the check
-							for port n.
-							If enabled, failing packets set the MINERR
-							interrupt and the WQE opcode is set to UNDER_FCS
-							(0x6, if packet has bad FCS) or UNDER_ERR (0x8,
-							if packet has good FCS). */
+                                                         AGL_GMX_RXn_FRM_CHK[MINERR] enables the check
+                                                         for port n.
+                                                         If enabled, failing packets set the MINERR
+                                                         interrupt and the WQE opcode is set to UNDER_FCS
+                                                         (0x6, if packet has bad FCS) or UNDER_ERR (0x8,
+                                                         if packet has good FCS). */
 #else
 	uint64_t len                          : 16;
 	uint64_t reserved_16_63               : 48;
@@ -2352,12 +2352,12 @@ union cvmx_agl_gmx_rxx_ifg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
 	uint64_t ifg                          : 4;  /**< Min IFG (in IFG*8 bits) between packets used to
-							determine IFGERR. Normally IFG is 96 bits.
-							Note in some operating modes, IFG cycles can be
-							inserted or removed in order to achieve clock rate
-							adaptation. For these reasons, the default value
-							is slightly conservative and does not check upto
-							the full 96 bits of IFG. */
+                                                         determine IFGERR. Normally IFG is 96 bits.
+                                                         Note in some operating modes, IFG cycles can be
+                                                         inserted or removed in order to achieve clock rate
+                                                         adaptation. For these reasons, the default value
+                                                         is slightly conservative and does not check upto
+                                                         the full 96 bits of IFG. */
 #else
 	uint64_t ifg                          : 4;
 	uint64_t reserved_4_63                : 60;
@@ -2618,13 +2618,13 @@ union cvmx_agl_gmx_rxx_int_reg {
 	uint64_t phy_spd                      : 1;  /**< Change in the RGMII inbound LinkSpeed */
 	uint64_t phy_link                     : 1;  /**< Change in the RGMII inbound LinkStatus */
 	uint64_t ifgerr                       : 1;  /**< Interframe Gap Violation
-							Does not necessarily indicate a failure */
+                                                         Does not necessarily indicate a failure */
 	uint64_t coldet                       : 1;  /**< Collision Detection */
 	uint64_t falerr                       : 1;  /**< False carrier error or extend error after slottime */
 	uint64_t rsverr                       : 1;  /**< Packet reserved opcodes */
 	uint64_t pcterr                       : 1;  /**< Bad Preamble / Protocol */
 	uint64_t ovrerr                       : 1;  /**< Internal Data Aggregation Overflow
-							This interrupt should never assert */
+                                                         This interrupt should never assert */
 	uint64_t niberr                       : 1;  /**< Nibble error (hi_nibble != lo_nibble) */
 	uint64_t skperr                       : 1;  /**< Skipper error */
 	uint64_t rcverr                       : 1;  /**< Frame was received with Packet Data reception error */
@@ -2667,13 +2667,13 @@ union cvmx_agl_gmx_rxx_int_reg {
 	uint64_t pause_drp                    : 1;  /**< Pause packet was dropped due to full GMX RX FIFO */
 	uint64_t reserved_16_18               : 3;
 	uint64_t ifgerr                       : 1;  /**< Interframe Gap Violation
-							Does not necessarily indicate a failure */
+                                                         Does not necessarily indicate a failure */
 	uint64_t coldet                       : 1;  /**< Collision Detection */
 	uint64_t falerr                       : 1;  /**< False carrier error or extend error after slottime */
 	uint64_t rsverr                       : 1;  /**< MII reserved opcodes */
 	uint64_t pcterr                       : 1;  /**< Bad Preamble / Protocol */
 	uint64_t ovrerr                       : 1;  /**< Internal Data Aggregation Overflow
-							This interrupt should never assert */
+                                                         This interrupt should never assert */
 	uint64_t reserved_9_9                 : 1;
 	uint64_t skperr                       : 1;  /**< Skipper error */
 	uint64_t rcverr                       : 1;  /**< Frame was received with MII Data reception error */
@@ -2717,13 +2717,13 @@ union cvmx_agl_gmx_rxx_int_reg {
 	uint64_t phy_spd                      : 1;  /**< Change in the RGMII inbound LinkSpeed              |             NS */
 	uint64_t phy_link                     : 1;  /**< Change in the RGMII inbound LinkStatus             |             NS */
 	uint64_t ifgerr                       : 1;  /**< Interframe Gap Violation
-							Does not necessarily indicate a failure */
+                                                         Does not necessarily indicate a failure */
 	uint64_t coldet                       : 1;  /**< Collision Detection */
 	uint64_t falerr                       : 1;  /**< False carrier error or extend error after slottime */
 	uint64_t rsverr                       : 1;  /**< Packet reserved opcodes */
 	uint64_t pcterr                       : 1;  /**< Bad Preamble / Protocol */
 	uint64_t ovrerr                       : 1;  /**< Internal Data Aggregation Overflow
-							This interrupt should never assert */
+                                                         This interrupt should never assert */
 	uint64_t niberr                       : 1;  /**< Nibble error (hi_nibble != lo_nibble)              |             NS */
 	uint64_t skperr                       : 1;  /**< Skipper error */
 	uint64_t rcverr                       : 1;  /**< Frame was received with Packet Data reception error */
@@ -2797,10 +2797,10 @@ union cvmx_agl_gmx_rxx_jabber {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t cnt                          : 16; /**< Byte count for jabber check
-							Failing packets set the JABBER interrupt and are
-							optionally sent with opcode==JABBER
-							GMX will truncate the packet to CNT bytes
-							CNT >= AGL_GMX_RX_FRM_MAX[LEN] */
+                                                         Failing packets set the JABBER interrupt and are
+                                                         optionally sent with opcode==JABBER
+                                                         GMX will truncate the packet to CNT bytes
+                                                         CNT >= AGL_GMX_RX_FRM_MAX[LEN] */
 #else
 	uint64_t cnt                          : 16;
 	uint64_t reserved_16_63               : 48;
@@ -2869,16 +2869,16 @@ union cvmx_agl_gmx_rxx_rx_inbnd {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
 	uint64_t duplex                       : 1;  /**< RGMII Inbound LinkDuplex
-							0=half-duplex
-							1=full-duplex */
+                                                         0=half-duplex
+                                                         1=full-duplex */
 	uint64_t speed                        : 2;  /**< RGMII Inbound LinkSpeed
-							00=2.5MHz
-							01=25MHz
-							10=125MHz
-							11=Reserved */
+                                                         00=2.5MHz
+                                                         01=25MHz
+                                                         10=125MHz
+                                                         11=Reserved */
 	uint64_t status                       : 1;  /**< RGMII Inbound LinkStatus
-							0=down
-							1=up */
+                                                         0=down
+                                                         1=up */
 #else
 	uint64_t status                       : 1;
 	uint64_t speed                        : 2;
@@ -3281,12 +3281,12 @@ union cvmx_agl_gmx_rxx_udd_skp {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_9_63                : 55;
 	uint64_t fcssel                       : 1;  /**< Include the skip bytes in the FCS calculation
-							0 = all skip bytes are included in FCS
-							1 = the skip bytes are not included in FCS */
+                                                         0 = all skip bytes are included in FCS
+                                                         1 = the skip bytes are not included in FCS */
 	uint64_t reserved_7_7                 : 1;
 	uint64_t len                          : 7;  /**< Amount of User-defined data before the start of
-							the L2 data.  Zero means L2 comes first.
-							Max value is 64. */
+                                                         the L2 data.  Zero means L2 comes first.
+                                                         Max value is 64. */
 #else
 	uint64_t len                          : 7;
 	uint64_t reserved_7_7                 : 1;
@@ -3325,11 +3325,11 @@ union cvmx_agl_gmx_rx_bp_dropx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_6_63                : 58;
 	uint64_t mark                         : 6;  /**< Number of 8B ticks to reserve in the RX FIFO.
-							When the FIFO exceeds this count, packets will
-							be dropped and not buffered.
-							MARK should typically be programmed to 2.
-							Failure to program correctly can lead to system
-							instability. */
+                                                         When the FIFO exceeds this count, packets will
+                                                         be dropped and not buffered.
+                                                         MARK should typically be programmed to 2.
+                                                         Failure to program correctly can lead to system
+                                                         instability. */
 #else
 	uint64_t mark                         : 6;
 	uint64_t reserved_6_63                : 58;
@@ -3542,7 +3542,7 @@ union cvmx_agl_gmx_smacx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
 	uint64_t smac                         : 48; /**< The SMAC field is used for generating and
-							accepting Control Pause packets */
+                                                         accepting Control Pause packets */
 #else
 	uint64_t smac                         : 48;
 	uint64_t reserved_48_63               : 16;
@@ -3593,15 +3593,15 @@ union cvmx_agl_gmx_stat_bp {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_17_63               : 47;
 	uint64_t bp                           : 1;  /**< Current TX stats BP state
-							When the TX stats machine cannot update the stats
-							registers quickly enough, the machine has the
-							ability to BP TX datapath.  This is a rare event
-							and will not occur in normal operation.
-							0 = no backpressure is applied
-							1 = backpressure is applied to TX datapath to
-							allow stat update operations to complete */
+                                                         When the TX stats machine cannot update the stats
+                                                         registers quickly enough, the machine has the
+                                                         ability to BP TX datapath.  This is a rare event
+                                                         and will not occur in normal operation.
+                                                         0 = no backpressure is applied
+                                                         1 = backpressure is applied to TX datapath to
+                                                         allow stat update operations to complete */
 	uint64_t cnt                          : 16; /**< Number of cycles that BP has been asserted
-							Saturating counter */
+                                                         Saturating counter */
 #else
 	uint64_t cnt                          : 16;
 	uint64_t bp                           : 1;
@@ -3639,10 +3639,10 @@ union cvmx_agl_gmx_txx_append {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
 	uint64_t force_fcs                    : 1;  /**< Append the Ethernet FCS on each pause packet
-							when FCS is clear.  Pause packets are normally
-							padded to 60 bytes.  If
-							AGL_GMX_TX_MIN_PKT[MIN_SIZE] exceeds 59, then
-							FORCE_FCS will not be used. */
+                                                         when FCS is clear.  Pause packets are normally
+                                                         padded to 60 bytes.  If
+                                                         AGL_GMX_TX_MIN_PKT[MIN_SIZE] exceeds 59, then
+                                                         FORCE_FCS will not be used. */
 	uint64_t fcs                          : 1;  /**< Append the Ethernet FCS on each packet */
 	uint64_t pad                          : 1;  /**< Append PAD bytes such that min sized */
 	uint64_t preamble                     : 1;  /**< Prepend the Ethernet preamble on each transfer */
@@ -3695,8 +3695,8 @@ union cvmx_agl_gmx_txx_clk {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_6_63                : 58;
 	uint64_t clk_cnt                      : 6;  /**< Controls the RGMII TXC frequency
-							TXC(period) =
-							rgm_ref_clk(period)*CLK_CNT */
+                                                         TXC(period) =
+                                                         rgm_ref_clk(period)*CLK_CNT */
 #else
 	uint64_t clk_cnt                      : 6;
 	uint64_t reserved_6_63                : 58;
@@ -3729,9 +3729,9 @@ union cvmx_agl_gmx_txx_ctl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
 	uint64_t xsdef_en                     : 1;  /**< Enables the excessive deferral check for stats
-							and interrupts */
+                                                         and interrupts */
 	uint64_t xscol_en                     : 1;  /**< Enables the excessive collision check for stats
-							and interrupts */
+                                                         and interrupts */
 #else
 	uint64_t xscol_en                     : 1;
 	uint64_t xsdef_en                     : 1;
@@ -3769,10 +3769,10 @@ union cvmx_agl_gmx_txx_min_pkt {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
 	uint64_t min_size                     : 8;  /**< Min frame in bytes before the FCS is applied
-							Padding is only appened when
-							AGL_GMX_TX_APPEND[PAD] for the coresponding packet
-							port is set. Packets will be padded to
-							MIN_SIZE+1 The reset value will pad to 60 bytes. */
+                                                         Padding is only appened when
+                                                         AGL_GMX_TX_APPEND[PAD] for the coresponding packet
+                                                         port is set. Packets will be padded to
+                                                         MIN_SIZE+1 The reset value will pad to 60 bytes. */
 #else
 	uint64_t min_size                     : 8;
 	uint64_t reserved_8_63                : 56;
@@ -3826,10 +3826,10 @@ union cvmx_agl_gmx_txx_pause_pkt_interval {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t interval                     : 16; /**< Arbitrate for a pause packet every (INTERVAL*512)
-							bit-times.
-							Normally, 0 < INTERVAL < AGL_GMX_TX_PAUSE_PKT_TIME
-							INTERVAL=0, will only send a single PAUSE packet
-							for each backpressure event */
+                                                         bit-times.
+                                                         Normally, 0 < INTERVAL < AGL_GMX_TX_PAUSE_PKT_TIME
+                                                         INTERVAL=0, will only send a single PAUSE packet
+                                                         for each backpressure event */
 #else
 	uint64_t interval                     : 16;
 	uint64_t reserved_16_63               : 48;
@@ -3883,8 +3883,8 @@ union cvmx_agl_gmx_txx_pause_pkt_time {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t time                         : 16; /**< The pause_time field placed is outbnd pause pkts
-							pause_time is in 512 bit-times
-							Normally, TIME > AGL_GMX_TX_PAUSE_PKT_INTERVAL */
+                                                         pause_time is in 512 bit-times
+                                                         Normally, TIME > AGL_GMX_TX_PAUSE_PKT_INTERVAL */
 #else
 	uint64_t time                         : 16;
 	uint64_t reserved_16_63               : 48;
@@ -3957,8 +3957,8 @@ union cvmx_agl_gmx_txx_pause_zero {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
 	uint64_t send                         : 1;  /**< When backpressure condition clear, send PAUSE
-							packet with pause_time of zero to enable the
-							channel */
+                                                         packet with pause_time of zero to enable the
+                                                         channel */
 #else
 	uint64_t send                         : 1;
 	uint64_t reserved_1_63                : 63;
@@ -3995,7 +3995,7 @@ union cvmx_agl_gmx_txx_soft_pause {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t time                         : 16; /**< Back off the TX bus for (TIME*512) bit-times
-							for full-duplex operation only */
+                                                         for full-duplex operation only */
 #else
 	uint64_t time                         : 16;
 	uint64_t reserved_16_63               : 48;
@@ -4032,10 +4032,10 @@ union cvmx_agl_gmx_txx_stat0 {
 	struct cvmx_agl_gmx_txx_stat0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t xsdef                        : 32; /**< Number of packets dropped (never successfully
-							sent) due to excessive deferal */
+                                                         sent) due to excessive deferal */
 	uint64_t xscol                        : 32; /**< Number of packets dropped (never successfully
-							sent) due to excessive collision.  Defined by
-							AGL_GMX_TX_COL_ATTEMPT[LIMIT]. */
+                                                         sent) due to excessive collision.  Defined by
+                                                         AGL_GMX_TX_COL_ATTEMPT[LIMIT]. */
 #else
 	uint64_t xscol                        : 32;
 	uint64_t xsdef                        : 32;
@@ -4073,7 +4073,7 @@ union cvmx_agl_gmx_txx_stat1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t scol                         : 32; /**< Number of packets sent with a single collision */
 	uint64_t mcol                         : 32; /**< Number of packets sent with multiple collisions
-							but < AGL_GMX_TX_COL_ATTEMPT[LIMIT]. */
+                                                         but < AGL_GMX_TX_COL_ATTEMPT[LIMIT]. */
 #else
 	uint64_t mcol                         : 32;
 	uint64_t scol                         : 32;
@@ -4114,8 +4114,8 @@ union cvmx_agl_gmx_txx_stat2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
 	uint64_t octs                         : 48; /**< Number of total octets sent on the interface.
-							Does not count octets from frames that were
-							truncated due to collisions in halfdup mode. */
+                                                         Does not count octets from frames that were
+                                                         truncated due to collisions in halfdup mode. */
 #else
 	uint64_t octs                         : 48;
 	uint64_t reserved_48_63               : 16;
@@ -4153,8 +4153,8 @@ union cvmx_agl_gmx_txx_stat3 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
 	uint64_t pkts                         : 32; /**< Number of total frames sent on the interface.
-							Does not count frames that were truncated due to
-							collisions in halfdup mode. */
+                                                         Does not count frames that were truncated due to
+                                                         collisions in halfdup mode. */
 #else
 	uint64_t pkts                         : 32;
 	uint64_t reserved_32_63               : 32;
@@ -4195,7 +4195,7 @@ union cvmx_agl_gmx_txx_stat4 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t hist1                        : 32; /**< Number of packets sent with an octet count of 64. */
 	uint64_t hist0                        : 32; /**< Number of packets sent with an octet count
-							of < 64. */
+                                                         of < 64. */
 #else
 	uint64_t hist0                        : 32;
 	uint64_t hist1                        : 32;
@@ -4235,9 +4235,9 @@ union cvmx_agl_gmx_txx_stat5 {
 	struct cvmx_agl_gmx_txx_stat5_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t hist3                        : 32; /**< Number of packets sent with an octet count of
-							128 - 255. */
+                                                         128 - 255. */
 	uint64_t hist2                        : 32; /**< Number of packets sent with an octet count of
-							65 - 127. */
+                                                         65 - 127. */
 #else
 	uint64_t hist2                        : 32;
 	uint64_t hist3                        : 32;
@@ -4277,9 +4277,9 @@ union cvmx_agl_gmx_txx_stat6 {
 	struct cvmx_agl_gmx_txx_stat6_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t hist5                        : 32; /**< Number of packets sent with an octet count of
-							512 - 1023. */
+                                                         512 - 1023. */
 	uint64_t hist4                        : 32; /**< Number of packets sent with an octet count of
-							256 - 511. */
+                                                         256 - 511. */
 #else
 	uint64_t hist4                        : 32;
 	uint64_t hist5                        : 32;
@@ -4319,9 +4319,9 @@ union cvmx_agl_gmx_txx_stat7 {
 	struct cvmx_agl_gmx_txx_stat7_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t hist7                        : 32; /**< Number of packets sent with an octet count
-							of > 1518. */
+                                                         of > 1518. */
 	uint64_t hist6                        : 32; /**< Number of packets sent with an octet count of
-							1024 - 1518. */
+                                                         1024 - 1518. */
 #else
 	uint64_t hist6                        : 32;
 	uint64_t hist7                        : 32;
@@ -4363,9 +4363,9 @@ union cvmx_agl_gmx_txx_stat8 {
 	struct cvmx_agl_gmx_txx_stat8_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t mcst                         : 32; /**< Number of packets sent to multicast DMAC.
-							Does not include BCST packets. */
+                                                         Does not include BCST packets. */
 	uint64_t bcst                         : 32; /**< Number of packets sent to broadcast DMAC.
-							Does not include MCST packets. */
+                                                         Does not include MCST packets. */
 #else
 	uint64_t bcst                         : 32;
 	uint64_t mcst                         : 32;
@@ -4403,8 +4403,8 @@ union cvmx_agl_gmx_txx_stat9 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t undflw                       : 32; /**< Number of underflow packets */
 	uint64_t ctl                          : 32; /**< Number of Control packets (PAUSE flow control)
-							generated by GMX.  It does not include control
-							packets forwarded or generated by the PP's. */
+                                                         generated by GMX.  It does not include control
+                                                         packets forwarded or generated by the PP's. */
 #else
 	uint64_t ctl                          : 32;
 	uint64_t undflw                       : 32;
@@ -4477,11 +4477,11 @@ union cvmx_agl_gmx_txx_thresh {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_6_63                : 58;
 	uint64_t cnt                          : 6;  /**< Number of 16B ticks to accumulate in the TX FIFO
-							before sending on the packet interface
-							This register should be large enough to prevent
-							underflow on the packet interface and must never
-							be set below 4.  This register cannot exceed the
-							the TX FIFO depth which is 128, 8B entries. */
+                                                         before sending on the packet interface
+                                                         This register should be large enough to prevent
+                                                         underflow on the packet interface and must never
+                                                         be set below 4.  This register cannot exceed the
+                                                         the TX FIFO depth which is 128, 8B entries. */
 #else
 	uint64_t cnt                          : 6;
 	uint64_t reserved_6_63                : 58;
@@ -4518,8 +4518,8 @@ union cvmx_agl_gmx_tx_bp {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
 	uint64_t bp                           : 2;  /**< Port BackPressure status
-							0=Port is available
-							1=Port should be back pressured */
+                                                         0=Port is available
+                                                         1=Port should be back pressured */
 #else
 	uint64_t bp                           : 2;
 	uint64_t reserved_2_63                : 62;
@@ -4531,8 +4531,8 @@ union cvmx_agl_gmx_tx_bp {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
 	uint64_t bp                           : 1;  /**< Port BackPressure status
-							0=Port is available
-							1=Port should be back pressured */
+                                                         0=Port is available
+                                                         1=Port should be back pressured */
 #else
 	uint64_t bp                           : 1;
 	uint64_t reserved_1_63                : 63;
@@ -4598,23 +4598,23 @@ union cvmx_agl_gmx_tx_ifg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
 	uint64_t ifg2                         : 4;  /**< 1/3 of the interframe gap timing
-							If CRS is detected during IFG2, then the
-							interFrameSpacing timer is not reset and a frame
-							is transmited once the timer expires.
-							1000Mbs   = 4
-							10/100Mbs = 10
-							(In 10/100Mbs mode, total IFG doubled to 24 with
-							IFG2 increase to 10 for bug16930.)
-							(Bug16930 only applies to 6xxx series) */
+                                                         If CRS is detected during IFG2, then the
+                                                         interFrameSpacing timer is not reset and a frame
+                                                         is transmited once the timer expires.
+                                                         1000Mbs   = 4
+                                                         10/100Mbs = 10
+                                                         (In 10/100Mbs mode, total IFG doubled to 24 with
+                                                         IFG2 increase to 10 for bug16930.)
+                                                         (Bug16930 only applies to 6xxx series) */
 	uint64_t ifg1                         : 4;  /**< 2/3 of the interframe gap timing
-							If CRS is detected during IFG1, then the
-							interFrameSpacing timer is reset and a frame is
-							not transmited.
-							1000Mbs   = 8
-							10/100Mbs = 14
-							(In 10/100Mbs mode, total IFG doubled to 24 with
-							IFG1 increase to 14 for bug16930.)
-							(Bug16930 only applies to 6xxx series) */
+                                                         If CRS is detected during IFG1, then the
+                                                         interFrameSpacing timer is reset and a frame is
+                                                         not transmited.
+                                                         1000Mbs   = 8
+                                                         10/100Mbs = 14
+                                                         (In 10/100Mbs mode, total IFG doubled to 24 with
+                                                         IFG1 increase to 14 for bug16930.)
+                                                         (Bug16930 only applies to 6xxx series) */
 #else
 	uint64_t ifg1                         : 4;
 	uint64_t ifg2                         : 4;
@@ -4653,7 +4653,7 @@ union cvmx_agl_gmx_tx_int_en {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_22_63               : 42;
 	uint64_t ptp_lost                     : 2;  /**< A packet with a PTP request was not able to be
-							sent due to XSCOL */
+                                                         sent due to XSCOL */
 	uint64_t reserved_18_19               : 2;
 	uint64_t late_col                     : 2;  /**< TX Late Collision */
 	uint64_t reserved_14_15               : 2;
@@ -4741,7 +4741,7 @@ union cvmx_agl_gmx_tx_int_en {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_21_63               : 43;
 	uint64_t ptp_lost                     : 1;  /**< A packet with a PTP request was not able to be
-							sent due to XSCOL */
+                                                         sent due to XSCOL */
 	uint64_t reserved_17_19               : 3;
 	uint64_t late_col                     : 1;  /**< TX Late Collision */
 	uint64_t reserved_13_15               : 3;
@@ -4788,7 +4788,7 @@ union cvmx_agl_gmx_tx_int_reg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_22_63               : 42;
 	uint64_t ptp_lost                     : 2;  /**< A packet with a PTP request was not able to be
-							sent due to XSCOL */
+                                                         sent due to XSCOL */
 	uint64_t reserved_18_19               : 2;
 	uint64_t late_col                     : 2;  /**< TX Late Collision */
 	uint64_t reserved_14_15               : 2;
@@ -4876,7 +4876,7 @@ union cvmx_agl_gmx_tx_int_reg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_21_63               : 43;
 	uint64_t ptp_lost                     : 1;  /**< A packet with a PTP request was not able to be
-							sent due to XSCOL */
+                                                         sent due to XSCOL */
 	uint64_t reserved_17_19               : 3;
 	uint64_t late_col                     : 1;  /**< TX Late Collision */
 	uint64_t reserved_13_15               : 3;
@@ -4958,8 +4958,8 @@ union cvmx_agl_gmx_tx_lfsr {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t lfsr                         : 16; /**< The current state of the LFSR used to feed random
-							numbers to compute truncated binary exponential
-							backoff. */
+                                                         numbers to compute truncated binary exponential
+                                                         backoff. */
 #else
 	uint64_t lfsr                         : 16;
 	uint64_t reserved_16_63               : 48;
@@ -4998,8 +4998,8 @@ union cvmx_agl_gmx_tx_ovr_bp {
 	uint64_t en                           : 2;  /**< Per port Enable back pressure override */
 	uint64_t reserved_6_7                 : 2;
 	uint64_t bp                           : 2;  /**< Port BackPressure status to use
-							0=Port is available
-							1=Port should be back pressured */
+                                                         0=Port is available
+                                                         1=Port should be back pressured */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t ign_full                     : 2;  /**< Ignore the RX FIFO full when computing BP */
 #else
@@ -5019,8 +5019,8 @@ union cvmx_agl_gmx_tx_ovr_bp {
 	uint64_t en                           : 1;  /**< Per port Enable back pressure override */
 	uint64_t reserved_5_7                 : 3;
 	uint64_t bp                           : 1;  /**< Port BackPressure status to use
-							0=Port is available
-							1=Port should be back pressured */
+                                                         0=Port is available
+                                                         1=Port should be back pressured */
 	uint64_t reserved_1_3                 : 3;
 	uint64_t ign_full                     : 1;  /**< Ignore the RX FIFO full when computing BP */
 #else
@@ -5192,49 +5192,49 @@ union cvmx_agl_prtx_ctl {
 	struct cvmx_agl_prtx_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t drv_byp                      : 1;  /**< When set, bypass the compensation controller and use
-							DRV_NCTL and DRV_PCTL */
+                                                         DRV_NCTL and DRV_PCTL */
 	uint64_t reserved_62_62               : 1;
 	uint64_t cmp_pctl                     : 6;  /**< PCTL drive strength from the HW compensation controller */
 	uint64_t reserved_54_55               : 2;
 	uint64_t cmp_nctl                     : 6;  /**< NCTL drive strength from the HW compensation controller */
 	uint64_t reserved_46_47               : 2;
 	uint64_t drv_pctl                     : 6;  /**< PCTL drive strength to use in bypass mode.
-							Reset value of 13 is for 50 ohm termination */
+                                                         Reset value of 13 is for 50 ohm termination */
 	uint64_t reserved_38_39               : 2;
 	uint64_t drv_nctl                     : 6;  /**< NCTL drive strength to use in bypass mode.
-							Reset value of 12 is for 50 ohm termination */
+                                                         Reset value of 12 is for 50 ohm termination */
 	uint64_t reserved_31_31               : 1;
 	uint64_t clk_set                      : 7;  /**< The clock delay as determined by the on board HW DLL */
 	uint64_t clkrx_byp                    : 1;  /**< Bypass the RX clock delay setting
-							Skews RXC from RXD,RXCTL
-							By default, HW internally shifts the RXC clock
-							to sample RXD,RXCTL assuming clock and data and
-							sourced synchronously from the link partner. */
+                                                         Skews RXC from RXD,RXCTL
+                                                         By default, HW internally shifts the RXC clock
+                                                         to sample RXD,RXCTL assuming clock and data and
+                                                         sourced synchronously from the link partner. */
 	uint64_t clkrx_set                    : 7;  /**< RX clock delay setting to use in bypass mode
-							Skews RXC from RXD */
+                                                         Skews RXC from RXD */
 	uint64_t clktx_byp                    : 1;  /**< Bypass the TX clock delay setting
-							Skews TXC from TXD,TXCTL
-							By default, clock and data and sourced
-							synchronously. */
+                                                         Skews TXC from TXD,TXCTL
+                                                         By default, clock and data and sourced
+                                                         synchronously. */
 	uint64_t clktx_set                    : 7;  /**< TX clock delay setting to use in bypass mode
-							Skews TXC from TXD */
+                                                         Skews TXC from TXD */
 	uint64_t refclk_sel                   : 2;  /**< Select the refclk to use.  Normal RGMII specification requires a 125MHz oscillator.  In
-							order to reduce system cost, a 500MHz coprocessor clock can be divided down and remove the
-							requirements for the external oscillator.  Additionally, in some well defined systems, the
-							link partner may be able to source the RXC.  The RGMII would operate correctly in 1000Mbs
-							mode only.  (INTERNAL: Some programming magic could allow for 10/100 operation if
-							critical).
-							0 = RGMII REFCLK
-							1 = RGMII RXC (1000Mbs only) (INTERNAL: some programming restrictions apply for 10/100)
-							2 = divided coprocessor clk
-							3 = reserved */
+                                                         order to reduce system cost, a 500MHz coprocessor clock can be divided down and remove the
+                                                         requirements for the external oscillator.  Additionally, in some well defined systems, the
+                                                         link partner may be able to source the RXC.  The RGMII would operate correctly in 1000Mbs
+                                                         mode only.  (INTERNAL: Some programming magic could allow for 10/100 operation if
+                                                         critical).
+                                                         0 = RGMII REFCLK
+                                                         1 = RGMII RXC (1000Mbs only) (INTERNAL: some programming restrictions apply for 10/100)
+                                                         2 = divided coprocessor clk
+                                                         3 = reserved */
 	uint64_t reserved_5_5                 : 1;
 	uint64_t dllrst                       : 1;  /**< DLL Reset */
 	uint64_t comp                         : 1;  /**< Compensation Enable */
 	uint64_t enable                       : 1;  /**< Port Enable */
 	uint64_t clkrst                       : 1;  /**< DLL CLK Reset */
 	uint64_t mode                         : 1;  /**< Port Mode
-							0=RGMII */
+                                                         0=RGMII */
 #else
 	uint64_t mode                         : 1;
 	uint64_t clkrst                       : 1;
@@ -5263,9 +5263,9 @@ union cvmx_agl_prtx_ctl {
 	struct cvmx_agl_prtx_ctl_cn61xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t drv_byp                      : 1;  /**< Bypass the compensation controller and use
-							DRV_NCTL and DRV_PCTL
-							Note: the reset value was changed from pass1
-							2. */
+                                                         DRV_NCTL and DRV_PCTL
+                                                         Note: the reset value was changed from pass1
+                                                         to pass2. */
 	uint64_t reserved_62_62               : 1;
 	uint64_t cmp_pctl                     : 6;  /**< PCTL drive strength from the compensation ctl */
 	uint64_t reserved_54_55               : 2;
@@ -5275,33 +5275,33 @@ union cvmx_agl_prtx_ctl {
                                                          Reset value of 19 is for 50 ohm termination */
 	uint64_t reserved_38_39               : 2;
 	uint64_t drv_nctl                     : 6;  /**< NCTL drive strength to use in bypass mode
-							Reset value of 15 is for 50 ohm termination */
+                                                         Reset value of 15 is for 50 ohm termination */
 	uint64_t reserved_29_31               : 3;
 	uint64_t clk_set                      : 5;  /**< The clock delay as determined by the DLL */
 	uint64_t clkrx_byp                    : 1;  /**< Bypass the RX clock delay setting
-							Skews RXC from RXD,RXCTL
-							By default, HW internally shifts the RXC clock
-							to sample RXD,RXCTL assuming clock and data and
-							sourced synchronously from the link partner. */
+                                                         Skews RXC from RXD,RXCTL
+                                                         By default, HW internally shifts the RXC clock
+                                                         to sample RXD,RXCTL assuming clock and data and
+                                                         sourced synchronously from the link partner. */
 	uint64_t reserved_21_22               : 2;
 	uint64_t clkrx_set                    : 5;  /**< RX clock delay setting to use in bypass mode
-							Skews RXC from RXD */
+                                                         Skews RXC from RXD */
 	uint64_t clktx_byp                    : 1;  /**< Bypass the TX clock delay setting
-							Skews TXC from TXD,TXCTL
-							By default, clock and data and sourced
-							synchronously. */
+                                                         Skews TXC from TXD,TXCTL
+                                                         By default, clock and data and sourced
+                                                         synchronously. */
 	uint64_t reserved_13_14               : 2;
 	uint64_t clktx_set                    : 5;  /**< TX clock delay setting to use in bypass mode
-							Skews TXC from TXD */
+                                                         Skews TXC from TXD */
 	uint64_t reserved_5_7                 : 3;
 	uint64_t dllrst                       : 1;  /**< DLL Reset */
 	uint64_t comp                         : 1;  /**< Compensation Enable */
 	uint64_t enable                       : 1;  /**< Port Enable
-							Note: the reset value was changed from pass1
-							to pass2. */
+                                                         Note: the reset value was changed from pass1
+                                                         to pass2. */
 	uint64_t clkrst                       : 1;  /**< Clock Tree Reset */
 	uint64_t mode                         : 1;  /**< Port Mode
-							0=RGMII */
+                                                         0=RGMII */
 #else
 	uint64_t mode                         : 1;
 	uint64_t clkrst                       : 1;
@@ -5336,49 +5336,49 @@ union cvmx_agl_prtx_ctl {
 	struct cvmx_agl_prtx_ctl_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t drv_byp                      : 1;  /**< When set, bypass the compensation controller and use
-							DRV_NCTL and DRV_PCTL */
+                                                         DRV_NCTL and DRV_PCTL */
 	uint64_t reserved_61_62               : 2;
 	uint64_t cmp_pctl                     : 5;  /**< PCTL drive strength from the HW compensation controller */
 	uint64_t reserved_53_55               : 3;
 	uint64_t cmp_nctl                     : 5;  /**< NCTL drive strength from the HW compensation controller */
 	uint64_t reserved_45_47               : 3;
 	uint64_t drv_pctl                     : 5;  /**< PCTL drive strength to use in bypass mode.
-							Reset value of 13 is for 50 ohm termination */
+                                                         Reset value of 13 is for 50 ohm termination */
 	uint64_t reserved_37_39               : 3;
 	uint64_t drv_nctl                     : 5;  /**< NCTL drive strength to use in bypass mode.
-							Reset value of 12 is for 50 ohm termination */
+                                                         Reset value of 12 is for 50 ohm termination */
 	uint64_t reserved_31_31               : 1;
 	uint64_t clk_set                      : 7;  /**< The clock delay as determined by the on board HW DLL */
 	uint64_t clkrx_byp                    : 1;  /**< Bypass the RX clock delay setting
-							Skews RXC from RXD,RXCTL
-							By default, HW internally shifts the RXC clock
-							to sample RXD,RXCTL assuming clock and data and
-							sourced synchronously from the link partner. */
+                                                         Skews RXC from RXD,RXCTL
+                                                         By default, HW internally shifts the RXC clock
+                                                         to sample RXD,RXCTL assuming clock and data and
+                                                         sourced synchronously from the link partner. */
 	uint64_t clkrx_set                    : 7;  /**< RX clock delay setting to use in bypass mode
-							Skews RXC from RXD */
+                                                         Skews RXC from RXD */
 	uint64_t clktx_byp                    : 1;  /**< Bypass the TX clock delay setting
-							Skews TXC from TXD,TXCTL
-							By default, clock and data and sourced
-							synchronously. */
+                                                         Skews TXC from TXD,TXCTL
+                                                         By default, clock and data and sourced
+                                                         synchronously. */
 	uint64_t clktx_set                    : 7;  /**< TX clock delay setting to use in bypass mode
-							Skews TXC from TXD */
+                                                         Skews TXC from TXD */
 	uint64_t refclk_sel                   : 2;  /**< Select the refclk to use.  Normal RGMII specification requires a 125MHz oscillator.  In
-							order to reduce system cost, a 500MHz coprocessor clock can be divided down and remove the
-							requirements for the external oscillator.  Additionally, in some well defined systems, the
-							link partner may be able to source the RXC.  The RGMII would operate correctly in 1000Mbs
-							mode only.  (INTERNAL: Some programming magic could allow for 10/100 operation if
-							critical).
-							0 = RGMII REFCLK
-							1 = RGMII RXC (1000Mbs only) (INTERNAL: some programming restrictions apply for 10/100)
-							2 = divided coprocessor clk
-							3 = reserved */
+                                                         order to reduce system cost, a 500MHz coprocessor clock can be divided down and remove the
+                                                         requirements for the external oscillator.  Additionally, in some well defined systems, the
+                                                         link partner may be able to source the RXC.  The RGMII would operate correctly in 1000Mbs
+                                                         mode only.  (INTERNAL: Some programming magic could allow for 10/100 operation if
+                                                         critical).
+                                                         0 = RGMII REFCLK
+                                                         1 = RGMII RXC (1000Mbs only) (INTERNAL: some programming restrictions apply for 10/100)
+                                                         2 = divided coprocessor clk
+                                                         3 = reserved */
 	uint64_t reserved_5_5                 : 1;
 	uint64_t dllrst                       : 1;  /**< DLL Reset */
 	uint64_t comp                         : 1;  /**< Compensation Enable */
 	uint64_t enable                       : 1;  /**< Port Enable */
 	uint64_t clkrst                       : 1;  /**< DLL CLK Reset */
 	uint64_t mode                         : 1;  /**< Port Mode
-							0=RGMII */
+                                                         0=RGMII */
 #else
 	uint64_t mode                         : 1;
 	uint64_t clkrst                       : 1;

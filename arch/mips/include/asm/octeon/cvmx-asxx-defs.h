@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -53,206 +53,206 @@
 #define __CVMX_ASXX_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_GMII_RX_CLK_SET(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_GMII_RX_CLK_SET(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_ASXX_GMII_RX_CLK_SET(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_ASXX_GMII_RX_CLK_SET(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00011800B0000180ull);
 }
 #else
-#define CVMX_ASXX_GMII_RX_CLK_SET(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000180ull))
+#define CVMX_ASXX_GMII_RX_CLK_SET(offset) (CVMX_ADD_IO_SEG(0x00011800B0000180ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_GMII_RX_DAT_SET(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_GMII_RX_DAT_SET(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_ASXX_GMII_RX_DAT_SET(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_ASXX_GMII_RX_DAT_SET(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00011800B0000188ull);
 }
 #else
-#define CVMX_ASXX_GMII_RX_DAT_SET(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000188ull))
+#define CVMX_ASXX_GMII_RX_DAT_SET(offset) (CVMX_ADD_IO_SEG(0x00011800B0000188ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_INT_EN(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_INT_EN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_INT_EN(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000018ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_INT_EN(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000018ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_INT_EN(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000018ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_INT_EN(offset) (CVMX_ADD_IO_SEG(0x00011800B0000018ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_INT_REG(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_INT_REG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_INT_REG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000010ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_INT_REG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000010ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_INT_REG(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000010ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_INT_REG(offset) (CVMX_ADD_IO_SEG(0x00011800B0000010ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_MII_RX_DAT_SET(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_MII_RX_DAT_SET(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_ASXX_MII_RX_DAT_SET(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_ASXX_MII_RX_DAT_SET(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00011800B0000190ull);
 }
 #else
-#define CVMX_ASXX_MII_RX_DAT_SET(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000190ull))
+#define CVMX_ASXX_MII_RX_DAT_SET(offset) (CVMX_ADD_IO_SEG(0x00011800B0000190ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_PRT_LOOP(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_PRT_LOOP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_PRT_LOOP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000040ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_PRT_LOOP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000040ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_PRT_LOOP(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000040ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_PRT_LOOP(offset) (CVMX_ADD_IO_SEG(0x00011800B0000040ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RLD_BYPASS(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RLD_BYPASS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RLD_BYPASS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000248ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RLD_BYPASS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000248ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RLD_BYPASS(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000248ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RLD_BYPASS(offset) (CVMX_ADD_IO_SEG(0x00011800B0000248ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RLD_BYPASS_SETTING(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RLD_BYPASS_SETTING(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RLD_BYPASS_SETTING(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000250ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RLD_BYPASS_SETTING(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000250ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RLD_BYPASS_SETTING(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000250ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RLD_BYPASS_SETTING(offset) (CVMX_ADD_IO_SEG(0x00011800B0000250ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RLD_COMP(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RLD_COMP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RLD_COMP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000220ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RLD_COMP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000220ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RLD_COMP(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000220ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RLD_COMP(offset) (CVMX_ADD_IO_SEG(0x00011800B0000220ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RLD_DATA_DRV(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RLD_DATA_DRV(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RLD_DATA_DRV(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000218ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RLD_DATA_DRV(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000218ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RLD_DATA_DRV(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000218ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RLD_DATA_DRV(offset) (CVMX_ADD_IO_SEG(0x00011800B0000218ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RLD_FCRAM_MODE(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RLD_FCRAM_MODE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RLD_FCRAM_MODE(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000210ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RLD_FCRAM_MODE(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000210ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RLD_FCRAM_MODE(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000210ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RLD_FCRAM_MODE(offset) (CVMX_ADD_IO_SEG(0x00011800B0000210ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RLD_NCTL_STRONG(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RLD_NCTL_STRONG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RLD_NCTL_STRONG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000230ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RLD_NCTL_STRONG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000230ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RLD_NCTL_STRONG(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000230ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RLD_NCTL_STRONG(offset) (CVMX_ADD_IO_SEG(0x00011800B0000230ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RLD_NCTL_WEAK(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RLD_NCTL_WEAK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RLD_NCTL_WEAK(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000240ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RLD_NCTL_WEAK(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000240ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RLD_NCTL_WEAK(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000240ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RLD_NCTL_WEAK(offset) (CVMX_ADD_IO_SEG(0x00011800B0000240ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RLD_PCTL_STRONG(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RLD_PCTL_STRONG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RLD_PCTL_STRONG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000228ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RLD_PCTL_STRONG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000228ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RLD_PCTL_STRONG(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000228ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RLD_PCTL_STRONG(offset) (CVMX_ADD_IO_SEG(0x00011800B0000228ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RLD_PCTL_WEAK(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RLD_PCTL_WEAK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RLD_PCTL_WEAK(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000238ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RLD_PCTL_WEAK(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000238ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RLD_PCTL_WEAK(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000238ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RLD_PCTL_WEAK(offset) (CVMX_ADD_IO_SEG(0x00011800B0000238ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RLD_SETTING(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RLD_SETTING(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RLD_SETTING(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000258ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RLD_SETTING(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000258ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RLD_SETTING(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000258ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RLD_SETTING(offset) (CVMX_ADD_IO_SEG(0x00011800B0000258ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_ASXX_RX_CLK_SETX(unsigned long offset, unsigned long block_id)
@@ -270,63 +270,63 @@ static inline uint64_t CVMX_ASXX_RX_CLK_SETX(unsigned long offset, unsigned long
 #define CVMX_ASXX_RX_CLK_SETX(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800B0000020ull) + (((offset) & 3) + ((block_id) & 1) * 0x1000000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RX_PRT_EN(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RX_PRT_EN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RX_PRT_EN(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000000ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RX_PRT_EN(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000000ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RX_PRT_EN(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000000ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RX_PRT_EN(offset) (CVMX_ADD_IO_SEG(0x00011800B0000000ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RX_WOL(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RX_WOL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RX_WOL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000100ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RX_WOL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000100ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RX_WOL(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000100ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RX_WOL(offset) (CVMX_ADD_IO_SEG(0x00011800B0000100ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RX_WOL_MSK(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RX_WOL_MSK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RX_WOL_MSK(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000108ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RX_WOL_MSK(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000108ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RX_WOL_MSK(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000108ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RX_WOL_MSK(offset) (CVMX_ADD_IO_SEG(0x00011800B0000108ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RX_WOL_POWOK(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RX_WOL_POWOK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RX_WOL_POWOK(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000118ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RX_WOL_POWOK(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000118ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RX_WOL_POWOK(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000118ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RX_WOL_POWOK(offset) (CVMX_ADD_IO_SEG(0x00011800B0000118ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_RX_WOL_SIG(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_RX_WOL_SIG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_RX_WOL_SIG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000110ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_RX_WOL_SIG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000110ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_RX_WOL_SIG(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000110ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_RX_WOL_SIG(offset) (CVMX_ADD_IO_SEG(0x00011800B0000110ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_ASXX_TX_CLK_SETX(unsigned long offset, unsigned long block_id)
@@ -344,19 +344,19 @@ static inline uint64_t CVMX_ASXX_TX_CLK_SETX(unsigned long offset, unsigned long
 #define CVMX_ASXX_TX_CLK_SETX(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800B0000048ull) + (((offset) & 3) + ((block_id) & 1) * 0x1000000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_TX_COMP_BYP(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_TX_COMP_BYP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_TX_COMP_BYP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000068ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_TX_COMP_BYP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000068ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_TX_COMP_BYP(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000068ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_TX_COMP_BYP(offset) (CVMX_ADD_IO_SEG(0x00011800B0000068ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_ASXX_TX_HI_WATERX(unsigned long offset, unsigned long block_id)
@@ -374,19 +374,19 @@ static inline uint64_t CVMX_ASXX_TX_HI_WATERX(unsigned long offset, unsigned lon
 #define CVMX_ASXX_TX_HI_WATERX(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800B0000080ull) + (((offset) & 3) + ((block_id) & 1) * 0x1000000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_ASXX_TX_PRT_EN(unsigned long block_id)
+static inline uint64_t CVMX_ASXX_TX_PRT_EN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_ASXX_TX_PRT_EN(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000008ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_ASXX_TX_PRT_EN(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000008ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_ASXX_TX_PRT_EN(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000008ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_ASXX_TX_PRT_EN(offset) (CVMX_ADD_IO_SEG(0x00011800B0000008ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 
 /**
@@ -401,8 +401,8 @@ union cvmx_asxx_gmii_rx_clk_set {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
 	uint64_t setting                      : 5;  /**< Setting to place on the RXCLK (GMII receive clk)
-							delay line.  The intrinsic delay can range from
-							50ps to 80ps per tap. */
+                                                         delay line.  The intrinsic delay can range from
+                                                         50ps to 80ps per tap. */
 #else
 	uint64_t setting                      : 5;
 	uint64_t reserved_5_63                : 59;
@@ -426,8 +426,8 @@ union cvmx_asxx_gmii_rx_dat_set {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
 	uint64_t setting                      : 5;  /**< Setting to place on the RXD (GMII receive data)
-							delay lines.  The intrinsic delay can range from
-							50ps to 80ps per tap. */
+                                                         delay lines.  The intrinsic delay can range from
+                                                         50ps to 80ps per tap. */
 #else
 	uint64_t setting                      : 5;
 	uint64_t reserved_5_63                : 59;
@@ -545,8 +545,8 @@ union cvmx_asxx_mii_rx_dat_set {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
 	uint64_t setting                      : 5;  /**< Setting to place on the RXD (MII receive data)
-							delay lines.  The intrinsic delay can range from
-							50ps to 80ps per tap. */
+                                                         delay lines.  The intrinsic delay can range from
+                                                         50ps to 80ps per tap. */
 #else
 	uint64_t setting                      : 5;
 	uint64_t reserved_5_63                : 59;
@@ -569,19 +569,19 @@ union cvmx_asxx_prt_loop {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
 	uint64_t ext_loop                     : 4;  /**< External Loopback Enable
-							0 = No Loopback (TX FIFO is filled by RMGII)
-							1 = RX FIFO drives the TX FIFO
-								- GMX_PRT_CFG[DUPLEX] must be 1 (FullDuplex)
-								- GMX_PRT_CFG[SPEED] must be 1  (GigE speed)
-								- core clock > 250MHZ
-								- rxc must not deviate from the +-50ppm
-								- if txc>rxc, idle cycle may drop over time */
+                                                         0 = No Loopback (TX FIFO is filled by RMGII)
+                                                         1 = RX FIFO drives the TX FIFO
+                                                             - GMX_PRT_CFG[DUPLEX] must be 1 (FullDuplex)
+                                                             - GMX_PRT_CFG[SPEED] must be 1  (GigE speed)
+                                                             - core clock > 250MHZ
+                                                             - rxc must not deviate from the +-50ppm
+                                                             - if txc>rxc, idle cycle may drop over time */
 	uint64_t int_loop                     : 4;  /**< Internal Loopback Enable
-							0 = No Loopback (RX FIFO is filled by RMGII pins)
-							1 = TX FIFO drives the RX FIFO
-							Note, in internal loop-back mode, the RGMII link
-							status is not used (since there is no real PHY).
-							Software cannot use the inband status. */
+                                                         0 = No Loopback (RX FIFO is filled by RMGII pins)
+                                                         1 = TX FIFO drives the RX FIFO
+                                                         Note, in internal loop-back mode, the RGMII link
+                                                         status is not used (since there is no real PHY).
+                                                         Software cannot use the inband status. */
 #else
 	uint64_t int_loop                     : 4;
 	uint64_t ext_loop                     : 4;
@@ -592,23 +592,23 @@ union cvmx_asxx_prt_loop {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_7_63                : 57;
 	uint64_t ext_loop                     : 3;  /**< External Loopback Enable
-							0 = No Loopback (TX FIFO is filled by RMGII)
-							1 = RX FIFO drives the TX FIFO
-								- GMX_PRT_CFG[DUPLEX] must be 1 (FullDuplex)
-								- GMX_PRT_CFG[SPEED] must be 1  (GigE speed)
-								- core clock > 250MHZ
-								- rxc must not deviate from the +-50ppm
-								- if txc>rxc, idle cycle may drop over time */
+                                                         0 = No Loopback (TX FIFO is filled by RMGII)
+                                                         1 = RX FIFO drives the TX FIFO
+                                                             - GMX_PRT_CFG[DUPLEX] must be 1 (FullDuplex)
+                                                             - GMX_PRT_CFG[SPEED] must be 1  (GigE speed)
+                                                             - core clock > 250MHZ
+                                                             - rxc must not deviate from the +-50ppm
+                                                             - if txc>rxc, idle cycle may drop over time */
 	uint64_t reserved_3_3                 : 1;
 	uint64_t int_loop                     : 3;  /**< Internal Loopback Enable
-							0 = No Loopback (RX FIFO is filled by RMGII pins)
-							1 = TX FIFO drives the RX FIFO
-								- GMX_PRT_CFG[DUPLEX] must be 1 (FullDuplex)
-								- GMX_PRT_CFG[SPEED] must be 1  (GigE speed)
-								_CLK[CLK_CNT] must be 1
-							Note, in internal loop-back mode, the RGMII link
-							status is not used (since there is no real PHY).
-							Software cannot use the inband status. */
+                                                         0 = No Loopback (RX FIFO is filled by RMGII pins)
+                                                         1 = TX FIFO drives the RX FIFO
+                                                             - GMX_PRT_CFG[DUPLEX] must be 1 (FullDuplex)
+                                                             - GMX_PRT_CFG[SPEED] must be 1  (GigE speed)
+                                                             - GMX_TX_CLK[CLK_CNT] must be 1
+                                                         Note, in internal loop-back mode, the RGMII link
+                                                         status is not used (since there is no real PHY).
+                                                         Software cannot use the inband status. */
 #else
 	uint64_t int_loop                     : 3;
 	uint64_t reserved_3_3                 : 1;
@@ -637,7 +637,7 @@ union cvmx_asxx_rld_bypass {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
 	uint64_t bypass                       : 1;  /**< When set, the rld_dll setting is bypassed with
-							ASX_RLD_BYPASS_SETTING */
+                                                         ASX_RLD_BYPASS_SETTING */
 #else
 	uint64_t bypass                       : 1;
 	uint64_t reserved_1_63                : 63;
@@ -686,10 +686,10 @@ union cvmx_asxx_rld_comp {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_9_63                : 55;
 	uint64_t pctl                         : 5;  /**< PCTL Compensation Value
-							These bits reflect the computed compensation
-							values from the built-in compensation circuit. */
+                                                         These bits reflect the computed compensation
+                                                          values from the built-in compensation circuit. */
 	uint64_t nctl                         : 4;  /**< These bits reflect the computed compensation
-							values from the built-in compensation circuit. */
+                                                         values from the built-in compensation circuit. */
 #else
 	uint64_t nctl                         : 4;
 	uint64_t pctl                         : 5;
@@ -700,9 +700,9 @@ union cvmx_asxx_rld_comp {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
 	uint64_t pctl                         : 4;  /**< These bits reflect the computed compensation
-							values from the built-in compensation circuit. */
+                                                         values from the built-in compensation circuit. */
 	uint64_t nctl                         : 4;  /**< These bits reflect the computed compensation
-							values from the built-in compensation circuit. */
+                                                         values from the built-in compensation circuit. */
 #else
 	uint64_t nctl                         : 4;
 	uint64_t pctl                         : 4;
@@ -727,11 +727,11 @@ union cvmx_asxx_rld_data_drv {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
 	uint64_t pctl                         : 4;  /**< These bits specify a driving strength (positive
-							integer) for the RLD I/Os when the built-in
-							compensation circuit is bypassed. */
+                                                         integer) for the RLD I/Os when the built-in
+                                                         compensation circuit is bypassed. */
 	uint64_t nctl                         : 4;  /**< These bits specify a driving strength (positive
-							integer) for the RLD I/Os when the built-in
-							compensation circuit is bypassed. */
+                                                         integer) for the RLD I/Os when the built-in
+                                                         compensation circuit is bypassed. */
 #else
 	uint64_t nctl                         : 4;
 	uint64_t pctl                         : 4;
@@ -757,8 +757,8 @@ union cvmx_asxx_rld_fcram_mode {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
 	uint64_t mode                         : 1;  /**< Memory Mode
-							- 0: RLDRAM
-							- 1: FCRAM */
+                                                         - 0: RLDRAM
+                                                         - 1: FCRAM */
 #else
 	uint64_t mode                         : 1;
 	uint64_t reserved_1_63                : 63;
@@ -978,9 +978,9 @@ union cvmx_asxx_rx_prt_en {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
 	uint64_t prt_en                       : 4;  /**< Port enable.  Must be set for Octane to receive
-							RMGII traffic.  When this bit clear on a given
-							port, then the all RGMII cycles will appear as
-							inter-frame cycles. */
+                                                         RMGII traffic.  When this bit clear on a given
+                                                         port, then the all RGMII cycles will appear as
+                                                         inter-frame cycles. */
 #else
 	uint64_t prt_en                       : 4;
 	uint64_t reserved_4_63                : 60;
@@ -990,9 +990,9 @@ union cvmx_asxx_rx_prt_en {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
 	uint64_t prt_en                       : 3;  /**< Port enable.  Must be set for Octane to receive
-							RMGII traffic.  When this bit clear on a given
-							port, then the all RGMII cycles will appear as
-							inter-frame cycles. */
+                                                         RMGII traffic.  When this bit clear on a given
+                                                         port, then the all RGMII cycles will appear as
+                                                         inter-frame cycles. */
 #else
 	uint64_t prt_en                       : 3;
 	uint64_t reserved_3_63                : 61;
@@ -1243,13 +1243,13 @@ union cvmx_asxx_tx_hi_waterx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
 	uint64_t mark                         : 4;  /**< TX FIFO HiWatermark to stall GMX
-							Value of 0 maps to 16
-							Reset value changed from 10 in pass1
-							Pass1 settings (assuming 125 tclk)
-							 - 325-375: 12
-							 - 375-437: 11
-							 - 437-550: 10
-							 - 550-687:  9 */
+                                                         Value of 0 maps to 16
+                                                         Reset value changed from 10 in pass1
+                                                         Pass1 settings (assuming 125 tclk)
+                                                         - 325-375: 12
+                                                         - 375-437: 11
+                                                         - 437-550: 10
+                                                         - 550-687:  9 */
 #else
 	uint64_t mark                         : 4;
 	uint64_t reserved_4_63                : 60;
@@ -1259,7 +1259,7 @@ union cvmx_asxx_tx_hi_waterx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
 	uint64_t mark                         : 3;  /**< TX FIFO HiWatermark to stall GMX
-							Value 0 maps to 8. */
+                                                         Value 0 maps to 8. */
 #else
 	uint64_t mark                         : 3;
 	uint64_t reserved_3_63                : 61;
@@ -1286,9 +1286,9 @@ union cvmx_asxx_tx_prt_en {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
 	uint64_t prt_en                       : 4;  /**< Port enable.  Must be set for Octane to send
-							RMGII traffic.   When this bit clear on a given
-							port, then all RGMII cycles will appear as
-							inter-frame cycles. */
+                                                         RMGII traffic.   When this bit clear on a given
+                                                         port, then all RGMII cycles will appear as
+                                                         inter-frame cycles. */
 #else
 	uint64_t prt_en                       : 4;
 	uint64_t reserved_4_63                : 60;
@@ -1298,9 +1298,9 @@ union cvmx_asxx_tx_prt_en {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
 	uint64_t prt_en                       : 3;  /**< Port enable.  Must be set for Octane to send
-							RMGII traffic.   When this bit clear on a given
-							port, then all RGMII cycles will appear as
-							inter-frame cycles. */
+                                                         RMGII traffic.   When this bit clear on a given
+                                                         port, then all RGMII cycles will appear as
+                                                         inter-frame cycles. */
 #else
 	uint64_t prt_en                       : 3;
 	uint64_t reserved_3_63                : 61;

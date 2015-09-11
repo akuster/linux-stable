@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -56,7 +56,7 @@
 #define CVMX_IOBP_BIST_STATUS CVMX_IOBP_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_IOBP_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBP_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0010018ull);
 }
@@ -67,7 +67,7 @@ static inline uint64_t CVMX_IOBP_BIST_STATUS_FUNC(void)
 #define CVMX_IOBP_CREDITS CVMX_IOBP_CREDITS_FUNC()
 static inline uint64_t CVMX_IOBP_CREDITS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBP_CREDITS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0010028ull);
 }
@@ -78,7 +78,7 @@ static inline uint64_t CVMX_IOBP_CREDITS_FUNC(void)
 #define CVMX_IOBP_ECC CVMX_IOBP_ECC_FUNC()
 static inline uint64_t CVMX_IOBP_ECC_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBP_ECC not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0010010ull);
 }
@@ -89,7 +89,7 @@ static inline uint64_t CVMX_IOBP_ECC_FUNC(void)
 #define CVMX_IOBP_INT_SUM CVMX_IOBP_INT_SUM_FUNC()
 static inline uint64_t CVMX_IOBP_INT_SUM_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBP_INT_SUM not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0010020ull);
 }
@@ -100,7 +100,7 @@ static inline uint64_t CVMX_IOBP_INT_SUM_FUNC(void)
 #define CVMX_IOBP_PP_BIST_STATUS CVMX_IOBP_PP_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_IOBP_PP_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBP_PP_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0010700ull);
 }
@@ -145,7 +145,10 @@ union cvmx_iobp_bist_status {
 	uint64_t reserved_11_63               : 53;
 #endif
 	} s;
+	struct cvmx_iobp_bist_status_s        cn73xx;
 	struct cvmx_iobp_bist_status_s        cn78xx;
+	struct cvmx_iobp_bist_status_s        cn78xxp2;
+	struct cvmx_iobp_bist_status_s        cnf75xx;
 };
 typedef union cvmx_iobp_bist_status cvmx_iobp_bist_status_t;
 
@@ -178,7 +181,10 @@ union cvmx_iobp_credits {
 	uint64_t reserved_31_63               : 33;
 #endif
 	} s;
+	struct cvmx_iobp_credits_s            cn73xx;
 	struct cvmx_iobp_credits_s            cn78xx;
+	struct cvmx_iobp_credits_s            cn78xxp2;
+	struct cvmx_iobp_credits_s            cnf75xx;
 };
 typedef union cvmx_iobp_credits cvmx_iobp_credits_t;
 
@@ -227,7 +233,10 @@ union cvmx_iobp_ecc {
 	uint64_t reserved_22_63               : 42;
 #endif
 	} s;
+	struct cvmx_iobp_ecc_s                cn73xx;
 	struct cvmx_iobp_ecc_s                cn78xx;
+	struct cvmx_iobp_ecc_s                cn78xxp2;
+	struct cvmx_iobp_ecc_s                cnf75xx;
 };
 typedef union cvmx_iobp_ecc cvmx_iobp_ecc_t;
 
@@ -312,7 +321,10 @@ union cvmx_iobp_int_sum {
 	uint64_t reserved_46_63               : 18;
 #endif
 	} s;
+	struct cvmx_iobp_int_sum_s            cn73xx;
 	struct cvmx_iobp_int_sum_s            cn78xx;
+	struct cvmx_iobp_int_sum_s            cn78xxp2;
+	struct cvmx_iobp_int_sum_s            cnf75xx;
 };
 typedef union cvmx_iobp_int_sum cvmx_iobp_int_sum_t;
 
@@ -335,7 +347,10 @@ union cvmx_iobp_pp_bist_status {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_iobp_pp_bist_status_s     cn73xx;
 	struct cvmx_iobp_pp_bist_status_s     cn78xx;
+	struct cvmx_iobp_pp_bist_status_s     cn78xxp2;
+	struct cvmx_iobp_pp_bist_status_s     cnf75xx;
 };
 typedef union cvmx_iobp_pp_bist_status cvmx_iobp_pp_bist_status_t;
 

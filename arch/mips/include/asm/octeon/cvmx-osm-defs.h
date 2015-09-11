@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -66,68 +66,220 @@ static inline uint64_t CVMX_OSM_ASE_RATE_LIMIT_CTRL_FUNC(void)
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OSM_BANKX_CTRL(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
-		cvmx_warn("CVMX_OSM_BANKX_CTRL(%lu) is invalid on this chip\n", offset);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return CVMX_ADD_IO_SEG(0x0001DC0000001000ull) + ((offset) & 31) * 8;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return CVMX_ADD_IO_SEG(0x00011800DC001000ull) + ((offset) & 63) * 8;
+			break;
+	}
+	cvmx_warn("CVMX_OSM_BANKX_CTRL (offset = %lu) not supported on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00011800DC001000ull) + ((offset) & 63) * 8;
 }
 #else
-#define CVMX_OSM_BANKX_CTRL(offset) (CVMX_ADD_IO_SEG(0x00011800DC001000ull) + ((offset) & 63) * 8)
+static inline uint64_t CVMX_OSM_BANKX_CTRL(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000001000ull) + (offset) * 8;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC001000ull) + (offset) * 8;
+	}
+	return CVMX_ADD_IO_SEG(0x00011800DC001000ull) + (offset) * 8;
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_OSM_CLK_CFG CVMX_OSM_CLK_CFG_FUNC()
+static inline uint64_t CVMX_OSM_CLK_CFG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX)))
+		cvmx_warn("CVMX_OSM_CLK_CFG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001DC0000000028ull);
+}
+#else
+#define CVMX_OSM_CLK_CFG (CVMX_ADD_IO_SEG(0x0001DC0000000028ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_OSM_ECC_CTRL CVMX_OSM_ECC_CTRL_FUNC()
 static inline uint64_t CVMX_OSM_ECC_CTRL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_OSM_ECC_CTRL not supported on this chip\n");
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000000020ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC000020ull);
+			break;
+	}
+	cvmx_warn("CVMX_OSM_ECC_CTRL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800DC000020ull);
 }
 #else
-#define CVMX_OSM_ECC_CTRL (CVMX_ADD_IO_SEG(0x00011800DC000020ull))
+#define CVMX_OSM_ECC_CTRL CVMX_OSM_ECC_CTRL_FUNC()
+static inline uint64_t CVMX_OSM_ECC_CTRL_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000000020ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC000020ull);
+	}
+	return CVMX_ADD_IO_SEG(0x00011800DC000020ull);
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_OSM_ECO CVMX_OSM_ECO_FUNC()
+static inline uint64_t CVMX_OSM_ECO_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000003000ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC003000ull);
+			break;
+	}
+	cvmx_warn("CVMX_OSM_ECO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011800DC003000ull);
+}
+#else
+#define CVMX_OSM_ECO CVMX_OSM_ECO_FUNC()
+static inline uint64_t CVMX_OSM_ECO_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000003000ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC003000ull);
+	}
+	return CVMX_ADD_IO_SEG(0x00011800DC003000ull);
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_OSM_INT_INFO_ADDR CVMX_OSM_INT_INFO_ADDR_FUNC()
 static inline uint64_t CVMX_OSM_INT_INFO_ADDR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_OSM_INT_INFO_ADDR not supported on this chip\n");
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000000018ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC000018ull);
+			break;
+	}
+	cvmx_warn("CVMX_OSM_INT_INFO_ADDR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800DC000018ull);
 }
 #else
-#define CVMX_OSM_INT_INFO_ADDR (CVMX_ADD_IO_SEG(0x00011800DC000018ull))
+#define CVMX_OSM_INT_INFO_ADDR CVMX_OSM_INT_INFO_ADDR_FUNC()
+static inline uint64_t CVMX_OSM_INT_INFO_ADDR_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000000018ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC000018ull);
+	}
+	return CVMX_ADD_IO_SEG(0x00011800DC000018ull);
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_OSM_INT_INFO_ECC CVMX_OSM_INT_INFO_ECC_FUNC()
 static inline uint64_t CVMX_OSM_INT_INFO_ECC_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_OSM_INT_INFO_ECC not supported on this chip\n");
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000000010ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC000010ull);
+			break;
+	}
+	cvmx_warn("CVMX_OSM_INT_INFO_ECC not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800DC000010ull);
 }
 #else
-#define CVMX_OSM_INT_INFO_ECC (CVMX_ADD_IO_SEG(0x00011800DC000010ull))
+#define CVMX_OSM_INT_INFO_ECC CVMX_OSM_INT_INFO_ECC_FUNC()
+static inline uint64_t CVMX_OSM_INT_INFO_ECC_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000000010ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC000010ull);
+	}
+	return CVMX_ADD_IO_SEG(0x00011800DC000010ull);
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_OSM_INT_STAT CVMX_OSM_INT_STAT_FUNC()
 static inline uint64_t CVMX_OSM_INT_STAT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_OSM_INT_STAT not supported on this chip\n");
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000000008ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC000008ull);
+			break;
+	}
+	cvmx_warn("CVMX_OSM_INT_STAT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800DC000008ull);
 }
 #else
-#define CVMX_OSM_INT_STAT (CVMX_ADD_IO_SEG(0x00011800DC000008ull))
+#define CVMX_OSM_INT_STAT CVMX_OSM_INT_STAT_FUNC()
+static inline uint64_t CVMX_OSM_INT_STAT_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000000008ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC000008ull);
+	}
+	return CVMX_ADD_IO_SEG(0x00011800DC000008ull);
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OSM_MEMX_BIST_STATUS(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7)))))
-		cvmx_warn("CVMX_OSM_MEMX_BIST_STATUS(%lu) is invalid on this chip\n", offset);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001DC0000002000ull) + ((offset) & 1) * 8;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 7))
+				return CVMX_ADD_IO_SEG(0x00011800DC002000ull) + ((offset) & 7) * 8;
+			break;
+	}
+	cvmx_warn("CVMX_OSM_MEMX_BIST_STATUS (offset = %lu) not supported on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00011800DC002000ull) + ((offset) & 7) * 8;
 }
 #else
-#define CVMX_OSM_MEMX_BIST_STATUS(offset) (CVMX_ADD_IO_SEG(0x00011800DC002000ull) + ((offset) & 7) * 8)
+static inline uint64_t CVMX_OSM_MEMX_BIST_STATUS(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001DC0000002000ull) + (offset) * 8;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800DC002000ull) + (offset) * 8;
+	}
+	return CVMX_ADD_IO_SEG(0x00011800DC002000ull) + (offset) * 8;
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_OSM_MEMX_DX(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 16383))))))
+		cvmx_warn("CVMX_OSM_MEMX_DX(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001DC0800000000ull) + (((offset) & 3) + ((block_id) & 16383) * 0x4ull) * 8;
+}
+#else
+#define CVMX_OSM_MEMX_DX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001DC0800000000ull) + (((offset) & 3) + ((block_id) & 16383) * 0x4ull) * 8)
 #endif
 
 /**
@@ -161,6 +313,7 @@ union cvmx_osm_ase_rate_limit_ctrl {
 #endif
 	} s;
 	struct cvmx_osm_ase_rate_limit_ctrl_s cn78xx;
+	struct cvmx_osm_ase_rate_limit_ctrl_s cn78xxp2;
 };
 typedef union cvmx_osm_ase_rate_limit_ctrl cvmx_osm_ase_rate_limit_ctrl_t;
 
@@ -191,9 +344,32 @@ union cvmx_osm_bankx_ctrl {
 	uint64_t reserved_3_63                : 61;
 #endif
 	} s;
+	struct cvmx_osm_bankx_ctrl_s          cn73xx;
 	struct cvmx_osm_bankx_ctrl_s          cn78xx;
+	struct cvmx_osm_bankx_ctrl_s          cn78xxp2;
 };
 typedef union cvmx_osm_bankx_ctrl cvmx_osm_bankx_ctrl_t;
+
+/**
+ * cvmx_osm_clk_cfg
+ *
+ * This is the general configuration register for the OSM block.
+ *
+ */
+union cvmx_osm_clk_cfg {
+	uint64_t u64;
+	struct cvmx_osm_clk_cfg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_1_63                : 63;
+	uint64_t clken                        : 1;  /**< Enable OSM clocks. Clear to disable clocking to disallow OSM accesses and save power. */
+#else
+	uint64_t clken                        : 1;
+	uint64_t reserved_1_63                : 63;
+#endif
+	} s;
+	struct cvmx_osm_clk_cfg_s             cn73xx;
+};
+typedef union cvmx_osm_clk_cfg cvmx_osm_clk_cfg_t;
 
 /**
  * cvmx_osm_ecc_ctrl
@@ -218,9 +394,36 @@ union cvmx_osm_ecc_ctrl {
 	uint64_t reserved_3_63                : 61;
 #endif
 	} s;
+	struct cvmx_osm_ecc_ctrl_s            cn73xx;
 	struct cvmx_osm_ecc_ctrl_s            cn78xx;
+	struct cvmx_osm_ecc_ctrl_s            cn78xxp2;
 };
 typedef union cvmx_osm_ecc_ctrl cvmx_osm_ecc_ctrl_t;
+
+/**
+ * cvmx_osm_eco
+ *
+ * Added in pass 2.
+ *
+ */
+union cvmx_osm_eco {
+	uint64_t u64;
+	struct cvmx_osm_eco_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t eco_ro                       : 8;  /**< INTERNAL: Reserved for ECO usage. */
+	uint64_t eco_rw                       : 8;  /**< INTERNAL: Reserved for ECO usage. */
+#else
+	uint64_t eco_rw                       : 8;
+	uint64_t eco_ro                       : 8;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_osm_eco_s                 cn73xx;
+	struct cvmx_osm_eco_s                 cn78xx;
+	struct cvmx_osm_eco_s                 cn78xxp2;
+};
+typedef union cvmx_osm_eco cvmx_osm_eco_t;
 
 /**
  * cvmx_osm_int_info_addr
@@ -245,7 +448,9 @@ union cvmx_osm_int_info_addr {
 	uint64_t reserved_35_63               : 29;
 #endif
 	} s;
+	struct cvmx_osm_int_info_addr_s       cn73xx;
 	struct cvmx_osm_int_info_addr_s       cn78xx;
+	struct cvmx_osm_int_info_addr_s       cn78xxp2;
 };
 typedef union cvmx_osm_int_info_addr cvmx_osm_int_info_addr_t;
 
@@ -256,7 +461,7 @@ typedef union cvmx_osm_int_info_addr cvmx_osm_int_info_addr_t;
  * outstanding ECC errors indicated in OSM_INT_STAT and a new ECC error arrives. Prioritization
  * for multiple events occurring at the same time is indicated by the OSM_ECC_ERR_SOURCE_E
  * enumeration; highest encoded value has highest priority. For current bank assignment, see
- * OSM_BANK(0..63)_CTRL.
+ * OSM_BANK()_CTRL.
  */
 union cvmx_osm_int_info_ecc {
 	uint64_t u64;
@@ -273,7 +478,9 @@ union cvmx_osm_int_info_ecc {
 	uint64_t reserved_37_63               : 27;
 #endif
 	} s;
+	struct cvmx_osm_int_info_ecc_s        cn73xx;
 	struct cvmx_osm_int_info_ecc_s        cn78xx;
+	struct cvmx_osm_int_info_ecc_s        cn78xxp2;
 };
 typedef union cvmx_osm_int_info_ecc cvmx_osm_int_info_ecc_t;
 
@@ -283,7 +490,7 @@ typedef union cvmx_osm_int_info_ecc cvmx_osm_int_info_ecc_t;
  * For debugging output for ECC DBE/SBEs, see OSM_INT_INFO_ECC. Address errors happen when a
  * requester attempts to access a bank that was not assigned to it. For example, Bank 0 is
  * assigned to HFA, and HNA attempts to access it. For debugging output for address errors, see
- * OSM_INT_INFO_ADDR. For current bank assignment, see OSM_BANK(0..63)_CTRL.
+ * OSM_INT_INFO_ADDR. For current bank assignment, see OSM_BANK()_CTRL.
  */
 union cvmx_osm_int_stat {
 	uint64_t u64;
@@ -340,23 +547,45 @@ union cvmx_osm_int_stat {
 	uint64_t reserved_23_63               : 41;
 #endif
 	} s;
+	struct cvmx_osm_int_stat_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_18_63               : 46;
+	uint64_t hna_addr_err                 : 1;  /**< HNA port illegal bank address error. */
+	uint64_t dfa_addr_err                 : 1;  /**< HFA port illegal bank address error. */
+	uint64_t reserved_4_15                : 12;
+	uint64_t hna_sbe                      : 1;  /**< HNA port single-bit error. */
+	uint64_t hna_dbe                      : 1;  /**< HNA port double-bit error. */
+	uint64_t dfa_sbe                      : 1;  /**< HFA port single-bit error. */
+	uint64_t dfa_dbe                      : 1;  /**< HFA port double-bit error. */
+#else
+	uint64_t dfa_dbe                      : 1;
+	uint64_t dfa_sbe                      : 1;
+	uint64_t hna_dbe                      : 1;
+	uint64_t hna_sbe                      : 1;
+	uint64_t reserved_4_15                : 12;
+	uint64_t dfa_addr_err                 : 1;
+	uint64_t hna_addr_err                 : 1;
+	uint64_t reserved_18_63               : 46;
+#endif
+	} cn73xx;
 	struct cvmx_osm_int_stat_s            cn78xx;
+	struct cvmx_osm_int_stat_s            cn78xxp2;
 };
 typedef union cvmx_osm_int_stat cvmx_osm_int_stat_t;
 
 /**
  * cvmx_osm_mem#_bist_status
  *
- * Results from BIST runs of OSM's memories. OSM_MEM is instantiated 8 times, each instance of
- * OSM_MEM has its own BIST_STATUS. Each OSM_MEM contains 32 BIST memory instances, so there are
- * 32 status bits per register.
+ * Results from BIST runs of OSM's memories. OSM_MEM is instantiated 2 times, each instance of
+ * OSM_MEM has its own BIST_STATUS. Each OSM_MEM contains 1 BIST memory instances, so there are
+ * 1 status bit per register.
  */
 union cvmx_osm_memx_bist_status {
 	uint64_t u64;
 	struct cvmx_osm_memx_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t bist_status                  : 32; /**< BIST status of BIST memory instance 31..0 in bits 31..0 respectively.
+	uint64_t bist_status                  : 32; /**< BIST status with one bit corresponding to each BIST memory instance.
                                                          INTERNAL: Each BIST Memory Instance (1 BIST engine + multiple physical memories) contains
                                                          2 physical memories. */
 #else
@@ -364,8 +593,42 @@ union cvmx_osm_memx_bist_status {
 	uint64_t reserved_32_63               : 32;
 #endif
 	} s;
+	struct cvmx_osm_memx_bist_status_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_1_63                : 63;
+	uint64_t bist_status                  : 1;  /**< BIST status with one bit corresponding to each BIST memory instance.
+                                                         INTERNAL: Each BIST Memory Instance (1 BIST engine + multiple physical memories) contains
+                                                         2 physical memories. */
+#else
+	uint64_t bist_status                  : 1;
+	uint64_t reserved_1_63                : 63;
+#endif
+	} cn73xx;
 	struct cvmx_osm_memx_bist_status_s    cn78xx;
+	struct cvmx_osm_memx_bist_status_s    cn78xxp2;
 };
 typedef union cvmx_osm_memx_bist_status cvmx_osm_memx_bist_status_t;
+
+/**
+ * cvmx_osm_mem#_d#
+ */
+union cvmx_osm_memx_dx {
+	uint64_t u64;
+	struct cvmx_osm_memx_dx_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t mem                          : 64; /**< OSM memory. THe last index in this memory corresponds to the row of data stored in OSM:
+                                                         D(0) = Data<63:0>.
+                                                         D(1) = Data<127:64>.
+                                                         D(2) = Data<191:128>.
+                                                         D(3) <63> = RAZ.
+                                                         D(3) <62:54> = ECC.(RO)
+                                                         D(3) <53:0> = Data<245:192>. */
+#else
+	uint64_t mem                          : 64;
+#endif
+	} s;
+	struct cvmx_osm_memx_dx_s             cn73xx;
+};
+typedef union cvmx_osm_memx_dx cvmx_osm_memx_dx_t;
 
 #endif

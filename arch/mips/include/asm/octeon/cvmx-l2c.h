@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2011  Cavium, Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium, Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -43,7 +43,7 @@
  * Interface to the Level 2 Cache (L2C) control, measurement, and debugging
  * facilities.
  *
- * <hr>$Revision: 107050 $<hr>
+ * <hr>$Revision: 115982 $<hr>
  *
  */
 
@@ -64,17 +64,21 @@
 #define CVMX_L2C_MAX_PCNT     4
 
 /* Number of L2C Tag-and-data sections (TADs) that are connected to LMC. */
-#define CVMX_L2C_TADS  ((OCTEON_IS_MODEL(OCTEON_CN68XX)) ? 4 : \
-			(OCTEON_IS_MODEL(OCTEON_CN78XX)) ? 8 : 1)
+#define CVMX_L2C_TADS  ((OCTEON_IS_MODEL(OCTEON_CN68XX) \
+		         || OCTEON_IS_MODEL(OCTEON_CN73XX) \
+			 || OCTEON_IS_MODEL(OCTEON_CNF75XX)) ? 4 : \
+				(OCTEON_IS_MODEL(OCTEON_CN78XX)) ? 8 : 1)
 /* Number of L2C IOBs connected to LMC. */
 #define CVMX_L2C_IOBS  ((OCTEON_IS_MODEL(OCTEON_CN68XX) \
-			 || OCTEON_IS_MODEL(OCTEON_CN78XX)) ? 2 : 1)
+			 || OCTEON_IS_MODEL(OCTEON_CN78XX) \
+			 || OCTEON_IS_MODEL(OCTEON_CN73XX) \
+			 || OCTEON_IS_MODEL(OCTEON_CNF75XX)) ? 2 : 1)
 
 /* Defines for Virtualizations, valid only from Octeon II onwards. */
 #define CVMX_L2C_VRT_MAX_VIRTID_ALLOWED ((OCTEON_IS_OCTEON2()) ? 64 : 0)
 #define CVMX_L2C_MAX_MEMSZ_ALLOWED (((OCTEON_IS_OCTEON2() \
 				      || OCTEON_IS_OCTEON3()) \
-				    ? 32 : 0) * (CVMX_L2C_TADS)) /* FIXME for O3 */
+				    ? 32 : 0) * (CVMX_L2C_TADS))
 
   /*------------*/
   /*  TYPEDEFS  */

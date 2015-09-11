@@ -82,7 +82,7 @@
  * internal cycle counter to completely eliminate any causes of
  * bus traffic.
  *
- * <hr> $Revision: 113619 $ <hr>
+ * <hr> $Revision: 114431 $ <hr>
  */
 
 #ifndef __CVMX_CMD_QUEUE_H__
@@ -294,7 +294,7 @@ static inline int __cvmx_cmd_queue_get_node(cvmx_cmd_queue_id_t queue_id)
  * time as us.
  *
  * @param queue_id Queue ID to lock
- * @param qptr     Pointer to the queue's global state
+ * 
  */
 static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id)
 {
@@ -318,12 +318,12 @@ static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id)
 		      "beqz    %[ticket], 1b\n"
 		      " lld    %[ticket], %[now_serving]\n"
 		      "2:\n"
-                      /* Wait until 'now_serving == ticket' with LL/PAUSE */
-                      "beq    %[ticket], %[my_ticket], 3f\n"
-                      " nop\n pause\n"  /* PAUSE is not allowed in delay slot */
-                      "b      2b\n"     /* check now_serving again */
-                      " lld    %[ticket], %[now_serving]\n"
-	              "3:\n"
+		      /* Wait until 'now_serving == ticket' with LL/PAUSE */
+		      "beq    %[ticket], %[my_ticket], 3f\n"
+		      " nop\n pause\n"	/* PAUSE is not allowed in delay slot */
+		      "b      2b\n"	/* check now_serving again */
+		      " lld    %[ticket], %[now_serving]\n"
+		      "3:\n"
 		      ".set pop\n"
                       : [ticket_ptr] "=m"(lock_ptr->ticket),
                       [now_serving] "=m"(lock_ptr->now_serving),
@@ -337,7 +337,8 @@ static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id)
  * @INTERNAL
  * Unlock the queue, flushing all writes.
  *
- * @param qptr   Queue to unlock
+ * @param queue_id Queue ID to lock
+ * 
  */
 static inline void __cvmx_cmd_queue_unlock(cvmx_cmd_queue_id_t queue_id)
 {
@@ -361,7 +362,7 @@ static inline void __cvmx_cmd_queue_unlock(cvmx_cmd_queue_id_t queue_id)
 	ns = (*ns_ptr) + 1;
 	(*ns_ptr) = ns;
 #endif
-	CVMX_SYNCWS;            /* nudge out the unlock. */
+	CVMX_SYNCWS;		/* nudge out the unlock. */
 }
 
 /**
@@ -426,7 +427,7 @@ __cvmx_cmd_queue_get_state(cvmx_cmd_queue_id_t queue_id)
  */
 static inline cvmx_cmd_queue_result_t
 cvmx_cmd_queue_write(cvmx_cmd_queue_id_t queue_id, bool use_locking,
-		    int cmd_count, const uint64_t *cmds)
+		     int cmd_count, const uint64_t *cmds)
 {
 	cvmx_cmd_queue_result_t ret = CVMX_CMD_QUEUE_SUCCESS;
 	uint64_t *cmd_ptr;

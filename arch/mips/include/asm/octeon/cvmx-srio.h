@@ -573,6 +573,31 @@ int cvmx_srio_physical_unmap(uint64_t physical_address, uint64_t size);
  */
 int cvmx_srio_omsg_desc(uint64_t port, cvmx_buf_ptr_t * buf_ptr, cvmx_srio_tx_message_header_t * desc_ptr);
 
+extern void cvmx_srio_set_pkind(int srio_link, int index,int pkind);
+
+/**
+ * Convert an ipd port number to its sRIO link number per SoC model.
+ *
+ * @param ipd_port Ipd port number to convert
+ *
+ * @return Srio link number
+ */
+extern int cvmx_srio_ipd2srio(int ipd_port);
+
+/**
+ * Get our device ID
+ *
+ * @return Device ID, or negative number on error
+ */
+extern int cvmx_srio_get_did(int srio_port);
+
+/**
+ * Set our device ID
+ *
+ * @return Device ID, or negative number on error
+ */
+extern int cvmx_srio_set_did(int srio_port, int did);
+
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
 }

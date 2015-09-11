@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -915,6 +915,52 @@ typedef union {
 	} cn38xx;
 } cvmx_wqe_word1_t;
 
+typedef union {
+	uint64_t u64;
+	struct {
+		CVMX_BITFIELD_FIELD(uint64_t rsvd_0:8,
+		/**
+		 * NVMe queue manager hardware error info.
+		 */
+		CVMX_BITFIELD_FIELD(uint64_t hwerr:8,
+		CVMX_BITFIELD_FIELD(uint64_t rsvd_1:24,
+		/**
+		 * Submission queue ID number
+		 */
+		CVMX_BITFIELD_FIELD(uint64_t sqid:8,
+		CVMX_BITFIELD_FIELD(uint64_t rsvd_2:4,
+		/**
+		 * Virtual function number
+		 */
+		CVMX_BITFIELD_FIELD(uint64_t vfnum:12,
+		))))));
+	};
+} cvmx_wqe_word3_t;
+
+typedef union {
+	uint64_t u64;
+	struct {
+		CVMX_BITFIELD_FIELD(uint64_t rsvd_0:21,
+		/**
+		 * SQ flow control counter. For diagnostic use only.
+		 */
+		CVMX_BITFIELD_FIELD(uint64_t sqfc:11,
+		CVMX_BITFIELD_FIELD(uint64_t rsvd_1:5,
+		/**
+		 * SQ tail. For diagnostic use only
+		 */
+		CVMX_BITFIELD_FIELD(uint64_t sqtail:11,
+		CVMX_BITFIELD_FIELD(uint64_t rsvd_2:3,
+		/**
+		 *  SQ head pointer. The SQ entry number that this
+		 *  command was read from. Useful for pairing up
+		 *  fused operations
+		 */
+		CVMX_BITFIELD_FIELD(uint64_t sqhead:13,
+		))))));
+	};
+} cvmx_wqe_word4_t;
+
 /**
  * Work queue entry format
  *
@@ -967,6 +1013,65 @@ typedef struct cvmx_wqe_s {
      */
 
 } CVMX_CACHE_LINE_ALIGNED cvmx_wqe_t;
+
+/**
+ * Work queue entry format for NQM
+ *
+ * must be 8-byte aligned
+ */
+typedef struct cvmx_wqe_nqm_s {
+
+    /*****************************************************************
+     * WORD 0
+     *  HW WRITE: the following 64 bits are filled by HW when a packet arrives
+     */
+
+	cvmx_wqe_word0_t word0;
+
+    /*****************************************************************
+     * WORD 1
+     *  HW WRITE: the following 64 bits are filled by HW when a packet arrives
+     */
+
+	cvmx_wqe_word1_t word1;
+    /**
+     * WORD 2
+     * Reserved
+     */
+	uint64_t word2;
+
+    /**
+     * WORD 3
+     * NVMe specific information
+     */
+	cvmx_wqe_word3_t word3;
+
+    /**
+     * WORD 4
+     * NVMe specific information
+     */
+	cvmx_wqe_word4_t word4;
+
+    /**
+     *   HW WRITE: octeon will fill in a programmable amount from the
+     *             packet, up to (at most, but perhaps less) the amount
+     *             needed to fill the work queue entry to 128 bytes
+     *   If the packet is recognized to be IP, the hardware starts (except that
+     *   the IPv4 header is padded for appropriate alignment) writing here where
+     *   the IP header starts.
+     *   If the packet is not recognized to be IP, the hardware starts writing
+     *   the beginning of the packet here.
+     */
+	uint8_t packet_data[88];
+
+    /**
+     * If desired, SW can make the work Q entry any length. For the
+     * purposes of discussion here, Assume 128B always, as this is all that
+     * the hardware deals with.
+     *
+     */
+
+} CVMX_CACHE_LINE_ALIGNED cvmx_wqe_nqm_t;
 
 /**
  * Work queue entry format for 78XX

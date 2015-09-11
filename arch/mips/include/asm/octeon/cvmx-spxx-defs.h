@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -53,196 +53,196 @@
 #define __CVMX_SPXX_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_BCKPRS_CNT(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_BCKPRS_CNT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_BCKPRS_CNT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000340ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_BCKPRS_CNT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000340ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_BCKPRS_CNT(block_id) (CVMX_ADD_IO_SEG(0x0001180090000340ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_BCKPRS_CNT(offset) (CVMX_ADD_IO_SEG(0x0001180090000340ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_BIST_STAT(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_BIST_STAT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_BIST_STAT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800900007F8ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_BIST_STAT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800900007F8ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_BIST_STAT(block_id) (CVMX_ADD_IO_SEG(0x00011800900007F8ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_BIST_STAT(offset) (CVMX_ADD_IO_SEG(0x00011800900007F8ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_CLK_CTL(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_CLK_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_CLK_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000348ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_CLK_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000348ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_CLK_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000348ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_CLK_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180090000348ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_CLK_STAT(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_CLK_STAT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_CLK_STAT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000350ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_CLK_STAT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000350ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_CLK_STAT(block_id) (CVMX_ADD_IO_SEG(0x0001180090000350ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_CLK_STAT(offset) (CVMX_ADD_IO_SEG(0x0001180090000350ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_DBG_DESKEW_CTL(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_DBG_DESKEW_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_DBG_DESKEW_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000368ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_DBG_DESKEW_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000368ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_DBG_DESKEW_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000368ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_DBG_DESKEW_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180090000368ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_DBG_DESKEW_STATE(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_DBG_DESKEW_STATE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_DBG_DESKEW_STATE(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000370ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_DBG_DESKEW_STATE(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000370ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_DBG_DESKEW_STATE(block_id) (CVMX_ADD_IO_SEG(0x0001180090000370ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_DBG_DESKEW_STATE(offset) (CVMX_ADD_IO_SEG(0x0001180090000370ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_DRV_CTL(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_DRV_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_DRV_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000358ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_DRV_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000358ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_DRV_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000358ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_DRV_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180090000358ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_ERR_CTL(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_ERR_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_ERR_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000320ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_ERR_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000320ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_ERR_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000320ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_ERR_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180090000320ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_INT_DAT(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_INT_DAT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_INT_DAT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000318ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_INT_DAT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000318ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_INT_DAT(block_id) (CVMX_ADD_IO_SEG(0x0001180090000318ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_INT_DAT(offset) (CVMX_ADD_IO_SEG(0x0001180090000318ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_INT_MSK(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_INT_MSK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_INT_MSK(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000308ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_INT_MSK(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000308ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_INT_MSK(block_id) (CVMX_ADD_IO_SEG(0x0001180090000308ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_INT_MSK(offset) (CVMX_ADD_IO_SEG(0x0001180090000308ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_INT_REG(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_INT_REG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_INT_REG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000300ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_INT_REG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000300ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_INT_REG(block_id) (CVMX_ADD_IO_SEG(0x0001180090000300ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_INT_REG(offset) (CVMX_ADD_IO_SEG(0x0001180090000300ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_INT_SYNC(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_INT_SYNC(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_INT_SYNC(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000310ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_INT_SYNC(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000310ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_INT_SYNC(block_id) (CVMX_ADD_IO_SEG(0x0001180090000310ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_INT_SYNC(offset) (CVMX_ADD_IO_SEG(0x0001180090000310ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_TPA_ACC(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_TPA_ACC(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_TPA_ACC(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000338ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_TPA_ACC(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000338ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_TPA_ACC(block_id) (CVMX_ADD_IO_SEG(0x0001180090000338ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_TPA_ACC(offset) (CVMX_ADD_IO_SEG(0x0001180090000338ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_TPA_MAX(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_TPA_MAX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_TPA_MAX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000330ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_TPA_MAX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000330ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_TPA_MAX(block_id) (CVMX_ADD_IO_SEG(0x0001180090000330ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_TPA_MAX(offset) (CVMX_ADD_IO_SEG(0x0001180090000330ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_TPA_SEL(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_TPA_SEL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_TPA_SEL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000328ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_TPA_SEL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000328ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_TPA_SEL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000328ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_TPA_SEL(offset) (CVMX_ADD_IO_SEG(0x0001180090000328ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SPXX_TRN4_CTL(unsigned long block_id)
+static inline uint64_t CVMX_SPXX_TRN4_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_SPXX_TRN4_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000360ull) + ((block_id) & 1) * 0x8000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_SPXX_TRN4_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000360ull) + ((offset) & 1) * 0x8000000ull;
 }
 #else
-#define CVMX_SPXX_TRN4_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000360ull) + ((block_id) & 1) * 0x8000000ull)
+#define CVMX_SPXX_TRN4_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180090000360ull) + ((offset) & 1) * 0x8000000ull)
 #endif
 
 /**

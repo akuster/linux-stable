@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -56,7 +56,7 @@
 #define CVMX_IOBN_BIST_STATUS CVMX_IOBN_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_IOBN_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0000018ull);
 }
@@ -67,7 +67,7 @@ static inline uint64_t CVMX_IOBN_BIST_STATUS_FUNC(void)
 #define CVMX_IOBN_CHIP_CUR_PWR CVMX_IOBN_CHIP_CUR_PWR_FUNC()
 static inline uint64_t CVMX_IOBN_CHIP_CUR_PWR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_CHIP_CUR_PWR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0000068ull);
 }
@@ -78,7 +78,7 @@ static inline uint64_t CVMX_IOBN_CHIP_CUR_PWR_FUNC(void)
 #define CVMX_IOBN_CHIP_GLB_PWR_THROTTLE CVMX_IOBN_CHIP_GLB_PWR_THROTTLE_FUNC()
 static inline uint64_t CVMX_IOBN_CHIP_GLB_PWR_THROTTLE_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_CHIP_GLB_PWR_THROTTLE not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0000038ull);
 }
@@ -89,7 +89,7 @@ static inline uint64_t CVMX_IOBN_CHIP_GLB_PWR_THROTTLE_FUNC(void)
 #define CVMX_IOBN_CHIP_PWR_OUT CVMX_IOBN_CHIP_PWR_OUT_FUNC()
 static inline uint64_t CVMX_IOBN_CHIP_PWR_OUT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_CHIP_PWR_OUT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0000048ull);
 }
@@ -100,7 +100,7 @@ static inline uint64_t CVMX_IOBN_CHIP_PWR_OUT_FUNC(void)
 #define CVMX_IOBN_CONTROL CVMX_IOBN_CONTROL_FUNC()
 static inline uint64_t CVMX_IOBN_CONTROL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_CONTROL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0000008ull);
 }
@@ -111,7 +111,7 @@ static inline uint64_t CVMX_IOBN_CONTROL_FUNC(void)
 #define CVMX_IOBN_CREDITS CVMX_IOBN_CREDITS_FUNC()
 static inline uint64_t CVMX_IOBN_CREDITS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_CREDITS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0000028ull);
 }
@@ -122,7 +122,7 @@ static inline uint64_t CVMX_IOBN_CREDITS_FUNC(void)
 #define CVMX_IOBN_ECC CVMX_IOBN_ECC_FUNC()
 static inline uint64_t CVMX_IOBN_ECC_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_ECC not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0000010ull);
 }
@@ -133,7 +133,7 @@ static inline uint64_t CVMX_IOBN_ECC_FUNC(void)
 #define CVMX_IOBN_GBL_DLL CVMX_IOBN_GBL_DLL_FUNC()
 static inline uint64_t CVMX_IOBN_GBL_DLL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_GBL_DLL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0001000ull);
 }
@@ -144,7 +144,7 @@ static inline uint64_t CVMX_IOBN_GBL_DLL_FUNC(void)
 #define CVMX_IOBN_HIGH_PRIORITY CVMX_IOBN_HIGH_PRIORITY_FUNC()
 static inline uint64_t CVMX_IOBN_HIGH_PRIORITY_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_HIGH_PRIORITY not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0000000ull);
 }
@@ -155,7 +155,7 @@ static inline uint64_t CVMX_IOBN_HIGH_PRIORITY_FUNC(void)
 #define CVMX_IOBN_INT_SUM CVMX_IOBN_INT_SUM_FUNC()
 static inline uint64_t CVMX_IOBN_INT_SUM_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_INT_SUM not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0000020ull);
 }
@@ -163,15 +163,39 @@ static inline uint64_t CVMX_IOBN_INT_SUM_FUNC(void)
 #define CVMX_IOBN_INT_SUM (CVMX_ADD_IO_SEG(0x00011800F0000020ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_IOBN_NCBX_CTL(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_IOBN_NCBX_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800F0004000ull) + ((offset) & 3) * 8;
+}
+#else
+#define CVMX_IOBN_NCBX_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800F0004000ull) + ((offset) & 3) * 8)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_IOBN_PP_BIST_STATUS CVMX_IOBN_PP_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_IOBN_PP_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_IOBN_PP_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800F0000700ull);
 }
 #else
 #define CVMX_IOBN_PP_BIST_STATUS (CVMX_ADD_IO_SEG(0x00011800F0000700ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_IOBN_ROC_DLL CVMX_IOBN_ROC_DLL_FUNC()
+static inline uint64_t CVMX_IOBN_ROC_DLL_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_IOBN_ROC_DLL not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011800F0001010ull);
+}
+#else
+#define CVMX_IOBN_ROC_DLL (CVMX_ADD_IO_SEG(0x00011800F0001010ull))
 #endif
 
 /**
@@ -243,7 +267,10 @@ union cvmx_iobn_bist_status {
 	uint64_t reserved_27_63               : 37;
 #endif
 	} s;
+	struct cvmx_iobn_bist_status_s        cn73xx;
 	struct cvmx_iobn_bist_status_s        cn78xx;
+	struct cvmx_iobn_bist_status_s        cn78xxp2;
+	struct cvmx_iobn_bist_status_s        cnf75xx;
 };
 typedef union cvmx_iobn_bist_status cvmx_iobn_bist_status_t;
 
@@ -275,7 +302,10 @@ union cvmx_iobn_chip_cur_pwr {
 	uint64_t reserved_8_63                : 56;
 #endif
 	} s;
+	struct cvmx_iobn_chip_cur_pwr_s       cn73xx;
 	struct cvmx_iobn_chip_cur_pwr_s       cn78xx;
+	struct cvmx_iobn_chip_cur_pwr_s       cn78xxp2;
+	struct cvmx_iobn_chip_cur_pwr_s       cnf75xx;
 };
 typedef union cvmx_iobn_chip_cur_pwr cvmx_iobn_chip_cur_pwr_t;
 
@@ -317,7 +347,10 @@ union cvmx_iobn_chip_glb_pwr_throttle {
 	uint64_t reserved_34_63               : 30;
 #endif
 	} s;
+	struct cvmx_iobn_chip_glb_pwr_throttle_s cn73xx;
 	struct cvmx_iobn_chip_glb_pwr_throttle_s cn78xx;
+	struct cvmx_iobn_chip_glb_pwr_throttle_s cn78xxp2;
+	struct cvmx_iobn_chip_glb_pwr_throttle_s cnf75xx;
 };
 typedef union cvmx_iobn_chip_glb_pwr_throttle cvmx_iobn_chip_glb_pwr_throttle_t;
 
@@ -349,7 +382,10 @@ union cvmx_iobn_chip_pwr_out {
 	uint64_t cpu_pwr                      : 16;
 #endif
 	} s;
+	struct cvmx_iobn_chip_pwr_out_s       cn73xx;
 	struct cvmx_iobn_chip_pwr_out_s       cn78xx;
+	struct cvmx_iobn_chip_pwr_out_s       cn78xxp2;
+	struct cvmx_iobn_chip_pwr_out_s       cnf75xx;
 };
 typedef union cvmx_iobn_chip_pwr_out cvmx_iobn_chip_pwr_out_t;
 
@@ -370,7 +406,10 @@ union cvmx_iobn_control {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_iobn_control_s            cn73xx;
 	struct cvmx_iobn_control_s            cn78xx;
+	struct cvmx_iobn_control_s            cn78xxp2;
+	struct cvmx_iobn_control_s            cnf75xx;
 };
 typedef union cvmx_iobn_control cvmx_iobn_control_t;
 
@@ -427,7 +466,10 @@ union cvmx_iobn_credits {
 	uint64_t reserved_62_63               : 2;
 #endif
 	} s;
+	struct cvmx_iobn_credits_s            cn73xx;
 	struct cvmx_iobn_credits_s            cn78xx;
+	struct cvmx_iobn_credits_s            cn78xxp2;
+	struct cvmx_iobn_credits_s            cnf75xx;
 };
 typedef union cvmx_iobn_credits cvmx_iobn_credits_t;
 
@@ -526,7 +568,10 @@ union cvmx_iobn_ecc {
 	uint64_t reserved_58_63               : 6;
 #endif
 	} s;
+	struct cvmx_iobn_ecc_s                cn73xx;
 	struct cvmx_iobn_ecc_s                cn78xx;
+	struct cvmx_iobn_ecc_s                cn78xxp2;
+	struct cvmx_iobn_ecc_s                cnf75xx;
 };
 typedef union cvmx_iobn_ecc cvmx_iobn_ecc_t;
 
@@ -565,7 +610,10 @@ union cvmx_iobn_gbl_dll {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_iobn_gbl_dll_s            cn73xx;
 	struct cvmx_iobn_gbl_dll_s            cn78xx;
+	struct cvmx_iobn_gbl_dll_s            cn78xxp2;
+	struct cvmx_iobn_gbl_dll_s            cnf75xx;
 };
 typedef union cvmx_iobn_gbl_dll cvmx_iobn_gbl_dll_t;
 
@@ -591,7 +639,10 @@ union cvmx_iobn_high_priority {
 	uint64_t reserved_2_63                : 62;
 #endif
 	} s;
+	struct cvmx_iobn_high_priority_s      cn73xx;
 	struct cvmx_iobn_high_priority_s      cn78xx;
+	struct cvmx_iobn_high_priority_s      cn78xxp2;
+	struct cvmx_iobn_high_priority_s      cnf75xx;
 };
 typedef union cvmx_iobn_high_priority cvmx_iobn_high_priority_t;
 
@@ -766,9 +817,48 @@ union cvmx_iobn_int_sum {
 	uint64_t reserved_52_63               : 12;
 #endif
 	} s;
+	struct cvmx_iobn_int_sum_s            cn73xx;
 	struct cvmx_iobn_int_sum_s            cn78xx;
+	struct cvmx_iobn_int_sum_s            cn78xxp2;
+	struct cvmx_iobn_int_sum_s            cnf75xx;
 };
 typedef union cvmx_iobn_int_sum cvmx_iobn_int_sum_t;
+
+/**
+ * cvmx_iobn_ncb#_ctl
+ *
+ * This register controls the type of store operation used for full cache blocks stores.
+ *
+ */
+union cvmx_iobn_ncbx_ctl {
+	uint64_t u64;
+	struct cvmx_iobn_ncbx_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_10_63               : 54;
+	uint64_t stp                          : 2;  /**< When a complete cache block is written a STP will be converted to:
+                                                         0x0 = STF.
+                                                         0x1 = STY.
+                                                         0x2 = STT.
+                                                         0x3 = Reserved. */
+	uint64_t reserved_2_7                 : 6;
+	uint64_t rstp                         : 2;  /**< When a complete cache block is written a RSTP will be converted to:
+                                                         0x0 = STY.
+                                                         0x1 = STT.
+                                                         0x2 = STF.
+                                                         0x3 = Reserved. */
+#else
+	uint64_t rstp                         : 2;
+	uint64_t reserved_2_7                 : 6;
+	uint64_t stp                          : 2;
+	uint64_t reserved_10_63               : 54;
+#endif
+	} s;
+	struct cvmx_iobn_ncbx_ctl_s           cn73xx;
+	struct cvmx_iobn_ncbx_ctl_s           cn78xx;
+	struct cvmx_iobn_ncbx_ctl_s           cn78xxp2;
+	struct cvmx_iobn_ncbx_ctl_s           cnf75xx;
+};
+typedef union cvmx_iobn_ncbx_ctl cvmx_iobn_ncbx_ctl_t;
 
 /**
  * cvmx_iobn_pp_bist_status
@@ -789,8 +879,48 @@ union cvmx_iobn_pp_bist_status {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_iobn_pp_bist_status_s     cn73xx;
 	struct cvmx_iobn_pp_bist_status_s     cn78xx;
+	struct cvmx_iobn_pp_bist_status_s     cn78xxp2;
+	struct cvmx_iobn_pp_bist_status_s     cnf75xx;
 };
 typedef union cvmx_iobn_pp_bist_status cvmx_iobn_pp_bist_status_t;
+
+/**
+ * cvmx_iobn_roc_dll
+ *
+ * Status of the ROC core-clock DLL.
+ *
+ */
+union cvmx_iobn_roc_dll {
+	uint64_t u64;
+	struct cvmx_iobn_roc_dll_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_60_63               : 4;
+	uint64_t max_dll_setting              : 12; /**< Max reported DLL setting. */
+	uint64_t min_dll_setting              : 12; /**< Min reported DLL setting. */
+	uint64_t reserved_32_35               : 4;
+	uint64_t pdr_rclk_refclk              : 1;  /**< Synchronized pdr_rclk_refclk from ROC core-clock DLL cmb0 phase detectors. */
+	uint64_t pdl_rclk_refclk              : 1;  /**< Synchronized pdl_rclk_refclk from ROC core-clock DLL cmb0 phase detectors. */
+	uint64_t pd_pos_rclk_refclk           : 1;  /**< Synchronized pd_pos_rclk_refclk from ROC core-clock DLL cmb0 phase detectors. */
+	uint64_t dll_lock                     : 1;  /**< The dll_lock signal from ROC core-clock DLL, from the positive edge of refclk. */
+	uint64_t dll_dly_elem_en              : 16; /**< The ROC core-clock delay element enable setting, from the negative edge of refclk. */
+	uint64_t dll_setting                  : 12; /**< The ROC core-clock DLL setting, from the negative edge of refclk. */
+#else
+	uint64_t dll_setting                  : 12;
+	uint64_t dll_dly_elem_en              : 16;
+	uint64_t dll_lock                     : 1;
+	uint64_t pd_pos_rclk_refclk           : 1;
+	uint64_t pdl_rclk_refclk              : 1;
+	uint64_t pdr_rclk_refclk              : 1;
+	uint64_t reserved_32_35               : 4;
+	uint64_t min_dll_setting              : 12;
+	uint64_t max_dll_setting              : 12;
+	uint64_t reserved_60_63               : 4;
+#endif
+	} s;
+	struct cvmx_iobn_roc_dll_s            cnf75xx;
+};
+typedef union cvmx_iobn_roc_dll cvmx_iobn_roc_dll_t;
 
 #endif

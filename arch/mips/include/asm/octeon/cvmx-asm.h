@@ -61,69 +61,69 @@
 #define CVMX_MIPS_MAX_CORE_BITS	(10)    /** Maximum # of bits to define cores */
 #define CVMX_MIPS_MAX_CORES	(1 << CVMX_MIPS_MAX_CORE_BITS)
 
-#define COP0_INDEX	$0, 0	/* TLB read/write index */
-#define COP0_RANDOM	$1, 0	/* TLB random index */
-#define COP0_ENTRYLO0	$2, 0	/* TLB entryLo0 */
-#define COP0_ENTRYLO1	$3, 0	/* TLB entryLo1 */
-#define COP0_CONTEXT	$4, 0	/* Context */
-#define COP0_USERLOCAL	$4, 2	/* User Local (OCTEON II and later) */
-#define COP0_PAGEMASK	$5, 0	/* TLB pagemask */
-#define COP0_PAGEGRAIN	$5, 1	/* TLB config for max page sizes */
-#define COP0_WIRED	$6, 0	/* TLB number of wired entries */
-#define COP0_HWRENA	$7, 0	/* rdhw instruction enable per register */
-#define COP0_BADVADDR	$8, 0	/* Bad virtual address */
-#define COP0_COUNT	$9, 0	/* Mips count register */
-#define COP0_CVMCOUNT	$9, 6	/* Cavium count register */
-#define COP0_CVMCTL	$9, 7	/* Cavium control */
-#define COP0_ENTRYHI	$10, 0	/* TLB entryHi */
-#define COP0_COMPARE	$11, 0	/* Mips compare register */
-#define COP0_POWTHROTTLE $11, 6	/* Power throttle register */
-#define COP0_CVMMEMCTL	$11, 7	/* Cavium memory control */
-#define COP0_STATUS	$12, 0	/* Mips status register */
-#define COP0_INTCTL	$12, 1	/* Useless (Vectored interrupts) */
-#define COP0_SRSCTL	$12, 2	/* Useless (Shadow registers) */
-#define COP0_CAUSE	$13, 0	/* Mips cause register */
-#define COP0_EPC	$14, 0	/* Exception program counter */
-#define COP0_PRID	$15, 0 	/* Processor ID */
-#define COP0_EBASE	$15, 1	/* Exception base */
-#define COP0_CONFIG	$16, 0	/* Misc config options */
-#define COP0_CONFIG1	$16, 1	/* Misc config options */
-#define COP0_CONFIG2	$16, 2	/* Misc config options */
-#define COP0_CONFIG3	$16, 3	/* Misc config options */
-#define COP0_CONFIG4	$16, 4	/* Misc config options (OCTEON III and later) */
-#define COP0_CONFIG5	$16, 5	/* Misc config options (OCTEON III and later) */
-#define COP0_WATCHLO0	$18, 0	/* Address watch registers */
-#define COP0_WATCHLO1	$18, 1	/* Address watch registers */
-#define COP0_WATCHHI0	$19, 0	/* Address watch registers */
-#define COP0_WATCHHI1	$19, 1	/* Address watch registers */
-#define COP0_XCONTEXT	$20, 0	/* OS context */
-#define COP0_MULTICOREDEBUG $22, 0	/* Cavium debug */
-#define COP0_DEBUG	$23, 0	/* Debug status */
-#define COP0_DEPC	$24, 0	/* Debug PC */
-#define COP0_PERFCONTROL0 $25, 0	/* Performance counter control */
-#define COP0_PERFCONTROL1 $25, 2	/* Performance counter control */
-#define COP0_PERFCONTROL2 $25, 4	/* Performance counter control */
-#define COP0_PERFCONTROL3 $25, 6	/* Performance counter control */
-#define COP0_PERFVALUE0	$25, 1	/* Performance counter */
-#define COP0_PERFVALUE1	$25, 3	/* Performance counter */
-#define COP0_PERFVALUE2	$25, 5	/* Performance counter */
-#define COP0_PERFVALUE3	$25, 7	/* Performance counter */
-#define COP0_ERRCTL	$26, 0	/* Cache error status (OIII) */
-#define COP0_CACHEERRI	$27, 0	/* I cache error status */
-#define COP0_CACHEERRD	$27, 1	/* D cache error status */
-#define COP0_TAGLOI	$28, 0	/* I cache tagLo */
-#define COP0_TAGLOD	$28, 2	/* D cache tagLo */
-#define COP0_DATALOI	$28, 1	/* I cache dataLo */
-#define COP0_DATALOD	$28, 3	/* D cahce dataLo */
-#define COP0_TAGHI	$29, 2	/* ? */
-#define COP0_DATAHII	$29, 1	/* ? */
-#define COP0_DATAHID	$29, 3	/* ? */
-#define COP0_ERROREPC	$30, 0	/* Error PC */
-#define COP0_DESAVE	$31, 0	/* Debug scratch area */
-#define COP0_KSCRATCH1	$31, 2	/* KScratch 1 (OCTEON II and later) */
-#define COP0_KSCRATCH2	$31, 3	/* KScratch 2 (OCTEON II and later) */
-#define COP0_KSCRATCH3	$31, 4	/* KScratch 3 (OCTEON III and later) */
-#define COP0_KSCRATCH4	$31, 5	/* KScratch 3 (OCTEON III and later) */
+#define COP0_INDEX	$0,0	/* TLB read/write index */
+#define COP0_RANDOM	$1,0	/* TLB random index */
+#define COP0_ENTRYLO0	$2,0	/* TLB entryLo0 */
+#define COP0_ENTRYLO1	$3,0	/* TLB entryLo1 */
+#define COP0_CONTEXT	$4,0	/* Context */
+#define COP0_USERLOCAL	$4,2	/* User Local (OCTEON II and later) */
+#define COP0_PAGEMASK	$5,0	/* TLB pagemask */
+#define COP0_PAGEGRAIN	$5,1	/* TLB config for max page sizes */
+#define COP0_WIRED	$6,0	/* TLB number of wired entries */
+#define COP0_HWRENA	$7,0	/* rdhw instruction enable per register */
+#define COP0_BADVADDR	$8,0	/* Bad virtual address */
+#define COP0_COUNT	$9,0	/* Mips count register */
+#define COP0_CVMCOUNT	$9,6	/* Cavium count register */
+#define COP0_CVMCTL	$9,7	/* Cavium control */
+#define COP0_ENTRYHI	$10,0	/* TLB entryHi */
+#define COP0_COMPARE	$11,0	/* Mips compare register */
+#define COP0_POWTHROTTLE $11,6	/* Power throttle register */
+#define COP0_CVMMEMCTL	$11,7	/* Cavium memory control */
+#define COP0_STATUS	$12,0	/* Mips status register */
+#define COP0_INTCTL	$12,1	/* Useless (Vectored interrupts) */
+#define COP0_SRSCTL	$12,2	/* Useless (Shadow registers) */
+#define COP0_CAUSE	$13,0	/* Mips cause register */
+#define COP0_EPC	$14,0	/* Exception program counter */
+#define COP0_PRID	$15,0	/* Processor ID */
+#define COP0_EBASE	$15,1	/* Exception base */
+#define COP0_CONFIG	$16,0	/* Misc config options */
+#define COP0_CONFIG1	$16,1	/* Misc config options */
+#define COP0_CONFIG2	$16,2	/* Misc config options */
+#define COP0_CONFIG3	$16,3	/* Misc config options */
+#define COP0_CONFIG4	$16,4	/* Misc config options (OCTEON III and later) */
+#define COP0_CONFIG5	$16,5	/* Misc config options (OCTEON III and later) */
+#define COP0_WATCHLO0	$18,0	/* Address watch registers */
+#define COP0_WATCHLO1	$18,1	/* Address watch registers */
+#define COP0_WATCHHI0	$19,0	/* Address watch registers */
+#define COP0_WATCHHI1	$19,1	/* Address watch registers */
+#define COP0_XCONTEXT	$20,0	/* OS context */
+#define COP0_MULTICOREDEBUG $22,0	/* Cavium debug */
+#define COP0_DEBUG	$23,0	/* Debug status */
+#define COP0_DEPC	$24,0	/* Debug PC */
+#define COP0_PERFCONTROL0 $25,0	/* Performance counter control */
+#define COP0_PERFCONTROL1 $25,2	/* Performance counter control */
+#define COP0_PERFCONTROL2 $25,4	/* Performance counter control */
+#define COP0_PERFCONTROL3 $25,6	/* Performance counter control */
+#define COP0_PERFVALUE0	$25,1	/* Performance counter */
+#define COP0_PERFVALUE1	$25,3	/* Performance counter */
+#define COP0_PERFVALUE2	$25,5	/* Performance counter */
+#define COP0_PERFVALUE3	$25,7	/* Performance counter */
+#define COP0_ERRCTL	$26,0	/* Cache error status (OIII) */
+#define COP0_CACHEERRI	$27,0	/* I cache error status */
+#define COP0_CACHEERRD	$27,1	/* D cache error status */
+#define COP0_TAGLOI	$28,0	/* I cache tagLo */
+#define COP0_TAGLOD	$28,2	/* D cache tagLo */
+#define COP0_DATALOI	$28,1	/* I cache dataLo */
+#define COP0_DATALOD	$28,3	/* D cahce dataLo */
+#define COP0_TAGHI	$29,2	/* ? */
+#define COP0_DATAHII	$29,1	/* ? */
+#define COP0_DATAHID	$29,3	/* ? */
+#define COP0_ERROREPC	$30,0	/* Error PC */
+#define COP0_DESAVE	$31,0	/* Debug scratch area */
+#define COP0_KSCRATCH1	$31,2	/* KScratch 1 (OCTEON II and later) */
+#define COP0_KSCRATCH2	$31,3	/* KScratch 2 (OCTEON II and later) */
+#define COP0_KSCRATCH3	$31,4	/* KScratch 3 (OCTEON III and later) */
+#define COP0_KSCRATCH4	$31,5	/* KScratch 3 (OCTEON III and later) */
 #define COP1_FIR	$0	/* Floating point implementation register */
 #define COP1_FCSR	$31	/* Floating point control and status register */
 
@@ -154,7 +154,7 @@ extern "C" {
 
 /* other useful stuff */
 #define CVMX_BREAK asm volatile ("break")
-#define CVMX_SYNC asm volatile ("sync" : : : "memory")
+#define CVMX_SYNC asm volatile ("sync" : : :"memory")
 /* String version of SYNCW macro for using in inline asm constructs */
 #define CVMX_SYNCW_STR_OCTEON2 "syncw\n"
 #ifdef CVMX_CAVIUM_OCTEON2
@@ -164,13 +164,13 @@ extern "C" {
 #endif /* CVMX_CAVIUM_OCTEON2 */
 
 #ifdef __OCTEON__
-#define CVMX_SYNCIOBDMA asm volatile ("synciobdma" : : : "memory")
+#define CVMX_SYNCIOBDMA asm volatile ("synciobdma" : : :"memory")
 	/* We actually use two syncw instructions in a row when we need a write
 	   memory barrier. This is because the CN3XXX series of Octeons have
 	   errata Core-401. This can cause a single syncw to not enforce
 	   ordering under very rare conditions. Even if it is rare, better safe
 	   than sorry */
-#define CVMX_SYNCW_OCTEON2 asm volatile ("syncw\n" : : : "memory")
+#define CVMX_SYNCW_OCTEON2 asm volatile ("syncw\n" : : :"memory")
 #ifdef CVMX_CAVIUM_OCTEON2
 #define CVMX_SYNCW CVMX_SYNCW_OCTEON2
 #else
@@ -197,21 +197,21 @@ extern "C" {
 	/* Again, just like syncw, we may need two syncws instructions in a row due
 	   errata Core-401. Only one syncws is required for Octeon2 models */
 #define CVMX_SYNCS asm volatile ("syncs" : : :"memory")
-#define CVMX_SYNCWS_OCTEON2 asm volatile ("syncws\n" : : : "memory")
+#define CVMX_SYNCWS_OCTEON2 asm volatile ("syncws\n" : : :"memory")
 #define CVMX_SYNCWS_STR_OCTEON2 "syncws\n"
 #ifdef CVMX_CAVIUM_OCTEON2
 #define CVMX_SYNCWS CVMX_SYNCWS_OCTEON2
 #define CVMX_SYNCWS_STR CVMX_SYNCWS_STR_OCTEON2
 #else
-#define CVMX_SYNCWS asm volatile ("syncws\nsyncws\n" : : : "memory")
+#define CVMX_SYNCWS asm volatile ("syncws\nsyncws\n" : : :"memory")
 #define CVMX_SYNCWS_STR "syncws\nsyncws\n"
 #endif /* CVMX_CAVIUM_OCTEON2 */
 #endif
 #endif
 #else /* !__OCTEON__ */
 	/* Not using a Cavium compiler, always use the slower sync so the assembler stays happy */
-#define CVMX_SYNCIOBDMA asm volatile ("sync" : : : "memory")
-#define CVMX_SYNCW asm volatile ("sync" : : : "memory")
+#define CVMX_SYNCIOBDMA asm volatile ("sync" : : :"memory")
+#define CVMX_SYNCW asm volatile ("sync" : : :"memory")
 #define CVMX_SYNCWS CVMX_SYNCW
 #define CVMX_SYNCS  CVMX_SYNC
 #define CVMX_SYNCWS_STR CVMX_SYNCW_STR
@@ -280,45 +280,45 @@ extern "C" {
 
 /** Endian swap */
 #define CVMX_ES64(result, input) \
-	do {\
-	CVMX_DSBH(result, input); \
-	CVMX_DSHD(result, result); \
-	} while (0)
+        do {\
+        CVMX_DSBH(result, input); \
+        CVMX_DSHD(result, result); \
+        } while (0)
 #define CVMX_ES32(result, input) \
-	do {\
-	CVMX_WSBH(result, input); \
-	CVMX_ROTR(result, result, 16); \
-	} while (0)
+        do {\
+        CVMX_WSBH(result, input); \
+        CVMX_ROTR(result, result, 16); \
+        } while (0)
 
 /* extract and insert - NOTE that pos and len variables must be constants! */
 /* the P variants take len rather than lenm1 */
 /* the M1 variants take lenm1 rather than len */
-#define CVMX_EXTS(result, input, pos, lenm1) asm ("exts %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(lenm1) : [rt] "=d" (result) : [rs] "d" (input))
-#define CVMX_EXTSP(result, input, pos, len) CVMX_EXTS(result, input, pos, (len)-1)
+#define CVMX_EXTS(result,input,pos,lenm1) asm ("exts %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(lenm1) : [rt] "=d" (result) : [rs] "d" (input))
+#define CVMX_EXTSP(result,input,pos,len) CVMX_EXTS(result,input,pos,(len)-1)
 
-#define CVMX_DEXT(result, input, pos, len) asm ("dext %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len) : [rt] "=d" (result) : [rs] "d" (input))
-#define CVMX_DEXTM1(result, input, pos, lenm1) CVMX_DEXT(result, input, pos, (lenm1)+1)
+#define CVMX_DEXT(result,input,pos,len) asm ("dext %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len) : [rt] "=d" (result) : [rs] "d" (input))
+#define CVMX_DEXTM1(result,input,pos,lenm1) CVMX_DEXT(result,input,pos,(lenm1)+1)
 
-#define CVMX_EXT(result, input, pos, len) asm ("ext %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len) : [rt] "=d" (result) : [rs] "d" (input))
-#define CVMX_EXTM1(result, input, pos, lenm1) CVMX_EXT(result, input, pos, (lenm1)+1)
+#define CVMX_EXT(result,input,pos,len) asm ("ext %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len) : [rt] "=d" (result) : [rs] "d" (input))
+#define CVMX_EXTM1(result,input,pos,lenm1) CVMX_EXT(result,input,pos,(lenm1)+1)
 
 /* removed
  * #define CVMX_EXTU(result,input,pos,lenm1) asm ("extu %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(lenm1) : [rt] "=d" (result) : [rs] "d" (input))
  * #define CVMX_EXTUP(result,input,pos,len) CVMX_EXTU(result,input,pos,(len)-1)
  */
 
-#define CVMX_CINS(result, input, pos, lenm1) asm ("cins %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(lenm1) : [rt] "=d" (result) : [rs] "d" (input))
-#define CVMX_CINSP(result, input, pos, len) CVMX_CINS(result, input, pos, (len)-1)
+#define CVMX_CINS(result,input,pos,lenm1) asm ("cins %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(lenm1) : [rt] "=d" (result) : [rs] "d" (input))
+#define CVMX_CINSP(result,input,pos,len) CVMX_CINS(result,input,pos,(len)-1)
 
-#define CVMX_DINS(result, input, pos, len) asm ("dins %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len): [rt] "=d" (result): [rs] "d" (input), "[rt]" (result))
-#define CVMX_DINSM1(result, input, pos, lenm1) CVMX_DINS(result, input, pos, (lenm1)+1)
-#define CVMX_DINSC(result, pos, len) asm ("dins %[rt],$0," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len): [rt] "=d" (result): "[rt]" (result))
-#define CVMX_DINSCM1(result, pos, lenm1) CVMX_DINSC(result, pos, (lenm1)+1)
+#define CVMX_DINS(result,input,pos,len) asm ("dins %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len): [rt] "=d" (result): [rs] "d" (input), "[rt]" (result))
+#define CVMX_DINSM1(result,input,pos,lenm1) CVMX_DINS(result,input,pos,(lenm1)+1)
+#define CVMX_DINSC(result,pos,len) asm ("dins %[rt],$0," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len): [rt] "=d" (result): "[rt]" (result))
+#define CVMX_DINSCM1(result,pos,lenm1) CVMX_DINSC(result,pos,(lenm1)+1)
 
-#define CVMX_INS(result, input, pos, len) asm ("ins %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len): [rt] "=d" (result): [rs] "d" (input), "[rt]" (result))
-#define CVMX_INSM1(result, input, pos, lenm1) CVMX_INS(result, input, pos, (lenm1)+1)
-#define CVMX_INSC(result, pos, len) asm ("ins %[rt],$0," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len): [rt] "=d" (result): "[rt]" (result))
-#define CVMX_INSCM1(result, pos, lenm1) CVMX_INSC(result,pos,(lenm1)+1)
+#define CVMX_INS(result,input,pos,len) asm ("ins %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len): [rt] "=d" (result): [rs] "d" (input), "[rt]" (result))
+#define CVMX_INSM1(result,input,pos,lenm1) CVMX_INS(result,input,pos,(lenm1)+1)
+#define CVMX_INSC(result,pos,len) asm ("ins %[rt],$0," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(len): [rt] "=d" (result): "[rt]" (result))
+#define CVMX_INSCM1(result,pos,lenm1) CVMX_INSC(result,pos,(lenm1)+1)
 
 /* removed
  * #define CVMX_INS0(result,input,pos,lenm1) asm("ins0 %[rt],%[rs]," CVMX_TMP_STR(pos) "," CVMX_TMP_STR(lenm1): [rt] "=d" (result): [rs] "d" (input), "[rt]" (result))
@@ -341,25 +341,25 @@ extern "C" {
 	   sign extended registers.  All other registers are 32 bits wide
 	   and already properly sign extended. */
 #define CVMX_RDHWRX(result, regstr, ASM_STMT) ({			\
-	if (regstr == 31) {							\
-		if (sizeof(result) == 8) {						\
-		ASM_STMT(".set\tpush\n"						\
+  if (regstr == 31) {							\
+    if (sizeof(result) == 8) {						\
+      ASM_STMT (".set\tpush\n"						\
 		"\t.set\tmips64r2\n"					\
 		"\trdhwr\t%L0,$31\n"					\
 		"\tdsra\t%M0,%L0,32\n"					\
 		"\tsll\t%L0,%L0,0\n"					\
-		"\t.set\tpop" : "=d"(result));				\
-	} else {								\
-		unsigned long _v;							\
-		ASM_STMT("rdhwr\t%0,$31\n"					\
+		"\t.set\tpop": "=d"(result));				\
+    } else {								\
+      unsigned long _v;							\
+      ASM_STMT ("rdhwr\t%0,$31\n"					\
 		"\tsll\t%0,%0,0" : "=d"(_v));				\
-		result = (typeof(result))_v;					\
-	}									\
-	} else {								\
-		unsigned long _v;							\
-		ASM_STMT("rdhwr\t%0,$" CVMX_TMP_STR(regstr) : "=d"(_v));		\
-		result = (typeof(result))_v;					\
-	}})
+      result = (typeof(result))_v;					\
+    }									\
+  } else {								\
+    unsigned long _v;							\
+    ASM_STMT ("rdhwr\t%0,$" CVMX_TMP_STR(regstr) : "=d"(_v));		\
+    result = (typeof(result))_v;					\
+  }})
 
 #define CVMX_RDHWR(result, regstr) CVMX_RDHWRX(result, regstr, asm volatile)
 #define CVMX_RDHWRNV(result, regstr) CVMX_RDHWRX(result, regstr, asm)
@@ -393,10 +393,10 @@ extern "C" {
    CVMX_VMM0 macros for OCTEONII. Refer to the Errata Core-17731 description
    for more details. */
 #ifndef _MIPS_ARCH_OCTEON2
-#define CVMX_VMULU(dest, mpcand, accum) asm volatile ("vmulu %[rd],%[rs],%[rt]" : [rd] "=d" (dest) : [rs] "d" (mpcand), [rt] "d" (accum))
-#define CVMX_VMM0(dest, mpcand, accum) asm volatile ("vmm0 %[rd],%[rs],%[rt]" : [rd] "=d" (dest) : [rs] "d" (mpcand), [rt] "d" (accum))
+#define CVMX_VMULU(dest,mpcand,accum) asm volatile ("vmulu %[rd],%[rs],%[rt]" : [rd] "=d" (dest) : [rs] "d" (mpcand), [rt] "d" (accum))
+#define CVMX_VMM0(dest,mpcand,accum) asm volatile ("vmm0 %[rd],%[rs],%[rt]" : [rd] "=d" (dest) : [rs] "d" (mpcand), [rt] "d" (accum))
 #endif
-#define CVMX_V3MULU(dest, mpcand, accum) asm volatile ("v3mulu %[rd],%[rs],%[rt]" : [rd] "=d" (dest) : [rs] "d" (mpcand), [rt] "d" (accum))
+#define CVMX_V3MULU(dest,mpcand,accum) asm volatile ("v3mulu %[rd],%[rs],%[rt]" : [rd] "=d" (dest) : [rs] "d" (mpcand), [rt] "d" (accum))
 
 /* branch stuff */
 /* these are hard to make work because the compiler does not realize that the
@@ -408,17 +408,17 @@ extern "C" {
 
 /** the label to this macro must include a ":" at the end */
 #define CVMX_ASM_LABEL(label) label \
-			asm volatile (CVMX_TMP_STR(label) : : )
+                             asm volatile (CVMX_TMP_STR(label) : : )
 
 /*
  * Low-latency memory stuff
  */
 /* set can be 0-1 */
-#define CVMX_MT_LLM_READ_ADDR(set, val)    asm volatile ("dmtc2 %[rt],0x0400+(8*(" CVMX_TMP_STR(set) "))" : : [rt] "d" (val))
-#define CVMX_MT_LLM_WRITE_ADDR_INTERNAL(set, val)   asm volatile ("dmtc2 %[rt],0x0401+(8*(" CVMX_TMP_STR(set) "))" : : [rt] "d" (val))
-#define CVMX_MT_LLM_READ64_ADDR(set, val)  asm volatile ("dmtc2 %[rt],0x0404+(8*(" CVMX_TMP_STR(set) "))" : : [rt] "d" (val))
-#define CVMX_MT_LLM_WRITE64_ADDR_INTERNAL(set, val) asm volatile ("dmtc2 %[rt],0x0405+(8*(" CVMX_TMP_STR(set) "))" : : [rt] "d" (val))
-#define CVMX_MT_LLM_DATA(set, val)         asm volatile ("dmtc2 %[rt],0x0402+(8*(" CVMX_TMP_STR(set) "))" : : [rt] "d" (val))
+#define CVMX_MT_LLM_READ_ADDR(set,val)    asm volatile ("dmtc2 %[rt],0x0400+(8*(" CVMX_TMP_STR(set) "))" : : [rt] "d" (val))
+#define CVMX_MT_LLM_WRITE_ADDR_INTERNAL(set,val)   asm volatile ("dmtc2 %[rt],0x0401+(8*(" CVMX_TMP_STR(set) "))" : : [rt] "d" (val))
+#define CVMX_MT_LLM_READ64_ADDR(set,val)  asm volatile ("dmtc2 %[rt],0x0404+(8*(" CVMX_TMP_STR(set) "))" : : [rt] "d" (val))
+#define CVMX_MT_LLM_WRITE64_ADDR_INTERNAL(set,val) asm volatile ("dmtc2 %[rt],0x0405+(8*(" CVMX_TMP_STR(set) "))" : : [rt] "d" (val))
+#define CVMX_MT_LLM_DATA(set,val)         asm volatile ("dmtc2 %[rt],0x0402+(8*(" CVMX_TMP_STR(set) "))" : : [rt] "d" (val))
 #define CVMX_MF_LLM_DATA(set,val)         asm volatile ("dmfc2 %[rt],0x0402+(8*(" CVMX_TMP_STR(set) "))" : [rt] "=d" (val) : )
 
 /* load linked, store conditional */
@@ -472,32 +472,32 @@ extern "C" {
 /* pos can be 0-14 */
 #define CVMX_MT_HSH_DATW(val,pos)   asm volatile ("dmtc2 %[rt],0x0240+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
 #define CVMX_MT_HSH_DATWZ(pos)      asm volatile ("dmtc2    $0,0x0240+" CVMX_TMP_STR(pos) :                 :               )
-#define CVMX_MT_HSH_STARTMD5(val)   asm volatile ("dmfc2 $0,0x0250\n"     \
-						  "dmtc2 %[rt],0x4047\n"                   :                 : [rt] "d" (val))
-#define CVMX_MT_HSH_STARTSHA(val)   asm volatile ("dmfc2 $0,0x0250\n"     \
-						  "dmtc2 %[rt],0x4057\n"                   :                 : [rt] "d" (val))
-#define CVMX_MT_HSH_STARTSHA256(val)   asm volatile ("dmfc2 $0,0x0250\n"     \
-						     "dmtc2 %[rt],0x404f\n"                :                 : [rt] "d" (val))
-#define CVMX_MT_HSH_STARTSHA512(val)   asm volatile ("dmfc2 $0,0x0250\n"     \
-						     "dmtc2 %[rt],0x424f\n"                :                 : [rt] "d" (val))
+#define CVMX_MT_HSH_STARTMD5(val)   asm volatile ("dmfc2 $0,0x0250 \n"     \
+                                                  "dmtc2 %[rt],0x4047 \n"                   :                 : [rt] "d" (val))
+#define CVMX_MT_HSH_STARTSHA(val)   asm volatile ("dmfc2 $0,0x0250 \n"     \
+                                                  "dmtc2 %[rt],0x4057 \n"                   :                 : [rt] "d" (val))
+#define CVMX_MT_HSH_STARTSHA256(val)   asm volatile ("dmfc2 $0,0x0250 \n"     \
+                                                     "dmtc2 %[rt],0x404f \n"                :                 : [rt] "d" (val))
+#define CVMX_MT_HSH_STARTSHA512(val)   asm volatile ("dmfc2 $0,0x0250 \n"     \
+                                                     "dmtc2 %[rt],0x424f \n"                :                 : [rt] "d" (val))
 /* pos can be 0-3 */
-#define CVMX_MT_HSH_IV(val, pos)     asm volatile ("dmtc2 %[rt],0x0048+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
+#define CVMX_MT_HSH_IV(val,pos)     asm volatile ("dmtc2 %[rt],0x0048+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
 /* pos can be 0-7 */
-#define CVMX_MT_HSH_IVW(val, pos)     asm volatile ("dmtc2 %[rt],0x0250+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
+#define CVMX_MT_HSH_IVW(val,pos)     asm volatile ("dmtc2 %[rt],0x0250+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
 
 /* pos can be 0-6 */
-#define CVMX_MF_HSH_DAT(val, pos)    asm volatile ("dmfc2 %[rt],0x0040+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_HSH_DAT(val,pos)    asm volatile ("dmfc2 %[rt],0x0040+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 /* pos can be 0-14 */
-#define CVMX_MF_HSH_DATW(val, pos)   asm volatile ("dmfc2 %[rt],0x0240+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_HSH_DATW(val,pos)   asm volatile ("dmfc2 %[rt],0x0240+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 /* pos can be 0-3 */
-#define CVMX_MF_HSH_IV(val, pos)     asm volatile ("dmfc2 %[rt],0x0048+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_HSH_IV(val,pos)     asm volatile ("dmfc2 %[rt],0x0048+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 /* pos can be 0-7 */
-#define CVMX_MF_HSH_IVW(val, pos)     asm volatile ("dmfc2 %[rt],0x0250+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_HSH_IVW(val,pos)     asm volatile ("dmfc2 %[rt],0x0250+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 
 /* 3DES */
 
 /* pos can be 0-2 */
-#define CVMX_MT_3DES_KEY(val, pos)   asm volatile ("dmtc2 %[rt],0x0080+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
+#define CVMX_MT_3DES_KEY(val,pos)   asm volatile ("dmtc2 %[rt],0x0080+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
 #define CVMX_MT_3DES_IV(val)        asm volatile ("dmtc2 %[rt],0x0084"                   :                 : [rt] "d" (val))
 #define CVMX_MT_3DES_ENC_CBC(val)   asm volatile ("dmtc2 %[rt],0x4088"                   :                 : [rt] "d" (val))
 #define CVMX_MT_3DES_ENC(val)       asm volatile ("dmtc2 %[rt],0x408a"                   :                 : [rt] "d" (val))
@@ -506,20 +506,20 @@ extern "C" {
 #define CVMX_MT_3DES_RESULT(val)    asm volatile ("dmtc2 %[rt],0x0098"                   :                 : [rt] "d" (val))
 
 /* pos can be 0-2 */
-#define CVMX_MF_3DES_KEY(val, pos)   asm volatile ("dmfc2 %[rt],0x0080+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_3DES_KEY(val,pos)   asm volatile ("dmfc2 %[rt],0x0080+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 #define CVMX_MF_3DES_IV(val)        asm volatile ("dmfc2 %[rt],0x0084"                   : [rt] "=d" (val) :               )
 #define CVMX_MF_3DES_RESULT(val)    asm volatile ("dmfc2 %[rt],0x0088"                   : [rt] "=d" (val) :               )
 
 /* KASUMI */
 
 /* pos can be 0-1 */
-#define CVMX_MT_KAS_KEY(val, pos)    CVMX_MT_3DES_KEY(val,pos)
+#define CVMX_MT_KAS_KEY(val,pos)    CVMX_MT_3DES_KEY(val,pos)
 #define CVMX_MT_KAS_ENC_CBC(val)    asm volatile ("dmtc2 %[rt],0x4089"                   :                 : [rt] "d" (val))
 #define CVMX_MT_KAS_ENC(val)        asm volatile ("dmtc2 %[rt],0x408b"                   :                 : [rt] "d" (val))
 #define CVMX_MT_KAS_RESULT(val)     CVMX_MT_3DES_RESULT(val)
 
 /* pos can be 0-1 */
-#define CVMX_MF_KAS_KEY(val, pos)    CVMX_MF_3DES_KEY(val,pos)
+#define CVMX_MF_KAS_KEY(val,pos)    CVMX_MF_3DES_KEY(val,pos)
 #define CVMX_MF_KAS_RESULT(val)     CVMX_MF_3DES_RESULT(val)
 
 /* AES */
@@ -533,56 +533,56 @@ extern "C" {
 #define CVMX_MT_AES_DEC0(val)       asm volatile ("dmtc2 %[rt],0x010e"                   :                 : [rt] "d" (val))
 #define CVMX_MT_AES_DEC1(val)       asm volatile ("dmtc2 %[rt],0x310f"                   :                 : [rt] "d" (val))
 /* pos can be 0-3 */
-#define CVMX_MT_AES_KEY(val, pos)    asm volatile ("dmtc2 %[rt],0x0104+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
+#define CVMX_MT_AES_KEY(val,pos)    asm volatile ("dmtc2 %[rt],0x0104+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
 /* pos can be 0-1 */
-#define CVMX_MT_AES_IV(val, pos)     asm volatile ("dmtc2 %[rt],0x0102+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
+#define CVMX_MT_AES_IV(val,pos)     asm volatile ("dmtc2 %[rt],0x0102+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
 #define CVMX_MT_AES_KEYLENGTH(val)  asm volatile ("dmtc2 %[rt],0x0110"                   :                 : [rt] "d" (val))	/* write the keylen */
 /* pos can be 0-1 */
-#define CVMX_MT_AES_RESULT(val, pos) asm volatile ("dmtc2 %[rt],0x0100+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
+#define CVMX_MT_AES_RESULT(val,pos) asm volatile ("dmtc2 %[rt],0x0100+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
 
 /* pos can be 0-1 */
-#define CVMX_MF_AES_RESULT(val, pos) asm volatile ("dmfc2 %[rt],0x0100+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_AES_RESULT(val,pos) asm volatile ("dmfc2 %[rt],0x0100+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 /* pos can be 0-1 */
-#define CVMX_MF_AES_IV(val, pos)     asm volatile ("dmfc2 %[rt],0x0102+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_AES_IV(val,pos)     asm volatile ("dmfc2 %[rt],0x0102+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 /* pos can be 0-3 */
-#define CVMX_MF_AES_KEY(val, pos)    asm volatile ("dmfc2 %[rt],0x0104+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_AES_KEY(val,pos)    asm volatile ("dmfc2 %[rt],0x0104+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 #define CVMX_MF_AES_KEYLENGTH(val)  asm volatile ("dmfc2 %[rt],0x0110"                   : [rt] "=d" (val) :               )	/* read the keylen */
 #define CVMX_MF_AES_DAT0(val)       asm volatile ("dmfc2 %[rt],0x0111"                   : [rt] "=d" (val) :               )	/* first piece of input data */
 
 /* GFM */
 
 /* pos can be 0-1 */
-#define CVMX_MF_GFM_MUL(val, pos)             asm volatile ("dmfc2 %[rt],0x0258+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_GFM_MUL(val,pos)             asm volatile ("dmfc2 %[rt],0x0258+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 #define CVMX_MF_GFM_POLY(val)                asm volatile ("dmfc2 %[rt],0x025e"                    : [rt] "=d" (val) :               )
 /* pos can be 0-1 */
-#define CVMX_MF_GFM_RESINP(val, pos)          asm volatile ("dmfc2 %[rt],0x025a+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_GFM_RESINP(val,pos)          asm volatile ("dmfc2 %[rt],0x025a+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 /* pos can be 0-1 */
-#define CVMX_MF_GFM_RESINP_REFLECT(val, pos)  asm volatile ("dmfc2 %[rt],0x005a+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_GFM_RESINP_REFLECT(val,pos)  asm volatile ("dmfc2 %[rt],0x005a+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 
 /* pos can be 0-1 */
-#define CVMX_MT_GFM_MUL(val, pos)             asm volatile ("dmtc2 %[rt],0x0258+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
+#define CVMX_MT_GFM_MUL(val,pos)             asm volatile ("dmtc2 %[rt],0x0258+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
 #define CVMX_MT_GFM_POLY(val)                asm volatile ("dmtc2 %[rt],0x025e"                    :                 : [rt] "d" (val))
 /* pos can be 0-1 */
-#define CVMX_MT_GFM_RESINP(val, pos)          asm volatile ("dmtc2 %[rt],0x025a+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
+#define CVMX_MT_GFM_RESINP(val,pos)          asm volatile ("dmtc2 %[rt],0x025a+" CVMX_TMP_STR(pos) :                 : [rt] "d" (val))
 #define CVMX_MT_GFM_XOR0(val)                asm volatile ("dmtc2 %[rt],0x025c"                    :                 : [rt] "d" (val))
 #define CVMX_MT_GFM_XORMUL1(val)             asm volatile ("dmtc2 %[rt],0x425d"                    :                 : [rt] "d" (val))
 /* pos can be 0-1 */
-#define CVMX_MT_GFM_MUL_REFLECT(val, pos)     asm volatile ("dmtc2 %[rt],0x0058+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MT_GFM_MUL_REFLECT(val,pos)     asm volatile ("dmtc2 %[rt],0x0058+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 #define CVMX_MT_GFM_XOR0_REFLECT(val)        asm volatile ("dmtc2 %[rt],0x005c"                    :                 : [rt] "d" (val))
 #define CVMX_MT_GFM_XORMUL1_REFLECT(val)     asm volatile ("dmtc2 %[rt],0x405d"                    :                 : [rt] "d" (val))
 
 /* SNOW 3G */
 
 /* pos can be 0-7 */
-#define CVMX_MF_SNOW3G_LFSR(val, pos)    asm volatile ("dmfc2 %[rt],0x0240+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_SNOW3G_LFSR(val,pos)    asm volatile ("dmfc2 %[rt],0x0240+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 /* pos can be 0-2 */
-#define CVMX_MF_SNOW3G_FSM(val, pos)     asm volatile ("dmfc2 %[rt],0x0251+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_SNOW3G_FSM(val,pos)     asm volatile ("dmfc2 %[rt],0x0251+" CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 #define CVMX_MF_SNOW3G_RESULT(val)      asm volatile ("dmfc2 %[rt],0x0250"                    : [rt] "=d" (val) :               )
 
 /* pos can be 0-7 */
-#define CVMX_MT_SNOW3G_LFSR(val, pos)    asm volatile ("dmtc2 %[rt],0x0240+" CVMX_TMP_STR(pos) : : [rt] "d" (val))
+#define CVMX_MT_SNOW3G_LFSR(val,pos)    asm volatile ("dmtc2 %[rt],0x0240+" CVMX_TMP_STR(pos) : : [rt] "d" (val))
 /* pos can be 0-2 */
-#define CVMX_MT_SNOW3G_FSM(val, pos)     asm volatile ("dmtc2 %[rt],0x0251+" CVMX_TMP_STR(pos) : : [rt] "d" (val))
+#define CVMX_MT_SNOW3G_FSM(val,pos)     asm volatile ("dmtc2 %[rt],0x0251+" CVMX_TMP_STR(pos) : : [rt] "d" (val))
 #define CVMX_MT_SNOW3G_RESULT(val)      asm volatile ("dmtc2 %[rt],0x0250"                    : : [rt] "d" (val))
 #define CVMX_MT_SNOW3G_START(val)       asm volatile ("dmtc2 %[rt],0x404d"                    : : [rt] "d" (val))
 #define CVMX_MT_SNOW3G_MORE(val)        asm volatile ("dmtc2 %[rt],0x404e"                    : : [rt] "d" (val))
@@ -590,11 +590,11 @@ extern "C" {
 /* SMS4 */
 
 /* pos can be 0-1 */
-#define CVMX_MF_SMS4_IV(val, pos)	asm volatile ("dmfc2 %[rt],0x0102+"CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_SMS4_IV(val,pos)	asm volatile ("dmfc2 %[rt],0x0102+"CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 /* pos can be 0-1 */
-#define CVMX_MF_SMS4_KEY(val, pos)	asm volatile ("dmfc2 %[rt],0x0104+"CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_SMS4_KEY(val,pos)	asm volatile ("dmfc2 %[rt],0x0104+"CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 /* pos can be 0-1 */
-#define CVMX_MF_SMS4_RESINP(val, pos)	asm volatile ("dmfc2 %[rt],0x0100+"CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
+#define CVMX_MF_SMS4_RESINP(val,pos)	asm volatile ("dmfc2 %[rt],0x0100+"CVMX_TMP_STR(pos) : [rt] "=d" (val) :               )
 #define CVMX_MT_SMS4_DEC_CBC0(val)	asm volatile ("dmtc2 %[rt],0x010c"                   : : [rt] "d" (val))
 #define CVMX_MT_SMS4_DEC_CBC1(val)	asm volatile ("dmtc2 %[rt],0x311d"      : : [rt] "d" (val))
 #define CVMX_MT_SMS4_DEC0(val)		asm volatile ("dmtc2 %[rt],0x010e"      : : [rt] "d" (val))
@@ -604,30 +604,30 @@ extern "C" {
 #define CVMX_MT_SMS4_ENC0(val)		asm volatile ("dmtc2 %[rt],0x010a"      : : [rt] "d" (val))
 #define CVMX_MT_SMS4_ENC1(val)		asm volatile ("dmtc2 %[rt],0x311b"      : : [rt] "d" (val))
 /* pos can be 0-1 */
-#define CVMX_MT_SMS4_IV(val, pos)	asm volatile ("dmtc2 %[rt],0x0102+"CVMX_TMP_STR(pos) : : [rt] "d" (val))
+#define CVMX_MT_SMS4_IV(val,pos)	asm volatile ("dmtc2 %[rt],0x0102+"CVMX_TMP_STR(pos) : : [rt] "d" (val))
 /* pos can be 0-1 */
-#define CVMX_MT_SMS4_KEY(val, pos)	asm volatile ("dmtc2 %[rt],0x0104+"CVMX_TMP_STR(pos) : : [rt] "d" (val))
+#define CVMX_MT_SMS4_KEY(val,pos)	asm volatile ("dmtc2 %[rt],0x0104+"CVMX_TMP_STR(pos) : : [rt] "d" (val))
 /* pos can be 0-1 */
-#define CVMX_MT_SMS4_RESINP(val, pos)	asm volatile ("dmtc2 %[rt],0x0100+"CVMX_TMP_STR(pos) : : [rt] "d" (val))
+#define CVMX_MT_SMS4_RESINP(val,pos)	asm volatile ("dmtc2 %[rt],0x0100+"CVMX_TMP_STR(pos) : : [rt] "d" (val))
 
 /* CAMELLIA */
 
 /* pos can be 0-1 */
-#define CVMX_MT_CAMELLIA_RESINP(val, pos) CVMX_MT_AES_RESULT(val, pos)
+#define CVMX_MT_CAMELLIA_RESINP(val,pos) CVMX_MT_AES_RESULT(val,pos)
 #define CVMX_MT_CAMELLIA_ROUND(val)      asm volatile ("dmtc2 %[rt],0x3114" : : [rt] "d" (val))
 #define CVMX_MT_CAMELLIA_FL(val)         asm volatile ("dmtc2 %[rt],0x115" : : [rt] "d" (val))
 #define CVMX_MT_CAMELLIA_FLINV(val)      asm volatile ("dmtc2 %[rt],0x116" : : [rt] "d" (val))
 
 /* pos can be 0-1 */
-#define CVMX_MF_CAMELLIA_RESINP(val, pos) CVMX_MF_AES_RESULT(val, pos)
+#define CVMX_MF_CAMELLIA_RESINP(val,pos) CVMX_MF_AES_RESULT(val,pos)
 
 /* ZUC */
 
 /* pos can be 0-7  (0-6 normally used) pos=i has LFSR_s(2*i) in msbs, */
 /* LFSR_s(2*i + 1) in lsbs, <63> and <31> are unused */
-#define CVMX_MT_ZUC_LFSR(val, pos) CVMX_MT_HSH_DATW(val, pos)
+#define CVMX_MT_ZUC_LFSR(val,pos) CVMX_MT_HSH_DATW(val,pos)
 /* pos can be 0-1  (not normally used) pos=0 has F_R1 in lsbs, pos=1 has F_R2 in lsbs */
-#define CVMX_MT_ZUC_FSM(val, pos)  CVMX_MT_HSH_IVW(val, (pos)+1)
+#define CVMX_MT_ZUC_FSM(val,pos)  CVMX_MT_HSH_IVW(val,(pos)+1)
 #define CVMX_MT_ZUC_RESULT(val)   CVMX_MT_HSH_IVW(val,0)
 #define CVMX_MT_ZUC_START(val)    asm volatile ("dmtc2 %[rt],0x4055" : : [rt] "d" (val))
 #define CVMX_MT_ZUC_MORE_NO_T     asm volatile ("dmtc2    $0,0x4056" : :)
@@ -635,37 +635,37 @@ extern "C" {
 
 /* pos can be 0-7  (not normally used) pos=i has LFSR_s(2*i) in msbs, */
 /* LFSR_s(2*i + 1) in lsbs, <63> and <31> are unpredictable after ops */
-#define CVMX_MF_ZUC_LFSR(val, pos) CVMX_MF_HSH_DATW(val, pos)
+#define CVMX_MF_ZUC_LFSR(val,pos) CVMX_MF_HSH_DATW(val,pos)
 /* pos can be 0-1  (not normally used) pos=0 has F_R1 in lsbs, pos=1 has F_R2 in lsbs */
-#define CVMX_MF_ZUC_FSM(val, pos)  CVMX_MF_HSH_IVW(val, (pos)+1)
+#define CVMX_MF_ZUC_FSM(val,pos)  CVMX_MF_HSH_IVW(val,(pos)+1)
 /* when T can be used, it is in <31:0> and <63:32> are zero */
-#define CVMX_MF_ZUC_TRESULT(val)  CVMX_MF_HSH_IVW(val, 3)
-#define CVMX_MF_ZUC_RESULT(val)   CVMX_MF_HSH_IVW(val, 0)
+#define CVMX_MF_ZUC_TRESULT(val)  CVMX_MF_HSH_IVW(val,3)
+#define CVMX_MF_ZUC_RESULT(val)   CVMX_MF_HSH_IVW(val,0)
 
 /* SHA3 (Keccak) */
 
 /* pos can be 0-24 */
-#define CVMX_MT_SHA3_DAT(val, pos)   {                                        \
+#define CVMX_MT_SHA3_DAT(val,pos)   {                                        \
     if(pos <= 14)                                                           \
-        CVMX_MT_HSH_DATW(val, pos);                                           \
+        CVMX_MT_HSH_DATW(val,pos);                                           \
     else if(pos == 15)                                                      \
         asm volatile ("dmtc2 %[rt],0x51" : : [rt] "d" (val));               \
     else if(pos <= 23)                                                      \
-        CVMX_MT_HSH_IVW(val, pos-16);                                         \
+        CVMX_MT_HSH_IVW(val,pos-16);                                         \
     else                                                                    \
         asm volatile ("dmtc2 %[rt],0x50" : : [rt] "d" (val));               \
     }
 
 /* pos can be 0-17 (use 0-8 for SHA3-512, 0-12 for SHA3-384, 0-16 for */
 /* SHA3-256, and 0-17 for SHA3-224) */
-#define CVMX_MT_SHA3_XORDAT(val, pos) asm volatile ("dmtc2 %[rt],0x02C0+" CVMX_TMP_STR(pos) : : [rt] "d" (val))
+#define CVMX_MT_SHA3_XORDAT(val,pos) asm volatile ("dmtc2 %[rt],0x02C0+" CVMX_TMP_STR(pos) : : [rt] "d" (val))
 /* works for all of SHA3-512, SHA3-384, SHA3-256, and SHA3-224 */
 #define CVMX_MT_SHA3_STARTOP         asm volatile ("dmtc2 $0,0x4052")
 
 /* pos can be 0-24 */
-#define CVMX_MF_SHA3_DAT(val, pos)   {                                        \
+#define CVMX_MF_SHA3_DAT(val,pos)   {                                        \
     if(pos <= 14)                                                           \
-        CVMX_MF_HSH_DATW(val, pos);                                           \
+        CVMX_MF_HSH_DATW(val,pos);                                           \
     else if(pos == 15)                                                      \
         asm volatile ("dmfc2 %[rt],0x24F" : [rt] "=d" (val) :);             \
     else if(pos <= 23)                                                      \

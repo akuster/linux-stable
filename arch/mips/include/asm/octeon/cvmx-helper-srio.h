@@ -50,6 +50,17 @@
 
 /**
  * @INTERNAL
+ * Convert interface number to sRIO link number
+ * per SoC model.
+ *
+ * @param xiface Interface to convert
+ *
+ * @return Srio link number
+ */
+extern int __cvmx_helper_srio_port(int xiface);
+
+/**
+ * @INTERNAL
  * Probe a SRIO interface and determine the number of ports
  * connected to it. The SRIO interface should still be down after
  * this call.

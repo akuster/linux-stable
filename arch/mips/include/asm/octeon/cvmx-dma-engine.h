@@ -43,7 +43,7 @@
  * Interface to the PCI / PCIe DMA engines. These are only avialable
  * on chips with PCI / PCIe.
  *
- * <hr>$Revision: 113328 $<hr>
+ * <hr>$Revision: 121436 $<hr>
  */
 
 #ifndef __CVMX_DMA_ENGINES_H__
@@ -279,7 +279,8 @@ typedef union {
                                                 components, and the number of 64-bit words required in the FIRST POINTERS
                                                 area is:
                                                     - HDR.NFST + ((HDR.NFST + 3)/4) where the division removes the fraction. */
-		uint64_t reserved_28_31:4;
+		uint64_t pvfe:1;            /**< Function Enable. */
+		uint64_t reserved_28_30:3;
 		uint64_t grp:10;	    /**< GRP � Group. */
 		uint64_t tt:2;		    /**< TT � SSO Tag Type. Sent to SSO upon instruction completion if
 						PT == DPI_HDR_PT_WQP. */

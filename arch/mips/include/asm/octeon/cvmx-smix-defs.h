@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -74,6 +74,11 @@ static inline uint64_t CVMX_SMIX_CLK(unsigned long offset)
 			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001180000001818ull) + ((offset) & 0) * 256;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180000003818ull) + ((offset) & 1) * 128;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 3))
@@ -81,7 +86,7 @@ static inline uint64_t CVMX_SMIX_CLK(unsigned long offset)
 			break;
 	}
 	cvmx_warn("CVMX_SMIX_CLK (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180000001818ull) + ((offset) & 1) * 256;
+	return CVMX_ADD_IO_SEG(0x0001180000003818ull) + ((offset) & 1) * 128;
 }
 #else
 static inline uint64_t CVMX_SMIX_CLK(unsigned long offset)
@@ -101,11 +106,14 @@ static inline uint64_t CVMX_SMIX_CLK(unsigned long offset)
 		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180000001818ull) + (offset) * 256;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180000003818ull) + (offset) * 128;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180000003818ull) + (offset) * 128;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180000001818ull) + (offset) * 256;
+	return CVMX_ADD_IO_SEG(0x0001180000003818ull) + (offset) * 128;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -130,6 +138,11 @@ static inline uint64_t CVMX_SMIX_CMD(unsigned long offset)
 			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001180000001800ull) + ((offset) & 0) * 256;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180000003800ull) + ((offset) & 1) * 128;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 3))
@@ -137,7 +150,7 @@ static inline uint64_t CVMX_SMIX_CMD(unsigned long offset)
 			break;
 	}
 	cvmx_warn("CVMX_SMIX_CMD (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180000001800ull) + ((offset) & 1) * 256;
+	return CVMX_ADD_IO_SEG(0x0001180000003800ull) + ((offset) & 1) * 128;
 }
 #else
 static inline uint64_t CVMX_SMIX_CMD(unsigned long offset)
@@ -157,11 +170,14 @@ static inline uint64_t CVMX_SMIX_CMD(unsigned long offset)
 		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180000001800ull) + (offset) * 256;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180000003800ull) + (offset) * 128;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180000003800ull) + (offset) * 128;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180000001800ull) + (offset) * 256;
+	return CVMX_ADD_IO_SEG(0x0001180000003800ull) + (offset) * 128;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -186,6 +202,11 @@ static inline uint64_t CVMX_SMIX_EN(unsigned long offset)
 			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001180000001820ull) + ((offset) & 0) * 256;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180000003820ull) + ((offset) & 1) * 128;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 3))
@@ -193,7 +214,7 @@ static inline uint64_t CVMX_SMIX_EN(unsigned long offset)
 			break;
 	}
 	cvmx_warn("CVMX_SMIX_EN (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180000001820ull) + ((offset) & 1) * 256;
+	return CVMX_ADD_IO_SEG(0x0001180000003820ull) + ((offset) & 1) * 128;
 }
 #else
 static inline uint64_t CVMX_SMIX_EN(unsigned long offset)
@@ -213,11 +234,14 @@ static inline uint64_t CVMX_SMIX_EN(unsigned long offset)
 		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180000001820ull) + (offset) * 256;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180000003820ull) + (offset) * 128;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180000003820ull) + (offset) * 128;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180000001820ull) + (offset) * 256;
+	return CVMX_ADD_IO_SEG(0x0001180000003820ull) + (offset) * 128;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -242,6 +266,11 @@ static inline uint64_t CVMX_SMIX_RD_DAT(unsigned long offset)
 			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001180000001810ull) + ((offset) & 0) * 256;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180000003810ull) + ((offset) & 1) * 128;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 3))
@@ -249,7 +278,7 @@ static inline uint64_t CVMX_SMIX_RD_DAT(unsigned long offset)
 			break;
 	}
 	cvmx_warn("CVMX_SMIX_RD_DAT (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180000001810ull) + ((offset) & 1) * 256;
+	return CVMX_ADD_IO_SEG(0x0001180000003810ull) + ((offset) & 1) * 128;
 }
 #else
 static inline uint64_t CVMX_SMIX_RD_DAT(unsigned long offset)
@@ -269,11 +298,14 @@ static inline uint64_t CVMX_SMIX_RD_DAT(unsigned long offset)
 		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180000001810ull) + (offset) * 256;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180000003810ull) + (offset) * 128;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180000003810ull) + (offset) * 128;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180000001810ull) + (offset) * 256;
+	return CVMX_ADD_IO_SEG(0x0001180000003810ull) + (offset) * 128;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -298,6 +330,11 @@ static inline uint64_t CVMX_SMIX_WR_DAT(unsigned long offset)
 			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001180000001808ull) + ((offset) & 0) * 256;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180000003808ull) + ((offset) & 1) * 128;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 3))
@@ -305,7 +342,7 @@ static inline uint64_t CVMX_SMIX_WR_DAT(unsigned long offset)
 			break;
 	}
 	cvmx_warn("CVMX_SMIX_WR_DAT (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180000001808ull) + ((offset) & 1) * 256;
+	return CVMX_ADD_IO_SEG(0x0001180000003808ull) + ((offset) & 1) * 128;
 }
 #else
 static inline uint64_t CVMX_SMIX_WR_DAT(unsigned long offset)
@@ -325,54 +362,52 @@ static inline uint64_t CVMX_SMIX_WR_DAT(unsigned long offset)
 		case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180000001808ull) + (offset) * 256;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180000003808ull) + (offset) * 128;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180000003808ull) + (offset) * 128;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180000001808ull) + (offset) * 256;
+	return CVMX_ADD_IO_SEG(0x0001180000003808ull) + (offset) * 128;
 }
 #endif
 
 /**
  * cvmx_smi#_clk
  *
- * This register determines the SMI timing characteristics. SMI Registers for the register address.
- *
+ * This register determines the SMI timing characteristics.
+ * If software wants to change SMI CLK timing parameters (SAMPLE/SAMPLE_HI), software
+ * must delay the SMI_CLK CSR write by at least 512 coprocessor-clocks after the
+ * previous SMI operation is finished.
  */
 union cvmx_smix_clk {
 	uint64_t u64;
 	struct cvmx_smix_clk_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
-	uint64_t mode                         : 1;  /**< IEEE operating mode
-                                                         0=Clause 22 complient
-                                                         1=Clause 45 complient */
+	uint64_t mode                         : 1;  /**< IEEE operating mode; 0 = Clause 22 compliant, 1 = Clause 45 compliant. */
 	uint64_t reserved_21_23               : 3;
-	uint64_t sample_hi                    : 5;  /**< When to sample read data (extended bits) */
-	uint64_t sample_mode                  : 1;  /**< Read Data sampling mode
-                                                         According to the 802.3 spec, on reads, the STA
-                                                         transitions MDC and the PHY drives MDIO with
-                                                         some delay relative to that edge.  This is edge1.
-                                                         The STA then samples MDIO on the next rising edge
-                                                         of MDC.  This is edge2. Octeon can sample the
-                                                         read data relative to either edge.
-                                                          0=[SAMPLE_HI,SAMPLE] specify the sample time
-                                                            relative to edge2
-                                                          1=[SAMPLE_HI,SAMPLE] specify the sample time
-                                                            relative to edge1 */
+	uint64_t sample_hi                    : 5;  /**< Sample (extended bits). Specifies in coprocessor clock cycles when to sample read data. */
+	uint64_t sample_mode                  : 1;  /**< Read data sampling mode.
+                                                         According to the 802.3 specification, on read operations, the STA transitions SMIn_MDC and
+                                                         the PHY drives SMIn_MDIO with some delay relative to that edge. This is Edge1.
+                                                         The STA then samples SMIn_MDIO on the next rising edge of SMIn_MDC. This is Edge2. The
+                                                         read data can be sampled relative to either edge.
+                                                         0 = Sample time is relative to Edge2.
+                                                         1 = Sample time is relative to Edge1. */
 	uint64_t reserved_14_14               : 1;
-	uint64_t clk_idle                     : 1;  /**< Do not toggle MDC on idle cycles */
-	uint64_t preamble                     : 1;  /**< Send PREAMBLE on SMI transacton
-                                                         PREAMBLE must be set 1 when MODE=1 in order
-                                                         for the receiving PHY to correctly frame the
-                                                         transaction. */
-	uint64_t sample                       : 4;  /**< When to sample read data
-                                                         (number of eclks after the rising edge of mdc)
-                                                         ( [SAMPLE_HI,SAMPLE] > 1 )
-                                                         ( [SAMPLE_HI, SAMPLE] + 3 <= 2*PHASE ) */
-	uint64_t phase                        : 8;  /**< MDC Clock Phase
-                                                         (number of eclks that make up an mdc phase)
-                                                         (PHASE > 2) */
+	uint64_t clk_idle                     : 1;  /**< SMIn_MDC toggle. When set, this bit causes SMIn_MDC not to toggle on idle cycles. */
+	uint64_t preamble                     : 1;  /**< Preamble. When this bit is set, the 32-bit preamble is sent first on SMI transactions.
+                                                         This field must be set to 1 when MODE = 1 in order for the receiving PHY to correctly
+                                                         frame the transaction. */
+	uint64_t sample                       : 4;  /**< Sample read data. Specifies the number of coprocessor clock cycles after the rising edge
+                                                         of SMIn_MDC to wait before sampling read data.
+                                                         _ (SAMPLE_HI,SAMPLE) > 1
+                                                         _ (SAMPLE_HI,SAMPLE) + 3 <= 2 * PHASE */
+	uint64_t phase                        : 8;  /**< MDC clock phase. Specifies the number of coprocessor clock cycles that make up an SMIn_MDC
+                                                         phase.
+                                                         _ PHASE > 2 */
 #else
 	uint64_t phase                        : 8;
 	uint64_t sample                       : 4;
@@ -440,8 +475,11 @@ union cvmx_smix_clk {
 	struct cvmx_smix_clk_s                cn68xxp1;
 	struct cvmx_smix_clk_s                cn70xx;
 	struct cvmx_smix_clk_s                cn70xxp1;
+	struct cvmx_smix_clk_s                cn73xx;
 	struct cvmx_smix_clk_s                cn78xx;
+	struct cvmx_smix_clk_s                cn78xxp2;
 	struct cvmx_smix_clk_s                cnf71xx;
+	struct cvmx_smix_clk_s                cnf75xx;
 };
 typedef union cvmx_smix_clk cvmx_smix_clk_t;
 
@@ -449,27 +487,26 @@ typedef union cvmx_smix_clk cvmx_smix_clk_t;
  * cvmx_smi#_cmd
  *
  * This register forces a read or write command to the PHY. Write operations to this register
- * create SMI transactions. Software will poll (depending on the transaction type). SMI Registers
- * for the register address.
+ * create SMI transactions. Software will poll (depending on the transaction type).
  */
 union cvmx_smix_cmd {
 	uint64_t u64;
 	struct cvmx_smix_cmd_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
-	uint64_t phy_op                       : 2;  /**< PHY Opcode depending on SMI_CLK[MODE]
-                                                         SMI_CLK[MODE] == 0 (<=1Gbs / Clause 22)
-                                                          x0=write
-                                                          x1=read
-                                                         SMI_CLK[MODE] == 1 (>1Gbs / Clause 45)
-                                                          00=address
-                                                          01=write
-                                                          11=read
-                                                          10=post-read-increment-address */
+	uint64_t phy_op                       : 2;  /**< PHY opcode, depending on SMI_()_CLK[MODE] setting.
+                                                         * If SMI_()_CLK[MODE] = 0 (<=1Gbs / Clause 22):
+                                                         0 = write operation, encoded in the frame as 01
+                                                         1 = read operation, encoded in the frame as 10.
+                                                         * If SMI_()_CLK[MODE] = 1 (>1Gbs / Clause 45):
+                                                         0x0 = Address.
+                                                         0x1 = Write.
+                                                         0x2 = Post-read-increment-address.
+                                                         0x3 = Read. */
 	uint64_t reserved_13_15               : 3;
-	uint64_t phy_adr                      : 5;  /**< PHY Address */
+	uint64_t phy_adr                      : 5;  /**< PHY address. */
 	uint64_t reserved_5_7                 : 3;
-	uint64_t reg_adr                      : 5;  /**< PHY Register Offset */
+	uint64_t reg_adr                      : 5;  /**< PHY register offset. */
 #else
 	uint64_t reg_adr                      : 5;
 	uint64_t reserved_5_7                 : 3;
@@ -516,15 +553,18 @@ union cvmx_smix_cmd {
 	struct cvmx_smix_cmd_s                cn68xxp1;
 	struct cvmx_smix_cmd_s                cn70xx;
 	struct cvmx_smix_cmd_s                cn70xxp1;
+	struct cvmx_smix_cmd_s                cn73xx;
 	struct cvmx_smix_cmd_s                cn78xx;
+	struct cvmx_smix_cmd_s                cn78xxp2;
 	struct cvmx_smix_cmd_s                cnf71xx;
+	struct cvmx_smix_cmd_s                cnf75xx;
 };
 typedef union cvmx_smix_cmd cvmx_smix_cmd_t;
 
 /**
  * cvmx_smi#_en
  *
- * Enables the SMI interface. SMI Registers for the register address.
+ * Enables the SMI interface.
  *
  */
 union cvmx_smix_en {
@@ -532,9 +572,9 @@ union cvmx_smix_en {
 	struct cvmx_smix_en_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t en                           : 1;  /**< Interface enable
-                                                         0=SMI Interface is down / no transactions, no MDC
-                                                         1=SMI Interface is up */
+	uint64_t en                           : 1;  /**< SMI/MDIO interface enable:
+                                                         1 = Enable interface.
+                                                         0 = Disable interface: no transactions, no SMIn_MDC transitions. */
 #else
 	uint64_t en                           : 1;
 	uint64_t reserved_1_63                : 63;
@@ -559,15 +599,18 @@ union cvmx_smix_en {
 	struct cvmx_smix_en_s                 cn68xxp1;
 	struct cvmx_smix_en_s                 cn70xx;
 	struct cvmx_smix_en_s                 cn70xxp1;
+	struct cvmx_smix_en_s                 cn73xx;
 	struct cvmx_smix_en_s                 cn78xx;
+	struct cvmx_smix_en_s                 cn78xxp2;
 	struct cvmx_smix_en_s                 cnf71xx;
+	struct cvmx_smix_en_s                 cnf75xx;
 };
 typedef union cvmx_smix_en cvmx_smix_en_t;
 
 /**
  * cvmx_smi#_rd_dat
  *
- * This register contains the data in a read operation. SMI Registers for the register address.
+ * This register contains the data in a read operation.
  *
  */
 union cvmx_smix_rd_dat {
@@ -575,9 +618,9 @@ union cvmx_smix_rd_dat {
 	struct cvmx_smix_rd_dat_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
-	uint64_t pending                      : 1;  /**< Read Xaction Pending */
-	uint64_t val                          : 1;  /**< Read Data Valid */
-	uint64_t dat                          : 16; /**< Read Data */
+	uint64_t pending                      : 1;  /**< Read transaction pending. Indicates that an SMI read transaction is in flight. */
+	uint64_t val                          : 1;  /**< Read data valid. Asserts when the read transaction completes. A read to this register clears VAL. */
+	uint64_t dat                          : 16; /**< Read data. */
 #else
 	uint64_t dat                          : 16;
 	uint64_t val                          : 1;
@@ -604,15 +647,18 @@ union cvmx_smix_rd_dat {
 	struct cvmx_smix_rd_dat_s             cn68xxp1;
 	struct cvmx_smix_rd_dat_s             cn70xx;
 	struct cvmx_smix_rd_dat_s             cn70xxp1;
+	struct cvmx_smix_rd_dat_s             cn73xx;
 	struct cvmx_smix_rd_dat_s             cn78xx;
+	struct cvmx_smix_rd_dat_s             cn78xxp2;
 	struct cvmx_smix_rd_dat_s             cnf71xx;
+	struct cvmx_smix_rd_dat_s             cnf75xx;
 };
 typedef union cvmx_smix_rd_dat cvmx_smix_rd_dat_t;
 
 /**
  * cvmx_smi#_wr_dat
  *
- * This register provides the data for a write operation. SMI Registers for the register address.
+ * This register provides the data for a write operation.
  *
  */
 union cvmx_smix_wr_dat {
@@ -620,9 +666,9 @@ union cvmx_smix_wr_dat {
 	struct cvmx_smix_wr_dat_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
-	uint64_t pending                      : 1;  /**< Write Xaction Pending */
-	uint64_t val                          : 1;  /**< Write Data Valid */
-	uint64_t dat                          : 16; /**< Write Data */
+	uint64_t pending                      : 1;  /**< Write transaction pending. Indicates that an SMI write transaction is in flight. */
+	uint64_t val                          : 1;  /**< Write data valid. Asserts when the write transaction completes. A read to this register clears VAL. */
+	uint64_t dat                          : 16; /**< Write data. */
 #else
 	uint64_t dat                          : 16;
 	uint64_t val                          : 1;
@@ -649,8 +695,11 @@ union cvmx_smix_wr_dat {
 	struct cvmx_smix_wr_dat_s             cn68xxp1;
 	struct cvmx_smix_wr_dat_s             cn70xx;
 	struct cvmx_smix_wr_dat_s             cn70xxp1;
+	struct cvmx_smix_wr_dat_s             cn73xx;
 	struct cvmx_smix_wr_dat_s             cn78xx;
+	struct cvmx_smix_wr_dat_s             cn78xxp2;
 	struct cvmx_smix_wr_dat_s             cnf71xx;
+	struct cvmx_smix_wr_dat_s             cnf75xx;
 };
 typedef union cvmx_smix_wr_dat cvmx_smix_wr_dat_t;
 

@@ -43,7 +43,7 @@
  * Functions for LOOP initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 73842 $<hr>
+ * <hr>$Revision: 115656 $<hr>
  */
 #ifndef __CVMX_HELPER_LOOP_H__
 #define __CVMX_HELPER_LOOP_H__
@@ -54,12 +54,12 @@
  * connected to it. The LOOP interface should still be down after
  * this call.
  *
- * @param interface Interface to probe
+ * @param xiface Interface to probe
  *
  * @return Number of ports on the interface. Zero to disable.
  */
-extern int __cvmx_helper_loop_probe(int interface);
-extern int __cvmx_helper_loop_enumerate(int interface);
+extern int __cvmx_helper_loop_probe(int xiface);
+extern int __cvmx_helper_loop_enumerate(int xiface);
 
 /**
  * @INTERNAL
@@ -67,10 +67,10 @@ extern int __cvmx_helper_loop_enumerate(int interface);
  * I/O should be fully functional. This is called with IPD
  * enabled but PKO disabled.
  *
- * @param interface Interface to bring up
+ * @param xiface Interface to bring up
  *
  * @return Zero on success, negative on failure
  */
-extern int __cvmx_helper_loop_enable(int interface);
+extern int __cvmx_helper_loop_enable(int xiface);
 
 #endif

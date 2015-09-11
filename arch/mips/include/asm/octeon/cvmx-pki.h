@@ -65,21 +65,27 @@ extern "C" {
 /* *INDENT-ON* */
 #endif
 
+/* PKI AURA and BPID count are equal to FPA AURA count */
+#define CVMX_PKI_NUM_AURA	(cvmx_fpa3_num_auras())
+#define CVMX_PKI_NUM_BPID	(cvmx_fpa3_num_auras())
+#define CVMX_PKI_NUM_SSO_GROUP	(cvmx_sso_num_xgrp())
+/* #define CVMX_PKI_NUM_CLUSTER_GROUP      (4) */
+#define CVMX_PKI_NUM_CLUSTER_GROUP_MAX	(4)
+#define CVMX_PKI_NUM_CLUSTER_GROUP	(cvmx_pki_num_cl_grp())
+/* #define CVMX_PKI_NUM_CLUSTER		(4) */
+#define CVMX_PKI_NUM_CLUSTER	 (cvmx_pki_num_clusters())
+
+/* FIXME: Reduce some of these values, convert to routines XXX */
 #define CVMX_PKI_NUM_CHANNEL		(4096)
-#define CVMX_PKI_NUM_AURA		(1024)
-#define CVMX_PKI_NUM_BPID		(1024)
 #define CVMX_PKI_NUM_PKIND		(64)
 #define CVMX_PKI_NUM_INTERNAL_STYLE     (256)
 #define CVMX_PKI_NUM_FINAL_STYLE 	(64)
 #define CVMX_PKI_NUM_QPG_ENTRY		(2048)
+#define CVMX_PKI_NUM_MTAG_IDX	(32 / 4) /*32 registers grouped by 4*/
 #define CVMX_PKI_NUM_LTYPE		(32)
-#define CVMX_PKI_NUM_CLUSTER		(4)
-#define CVMX_PKI_NUM_CLUSTER_GROUP      (4)
 #define CVMX_PKI_NUM_PCAM_BANK		(2)
 #define CVMX_PKI_NUM_PCAM_ENTRY		(192)
 #define CVMX_PKI_NUM_FRAME_CHECK	(2)
-#define CVMX_PKI_NUM_BPID		(1024)
-#define CVMX_PKI_NUM_SSO_GROUP		(256)
 #define CVMX_PKI_NUM_BELTYPE		(32)
 #define CVMX_PKI_MAX_FRAME_SIZE		(65535)
 #define CVMX_PKI_FIND_AVAL_ENTRY        (-1)
@@ -91,6 +97,19 @@ extern "C" {
 #else
 #define CVMX_PKI_TOTAL_PCAM_ENTRY	(CVMX_PKI_NUM_PCAM_BANK * CVMX_PKI_NUM_PCAM_ENTRY)
 #endif
+
+static inline unsigned cvmx_pki_num_clusters(void)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		return 2;
+	return 4;
+}
+static inline unsigned cvmx_pki_num_cl_grp(void)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		return 1;
+	return 4;
+}
 
 enum cvmx_pki_pkind_parse_mode {
 	CVMX_PKI_PARSE_LA_TO_LG = 0,	/* parse LA(L2) to LG */
@@ -375,20 +394,28 @@ struct cvmx_pki_style_parm {
    that modiying that style will modify the respective parameters for all the ports which
    are using this style */
 
+enum cvmx_pki_mtag_ptrsel {
+	CVMX_PKI_MTAG_PTRSEL_SOP = 0,
+	CVMX_PKI_MTAG_PTRSEL_LA = 8,
+	CVMX_PKI_MTAG_PTRSEL_LB = 9,
+	CVMX_PKI_MTAG_PTRSEL_LC = 10,
+	CVMX_PKI_MTAG_PTRSEL_LD = 11,
+	CVMX_PKI_MTAG_PTRSEL_LE = 12,
+	CVMX_PKI_MTAG_PTRSEL_LF = 13,
+	CVMX_PKI_MTAG_PTRSEL_LG = 14,
+	CVMX_PKI_MTAG_PTRSEL_VL = 15,
+};
+
 struct cvmx_pki_mask_tag {
-	uint64_t tag_inc;			/**< Include masked tags using PKI_TAG_INC(0..31)_MASK. Each bit indicates to include the
-						     corresponding PKI_TAG_INC_MASK range. */
-	uint64_t tag_masken;			/**< Apply PKI_STYLE(0..63)_TAG_MASK to computed tag.*/
-	uint64_t mask;				/**< When set, each bit excludes corresponding bit of the tuple computed tag from being
-						     included in the final tag. PKI_CL(0..3)_STYLE(0..63)_CFG2 [TAG_MASKEN] must be set. Does
-						     not affect tags from packets with a PKI_INST_HDR_S when PKI_INST_HDR[UTAG] is set */
-	uint64_t tag_idx[4];			/**< Index 0-3 for TAG_INC<3>. This value is multipled by 4 to index into PKI_TAG_INC(0..31)_MASK.
-						     See WQE[TAG]. */
+	bool enable;
+	int base; /* CVMX_PKI_MTAG_PTRSEL_XXX */
+	int offset; /* Offset from base. */
+	uint64_t val; /* Bitmask: 1 = enable, 0 = disabled for each byte in the 64-byte array.*/
 };
 
 struct cvmx_pki_style_tag_cfg {
 	struct cvmx_pki_tag_fields tag_fields;
-	struct cvmx_pki_mask_tag   mask_tag;
+	struct cvmx_pki_mask_tag mask_tag[4];
 };
 
 struct cvmx_pki_style_config {
@@ -458,7 +485,7 @@ struct cvmx_pki_tag_sec {
 };
 
 struct cvmx_pki_global_config {
-	uint64_t cluster_mask[CVMX_PKI_NUM_CLUSTER_GROUP];	/**< Mask of clusters associated with that cluster group,
+	uint64_t cluster_mask[CVMX_PKI_NUM_CLUSTER_GROUP_MAX];/**< Mask of clusters associated with that cluster group,
 								there are 4 cluster groups and 4 clusters which can be assigned
 								to cluster groups */
 	enum cvmx_pki_stats_mode stat_mode;			/**< The PKI_STAT*_X registers can be indexed either by pkind or final style.
@@ -548,35 +575,35 @@ struct cvmx_pki_pcam_config {
  * Status statistics for a port
  */
 struct cvmx_pki_port_stats {
-	uint32_t dropped_octets;	/**< Inbound octets marked to be dropped by the IPD */
-	uint32_t dropped_packets;	/**< Inbound packets marked to be dropped by the IPD */
-	uint32_t pci_raw_packets;	/**< RAW PCI Packets received by PKI per port */
-	uint32_t octets;		/**< Number of octets processed by PKI */
-	uint32_t packets;		/**< Number of packets processed by PKI */
-	uint32_t multicast_packets;	/**< Number of indentified L2 multicast packets.
+	uint64_t dropped_octets;	/**< Inbound octets marked to be dropped by the IPD */
+	uint64_t dropped_packets;	/**< Inbound packets marked to be dropped by the IPD */
+	uint64_t pci_raw_packets;	/**< RAW PCI Packets received by PKI per port */
+	uint64_t octets;		/**< Number of octets processed by PKI */
+	uint64_t packets;		/**< Number of packets processed by PKI */
+	uint64_t multicast_packets;	/**< Number of indentified L2 multicast packets.
 					Does not include broadcast packets.
 					Only includes packets whose parse mode is
 					SKIP_TO_L2 */
-	uint32_t broadcast_packets;	/**< Number of indentified L2 broadcast packets.
+	uint64_t broadcast_packets;	/**< Number of indentified L2 broadcast packets.
 					Does not include multicast packets.
 					Only includes packets whose parse mode is
 					SKIP_TO_L2 */
-	uint32_t len_64_packets;	/**< Number of 64B packets */
-	uint32_t len_65_127_packets;	/**< Number of 65-127B packets */
-	uint32_t len_128_255_packets;	/**< Number of 128-255B packets */
-	uint32_t len_256_511_packets;	/**< Number of 256-511B packets */
-	uint32_t len_512_1023_packets;	/**< Number of 512-1023B packets */
-	uint32_t len_1024_1518_packets;	/**< Number of 1024-1518B packets */
-	uint32_t len_1519_max_packets;	/**< Number of 1519-max packets */
-	uint32_t fcs_align_err_packets;	/**< Number of packets with FCS or Align opcode errors */
-	uint32_t runt_packets;		/**< Number of packets with length < min */
-	uint32_t runt_crc_packets;	/**< Number of packets with length < min and FCS error */
-	uint32_t oversize_packets;	/**< Number of packets with length > max */
-	uint32_t oversize_crc_packets;	/**< Number of packets with length > max and FCS error */
-	uint32_t inb_packets;		/**< Number of packets without GMX/SPX/PCI errors received by PKI */
+	uint64_t len_64_packets;	/**< Number of 64B packets */
+	uint64_t len_65_127_packets;	/**< Number of 65-127B packets */
+	uint64_t len_128_255_packets;	/**< Number of 128-255B packets */
+	uint64_t len_256_511_packets;	/**< Number of 256-511B packets */
+	uint64_t len_512_1023_packets;	/**< Number of 512-1023B packets */
+	uint64_t len_1024_1518_packets;	/**< Number of 1024-1518B packets */
+	uint64_t len_1519_max_packets;	/**< Number of 1519-max packets */
+	uint64_t fcs_align_err_packets;	/**< Number of packets with FCS or Align opcode errors */
+	uint64_t runt_packets;		/**< Number of packets with length < min */
+	uint64_t runt_crc_packets;	/**< Number of packets with length < min and FCS error */
+	uint64_t oversize_packets;	/**< Number of packets with length > max */
+	uint64_t oversize_crc_packets;	/**< Number of packets with length > max and FCS error */
+	uint64_t inb_packets;		/**< Number of packets without GMX/SPX/PCI errors received by PKI */
 	uint64_t inb_octets;		/**< Total number of octets from all packets received by PKI, including CRC */
-	uint16_t inb_errors;		/**< Number of packets with GMX/SPX/PCI errors received by PKI */
-	uint32_t mcast_l2_red_packets;	/**< Number of packets with L2 Multicast DMAC
+	uint64_t inb_errors;		/**< Number of packets with GMX/SPX/PCI errors received by PKI */
+	uint64_t mcast_l2_red_packets;	/**< Number of packets with L2 Multicast DMAC
 					that were dropped due to RED.
 					The HW will consider a packet to be an L2
 					multicast packet when the least-significant bit
@@ -584,12 +611,12 @@ struct cvmx_pki_port_stats {
 					packet is not an L2 broadcast packet.
 					Only applies when the parse mode for the packets
 					is SKIP-TO-L2 */
-	uint32_t bcast_l2_red_packets;	/**< Number of packets with L2 Broadcast DMAC	that were dropped due to RED.
+	uint64_t bcast_l2_red_packets;	/**< Number of packets with L2 Broadcast DMAC	that were dropped due to RED.
 					The HW will consider a packet to be an L2
 					broadcast packet when the 48-bit DMAC is all 1's.
 					Only applies when the parse mode for the packets
 					is SKIP-TO-L2 */
-	uint32_t mcast_l3_red_packets;	/**< Number of packets with L3 Multicast Dest Address
+	uint64_t mcast_l3_red_packets;	/**< Number of packets with L3 Multicast Dest Address
 					that were dropped due to RED.
 					The HW considers an IPv4 packet to be multicast
 					when the most-significant nibble of the 32-bit
@@ -600,7 +627,7 @@ struct cvmx_pki_port_stats {
 					Only applies when the parse mode for the packets
 					is SKIP-TO-L2 and the packet is IP or the parse
 					mode for the packet is SKIP-TO-IP */
-	uint32_t bcast_l3_red_packets;	/**< Number of packets with L3 Broadcast Dest Address
+	uint64_t bcast_l3_red_packets;	/**< Number of packets with L3 Broadcast Dest Address
 					that were dropped due to RED.
 					The HW considers an IPv4 packet to be broadcast
 					when all bits are set in the MSB of the
@@ -688,7 +715,7 @@ static inline void cvmx_pki_write_ltype_map(int node,
  * @param cl_grp        cluster group to enable parsing
  *
  */
-static inline int cvmx_pki_parse_enable(int node, int cl_grp)
+static inline int cvmx_pki_parse_enable(int node, unsigned cl_grp)
 {
 	cvmx_pki_icgx_cfg_t pki_cl_grp;
 
@@ -1033,6 +1060,21 @@ static inline void cvmx_pki_get_flow_stats(int node, uint64_t style_num, struct 
 {
 	cvmx_pki_get_stats(node, style_num, status);
 }
+
+/**
+ * Show integrated PKI configuration.
+ *
+ * @param node	   node number
+ */
+int cvmx_pki_config_dump(unsigned node);
+
+/**
+ * Show integrated PKI statistics.
+ *
+ * @param node	   node number
+ */
+int cvmx_pki_stats_dump(unsigned node);
+
 
 /**
  * This function enables pki

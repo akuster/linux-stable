@@ -1637,6 +1637,23 @@ enum cvmx_sso_group_modify_mask{
 };
 
 /**
+ * @INTERNAL
+ * Return the number of SSO groups for a given SoC model
+ */
+static inline unsigned cvmx_sso_num_xgrp(void)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return 256;
+	if (OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		return 64;
+	if (OCTEON_IS_MODEL(OCTEON_CN73XX))
+		return 64;
+	cvmx_printf("ERROR: %s: Unknown model\n", __func__);
+	return 0;
+}
+
+
+/**
  * Get the POW tag for this core. This returns the current
  * tag type, tag, group, and POW entry index associated with
  * this core. Index is only valid if the tag type isn't NULL_NULL.
@@ -2594,8 +2611,9 @@ static inline void cvmx_pow_set_group_mask(uint64_t core_num, uint64_t mask)
 		node = cvmx_coremask_core_to_node(core_num);
 		core = cvmx_coremask_core_on_node(core_num);
 
-		/* 256 groups divided into 4 X 64 bit registers */
-		for (rix = 0; rix < (CVMX_SSO_NUM_XGRP >> 6); rix ++ ) {
+		/* 78xx: 256 groups divided into 4 X 64 bit registers */
+		/* 73xx: 64 groups are in one register */
+		for (rix = 0; rix < (cvmx_sso_num_xgrp() >> 6); rix ++ ) {
 			grp_msk.u64 = 0;
 			for(bit = 0; bit < 64; bit++) {
 				/* 8-bit native XGRP number */
@@ -2637,9 +2655,9 @@ static inline void cvmx_pow_set_group_mask(uint64_t core_num, uint64_t mask)
  * @param core_num   	processor core to apply mask to
  * @param mask_set	78XX has 2 set of masks per core each with 256 groups.
  *                      Bit 0 represents the first mask set, bit 1 the second,
- * 			when set a each member of <xgrp_mask> will be added
+ * 			when set a each member of 'xgrp_mask' will be added
  * 			to the core, when cleared, each of the groups in
- * 			<xgrp_mask> will be removed from the mask set.
+ * 			'xgrp_mask' will be removed from the mask set.
  * @param xgrp_mask   	Group mask. There are 256 groups, divided in 4 of 64 bit mask sets.
  * 	        	Each 1 bit in the mask enables the core to accept work from
  *      	        the corresponding group.
@@ -2647,7 +2665,7 @@ static inline void cvmx_pow_set_group_mask(uint64_t core_num, uint64_t mask)
  * Note: each core can be configured to accept work in accordance to both
  * mask sets, with the first having higher precedence over the second,
  * or to accept work in accordance to just one of the two mask sets.
- * The <core_num> argument represents a processor core on any node
+ * The 'core_num' argument represents a processor core on any node
  * in a coherent multi-chip system.
  *
  * TBD: function to configure which mask_set is applied to a core.
@@ -2668,7 +2686,7 @@ static inline void cvmx_pow_set_xgrp_mask( uint64_t core_num,
 	node = cvmx_coremask_core_to_node(core_num);
 	core = cvmx_coremask_core_on_node(core_num);
 
-	for (grp = 0; grp < (CVMX_SSO_NUM_XGRP >> 6); grp++) {
+	for (grp = 0; grp < (cvmx_sso_num_xgrp() >> 6); grp++) {
 		uint64_t reg_addr;
 
 		reg_addr = CVMX_SSO_PPX_SX_GRPMSKX(core, 0, grp),
@@ -2702,7 +2720,7 @@ static inline void cvmx_pow_set_xgrp_mask( uint64_t core_num,
  * @param mask_set	every core has set of 2 masks which can be set to accept work
  *                      from 256 groups. At the time of get_work, cores can choose which
  *			mask_set to get work from.
- * 			<mask_set> values range from 0 to 3, where
+ * 			'mask_set' values range from 0 to 3, where
  * 			each of the two bits represents a mask set.
  * 			Cores will be added to the mask set whith corresponding
  * 			bit set, and removed from the mask set with
@@ -2846,7 +2864,7 @@ static inline void cvmx_pow_set_priority(uint64_t core_num, const uint8_t priori
 		grp_pri.s.weight = 0x3f;
 		grp_pri.s.affinity = 0xf;
 
-		for(group = 0; group < CVMX_SSO_NUM_XGRP; group ++ ) {
+		for(group = 0; group < cvmx_sso_num_xgrp(); group ++ ) {
 			grp_pri.u64 = cvmx_read_csr_node(node,
 				CVMX_SSO_GRPX_PRI(group));
 			grp_pri.s.pri = priority[group & 0x7];
@@ -3153,13 +3171,13 @@ static inline uint32_t cvmx_pow_tag_get_hw_bits(uint64_t tag)
 	return (tag & cvmx_build_mask(32 - CVMX_TAG_SW_BITS));
 }
 
-static inline uint64_t cvmx_sso_get_total_wqe_count_78xx(int node)
+static inline uint64_t cvmx_sso3_get_wqe_count(int node)
 {
 	cvmx_sso_grpx_aq_cnt_t aq_cnt;
-	int grp = 0;
+	unsigned grp = 0;
 	uint64_t cnt = 0;
 
-	for( grp = 0; grp < CVMX_SSO_NUM_XGRP; grp++) {
+	for( grp = 0; grp < cvmx_sso_num_xgrp(); grp++) {
 		aq_cnt.u64 = cvmx_read_csr_node(node,
 				CVMX_SSO_GRPX_AQ_CNT(grp));
 		cnt += aq_cnt.s.aq_cnt;
@@ -3172,7 +3190,7 @@ static inline uint64_t cvmx_sso_get_total_wqe_count(void)
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE))
 	{
 		int node = cvmx_get_node_num();
-		return cvmx_sso_get_total_wqe_count_78xx(node);
+		return cvmx_sso3_get_wqe_count(node);
 	}
 	else if (OCTEON_IS_MODEL(OCTEON_CN68XX))
 	{
@@ -3237,6 +3255,13 @@ int cvmx_sso_reserve_group(int node);
 #define cvmx_sso_allocate_group cvmx_sso_reserve_group
 int cvmx_sso_release_group_range(int node, int base_group, int count);
 int cvmx_sso_release_group(int node, int group);
+
+/**
+ * Show integrated PKI configuration.
+ *
+ * @param node	   node number
+ */
+int cvmx_sso_config_dump(unsigned node);
 
 #ifdef  __cplusplus
 /* *INDENT-OFF* */

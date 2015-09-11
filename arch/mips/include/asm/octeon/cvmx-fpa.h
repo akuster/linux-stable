@@ -42,7 +42,7 @@
  *
  * Interface to the hardware Free Pool Allocator.
  *
- * <hr>$Revision: 113671 $<hr>
+ * <hr>$Revision: 120123 $<hr>
  *
  */
 
@@ -62,7 +62,7 @@
 
 /* On CN78XX in backward-compatible mode, pool is mapped to AURA */
 #define CVMX_FPA_NUM_POOLS (octeon_has_feature(OCTEON_FEATURE_FPA3) ? \
-			CVMX_FPA3_NUM_POOLX : CVMX_FPA1_NUM_POOLS)
+			cvmx_fpa3_num_auras() : CVMX_FPA1_NUM_POOLS)
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
@@ -87,26 +87,6 @@ typedef struct cvmx_fpa_pool_config cvmx_fpa_pool_config_t;
  * @return The name
  */
 const char *cvmx_fpa_get_name(int pool_num);
-
-/**
- * Return the base of the pool
- *
- * @param pool   Pool to get the base of
- * @return The base
- */
-void *cvmx_fpa_get_base(int pool);
-
-/**
- * Check if a pointer belongs to an FPA pool. Return non-zero
- * if the supplied pointer is inside the memory controlled by
- * an FPA pool.
- *
- * @param pool   Pool to check
- * @param ptr    Pointer to check
- * @return Non-zero if pointer is in the pool. Zero if not
- */
-int cvmx_fpa_is_member(int pool, void *ptr);
-
 
 /**
  * Initialize FPA per node

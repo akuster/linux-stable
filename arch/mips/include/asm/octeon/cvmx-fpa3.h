@@ -42,7 +42,7 @@
  *
  * Interface to the CN78XX Free Pool Allocator, a.k.a. FPA3
  *
- * <hr>$Revision: 108951 $<hr>
+ * <hr>$Revision: 122227 $<hr>
  *
  */
 
@@ -238,14 +238,53 @@ enum cvmx_fpa3_pool_alignment_e {
 	FPA_OPAQUE_ALIGNMENT
 };
 
-#define CVMX_FPA3_NUM_POOLX	                64
-#define CVMX_FPA3_NUM_AURAS                     1024
+#ifdef CVMX_BUILD_FOR_LINUX_KERNEL	//XXX temp for octeon3_ethernet.c
+# define CVMX_FPA3_NUM_POOLX	                64	// Depricated
+# define CVMX_FPA3_NUM_AURAS                     1024	// Depricated
+#endif
+
 #define	CVMX_FPA3_AURAX_LIMIT_MAX               ((1ull<<40)-1)
+
+/**
+ * @INTERNAL
+ * Accessor functions to return number of POOLS in an FPA3
+ * depending on SoC model.
+ * The number is per-node for models supporting multi-node configurations.
+ */
+static inline int cvmx_fpa3_num_pools(void)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return 64;
+	if (OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		return 32;
+	if (OCTEON_IS_MODEL(OCTEON_CN73XX))
+		return 32;
+	cvmx_printf("ERROR: %s: Unknowm model\n",__func__);
+	return -1;
+}
+
+/**
+ * @INTERNAL
+ * Accessor functions to return number of AURAS in an FPA3
+ * depending on SoC model.
+ * The number is per-node for models supporting multi-node configurations.
+ */
+static inline int cvmx_fpa3_num_auras(void)
+{
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return 1024;
+	if (OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		return 512;
+	if (OCTEON_IS_MODEL(OCTEON_CN73XX))
+		return 512;
+	cvmx_printf("ERROR: %s: Unknowm model\n",__func__);
+	return -1;
+}
+
 
 /**
  * Get the FPA3 POOL underneath FPA3 AURA, containing all its buffers
  *
- * @INTERNAL
  */
 static inline cvmx_fpa3_pool_t
 cvmx_fpa3_aura_to_pool(cvmx_fpa3_gaura_t aura)
@@ -268,10 +307,7 @@ cvmx_fpa3_aura_to_pool(cvmx_fpa3_gaura_t aura)
 /**
  * Get a new block from the FPA pool
  *
- * @INTERNAL
- *
- * @param node  - node number
- * @param pool  - pool to get the block from
+ * @param aura  - aura number
  * @return pointer to the block or NULL on failure
  */
 static inline void *cvmx_fpa3_alloc(cvmx_fpa3_gaura_t aura)
@@ -302,7 +338,6 @@ static inline void *cvmx_fpa3_alloc(cvmx_fpa3_gaura_t aura)
 
 /**
  * Asynchronously get a new block from the FPA
- * @INTERNAL
  *
  * The result of cvmx_fpa_async_alloc() may be retrieved using
  * cvmx_fpa_async_alloc_finish().
@@ -333,7 +368,6 @@ cvmx_fpa3_async_alloc(uint64_t scr_addr, cvmx_fpa3_gaura_t aura)
 
 /**
  * Retrieve the result of cvmx_fpa3_async_alloc
- * @INTERNAL
  *
  * @param scr_addr The Local scratch address.  Must be the same value
  * passed to cvmx_fpa_async_alloc().
@@ -360,7 +394,6 @@ cvmx_fpa3_async_alloc_finish(uint64_t scr_addr, cvmx_fpa3_gaura_t aura)
 
 /**
  * Free a pointer back to the pool.
- * @INTERNAL
  *
  * @param aura   global aura number
  * @param ptr    physical address of block to free.
@@ -398,7 +431,6 @@ static inline void cvmx_fpa3_free(void *ptr, cvmx_fpa3_gaura_t aura,
 
 /**
  * Free a pointer back to the pool without flushing the write buffer.
- * @INTERNAL
  *
  * @param aura   global aura number
  * @param ptr    physical address of block to free.
@@ -464,7 +496,7 @@ static inline int cvmx_fpa3_config_red_params(unsigned node, int qos_avg_en,
 /**
  * Gets the buffer size of the specified pool,
  *
- * @param pool Global aura number
+ * @param aura Global aura number
  * @return Returns size of the buffers in the specified pool.
  */
 static inline int cvmx_fpa3_get_aura_buf_size(cvmx_fpa3_gaura_t aura)
@@ -632,6 +664,7 @@ extern int cvmx_fpa3_shutdown_aura_and_pool(cvmx_fpa3_gaura_t aura);
 extern int cvmx_fpa3_shutdown_aura(cvmx_fpa3_gaura_t aura);
 extern int cvmx_fpa3_shutdown_pool(cvmx_fpa3_pool_t pool);
 extern const char *cvmx_fpa3_get_pool_name(cvmx_fpa3_pool_t pool);
+extern int cvmx_fpa3_get_pool_buf_size(cvmx_fpa3_pool_t pool);
 extern const char *cvmx_fpa3_get_aura_name(cvmx_fpa3_gaura_t aura);
 
 #ifdef CVMX_BUILD_FOR_UBOOT

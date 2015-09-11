@@ -42,7 +42,7 @@
  * Simple allocate only memory allocator.  Used to allocate memory at application
  * start time.
  *
- * <hr>$Revision: 113619 $<hr>
+ * <hr>$Revision: 109474 $<hr>
  *
  */
 
@@ -543,7 +543,7 @@ void cvmx_bootmem_phy_list_print(void);
  */
 int64_t cvmx_bootmem_phy_mem_list_init(uint64_t mem_size,
 				       uint32_t low_reserved_bytes,
-				       cvmx_bootmem_desc_t *desc_buffer);
+				       cvmx_bootmem_desc_t * desc_buffer);
 
 /**
  * This function initializes the free memory list used by cvmx_bootmem.
@@ -565,7 +565,7 @@ int64_t cvmx_bootmem_phy_mem_list_init(uint64_t mem_size,
 int64_t cvmx_bootmem_phy_mem_list_init_multi(uint8_t nodemask,
 				       uint32_t mem_size[],
 				       uint32_t low_reserved_bytes,
-				       cvmx_bootmem_desc_t *desc_buffer);
+				       cvmx_bootmem_desc_t * desc_buffer);
 /**
  * Locks the bootmem allocator.  This is useful in certain situations
  * where multiple allocations must be made without being interrupted.

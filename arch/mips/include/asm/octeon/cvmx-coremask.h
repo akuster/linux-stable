@@ -60,7 +60,7 @@
  * provide future compatibility if more cores are added to future processors
  * or more nodes are supported.
  *
- * <hr>$Revision: 107050 $<hr>
+ * <hr>$Revision: 114431 $<hr>
  *
  */
 
@@ -775,7 +775,7 @@ static inline int cvmx_coremask_intersects(const cvmx_coremask_t *c1,
 /**
  * Masks a single node of a coremask
  *
- * @param[inout] pcm - coremask to mask
+ * @param pcm - coremask to mask [inout]
  * @param node       - node number to mask against
  */
 static inline void cvmx_coremask_mask_node(cvmx_coremask_t *pcm, int node)

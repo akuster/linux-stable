@@ -99,6 +99,20 @@ extern int cvmx_helper_pko3_shut_interface(int xiface);
  */
 extern int cvmx_helper_pko3_shutdown(unsigned int node);
 
+/**
+ * Show integrated PKO configuration.
+ *
+ * @param node	   node number
+ */
+int cvmx_helper_pko3_config_dump(unsigned int node);
+
+/**
+ * Show integrated PKO statistics.
+ *
+ * @param node	   node number
+ */
+int cvmx_helper_pko3_stats_dump(unsigned int node);
+
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
 }

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -592,6 +592,17 @@ static inline uint64_t CVMX_OCX_RLKX_MCD_CTL(unsigned long offset)
 #define CVMX_OCX_RLKX_MCD_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180011018020ull) + ((offset) & 3) * 8192)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_OCX_STRAP CVMX_OCX_STRAP_FUNC()
+static inline uint64_t CVMX_OCX_STRAP_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_OCX_STRAP not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x000118001100FF08ull);
+}
+#else
+#define CVMX_OCX_STRAP (CVMX_ADD_IO_SEG(0x000118001100FF08ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OCX_TLKX_BIST_STATUS(unsigned long offset)
 {
 	if (!(
@@ -601,6 +612,17 @@ static inline uint64_t CVMX_OCX_TLKX_BIST_STATUS(unsigned long offset)
 }
 #else
 #define CVMX_OCX_TLKX_BIST_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180011010008ull) + ((offset) & 3) * 8192)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_OCX_TLKX_BYP_CTL(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCX_TLKX_BYP_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180011010030ull) + ((offset) & 3) * 8192;
+}
+#else
+#define CVMX_OCX_TLKX_BYP_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180011010030ull) + ((offset) & 3) * 8192)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OCX_TLKX_ECC_CTL(unsigned long offset)
@@ -857,31 +879,33 @@ union cvmx_ocx_com_bist_status {
 	struct cvmx_ocx_com_bist_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_36_63               : 28;
-	uint64_t status                       : 36; /**< RX FIFO status for:
+	uint64_t status                       : 36; /**< BIST status.
+                                                         INTERNAL:
                                                          <35:34> = Link 2 VC4/VC2.
-                                                         <33:32> = Link 2 VC10/VC8/VC6.
+                                                         <33:32> = Link 2 VC10/VC8/VC6. (Reserved in pass 2)
                                                          <31:30> = Link 1 VC4/VC2.
-                                                         <29:28> = Link 1 VC10/VC8/VC6.
+                                                         <29:28> = Link 1 VC10/VC8/VC6. (Reserved in pass 2)
                                                          <27:26> = Link 0 VC4/VC2.
-                                                         <25:24> = Link 0 VC10/VC8/VC6.
+                                                         <25:24> = Link 0 VC10/VC8/VC6. (Reserved in pass 2)
                                                          <23:22> = Link 2 VC12.
                                                          <21:20> = Link 2 VC1/VC0.
                                                          <19:18> = Link 2 VC5/VC3.
-                                                         <17:16> = Link 2 VC11/VC9/VC7.
+                                                         <17:16> = Link 2 VC11/VC9/VC7. (Reserved in pass 2)
                                                          <15:14> = Link 1 VC12.
                                                          <13:12> = Link 1 VC1/VC0.
                                                          <11:10> = Link 1 VC5/VC3.
-                                                         <9:8>   = Link 1 VC11/VC9/VC7.
+                                                         <9:8>   = Link 1 VC11/VC9/VC7. (Reserved in pass 2)
                                                          <7:6>   = Link 0 VC12.
                                                          <5:4>   = Link 0 VC1/VC0.
                                                          <3:2>   = Link 0 VC5/VC3.
-                                                         <1:0>   = Link 0 VC11/VC9/VC7. */
+                                                         <1:0>   = Link 0 VC11/VC9/VC7. (Reserved in pass 2) */
 #else
 	uint64_t status                       : 36;
 	uint64_t reserved_36_63               : 28;
 #endif
 	} s;
 	struct cvmx_ocx_com_bist_status_s     cn78xx;
+	struct cvmx_ocx_com_bist_status_s     cn78xxp2;
 };
 typedef union cvmx_ocx_com_bist_status cvmx_ocx_com_bist_status_t;
 
@@ -904,6 +928,7 @@ union cvmx_ocx_com_dual_sort {
 #endif
 	} s;
 	struct cvmx_ocx_com_dual_sort_s       cn78xx;
+	struct cvmx_ocx_com_dual_sort_s       cn78xxp2;
 };
 typedef union cvmx_ocx_com_dual_sort cvmx_ocx_com_dual_sort_t;
 
@@ -952,6 +977,7 @@ union cvmx_ocx_com_int {
 #endif
 	} s;
 	struct cvmx_ocx_com_int_s             cn78xx;
+	struct cvmx_ocx_com_int_s             cn78xxp2;
 };
 typedef union cvmx_ocx_com_int cvmx_ocx_com_int_t;
 
@@ -976,7 +1002,9 @@ union cvmx_ocx_com_linkx_ctl {
 	struct cvmx_ocx_com_linkx_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
-	uint64_t cclk_dis                     : 1;  /**< Reserved. */
+	uint64_t cclk_dis                     : 1;  /**< Reserved.  INTERNAL:  Disable conditional clocking.  Set to force link clocks on
+                                                         unconditionally.
+                                                         Added in pass 2. */
 	uint64_t loopback                     : 1;  /**< Reserved. INTERNAL: Diagnostic data loopback.Set to force outgoing link to inbound port.
                                                          All data and link credits are returned and appear to come from link partner. Typically
                                                          SerDes should be disabled during this operation. */
@@ -985,8 +1013,10 @@ union cvmx_ocx_com_linkx_ctl {
                                                          Setting the bit also causes the link to transmit a REINIT request to the link partner.
                                                          This bit must be cleared for link to operate normally. */
 	uint64_t gate                         : 1;  /**< Reserved. */
-	uint64_t auto_clr                     : 1;  /**< Automatically clear DROP bit if link partner has cleared other side. Typically disabled if
-                                                         software wishes to manage deassertion of DROP. */
+	uint64_t auto_clr                     : 1;  /**< When set, automatically clears the local DROP bit if link partner forces
+                                                         a reinitialization.  Typically disabled once software is running.
+                                                         If clear, software must manage clearing the DROP bit after it has verified
+                                                         that any pending transactions have timed out. */
 	uint64_t drop                         : 1;  /**< Drop all requests on given link. Typically set by hardware when link has failed or been
                                                          reinitialized. Cleared by software once pending link traffic is removed. (See
                                                          OCX_TLK(0..2)_FIFO(0..13)_CNT.) */
@@ -1012,6 +1042,7 @@ union cvmx_ocx_com_linkx_ctl {
 #endif
 	} s;
 	struct cvmx_ocx_com_linkx_ctl_s       cn78xx;
+	struct cvmx_ocx_com_linkx_ctl_s       cn78xxp2;
 };
 typedef union cvmx_ocx_com_linkx_ctl cvmx_ocx_com_linkx_ctl_t;
 
@@ -1061,6 +1092,7 @@ union cvmx_ocx_com_linkx_int {
 #endif
 	} s;
 	struct cvmx_ocx_com_linkx_int_s       cn78xx;
+	struct cvmx_ocx_com_linkx_int_s       cn78xxp2;
 };
 typedef union cvmx_ocx_com_linkx_int cvmx_ocx_com_linkx_int_t;
 
@@ -1080,6 +1112,7 @@ union cvmx_ocx_com_link_timer {
 #endif
 	} s;
 	struct cvmx_ocx_com_link_timer_s      cn78xx;
+	struct cvmx_ocx_com_link_timer_s      cn78xxp2;
 };
 typedef union cvmx_ocx_com_link_timer cvmx_ocx_com_link_timer_t;
 
@@ -1114,6 +1147,7 @@ union cvmx_ocx_com_node {
 #endif
 	} s;
 	struct cvmx_ocx_com_node_s            cn78xx;
+	struct cvmx_ocx_com_node_s            cn78xxp2;
 };
 typedef union cvmx_ocx_com_node cvmx_ocx_com_node_t;
 
@@ -1127,12 +1161,39 @@ union cvmx_ocx_dllx_status {
 	uint64_t u64;
 	struct cvmx_ocx_dllx_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_60_63               : 4;
+	uint64_t max_dll_setting              : 12; /**< Max reported DLL setting. Added in pass 2. */
+	uint64_t min_dll_setting              : 12; /**< Min reported DLL setting. Added in pass 2. */
+	uint64_t pd_pos_rclk_refclk           : 1;  /**< Phase detector output. Added in pass 2. */
+	uint64_t pdl_rclk_refclk              : 1;  /**< Phase detector output. Added in pass 2. */
+	uint64_t pdr_rclk_refclk              : 1;  /**< Phase detector output. Added in pass 2. */
+	uint64_t reserved_32_32               : 1;
+	uint64_t dly_elem_enable              : 16; /**< Delay element enable. Added in pass 2. */
+	uint64_t dll_setting                  : 12; /**< DLL setting. Added in pass 2. */
+	uint64_t reserved_1_3                 : 3;
+	uint64_t dll_lock                     : 1;  /**< DLL lock: 1 = locked, 0 = unlocked. Added in pass 2. */
+#else
+	uint64_t dll_lock                     : 1;
+	uint64_t reserved_1_3                 : 3;
+	uint64_t dll_setting                  : 12;
+	uint64_t dly_elem_enable              : 16;
+	uint64_t reserved_32_32               : 1;
+	uint64_t pdr_rclk_refclk              : 1;
+	uint64_t pdl_rclk_refclk              : 1;
+	uint64_t pd_pos_rclk_refclk           : 1;
+	uint64_t min_dll_setting              : 12;
+	uint64_t max_dll_setting              : 12;
+	uint64_t reserved_60_63               : 4;
+#endif
+	} s;
+	struct cvmx_ocx_dllx_status_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_0_63                : 64;
 #else
 	uint64_t reserved_0_63                : 64;
 #endif
-	} s;
-	struct cvmx_ocx_dllx_status_s         cn78xx;
+	} cn78xx;
+	struct cvmx_ocx_dllx_status_s         cn78xxp2;
 };
 typedef union cvmx_ocx_dllx_status cvmx_ocx_dllx_status_t;
 
@@ -1152,6 +1213,7 @@ union cvmx_ocx_frcx_stat0 {
 #endif
 	} s;
 	struct cvmx_ocx_frcx_stat0_s          cn78xx;
+	struct cvmx_ocx_frcx_stat0_s          cn78xxp2;
 };
 typedef union cvmx_ocx_frcx_stat0 cvmx_ocx_frcx_stat0_t;
 
@@ -1171,6 +1233,7 @@ union cvmx_ocx_frcx_stat1 {
 #endif
 	} s;
 	struct cvmx_ocx_frcx_stat1_s          cn78xx;
+	struct cvmx_ocx_frcx_stat1_s          cn78xxp2;
 };
 typedef union cvmx_ocx_frcx_stat1 cvmx_ocx_frcx_stat1_t;
 
@@ -1189,6 +1252,7 @@ union cvmx_ocx_frcx_stat2 {
 #endif
 	} s;
 	struct cvmx_ocx_frcx_stat2_s          cn78xx;
+	struct cvmx_ocx_frcx_stat2_s          cn78xxp2;
 };
 typedef union cvmx_ocx_frcx_stat2 cvmx_ocx_frcx_stat2_t;
 
@@ -1207,6 +1271,7 @@ union cvmx_ocx_frcx_stat3 {
 #endif
 	} s;
 	struct cvmx_ocx_frcx_stat3_s          cn78xx;
+	struct cvmx_ocx_frcx_stat3_s          cn78xxp2;
 };
 typedef union cvmx_ocx_frcx_stat3 cvmx_ocx_frcx_stat3_t;
 
@@ -1232,6 +1297,7 @@ union cvmx_ocx_lnex_bad_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_bad_cnt_s        cn78xx;
+	struct cvmx_ocx_lnex_bad_cnt_s        cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_bad_cnt cvmx_ocx_lnex_bad_cnt_t;
 
@@ -1259,6 +1325,7 @@ union cvmx_ocx_lnex_cfg {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_cfg_s            cn78xx;
+	struct cvmx_ocx_lnex_cfg_s            cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_cfg cvmx_ocx_lnex_cfg_t;
 
@@ -1297,6 +1364,7 @@ union cvmx_ocx_lnex_int {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_int_s            cn78xx;
+	struct cvmx_ocx_lnex_int_s            cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_int cvmx_ocx_lnex_int_t;
 
@@ -1307,7 +1375,8 @@ union cvmx_ocx_lnex_int_en {
 	uint64_t u64;
 	struct cvmx_ocx_lnex_int_en_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_9_63                : 55;
+	uint64_t reserved_10_63               : 54;
+	uint64_t disp_err                     : 1;  /**< Enable bit for RX disparity error encountered. */
 	uint64_t bad_64b67b                   : 1;  /**< Enable bit for bad 64B/67B codeword encountered. */
 	uint64_t stat_cnt_ovfl                : 1;  /**< Enable bit for RX lane statistic counter overflow. */
 	uint64_t stat_msg                     : 1;  /**< Enable bit for status bits for the link or a lane transitioned from a 1 (healthy) to a 0 (problem). */
@@ -1328,10 +1397,12 @@ union cvmx_ocx_lnex_int_en {
 	uint64_t stat_msg                     : 1;
 	uint64_t stat_cnt_ovfl                : 1;
 	uint64_t bad_64b67b                   : 1;
-	uint64_t reserved_9_63                : 55;
+	uint64_t disp_err                     : 1;
+	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
 	struct cvmx_ocx_lnex_int_en_s         cn78xx;
+	struct cvmx_ocx_lnex_int_en_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_int_en cvmx_ocx_lnex_int_en_t;
 
@@ -1351,6 +1422,7 @@ union cvmx_ocx_lnex_stat00 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat00_s         cn78xx;
+	struct cvmx_ocx_lnex_stat00_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat00 cvmx_ocx_lnex_stat00_t;
 
@@ -1370,6 +1442,7 @@ union cvmx_ocx_lnex_stat01 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat01_s         cn78xx;
+	struct cvmx_ocx_lnex_stat01_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat01 cvmx_ocx_lnex_stat01_t;
 
@@ -1389,6 +1462,7 @@ union cvmx_ocx_lnex_stat02 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat02_s         cn78xx;
+	struct cvmx_ocx_lnex_stat02_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat02 cvmx_ocx_lnex_stat02_t;
 
@@ -1408,6 +1482,7 @@ union cvmx_ocx_lnex_stat03 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat03_s         cn78xx;
+	struct cvmx_ocx_lnex_stat03_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat03 cvmx_ocx_lnex_stat03_t;
 
@@ -1427,6 +1502,7 @@ union cvmx_ocx_lnex_stat04 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat04_s         cn78xx;
+	struct cvmx_ocx_lnex_stat04_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat04 cvmx_ocx_lnex_stat04_t;
 
@@ -1446,6 +1522,7 @@ union cvmx_ocx_lnex_stat05 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat05_s         cn78xx;
+	struct cvmx_ocx_lnex_stat05_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat05 cvmx_ocx_lnex_stat05_t;
 
@@ -1465,6 +1542,7 @@ union cvmx_ocx_lnex_stat06 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat06_s         cn78xx;
+	struct cvmx_ocx_lnex_stat06_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat06 cvmx_ocx_lnex_stat06_t;
 
@@ -1484,6 +1562,7 @@ union cvmx_ocx_lnex_stat07 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat07_s         cn78xx;
+	struct cvmx_ocx_lnex_stat07_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat07 cvmx_ocx_lnex_stat07_t;
 
@@ -1504,6 +1583,7 @@ union cvmx_ocx_lnex_stat08 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat08_s         cn78xx;
+	struct cvmx_ocx_lnex_stat08_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat08 cvmx_ocx_lnex_stat08_t;
 
@@ -1523,6 +1603,7 @@ union cvmx_ocx_lnex_stat09 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat09_s         cn78xx;
+	struct cvmx_ocx_lnex_stat09_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat09 cvmx_ocx_lnex_stat09_t;
 
@@ -1542,6 +1623,7 @@ union cvmx_ocx_lnex_stat10 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat10_s         cn78xx;
+	struct cvmx_ocx_lnex_stat10_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat10 cvmx_ocx_lnex_stat10_t;
 
@@ -1561,6 +1643,7 @@ union cvmx_ocx_lnex_stat11 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat11_s         cn78xx;
+	struct cvmx_ocx_lnex_stat11_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat11 cvmx_ocx_lnex_stat11_t;
 
@@ -1580,6 +1663,7 @@ union cvmx_ocx_lnex_stat12 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat12_s         cn78xx;
+	struct cvmx_ocx_lnex_stat12_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat12 cvmx_ocx_lnex_stat12_t;
 
@@ -1599,6 +1683,7 @@ union cvmx_ocx_lnex_stat13 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat13_s         cn78xx;
+	struct cvmx_ocx_lnex_stat13_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat13 cvmx_ocx_lnex_stat13_t;
 
@@ -1618,6 +1703,7 @@ union cvmx_ocx_lnex_stat14 {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_stat14_s         cn78xx;
+	struct cvmx_ocx_lnex_stat14_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_stat14 cvmx_ocx_lnex_stat14_t;
 
@@ -1640,6 +1726,7 @@ union cvmx_ocx_lnex_status {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_status_s         cn78xx;
+	struct cvmx_ocx_lnex_status_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_status cvmx_ocx_lnex_status_t;
 
@@ -1676,6 +1763,7 @@ union cvmx_ocx_lnex_sts_msg {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_sts_msg_s        cn78xx;
+	struct cvmx_ocx_lnex_sts_msg_s        cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_sts_msg cvmx_ocx_lnex_sts_msg_t;
 
@@ -1689,7 +1777,8 @@ union cvmx_ocx_lnex_trn_ctl {
 	uint64_t reserved_4_63                : 60;
 	uint64_t lock                         : 1;  /**< Training frame boundary locked. */
 	uint64_t done                         : 1;  /**< Training done. For diagnostic use only may be written to 1 to force training done. */
-	uint64_t ena                          : 1;  /**< Training enabled. */
+	uint64_t ena                          : 1;  /**< Training enabled.
+                                                         Should match corresponding OCX_QLM()_CFG[TRN_ENA]. */
 	uint64_t eie_detect                   : 1;  /**< Electrical idle exit (EIE) detected. */
 #else
 	uint64_t eie_detect                   : 1;
@@ -1700,6 +1789,7 @@ union cvmx_ocx_lnex_trn_ctl {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_trn_ctl_s        cn78xx;
+	struct cvmx_ocx_lnex_trn_ctl_s        cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_trn_ctl cvmx_ocx_lnex_trn_ctl_t;
 
@@ -1713,10 +1803,12 @@ union cvmx_ocx_lnex_trn_ld {
 	uint64_t lp_manual                    : 1;  /**< Allow software to manually manipulate local device CU/SR by ignoring hardware update. */
 	uint64_t reserved_49_62               : 14;
 	uint64_t ld_cu_val                    : 1;  /**< Local device coefficient update field valid. */
-	uint64_t ld_cu_dat                    : 16; /**< Local device coefficient update field data. */
+	uint64_t ld_cu_dat                    : 16; /**< Local device coefficient update field data.
+                                                         The format of this field is BGX_SPU_BR_TRAIN_CUP_S. */
 	uint64_t reserved_17_31               : 15;
 	uint64_t ld_sr_val                    : 1;  /**< Local device status report field valid. */
-	uint64_t ld_sr_dat                    : 16; /**< Local device status report field data. */
+	uint64_t ld_sr_dat                    : 16; /**< Local device status report field data.
+                                                         The format of this field is BGX_SPU_BR_TRAIN_REP_S. */
 #else
 	uint64_t ld_sr_dat                    : 16;
 	uint64_t ld_sr_val                    : 1;
@@ -1728,6 +1820,7 @@ union cvmx_ocx_lnex_trn_ld {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_trn_ld_s         cn78xx;
+	struct cvmx_ocx_lnex_trn_ld_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_trn_ld cvmx_ocx_lnex_trn_ld_t;
 
@@ -1740,10 +1833,12 @@ union cvmx_ocx_lnex_trn_lp {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_49_63               : 15;
 	uint64_t lp_cu_val                    : 1;  /**< Link partner coefficient update field valid. */
-	uint64_t lp_cu_dat                    : 16; /**< Link partner coefficient update field data. */
+	uint64_t lp_cu_dat                    : 16; /**< Link partner coefficient update field data.
+                                                         The format of this field is BGX_SPU_BR_TRAIN_CUP_S. */
 	uint64_t reserved_17_31               : 15;
 	uint64_t lp_sr_val                    : 1;  /**< Link partner status report field valid. */
-	uint64_t lp_sr_dat                    : 16; /**< Link partner status report field data. */
+	uint64_t lp_sr_dat                    : 16; /**< Link partner status report field data.
+                                                         The format of this field is BGX_SPU_BR_TRAIN_REP_S. */
 #else
 	uint64_t lp_sr_dat                    : 16;
 	uint64_t lp_sr_val                    : 1;
@@ -1754,6 +1849,7 @@ union cvmx_ocx_lnex_trn_lp {
 #endif
 	} s;
 	struct cvmx_ocx_lnex_trn_lp_s         cn78xx;
+	struct cvmx_ocx_lnex_trn_lp_s         cn78xxp2;
 };
 typedef union cvmx_ocx_lnex_trn_lp cvmx_ocx_lnex_trn_lp_t;
 
@@ -1809,6 +1905,7 @@ union cvmx_ocx_lne_dbg {
 #endif
 	} s;
 	struct cvmx_ocx_lne_dbg_s             cn78xx;
+	struct cvmx_ocx_lne_dbg_s             cn78xxp2;
 };
 typedef union cvmx_ocx_lne_dbg cvmx_ocx_lne_dbg_t;
 
@@ -1862,15 +1959,23 @@ union cvmx_ocx_lnkx_cfg {
                                                          A link with QLM_SELECT = 000000 is invalid and will never exchange traffic with the
                                                          link partner. */
 	uint64_t reserved_29_31               : 3;
-	uint64_t data_rate                    : 13; /**< Reserved. */
-	uint64_t low_delay                    : 6;  /**< Reserved. */
+	uint64_t data_rate                    : 13; /**< The number of rclk to transmit 32 words, where each word is 67 bits.  HW will
+                                                         automatically
+                                                         calculate a conservative value for this field.   SW can override the calculation by
+                                                         writing
+                                                         TX_DAT_RATE=roundup((67*RCLK / GBAUD)*32).  Added in pass 2. */
+	uint64_t low_delay                    : 6;  /**< The delay before reacting to a lane low data indication, as a multiple of 64 rclks.
+                                                         Added in pass 2. */
 	uint64_t lane_align_dis               : 1;  /**< Disable the RX lane alignment. */
 	uint64_t lane_rev                     : 1;  /**< RX lane reversal.   When enabled, lane destriping is performed from the most significant
                                                          lane enabled to least significant lane enabled QLM_SELECT must be zero before changing
                                                          LANE_REV. */
-	uint64_t reserved_0_7                 : 8;
+	uint64_t lane_rev_auto                : 1;  /**< Automatically detect RX lane reversal.   When enable, LANE_REV will be updated by HW.
+                                                         Added in pass 2. */
+	uint64_t reserved_0_6                 : 7;
 #else
-	uint64_t reserved_0_7                 : 8;
+	uint64_t reserved_0_6                 : 7;
+	uint64_t lane_rev_auto                : 1;
 	uint64_t lane_rev                     : 1;
 	uint64_t lane_align_dis               : 1;
 	uint64_t low_delay                    : 6;
@@ -1883,6 +1988,7 @@ union cvmx_ocx_lnkx_cfg {
 #endif
 	} s;
 	struct cvmx_ocx_lnkx_cfg_s            cn78xx;
+	struct cvmx_ocx_lnkx_cfg_s            cn78xxp2;
 };
 typedef union cvmx_ocx_lnkx_cfg cvmx_ocx_lnkx_cfg_t;
 
@@ -1931,6 +2037,7 @@ union cvmx_ocx_pp_cmd {
 #endif
 	} s;
 	struct cvmx_ocx_pp_cmd_s              cn78xx;
+	struct cvmx_ocx_pp_cmd_s              cn78xxp2;
 };
 typedef union cvmx_ocx_pp_cmd cvmx_ocx_pp_cmd_t;
 
@@ -1951,6 +2058,7 @@ union cvmx_ocx_pp_rd_data {
 #endif
 	} s;
 	struct cvmx_ocx_pp_rd_data_s          cn78xx;
+	struct cvmx_ocx_pp_rd_data_s          cn78xxp2;
 };
 typedef union cvmx_ocx_pp_rd_data cvmx_ocx_pp_rd_data_t;
 
@@ -1971,6 +2079,7 @@ union cvmx_ocx_pp_wr_data {
 #endif
 	} s;
 	struct cvmx_ocx_pp_wr_data_s          cn78xx;
+	struct cvmx_ocx_pp_wr_data_s          cn78xxp2;
 };
 typedef union cvmx_ocx_pp_wr_data cvmx_ocx_pp_wr_data_t;
 
@@ -1981,13 +2090,16 @@ union cvmx_ocx_qlmx_cfg {
 	uint64_t u64;
 	struct cvmx_ocx_qlmx_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ser_low                      : 4;  /**< Reserved. */
+	uint64_t ser_low                      : 4;  /**< Reduce latency by limiting the amount of data in flight for each SerDes.  Writing to 0
+                                                         causes
+                                                         hardware to determine a typically optimal value.   Added in pass 2. */
 	uint64_t reserved_42_59               : 18;
-	uint64_t ser_limit                    : 10; /**< Reduce latency by limiting the amount of data in flight for each SerDes. For diagnostic
-                                                         use only.  Removed in pass 2. */
+	uint64_t ser_limit                    : 10; /**< Reserved.  Removed in pass 2. */
 	uint64_t crd_dis                      : 1;  /**< For diagnostic use only. */
 	uint64_t reserved_27_30               : 4;
-	uint64_t trn_rxeq_only                : 1;  /**< Reserved. */
+	uint64_t trn_rxeq_only                : 1;  /**< Shortened training sequence.  Initialized to 1 during cold reset when OCI_SPD<3:0> pins
+                                                         indicate 5 GBAUD <=speed < 8 GBAUD. Otherwise, initialized to 0 during a cold reset. This
+                                                         field is not affected by soft or warm reset.  For diagnostic use only. */
 	uint64_t timer_dis                    : 1;  /**< Disable bad lane timer. A timer counts core clocks (RCLKs) when any enabled lane is not
                                                          ready, i.e. not in the scrambler sync state. If this timer expires before all enabled
                                                          lanes can be made ready, then any lane which is not ready is disabled via
@@ -2045,6 +2157,7 @@ union cvmx_ocx_qlmx_cfg {
 #endif
 	} s;
 	struct cvmx_ocx_qlmx_cfg_s            cn78xx;
+	struct cvmx_ocx_qlmx_cfg_s            cn78xxp2;
 };
 typedef union cvmx_ocx_qlmx_cfg cvmx_ocx_qlmx_cfg_t;
 
@@ -2065,6 +2178,7 @@ union cvmx_ocx_rlkx_align {
 #endif
 	} s;
 	struct cvmx_ocx_rlkx_align_s          cn78xx;
+	struct cvmx_ocx_rlkx_align_s          cn78xxp2;
 };
 typedef union cvmx_ocx_rlkx_align cvmx_ocx_rlkx_align_t;
 
@@ -2087,6 +2201,7 @@ union cvmx_ocx_rlkx_blk_err {
 #endif
 	} s;
 	struct cvmx_ocx_rlkx_blk_err_s        cn78xx;
+	struct cvmx_ocx_rlkx_blk_err_s        cn78xxp2;
 };
 typedef union cvmx_ocx_rlkx_blk_err cvmx_ocx_rlkx_blk_err_t;
 
@@ -2113,6 +2228,7 @@ union cvmx_ocx_rlkx_ecc_ctl {
 #endif
 	} s;
 	struct cvmx_ocx_rlkx_ecc_ctl_s        cn78xx;
+	struct cvmx_ocx_rlkx_ecc_ctl_s        cn78xxp2;
 };
 typedef union cvmx_ocx_rlkx_ecc_ctl cvmx_ocx_rlkx_ecc_ctl_t;
 
@@ -2145,6 +2261,7 @@ union cvmx_ocx_rlkx_enables {
 #endif
 	} s;
 	struct cvmx_ocx_rlkx_enables_s        cn78xx;
+	struct cvmx_ocx_rlkx_enables_s        cn78xxp2;
 };
 typedef union cvmx_ocx_rlkx_enables cvmx_ocx_rlkx_enables_t;
 
@@ -2164,6 +2281,7 @@ union cvmx_ocx_rlkx_fifox_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_rlkx_fifox_cnt_s      cn78xx;
+	struct cvmx_ocx_rlkx_fifox_cnt_s      cn78xxp2;
 };
 typedef union cvmx_ocx_rlkx_fifox_cnt cvmx_ocx_rlkx_fifox_cnt_t;
 
@@ -2186,6 +2304,7 @@ union cvmx_ocx_rlkx_lnk_data {
 #endif
 	} s;
 	struct cvmx_ocx_rlkx_lnk_data_s       cn78xx;
+	struct cvmx_ocx_rlkx_lnk_data_s       cn78xxp2;
 };
 typedef union cvmx_ocx_rlkx_lnk_data cvmx_ocx_rlkx_lnk_data_t;
 
@@ -2209,8 +2328,44 @@ union cvmx_ocx_rlkx_mcd_ctl {
 #endif
 	} s;
 	struct cvmx_ocx_rlkx_mcd_ctl_s        cn78xx;
+	struct cvmx_ocx_rlkx_mcd_ctl_s        cn78xxp2;
 };
 typedef union cvmx_ocx_rlkx_mcd_ctl cvmx_ocx_rlkx_mcd_ctl_t;
+
+/**
+ * cvmx_ocx_strap
+ *
+ * This register provide read-only access to OCI straps.  Added in pass 2.
+ *
+ */
+union cvmx_ocx_strap {
+	uint64_t u64;
+	struct cvmx_ocx_strap_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_26_63               : 38;
+	uint64_t oci3_lnk1                    : 1;  /**< OCI3_LNK1 strap. */
+	uint64_t oci2_lnk1                    : 1;  /**< OCI2_LNK1 strap. */
+	uint64_t reserved_17_23               : 7;
+	uint64_t oci_fixed_node               : 1;  /**< OCI_FIXED_NODE strap. */
+	uint64_t reserved_10_15               : 6;
+	uint64_t oci_node_id                  : 2;  /**< OCI_NODE_ID<1:0> straps. */
+	uint64_t reserved_4_7                 : 4;
+	uint64_t oci_spd                      : 4;  /**< OCI_SPD<3:0> straps. */
+#else
+	uint64_t oci_spd                      : 4;
+	uint64_t reserved_4_7                 : 4;
+	uint64_t oci_node_id                  : 2;
+	uint64_t reserved_10_15               : 6;
+	uint64_t oci_fixed_node               : 1;
+	uint64_t reserved_17_23               : 7;
+	uint64_t oci2_lnk1                    : 1;
+	uint64_t oci3_lnk1                    : 1;
+	uint64_t reserved_26_63               : 38;
+#endif
+	} s;
+	struct cvmx_ocx_strap_s               cn78xxp2;
+};
+typedef union cvmx_ocx_strap cvmx_ocx_strap_t;
 
 /**
  * cvmx_ocx_tlk#_bist_status
@@ -2231,8 +2386,34 @@ union cvmx_ocx_tlkx_bist_status {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_bist_status_s    cn78xx;
+	struct cvmx_ocx_tlkx_bist_status_s    cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_bist_status cvmx_ocx_tlkx_bist_status_t;
+
+/**
+ * cvmx_ocx_tlk#_byp_ctl
+ *
+ * This register is for diagnostic use.  Added in pass 2.
+ *
+ */
+union cvmx_ocx_tlkx_byp_ctl {
+	uint64_t u64;
+	struct cvmx_ocx_tlkx_byp_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_12_63               : 52;
+	uint64_t vc_dis                       : 11; /**< VC bypass disable.  When set, the corresponding VC is restricted from using
+                                                         the low latency TX FIFO bypass logic.  This logic is typically disabled for
+                                                         VC0 only.  For diagnostic use only. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t vc_dis                       : 11;
+	uint64_t reserved_12_63               : 52;
+#endif
+	} s;
+	struct cvmx_ocx_tlkx_byp_ctl_s        cn78xxp2;
+};
+typedef union cvmx_ocx_tlkx_byp_ctl cvmx_ocx_tlkx_byp_ctl_t;
 
 /**
  * cvmx_ocx_tlk#_ecc_ctl
@@ -2261,6 +2442,7 @@ union cvmx_ocx_tlkx_ecc_ctl {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_ecc_ctl_s        cn78xx;
+	struct cvmx_ocx_tlkx_ecc_ctl_s        cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_ecc_ctl cvmx_ocx_tlkx_ecc_ctl_t;
 
@@ -2279,6 +2461,7 @@ union cvmx_ocx_tlkx_fifox_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_fifox_cnt_s      cn78xx;
+	struct cvmx_ocx_tlkx_fifox_cnt_s      cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_fifox_cnt cvmx_ocx_tlkx_fifox_cnt_t;
 
@@ -2298,6 +2481,7 @@ union cvmx_ocx_tlkx_lnk_data {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_lnk_data_s       cn78xx;
+	struct cvmx_ocx_tlkx_lnk_data_s       cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_lnk_data cvmx_ocx_tlkx_lnk_data_t;
 
@@ -2316,6 +2500,7 @@ union cvmx_ocx_tlkx_lnk_vcx_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_lnk_vcx_cnt_s    cn78xx;
+	struct cvmx_ocx_tlkx_lnk_vcx_cnt_s    cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_lnk_vcx_cnt cvmx_ocx_tlkx_lnk_vcx_cnt_t;
 
@@ -2342,6 +2527,7 @@ union cvmx_ocx_tlkx_mcd_ctl {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_mcd_ctl_s        cn78xx;
+	struct cvmx_ocx_tlkx_mcd_ctl_s        cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_mcd_ctl cvmx_ocx_tlkx_mcd_ctl_t;
 
@@ -2360,6 +2546,7 @@ union cvmx_ocx_tlkx_rtn_vcx_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_rtn_vcx_cnt_s    cn78xx;
+	struct cvmx_ocx_tlkx_rtn_vcx_cnt_s    cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_rtn_vcx_cnt cvmx_ocx_tlkx_rtn_vcx_cnt_t;
 
@@ -2383,6 +2570,7 @@ union cvmx_ocx_tlkx_stat_ctl {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_ctl_s       cn78xx;
+	struct cvmx_ocx_tlkx_stat_ctl_s       cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_ctl cvmx_ocx_tlkx_stat_ctl_t;
 
@@ -2400,6 +2588,7 @@ union cvmx_ocx_tlkx_stat_data_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_data_cnt_s  cn78xx;
+	struct cvmx_ocx_tlkx_stat_data_cnt_s  cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_data_cnt cvmx_ocx_tlkx_stat_data_cnt_t;
 
@@ -2417,6 +2606,7 @@ union cvmx_ocx_tlkx_stat_err_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_err_cnt_s   cn78xx;
+	struct cvmx_ocx_tlkx_stat_err_cnt_s   cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_err_cnt cvmx_ocx_tlkx_stat_err_cnt_t;
 
@@ -2434,6 +2624,7 @@ union cvmx_ocx_tlkx_stat_idle_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_idle_cnt_s  cn78xx;
+	struct cvmx_ocx_tlkx_stat_idle_cnt_s  cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_idle_cnt cvmx_ocx_tlkx_stat_idle_cnt_t;
 
@@ -2451,6 +2642,7 @@ union cvmx_ocx_tlkx_stat_matx_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_matx_cnt_s  cn78xx;
+	struct cvmx_ocx_tlkx_stat_matx_cnt_s  cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_matx_cnt cvmx_ocx_tlkx_stat_matx_cnt_t;
 
@@ -2465,10 +2657,11 @@ union cvmx_ocx_tlkx_stat_matchx {
 	uint64_t mask                         : 9;  /**< Setting these bits mask (really matches) the corresponding bit comparison for each packet. */
 	uint64_t reserved_9_15                : 7;
 	uint64_t cmd                          : 5;  /**< These bits are compared against the command for each packet sent over the link. If both
-                                                         the unmasked VC and CMD bits match then OCX_TLK(0..2)_STAT_MAT(0..3)_CNT is incremented. */
-	uint64_t vc                           : 4;  /**< These bits are compared against the link VC number for each packet sent over the link. If
-                                                         both the unmasked VC and CMD bits match, then OCX_TLK(0..2)_STAT_MAT(0..3)_CNT is
-                                                         incremented. */
+                                                         the unmasked VC and CMD bits match then OCX_TLK()_STAT_MAT()_CNT is incremented. */
+	uint64_t vc                           : 4;  /**< These bits are compared against the link VC number for each packet sent over the link.
+                                                         If both the unmasked VC and CMD bits match, then OCX_TLK()_STAT_MAT()_CNT is
+                                                         incremented.  Only memory and I/O traffic are monitored.  Matches are limited to
+                                                         VC0 thru VC11. */
 #else
 	uint64_t vc                           : 4;
 	uint64_t cmd                          : 5;
@@ -2478,6 +2671,7 @@ union cvmx_ocx_tlkx_stat_matchx {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_matchx_s    cn78xx;
+	struct cvmx_ocx_tlkx_stat_matchx_s    cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_matchx cvmx_ocx_tlkx_stat_matchx_t;
 
@@ -2495,6 +2689,7 @@ union cvmx_ocx_tlkx_stat_retry_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_retry_cnt_s cn78xx;
+	struct cvmx_ocx_tlkx_stat_retry_cnt_s cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_retry_cnt cvmx_ocx_tlkx_stat_retry_cnt_t;
 
@@ -2512,6 +2707,7 @@ union cvmx_ocx_tlkx_stat_sync_cnt {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_sync_cnt_s  cn78xx;
+	struct cvmx_ocx_tlkx_stat_sync_cnt_s  cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_sync_cnt cvmx_ocx_tlkx_stat_sync_cnt_t;
 
@@ -2530,6 +2726,7 @@ union cvmx_ocx_tlkx_stat_vcx_cmd {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_vcx_cmd_s   cn78xx;
+	struct cvmx_ocx_tlkx_stat_vcx_cmd_s   cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_vcx_cmd cvmx_ocx_tlkx_stat_vcx_cmd_t;
 
@@ -2549,6 +2746,7 @@ union cvmx_ocx_tlkx_stat_vcx_con {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_vcx_con_s   cn78xx;
+	struct cvmx_ocx_tlkx_stat_vcx_con_s   cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_vcx_con cvmx_ocx_tlkx_stat_vcx_con_t;
 
@@ -2566,6 +2764,7 @@ union cvmx_ocx_tlkx_stat_vcx_pkt {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_stat_vcx_pkt_s   cn78xx;
+	struct cvmx_ocx_tlkx_stat_vcx_pkt_s   cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_stat_vcx_pkt cvmx_ocx_tlkx_stat_vcx_pkt_t;
 
@@ -2606,6 +2805,7 @@ union cvmx_ocx_tlkx_status {
 #endif
 	} s;
 	struct cvmx_ocx_tlkx_status_s         cn78xx;
+	struct cvmx_ocx_tlkx_status_s         cn78xxp2;
 };
 typedef union cvmx_ocx_tlkx_status cvmx_ocx_tlkx_status_t;
 
@@ -2654,6 +2854,7 @@ union cvmx_ocx_win_cmd {
 #endif
 	} s;
 	struct cvmx_ocx_win_cmd_s             cn78xx;
+	struct cvmx_ocx_win_cmd_s             cn78xxp2;
 };
 typedef union cvmx_ocx_win_cmd cvmx_ocx_win_cmd_t;
 
@@ -2673,6 +2874,7 @@ union cvmx_ocx_win_rd_data {
 #endif
 	} s;
 	struct cvmx_ocx_win_rd_data_s         cn78xx;
+	struct cvmx_ocx_win_rd_data_s         cn78xxp2;
 };
 typedef union cvmx_ocx_win_rd_data cvmx_ocx_win_rd_data_t;
 
@@ -2696,6 +2898,7 @@ union cvmx_ocx_win_timer {
 #endif
 	} s;
 	struct cvmx_ocx_win_timer_s           cn78xx;
+	struct cvmx_ocx_win_timer_s           cn78xxp2;
 };
 typedef union cvmx_ocx_win_timer cvmx_ocx_win_timer_t;
 
@@ -2716,6 +2919,7 @@ union cvmx_ocx_win_wr_data {
 #endif
 	} s;
 	struct cvmx_ocx_win_wr_data_s         cn78xx;
+	struct cvmx_ocx_win_wr_data_s         cn78xxp2;
 };
 typedef union cvmx_ocx_win_wr_data cvmx_ocx_win_wr_data_t;
 

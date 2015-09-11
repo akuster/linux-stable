@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -53,32 +53,38 @@
 #define __CVMX_GSERX_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_ANA_ATEST(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_ANA_ATEST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_ANA_ATEST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000800ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_ANA_ATEST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000800ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_ANA_ATEST(block_id) (CVMX_ADD_IO_SEG(0x0001180090000800ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_ANA_ATEST(offset) (CVMX_ADD_IO_SEG(0x0001180090000800ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_ANA_SEL(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_ANA_SEL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_ANA_SEL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000808ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_ANA_SEL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000808ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_ANA_SEL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000808ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_ANA_SEL(offset) (CVMX_ADD_IO_SEG(0x0001180090000808ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_BR_RXX_CTL(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_BR_RXX_CTL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090000400ull) + (((offset) & 3) + ((block_id) & 15) * 0x20000ull) * 128;
 }
@@ -89,7 +95,9 @@ static inline uint64_t CVMX_GSERX_BR_RXX_CTL(unsigned long offset, unsigned long
 static inline uint64_t CVMX_GSERX_BR_RXX_EER(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_BR_RXX_EER(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090000418ull) + (((offset) & 3) + ((block_id) & 15) * 0x20000ull) * 128;
 }
@@ -100,7 +108,9 @@ static inline uint64_t CVMX_GSERX_BR_RXX_EER(unsigned long offset, unsigned long
 static inline uint64_t CVMX_GSERX_BR_TXX_CTL(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_BR_TXX_CTL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090000420ull) + (((offset) & 3) + ((block_id) & 15) * 0x20000ull) * 128;
 }
@@ -111,7 +121,9 @@ static inline uint64_t CVMX_GSERX_BR_TXX_CTL(unsigned long offset, unsigned long
 static inline uint64_t CVMX_GSERX_BR_TXX_CUR(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_BR_TXX_CUR(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090000438ull) + (((offset) & 3) + ((block_id) & 15) * 0x20000ull) * 128;
 }
@@ -119,26 +131,43 @@ static inline uint64_t CVMX_GSERX_BR_TXX_CUR(unsigned long offset, unsigned long
 #define CVMX_GSERX_BR_TXX_CUR(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090000438ull) + (((offset) & 3) + ((block_id) & 15) * 0x20000ull) * 128)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_CFG(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_BR_TXX_TAP(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_CFG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000080ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_BR_TXX_TAP(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090000440ull) + (((offset) & 3) + ((block_id) & 15) * 0x20000ull) * 128;
 }
 #else
-#define CVMX_GSERX_CFG(block_id) (CVMX_ADD_IO_SEG(0x0001180090000080ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_BR_TXX_TAP(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090000440ull) + (((offset) & 3) + ((block_id) & 15) * 0x20000ull) * 128)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_DBG(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_CFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_DBG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000098ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_CFG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000080ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_DBG(block_id) (CVMX_ADD_IO_SEG(0x0001180090000098ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_CFG(offset) (CVMX_ADD_IO_SEG(0x0001180090000080ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_DBG(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_DBG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000098ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_DBG(offset) (CVMX_ADD_IO_SEG(0x0001180090000098ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_DLMX_LOOPBK_EN(unsigned long offset, unsigned long block_id)
@@ -493,54 +522,134 @@ static inline uint64_t CVMX_GSERX_DLMX_TX_TERM_OFFSET(unsigned long offset, unsi
 #define CVMX_GSERX_DLMX_TX_TERM_OFFSET(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090003040ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_EQ_WAIT_TIME(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_EQ_WAIT_TIME(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_EQ_WAIT_TIME(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800904E0000ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_EQ_WAIT_TIME(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904E0000ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_EQ_WAIT_TIME(block_id) (CVMX_ADD_IO_SEG(0x00011800904E0000ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_EQ_WAIT_TIME(offset) (CVMX_ADD_IO_SEG(0x00011800904E0000ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_GLBL_TAD(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_GLBL_MISC_CONFIG_1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_GLBL_TAD(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090460400ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_GLBL_MISC_CONFIG_1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090460030ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_GLBL_TAD(block_id) (CVMX_ADD_IO_SEG(0x0001180090460400ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_GLBL_MISC_CONFIG_1(offset) (CVMX_ADD_IO_SEG(0x0001180090460030ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_GLBL_TM_ADMON(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_GLBL_PLL_CFG_0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_GLBL_TM_ADMON(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090460408ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13)))))
+		cvmx_warn("CVMX_GSERX_GLBL_PLL_CFG_0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090460000ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_GLBL_TM_ADMON(block_id) (CVMX_ADD_IO_SEG(0x0001180090460408ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_GLBL_PLL_CFG_0(offset) (CVMX_ADD_IO_SEG(0x0001180090460000ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_IDDQ_MODE(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_GLBL_PLL_CFG_1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_IDDQ_MODE(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000018ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13)))))
+		cvmx_warn("CVMX_GSERX_GLBL_PLL_CFG_1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090460008ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_IDDQ_MODE(block_id) (CVMX_ADD_IO_SEG(0x0001180090000018ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_GLBL_PLL_CFG_1(offset) (CVMX_ADD_IO_SEG(0x0001180090460008ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_GLBL_PLL_CFG_2(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13)))))
+		cvmx_warn("CVMX_GSERX_GLBL_PLL_CFG_2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090460010ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_GLBL_PLL_CFG_2(offset) (CVMX_ADD_IO_SEG(0x0001180090460010ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_GLBL_PLL_CFG_3(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_GLBL_PLL_CFG_3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090460018ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_GLBL_PLL_CFG_3(offset) (CVMX_ADD_IO_SEG(0x0001180090460018ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_GLBL_PLL_MONITOR(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_GLBL_PLL_MONITOR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090460100ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_GLBL_PLL_MONITOR(offset) (CVMX_ADD_IO_SEG(0x0001180090460100ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_GLBL_TAD(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_GLBL_TAD(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090460400ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_GLBL_TAD(offset) (CVMX_ADD_IO_SEG(0x0001180090460400ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_GLBL_TM_ADMON(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_GLBL_TM_ADMON(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090460408ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_GLBL_TM_ADMON(offset) (CVMX_ADD_IO_SEG(0x0001180090460408ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_IDDQ_MODE(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_IDDQ_MODE(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000018ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_IDDQ_MODE(offset) (CVMX_ADD_IO_SEG(0x0001180090000018ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_LANEX_LBERT_CFG(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_LBERT_CFG(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904C0020ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -551,7 +660,9 @@ static inline uint64_t CVMX_GSERX_LANEX_LBERT_CFG(unsigned long offset, unsigned
 static inline uint64_t CVMX_GSERX_LANEX_LBERT_ECNT(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_LBERT_ECNT(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904C0028ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -562,7 +673,9 @@ static inline uint64_t CVMX_GSERX_LANEX_LBERT_ECNT(unsigned long offset, unsigne
 static inline uint64_t CVMX_GSERX_LANEX_LBERT_PAT_CFG(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_LBERT_PAT_CFG(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904C0018ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -573,7 +686,9 @@ static inline uint64_t CVMX_GSERX_LANEX_LBERT_PAT_CFG(unsigned long offset, unsi
 static inline uint64_t CVMX_GSERX_LANEX_MISC_CFG_0(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_MISC_CFG_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904C0000ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -584,7 +699,9 @@ static inline uint64_t CVMX_GSERX_LANEX_MISC_CFG_0(unsigned long offset, unsigne
 static inline uint64_t CVMX_GSERX_LANEX_MISC_CFG_1(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_MISC_CFG_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904C0008ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -595,7 +712,9 @@ static inline uint64_t CVMX_GSERX_LANEX_MISC_CFG_1(unsigned long offset, unsigne
 static inline uint64_t CVMX_GSERX_LANEX_PCS_CTLIFC_0(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_PCS_CTLIFC_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904C0060ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -606,7 +725,9 @@ static inline uint64_t CVMX_GSERX_LANEX_PCS_CTLIFC_0(unsigned long offset, unsig
 static inline uint64_t CVMX_GSERX_LANEX_PCS_CTLIFC_1(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_PCS_CTLIFC_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904C0068ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -617,7 +738,9 @@ static inline uint64_t CVMX_GSERX_LANEX_PCS_CTLIFC_1(unsigned long offset, unsig
 static inline uint64_t CVMX_GSERX_LANEX_PCS_CTLIFC_2(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_PCS_CTLIFC_2(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904C0070ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -625,10 +748,25 @@ static inline uint64_t CVMX_GSERX_LANEX_PCS_CTLIFC_2(unsigned long offset, unsig
 #define CVMX_GSERX_LANEX_PCS_CTLIFC_2(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904C0070ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_LANEX_PCS_MACIFC_MON_2(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_LANEX_PCS_MACIFC_MON_2(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x00011800904C0118ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
+}
+#else
+#define CVMX_GSERX_LANEX_PCS_MACIFC_MON_2(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904C0118ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_LANEX_PMA_LOOPBACK_CTRL(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_PMA_LOOPBACK_CTRL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904400D0ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -639,7 +777,9 @@ static inline uint64_t CVMX_GSERX_LANEX_PMA_LOOPBACK_CTRL(unsigned long offset, 
 static inline uint64_t CVMX_GSERX_LANEX_PWR_CTRL(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_PWR_CTRL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904400D8ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -650,7 +790,9 @@ static inline uint64_t CVMX_GSERX_LANEX_PWR_CTRL(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_RX_AEQ_OUT_0(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_AEQ_OUT_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440280ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -661,7 +803,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_AEQ_OUT_0(unsigned long offset, unsig
 static inline uint64_t CVMX_GSERX_LANEX_RX_AEQ_OUT_1(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_AEQ_OUT_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440288ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -672,7 +816,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_AEQ_OUT_1(unsigned long offset, unsig
 static inline uint64_t CVMX_GSERX_LANEX_RX_AEQ_OUT_2(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_AEQ_OUT_2(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440290ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -680,10 +826,77 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_AEQ_OUT_2(unsigned long offset, unsig
 #define CVMX_GSERX_LANEX_RX_AEQ_OUT_2(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090440290ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_LANEX_RX_CDR_CTRL_1(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_LANEX_RX_CDR_CTRL_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090440038ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
+}
+#else
+#define CVMX_GSERX_LANEX_RX_CDR_CTRL_1(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090440038ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_LANEX_RX_CDR_CTRL_2(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_LANEX_RX_CDR_CTRL_2(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090440040ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
+}
+#else
+#define CVMX_GSERX_LANEX_RX_CDR_CTRL_2(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090440040ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_LANEX_RX_CDR_MISC_CTRL_0(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_LANEX_RX_CDR_MISC_CTRL_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090440208ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
+}
+#else
+#define CVMX_GSERX_LANEX_RX_CDR_MISC_CTRL_0(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090440208ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_LANEX_RX_CDR_STATUS_1(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_LANEX_RX_CDR_STATUS_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x00011800904402D0ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
+}
+#else
+#define CVMX_GSERX_LANEX_RX_CDR_STATUS_1(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904402D0ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_LANEX_RX_CDR_STATUS_2(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_LANEX_RX_CDR_STATUS_2(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x00011800904402D8ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
+}
+#else
+#define CVMX_GSERX_LANEX_RX_CDR_STATUS_2(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904402D8ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_0(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_CFG_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440000ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -694,7 +907,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_0(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_1(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_CFG_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440008ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -705,7 +920,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_1(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_2(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_CFG_2(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440010ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -716,7 +933,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_2(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_3(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_CFG_3(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440018ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -727,7 +946,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_3(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_4(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_CFG_4(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440020ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -738,7 +959,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_4(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_5(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_CFG_5(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440028ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -749,7 +972,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_CFG_5(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_RX_CTLE_CTRL(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_CTLE_CTRL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440058ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -760,7 +985,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_CTLE_CTRL(unsigned long offset, unsig
 static inline uint64_t CVMX_GSERX_LANEX_RX_LOOP_CTRL(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_LOOP_CTRL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440048ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -771,7 +998,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_LOOP_CTRL(unsigned long offset, unsig
 static inline uint64_t CVMX_GSERX_LANEX_RX_MISC_OVRRD(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_MISC_OVRRD(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440258ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -782,7 +1011,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_MISC_OVRRD(unsigned long offset, unsi
 static inline uint64_t CVMX_GSERX_LANEX_RX_PRECORR_CTRL(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_PRECORR_CTRL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440060ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -790,10 +1021,25 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_PRECORR_CTRL(unsigned long offset, un
 #define CVMX_GSERX_LANEX_RX_PRECORR_CTRL(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090440060ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_LANEX_RX_PRECORR_VAL(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_LANEX_RX_PRECORR_VAL(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090440078ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
+}
+#else
+#define CVMX_GSERX_LANEX_RX_PRECORR_VAL(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090440078ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_LANEX_RX_VALBBD_CTRL_0(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_VALBBD_CTRL_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440240ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -804,7 +1050,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_VALBBD_CTRL_0(unsigned long offset, u
 static inline uint64_t CVMX_GSERX_LANEX_RX_VALBBD_CTRL_1(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_VALBBD_CTRL_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440248ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -815,7 +1063,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_VALBBD_CTRL_1(unsigned long offset, u
 static inline uint64_t CVMX_GSERX_LANEX_RX_VALBBD_CTRL_2(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_VALBBD_CTRL_2(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440250ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -826,7 +1076,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_VALBBD_CTRL_2(unsigned long offset, u
 static inline uint64_t CVMX_GSERX_LANEX_RX_VMA_CTRL(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_VMA_CTRL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090440200ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -837,7 +1089,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_VMA_CTRL(unsigned long offset, unsign
 static inline uint64_t CVMX_GSERX_LANEX_RX_VMA_STATUS_0(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_VMA_STATUS_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904402B8ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -848,7 +1102,9 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_VMA_STATUS_0(unsigned long offset, un
 static inline uint64_t CVMX_GSERX_LANEX_RX_VMA_STATUS_1(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_RX_VMA_STATUS_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904402C0ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -856,10 +1112,51 @@ static inline uint64_t CVMX_GSERX_LANEX_RX_VMA_STATUS_1(unsigned long offset, un
 #define CVMX_GSERX_LANEX_RX_VMA_STATUS_1(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904402C0ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_LANEX_SDS_PIN_MON_0(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_LANEX_SDS_PIN_MON_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090440130ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
+}
+#else
+#define CVMX_GSERX_LANEX_SDS_PIN_MON_0(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090440130ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_LANEX_SDS_PIN_MON_1(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_LANEX_SDS_PIN_MON_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090440138ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
+}
+#else
+#define CVMX_GSERX_LANEX_SDS_PIN_MON_1(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090440138ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_LANEX_SDS_PIN_MON_2(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
+		cvmx_warn("CVMX_GSERX_LANEX_SDS_PIN_MON_2(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return CVMX_ADD_IO_SEG(0x0001180090440140ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
+}
+#else
+#define CVMX_GSERX_LANEX_SDS_PIN_MON_2(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090440140ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_LANEX_TX_CFG_0(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_TX_CFG_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904400A8ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -870,7 +1167,9 @@ static inline uint64_t CVMX_GSERX_LANEX_TX_CFG_0(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_TX_CFG_1(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_TX_CFG_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904400B0ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -881,7 +1180,9 @@ static inline uint64_t CVMX_GSERX_LANEX_TX_CFG_1(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_TX_CFG_2(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_TX_CFG_2(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904400B8ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -892,7 +1193,9 @@ static inline uint64_t CVMX_GSERX_LANEX_TX_CFG_2(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_TX_CFG_3(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_TX_CFG_3(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904400C0ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -903,7 +1206,9 @@ static inline uint64_t CVMX_GSERX_LANEX_TX_CFG_3(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANEX_TX_PRE_EMPHASIS(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANEX_TX_PRE_EMPHASIS(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904400C8ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576;
 }
@@ -911,43 +1216,51 @@ static inline uint64_t CVMX_GSERX_LANEX_TX_PRE_EMPHASIS(unsigned long offset, un
 #define CVMX_GSERX_LANEX_TX_PRE_EMPHASIS(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904400C8ull) + (((offset) & 3) + ((block_id) & 15) * 0x10ull) * 1048576)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_LANE_LPBKEN(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_LANE_LPBKEN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_LANE_LPBKEN(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000110ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_LANE_LPBKEN(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000110ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_LANE_LPBKEN(block_id) (CVMX_ADD_IO_SEG(0x0001180090000110ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_LANE_LPBKEN(offset) (CVMX_ADD_IO_SEG(0x0001180090000110ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_LANE_MODE(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_LANE_MODE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_LANE_MODE(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000118ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_LANE_MODE(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000118ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_LANE_MODE(block_id) (CVMX_ADD_IO_SEG(0x0001180090000118ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_LANE_MODE(offset) (CVMX_ADD_IO_SEG(0x0001180090000118ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_LANE_POFF(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_LANE_POFF(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_LANE_POFF(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000108ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_LANE_POFF(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000108ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_LANE_POFF(block_id) (CVMX_ADD_IO_SEG(0x0001180090000108ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_LANE_POFF(offset) (CVMX_ADD_IO_SEG(0x0001180090000108ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_LANE_PX_MODE_0(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 11)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 11)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 11)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 11)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANE_PX_MODE_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904E0040ull) + (((offset) & 15) + ((block_id) & 15) * 0x80000ull) * 32;
 }
@@ -958,7 +1271,9 @@ static inline uint64_t CVMX_GSERX_LANE_PX_MODE_0(unsigned long offset, unsigned 
 static inline uint64_t CVMX_GSERX_LANE_PX_MODE_1(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 11)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 11)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 11)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 11)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_LANE_PX_MODE_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904E0048ull) + (((offset) & 15) + ((block_id) & 15) * 0x80000ull) * 32;
 }
@@ -966,92 +1281,106 @@ static inline uint64_t CVMX_GSERX_LANE_PX_MODE_1(unsigned long offset, unsigned 
 #define CVMX_GSERX_LANE_PX_MODE_1(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904E0048ull) + (((offset) & 15) + ((block_id) & 15) * 0x80000ull) * 32)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_LANE_SRST(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_LANE_SRST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_LANE_SRST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000100ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_LANE_SRST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000100ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_LANE_SRST(block_id) (CVMX_ADD_IO_SEG(0x0001180090000100ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_LANE_SRST(offset) (CVMX_ADD_IO_SEG(0x0001180090000100ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_LANE_VMA_COARSE_CTRL_0(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_LANE_VMA_COARSE_CTRL_0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_LANE_VMA_COARSE_CTRL_0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800904E01B0ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_LANE_VMA_COARSE_CTRL_0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904E01B0ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_LANE_VMA_COARSE_CTRL_0(block_id) (CVMX_ADD_IO_SEG(0x00011800904E01B0ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_LANE_VMA_COARSE_CTRL_0(offset) (CVMX_ADD_IO_SEG(0x00011800904E01B0ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_LANE_VMA_COARSE_CTRL_1(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_LANE_VMA_COARSE_CTRL_1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_LANE_VMA_COARSE_CTRL_1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800904E01B8ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_LANE_VMA_COARSE_CTRL_1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904E01B8ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_LANE_VMA_COARSE_CTRL_1(block_id) (CVMX_ADD_IO_SEG(0x00011800904E01B8ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_LANE_VMA_COARSE_CTRL_1(offset) (CVMX_ADD_IO_SEG(0x00011800904E01B8ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_LANE_VMA_COARSE_CTRL_2(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_LANE_VMA_COARSE_CTRL_2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_LANE_VMA_COARSE_CTRL_2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800904E01C0ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_LANE_VMA_COARSE_CTRL_2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904E01C0ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_LANE_VMA_COARSE_CTRL_2(block_id) (CVMX_ADD_IO_SEG(0x00011800904E01C0ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_LANE_VMA_COARSE_CTRL_2(offset) (CVMX_ADD_IO_SEG(0x00011800904E01C0ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_LANE_VMA_FINE_CTRL_0(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_LANE_VMA_FINE_CTRL_0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_LANE_VMA_FINE_CTRL_0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800904E01C8ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_LANE_VMA_FINE_CTRL_0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904E01C8ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_LANE_VMA_FINE_CTRL_0(block_id) (CVMX_ADD_IO_SEG(0x00011800904E01C8ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_LANE_VMA_FINE_CTRL_0(offset) (CVMX_ADD_IO_SEG(0x00011800904E01C8ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_LANE_VMA_FINE_CTRL_1(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_LANE_VMA_FINE_CTRL_1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_LANE_VMA_FINE_CTRL_1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800904E01D0ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_LANE_VMA_FINE_CTRL_1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904E01D0ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_LANE_VMA_FINE_CTRL_1(block_id) (CVMX_ADD_IO_SEG(0x00011800904E01D0ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_LANE_VMA_FINE_CTRL_1(offset) (CVMX_ADD_IO_SEG(0x00011800904E01D0ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_LANE_VMA_FINE_CTRL_2(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_LANE_VMA_FINE_CTRL_2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_LANE_VMA_FINE_CTRL_2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800904E01D8ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_LANE_VMA_FINE_CTRL_2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904E01D8ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_LANE_VMA_FINE_CTRL_2(block_id) (CVMX_ADD_IO_SEG(0x00011800904E01D8ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_LANE_VMA_FINE_CTRL_2(offset) (CVMX_ADD_IO_SEG(0x00011800904E01D8ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_PCS_CLK_REQ(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_PCS_CLK_REQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_PCS_CLK_REQ(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_PCS_CLK_REQ(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080478ull);
 }
 #else
-#define CVMX_GSERX_PCIE_PCS_CLK_REQ(block_id) (CVMX_ADD_IO_SEG(0x0001180090080478ull))
+#define CVMX_GSERX_PCIE_PCS_CLK_REQ(offset) (CVMX_ADD_IO_SEG(0x0001180090080478ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_PCIE_PIPEX_TXDEEMPH(unsigned long offset, unsigned long block_id)
@@ -1065,147 +1394,147 @@ static inline uint64_t CVMX_GSERX_PCIE_PIPEX_TXDEEMPH(unsigned long offset, unsi
 #define CVMX_GSERX_PCIE_PIPEX_TXDEEMPH(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090080480ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_PIPE_COM_CLK(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_PIPE_COM_CLK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_PIPE_COM_CLK(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_PIPE_COM_CLK(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080470ull);
 }
 #else
-#define CVMX_GSERX_PCIE_PIPE_COM_CLK(block_id) (CVMX_ADD_IO_SEG(0x0001180090080470ull))
+#define CVMX_GSERX_PCIE_PIPE_COM_CLK(offset) (CVMX_ADD_IO_SEG(0x0001180090080470ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_PIPE_CRST(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_PIPE_CRST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_PIPE_CRST(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_PIPE_CRST(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080458ull);
 }
 #else
-#define CVMX_GSERX_PCIE_PIPE_CRST(block_id) (CVMX_ADD_IO_SEG(0x0001180090080458ull))
+#define CVMX_GSERX_PCIE_PIPE_CRST(offset) (CVMX_ADD_IO_SEG(0x0001180090080458ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_PIPE_PORT_LOOPBK(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_PIPE_PORT_LOOPBK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_PIPE_PORT_LOOPBK(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_PIPE_PORT_LOOPBK(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080468ull);
 }
 #else
-#define CVMX_GSERX_PCIE_PIPE_PORT_LOOPBK(block_id) (CVMX_ADD_IO_SEG(0x0001180090080468ull))
+#define CVMX_GSERX_PCIE_PIPE_PORT_LOOPBK(offset) (CVMX_ADD_IO_SEG(0x0001180090080468ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_PIPE_PORT_SEL(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_PIPE_PORT_SEL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_PIPE_PORT_SEL(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_PIPE_PORT_SEL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080460ull);
 }
 #else
-#define CVMX_GSERX_PCIE_PIPE_PORT_SEL(block_id) (CVMX_ADD_IO_SEG(0x0001180090080460ull))
+#define CVMX_GSERX_PCIE_PIPE_PORT_SEL(offset) (CVMX_ADD_IO_SEG(0x0001180090080460ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_PIPE_RST(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_PIPE_RST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_PIPE_RST(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_PIPE_RST(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080448ull);
 }
 #else
-#define CVMX_GSERX_PCIE_PIPE_RST(block_id) (CVMX_ADD_IO_SEG(0x0001180090080448ull))
+#define CVMX_GSERX_PCIE_PIPE_RST(offset) (CVMX_ADD_IO_SEG(0x0001180090080448ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_PIPE_RST_STS(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_PIPE_RST_STS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_PIPE_RST_STS(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_PIPE_RST_STS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080450ull);
 }
 #else
-#define CVMX_GSERX_PCIE_PIPE_RST_STS(block_id) (CVMX_ADD_IO_SEG(0x0001180090080450ull))
+#define CVMX_GSERX_PCIE_PIPE_RST_STS(offset) (CVMX_ADD_IO_SEG(0x0001180090080450ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_PIPE_STATUS(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_PIPE_STATUS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_PIPE_STATUS(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_PIPE_STATUS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080400ull);
 }
 #else
-#define CVMX_GSERX_PCIE_PIPE_STATUS(block_id) (CVMX_ADD_IO_SEG(0x0001180090080400ull))
+#define CVMX_GSERX_PCIE_PIPE_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180090080400ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_TX_DEEMPH_GEN1(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_TX_DEEMPH_GEN1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_TX_DEEMPH_GEN1(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_TX_DEEMPH_GEN1(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080408ull);
 }
 #else
-#define CVMX_GSERX_PCIE_TX_DEEMPH_GEN1(block_id) (CVMX_ADD_IO_SEG(0x0001180090080408ull))
+#define CVMX_GSERX_PCIE_TX_DEEMPH_GEN1(offset) (CVMX_ADD_IO_SEG(0x0001180090080408ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_3P5DB(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_3P5DB(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_3P5DB(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_3P5DB(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080410ull);
 }
 #else
-#define CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_3P5DB(block_id) (CVMX_ADD_IO_SEG(0x0001180090080410ull))
+#define CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_3P5DB(offset) (CVMX_ADD_IO_SEG(0x0001180090080410ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_6DB(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_6DB(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_6DB(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_6DB(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080418ull);
 }
 #else
-#define CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_6DB(block_id) (CVMX_ADD_IO_SEG(0x0001180090080418ull))
+#define CVMX_GSERX_PCIE_TX_DEEMPH_GEN2_6DB(offset) (CVMX_ADD_IO_SEG(0x0001180090080418ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_TX_SWING_FULL(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_TX_SWING_FULL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_TX_SWING_FULL(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_TX_SWING_FULL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080420ull);
 }
 #else
-#define CVMX_GSERX_PCIE_TX_SWING_FULL(block_id) (CVMX_ADD_IO_SEG(0x0001180090080420ull))
+#define CVMX_GSERX_PCIE_TX_SWING_FULL(offset) (CVMX_ADD_IO_SEG(0x0001180090080420ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_TX_SWING_LOW(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_TX_SWING_LOW(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_TX_SWING_LOW(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_TX_SWING_LOW(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080428ull);
 }
 #else
-#define CVMX_GSERX_PCIE_TX_SWING_LOW(block_id) (CVMX_ADD_IO_SEG(0x0001180090080428ull))
+#define CVMX_GSERX_PCIE_TX_SWING_LOW(offset) (CVMX_ADD_IO_SEG(0x0001180090080428ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PCIE_TX_VBOOST_LVL(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PCIE_TX_VBOOST_LVL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_PCIE_TX_VBOOST_LVL(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_PCIE_TX_VBOOST_LVL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090080440ull);
 }
 #else
-#define CVMX_GSERX_PCIE_TX_VBOOST_LVL(block_id) (CVMX_ADD_IO_SEG(0x0001180090080440ull))
+#define CVMX_GSERX_PCIE_TX_VBOOST_LVL(offset) (CVMX_ADD_IO_SEG(0x0001180090080440ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_PHYX_IDCODE_HI(unsigned long offset, unsigned long block_id)
@@ -1417,32 +1746,38 @@ static inline uint64_t CVMX_GSERX_PHYX_OVRD_IN_LO(unsigned long offset, unsigned
 #define CVMX_GSERX_PHYX_OVRD_IN_LO(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090400088ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 524288)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PHY_CTL(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PHY_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_PHY_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000000ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_PHY_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000000ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_PHY_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000000ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_PHY_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180090000000ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PIPE_LPBK(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PIPE_LPBK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_PIPE_LPBK(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000200ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_PIPE_LPBK(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000200ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_PIPE_LPBK(block_id) (CVMX_ADD_IO_SEG(0x0001180090000200ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_PIPE_LPBK(offset) (CVMX_ADD_IO_SEG(0x0001180090000200ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_PLL_PX_MODE_0(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 11)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 11)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 11)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 11)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_PLL_PX_MODE_0(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904E0030ull) + (((offset) & 15) + ((block_id) & 15) * 0x80000ull) * 32;
 }
@@ -1453,7 +1788,9 @@ static inline uint64_t CVMX_GSERX_PLL_PX_MODE_0(unsigned long offset, unsigned l
 static inline uint64_t CVMX_GSERX_PLL_PX_MODE_1(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 11)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 11)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 11)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 11)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_PLL_PX_MODE_1(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800904E0038ull) + (((offset) & 15) + ((block_id) & 15) * 0x80000ull) * 32;
 }
@@ -1461,136 +1798,255 @@ static inline uint64_t CVMX_GSERX_PLL_PX_MODE_1(unsigned long offset, unsigned l
 #define CVMX_GSERX_PLL_PX_MODE_1(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800904E0038ull) + (((offset) & 15) + ((block_id) & 15) * 0x80000ull) * 32)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_PLL_STAT(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_PLL_STAT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_PLL_STAT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000010ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_PLL_STAT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000010ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_PLL_STAT(block_id) (CVMX_ADD_IO_SEG(0x0001180090000010ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_PLL_STAT(offset) (CVMX_ADD_IO_SEG(0x0001180090000010ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_QLM_STAT(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_QLM_STAT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_QLM_STAT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800900000A0ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_QLM_STAT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800900000A0ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_QLM_STAT(block_id) (CVMX_ADD_IO_SEG(0x00011800900000A0ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_QLM_STAT(offset) (CVMX_ADD_IO_SEG(0x00011800900000A0ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_RDET_TIME(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_RDET_TIME(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_RDET_TIME(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800904E0008ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_RDET_TIME(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904E0008ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_RDET_TIME(block_id) (CVMX_ADD_IO_SEG(0x00011800904E0008ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_RDET_TIME(offset) (CVMX_ADD_IO_SEG(0x00011800904E0008ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_REFCLK_SEL(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_REFCLK_EVT_CNTR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_REFCLK_SEL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000008ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_REFCLK_EVT_CNTR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000178ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_REFCLK_SEL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000008ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_REFCLK_EVT_CNTR(offset) (CVMX_ADD_IO_SEG(0x0001180090000178ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_RX_COAST(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_REFCLK_EVT_CTRL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_RX_COAST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000138ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_REFCLK_EVT_CTRL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000170ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_RX_COAST(block_id) (CVMX_ADD_IO_SEG(0x0001180090000138ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_REFCLK_EVT_CTRL(offset) (CVMX_ADD_IO_SEG(0x0001180090000170ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_RX_EIE_DETEN(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_REFCLK_SEL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_RX_EIE_DETEN(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000148ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_REFCLK_SEL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000008ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_RX_EIE_DETEN(block_id) (CVMX_ADD_IO_SEG(0x0001180090000148ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_REFCLK_SEL(offset) (CVMX_ADD_IO_SEG(0x0001180090000008ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_RX_EIE_DETSTS(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_RX_COAST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_RX_EIE_DETSTS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000150ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_RX_COAST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000138ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_RX_EIE_DETSTS(block_id) (CVMX_ADD_IO_SEG(0x0001180090000150ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_RX_COAST(offset) (CVMX_ADD_IO_SEG(0x0001180090000138ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_RX_EIE_FILTER(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_RX_EIE_DETEN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_RX_EIE_FILTER(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000158ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_RX_EIE_DETEN(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000148ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_RX_EIE_FILTER(block_id) (CVMX_ADD_IO_SEG(0x0001180090000158ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_RX_EIE_DETEN(offset) (CVMX_ADD_IO_SEG(0x0001180090000148ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_RX_POLARITY(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_RX_EIE_DETSTS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_RX_POLARITY(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000160ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_RX_EIE_DETSTS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000150ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_RX_POLARITY(block_id) (CVMX_ADD_IO_SEG(0x0001180090000160ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_RX_EIE_DETSTS(offset) (CVMX_ADD_IO_SEG(0x0001180090000150ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_RX_PWR_CTRL_P1(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_RX_EIE_FILTER(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_RX_PWR_CTRL_P1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800904600B0ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_RX_EIE_FILTER(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000158ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_RX_PWR_CTRL_P1(block_id) (CVMX_ADD_IO_SEG(0x00011800904600B0ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_RX_EIE_FILTER(offset) (CVMX_ADD_IO_SEG(0x0001180090000158ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SATA_CFG(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_RX_POLARITY(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_SATA_CFG(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_RX_POLARITY(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000160ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_RX_POLARITY(offset) (CVMX_ADD_IO_SEG(0x0001180090000160ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_RX_PWR_CTRL_P1(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_RX_PWR_CTRL_P1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904600B0ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_RX_PWR_CTRL_P1(offset) (CVMX_ADD_IO_SEG(0x00011800904600B0ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_RX_PWR_CTRL_P2(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_RX_PWR_CTRL_P2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904600B8ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_RX_PWR_CTRL_P2(offset) (CVMX_ADD_IO_SEG(0x00011800904600B8ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_RX_TXDIR_CTRL_1(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 13)))))
+		cvmx_warn("CVMX_GSERX_RX_TXDIR_CTRL_1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800904600F0ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_RX_TXDIR_CTRL_1(offset) (CVMX_ADD_IO_SEG(0x00011800904600F0ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_SATA_CFG(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_SATA_CFG(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090100208ull);
 }
 #else
-#define CVMX_GSERX_SATA_CFG(block_id) (CVMX_ADD_IO_SEG(0x0001180090100208ull))
+#define CVMX_GSERX_SATA_CFG(offset) (CVMX_ADD_IO_SEG(0x0001180090100208ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SATA_LANE_RST(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SATA_LANEX_TX_AMPX(unsigned long a, unsigned long b, unsigned long c)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_SATA_LANE_RST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090100210ull);
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((a <= 6)) && ((b <= 1)) && ((c <= 2)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((a <= 8)) && ((b <= 1)) && ((c <= 2))))))
+		cvmx_warn("CVMX_GSERX_SATA_LANEX_TX_AMPX(%lu,%lu,%lu) is invalid on this chip\n", a, b, c);
+	return CVMX_ADD_IO_SEG(0x0001180090000B00ull) + ((a) << 24) + ((b) << 5) + ((c) << 3);
 }
 #else
-#define CVMX_GSERX_SATA_LANE_RST(block_id) (CVMX_ADD_IO_SEG(0x0001180090100210ull))
+#define CVMX_GSERX_SATA_LANEX_TX_AMPX(a, b, c) (CVMX_ADD_IO_SEG(0x0001180090000B00ull) + ((a) << 24) + ((b) << 5) + ((c) << 3))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_SATA_LANEX_TX_PREEMPHX(unsigned long a, unsigned long b, unsigned long c)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((a <= 6)) && ((b <= 1)) && ((c <= 2)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((a <= 8)) && ((b <= 1)) && ((c <= 2))))))
+		cvmx_warn("CVMX_GSERX_SATA_LANEX_TX_PREEMPHX(%lu,%lu,%lu) is invalid on this chip\n", a, b, c);
+	return CVMX_ADD_IO_SEG(0x0001180090000A00ull) + ((a) << 24) + ((b) << 5) + ((c) << 3);
+}
+#else
+#define CVMX_GSERX_SATA_LANEX_TX_PREEMPHX(a, b, c) (CVMX_ADD_IO_SEG(0x0001180090000A00ull) + ((a) << 24) + ((b) << 5) + ((c) << 3))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_SATA_LANE_RST(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180090100210ull) + ((offset) & 0) * 0x1000000ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 8))
+				return CVMX_ADD_IO_SEG(0x0001180090000908ull) + ((offset) & 15) * 0x1000000ull;
+			break;
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 6))
+				return CVMX_ADD_IO_SEG(0x0001180090000908ull) + ((offset) & 7) * 0x1000000ull;
+			break;
+	}
+	cvmx_warn("CVMX_GSERX_SATA_LANE_RST (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000908ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+static inline uint64_t CVMX_GSERX_SATA_LANE_RST(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180090100210ull) + (offset) * 0x1000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180090000908ull) + (offset) * 0x1000000ull;
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180090000908ull) + (offset) * 0x1000000ull;
+	}
+	return CVMX_ADD_IO_SEG(0x0001180090000908ull) + (offset) * 0x1000000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_SATA_P0_TX_AMP_GENX(unsigned long offset, unsigned long block_id)
@@ -1637,98 +2093,148 @@ static inline uint64_t CVMX_GSERX_SATA_P1_TX_PREEMPH_GENX(unsigned long offset, 
 #define CVMX_GSERX_SATA_P1_TX_PREEMPH_GENX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090100420ull) + (((offset) & 3) + ((block_id) & 0) * 0x0ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SATA_REF_SSP_EN(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SATA_REF_SSP_EN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_SATA_REF_SSP_EN(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_SATA_REF_SSP_EN(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090100600ull);
 }
 #else
-#define CVMX_GSERX_SATA_REF_SSP_EN(block_id) (CVMX_ADD_IO_SEG(0x0001180090100600ull))
+#define CVMX_GSERX_SATA_REF_SSP_EN(offset) (CVMX_ADD_IO_SEG(0x0001180090100600ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SATA_RX_INVERT(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SATA_RX_INVERT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_SATA_RX_INVERT(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_SATA_RX_INVERT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090100218ull);
 }
 #else
-#define CVMX_GSERX_SATA_RX_INVERT(block_id) (CVMX_ADD_IO_SEG(0x0001180090100218ull))
+#define CVMX_GSERX_SATA_RX_INVERT(offset) (CVMX_ADD_IO_SEG(0x0001180090100218ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SATA_SSC_CLK_SEL(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SATA_SSC_CLK_SEL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_SATA_SSC_CLK_SEL(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_SATA_SSC_CLK_SEL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090100238ull);
 }
 #else
-#define CVMX_GSERX_SATA_SSC_CLK_SEL(block_id) (CVMX_ADD_IO_SEG(0x0001180090100238ull))
+#define CVMX_GSERX_SATA_SSC_CLK_SEL(offset) (CVMX_ADD_IO_SEG(0x0001180090100238ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SATA_SSC_EN(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SATA_SSC_EN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_SATA_SSC_EN(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_SATA_SSC_EN(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090100228ull);
 }
 #else
-#define CVMX_GSERX_SATA_SSC_EN(block_id) (CVMX_ADD_IO_SEG(0x0001180090100228ull))
+#define CVMX_GSERX_SATA_SSC_EN(offset) (CVMX_ADD_IO_SEG(0x0001180090100228ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SATA_SSC_RANGE(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SATA_SSC_RANGE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_SATA_SSC_RANGE(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_GSERX_SATA_SSC_RANGE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180090100230ull);
 }
 #else
-#define CVMX_GSERX_SATA_SSC_RANGE(block_id) (CVMX_ADD_IO_SEG(0x0001180090100230ull))
+#define CVMX_GSERX_SATA_SSC_RANGE(offset) (CVMX_ADD_IO_SEG(0x0001180090100230ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SATA_STATUS(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SATA_STATUS(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_SATA_STATUS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090100200ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180090100200ull) + ((offset) & 0) * 0x1000000ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 8))
+				return CVMX_ADD_IO_SEG(0x0001180090100900ull) + ((offset) & 15) * 0x1000000ull;
+			break;
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 6))
+				return CVMX_ADD_IO_SEG(0x0001180090100900ull) + ((offset) & 7) * 0x1000000ull;
+			break;
+	}
+	cvmx_warn("CVMX_GSERX_SATA_STATUS (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090100900ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_SATA_STATUS(block_id) (CVMX_ADD_IO_SEG(0x0001180090100200ull))
+static inline uint64_t CVMX_GSERX_SATA_STATUS(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180090100200ull) + (offset) * 0x1000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180090100900ull) + (offset) * 0x1000000ull;
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180090100900ull) + (offset) * 0x1000000ull;
+	}
+	return CVMX_ADD_IO_SEG(0x0001180090100900ull) + (offset) * 0x1000000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SATA_TX_INVERT(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SATA_TX_INVERT(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_GSERX_SATA_TX_INVERT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090100220ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180090100220ull) + ((offset) & 0) * 0x1000000ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 8))
+				return CVMX_ADD_IO_SEG(0x0001180090000910ull) + ((offset) & 15) * 0x1000000ull;
+			break;
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 6))
+				return CVMX_ADD_IO_SEG(0x0001180090000910ull) + ((offset) & 7) * 0x1000000ull;
+			break;
+	}
+	cvmx_warn("CVMX_GSERX_SATA_TX_INVERT (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000910ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_SATA_TX_INVERT(block_id) (CVMX_ADD_IO_SEG(0x0001180090100220ull))
+static inline uint64_t CVMX_GSERX_SATA_TX_INVERT(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180090100220ull) + (offset) * 0x1000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180090000910ull) + (offset) * 0x1000000ull;
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180090000910ull) + (offset) * 0x1000000ull;
+	}
+	return CVMX_ADD_IO_SEG(0x0001180090000910ull) + (offset) * 0x1000000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SCRATCH(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SCRATCH(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_SCRATCH(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000020ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_SCRATCH(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000020ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_SCRATCH(block_id) (CVMX_ADD_IO_SEG(0x0001180090000020ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_SCRATCH(offset) (CVMX_ADD_IO_SEG(0x0001180090000020ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_GSERX_SLICEX_RX_SDLL_CTRL(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 13))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 6)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 13)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 8))))))
 		cvmx_warn("CVMX_GSERX_SLICEX_RX_SDLL_CTRL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180090460220ull) + (((offset) & 1) + ((block_id) & 15) * 0x8ull) * 2097152;
 }
@@ -1736,48 +2242,104 @@ static inline uint64_t CVMX_GSERX_SLICEX_RX_SDLL_CTRL(unsigned long offset, unsi
 #define CVMX_GSERX_SLICEX_RX_SDLL_CTRL(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090460220ull) + (((offset) & 1) + ((block_id) & 15) * 0x8ull) * 2097152)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SLICE_CFG(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SLICE_CFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_SLICE_CFG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090460060ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_SLICE_CFG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090460060ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_SLICE_CFG(block_id) (CVMX_ADD_IO_SEG(0x0001180090460060ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_SLICE_CFG(offset) (CVMX_ADD_IO_SEG(0x0001180090460060ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SPD(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SPD(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_SPD(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000088ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_SPD(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000088ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_SPD(block_id) (CVMX_ADD_IO_SEG(0x0001180090000088ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_SPD(offset) (CVMX_ADD_IO_SEG(0x0001180090000088ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_SRST(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SRIO_PCS_CFG_0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_SRST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000090ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_SRIO_PCS_CFG_0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000240ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_SRST(block_id) (CVMX_ADD_IO_SEG(0x0001180090000090ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_SRIO_PCS_CFG_0(offset) (CVMX_ADD_IO_SEG(0x0001180090000240ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_GSERX_TX_VBOOST(unsigned long block_id)
+static inline uint64_t CVMX_GSERX_SRIO_PCS_CFG_1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 13)))))
-		cvmx_warn("CVMX_GSERX_TX_VBOOST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180090000130ull) + ((block_id) & 15) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_SRIO_PCS_CFG_1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000248ull) + ((offset) & 15) * 0x1000000ull;
 }
 #else
-#define CVMX_GSERX_TX_VBOOST(block_id) (CVMX_ADD_IO_SEG(0x0001180090000130ull) + ((block_id) & 15) * 0x1000000ull)
+#define CVMX_GSERX_SRIO_PCS_CFG_1(offset) (CVMX_ADD_IO_SEG(0x0001180090000248ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_SRST(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_SRST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000090ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_SRST(offset) (CVMX_ADD_IO_SEG(0x0001180090000090ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_TXCLK_EVT_CNTR(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_TXCLK_EVT_CNTR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000188ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_TXCLK_EVT_CNTR(offset) (CVMX_ADD_IO_SEG(0x0001180090000188ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_TXCLK_EVT_CTRL(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_TXCLK_EVT_CTRL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000180ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_TXCLK_EVT_CTRL(offset) (CVMX_ADD_IO_SEG(0x0001180090000180ull) + ((offset) & 15) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GSERX_TX_VBOOST(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 6))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 8)))))
+		cvmx_warn("CVMX_GSERX_TX_VBOOST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180090000130ull) + ((offset) & 15) * 0x1000000ull;
+}
+#else
+#define CVMX_GSERX_TX_VBOOST(offset) (CVMX_ADD_IO_SEG(0x0001180090000130ull) + ((offset) & 15) * 0x1000000ull)
 #endif
 
 /**
@@ -1788,13 +2350,13 @@ union cvmx_gserx_ana_atest {
 	struct cvmx_gserx_ana_atest_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t ana_dac_b                    : 7;  /**< Used to control the B-side DAC input to the analog test block. Note that the QLM4 register
-                                                         is tied to the analog test block, for non-CCPI links. Note that the CCPI4 register is tied
-                                                         to the analog test block, for CCPI links. The other GSER()_ANA_ATEST registers are
-                                                         unused. For diagnostic use only. */
-	uint64_t ana_dac_a                    : 5;  /**< Used to control A-side DAC input to the analog test block. Note that the QLM4 register is
-                                                         tied to the analog test block, for non-CCPI links. Note that the CCPI4 register is tied to
-                                                         the analog test block, for CCPI links. The other GSER()_ANA_ATEST registers are unused.
+	uint64_t ana_dac_b                    : 7;  /**< Used to control the B-side DAC input to the analog test block. Note that only
+                                                         the GSER(4)_ANA_ATEST.ANA_DAC_B register is tied to the analog test block.
+                                                         The GSER(0..3,5..6)_ANA_ATEST.ANA_DAC_B registers are unused.
+                                                         For diagnostic use only. */
+	uint64_t ana_dac_a                    : 5;  /**< Used to control the A-side DAC input to the analog test block. Note that only
+                                                         the GSER(4)_ANA_TEST.ANA_DAC_A register is tied to the analog test block.
+                                                         The GSER(0..3,5..6)_ANA_ATEST.ANA_DAC_A registers are unused.
                                                          For diagnostic use only. */
 #else
 	uint64_t ana_dac_a                    : 5;
@@ -1802,7 +2364,10 @@ union cvmx_gserx_ana_atest {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
+	struct cvmx_gserx_ana_atest_s         cn73xx;
 	struct cvmx_gserx_ana_atest_s         cn78xx;
+	struct cvmx_gserx_ana_atest_s         cn78xxp2;
+	struct cvmx_gserx_ana_atest_s         cnf75xx;
 };
 typedef union cvmx_gserx_ana_atest cvmx_gserx_ana_atest_t;
 
@@ -1814,16 +2379,27 @@ union cvmx_gserx_ana_sel {
 	struct cvmx_gserx_ana_sel_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_9_63                : 55;
-	uint64_t ana_sel                      : 9;  /**< Used to control the adr_global input to the analog test block. Note that the QLM0 register
-                                                         is tied to the analog test block, for non-CCPI links. Note that the QLM8 register is tied
-                                                         to the analog test block, for CCPI links. The other GSER()_ANA_SEL registers are unused.
+	uint64_t ana_sel                      : 9;  /**< Used to control the adr_global input to the analog test block. Note that only
+                                                         the GSER(4)_ANA_SEL.ANA_SEL register is tied to the analog test block.
+                                                         The GSER(0..3,5..6)_ANA_SEL.ANA_SEL registers are unused.
+                                                         Used to power down the common clock input receiver to reduce power consumption
+                                                         if the common clock input is not used.
+                                                         If the common clock QLMC_REFCLK1_P/N input is unused program the
+                                                         GSER(4)_ANA_SEL.ANA_SEL field to 0x1fd.
+                                                         If the common clock QLMC_REFCLK0_P/N input is unused program the
+                                                         GSER(4)_ANA_SEL.ANA_SEL field to 0x1fe.
+                                                         If both common clock QLMC_REFCLK0_P/N and QLMC_REFCLK1_P/N inputs are unused program the
+                                                         GSER(4)_ANA_SEL.ANA_SEL field to 0x1fc.
                                                          For diagnostic use only. */
 #else
 	uint64_t ana_sel                      : 9;
 	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
+	struct cvmx_gserx_ana_sel_s           cn73xx;
 	struct cvmx_gserx_ana_sel_s           cn78xx;
+	struct cvmx_gserx_ana_sel_s           cn78xxp2;
+	struct cvmx_gserx_ana_sel_s           cnf75xx;
 };
 typedef union cvmx_gserx_ana_sel cvmx_gserx_ana_sel_t;
 
@@ -1834,9 +2410,45 @@ union cvmx_gserx_br_rxx_ctl {
 	uint64_t u64;
 	struct cvmx_gserx_br_rxx_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_3_63                : 61;
-	uint64_t rxt_swm                      : 1;  /**< Set when RX Base-R Link Training is to be performed under software control. For diagnostic
+	uint64_t reserved_4_63                : 60;
+	uint64_t rxt_adtmout_disable          : 1;  /**< For Base-R links the terminating condition for link training receiver adaptation
+                                                         is a 330 milliseconds time-out timer.  When the receiver adaptation time-out timer
+                                                         expires the receiver adaptation process is concluded and the link is considered good.
+                                                         Note that when Base-R link training is performed under software control,
+                                                         (GSER()_BR_RX()_CTL[RXT_SWM] is set), the receiver adaptation time-out timer is disabled
+                                                         and not used.
+                                                         Set this bit to a one to disable the link training receiver adaptation time-out
+                                                         timer during Base-R link training under hardware control.  For diagnostic use only. */
+	uint64_t rxt_swm                      : 1;  /**< Set when RX Base-R Link Training is to be performed under software control.
+                                                         See GSER()_BR_RX()_EER[EXT_EER]. */
+	uint64_t rxt_preset                   : 1;  /**< For all link training, this bit determines how to configure the preset bit in the
+                                                         coefficient update message that is sent to the far end transmitter. When set, a one time
+                                                         request is made that the coefficients be set to a state where equalization is turned off.
+                                                         To perform a preset, set this bit prior to link training. Link training needs to be
+                                                         disabled to complete the request and get the rxtrain state machine back to idle. Note that
+                                                         it is illegal to set both the preset and initialize bits at the same time. For diagnostic
                                                          use only. */
+	uint64_t rxt_initialize               : 1;  /**< For all link training, this bit determines how to configure the initialize bit in the
+                                                         coefficient update message that is sent to the far end transmitter of RX training. When
+                                                         set, a request is made that the coefficients be set to its INITIALIZE state. To perform an
+                                                         initialize prior to link training, set this bit prior to performing link training. Note
+                                                         that it is illegal to set both the preset and initialize bits at the same time. Since the
+                                                         far end transmitter is required to be initialized prior to starting link training, it is
+                                                         not expected that software will need to set this bit. For diagnostic use only. */
+#else
+	uint64_t rxt_initialize               : 1;
+	uint64_t rxt_preset                   : 1;
+	uint64_t rxt_swm                      : 1;
+	uint64_t rxt_adtmout_disable          : 1;
+	uint64_t reserved_4_63                : 60;
+#endif
+	} s;
+	struct cvmx_gserx_br_rxx_ctl_s        cn73xx;
+	struct cvmx_gserx_br_rxx_ctl_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_3_63                : 61;
+	uint64_t rxt_swm                      : 1;  /**< Set when RX Base-R Link Training is to be performed under software control.
+                                                         See GSER()_BR_RX()_EER[EXT_EER]. */
 	uint64_t rxt_preset                   : 1;  /**< For all link training, this bit determines how to configure the preset bit in the
                                                          coefficient update message that is sent to the far end transmitter. When set, a one time
                                                          request is made that the coefficients be set to a state where equalization is turned off.
@@ -1857,8 +2469,9 @@ union cvmx_gserx_br_rxx_ctl {
 	uint64_t rxt_swm                      : 1;
 	uint64_t reserved_3_63                : 61;
 #endif
-	} s;
-	struct cvmx_gserx_br_rxx_ctl_s        cn78xx;
+	} cn78xx;
+	struct cvmx_gserx_br_rxx_ctl_s        cn78xxp2;
+	struct cvmx_gserx_br_rxx_ctl_s        cnf75xx;
 };
 typedef union cvmx_gserx_br_rxx_ctl cvmx_gserx_br_rxx_ctl_t;
 
@@ -1877,7 +2490,18 @@ union cvmx_gserx_br_rxx_eer {
 	uint64_t reserved_16_63               : 48;
 	uint64_t rxt_eer                      : 1;  /**< When RX Base-R Link Training is being performed under software control,
                                                          (GSER()_BR_RX()_CTL[RXT_SWM] is set), writing this bit initiates an equalization
-                                                         request to the RAW PCS. Reading this bit always returns a zero. */
+                                                         request to the RAW PCS. Reading this bit always returns a zero.
+                                                         When auto-negotiated link training is not present and link speed >= 5Gbaud,
+                                                         including XFI, receiver (only) equalization should be manually performed. After
+                                                         GSER()_BR_RX()_CTL[RXT_SWM] is set, writing this CSR with
+                                                         [RXT_EER]=1 initiates this manual equalization. The operation may take up to
+                                                         2 milliseconds, and then hardware sets [RXT_ESV]. [RXT_ESM] can be
+                                                         ignored after these receiver-only equalizations. The serdes input should
+                                                         be a pattern (something similar to the Base-R training sequence, ideally)
+                                                         during this receiver-only training. If DFE is to be disabled
+                                                         (recommended for 5Gbaud and below), do it prior to this receiver-only
+                                                         initialization. (GSER()_LANE()_RX_VALBBD_CTRL_0, GSER()_LANE()_RX_VALBBD_CTRL_1,
+                                                         and GSER()_LANE()_RX_VALBBD_CTRL_2 configure the DFE.) */
 	uint64_t rxt_esv                      : 1;  /**< When performing an equalization request (RXT_EER), this bit, when set, indicates that the
                                                          Equalization Status (RXT_ESM) is valid. When issuing a RXT_EER request, it is expected
                                                          that RXT_ESV will get written to zero so that a valid RXT_ESM can be determined. */
@@ -1902,7 +2526,10 @@ union cvmx_gserx_br_rxx_eer {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_br_rxx_eer_s        cn73xx;
 	struct cvmx_gserx_br_rxx_eer_s        cn78xx;
+	struct cvmx_gserx_br_rxx_eer_s        cn78xxp2;
+	struct cvmx_gserx_br_rxx_eer_s        cnf75xx;
 };
 typedef union cvmx_gserx_br_rxx_eer cvmx_gserx_br_rxx_eer_t;
 
@@ -1921,7 +2548,10 @@ union cvmx_gserx_br_txx_ctl {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_gserx_br_txx_ctl_s        cn73xx;
 	struct cvmx_gserx_br_txx_ctl_s        cn78xx;
+	struct cvmx_gserx_br_txx_ctl_s        cn78xxp2;
+	struct cvmx_gserx_br_txx_ctl_s        cnf75xx;
 };
 typedef union cvmx_gserx_br_txx_ctl cvmx_gserx_br_txx_ctl_t;
 
@@ -1939,15 +2569,54 @@ union cvmx_gserx_br_txx_cur {
                                                          For diagnostic use only.
                                                          <13:9> = TX_POST<4:0>.
                                                          <8:4> = TX_SWING<4:0>.
-                                                         <3:0> = TX_PRE<4:0>. */
+                                                         <3:0> = TX_PRE<3:0>. */
 #else
 	uint64_t txt_cur                      : 14;
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_gserx_br_txx_cur_s        cn73xx;
 	struct cvmx_gserx_br_txx_cur_s        cn78xx;
+	struct cvmx_gserx_br_txx_cur_s        cn78xxp2;
+	struct cvmx_gserx_br_txx_cur_s        cnf75xx;
 };
 typedef union cvmx_gserx_br_txx_cur cvmx_gserx_br_txx_cur_t;
+
+/**
+ * cvmx_gser#_br_tx#_tap
+ *
+ * Added in pass 2.
+ *
+ */
+union cvmx_gserx_br_txx_tap {
+	uint64_t u64;
+	struct cvmx_gserx_br_txx_tap_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t txt_pre                      : 4;  /**< After TX Base-R Link Training, this is the resultant POST Tap value that was
+                                                         written to the PHY.  This field has no meaning if TX Base-R Link Traning was
+                                                         not performed.
+                                                         For diagnostic use only. */
+	uint64_t txt_swing                    : 5;  /**< After TX Base-R Link Training, this is the resultant SWING Tap value that was
+                                                         written to the PHY.  This field has no meaning if TX Base-R Link Traning was
+                                                         not performed.
+                                                         For diagnostic use only. */
+	uint64_t txt_post                     : 5;  /**< After TX Base-R Link Training, this is the resultant POST Tap value that was
+                                                         written to the PHY.  This field has no meaning if TX Base-R Link Traning was
+                                                         not performed.
+                                                         For diagnostic use only. */
+#else
+	uint64_t txt_post                     : 5;
+	uint64_t txt_swing                    : 5;
+	uint64_t txt_pre                      : 4;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_gserx_br_txx_tap_s        cn73xx;
+	struct cvmx_gserx_br_txx_tap_s        cn78xxp2;
+	struct cvmx_gserx_br_txx_tap_s        cnf75xx;
+};
+typedef union cvmx_gserx_br_txx_tap cvmx_gserx_br_txx_tap_t;
 
 /**
  * cvmx_gser#_cfg
@@ -1955,6 +2624,65 @@ typedef union cvmx_gserx_br_txx_cur cvmx_gserx_br_txx_cur_t;
 union cvmx_gserx_cfg {
 	uint64_t u64;
 	struct cvmx_gserx_cfg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_9_63                : 55;
+	uint64_t rmac_pipe                    : 1;  /**< Indicates the RMAC is configured for PIPE mode when GSER(6..8)_CFG[RMAC]
+                                                         is also set.  Lanes 0 and 1 of the 2-lane SerDes are used in PIPE mode. */
+	uint64_t rmac                         : 1;  /**< Indicates GSER(6..8) is configured for RMAC mode. Only one of the BGX, PCIE, SRIO, or
+                                                         RMAC modes can be set at any one time. */
+	uint64_t srio                         : 1;  /**< Indicates GSER(2..3) is configured for SRIO mode. GSER(2..3) will power-up with
+                                                         GSER(2..3)_CFG[SRIO] bit set by the hardware.  Only one of the BGX, PCIE, SRIO, or RMAC
+                                                         modes can be set at any one time. */
+	uint64_t sata                         : 1;  /**< Reserved. */
+	uint64_t bgx_quad                     : 1;  /**< Indicates the BGX is in quad aggregation mode when GSER(4..5)_CFG[BGX]
+                                                         is also set. A single controller is used for all four lanes. */
+	uint64_t bgx_dual                     : 1;  /**< Indicates the BGX is in dual aggregation mode when GSER(4..5)_CFG[BGX]
+                                                         is also set. A single controller is used for lanes 0 and 1 and another controller is used
+                                                         for lanes 2 and 3. */
+	uint64_t bgx                          : 1;  /**< Indicates GSER(4..5) is configured for BGX mode. Only one of the BGX,
+                                                         PCIE, SRIO, or RMAC modes can be set at any one time. */
+	uint64_t ila                          : 1;  /**< Reserved. */
+	uint64_t pcie                         : 1;  /**< Indicates GSER(0..1) is configured for PCIE mode. Only one of the BGX,
+                                                         PCIE, SRIO, or RMAC modes can be set at any one time. */
+#else
+	uint64_t pcie                         : 1;
+	uint64_t ila                          : 1;
+	uint64_t bgx                          : 1;
+	uint64_t bgx_dual                     : 1;
+	uint64_t bgx_quad                     : 1;
+	uint64_t sata                         : 1;
+	uint64_t srio                         : 1;
+	uint64_t rmac                         : 1;
+	uint64_t rmac_pipe                    : 1;
+	uint64_t reserved_9_63                : 55;
+#endif
+	} s;
+	struct cvmx_gserx_cfg_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_6_63                : 58;
+	uint64_t sata                         : 1;  /**< Indicates the GSER is configured for SATA mode. Only one of the BGX, SATA, or PCIE
+                                                         modes can be set at any one time. */
+	uint64_t bgx_quad                     : 1;  /**< Indicates the BGX is in quad aggregation mode when GSER(2..3,5)_CFG[BGX]
+                                                         is also set. A single controller is used for all four lanes. */
+	uint64_t bgx_dual                     : 1;  /**< Indicates the BGX is in dual aggregation mode when GSER()_CFG[BGX]
+                                                         is also set. A single controller is used for lanes 0 and 1 and another controller is used
+                                                         for lanes 2 and 3. */
+	uint64_t bgx                          : 1;  /**< Indicates the GSER is configured for BGX mode. Only one of the BGX,
+                                                         SATA, or PCIE modes can be set at any one time. */
+	uint64_t ila                          : 1;  /**< Reserved. */
+	uint64_t pcie                         : 1;  /**< Indicates the GSER is configured for PCIE mode. Only one of the BGX,
+                                                         SATA, or PCIE modes can be set at any one time. */
+#else
+	uint64_t pcie                         : 1;
+	uint64_t ila                          : 1;
+	uint64_t bgx                          : 1;
+	uint64_t bgx_dual                     : 1;
+	uint64_t bgx_quad                     : 1;
+	uint64_t sata                         : 1;
+	uint64_t reserved_6_63                : 58;
+#endif
+	} cn73xx;
+	struct cvmx_gserx_cfg_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
 	uint64_t bgx_quad                     : 1;  /**< For non-CCPI links, indicates the BGX is in quad aggregation mode when GSER()_CFG[BGX]
@@ -1978,8 +2706,9 @@ union cvmx_gserx_cfg {
 	uint64_t bgx_quad                     : 1;
 	uint64_t reserved_5_63                : 59;
 #endif
-	} s;
-	struct cvmx_gserx_cfg_s               cn78xx;
+	} cn78xx;
+	struct cvmx_gserx_cfg_cn78xx          cn78xxp2;
+	struct cvmx_gserx_cfg_s               cnf75xx;
 };
 typedef union cvmx_gserx_cfg cvmx_gserx_cfg_t;
 
@@ -1991,14 +2720,17 @@ union cvmx_gserx_dbg {
 	struct cvmx_gserx_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t rxqtm_on                     : 1;  /**< For non-BGX/ILK configurations, setting this bit enables the RX FIFOs. This allows
+	uint64_t rxqtm_on                     : 1;  /**< For non-BGX configurations, setting this bit enables the RX FIFOs. This allows
                                                          received data to become visible to the RSL debug port. For diagnostic use only. */
 #else
 	uint64_t rxqtm_on                     : 1;
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_gserx_dbg_s               cn73xx;
 	struct cvmx_gserx_dbg_s               cn78xx;
+	struct cvmx_gserx_dbg_s               cn78xxp2;
+	struct cvmx_gserx_dbg_s               cnf75xx;
 };
 typedef union cvmx_gserx_dbg cvmx_gserx_dbg_t;
 
@@ -2881,9 +3613,268 @@ union cvmx_gserx_eq_wait_time {
 	uint64_t reserved_8_63                : 56;
 #endif
 	} s;
+	struct cvmx_gserx_eq_wait_time_s      cn73xx;
 	struct cvmx_gserx_eq_wait_time_s      cn78xx;
+	struct cvmx_gserx_eq_wait_time_s      cn78xxp2;
+	struct cvmx_gserx_eq_wait_time_s      cnf75xx;
 };
 typedef union cvmx_gserx_eq_wait_time cvmx_gserx_eq_wait_time_t;
+
+/**
+ * cvmx_gser#_glbl_misc_config_1
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_glbl_misc_config_1 {
+	uint64_t u64;
+	struct cvmx_gserx_glbl_misc_config_1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_10_63               : 54;
+	uint64_t pcs_sds_vref_tr              : 4;  /**< Trim the BGR (Band Gap Reference) reference (all external and internal currents
+                                                         are affected).
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_trim_chp_reg         : 2;  /**< Trim current going to CML-CMOS stage at output of VCO.
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_vco_reg_tr           : 2;  /**< Trims regulator voltage.
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_cvbg_en              : 1;  /**< Forces 0.6 V from VDDHV onto VBG node.
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_extvbg_en            : 1;  /**< Force external VBG through AMON pin in TMA5 mode.
+                                                         For diagnostic use only. */
+#else
+	uint64_t pcs_sds_extvbg_en            : 1;
+	uint64_t pcs_sds_cvbg_en              : 1;
+	uint64_t pcs_sds_vco_reg_tr           : 2;
+	uint64_t pcs_sds_trim_chp_reg         : 2;
+	uint64_t pcs_sds_vref_tr              : 4;
+	uint64_t reserved_10_63               : 54;
+#endif
+	} s;
+	struct cvmx_gserx_glbl_misc_config_1_s cn78xx;
+	struct cvmx_gserx_glbl_misc_config_1_s cn78xxp2;
+	struct cvmx_gserx_glbl_misc_config_1_s cnf75xx;
+};
+typedef union cvmx_gserx_glbl_misc_config_1 cvmx_gserx_glbl_misc_config_1_t;
+
+/**
+ * cvmx_gser#_glbl_pll_cfg_0
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_glbl_pll_cfg_0 {
+	uint64_t u64;
+	struct cvmx_gserx_glbl_pll_cfg_0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t pcs_sds_pll_vco_reset_b      : 1;  /**< VCO reset, active low.
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_pll_strt_cal_b       : 1;  /**< Start PLL calibration, active low.
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_pll_cripple          : 1;  /**< Ripple capacitor tuning.
+                                                         For diagnostic use only. */
+	uint64_t reserved_8_10                : 3;
+	uint64_t pcs_sds_pll_fthresh          : 2;  /**< PLL frequency comparison threshold.
+                                                         For diagnostic use only. */
+	uint64_t reserved_0_5                 : 6;
+#else
+	uint64_t reserved_0_5                 : 6;
+	uint64_t pcs_sds_pll_fthresh          : 2;
+	uint64_t reserved_8_10                : 3;
+	uint64_t pcs_sds_pll_cripple          : 1;
+	uint64_t pcs_sds_pll_strt_cal_b       : 1;
+	uint64_t pcs_sds_pll_vco_reset_b      : 1;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_gserx_glbl_pll_cfg_0_s    cn78xx;
+	struct cvmx_gserx_glbl_pll_cfg_0_s    cn78xxp2;
+};
+typedef union cvmx_gserx_glbl_pll_cfg_0 cvmx_gserx_glbl_pll_cfg_0_t;
+
+/**
+ * cvmx_gser#_glbl_pll_cfg_1
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_glbl_pll_cfg_1 {
+	uint64_t u64;
+	struct cvmx_gserx_glbl_pll_cfg_1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_10_63               : 54;
+	uint64_t cfg_pll_ctrl_en              : 1;  /**< PLL reset control enable.
+                                                         0 = PLL RESETs/cal start are not active.
+                                                         1 = All PLL RESETs/cal start are enabled.
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_pll_calmode          : 3;  /**< PLL calibration mode.
+                                                         0 = Force PLL loop into calibration mode.
+                                                         1 = Normal operation.
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_pll_cal_ovrd_en      : 1;  /**< Manual PLL coarse calibration override enable.
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_pll_cal_ovrd         : 5;  /**< Manual PLL coarse calibration override value.
+                                                         For diagnostic use only. */
+#else
+	uint64_t pcs_sds_pll_cal_ovrd         : 5;
+	uint64_t pcs_sds_pll_cal_ovrd_en      : 1;
+	uint64_t pcs_sds_pll_calmode          : 3;
+	uint64_t cfg_pll_ctrl_en              : 1;
+	uint64_t reserved_10_63               : 54;
+#endif
+	} s;
+	struct cvmx_gserx_glbl_pll_cfg_1_s    cn78xx;
+	struct cvmx_gserx_glbl_pll_cfg_1_s    cn78xxp2;
+};
+typedef union cvmx_gserx_glbl_pll_cfg_1 cvmx_gserx_glbl_pll_cfg_1_t;
+
+/**
+ * cvmx_gser#_glbl_pll_cfg_2
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_glbl_pll_cfg_2 {
+	uint64_t u64;
+	struct cvmx_gserx_glbl_pll_cfg_2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_15_63               : 49;
+	uint64_t pll_div_ovrrd_en             : 1;  /**< Override Global Power state machine and mac_pcs_pll_div control signal.
+                                                         When asserted, pcs_sds_pll_div is specified from
+                                                         GSER()_LANE()_PCS_PLL_CTLIFC_0[PLL_DIV_OVRRD_VAL],
+                                                         global power state machine and mac_pcs_pll_div control signals are ignored.
+                                                         For diagnostic use only. */
+	uint64_t reserved_10_13               : 4;
+	uint64_t pcs_sds_pll_lock_override    : 1;  /**< Not used.
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_pll_counter_resetn   : 1;  /**< Not used.
+                                                         For diagnostic use only. */
+	uint64_t pll_sdsck_pd_ovrrd_val       : 1;  /**< Clock tree powerdown override value.
+                                                         For diagnostic use only. */
+	uint64_t pll_sdsck_pd_ovrrd_en        : 1;  /**< Clock tree powerdown override enable.
+                                                         For diagnostic use only. */
+	uint64_t pll_pd_ovrrd_val             : 1;  /**< PLL powerdown override value.
+                                                         For diagnostic use only. */
+	uint64_t pll_pd_ovrrd_en              : 1;  /**< When asserted, overrides PLL powerdown from state machine.
+                                                         For diagnostic use only. */
+	uint64_t pcs_sds_pll_div5_byp         : 1;  /**< Not used.
+                                                         For diagnostic use only. */
+	uint64_t pll_band_sel_ovrrd_val       : 1;  /**< State machine override value for VCO band select.
+                                                         0 = Low band VCO0 (RO-VCO).
+                                                         1 = High band VCO1 (LC-VCO).
+                                                         For diagnostic use only. */
+	uint64_t pll_band_sel_ovrrd_en        : 1;  /**< PLL band select override enable.
+                                                         For diagnostic use only. */
+	uint64_t pll_pcs_div_ovrrd_en         : 1;  /**< Override global power state machine and mac_pcs_pll_div control signal.
+                                                         When asserted, pcs_sds_pll_div is specified from
+                                                         GSER()_LANE()_PCS_PLL_CTLIFC_1[PLL_PCS_DIV_OVRRD_VAL],
+                                                         global power state machine and mac_pcs_pll_div control signals are ignored.
+                                                         For diagnostic use only. */
+#else
+	uint64_t pll_pcs_div_ovrrd_en         : 1;
+	uint64_t pll_band_sel_ovrrd_en        : 1;
+	uint64_t pll_band_sel_ovrrd_val       : 1;
+	uint64_t pcs_sds_pll_div5_byp         : 1;
+	uint64_t pll_pd_ovrrd_en              : 1;
+	uint64_t pll_pd_ovrrd_val             : 1;
+	uint64_t pll_sdsck_pd_ovrrd_en        : 1;
+	uint64_t pll_sdsck_pd_ovrrd_val       : 1;
+	uint64_t pcs_sds_pll_counter_resetn   : 1;
+	uint64_t pcs_sds_pll_lock_override    : 1;
+	uint64_t reserved_10_13               : 4;
+	uint64_t pll_div_ovrrd_en             : 1;
+	uint64_t reserved_15_63               : 49;
+#endif
+	} s;
+	struct cvmx_gserx_glbl_pll_cfg_2_s    cn78xx;
+	struct cvmx_gserx_glbl_pll_cfg_2_s    cn78xxp2;
+};
+typedef union cvmx_gserx_glbl_pll_cfg_2 cvmx_gserx_glbl_pll_cfg_2_t;
+
+/**
+ * cvmx_gser#_glbl_pll_cfg_3
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_glbl_pll_cfg_3 {
+	uint64_t u64;
+	struct cvmx_gserx_glbl_pll_cfg_3_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_10_63               : 54;
+	uint64_t pcs_sds_pll_vco_amp          : 2;  /**< Adjusts the VCO amplitude control current.
+                                                         For diagnostic use only.
+                                                         0x0 = Add 25 uA.
+                                                         0x1 = OFF (default).
+                                                         0x2 = Sink 25uA.
+                                                         0x3 = Sink 50uA. */
+	uint64_t pll_bypass_uq                : 1;  /**< PLL bypass enable. When asserted, multiplexes in the feedback divider clock.
+                                                         For diagnostic use only. */
+	uint64_t pll_vctrl_sel_ovrrd_en       : 1;  /**< Override enable for selecting current for Vctrl in open loop operation.
+                                                         For diagnostic use only. */
+	uint64_t pll_vctrl_sel_ovrrd_val      : 2;  /**< Override value for selecting current for Vctrl in open loop operation.
+                                                         For diagnostic use only. */
+	uint64_t pll_vctrl_sel_lcvco_val      : 2;  /**< Selects current for Vctrl in open loop operation for LC-tank VCO.
+                                                         For diagnostic use only. */
+	uint64_t pll_vctrl_sel_rovco_val      : 2;  /**< Selects current for Vctrl in open loop operation for ring oscillator VCO.
+                                                         For diagnostic use only. */
+#else
+	uint64_t pll_vctrl_sel_rovco_val      : 2;
+	uint64_t pll_vctrl_sel_lcvco_val      : 2;
+	uint64_t pll_vctrl_sel_ovrrd_val      : 2;
+	uint64_t pll_vctrl_sel_ovrrd_en       : 1;
+	uint64_t pll_bypass_uq                : 1;
+	uint64_t pcs_sds_pll_vco_amp          : 2;
+	uint64_t reserved_10_63               : 54;
+#endif
+	} s;
+	struct cvmx_gserx_glbl_pll_cfg_3_s    cn78xx;
+	struct cvmx_gserx_glbl_pll_cfg_3_s    cn78xxp2;
+	struct cvmx_gserx_glbl_pll_cfg_3_s    cnf75xx;
+};
+typedef union cvmx_gserx_glbl_pll_cfg_3 cvmx_gserx_glbl_pll_cfg_3_t;
+
+/**
+ * cvmx_gser#_glbl_pll_monitor
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_glbl_pll_monitor {
+	uint64_t u64;
+	struct cvmx_gserx_glbl_pll_monitor_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t sds_pcs_glbl_status          : 6;  /**< Spare reserved for future use. Read data should be ignored. */
+	uint64_t sds_pcs_pll_lock             : 1;  /**< Status signal from Global indicates that PLL is locked. Not a true "lock" signal.
+                                                         Used to debug/test the PLL. */
+	uint64_t sds_pcs_clock_ready          : 1;  /**< Clock status signal, can be overriden with (I_PLL_CTRL_EN == 1).
+                                                         0 = Clock not ready.
+                                                         1 = Clock ready. */
+	uint64_t sds_pcs_pll_calstates        : 5;  /**< PLL calibration code. */
+	uint64_t sds_pcs_pll_caldone          : 1;  /**< PLL calibration done signal. */
+#else
+	uint64_t sds_pcs_pll_caldone          : 1;
+	uint64_t sds_pcs_pll_calstates        : 5;
+	uint64_t sds_pcs_clock_ready          : 1;
+	uint64_t sds_pcs_pll_lock             : 1;
+	uint64_t sds_pcs_glbl_status          : 6;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_gserx_glbl_pll_monitor_s  cn73xx;
+	struct cvmx_gserx_glbl_pll_monitor_s  cn78xx;
+	struct cvmx_gserx_glbl_pll_monitor_s  cn78xxp2;
+	struct cvmx_gserx_glbl_pll_monitor_s  cnf75xx;
+};
+typedef union cvmx_gserx_glbl_pll_monitor cvmx_gserx_glbl_pll_monitor_t;
 
 /**
  * cvmx_gser#_glbl_tad
@@ -2927,7 +3918,8 @@ union cvmx_gserx_glbl_tad {
                                                          0x01 = DFE Edge I.
                                                          0x02 = DFE CK Q.
                                                          0x03 = DFE CK I.
-                                                         0x04 = TBD.
+                                                         0x04 = DLL use GSER()_SLICE()_RX_SDLL_CTRL.PCS_SDS_RX_SDLL_SWSEL to select signal
+                                                         in the slice dll.
                                                          0x05-0x7 = Reserved.
                                                          0x08 = RX ld_rx[0].
                                                          0x09 = RX rx_clk.
@@ -2949,7 +3941,10 @@ union cvmx_gserx_glbl_tad {
 	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
+	struct cvmx_gserx_glbl_tad_s          cn73xx;
 	struct cvmx_gserx_glbl_tad_s          cn78xx;
+	struct cvmx_gserx_glbl_tad_s          cn78xxp2;
+	struct cvmx_gserx_glbl_tad_s          cnf75xx;
 };
 typedef union cvmx_gserx_glbl_tad cvmx_gserx_glbl_tad_t;
 
@@ -2971,8 +3966,8 @@ union cvmx_gserx_glbl_tm_admon {
 	uint64_t lsel                         : 3;  /**< Three bits to select 1 out of 4 lanes for AMON/DMON test.
                                                          0x0 = Selects lane 0.
                                                          0x1 = Selects lane 1.
-                                                         0x2 = Selects lane 2.
-                                                         0x3 = Selects lane 3.
+                                                         0x2 = Selects lane 2.  Lane 2 is unused in GSER4, GSER5, and GSER6.
+                                                         0x3 = Selects lane 3.  Lane 3 is unused in GSER4, GSER5, and GSER6.
                                                          0x4-0x7 = Reserved. */
 #else
 	uint64_t lsel                         : 3;
@@ -2982,7 +3977,29 @@ union cvmx_gserx_glbl_tm_admon {
 	uint64_t reserved_8_63                : 56;
 #endif
 	} s;
+	struct cvmx_gserx_glbl_tm_admon_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_8_63                : 56;
+	uint64_t amon_on                      : 1;  /**< When set, AMON test mode is enabled; see GSER()_GLBL_TAD. */
+	uint64_t dmon_on                      : 1;  /**< When set, DMON test mode is enabled; see GSER()_GLBL_TAD. */
+	uint64_t reserved_5_3                 : 3;
+	uint64_t lsel                         : 3;  /**< Three bits to select 1 out of 4 lanes for AMON/DMON test.
+                                                         0x0 = Selects lane 0.
+                                                         0x1 = Selects lane 1.
+                                                         0x2 = Selects lane 2.  Lane 2 is unused in GSER4, GSER5, and GSER6.
+                                                         0x3 = Selects lane 3.  Lane 3 is unused in GSER4, GSER5, and GSER6.
+                                                         0x4-0x7 = Reserved. */
+#else
+	uint64_t lsel                         : 3;
+	uint64_t reserved_5_3                 : 3;
+	uint64_t dmon_on                      : 1;
+	uint64_t amon_on                      : 1;
+	uint64_t reserved_8_63                : 56;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_glbl_tm_admon_s     cn78xx;
+	struct cvmx_gserx_glbl_tm_admon_cn73xx cn78xxp2;
+	struct cvmx_gserx_glbl_tm_admon_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_glbl_tm_admon cvmx_gserx_glbl_tm_admon_t;
 
@@ -3003,7 +4020,10 @@ union cvmx_gserx_iddq_mode {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_gserx_iddq_mode_s         cn73xx;
 	struct cvmx_gserx_iddq_mode_s         cn78xx;
+	struct cvmx_gserx_iddq_mode_s         cn78xxp2;
+	struct cvmx_gserx_iddq_mode_s         cnf75xx;
 };
 typedef union cvmx_gserx_iddq_mode cvmx_gserx_iddq_mode_t;
 
@@ -3077,7 +4097,10 @@ union cvmx_gserx_lanex_lbert_cfg {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_lbert_cfg_s   cn73xx;
 	struct cvmx_gserx_lanex_lbert_cfg_s   cn78xx;
+	struct cvmx_gserx_lanex_lbert_cfg_s   cn78xxp2;
+	struct cvmx_gserx_lanex_lbert_cfg_s   cnf75xx;
 };
 typedef union cvmx_gserx_lanex_lbert_cfg cvmx_gserx_lanex_lbert_cfg_t;
 
@@ -3107,7 +4130,10 @@ union cvmx_gserx_lanex_lbert_ecnt {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_lbert_ecnt_s  cn73xx;
 	struct cvmx_gserx_lanex_lbert_ecnt_s  cn78xx;
+	struct cvmx_gserx_lanex_lbert_ecnt_s  cn78xxp2;
+	struct cvmx_gserx_lanex_lbert_ecnt_s  cnf75xx;
 };
 typedef union cvmx_gserx_lanex_lbert_ecnt cvmx_gserx_lanex_lbert_ecnt_t;
 
@@ -3130,7 +4156,10 @@ union cvmx_gserx_lanex_lbert_pat_cfg {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_lbert_pat_cfg_s cn73xx;
 	struct cvmx_gserx_lanex_lbert_pat_cfg_s cn78xx;
+	struct cvmx_gserx_lanex_lbert_pat_cfg_s cn78xxp2;
+	struct cvmx_gserx_lanex_lbert_pat_cfg_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_lbert_pat_cfg cvmx_gserx_lanex_lbert_pat_cfg_t;
 
@@ -3156,7 +4185,8 @@ union cvmx_gserx_lanex_misc_cfg_0 {
                                                          PHY EIE status assertions to determine EIE and assert Raw
                                                          PCS output pcs_mac_rx_eie_det_sts. */
 	uint64_t eie_det_stl_on_time          : 3;  /**< EIE detec state machine "on" delay prior to sampling
-                                                         PHY EIE status. */
+                                                         PHY EIE status.  Software needs to set this field to 0x4 if
+                                                         in SATA mode (GSER()_CFG[SATA] is set). */
 	uint64_t eie_det_stl_off_time         : 3;  /**< EIE detec state machine "off" delay prior to sampling
                                                          PHY EIE status. */
 	uint64_t tx_bit_order                 : 1;  /**< 0x1: Reverse bit order of parallel data to SerDes TX.
@@ -3176,7 +4206,10 @@ union cvmx_gserx_lanex_misc_cfg_0 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_misc_cfg_0_s  cn73xx;
 	struct cvmx_gserx_lanex_misc_cfg_0_s  cn78xx;
+	struct cvmx_gserx_lanex_misc_cfg_0_s  cn78xxp2;
+	struct cvmx_gserx_lanex_misc_cfg_0_s  cnf75xx;
 };
 typedef union cvmx_gserx_lanex_misc_cfg_0 cvmx_gserx_lanex_misc_cfg_0_t;
 
@@ -3214,7 +4247,34 @@ union cvmx_gserx_lanex_misc_cfg_1 {
 	uint64_t reserved_13_63               : 51;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_misc_cfg_1_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_13_63               : 51;
+	uint64_t par_tx_init                  : 1;  /**< Performs parallel initialization of SerDes interface TX
+                                                         fifo pointers. */
+	uint64_t tx_polarity                  : 1;  /**< Invert polarity of trasmitted bit stream.  Inversion is
+                                                         performed in the SerDes interface transmit datapth. */
+	uint64_t rx_polarity_ovrrd_en         : 1;  /**< Override mac_pcs_rxX_polarity control pin values
+                                                         When set, RX polarity inversion is specified from
+                                                         RX_POLARITY_OVRRD_VAL, and mac_pcs_rxX_polarity is ignored. */
+	uint64_t rx_polarity_ovrrd_val        : 1;  /**< Controls RX polarity inversion when RX_POLARITY_OVRRD_EN
+                                                         is set. Inversion is performed in the SerDes interface receive
+                                                         datapath. */
+	uint64_t reserved_8_2                 : 7;
+	uint64_t mac_tx_fifo_rd_ptr_ival      : 2;  /**< Initial value for MAC to PCS TX FIFO read pointer. */
+#else
+	uint64_t mac_tx_fifo_rd_ptr_ival      : 2;
+	uint64_t reserved_8_2                 : 7;
+	uint64_t rx_polarity_ovrrd_val        : 1;
+	uint64_t rx_polarity_ovrrd_en         : 1;
+	uint64_t tx_polarity                  : 1;
+	uint64_t par_tx_init                  : 1;
+	uint64_t reserved_13_63               : 51;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_lanex_misc_cfg_1_s  cn78xx;
+	struct cvmx_gserx_lanex_misc_cfg_1_cn73xx cn78xxp2;
+	struct cvmx_gserx_lanex_misc_cfg_1_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_lanex_misc_cfg_1 cvmx_gserx_lanex_misc_cfg_1_t;
 
@@ -3246,7 +4306,7 @@ union cvmx_gserx_lanex_pcs_ctlifc_0 {
                                                          is asserted GSER()_LANE()_PCS_CTLIFC_2[CFG_TX_MODE_OVRRD_EN].
                                                          0x0 = 8-bit raw data (not supported).
                                                          0x1 = 10-bit raw data (not supported).
-                                                         0x2 = 16-bit raw data (not supported).
+                                                         0x2 = 16-bit raw data (for PCIe Gen3 8Gb only).
                                                          0x3 = 20-bit raw data. */
 	uint64_t cfg_tx_pstate_req_ovrrd_val  : 2;  /**< Override TX pstate request when its override bit
                                                          is asserted GSER()_LANE()_PCS_CTLIFC_2[CFG_TX_PSTATE_REQ_OVRRD_EN]. */
@@ -3265,7 +4325,10 @@ union cvmx_gserx_lanex_pcs_ctlifc_0 {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_pcs_ctlifc_0_s cn73xx;
 	struct cvmx_gserx_lanex_pcs_ctlifc_0_s cn78xx;
+	struct cvmx_gserx_lanex_pcs_ctlifc_0_s cn78xxp2;
+	struct cvmx_gserx_lanex_pcs_ctlifc_0_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_pcs_ctlifc_0 cvmx_gserx_lanex_pcs_ctlifc_0_t;
 
@@ -3297,7 +4360,28 @@ union cvmx_gserx_lanex_pcs_ctlifc_1 {
 	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_pcs_ctlifc_1_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_9_63                : 55;
+	uint64_t cfg_rx_pstate_req_ovrrd_val  : 2;  /**< Override RX pstate request when its override bit
+                                                         is asserted GSER()_LANE()_PCS_CTLIFC_2[CFG_TX_PSTATE_REQ_OVRRD_EN]. */
+	uint64_t reserved_6_2                 : 5;
+	uint64_t cfg_rx_mode_ovrrd_val        : 2;  /**< Override PCS RX mode (data width) when its override bit
+                                                         is asserted GSER()_LANE()_PCS_CTLIFC_2[CFG_RX_MODE_OVRRD_EN].
+                                                         0x0 = 8-bit raw data (not supported).
+                                                         0x1 = 10-bit raw data (not supported).
+                                                         0x2 = 16-bit raw data (not supported).
+                                                         0x3 = 20-bit raw data. */
+#else
+	uint64_t cfg_rx_mode_ovrrd_val        : 2;
+	uint64_t reserved_6_2                 : 5;
+	uint64_t cfg_rx_pstate_req_ovrrd_val  : 2;
+	uint64_t reserved_9_63                : 55;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_lanex_pcs_ctlifc_1_s cn78xx;
+	struct cvmx_gserx_lanex_pcs_ctlifc_1_cn73xx cn78xxp2;
+	struct cvmx_gserx_lanex_pcs_ctlifc_1_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_lanex_pcs_ctlifc_1 cvmx_gserx_lanex_pcs_ctlifc_1_t;
 
@@ -3358,9 +4442,97 @@ union cvmx_gserx_lanex_pcs_ctlifc_2 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_pcs_ctlifc_2_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t ctlifc_ovrrd_req             : 1;  /**< Writing to set this bit initiates a state machine interface request
+                                                         for GSER()_LANE()_PCS_CTLIFC_0 and GSER()_LANE()_PCS_CTLIFC_1
+                                                         override values. */
+	uint64_t reserved_14_9                : 6;
+	uint64_t cfg_tx_vboost_en_ovrrd_en    : 1;  /**< Override mac_pcs_txX vboost_en signal with the value specified in
+                                                         GSER()_LANE()_PCS_CTLIFC_2[CFG_TX_VBOOST_EN_OVRRD_VAL]. */
+	uint64_t cfg_tx_coeff_req_ovrrd_en    : 1;  /**< Override mac_pcs_txX_coeff_req signal with the value specified in
+                                                         GSER()_LANE()_PCS_CTLIFC_0[CFG_TX_COEFF_REQ_OVRRD_VAL]. */
+	uint64_t cfg_rx_cdr_coast_req_ovrrd_en : 1; /**< Override mac_pcs_rxX_cdr_coast signal with the value specified in
+                                                         GSER()_LANE()_PCS_CTLIFC_2[CFG_RX_COAST_REQ_OVRRD_VAL]. */
+	uint64_t cfg_tx_detrx_en_req_ovrrd_en : 1;  /**< Override mac_pcs_txX_detrx_en signal with the value specified in
+                                                         GSER()_LANE()_PCS_CTLIFC_2[CFG_TX_DETRX_EN_REQ_OVRRD_VAL]. */
+	uint64_t cfg_soft_reset_req_ovrrd_en  : 1;  /**< Override mac_pcs_laneX_soft_rst signal with the value specified in
+                                                         GSER()_LANE()_PCS_CTLIFC_2[CFG_SOFT_RESET_REQ_OVRRD_VAL]. */
+	uint64_t cfg_lane_pwr_off_ovrrd_en    : 1;  /**< Override mac_pcs_laneX_pwr_off signal with the value specified in
+                                                         GSER()_LANE()_PCS_CTLIFC_2[CFG_LANE_PWR_OFF_OVRRD_VAL]. */
+	uint64_t cfg_tx_pstate_req_ovrrd_en   : 1;  /**< Override mac_pcs_txX_pstate[1:0] signal with the value specified in
+                                                         GSER()_LANE()_PCS_CTLIFC_2[CFG_TX_PSTATE_REQ_OVRRD_VAL].
+                                                         When using this field to change the TX Power State, you must also set
+                                                         the override enable bits for the lane_mode, soft_reset and lane_pwr_off
+                                                         fields.  The corresponding orrd_val fields should be programmed so as
+                                                         not to cause undesired changes. */
+	uint64_t cfg_rx_pstate_req_ovrrd_en   : 1;  /**< Override mac_pcs_rxX_pstate[1:0] signal with the value specified in
+                                                         GSER()_LANE()_PCS_CTLIFC_2[CFG_RX_PSTATE_REQ_OVRRD_VAL].
+                                                         When using this field to change the RX Power State, you must also set
+                                                         the override enable bits for the lane_mode, soft_reset and lane_pwr_off
+                                                         fields.  The corresponding orrd_val fields should be programmed so as
+                                                         not to cause undesired changes. */
+	uint64_t cfg_lane_mode_req_ovrrd_en   : 1;  /**< Override mac_pcs_laneX_mode[3:0] signal with the value specified in
+                                                         is asserted GSER()_LANE()_PCS_CTLIFC_2[CFG_LANE_MODE_REQ_OVRRD_VAL]. */
+#else
+	uint64_t cfg_lane_mode_req_ovrrd_en   : 1;
+	uint64_t cfg_rx_pstate_req_ovrrd_en   : 1;
+	uint64_t cfg_tx_pstate_req_ovrrd_en   : 1;
+	uint64_t cfg_lane_pwr_off_ovrrd_en    : 1;
+	uint64_t cfg_soft_reset_req_ovrrd_en  : 1;
+	uint64_t cfg_tx_detrx_en_req_ovrrd_en : 1;
+	uint64_t cfg_rx_cdr_coast_req_ovrrd_en : 1;
+	uint64_t cfg_tx_coeff_req_ovrrd_en    : 1;
+	uint64_t cfg_tx_vboost_en_ovrrd_en    : 1;
+	uint64_t reserved_14_9                : 6;
+	uint64_t ctlifc_ovrrd_req             : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_lanex_pcs_ctlifc_2_s cn78xx;
+	struct cvmx_gserx_lanex_pcs_ctlifc_2_cn73xx cn78xxp2;
+	struct cvmx_gserx_lanex_pcs_ctlifc_2_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_lanex_pcs_ctlifc_2 cvmx_gserx_lanex_pcs_ctlifc_2_t;
+
+/**
+ * cvmx_gser#_lane#_pcs_macifc_mon_2
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_lanex_pcs_macifc_mon_2 {
+	uint64_t u64;
+	struct cvmx_gserx_lanex_pcs_macifc_mon_2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t tx_coeff_req                 : 1;  /**< Indicates current state of the MAC to PCS Tx Coefficient Request input.
+                                                         INTERNAL: mac_pcs_txX_coeff_req. */
+	uint64_t tx_vboost_en                 : 1;  /**< Indicates current state of the MAC to PCS Tx Vboost Enable input.
+                                                         INTERNAL: mac_pcs_txX_vboost_en. */
+	uint64_t tx_swing                     : 5;  /**< Indicates current state of the MAC to PCS Tx Equalizer Swing<4:0> input.
+                                                         INTERNAL: mac_pcs_txX_swing[4:0]. */
+	uint64_t tx_pre                       : 4;  /**< Indicates current state of the MAC to PCS Tx Equalizer Pre Emphasis<3:0> input.
+                                                         INTERNAL: mac_pcs_txX_pre[3:0]. */
+	uint64_t tx_post                      : 5;  /**< Indicates current state of the MAC to PCS Tx Equalizer Post Emphasis<4:0> input.
+                                                         INTERNAL: mac_pcs_txX_post[4:0]. */
+#else
+	uint64_t tx_post                      : 5;
+	uint64_t tx_pre                       : 4;
+	uint64_t tx_swing                     : 5;
+	uint64_t tx_vboost_en                 : 1;
+	uint64_t tx_coeff_req                 : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_pcs_macifc_mon_2_s cn73xx;
+	struct cvmx_gserx_lanex_pcs_macifc_mon_2_s cn78xx;
+	struct cvmx_gserx_lanex_pcs_macifc_mon_2_s cn78xxp2;
+	struct cvmx_gserx_lanex_pcs_macifc_mon_2_s cnf75xx;
+};
+typedef union cvmx_gserx_lanex_pcs_macifc_mon_2 cvmx_gserx_lanex_pcs_macifc_mon_2_t;
 
 /**
  * cvmx_gser#_lane#_pma_loopback_ctrl
@@ -3382,7 +4554,10 @@ union cvmx_gserx_lanex_pma_loopback_ctrl {
 	uint64_t reserved_2_63                : 62;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_pma_loopback_ctrl_s cn73xx;
 	struct cvmx_gserx_lanex_pma_loopback_ctrl_s cn78xx;
+	struct cvmx_gserx_lanex_pma_loopback_ctrl_s cn78xxp2;
+	struct cvmx_gserx_lanex_pma_loopback_ctrl_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_pma_loopback_ctrl cvmx_gserx_lanex_pma_loopback_ctrl_t;
 
@@ -3459,7 +4634,73 @@ union cvmx_gserx_lanex_pwr_ctrl {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_pwr_ctrl_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_15_63               : 49;
+	uint64_t tx_sds_fifo_reset_ovrrd_en   : 1;  /**< When asserted, TX_SDS_FIFO_RESET_OVVRD_VAL is used to specify the value of the reset
+                                                         signal for the TX FIFO supplying data to the SerDes p2s interface. */
+	uint64_t tx_sds_fifo_reset_ovrrd_val  : 1;  /**< When asserted, TX_SDS_FIFO_RESET_OVVRD_EN is asserted, this field is
+                                                         used to specify the value of the reset
+                                                         signal for the TX FIFO supplying data to the SerDes p2s interface. */
+	uint64_t tx_pcs_reset_ovrrd_val       : 1;  /**< When TX_PCS_RESET_OVRRD_EN is
+                                                         asserted, this field is used to specify the value of
+                                                         the reset signal for PCS TX logic. */
+	uint64_t rx_pcs_reset_ovrrd_val       : 1;  /**< When RX_PCS_RESET_OVRRD_EN is
+                                                         asserted, this field is used to specify the value of
+                                                         the reset signal for PCS RX logic. */
+	uint64_t reserved_10_9                : 2;
+	uint64_t rx_resetn_ovrrd_en           : 1;  /**< Override RX Power State machine rx_resetn
+                                                         control signal.  When set, the rx_resetn control signal is taken
+                                                         from the GSER()_LANE()_RX_CFG_0[RX_RESETN_OVRRD_VAL]
+                                                         control bit. */
+	uint64_t rx_resetn_ovrrd_val          : 1;  /**< Override RX Power State machine reset control
+                                                         signal. When set, reset control signals are specified in
+                                                         [RX_PCS_RESET_OVRRD_VAL]. */
+	uint64_t rx_lctrl_ovrrd_en            : 1;  /**< Override RX Power State machine loop control
+                                                         signals.  When set, the loop control settings are
+                                                         specified in the GSER()_LANE()_RX_LOOP_CTRL[CFG_RX_LCTRL] field. */
+	uint64_t rx_lctrl_ovrrd_val           : 1;  /**< Override RX Power State machine power down
+                                                         control signal. When set, the power down control signal is
+                                                         specified by GSER()_LANE()_RX_CFG_1[RX_CHPD_OVRRD_VAL]. */
+	uint64_t tx_tristate_en_ovrrd_en      : 1;  /**< Override TX Power State machine TX tristate
+                                                         control signal.  When set, TX tristate control signal is specified
+                                                         in GSER()_LANE()_TX_CFG_0[TX_TRISTATE_EN_OVRRD_VAL]. */
+	uint64_t tx_pcs_reset_ovrrd_en        : 1;  /**< Override TX Power State machine reset control
+                                                         signal.  When set, reset control signals is specified in
+                                                         [TX_PCS_RESET_OVRRD_VAL]. */
+	uint64_t tx_elec_idle_ovrrd_en        : 1;  /**< Override mac_pcs_txX_elec_idle signal
+                                                         When set, TX electrical idle is controlled from
+                                                         GSER()_LANE()_TX_CFG_1[TX_ELEC_IDLE_OVRRD_VAL]
+                                                         mac_pcs_txX_elec_idle signal is ignored. */
+	uint64_t tx_pd_ovrrd_en               : 1;  /**< Override TX Power State machine TX lane
+                                                         power-down control signal
+                                                         When set, TX lane power down is controlled by
+                                                         GSER()_LANE()_TX_CFG_0[TX_CHPD_OVRRD_VAL]. */
+	uint64_t tx_p2s_resetn_ovrrd_en       : 1;  /**< Override TX Power State machine TX reset
+                                                         control signal
+                                                         When set, TX reset is controlled by
+                                                         GSER()_LANE()_TX_CFG_0[TX_RESETN_OVRRD_VAL]. */
+#else
+	uint64_t tx_p2s_resetn_ovrrd_en       : 1;
+	uint64_t tx_pd_ovrrd_en               : 1;
+	uint64_t tx_elec_idle_ovrrd_en        : 1;
+	uint64_t tx_pcs_reset_ovrrd_en        : 1;
+	uint64_t tx_tristate_en_ovrrd_en      : 1;
+	uint64_t rx_lctrl_ovrrd_val           : 1;
+	uint64_t rx_lctrl_ovrrd_en            : 1;
+	uint64_t rx_resetn_ovrrd_val          : 1;
+	uint64_t rx_resetn_ovrrd_en           : 1;
+	uint64_t reserved_10_9                : 2;
+	uint64_t rx_pcs_reset_ovrrd_val       : 1;
+	uint64_t tx_pcs_reset_ovrrd_val       : 1;
+	uint64_t tx_sds_fifo_reset_ovrrd_val  : 1;
+	uint64_t tx_sds_fifo_reset_ovrrd_en   : 1;
+	uint64_t reserved_15_63               : 49;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_lanex_pwr_ctrl_s    cn78xx;
+	struct cvmx_gserx_lanex_pwr_ctrl_cn73xx cn78xxp2;
+	struct cvmx_gserx_lanex_pwr_ctrl_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_lanex_pwr_ctrl cvmx_gserx_lanex_pwr_ctrl_t;
 
@@ -3482,7 +4723,10 @@ union cvmx_gserx_lanex_rx_aeq_out_0 {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_aeq_out_0_s cn73xx;
 	struct cvmx_gserx_lanex_rx_aeq_out_0_s cn78xx;
+	struct cvmx_gserx_lanex_rx_aeq_out_0_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_aeq_out_0_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_aeq_out_0 cvmx_gserx_lanex_rx_aeq_out_0_t;
 
@@ -3506,7 +4750,10 @@ union cvmx_gserx_lanex_rx_aeq_out_1 {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_aeq_out_1_s cn73xx;
 	struct cvmx_gserx_lanex_rx_aeq_out_1_s cn78xx;
+	struct cvmx_gserx_lanex_rx_aeq_out_1_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_aeq_out_1_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_aeq_out_1 cvmx_gserx_lanex_rx_aeq_out_1_t;
 
@@ -3530,9 +4777,158 @@ union cvmx_gserx_lanex_rx_aeq_out_2 {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_aeq_out_2_s cn73xx;
 	struct cvmx_gserx_lanex_rx_aeq_out_2_s cn78xx;
+	struct cvmx_gserx_lanex_rx_aeq_out_2_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_aeq_out_2_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_aeq_out_2 cvmx_gserx_lanex_rx_aeq_out_2_t;
+
+/**
+ * cvmx_gser#_lane#_rx_cdr_ctrl_1
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_lanex_rx_cdr_ctrl_1 {
+	uint64_t u64;
+	struct cvmx_gserx_lanex_rx_cdr_ctrl_1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t cfg_rx_cdr_ctrl_ovrrd_val    : 16; /**< Set CFG_RX_CDR_CTRL_OVRRD_EN in register
+                                                         GSER()_LANE()_RX_MISC_OVRRD to override pcs_sds_rx_cdr_ctrl.
+                                                         <15:13> = CDR frequency gain.
+                                                         <12>    = Frequency accumulator manual enable.
+                                                         <11:5>  = Frequency accumulator manual value.
+                                                         <4>     = CDR phase offset override enable.
+                                                         <3:0>   = CDR phase offset override, DLL IQ. */
+#else
+	uint64_t cfg_rx_cdr_ctrl_ovrrd_val    : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_rx_cdr_ctrl_1_s cn73xx;
+	struct cvmx_gserx_lanex_rx_cdr_ctrl_1_s cn78xx;
+	struct cvmx_gserx_lanex_rx_cdr_ctrl_1_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cdr_ctrl_1_s cnf75xx;
+};
+typedef union cvmx_gserx_lanex_rx_cdr_ctrl_1 cvmx_gserx_lanex_rx_cdr_ctrl_1_t;
+
+/**
+ * cvmx_gser#_lane#_rx_cdr_ctrl_2
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_lanex_rx_cdr_ctrl_2 {
+	uint64_t u64;
+	struct cvmx_gserx_lanex_rx_cdr_ctrl_2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t cfg_rx_cdr_ctrl_ovrrd_val    : 16; /**< Set CFG_RX_CDR_CTRL_OVRRD_EN in register
+                                                         GSER()_LANE()_RX_MISC_OVRRD to override pcs_sds_rx_cdr_ctrl.
+                                                         <15>   = Shadow PI phase enable.
+                                                         <14:8> = Shadow PI phase value.
+                                                         <7>    = CDR manual phase enable.
+                                                         <6:0>  = CDR manual phase value. */
+#else
+	uint64_t cfg_rx_cdr_ctrl_ovrrd_val    : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_rx_cdr_ctrl_2_s cn73xx;
+	struct cvmx_gserx_lanex_rx_cdr_ctrl_2_s cn78xx;
+	struct cvmx_gserx_lanex_rx_cdr_ctrl_2_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cdr_ctrl_2_s cnf75xx;
+};
+typedef union cvmx_gserx_lanex_rx_cdr_ctrl_2 cvmx_gserx_lanex_rx_cdr_ctrl_2_t;
+
+/**
+ * cvmx_gser#_lane#_rx_cdr_misc_ctrl_0
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_lanex_rx_cdr_misc_ctrl_0 {
+	uint64_t u64;
+	struct cvmx_gserx_lanex_rx_cdr_misc_ctrl_0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_8_63                : 56;
+	uint64_t pcs_sds_rx_cdr_misc_ctrl     : 8;  /**< Per lane RX miscellaneous CDR control:
+                                                         <7> = RT-Eyemon counter enable, will start counting 5.4e9 bits.
+                                                         <6> = RT-Eyemon shadow PI control enable.
+                                                         <5:4> = RT-Eyemon error counter byte selection observable on
+                                                                 SDS_OCS_RX_CDR_STATUS[14:7] in register GSER_LANE_RX_CDR_STATUS_1.
+                                                         <3:0> = LBW adjustment thresholds. */
+#else
+	uint64_t pcs_sds_rx_cdr_misc_ctrl     : 8;
+	uint64_t reserved_8_63                : 56;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_rx_cdr_misc_ctrl_0_s cn73xx;
+	struct cvmx_gserx_lanex_rx_cdr_misc_ctrl_0_s cn78xx;
+	struct cvmx_gserx_lanex_rx_cdr_misc_ctrl_0_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cdr_misc_ctrl_0_s cnf75xx;
+};
+typedef union cvmx_gserx_lanex_rx_cdr_misc_ctrl_0 cvmx_gserx_lanex_rx_cdr_misc_ctrl_0_t;
+
+/**
+ * cvmx_gser#_lane#_rx_cdr_status_1
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_lanex_rx_cdr_status_1 {
+	uint64_t u64;
+	struct cvmx_gserx_lanex_rx_cdr_status_1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_15_63               : 49;
+	uint64_t sds_pcs_rx_cdr_status        : 15; /**< Per lane RX CDR status:
+                                                         <14:7> = RT-Eyemon error counter.
+                                                         <6:4>  = LBW adjustment value.
+                                                         <3:0>  = LBW adjustment state. */
+#else
+	uint64_t sds_pcs_rx_cdr_status        : 15;
+	uint64_t reserved_15_63               : 49;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_rx_cdr_status_1_s cn73xx;
+	struct cvmx_gserx_lanex_rx_cdr_status_1_s cn78xx;
+	struct cvmx_gserx_lanex_rx_cdr_status_1_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cdr_status_1_s cnf75xx;
+};
+typedef union cvmx_gserx_lanex_rx_cdr_status_1 cvmx_gserx_lanex_rx_cdr_status_1_t;
+
+/**
+ * cvmx_gser#_lane#_rx_cdr_status_2
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_lanex_rx_cdr_status_2 {
+	uint64_t u64;
+	struct cvmx_gserx_lanex_rx_cdr_status_2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t sds_pcs_rx_cdr_status        : 14; /**< CDR status.
+                                                         <13:7> = CDR phase control output.
+                                                         <6:0> = CDR frequency accumulator output. */
+#else
+	uint64_t sds_pcs_rx_cdr_status        : 14;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_rx_cdr_status_2_s cn73xx;
+	struct cvmx_gserx_lanex_rx_cdr_status_2_s cn78xx;
+	struct cvmx_gserx_lanex_rx_cdr_status_2_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cdr_status_2_s cnf75xx;
+};
+typedef union cvmx_gserx_lanex_rx_cdr_status_2 cvmx_gserx_lanex_rx_cdr_status_2_t;
 
 /**
  * cvmx_gser#_lane#_rx_cfg_0
@@ -3544,6 +4940,76 @@ typedef union cvmx_gserx_lanex_rx_aeq_out_2 cvmx_gserx_lanex_rx_aeq_out_2_t;
 union cvmx_gserx_lanex_rx_cfg_0 {
 	uint64_t u64;
 	struct cvmx_gserx_lanex_rx_cfg_0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t rx_datarate_ovrrd_en         : 1;  /**< Override enable for RX Power State Machine data rate signal. */
+	uint64_t reserved_14_14               : 1;
+	uint64_t rx_resetn_ovvrd_val          : 1;  /**< This value overrides the RX Power State machine rx_resetn control
+                                                         signal when GSER()_LANE()_PWR_CTRL[RX_RESETN_OVRRD_EN] is set. */
+	uint64_t pcs_sds_rx_eyemon_en         : 1;  /**< RX eyemon test enable. */
+	uint64_t pcs_sds_rx_pcm_ctrl          : 4;  /**< <11>: Reserved
+                                                         <10-8>:
+                                                           0x0 = 540mV.
+                                                           0x1 = 540mV + 20mV.
+                                                           0x2-0x3 = Reserved.
+                                                           0x4 = 100-620mV (default).
+                                                           0x5-0x7 = Reserved. */
+	uint64_t rx_datarate_ovrrd_val        : 2;  /**< Specifies the data rate when RX_DATARATE_OVRRD_EN is asserted:
+                                                         0x0 = Full rate.
+                                                         0x1 = 1/2 data rate.
+                                                         0x2 = 1/4 data rate.
+                                                         0x3 = 1/8 data rate. */
+	uint64_t cfg_rx_pol_invert            : 1;  /**< Invert the receive data.  Allies with GSER()_LANE()_MISC_CFG_0[USE_PMA_POLARITY]
+                                                         is deasserted. */
+	uint64_t rx_subblk_pd_ovrrd_val       : 5;  /**< Not supported. */
+#else
+	uint64_t rx_subblk_pd_ovrrd_val       : 5;
+	uint64_t cfg_rx_pol_invert            : 1;
+	uint64_t rx_datarate_ovrrd_val        : 2;
+	uint64_t pcs_sds_rx_pcm_ctrl          : 4;
+	uint64_t pcs_sds_rx_eyemon_en         : 1;
+	uint64_t rx_resetn_ovvrd_val          : 1;
+	uint64_t reserved_14_14               : 1;
+	uint64_t rx_datarate_ovrrd_en         : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_rx_cfg_0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t rx_datarate_ovrrd_en         : 1;  /**< Override enable for RX Power State Machine data rate signal. */
+	uint64_t pcs_rx_tristate_enable       : 1;  /**< RX termination high-Z enable. */
+	uint64_t rx_resetn_ovvrd_val          : 1;  /**< This value overrides the RX Power State machine rx_resetn control
+                                                         signal when GSER()_LANE()_PWR_CTRL[RX_RESETN_OVRRD_EN] is set. */
+	uint64_t pcs_sds_rx_eyemon_en         : 1;  /**< RX eyemon test enable. */
+	uint64_t pcs_sds_rx_pcm_ctrl          : 4;  /**< <11>: Reserved
+                                                         <10-8>:
+                                                           0x0 = 540mV.
+                                                           0x1 = 540mV + 20mV.
+                                                           0x2-0x3 = Reserved.
+                                                           0x4 = 100-620mV (default).
+                                                           0x5-0x7 = Reserved. */
+	uint64_t rx_datarate_ovrrd_val        : 2;  /**< Specifies the data rate when RX_DATARATE_OVRRD_EN is asserted:
+                                                         0x0 = Full rate.
+                                                         0x1 = 1/2 data rate.
+                                                         0x2 = 1/4 data rate.
+                                                         0x3 = 1/8 data rate. */
+	uint64_t cfg_rx_pol_invert            : 1;  /**< Invert the receive data.  Allies with GSER()_LANE()_MISC_CFG_0[USE_PMA_POLARITY]
+                                                         is deasserted. */
+	uint64_t rx_subblk_pd_ovrrd_val       : 5;  /**< Not supported. */
+#else
+	uint64_t rx_subblk_pd_ovrrd_val       : 5;
+	uint64_t cfg_rx_pol_invert            : 1;
+	uint64_t rx_datarate_ovrrd_val        : 2;
+	uint64_t pcs_sds_rx_pcm_ctrl          : 4;
+	uint64_t pcs_sds_rx_eyemon_en         : 1;
+	uint64_t rx_resetn_ovvrd_val          : 1;
+	uint64_t pcs_rx_tristate_enable       : 1;
+	uint64_t rx_datarate_ovrrd_en         : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
+	struct cvmx_gserx_lanex_rx_cfg_0_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t rx_datarate_ovrrd_en         : 1;  /**< Override enable for RX Power State Machine data rate signal. */
@@ -3577,8 +5043,9 @@ union cvmx_gserx_lanex_rx_cfg_0 {
 	uint64_t rx_datarate_ovrrd_en         : 1;
 	uint64_t reserved_16_63               : 48;
 #endif
-	} s;
-	struct cvmx_gserx_lanex_rx_cfg_0_s    cn78xx;
+	} cn78xx;
+	struct cvmx_gserx_lanex_rx_cfg_0_cn78xx cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cfg_0_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_cfg_0 cvmx_gserx_lanex_rx_cfg_0_t;
 
@@ -3624,7 +5091,10 @@ union cvmx_gserx_lanex_rx_cfg_1 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_cfg_1_s    cn73xx;
 	struct cvmx_gserx_lanex_rx_cfg_1_s    cn78xx;
+	struct cvmx_gserx_lanex_rx_cfg_1_s    cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cfg_1_s    cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_cfg_1 cvmx_gserx_lanex_rx_cfg_1_t;
 
@@ -3648,15 +5118,27 @@ union cvmx_gserx_lanex_rx_cfg_2 {
 	uint64_t pcs_sds_rx_sampler_boost_en  : 1;  /**< Faster sampler c2q.
                                                          For diagnostic use only. */
 	uint64_t reserved_10_10               : 1;
-	uint64_t rx_sds_rx_agc_mval           : 10; /**< AGC manual value only used when GSERX_LANE()_RX_CFG_5[RX_AGC_MEN_OVVRD_VAL] is set.
+	uint64_t rx_sds_rx_agc_mval           : 10; /**< AGC manual value used when GSERX_LANE()_RX_CFG_5[RX_AGC_MEN_OVVRD_EN,RX_AGC_MEN_OVVRD_VAL]
+                                                         are set.
                                                          <9:8>: Reserved.
-                                                         <7:4>: Pre-CTL gain
-                                                         - 0 = -6dB
-                                                         - 1 = -5dB
-                                                         - 3 = +5dB.
-                                                         <3:0>: Post-CTL gain (steps of 0.0875)
+                                                         <7:4>: Pre-CTLE (continuous time linear equalizer) gain (steps of approximately 0.75dB):
+                                                         - 0x0 = -6dB
+                                                         - 0x1 = -5dB
+                                                         - 0xF = +5dB.
+                                                         <3:0>: Post-CTLE gain (steps of 0.0875):
                                                          - 0x0 = lowest
-                                                         - 0xf = lowest * 2.3125. */
+                                                         - 0xf = lowest * 2.3125.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <
+                                                         5Gbaud, pre-CTLE, post-CTLE, and peaking control settings should be manually
+                                                         configured. GSER()_LANE()_RX_CFG_5[RX_AGC_MEN_OVVRD_EN,RX_AGC_MEN_OVVRD_VAL]
+                                                         should both be set, [RX_SDS_RX_AGC_MVAL] has the pre and post settings,
+                                                         and GSER()_LANE()_RX_CTLE_CTRL[PCS_SDS_RX_CTLE_ZERO] controls equalizer
+                                                         peaking.
+                                                         The [RX_SDS_RX_AGC_MVAL] settings should be derived from signal integrity
+                                                         simulations with the IBIS-AMI model supplied by Cavium when
+                                                         GSER()_LANE()_RX_CFG_5[RX_AGC_MEN_OVVRD_EN,RX_AGC_MEN_OVVRD_VAL] are set.
+                                                         INTERNAL: reset value may be reasonable default settings. */
 #else
 	uint64_t rx_sds_rx_agc_mval           : 10;
 	uint64_t reserved_10_10               : 1;
@@ -3666,7 +5148,10 @@ union cvmx_gserx_lanex_rx_cfg_2 {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_cfg_2_s    cn73xx;
 	struct cvmx_gserx_lanex_rx_cfg_2_s    cn78xx;
+	struct cvmx_gserx_lanex_rx_cfg_2_s    cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cfg_2_s    cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_cfg_2 cvmx_gserx_lanex_rx_cfg_2_t;
 
@@ -3701,7 +5186,10 @@ union cvmx_gserx_lanex_rx_cfg_3 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_cfg_3_s    cn73xx;
 	struct cvmx_gserx_lanex_rx_cfg_3_s    cn78xx;
+	struct cvmx_gserx_lanex_rx_cfg_3_s    cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cfg_3_s    cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_cfg_3 cvmx_gserx_lanex_rx_cfg_3_t;
 
@@ -3724,10 +5212,10 @@ union cvmx_gserx_lanex_rx_cfg_4 {
                                                          <13:8>: Q/QB error sampler 0 threshold, 6.7mV/step, used for training/LMS.
                                                          <7>: Enable Window mode, after training has finished.
                                                          <6:5>: Control sds_pcs_rx_vma_status[15:8].
-                                                         0x0 = window counter[19:12] (FOM).
-                                                         0x1 = window ouunter[11:4].
-                                                         0x2 = CTLE pole, SDLL_IQ.
-                                                         0x3 = pre-CTLE gain, CTLE peak.
+                                                              0x0 = window counter[19:12] (FOM).
+                                                              0x1 = window ouunter[11:4].
+                                                              0x2 = CTLE pole, SDLL_IQ.
+                                                              0x3 = pre-CTLE gain, CTLE peak.
                                                          <4>: Offset cancellation enable.
                                                          <3:0>: Max CTLE peak setting during training when pcs_sds_rx_vma_ctl[7] is set in
                                                          GSER()_LANE()_RX_VMA_CTRL. */
@@ -3736,7 +5224,10 @@ union cvmx_gserx_lanex_rx_cfg_4 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_cfg_4_s    cn73xx;
 	struct cvmx_gserx_lanex_rx_cfg_4_s    cn78xx;
+	struct cvmx_gserx_lanex_rx_cfg_4_s    cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cfg_4_s    cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_cfg_4 cvmx_gserx_lanex_rx_cfg_4_t;
 
@@ -3752,8 +5243,22 @@ union cvmx_gserx_lanex_rx_cfg_5 {
 	struct cvmx_gserx_lanex_rx_cfg_5_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
-	uint64_t rx_agc_men_ovvrd_en          : 1;  /**< Override enable for AGC manual mode. */
-	uint64_t rx_agc_men_ovvrd_val         : 1;  /**< Override value for AGC manual mode. */
+	uint64_t rx_agc_men_ovvrd_en          : 1;  /**< Override enable for AGC manual mode.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <
+                                                         5Gbaud, pre-CTLE, post-CTLE, and peaking control settings should be manually
+                                                         configured. [RX_AGC_MEN_OVVRD_EN,RX_AGC_MEN_OVVRD_VAL] should both be set,
+                                                         GSER()_LANE()_RX_CFG_2[RX_SDS_RX_AGC_MVAL] has the pre and post settings,
+                                                         and GSER()_LANE()_RX_CTLE_CTRL[PCS_SDS_RX_CTLE_ZERO] controls equalizer
+                                                         peaking. */
+	uint64_t rx_agc_men_ovvrd_val         : 1;  /**< Override value for AGC manual mode.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <
+                                                         5Gbaud, pre-CTLE, post-CTLE, and peaking control settings should be manually
+                                                         configured. [RX_AGC_MEN_OVVRD_EN,RX_AGC_MEN_OVVRD_VAL] should both be set,
+                                                         GSER()_LANE()_RX_CFG_2[RX_SDS_RX_AGC_MVAL] has the pre and post settings,
+                                                         and GSER()_LANE()_RX_CTLE_CTRL[PCS_SDS_RX_CTLE_ZERO] controls equalizer
+                                                         peaking. */
 	uint64_t rx_widthsel_ovvrd_en         : 1;  /**< Override enable for RX width select to the SerDes pcs_sds_rx_widthsel. */
 	uint64_t rx_widthsel_ovvrd_val        : 2;  /**< Override value for RX width select to the SerDes pcs_sds_rx_widthsel.
                                                          0x0 = 8-bit raw data.
@@ -3768,7 +5273,10 @@ union cvmx_gserx_lanex_rx_cfg_5 {
 	uint64_t reserved_5_63                : 59;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_cfg_5_s    cn73xx;
 	struct cvmx_gserx_lanex_rx_cfg_5_s    cn78xx;
+	struct cvmx_gserx_lanex_rx_cfg_5_s    cn78xxp2;
+	struct cvmx_gserx_lanex_rx_cfg_5_s    cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_cfg_5 cvmx_gserx_lanex_rx_cfg_5_t;
 
@@ -3789,7 +5297,17 @@ union cvmx_gserx_lanex_rx_ctle_ctrl {
                                                          0x1 =  0%.
                                                          0x2 = +5%.
                                                          0x3 = +10%. */
-	uint64_t pcs_sds_rx_ctle_zero         : 4;  /**< Equalizer peaking control. */
+	uint64_t pcs_sds_rx_ctle_zero         : 4;  /**< Equalizer peaking control.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <
+                                                         5Gbaud, pre-CTLE, post-CTLE, and peaking control settings should be manually
+                                                         configured. GSER()_LANE()_RX_CFG_5[RX_AGC_MEN_OVVRD_EN,RX_AGC_MEN_OVVRD_VAL]
+                                                         should both be set, GSER()_LANE()_RX_CFG_2[RX_SDS_RX_AGC_MVAL] has the
+                                                         pre and post settings, and [PCS_SDS_RX_CTLE_ZERO] controls equalizer
+                                                         peaking.
+                                                         The [PCS_SDS_RX_CTLE_ZERO] setting should be derived from signal integrity
+                                                         simulations with the IBIS-AMI model supplied by Cavium when auto-negotiated
+                                                         link training is not present and link speed < 5Gbaud. */
 	uint64_t rx_ctle_pole_ovrrd_en        : 1;  /**< Equalizer pole adjustment override enable. */
 	uint64_t rx_ctle_pole_ovrrd_val       : 4;  /**< Equalizer pole adjustment override value.
                                                          RX pre-correlation sample counter control
@@ -3814,7 +5332,10 @@ union cvmx_gserx_lanex_rx_ctle_ctrl {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_ctle_ctrl_s cn73xx;
 	struct cvmx_gserx_lanex_rx_ctle_ctrl_s cn78xx;
+	struct cvmx_gserx_lanex_rx_ctle_ctrl_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_ctle_ctrl_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_ctle_ctrl cvmx_gserx_lanex_rx_ctle_ctrl_t;
 
@@ -3832,17 +5353,18 @@ union cvmx_gserx_lanex_rx_loop_ctrl {
 	uint64_t reserved_12_63               : 52;
 	uint64_t fast_dll_lock                : 1;  /**< Assert to enable fast DLL lock (for simulation purposes only). */
 	uint64_t fast_ofst_cncl               : 1;  /**< Assert to enable fast Offset cancellation (for simulation purposes only). */
-	uint64_t cfg_rx_lctrl                 : 10; /**< When GSER()_LANE()_PWR_CTRL[RX_LCTRL_OVRRD_EN] is set, loop control settings.
-                                                         0x0 = cdr_en_byp.
-                                                         0x1 = dfe_en_byp.
-                                                         0x2 = agc_en_byp.
-                                                         0x3 = ofst_cncl_en_byp.
-                                                         0x4 = CDR resetn.
-                                                         0x5 = CTLE resetn.
-                                                         0x6 = VMA resetn.
-                                                         0x7 = ofst_cncl_rstn_byp.
-                                                         0x8 = lctrl_men.
-                                                         0x9 - 0x3ff = Reserved. */
+	uint64_t cfg_rx_lctrl                 : 10; /**< Loop control settings.
+                                                         <0> = cdr_en_byp.
+                                                         <1> = dfe_en_byp.
+                                                         <2> = agc_en_byp.
+                                                         <3> = ofst_cncl_en_byp.
+                                                         <4> = CDR resetn.
+                                                         <5> = CTLE resetn.
+                                                         <6> = VMA resetn.
+                                                         <7> = ofst_cncl_rstn_byp.
+                                                         <8> = lctrl_men.
+                                                         <9> = Reserved.
+                                                         GSER()_LANE()_PWR_CTRL[RX_LCTRL_OVRRD_EN] controls <9:7> and <3:0>. */
 #else
 	uint64_t cfg_rx_lctrl                 : 10;
 	uint64_t fast_ofst_cncl               : 1;
@@ -3850,7 +5372,10 @@ union cvmx_gserx_lanex_rx_loop_ctrl {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_loop_ctrl_s cn73xx;
 	struct cvmx_gserx_lanex_rx_loop_ctrl_s cn78xx;
+	struct cvmx_gserx_lanex_rx_loop_ctrl_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_loop_ctrl_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_loop_ctrl cvmx_gserx_lanex_rx_loop_ctrl_t;
 
@@ -3864,6 +5389,88 @@ typedef union cvmx_gserx_lanex_rx_loop_ctrl cvmx_gserx_lanex_rx_loop_ctrl_t;
 union cvmx_gserx_lanex_rx_misc_ovrrd {
 	uint64_t u64;
 	struct cvmx_gserx_lanex_rx_misc_ovrrd_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t cfg_rx_oob_clk_en_ovrrd_val  : 1;  /**< Override value for RX OOB Clock Enable. */
+	uint64_t cfg_rx_oob_clk_en_ovrrd_en   : 1;  /**< Override enable for RX OOB Clock Enable. */
+	uint64_t cfg_rx_eie_det_ovrrd_val     : 1;  /**< Override value for RX Electrical-Idle-Exit
+                                                         Detect Enable. */
+	uint64_t cfg_rx_eie_det_ovrrd_en      : 1;  /**< Override enable for RX Electrical-Idle-Exit
+                                                         Detect Enable. */
+	uint64_t cfg_rx_cdr_ctrl_ovvrd_en     : 1;  /**< Not supported. */
+	uint64_t cfg_rx_eq_eval_ovrrd_val     : 1;  /**< Training mode control in override mode. */
+	uint64_t cfg_rx_eq_eval_ovrrd_en      : 1;  /**< Override enable for RX-EQ Eval
+                                                         When asserted, training mode is controlled by
+                                                         CFG_RX_EQ_EVAL_OVRRD_VAL. */
+	uint64_t reserved_6_6                 : 1;
+	uint64_t cfg_rx_dll_locken_ovvrd_en   : 1;  /**< When asserted, override DLL lock enable
+                                                         signal from the RX Power State machine with
+                                                         CFG_RX_DLL_LOCKEN in register
+                                                         GSER()_LANE()_RX_CFG_1. */
+	uint64_t cfg_rx_errdet_ctrl_ovvrd_en  : 1;  /**< When asserted, pcs_sds_rx_err_det_ctrl is set
+                                                         to cfg_rx_errdet_ctrl in registers
+                                                         GSER()_LANE()_RX_CFG_3 and GSER()_LANE()_RX_CFG_4. */
+	uint64_t reserved_1_3                 : 3;
+	uint64_t cfg_rxeq_eval_restore_en     : 1;  /**< When asserted, AGC and CTLE use the RX EQ settings determined from RX EQ
+                                                         evaluation process when VMA is not in manual mode. Otherwise, default settings are used. */
+#else
+	uint64_t cfg_rxeq_eval_restore_en     : 1;
+	uint64_t reserved_1_3                 : 3;
+	uint64_t cfg_rx_errdet_ctrl_ovvrd_en  : 1;
+	uint64_t cfg_rx_dll_locken_ovvrd_en   : 1;
+	uint64_t reserved_6_6                 : 1;
+	uint64_t cfg_rx_eq_eval_ovrrd_en      : 1;
+	uint64_t cfg_rx_eq_eval_ovrrd_val     : 1;
+	uint64_t cfg_rx_cdr_ctrl_ovvrd_en     : 1;
+	uint64_t cfg_rx_eie_det_ovrrd_en      : 1;
+	uint64_t cfg_rx_eie_det_ovrrd_val     : 1;
+	uint64_t cfg_rx_oob_clk_en_ovrrd_en   : 1;
+	uint64_t cfg_rx_oob_clk_en_ovrrd_val  : 1;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_rx_misc_ovrrd_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t cfg_rx_oob_clk_en_ovrrd_val  : 1;  /**< Override value for RX OOB Clock Enable. */
+	uint64_t cfg_rx_oob_clk_en_ovrrd_en   : 1;  /**< Override enable for RX OOB Clock Enable. */
+	uint64_t cfg_rx_eie_det_ovrrd_val     : 1;  /**< Override value for RX Electrical-Idle-Exit
+                                                         Detect Enable. */
+	uint64_t cfg_rx_eie_det_ovrrd_en      : 1;  /**< Override enable for RX Electrical-Idle-Exit
+                                                         Detect Enable. */
+	uint64_t cfg_rx_cdr_ctrl_ovvrd_en     : 1;  /**< Not supported. */
+	uint64_t cfg_rx_eq_eval_ovrrd_val     : 1;  /**< Training mode control in override mode. */
+	uint64_t cfg_rx_eq_eval_ovrrd_en      : 1;  /**< Override enable for RX-EQ Eval
+                                                         When asserted, training mode is controlled by
+                                                         CFG_RX_EQ_EVAL_OVRRD_VAL. */
+	uint64_t reserved_6_6                 : 1;
+	uint64_t cfg_rx_dll_locken_ovvrd_en   : 1;  /**< When asserted, override DLL lock enable
+                                                         signal from the RX Power State machine with
+                                                         CFG_RX_DLL_LOCKEN in register
+                                                         GSER()_LANE()_RX_CFG_1. */
+	uint64_t cfg_rx_errdet_ctrl_ovvrd_en  : 1;  /**< When asserted, pcs_sds_rx_err_det_ctrl is set
+                                                         to cfg_rx_errdet_ctrl in registers
+                                                         GSER()_LANE()_RX_CFG_3 and GSER()_LANE()_RX_CFG_4. */
+	uint64_t reserved_3_1                 : 3;
+	uint64_t cfg_rxeq_eval_restore_en     : 1;  /**< When asserted, AGC and CTLE use the RX EQ settings determined from RX EQ
+                                                         evaluation process when VMA is not in manual mode. Otherwise, default settings are used. */
+#else
+	uint64_t cfg_rxeq_eval_restore_en     : 1;
+	uint64_t reserved_3_1                 : 3;
+	uint64_t cfg_rx_errdet_ctrl_ovvrd_en  : 1;
+	uint64_t cfg_rx_dll_locken_ovvrd_en   : 1;
+	uint64_t reserved_6_6                 : 1;
+	uint64_t cfg_rx_eq_eval_ovrrd_en      : 1;
+	uint64_t cfg_rx_eq_eval_ovrrd_val     : 1;
+	uint64_t cfg_rx_cdr_ctrl_ovvrd_en     : 1;
+	uint64_t cfg_rx_eie_det_ovrrd_en      : 1;
+	uint64_t cfg_rx_eie_det_ovrrd_val     : 1;
+	uint64_t cfg_rx_oob_clk_en_ovrrd_en   : 1;
+	uint64_t cfg_rx_oob_clk_en_ovrrd_val  : 1;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} cn73xx;
+	struct cvmx_gserx_lanex_rx_misc_ovrrd_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_14_63               : 50;
 	uint64_t cfg_rx_oob_clk_en_ovrrd_val  : 1;  /**< Not supported. */
@@ -3900,8 +5507,9 @@ union cvmx_gserx_lanex_rx_misc_ovrrd {
 	uint64_t cfg_rx_oob_clk_en_ovrrd_val  : 1;
 	uint64_t reserved_14_63               : 50;
 #endif
-	} s;
-	struct cvmx_gserx_lanex_rx_misc_ovrrd_s cn78xx;
+	} cn78xx;
+	struct cvmx_gserx_lanex_rx_misc_ovrrd_cn73xx cn78xxp2;
+	struct cvmx_gserx_lanex_rx_misc_ovrrd_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_misc_ovrrd cvmx_gserx_lanex_rx_misc_ovrrd_t;
 
@@ -3934,9 +5542,40 @@ union cvmx_gserx_lanex_rx_precorr_ctrl {
 	uint64_t reserved_5_63                : 59;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_precorr_ctrl_s cn73xx;
 	struct cvmx_gserx_lanex_rx_precorr_ctrl_s cn78xx;
+	struct cvmx_gserx_lanex_rx_precorr_ctrl_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_precorr_ctrl_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_precorr_ctrl cvmx_gserx_lanex_rx_precorr_ctrl_t;
+
+/**
+ * cvmx_gser#_lane#_rx_precorr_val
+ *
+ * These are the RAW PCS per-lane RX precorrelation control registers. These registers are for
+ * diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset. The values of the CSR
+ * fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_lanex_rx_precorr_val {
+	uint64_t u64;
+	struct cvmx_gserx_lanex_rx_precorr_val_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_13_63               : 51;
+	uint64_t sds_pcs_rx_precorr_vld       : 1;  /**< RX pre-correlation count is valid. */
+	uint64_t sds_pcs_rx_precorr_cnt       : 12; /**< RX pre-correlation count. */
+#else
+	uint64_t sds_pcs_rx_precorr_cnt       : 12;
+	uint64_t sds_pcs_rx_precorr_vld       : 1;
+	uint64_t reserved_13_63               : 51;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_rx_precorr_val_s cn73xx;
+	struct cvmx_gserx_lanex_rx_precorr_val_s cn78xx;
+	struct cvmx_gserx_lanex_rx_precorr_val_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_precorr_val_s cnf75xx;
+};
+typedef union cvmx_gserx_lanex_rx_precorr_val cvmx_gserx_lanex_rx_precorr_val_t;
 
 /**
  * cvmx_gser#_lane#_rx_valbbd_ctrl_0
@@ -3952,13 +5591,45 @@ union cvmx_gserx_lanex_rx_valbbd_ctrl_0 {
 	uint64_t agc_gain                     : 2;  /**< AGC gain. */
 	uint64_t dfe_gain                     : 2;  /**< DFE gain. */
 	uint64_t dfe_c5_mval                  : 4;  /**< DFE Tap5 manual value when GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN] and
-                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set. */
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,
+                                                         DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,DFE_C1_OVRD_VAL] and clearing all of
+                                                         [DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL,DFE_C4_MSGN] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_1[DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 	uint64_t dfe_c5_msgn                  : 1;  /**< DFE Tap5 manual sign when GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN] and
-                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set. */
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,
+                                                         DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,DFE_C1_OVRD_VAL] and clearing all of
+                                                         [DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL,DFE_C4_MSGN] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_1[DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 	uint64_t dfe_c4_mval                  : 4;  /**< DFE Tap4 manual value when GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN] and
-                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set. */
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,
+                                                         DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,DFE_C1_OVRD_VAL] and clearing all of
+                                                         [DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL,DFE_C4_MSGN] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_1[DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 	uint64_t dfe_c4_msgn                  : 1;  /**< DFE Tap4 manual sign when GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN] and
-                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set. */
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,
+                                                         DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,DFE_C1_OVRD_VAL] and clearing all of
+                                                         [DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL,DFE_C4_MSGN] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_1[DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 #else
 	uint64_t dfe_c4_msgn                  : 1;
 	uint64_t dfe_c4_mval                  : 4;
@@ -3969,7 +5640,10 @@ union cvmx_gserx_lanex_rx_valbbd_ctrl_0 {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_valbbd_ctrl_0_s cn73xx;
 	struct cvmx_gserx_lanex_rx_valbbd_ctrl_0_s cn78xx;
+	struct cvmx_gserx_lanex_rx_valbbd_ctrl_0_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_valbbd_ctrl_0_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_valbbd_ctrl_0 cvmx_gserx_lanex_rx_valbbd_ctrl_0_t;
 
@@ -3985,22 +5659,65 @@ union cvmx_gserx_lanex_rx_valbbd_ctrl_1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
 	uint64_t dfe_c3_mval                  : 4;  /**< DFE Tap3 manual value when GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN] and
-                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set. */
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,
+                                                         DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL,FE_C4_MSGN]
+                                                         and clearing all of [DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 	uint64_t dfe_c3_msgn                  : 1;  /**< DFE Tap3 manual sign when GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN] and
-                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set. */
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,
+                                                         DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL,FE_C4_MSGN]
+                                                         and clearing all of [DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 	uint64_t dfe_c2_mval                  : 4;  /**< DFE Tap2 manual value when GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN] and
-                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set. */
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,
+                                                         DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL,FE_C4_MSGN]
+                                                         and clearing all of [DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 	uint64_t dfe_c2_msgn                  : 1;  /**< DFE Tap2 manual sign when GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN] and
-                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set. */
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,
+                                                         DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL,FE_C4_MSGN]
+                                                         and clearing all of [DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 	uint64_t dfe_c1_mval                  : 4;  /**< DFE Tap1 manual value when GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN] and
                                                          GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set.
-                                                         Recommended settings: For the following modes:
-                                                         5G_REFCLK100, 5G_REFCLK15625_QSGMII, and 5G_REFCLK125, it is recommended that DFE_C1_MVAL
-                                                         be set to zero after setting GSER()_LANE_P()_MODE_1[VMA_MM] and also after
-                                                         updating the GSER()_LANE()_RX_VALBBD_CTRL_2 register. In all other modes this
-                                                         register can be ignored. */
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,
+                                                         DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL,FE_C4_MSGN]
+                                                         and clearing all of [DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 	uint64_t dfe_c1_msgn                  : 1;  /**< DFE Tap1 manual sign when GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN] and
-                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set. */
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_C5_OVRD_VAL] are both set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_2[DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,
+                                                         DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL,FE_C4_MSGN]
+                                                         and clearing all of [DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 #else
 	uint64_t dfe_c1_msgn                  : 1;
 	uint64_t dfe_c1_mval                  : 4;
@@ -4011,7 +5728,10 @@ union cvmx_gserx_lanex_rx_valbbd_ctrl_1 {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_valbbd_ctrl_1_s cn73xx;
 	struct cvmx_gserx_lanex_rx_valbbd_ctrl_1_s cn78xx;
+	struct cvmx_gserx_lanex_rx_valbbd_ctrl_1_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_valbbd_ctrl_1_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_valbbd_ctrl_1 cvmx_gserx_lanex_rx_valbbd_ctrl_1_t;
 
@@ -4029,29 +5749,66 @@ union cvmx_gserx_lanex_rx_valbbd_ctrl_2 {
 	uint64_t dfe_ovrd_en                  : 1;  /**< Override enable for DFE tap controls. When asserted, the register bits in
                                                          GSER()_LANE()_RX_VALBBD_CTRL_0 and GSER()_LANE()_RX_VALBBD_CTRL_1 are
                                                          used for controlling the DFE tap manual mode, instead the manual mode signal indexed by
-                                                         GSER()_LANE_MODE[LMODE]. Recommended settings: For the following modes: 5G_REFCLK100,
-                                                         5G_REFCLK15625_QSGMII, and 5G_REFCLK125, it is recommended that DFE tap controls be put in
-                                                         manual mode by setting this bit. In all other modes this register can be ignored. */
-	uint64_t dfe_c5_ovrd_val              : 1;  /**< Override value for DFE Tap5 manual enable. Recommended settings: For the following modes;
-                                                         5G_REFCLK100, 5G_REFCLK15625_QSGMII, and 5G_REFCLK125, it is recommended that the DFE Tap5
-                                                         manual enable be set after setting GSER()_LANE_P()_MODE_1[VMA_MM]. In all
-                                                         other modes this register can be ignored. */
-	uint64_t dfe_c4_ovrd_val              : 1;  /**< Override value for DFE Tap4 manual enable. Recommended settings: For the following modes:
-                                                         5G_REFCLK100, 5G_REFCLK15625_QSGMII, and 5G_REFCLK125, it is recommended that the DFE Tap4
-                                                         manual enable be set after setting GSER()_LANE_P()_MODE_1[VMA_MM]. In all
-                                                         other modes this register can be ignored. */
-	uint64_t dfe_c3_ovrd_val              : 1;  /**< Override value for DFE Tap3 manual enable. Recommended settings: For the following modes;
-                                                         5G_REFCLK100, 5G_REFCLK15625_QSGMII, and 5G_REFCLK125, it is recommended that the DFE Tap3
-                                                         manual enable be set after setting GSER()_LANE_P()_MODE_1[VMA_MM]. In all
-                                                         other modes this register can be ignored. */
-	uint64_t dfe_c2_ovrd_val              : 1;  /**< Override value for DFE Tap2 manual enable. Recommended settings: For the following modes;
-                                                         5G_REFCLK100, 5G_REFCLK15625_QSGMII, and 5G_REFCLK125, it is recommended that the DFE Tap2
-                                                         manual enable be set after setting GSER()_LANE_P()_MODE_1[VMA_MM]. In all
-                                                         other modes this register can be ignored. */
-	uint64_t dfe_c1_ovrd_val              : 1;  /**< Override value for DFE Tap1 manual enable. Recommended settings: For the following modes;
-                                                         5G_REFCLK100, 5G_REFCLK15625_QSGMII, and 5G_REFCLK125, it is recommended that the DFE Tap1
-                                                         manual enable be set after setting GSER()_LANE_P()_MODE_1[VMA_MM]. In all
-                                                         other modes this register can be ignored. */
+                                                         GSER()_LANE_MODE[LMODE].
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         [DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,
+                                                         DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL, FE_C4_MSGN]
+                                                         and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_1[DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
+	uint64_t dfe_c5_ovrd_val              : 1;  /**< Override value for DFE Tap5 manual enable. Used when [DFE_OVRD_EN] is set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         [DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,
+                                                         DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL, FE_C4_MSGN]
+                                                         and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_1[DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
+	uint64_t dfe_c4_ovrd_val              : 1;  /**< Override value for DFE Tap4 manual enable. Used when [DFE_OVRD_EN] is set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         [DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,
+                                                         DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL, FE_C4_MSGN]
+                                                         and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_1[DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
+	uint64_t dfe_c3_ovrd_val              : 1;  /**< Override value for DFE Tap3 manual enable. Used when [DFE_OVRD_EN] is set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         [DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,
+                                                         DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL, FE_C4_MSGN]
+                                                         and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_1[DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
+	uint64_t dfe_c2_ovrd_val              : 1;  /**< Override value for DFE Tap2 manual enable. Used when [DFE_OVRD_EN] is set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         [DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,
+                                                         DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL, FE_C4_MSGN]
+                                                         and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_1[DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
+	uint64_t dfe_c1_ovrd_val              : 1;  /**< Override value for DFE Tap1 manual enable. Used when [DFE_OVRD_EN] is set.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present and link speed <=
+                                                         5Gbaud, the DFE should be completely disabled by setting all of
+                                                         [DFE_OVRD_EN,DFE_C5_OVRD_VAL,DFE_C4_OVRD_VAL,DFE_C3_OVRD_VAL,DFE_C2_OVRD_VAL,
+                                                         DFE_C1_OVRD_VAL] and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_0[DFE_C5_MVAL,DFE_C5_MSGN,DFE_C4_MVAL, FE_C4_MSGN]
+                                                         and clearing all of
+                                                         GSER()_LANE()_RX_VALBBD_CTRL_1[DFE_C3_MVAL,DFE_C3_MSGN,DFE_C2_MVAL,DFE_C2_MSGN,
+                                                         DFE_C1_MVAL,DFE_C1_MSGN]. */
 #else
 	uint64_t dfe_c1_ovrd_val              : 1;
 	uint64_t dfe_c2_ovrd_val              : 1;
@@ -4062,7 +5819,10 @@ union cvmx_gserx_lanex_rx_valbbd_ctrl_2 {
 	uint64_t reserved_6_63                : 58;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_valbbd_ctrl_2_s cn73xx;
 	struct cvmx_gserx_lanex_rx_valbbd_ctrl_2_s cn78xx;
+	struct cvmx_gserx_lanex_rx_valbbd_ctrl_2_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_valbbd_ctrl_2_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_valbbd_ctrl_2 cvmx_gserx_lanex_rx_valbbd_ctrl_2_t;
 
@@ -4102,7 +5862,10 @@ union cvmx_gserx_lanex_rx_vma_ctrl {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_vma_ctrl_s cn73xx;
 	struct cvmx_gserx_lanex_rx_vma_ctrl_s cn78xx;
+	struct cvmx_gserx_lanex_rx_vma_ctrl_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_vma_ctrl_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_vma_ctrl cvmx_gserx_lanex_rx_vma_ctrl_t;
 
@@ -4127,7 +5890,10 @@ union cvmx_gserx_lanex_rx_vma_status_0 {
 	uint64_t reserved_8_63                : 56;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_vma_status_0_s cn73xx;
 	struct cvmx_gserx_lanex_rx_vma_status_0_s cn78xx;
+	struct cvmx_gserx_lanex_rx_vma_status_0_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_vma_status_0_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_vma_status_0 cvmx_gserx_lanex_rx_vma_status_0_t;
 
@@ -4143,23 +5909,184 @@ union cvmx_gserx_lanex_rx_vma_status_1 {
 	struct cvmx_gserx_lanex_rx_vma_status_1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t sds_pcs_rx_vma_status        : 16; /**< <15:8>: Output is controlled by GSER()_LANE()_RX_CFG_3[CFG_RX_ERRDET_CTRL[6:5]
-                                                         0x0 = Pre-CTL gain, CTLE Peak.
-                                                         0x1 = CTL pole, SDLL_IQ.
-                                                         0x2 = Window counter[11:3].
-                                                         0x3 = Window counter[19:12] (VMA RAW FOM).
-                                                         <7>: Training done
-                                                         <6>: Internal state machine training done
-                                                         <5:3>: Internal state machine Delta
+	uint64_t sds_pcs_rx_vma_status        : 16; /**< <15:8>: Output is controlled by GSER()_LANE()_RX_CFG_3[CFG_RX_ERRDET_CTRL[6:5]:
+                                                         0x0 = Window counter[19:12] (VMA RAW FOM).
+                                                         0x1 = Window counter[11:4].
+                                                         0x2 = CTLE (continous time linear equalizer) pole, SDLL_IQ.
+                                                         0x3 = Pre-CTLE gain, CTLE Peak.
+                                                         <7>: Training done.
+                                                         <6>: Internal state machine training done.
+                                                         <5:3>: Internal state machine delta.
                                                          <2:0>: CDR Phase Offset, DLL IQ Training value. */
 #else
 	uint64_t sds_pcs_rx_vma_status        : 16;
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_rx_vma_status_1_s cn73xx;
 	struct cvmx_gserx_lanex_rx_vma_status_1_s cn78xx;
+	struct cvmx_gserx_lanex_rx_vma_status_1_s cn78xxp2;
+	struct cvmx_gserx_lanex_rx_vma_status_1_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_rx_vma_status_1 cvmx_gserx_lanex_rx_vma_status_1_t;
+
+/**
+ * cvmx_gser#_lane#_sds_pin_mon_0
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_lanex_sds_pin_mon_0 {
+	uint64_t u64;
+	struct cvmx_gserx_lanex_sds_pin_mon_0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_10_63               : 54;
+	uint64_t pcs_sds_tx_widthsel          : 2;  /**< TX parallel interface width settings (RAW PCS to
+                                                         SerDes TX).
+                                                         0x0 = 8-bit raw data (not supported).
+                                                         0x1 = 10-bit raw data (not supported).
+                                                         0x2 = 16-bit raw data (not supported).
+                                                         0x3 = 20-bit raw data. */
+	uint64_t pcs_sds_rx_pcie_mode         : 1;  /**< Selects between RX terminations:
+                                                         0x0 = pcs_sds_rx_terminate_to_vdda.
+                                                         0x1 = VSS. */
+	uint64_t reserved_5_6                 : 2;
+	uint64_t pcs_sds_rx_misc_ctrl_5       : 1;  /**< Not Used. */
+	uint64_t tx_detrx_state               : 2;  /**< RX detection state:
+                                                         0x0 = IDLE.
+                                                         0x1 = Charge Up.
+                                                         0x2 = Detection.
+                                                         0x3 = Restore common mode. */
+	uint64_t pcs_sds_tx_rx_detect_dis     : 1;  /**< TX detect RX, mode disable. */
+	uint64_t pcs_sds_tx_detect_pulsen     : 1;  /**< TX detect RX, pulse enable. */
+#else
+	uint64_t pcs_sds_tx_detect_pulsen     : 1;
+	uint64_t pcs_sds_tx_rx_detect_dis     : 1;
+	uint64_t tx_detrx_state               : 2;
+	uint64_t pcs_sds_rx_misc_ctrl_5       : 1;
+	uint64_t reserved_5_6                 : 2;
+	uint64_t pcs_sds_rx_pcie_mode         : 1;
+	uint64_t pcs_sds_tx_widthsel          : 2;
+	uint64_t reserved_10_63               : 54;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_sds_pin_mon_0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_10_63               : 54;
+	uint64_t pcs_sds_tx_widthsel          : 2;  /**< TX parallel interface width settings (RAW PCS to
+                                                         SerDes TX).
+                                                         0x0 = 8-bit raw data (not supported).
+                                                         0x1 = 10-bit raw data (not supported).
+                                                         0x2 = 16-bit raw data (not supported).
+                                                         0x3 = 20-bit raw data. */
+	uint64_t pcs_sds_rx_pcie_mode         : 1;  /**< Selects between RX terminations:
+                                                         0x0 = pcs_sds_rx_terminate_to_vdda.
+                                                         0x1 = VSS. */
+	uint64_t reserved_6_5                 : 2;
+	uint64_t pcs_sds_rx_misc_ctrl_5       : 1;  /**< Not Used. */
+	uint64_t tx_detrx_state               : 2;  /**< RX detection state:
+                                                         0x0 = IDLE.
+                                                         0x1 = Charge Up.
+                                                         0x2 = Detection.
+                                                         0x3 = Restore common mode. */
+	uint64_t pcs_sds_tx_rx_detect_dis     : 1;  /**< TX detect RX, mode disable. */
+	uint64_t pcs_sds_tx_detect_pulsen     : 1;  /**< TX detect RX, pulse enable. */
+#else
+	uint64_t pcs_sds_tx_detect_pulsen     : 1;
+	uint64_t pcs_sds_tx_rx_detect_dis     : 1;
+	uint64_t tx_detrx_state               : 2;
+	uint64_t pcs_sds_rx_misc_ctrl_5       : 1;
+	uint64_t reserved_6_5                 : 2;
+	uint64_t pcs_sds_rx_pcie_mode         : 1;
+	uint64_t pcs_sds_tx_widthsel          : 2;
+	uint64_t reserved_10_63               : 54;
+#endif
+	} cn73xx;
+	struct cvmx_gserx_lanex_sds_pin_mon_0_cn73xx cn78xxp2;
+	struct cvmx_gserx_lanex_sds_pin_mon_0_cn73xx cnf75xx;
+};
+typedef union cvmx_gserx_lanex_sds_pin_mon_0 cvmx_gserx_lanex_sds_pin_mon_0_t;
+
+/**
+ * cvmx_gser#_lane#_sds_pin_mon_1
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_lanex_sds_pin_mon_1 {
+	uint64_t u64;
+	struct cvmx_gserx_lanex_sds_pin_mon_1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t pcs_sds_rx_chpd              : 1;  /**< RX channel powerdown signal. */
+	uint64_t pcs_sds_rx_eie_en            : 1;  /**< Enable for electrical idle detection circuit
+                                                         in SerDes RX. */
+	uint64_t reserved_13_13               : 1;
+	uint64_t pcs_sds_ln_loopback_mode     : 1;  /**< TX to RX on chip loopback control signal. */
+	uint64_t pcs_sds_tx_chpd              : 1;  /**< TX channel powerdown signal. */
+	uint64_t pcs_sds_rx_widthsel          : 2;  /**< Width select.
+                                                         0x0 = 8-bit raw data.
+                                                         0x1 = 10-bit raw data.
+                                                         0x2 = 16-bit raw data.
+                                                         0x3 = 20-bit raw data. */
+	uint64_t reserved_8_8                 : 1;
+	uint64_t pcs_sds_tx_resetn            : 1;  /**< TX reset, active low (RAW PCS output to lane TX). */
+	uint64_t pcs_sds_tx_tristate_en       : 1;  /**< TX driver tristate enable (RAW PCS output to lane TX). */
+	uint64_t pcs_sds_tx_swing             : 5;  /**< TX swing (RAW PCS output to lane TX). */
+	uint64_t pcs_sds_tx_elec_idle         : 1;  /**< TX electrical idle control (RAW PCS output to lane TX). */
+#else
+	uint64_t pcs_sds_tx_elec_idle         : 1;
+	uint64_t pcs_sds_tx_swing             : 5;
+	uint64_t pcs_sds_tx_tristate_en       : 1;
+	uint64_t pcs_sds_tx_resetn            : 1;
+	uint64_t reserved_8_8                 : 1;
+	uint64_t pcs_sds_rx_widthsel          : 2;
+	uint64_t pcs_sds_tx_chpd              : 1;
+	uint64_t pcs_sds_ln_loopback_mode     : 1;
+	uint64_t reserved_13_13               : 1;
+	uint64_t pcs_sds_rx_eie_en            : 1;
+	uint64_t pcs_sds_rx_chpd              : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_sds_pin_mon_1_s cn73xx;
+	struct cvmx_gserx_lanex_sds_pin_mon_1_s cn78xxp2;
+	struct cvmx_gserx_lanex_sds_pin_mon_1_s cnf75xx;
+};
+typedef union cvmx_gserx_lanex_sds_pin_mon_1 cvmx_gserx_lanex_sds_pin_mon_1_t;
+
+/**
+ * cvmx_gser#_lane#_sds_pin_mon_2
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_lanex_sds_pin_mon_2 {
+	uint64_t u64;
+	struct cvmx_gserx_lanex_sds_pin_mon_2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_11_63               : 53;
+	uint64_t pcs_sds_tx_vboost_en         : 1;  /**< TX boost enable. */
+	uint64_t pcs_sds_tx_turbos_en         : 1;  /**< TX turbo mode enable signal, increases swing of TX
+                                                         through current mode. */
+	uint64_t pcs_sds_premptap             : 9;  /**< Pre-emphasis control.
+                                                         <8:4> = Post-cursor.
+                                                         <3:0> = Pre-cursor. */
+#else
+	uint64_t pcs_sds_premptap             : 9;
+	uint64_t pcs_sds_tx_turbos_en         : 1;
+	uint64_t pcs_sds_tx_vboost_en         : 1;
+	uint64_t reserved_11_63               : 53;
+#endif
+	} s;
+	struct cvmx_gserx_lanex_sds_pin_mon_2_s cn73xx;
+	struct cvmx_gserx_lanex_sds_pin_mon_2_s cn78xxp2;
+	struct cvmx_gserx_lanex_sds_pin_mon_2_s cnf75xx;
+};
+typedef union cvmx_gserx_lanex_sds_pin_mon_2 cvmx_gserx_lanex_sds_pin_mon_2_t;
 
 /**
  * cvmx_gser#_lane#_tx_cfg_0
@@ -4180,7 +6107,22 @@ union cvmx_gserx_lanex_tx_cfg_0 {
 	uint64_t tx_cm_mode                   : 1;  /**< Assert to enable fast Common-Mode charge up. For simulation purposes only. */
 	uint64_t cfg_tx_swing                 : 5;  /**< TX output swing control.
                                                          Default swing encoding when GSER()_LANE()_TX_CFG_1[TX_SWING_OVRRD_EN] is
-                                                         asserted. */
+                                                         asserted.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present, including XFI and all
+                                                         protocols <= 6.25Gbaud except PCIe, the transmit swing should be manually
+                                                         over-ridden. GSER()_LANE()_TX_CFG_1[TX_SWING_OVRD_EN] should be set
+                                                         and [CFG_TX_SWING] configures the swing.
+                                                         [CFG_TX_SWING] should be derived from signal integrity simulations
+                                                         with the IBIS-AMI model supplied by Cavium when auto-negotiated link
+                                                         training is not present and link speed <= 6.25Gbaud.
+                                                         <pre>
+                                                             Frequency          Possibly useful [CFG_TX_SWING] value
+                                                             --------------------------------------------------------
+                                                              6.25 Gbaud             0xa
+                                                              10.3125 Gbaud          0xd
+                                                              other                  0x7
+                                                         </pre> */
 	uint64_t fast_rdet_mode               : 1;  /**< Assert to enable fast RX Detection. For simulation purposes only. */
 	uint64_t fast_tristate_mode           : 1;  /**< Assert to enable fast Tristate power up. For simulation purposes only. */
 	uint64_t reserved_0_0                 : 1;
@@ -4197,7 +6139,51 @@ union cvmx_gserx_lanex_tx_cfg_0 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_tx_cfg_0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t tx_tristate_en_ovrd_val      : 1;  /**< TX termination high-Z enable. */
+	uint64_t tx_chpd_ovrd_val             : 1;  /**< TX lane power down. */
+	uint64_t reserved_13_10               : 4;
+	uint64_t tx_resetn_ovrd_val           : 1;  /**< TX P2S rest. */
+	uint64_t tx_cm_mode                   : 1;  /**< Assert to enable fast Common-Mode charge up. For simulation purposes only. */
+	uint64_t cfg_tx_swing                 : 5;  /**< TX output swing control.
+                                                         Default swing encoding when GSER()_LANE()_TX_CFG_1[TX_SWING_OVRRD_EN] is
+                                                         asserted.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present, including XFI and all
+                                                         protocols <= 6.25Gbaud except PCIe, the transmit swing should be manually
+                                                         over-ridden. GSER()_LANE()_TX_CFG_1[TX_SWING_OVRD_EN] should be set
+                                                         and [CFG_TX_SWING] configures the swing.
+                                                         [CFG_TX_SWING] should be derived from signal integrity simulations
+                                                         with the IBIS-AMI model supplied by Cavium when auto-negotiated link
+                                                         training is not present and link speed <= 6.25Gbaud.
+                                                         <pre>
+                                                             Frequency          Possibly useful [CFG_TX_SWING] value
+                                                             --------------------------------------------------------
+                                                              6.25 Gbaud             0xa
+                                                              10.3125 Gbaud          0xd
+                                                              other                  0x7
+                                                         </pre> */
+	uint64_t fast_rdet_mode               : 1;  /**< Assert to enable fast RX Detection. For simulation purposes only. */
+	uint64_t fast_tristate_mode           : 1;  /**< Assert to enable fast Tristate power up. For simulation purposes only. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t fast_tristate_mode           : 1;
+	uint64_t fast_rdet_mode               : 1;
+	uint64_t cfg_tx_swing                 : 5;
+	uint64_t tx_cm_mode                   : 1;
+	uint64_t tx_resetn_ovrd_val           : 1;
+	uint64_t reserved_13_10               : 4;
+	uint64_t tx_chpd_ovrd_val             : 1;
+	uint64_t tx_tristate_en_ovrd_val      : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_lanex_tx_cfg_0_s    cn78xx;
+	struct cvmx_gserx_lanex_tx_cfg_0_cn73xx cn78xxp2;
+	struct cvmx_gserx_lanex_tx_cfg_0_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_lanex_tx_cfg_0 cvmx_gserx_lanex_tx_cfg_0_t;
 
@@ -4217,12 +6203,23 @@ union cvmx_gserx_lanex_tx_cfg_1 {
 	uint64_t tx_widthsel_ovrd_val         : 2;  /**< Override value for pcs_sds_widthsel, TX parallel interface width setting.
                                                          0x0 = 8-bit (not supported).
                                                          0x1 = 10-bit (not supported).
-                                                         0x2 = 16-bit (not supported).
-                                                         0x3 = 20-bit (not supported). */
+                                                         0x2 = 16-bit (for PCIe Gen3 8Gb only).
+                                                         0x3 = 20-bit. */
 	uint64_t tx_vboost_en_ovrrd_en        : 1;  /**< Override enable for pcs_sds_txX_vboost_en, TX  vboost mode enable. */
 	uint64_t tx_turbo_en_ovrrd_en         : 1;  /**< Override enable for pcs_sds_txX_turbo_en, Turbo mode enable. */
-	uint64_t tx_swing_ovrd_en             : 1;  /**< Override enable for pcs_sds_txX_swing, TX swing. */
-	uint64_t tx_premptap_ovrd_val         : 1;  /**< Override enable for pcs_sds_txX_preemptap, preemphasis control. */
+	uint64_t tx_swing_ovrd_en             : 1;  /**< Override enable for pcs_sds_txX_swing, TX swing.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present, including XFI and all
+                                                         protocols <= 6.25Gbaud except PCIe, the transmit swing should be manually
+                                                         over-ridden. [TX_SWING_OVRD_EN] should be set and
+                                                         GSER()_LANE()_TX_CFG_0[CFG_TX_SWING] configures the swing. */
+	uint64_t tx_premptap_ovrd_val         : 1;  /**< Override enable for pcs_sds_txX_preemptap, preemphasis control.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present, including XFI and all
+                                                         protocols <= 6.25Gbaud except PCIe, the transmit preemphasis pre and post
+                                                         cursor values should be manually over-ridden.  [TX_PREMPTAP_OVRD_VAL] should
+                                                         be set and GSER()_LANE()_TX_PRE_EMPHASIS[CFG_TX_PREMPTAP] has the pre and post
+                                                         cursor values. */
 	uint64_t tx_elec_idle_ovrrd_en        : 1;  /**< Override enable for pcs_sds_txX_elec_idle, TX electrical idle. */
 	uint64_t smpl_rate_ovrd_en            : 1;  /**< Override enable for TX Power state machine sample rate. When asserted, the TX sample is
                                                          specified from SMPL_RATE_OVRD_VAL and the TX Power state machine control signal is
@@ -4258,7 +6255,10 @@ union cvmx_gserx_lanex_tx_cfg_1 {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_tx_cfg_1_s    cn73xx;
 	struct cvmx_gserx_lanex_tx_cfg_1_s    cn78xx;
+	struct cvmx_gserx_lanex_tx_cfg_1_s    cn78xxp2;
+	struct cvmx_gserx_lanex_tx_cfg_1_s    cnf75xx;
 };
 typedef union cvmx_gserx_lanex_tx_cfg_1 cvmx_gserx_lanex_tx_cfg_1_t;
 
@@ -4289,7 +6289,27 @@ union cvmx_gserx_lanex_tx_cfg_2 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_tx_cfg_2_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t pcs_sds_tx_dcc_en            : 1;  /**< DCC Enable. */
+	uint64_t reserved_14_3                : 12;
+	uint64_t rcvr_test_ovrd_en            : 1;  /**< Override RX detect disable and test pulse. */
+	uint64_t rcvr_test_ovrd_val           : 1;  /**< Override value for RX detect test pulse; used to create a pulse during which the receiver
+                                                         detect test operation is performed. */
+	uint64_t tx_rx_detect_dis_ovrd_val    : 1;  /**< Override value of RX detect disable. */
+#else
+	uint64_t tx_rx_detect_dis_ovrd_val    : 1;
+	uint64_t rcvr_test_ovrd_val           : 1;
+	uint64_t rcvr_test_ovrd_en            : 1;
+	uint64_t reserved_14_3                : 12;
+	uint64_t pcs_sds_tx_dcc_en            : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_lanex_tx_cfg_2_s    cn78xx;
+	struct cvmx_gserx_lanex_tx_cfg_2_cn73xx cn78xxp2;
+	struct cvmx_gserx_lanex_tx_cfg_2_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_lanex_tx_cfg_2 cvmx_gserx_lanex_tx_cfg_2_t;
 
@@ -4320,7 +6340,27 @@ union cvmx_gserx_lanex_tx_cfg_3 {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_tx_cfg_3_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_15_63               : 49;
+	uint64_t cfg_tx_vboost_en             : 1;  /**< Specifies the value of TX VBoost enable when
+                                                         GSER()_LANE()_TX_CFG_1[TX_VBOOST_EN_OVRRD_EN] is asserted. */
+	uint64_t reserved_13_7                : 7;
+	uint64_t pcs_sds_tx_gain              : 3;  /**< TX Gain. For debug use only. */
+	uint64_t pcs_sds_tx_srate_sel         : 3;  /**< Reserved. */
+	uint64_t cfg_tx_turbo_en              : 1;  /**< Specifies value ot TX turbo enable when GSER()_LANE()_TX_CFG_1[TX_TURBO_EN] is set. */
+#else
+	uint64_t cfg_tx_turbo_en              : 1;
+	uint64_t pcs_sds_tx_srate_sel         : 3;
+	uint64_t pcs_sds_tx_gain              : 3;
+	uint64_t reserved_13_7                : 7;
+	uint64_t cfg_tx_vboost_en             : 1;
+	uint64_t reserved_15_63               : 49;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_lanex_tx_cfg_3_s    cn78xx;
+	struct cvmx_gserx_lanex_tx_cfg_3_cn73xx cn78xxp2;
+	struct cvmx_gserx_lanex_tx_cfg_3_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_lanex_tx_cfg_3 cvmx_gserx_lanex_tx_cfg_3_t;
 
@@ -4339,13 +6379,32 @@ union cvmx_gserx_lanex_tx_pre_emphasis {
 	uint64_t cfg_tx_premptap              : 9;  /**< Override preemphasis control. Applies when
                                                          GSER()_LANE()_TX_CFG_3[TX_PREMPTAP_OVRD_EN] is asserted.
                                                          <8:4> = Post-cursor.
-                                                         <3:0> = Pre-cursor. */
+                                                         <3:0> = Pre-cursor.
+                                                         Recommended settings:
+                                                         When auto-negotiated link training is not present, including XFI and all
+                                                         protocols <= 6.25Gbaud except PCIe, the transmit preemphasis pre and post
+                                                         cursor values should be manually over-ridden.
+                                                         GSER()_LANE()_TX_CFG_1[TX_PREMPTAP_OVRD_VAL] should be set
+                                                         and [CFG_TX_PREMPTAP] has the pre and post cursor values.
+                                                         [CFG_TX_PREMPTAP] should be derived from signal integrity simulations
+                                                         with the IBIS-AMI model supplied by Cavium when auto-negotiated link
+                                                         training is not present and link speed <= 6.25Gbaud.
+                                                         <pre>
+                                                            Frequency        Possibly useful [CFG_TX_PREMPTAP] value
+                                                            --------------------------------------------------------
+                                                             6,25 Gbaud            0xa0
+                                                             10.3125 Gbaud         0xd0
+                                                             other                 0xf0
+                                                         </pre> */
 #else
 	uint64_t cfg_tx_premptap              : 9;
 	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
+	struct cvmx_gserx_lanex_tx_pre_emphasis_s cn73xx;
 	struct cvmx_gserx_lanex_tx_pre_emphasis_s cn78xx;
+	struct cvmx_gserx_lanex_tx_pre_emphasis_s cn78xxp2;
+	struct cvmx_gserx_lanex_tx_pre_emphasis_s cnf75xx;
 };
 typedef union cvmx_gserx_lanex_tx_pre_emphasis cvmx_gserx_lanex_tx_pre_emphasis_t;
 
@@ -4360,10 +6419,10 @@ union cvmx_gserx_lane_lpbken {
 	struct cvmx_gserx_lane_lpbken_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t lpbken                       : 4;  /**< For links that are not in PCIE mode (including all CCPI links). When asserted in P0 state,
+	uint64_t lpbken                       : 4;  /**< For links that are not in PCIE nor SATA mode. When asserted in P0 state,
                                                          allows per lane TX-to-RX serial loopback activation.
-                                                         <3>: Lane 3.
-                                                         <2>: Lane 2.
+                                                         <3>: Lane 3.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
+                                                         <2>: Lane 2.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
                                                          <1>: Lane 1.
                                                          <0>: Lane 0. */
 #else
@@ -4371,7 +6430,10 @@ union cvmx_gserx_lane_lpbken {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_gserx_lane_lpbken_s       cn73xx;
 	struct cvmx_gserx_lane_lpbken_s       cn78xx;
+	struct cvmx_gserx_lane_lpbken_s       cn78xxp2;
+	struct cvmx_gserx_lane_lpbken_s       cnf75xx;
 };
 typedef union cvmx_gserx_lane_lpbken cvmx_gserx_lane_lpbken_t;
 
@@ -4386,31 +6448,24 @@ union cvmx_gserx_lane_mode {
 	struct cvmx_gserx_lane_mode_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t lmode                        : 4;  /**< For links that are not in PCIE mode (including all CCPI links), used to index into the PHY
+	uint64_t lmode                        : 4;  /**< For links that are not in PCIE nor SATA mode, used to index into the PHY
                                                          table to select electrical specs and link rate. Note that the PHY table can be modified
                                                          such that any supported link rate can be derived regardless of the configured LMODE.
                                                          0x0: R_25G_REFCLK100.
                                                          0x1: R_5G_REFCLK100.
                                                          0x2: R_8G_REFCLK100.
                                                          0x3: R_125G_REFCLK15625_KX (not supported).
-                                                         0x4: R_3125G_REFCLK15625_XAUI.
-                                                         For XAUI applications:
+                                                         0x4: R_3125G_REFCLK15625_XAUI (not supported).
                                                          0x5: R_103125G_REFCLK15625_KR.
-                                                         For XFI, XLAUI, KR applications:
                                                          0x6: R_125G_REFCLK15625_SGMII.
-                                                         For SGMII applications:
                                                          0x7: R_5G_REFCLK15625_QSGMII (not supported).
-                                                         0x8: R_625G_REFCLK15625_RXAUI.
-                                                         For RXAUI, DXAUI applications:
+                                                         0x8: R_625G_REFCLK15625_RXAUI (not supported).
                                                          0x9: R_25G_REFCLK125.
                                                          0xA: R_5G_REFCLK125.
                                                          0xB: R_8G_REFCLK125.
                                                          0xC - 0xF: Reserved.
-                                                         This register is not used for PCIE configurations. For non-CCPI links, this register
-                                                         defaults to R_625G_REFCLK15625_RXAUI. For CCPI links, the value is mapped at reset from
-                                                         the
-                                                         GSER()_SPD and the appropriate table updates are performed so the rate is obtained for the
-                                                         particular reference clock.
+                                                         This register is not used for PCIE nor SATA configurations. This register
+                                                         defaults to R_625G_REFCLK15625_RXAUI.
                                                          It is recommended that the PHY be in reset when reconfiguring the LMODE
                                                          (GSER()_PHY_CTL[PHY_RESET] is set).
                                                          Once the LMODE has been configured, and the PHY is out of reset, the table entries for the
@@ -4427,7 +6482,10 @@ union cvmx_gserx_lane_mode {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_gserx_lane_mode_s         cn73xx;
 	struct cvmx_gserx_lane_mode_s         cn78xx;
+	struct cvmx_gserx_lane_mode_s         cn78xxp2;
+	struct cvmx_gserx_lane_mode_s         cnf75xx;
 };
 typedef union cvmx_gserx_lane_mode cvmx_gserx_lane_mode_t;
 
@@ -4451,6 +6509,7 @@ union cvmx_gserx_lane_px_mode_0 {
                                                          0x2 = ~15dB of peaking at 5.5 GHz
                                                          0x3 = ~20dB of peaking at 6 GHz (Maximum bandwidth).
                                                          Recommended settings:
+                                                         <pre>
                                                          _ R_25G_REFCLK100:          0x0
                                                          _ R_5G_REFCLK100:           0x0
                                                          _ R_8G_REFCLK100:           0x3
@@ -4462,11 +6521,13 @@ union cvmx_gserx_lane_px_mode_0 {
                                                          _ R_625G_REFCLK15625_RXAUI: 0x0
                                                          _ R_25G_REFCLK125:          0x0
                                                          _ R_5G_REFCLK125:           0x0
-                                                         _ R_8G_REFCLK125:           0x3 */
+                                                         _ R_8G_REFCLK125:           0x3
+                                                         </pre> */
 	uint64_t pcie                         : 1;  /**< Selects between RX terminations.
                                                          - 0: Differential termination
                                                          - 1: Termination between pad and SDS_VDDS.
                                                           Recommended settings:
+                                                          <pre>
                                                           _ R_25G_REFCLK100:          0x1
                                                           _ R_5G_REFCLK100:           0x1
                                                           _ R_8G_REFCLK100:           0x0
@@ -4478,43 +6539,52 @@ union cvmx_gserx_lane_px_mode_0 {
                                                           _ R_625G_REFCLK15625_RXAUI: 0x0
                                                           _ R_25G_REFCLK125:          0x1
                                                           _ R_5G_REFCLK125:           0x1
-                                                          _ R_8G_REFCLK125:           0x0 */
+                                                          _ R_8G_REFCLK125:           0x0
+                                                          </pre> */
 	uint64_t tx_ldiv                      : 2;  /**< Configures clock divider used to determine the receive rate.
                                                          0x0 = full data rate.
                                                          0x1 = 1/2 data rate.
                                                          0x2 = 1/4 data rate.
                                                          0x3 = 1/8 data rate.
                                                          Recommended settings:
-                                                         _ R_25G_REFCLK100:          0x1
-                                                         _ R_5G_REFCLK100:           0x0
-                                                         _ R_8G_REFCLK100:           0x0
-                                                         _ R_125G_REFCLK15625_KX:    0x2
-                                                         _ R_3125G_REFCLK15625_XAUI: 0x1
-                                                         _ R_103125G_REFCLK15625_KR: 0x0
-                                                         _ R_125G_REFCLK15625_SGMII: 0x2
-                                                         _ R_5G_REFCLK15625_QSGMII:  0x0
-                                                         _ R_625G_REFCLK15625_RXAUI: 0x0
-                                                         _ R_25G_REFCLK125:          0x1
-                                                         _ R_5G_REFCLK125:           0x0
-                                                         _ R_8G_REFCLK125:           0x0 */
+                                                         <pre>
+                                                                                     SATA   non-SATA
+                                                         _ R_25G_REFCLK100:           0x0    0x1
+                                                         _ R_5G_REFCLK100:            0x0    0x0
+                                                         _ R_8G_REFCLK100:            0x0    0x0
+                                                         _ R_125G_REFCLK15625_KX:     NS     0x2
+                                                         _ R_3125G_REFCLK15625_XAUI:  NS     0x1
+                                                         _ R_103125G_REFCLK15625_KR:  NS     0x0
+                                                         _ R_125G_REFCLK15625_SGMII:  NS     0x2
+                                                         _ R_5G_REFCLK15625_QSGMII:   NS     0x0
+                                                         _ R_625G_REFCLK15625_RXAUI:  NS     0x0
+                                                         _ R_25G_REFCLK125:           NS     0x1
+                                                         _ R_5G_REFCLK125:            NS     0x0
+                                                         _ R_8G_REFCLK125:            NS     0x0
+                                                         </pre>
+                                                         A 'NS' indicates that the rate is not supported at the specified reference clock. */
 	uint64_t rx_ldiv                      : 2;  /**< Configures clock divider used to determine the receive rate.
                                                          0x0 = full data rate
                                                          0x1 = 1/2 data rate
                                                          0x2 = 1/4 data rate
                                                          0x3 = 1/8 data rate
                                                          Recommended settings:
-                                                         _ R_25G_REFCLK100:          0x1
-                                                         _ R_5G_REFCLK100:           0x0
-                                                         _ R_8G_REFCLK100:           0x0
-                                                         _ R_125G_REFCLK15625_KX:    0x2
-                                                         _ R_3125G_REFCLK15625_XAUI: 0x1
-                                                         _ R_103125G_REFCLK15625_KR: 0x0
-                                                         _ R_125G_REFCLK15625_SGMII: 0x2
-                                                         _ R_5G_REFCLK15625_QSGMII:  0x0
-                                                         _ R_625G_REFCLK15625_RXAUI: 0x0
-                                                         _ R_25G_REFCLK125:          0x1
-                                                         _ R_5G_REFCLK125:           0x0
-                                                         _ R_8G_REFCLK125:           0x0 */
+                                                         <pre>
+                                                                                     SATA   non-SATA
+                                                         _ R_25G_REFCLK100:           0x2    0x1
+                                                         _ R_5G_REFCLK100:            0x1    0x0
+                                                         _ R_8G_REFCLK100:            0x0    0x0
+                                                         _ R_125G_REFCLK15625_KX:     NS     0x2
+                                                         _ R_3125G_REFCLK15625_XAUI:  NS     0x1
+                                                         _ R_103125G_REFCLK15625_KR:  NS     0x0
+                                                         _ R_125G_REFCLK15625_SGMII:  NS     0x2
+                                                         _ R_5G_REFCLK15625_QSGMII:   NS     0x0
+                                                         _ R_625G_REFCLK15625_RXAUI:  NS     0x0
+                                                         _ R_25G_REFCLK125:           NS     0x1
+                                                         _ R_5G_REFCLK125:            NS     0x0
+                                                         _ R_8G_REFCLK125:            NS     0x0
+                                                         </pre>
+                                                         A 'NS' indicates that the rate is not supported at the specified reference clock. */
 	uint64_t srate                        : 3;  /**< Sample rate, used to generate strobe to effectively divide the clock down to a slower
                                                          rate.
                                                          0x0 = Full rate
@@ -4528,12 +6598,12 @@ union cvmx_gserx_lane_px_mode_0 {
 	uint64_t tx_mode                      : 2;  /**< TX data width:
                                                          0x0 = 8-bit raw data (not supported).
                                                          0x1 = 10-bit raw data (not supported).
-                                                         0x2 = 16-bit raw data (not supported).
+                                                         0x2 = 16-bit raw data (for PCIe Gen3 8Gb only).
                                                          0x3 = 20-bit raw data. */
 	uint64_t rx_mode                      : 2;  /**< RX data width:
                                                          0x0 = 8-bit raw data (not supported).
                                                          0x1 = 10-bit raw data (not supported).
-                                                         0x2 = 16-bit raw data (not supported).
+                                                         0x2 = 16-bit raw data (for PCIe Gen3 8Gb only).
                                                          0x3 = 20-bit raw data. */
 #else
 	uint64_t rx_mode                      : 2;
@@ -4547,7 +6617,10 @@ union cvmx_gserx_lane_px_mode_0 {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_gserx_lane_px_mode_0_s    cn73xx;
 	struct cvmx_gserx_lane_px_mode_0_s    cn78xx;
+	struct cvmx_gserx_lane_px_mode_0_s    cn78xxp2;
+	struct cvmx_gserx_lane_px_mode_0_s    cnf75xx;
 };
 typedef union cvmx_gserx_lane_px_mode_0 cvmx_gserx_lane_px_mode_0_t;
 
@@ -4569,11 +6642,13 @@ union cvmx_gserx_lane_px_mode_1 {
 	uint64_t vma_fine_cfg_sel             : 1;  /**< Recommended settings:
                                                          1 = Enabled. Fine step adaptation selected (10.3125 Gbaud rate).
                                                          0 = Disabled. Coarse step adaptation selected (rates lower than 10.3125 Gbaud). */
-	uint64_t vma_mm                       : 1;  /**< Manual DFE verses adaptive DFE mode. Recommended settings:
+	uint64_t vma_mm                       : 1;  /**< Manual DFE verses adaptive DFE mode.
+                                                         Recommended settings:
                                                          0 = Adaptive DFE (5 Gbaud and higher)
                                                          1 = Manual DFE, fixed tap (3.125 Gbaud and lower). */
 	uint64_t cdr_fgain                    : 4;  /**< CDR frequency gain.
                                                          Recommended settings:
+                                                         <pre>
                                                          _ R_25G_REFCLK100:          0xA
                                                          _ R_5G_REFCLK100:           0xA
                                                          _ R_8G_REFCLK100:           0xB
@@ -4585,21 +6660,26 @@ union cvmx_gserx_lane_px_mode_1 {
                                                          _ R_625G_REFCLK15625_RXAUI: 0xA
                                                          _ R_25G_REFCLK125:          0xA
                                                          _ R_5G_REFCLK125:           0xA
-                                                         _ R_8G_REFCLK125:           0xB */
+                                                         _ R_8G_REFCLK125:           0xB
+                                                         </pre> */
 	uint64_t ph_acc_adj                   : 10; /**< Phase accumulator adjust.
                                                          Recommended settings:
-                                                         _ R_25G_REFCLK100:          0x14
-                                                         _ R_5G_REFCLK100:           0x14
-                                                         _ R_8G_REFCLK100:           0x23
-                                                         _ R_125G_REFCLK15625_KX:    0x1E
-                                                         _ R_3125G_REFCLK15625_XAUI: 0x1E
-                                                         _ R_103125G_REFCLK15625_KR: 0xF
-                                                         _ R_125G_REFCLK15625_SGMII: 0x1E
-                                                         _ R_5G_REFCLK15625_QSGMII:  0x1E
-                                                         _ R_625G_REFCLK15625_RXAUI: 0x14
-                                                         _ R_25G_REFCLK125:          0x14
-                                                         _ R_5G_REFCLK125:           0x14
-                                                         _ R_8G_REFCLK125:           0x23 */
+                                                         <pre>
+                                                                                     SATA   non-SATA
+                                                         _ R_25G_REFCLK100:           0x15   0x14
+                                                         _ R_5G_REFCLK100:            0x15   0x14
+                                                         _ R_8G_REFCLK100:            0x15   0x23
+                                                         _ R_125G_REFCLK15625_KX:     NS     0x1E
+                                                         _ R_3125G_REFCLK15625_XAUI:  NS     0x1E
+                                                         _ R_103125G_REFCLK15625_KR:  NS     0xF
+                                                         _ R_125G_REFCLK15625_SGMII:  NS     0x1E
+                                                         _ R_5G_REFCLK15625_QSGMII:   NS     0x1E
+                                                         _ R_625G_REFCLK15625_RXAUI:  NS     0x14
+                                                         _ R_25G_REFCLK125:           NS     0x14
+                                                         _ R_5G_REFCLK125:            NS     0x14
+                                                         _ R_8G_REFCLK125:            NS     0x23
+                                                         </pre>
+                                                         A 'NS' indicates that the rate is not supported at the specified reference clock. */
 #else
 	uint64_t ph_acc_adj                   : 10;
 	uint64_t cdr_fgain                    : 4;
@@ -4608,7 +6688,10 @@ union cvmx_gserx_lane_px_mode_1 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lane_px_mode_1_s    cn73xx;
 	struct cvmx_gserx_lane_px_mode_1_s    cn78xx;
+	struct cvmx_gserx_lane_px_mode_1_s    cn78xxp2;
+	struct cvmx_gserx_lane_px_mode_1_s    cnf75xx;
 };
 typedef union cvmx_gserx_lane_px_mode_1 cvmx_gserx_lane_px_mode_1_t;
 
@@ -4623,10 +6706,10 @@ union cvmx_gserx_lane_poff {
 	struct cvmx_gserx_lane_poff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t lpoff                        : 4;  /**< For links that are not in PCIE mode (including all CCPI links), allows for per lane power
+	uint64_t lpoff                        : 4;  /**< For links that are not in PCIE mode, allows for per lane power
                                                          down.
-                                                         <3>: Lane 3.
-                                                         <2>: Lane 2.
+                                                         <3>: Lane 3.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
+                                                         <2>: Lane 2   Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
                                                          <1>: Lane 1.
                                                          <0>: Lane 0. */
 #else
@@ -4634,7 +6717,10 @@ union cvmx_gserx_lane_poff {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_gserx_lane_poff_s         cn73xx;
 	struct cvmx_gserx_lane_poff_s         cn78xx;
+	struct cvmx_gserx_lane_poff_s         cn78xxp2;
+	struct cvmx_gserx_lane_poff_s         cnf75xx;
 };
 typedef union cvmx_gserx_lane_poff cvmx_gserx_lane_poff_t;
 
@@ -4649,7 +6735,7 @@ union cvmx_gserx_lane_srst {
 	struct cvmx_gserx_lane_srst_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t lsrst                        : 1;  /**< For links that are not in PCIE mode (including all CCPI links), resets all 4 lanes
+	uint64_t lsrst                        : 1;  /**< For links that are not in PCIE nor SATA mode, resets all 4 lanes
                                                          (equivalent to the P2 power state) after any pending requests (power state change, rate
                                                          change) are complete. The lanes remain in reset state while this signal is asserted. When
                                                          the signal deasserts, the lanes exit the reset state and the PHY returns to the power
@@ -4659,7 +6745,10 @@ union cvmx_gserx_lane_srst {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_gserx_lane_srst_s         cn73xx;
 	struct cvmx_gserx_lane_srst_s         cn78xx;
+	struct cvmx_gserx_lane_srst_s         cn78xxp2;
+	struct cvmx_gserx_lane_srst_s         cnf75xx;
 };
 typedef union cvmx_gserx_lane_srst cvmx_gserx_lane_srst_t;
 
@@ -4690,7 +6779,10 @@ union cvmx_gserx_lane_vma_coarse_ctrl_0 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lane_vma_coarse_ctrl_0_s cn73xx;
 	struct cvmx_gserx_lane_vma_coarse_ctrl_0_s cn78xx;
+	struct cvmx_gserx_lane_vma_coarse_ctrl_0_s cn78xxp2;
+	struct cvmx_gserx_lane_vma_coarse_ctrl_0_s cnf75xx;
 };
 typedef union cvmx_gserx_lane_vma_coarse_ctrl_0 cvmx_gserx_lane_vma_coarse_ctrl_0_t;
 
@@ -4716,7 +6808,10 @@ union cvmx_gserx_lane_vma_coarse_ctrl_1 {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
+	struct cvmx_gserx_lane_vma_coarse_ctrl_1_s cn73xx;
 	struct cvmx_gserx_lane_vma_coarse_ctrl_1_s cn78xx;
+	struct cvmx_gserx_lane_vma_coarse_ctrl_1_s cn78xxp2;
+	struct cvmx_gserx_lane_vma_coarse_ctrl_1_s cnf75xx;
 };
 typedef union cvmx_gserx_lane_vma_coarse_ctrl_1 cvmx_gserx_lane_vma_coarse_ctrl_1_t;
 
@@ -4742,7 +6837,10 @@ union cvmx_gserx_lane_vma_coarse_ctrl_2 {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
+	struct cvmx_gserx_lane_vma_coarse_ctrl_2_s cn73xx;
 	struct cvmx_gserx_lane_vma_coarse_ctrl_2_s cn78xx;
+	struct cvmx_gserx_lane_vma_coarse_ctrl_2_s cn78xxp2;
+	struct cvmx_gserx_lane_vma_coarse_ctrl_2_s cnf75xx;
 };
 typedef union cvmx_gserx_lane_vma_coarse_ctrl_2 cvmx_gserx_lane_vma_coarse_ctrl_2_t;
 
@@ -4782,7 +6880,10 @@ union cvmx_gserx_lane_vma_fine_ctrl_0 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_lane_vma_fine_ctrl_0_s cn73xx;
 	struct cvmx_gserx_lane_vma_fine_ctrl_0_s cn78xx;
+	struct cvmx_gserx_lane_vma_fine_ctrl_0_s cn78xxp2;
+	struct cvmx_gserx_lane_vma_fine_ctrl_0_s cnf75xx;
 };
 typedef union cvmx_gserx_lane_vma_fine_ctrl_0 cvmx_gserx_lane_vma_fine_ctrl_0_t;
 
@@ -4811,7 +6912,10 @@ union cvmx_gserx_lane_vma_fine_ctrl_1 {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
+	struct cvmx_gserx_lane_vma_fine_ctrl_1_s cn73xx;
 	struct cvmx_gserx_lane_vma_fine_ctrl_1_s cn78xx;
+	struct cvmx_gserx_lane_vma_fine_ctrl_1_s cn78xxp2;
+	struct cvmx_gserx_lane_vma_fine_ctrl_1_s cnf75xx;
 };
 typedef union cvmx_gserx_lane_vma_fine_ctrl_1 cvmx_gserx_lane_vma_fine_ctrl_1_t;
 
@@ -4840,7 +6944,10 @@ union cvmx_gserx_lane_vma_fine_ctrl_2 {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
+	struct cvmx_gserx_lane_vma_fine_ctrl_2_s cn73xx;
 	struct cvmx_gserx_lane_vma_fine_ctrl_2_s cn78xx;
+	struct cvmx_gserx_lane_vma_fine_ctrl_2_s cn78xxp2;
+	struct cvmx_gserx_lane_vma_fine_ctrl_2_s cnf75xx;
 };
 typedef union cvmx_gserx_lane_vma_fine_ctrl_2 cvmx_gserx_lane_vma_fine_ctrl_2_t;
 
@@ -5973,10 +8080,8 @@ union cvmx_gserx_phy_ctl {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
 	uint64_t phy_reset                    : 1;  /**< When asserted, the PHY is held in reset. This bit is initialized as follows:
-                                                         0 = (not reset) = Bootable PCIe, or CCPI when GSER(8..13)_SPD[SPD] comes up in a bootable
-                                                         mode.
-                                                         1 = (reset) =  Non-bootable PCIe, BGX/ILK, or CCPI when GSER(8..13)_SPD[SPD] comes up in
-                                                         SW_MODE. */
+                                                         0 = (not reset) = Bootable PCIe.
+                                                         1 = (reset) = Non-bootable PCIe, BGX, or SATA. */
 	uint64_t phy_pd                       : 1;  /**< When asserted, the PHY is powered down. */
 #else
 	uint64_t phy_pd                       : 1;
@@ -5984,7 +8089,10 @@ union cvmx_gserx_phy_ctl {
 	uint64_t reserved_2_63                : 62;
 #endif
 	} s;
+	struct cvmx_gserx_phy_ctl_s           cn73xx;
 	struct cvmx_gserx_phy_ctl_s           cn78xx;
+	struct cvmx_gserx_phy_ctl_s           cn78xxp2;
+	struct cvmx_gserx_phy_ctl_s           cnf75xx;
 };
 typedef union cvmx_gserx_phy_ctl cvmx_gserx_phy_ctl_t;
 
@@ -5997,14 +8105,16 @@ union cvmx_gserx_pipe_lpbk {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
 	uint64_t pcie_lpbk                    : 1;  /**< For links that are in PCIE mode, places the PHY in serial loopback mode, where the
-                                                         QLMn_TXN/QLMn_TXP data are looped back to the QLMn_RXN/QLMn_RXP.
-                                                         This register has no meaning for links that don't support PCIe i.e. GSER(5..13). */
+                                                         QLMn_TXN/QLMn_TXP data are looped back to the QLMn_RXN/QLMn_RXP. */
 #else
 	uint64_t pcie_lpbk                    : 1;
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_gserx_pipe_lpbk_s         cn73xx;
 	struct cvmx_gserx_pipe_lpbk_s         cn78xx;
+	struct cvmx_gserx_pipe_lpbk_s         cn78xxp2;
+	struct cvmx_gserx_pipe_lpbk_s         cnf75xx;
 };
 typedef union cvmx_gserx_pipe_lpbk cvmx_gserx_pipe_lpbk_t;
 
@@ -6026,35 +8136,44 @@ union cvmx_gserx_pll_px_mode_0 {
 	uint64_t pll_icp                      : 4;  /**< PLL charge pump enable.
                                                          Recommended settings, which are based on the reference clock speed:
                                                          <pre>
-                                                                  100MHz 125MHz 156.25MHz
-                                                         1.25G:    0x1    0x1    0x1
-                                                         2.5G:     0x4    0x3    0x3
-                                                         3.125G:   NS     0x1    0x1
-                                                         5.0G:     0x4    0x3    0x3
-                                                         6.25G:    NS     0x1    0x1
-                                                         8.0G:     0x3    0x2    NS
-                                                         10.3125G: NS     NS     0x1
+                                                                  100Mhz  100MHz   125MHz   156.25MHz
+                                                                  SATA    non-SATA non-SATA non-SATA
+                                                         1.25G:    NS     0x1      0x1      0x1
+                                                         2.5G:     0x1    0x4      0x3      0x3
+                                                         3.125G:   NS     NS       0x1      0x1
+                                                         5.0G:     0x1    0x4      0x3      0x3
+                                                         6.25G:    NS     NS       0x1      0x1
+                                                         8.0G:     0x1    0x3      0x2      NS
+                                                         10.3125G: NS     NS       NS       0x1
                                                          </pre>
                                                          A 'NS' indicates that the rate is not supported at the specified reference clock. */
 	uint64_t pll_rloop                    : 3;  /**< Loop resistor tuning.
                                                          Recommended settings:
-                                                         _ 1.25G:    0x3
-                                                         _ 2.5G:     0x3
-                                                         _ 3.125G:   0x3
-                                                         _ 5.0G:     0x3
-                                                         _ 6.25G:    0x3
-                                                         _ 8.0G:     0x5
-                                                         _ 10.3125G: 0x5 */
+                                                         <pre>
+                                                                     SATA    non-SATA
+                                                         _ 1.25G:     NS      0x3
+                                                         _ 2.5G:      0x3     0x3
+                                                         _ 3.125G:    NS      0x3
+                                                         _ 5.0G:      0x3     0x3
+                                                         _ 6.25G:     NS      0x3
+                                                         _ 8.0G:      0x5     0x5
+                                                         _ 10.3125G:  NS      0x5
+                                                         </pre>
+                                                         A 'NS' indicates that the rate is not supported at the specified reference clock. */
 	uint64_t pll_pcs_div                  : 9;  /**< The divider that generates PCS_MAC_TX_CLK. The frequency of the clock is (pll_frequency /
                                                          PLL_PCS_DIV).
                                                          Recommended settings:
-                                                         _ 1.25G:    0x28
-                                                         _ 2.5G:     0x5
-                                                         _ 3.125G:   0x14
-                                                         _ 5.0G:     0xA
-                                                         _ 6.25G:    0xA
-                                                         _ 8.0G:     0xA
-                                                         _ 10.3125G: 0xA */
+                                                         <pre>
+                                                                     SATA    PCIE   Other
+                                                         _ 1.25G:     NS      NS     0x28
+                                                         _ 2.5G:      0x5     0x5    0x5
+                                                         _ 3.125G:    NS      NS     0x14
+                                                         _ 5.0G:      0x5     0x5    0xA
+                                                         _ 6.25G:     NS      NS     0xA
+                                                         _ 8.0G:      0x5     0x8    0xA
+                                                         _ 10.3125G:  NS      NS     0xA
+                                                         </pre>
+                                                         A 'NS' indicates that the rate is not supported at the specified reference clock. */
 #else
 	uint64_t pll_pcs_div                  : 9;
 	uint64_t pll_rloop                    : 3;
@@ -6062,7 +8181,10 @@ union cvmx_gserx_pll_px_mode_0 {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_pll_px_mode_0_s     cn73xx;
 	struct cvmx_gserx_pll_px_mode_0_s     cn78xx;
+	struct cvmx_gserx_pll_px_mode_0_s     cn78xxp2;
+	struct cvmx_gserx_pll_px_mode_0_s     cnf75xx;
 };
 typedef union cvmx_gserx_pll_px_mode_0 cvmx_gserx_pll_px_mode_0_t;
 
@@ -6107,23 +8229,27 @@ union cvmx_gserx_pll_px_mode_1 {
                                                          10.3125G:  NS      NS     0x2
                                                          </pre>
                                                          A 'NS' indicates that the rate is not supported at the specified reference clock. */
-	uint64_t pll_pcie3en                  : 1;  /**< Enable PCIE3 mode. Recommended settings:
+	uint64_t pll_pcie3en                  : 1;  /**< Enable PCIE3 mode.
+                                                         Recommended settings:
                                                          0 = Any rate other than 8 Gbaud.
                                                          1 = Rate is equal to 8 Gbaud. */
 	uint64_t pll_opr                      : 1;  /**< PLL op range:
-                                                         0 = Use Ring Oscillator VCO. Recommended for rates 6.25 Gbaud and lower.
-                                                         1 = Use LC-tank VCO. Recommended for rates 8 Gbaud and higher. */
+                                                         0 = Use Ring Oscillator VCO.
+                                                         Recommended for rates 6.25 Gbaud and lower and for SATA.
+                                                         1 = Use LC-tank VCO.
+                                                         Recommended for non-SATA rates 8 Gbaud and higher. */
 	uint64_t pll_div                      : 9;  /**< PLL divider in feedback path which sets the PLL frequency.
                                                          Recommended settings:
                                                          <pre>
-                                                                  100MHz 125MHz 156.25MHz
-                                                         1.25G:    0x19   0x14    0x10
-                                                         2.5G:     0x19   0x14    0x10
-                                                         3.125G:   NS     0x19    0x14
-                                                         5.0G:     0x19   0x14    0x10
-                                                         6.25G:    NS     0x19    0x14
-                                                         8.0G:     0x28   0x20    NS
-                                                         10.3125G: NS     NS      0x21
+                                                                  100Mhz  100MHz   125MHz   156.25MHz
+                                                                  SATA    non-SATA non-SATA non-SATA
+                                                         1.25G:    NS      0x19   0x14    0x10
+                                                         2.5G:     0x1E    0x19   0x14    0x10
+                                                         3.125G:   NS      NS     0x19    0x14
+                                                         5.0G:     0x1E    0x19   0x14    0x10
+                                                         6.25G:    NS      NS     0x19    0x14
+                                                         8.0G:     0x1E    0x28   0x20    NS
+                                                         10.3125G: NS      NS     NS      0x21
                                                          </pre>
                                                          A 'NS' indicates that the rate is not supported at the specified reference clock. */
 #else
@@ -6135,7 +8261,10 @@ union cvmx_gserx_pll_px_mode_1 {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_gserx_pll_px_mode_1_s     cn73xx;
 	struct cvmx_gserx_pll_px_mode_1_s     cn78xx;
+	struct cvmx_gserx_pll_px_mode_1_s     cn78xxp2;
+	struct cvmx_gserx_pll_px_mode_1_s     cnf75xx;
 };
 typedef union cvmx_gserx_pll_px_mode_1 cvmx_gserx_pll_px_mode_1_t;
 
@@ -6153,7 +8282,10 @@ union cvmx_gserx_pll_stat {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_gserx_pll_stat_s          cn73xx;
 	struct cvmx_gserx_pll_stat_s          cn78xx;
+	struct cvmx_gserx_pll_stat_s          cn78xxp2;
+	struct cvmx_gserx_pll_stat_s          cnf75xx;
 };
 typedef union cvmx_gserx_pll_stat cvmx_gserx_pll_stat_t;
 
@@ -6174,7 +8306,10 @@ union cvmx_gserx_qlm_stat {
 	uint64_t reserved_2_63                : 62;
 #endif
 	} s;
+	struct cvmx_gserx_qlm_stat_s          cn73xx;
 	struct cvmx_gserx_qlm_stat_s          cn78xx;
+	struct cvmx_gserx_qlm_stat_s          cn78xxp2;
+	struct cvmx_gserx_qlm_stat_s          cnf75xx;
 };
 typedef union cvmx_gserx_qlm_stat cvmx_gserx_qlm_stat_t;
 
@@ -6202,9 +8337,67 @@ union cvmx_gserx_rdet_time {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_rdet_time_s         cn73xx;
 	struct cvmx_gserx_rdet_time_s         cn78xx;
+	struct cvmx_gserx_rdet_time_s         cn78xxp2;
+	struct cvmx_gserx_rdet_time_s         cnf75xx;
 };
 typedef union cvmx_gserx_rdet_time cvmx_gserx_rdet_time_t;
+
+/**
+ * cvmx_gser#_refclk_evt_cntr
+ *
+ * Added in pass 2.
+ *
+ */
+union cvmx_gserx_refclk_evt_cntr {
+	uint64_t u64;
+	struct cvmx_gserx_refclk_evt_cntr_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t count                        : 32; /**< This register can only be reliably read when GSER()_REFCLK_EVT_CTRL[ENB]
+                                                         is clear.
+                                                         When GSER()_REFCLK_EVT_CTRL[CLR] is set, [COUNT] goes to zero.
+                                                         When GSER()_REFCLK_EVT_CTRL[ENB] is set, [COUNT] is incremented
+                                                         in positve edges of the QLM reference clock.
+                                                         When GSER()_REFCLK_EVT_CTRL[ENB] is not set, [COUNT] is held; this must
+                                                         be used when [COUNT] is being read for reliable results. */
+#else
+	uint64_t count                        : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_gserx_refclk_evt_cntr_s   cn73xx;
+	struct cvmx_gserx_refclk_evt_cntr_s   cn78xxp2;
+	struct cvmx_gserx_refclk_evt_cntr_s   cnf75xx;
+};
+typedef union cvmx_gserx_refclk_evt_cntr cvmx_gserx_refclk_evt_cntr_t;
+
+/**
+ * cvmx_gser#_refclk_evt_ctrl
+ *
+ * Added in pass 2.
+ *
+ */
+union cvmx_gserx_refclk_evt_ctrl {
+	uint64_t u64;
+	struct cvmx_gserx_refclk_evt_ctrl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_2_63                : 62;
+	uint64_t clr                          : 1;  /**< When set, clears GSER()_REFCLK_EVT_CNTR[COUNT]. */
+	uint64_t enb                          : 1;  /**< When set, enables the GSER()_REFCLK_EVT_CNTR[COUNT] to increment
+                                                         on positive edges of the QLM reference clock. */
+#else
+	uint64_t enb                          : 1;
+	uint64_t clr                          : 1;
+	uint64_t reserved_2_63                : 62;
+#endif
+	} s;
+	struct cvmx_gserx_refclk_evt_ctrl_s   cn73xx;
+	struct cvmx_gserx_refclk_evt_ctrl_s   cn78xxp2;
+	struct cvmx_gserx_refclk_evt_ctrl_s   cnf75xx;
+};
+typedef union cvmx_gserx_refclk_evt_ctrl cvmx_gserx_refclk_evt_ctrl_t;
 
 /**
  * cvmx_gser#_refclk_sel
@@ -6224,9 +8417,9 @@ union cvmx_gserx_refclk_sel {
                                                          reference clock. It is not used for non-PCIe links. */
 	uint64_t com_clk_sel                  : 1;  /**< When set, the reference clock is sourced from the external clock mux. For bootable PCIe
                                                          links, this bit is loaded with the PCIEn_COM0_CLK_EN pin at cold reset. */
-	uint64_t use_com1                     : 1;  /**< For non-CCPI links, this bit controls the external mux select. When set, QLMC_REF_CLK1_N/P
+	uint64_t use_com1                     : 1;  /**< This bit controls the external mux select. When set, QLMC_REF_CLK1_N/P
                                                          are selected as the reference clock. When clear, QLMC_REF_CLK0_N/P are selected as the
-                                                         reference clock. */
+                                                         reference clock. INTERNAL: For non-CCPI links. */
 #else
 	uint64_t use_com1                     : 1;
 	uint64_t com_clk_sel                  : 1;
@@ -6234,7 +8427,10 @@ union cvmx_gserx_refclk_sel {
 	uint64_t reserved_3_63                : 61;
 #endif
 	} s;
+	struct cvmx_gserx_refclk_sel_s        cn73xx;
 	struct cvmx_gserx_refclk_sel_s        cn78xx;
+	struct cvmx_gserx_refclk_sel_s        cn78xxp2;
+	struct cvmx_gserx_refclk_sel_s        cnf75xx;
 };
 typedef union cvmx_gserx_refclk_sel cvmx_gserx_refclk_sel_t;
 
@@ -6249,14 +8445,14 @@ union cvmx_gserx_rx_coast {
 	struct cvmx_gserx_rx_coast_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t coast                        : 4;  /**< For links that are not in PCIE mode (including all CCPI links), control signals to freeze
+	uint64_t coast                        : 4;  /**< For links that are not in PCIE nor SATA mode, control signals to freeze
                                                          the frequency of the per lane CDR in the PHY. The COAST signals are only valid in P0
                                                          state, come up asserted and are deasserted in hardware after detecting the electrical idle
                                                          exit (GSER()_RX_EIE_DETSTS[EIESTS]). Once the COAST signal deasserts, the CDR is
                                                          allowed to lock. In BGX mode, the BGX MAC can also control the COAST inputs to the PHY to
                                                          allow Auto-Negotiation for backplane Ethernet. For diagnostic use only.
-                                                         <3>: Lane 3.
-                                                         <2>: Lane 2.
+                                                         <3>: Lane 3.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
+                                                         <2>: Lane 2.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
                                                          <1>: Lane 1.
                                                          <0>: Lane 0. */
 #else
@@ -6264,7 +8460,10 @@ union cvmx_gserx_rx_coast {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_gserx_rx_coast_s          cn73xx;
 	struct cvmx_gserx_rx_coast_s          cn78xx;
+	struct cvmx_gserx_rx_coast_s          cn78xxp2;
+	struct cvmx_gserx_rx_coast_s          cnf75xx;
 };
 typedef union cvmx_gserx_rx_coast cvmx_gserx_rx_coast_t;
 
@@ -6279,13 +8478,13 @@ union cvmx_gserx_rx_eie_deten {
 	struct cvmx_gserx_rx_eie_deten_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t eiede                        : 4;  /**< For links that are not in PCIE mode (including all CCPI links), these bits enable per lane
+	uint64_t eiede                        : 4;  /**< For links that are not in PCIE nor SATA mode, these bits enable per lane
                                                          electrical idle exit (EIE) detection. When EIE is detected,
                                                          GSER()_RX_EIE_DETSTS[EIELTCH] is asserted. EIEDE defaults to the enabled state. Once
                                                          EIE has been detected, EIEDE must be disabled, and then enabled again to perform another
                                                          EIE detection.
-                                                         <3>: Lane 3.
-                                                         <2>: Lane 2.
+                                                         <3>: Lane 3.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
+                                                         <2>: Lane 2.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
                                                          <1>: Lane 1.
                                                          <0>: Lane 0. */
 #else
@@ -6293,7 +8492,10 @@ union cvmx_gserx_rx_eie_deten {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_gserx_rx_eie_deten_s      cn73xx;
 	struct cvmx_gserx_rx_eie_deten_s      cn78xx;
+	struct cvmx_gserx_rx_eie_deten_s      cn78xxp2;
+	struct cvmx_gserx_rx_eie_deten_s      cnf75xx;
 };
 typedef union cvmx_gserx_rx_eie_deten cvmx_gserx_rx_eie_deten_t;
 
@@ -6309,8 +8511,8 @@ union cvmx_gserx_rx_eie_detsts {
                                                          lock. During this time, there may be RX bit errors. These bits will set when the CDR is
                                                          guaranteed to be locked. Note that link training can't start until the lane CDRLOCK is
                                                          set. Software can use CDRLOCK to determine when to expect error free RX data.
-                                                         <11>: Lane 3.
-                                                         <10>: Lane 2.
+                                                         <11>: Lane 3.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
+                                                         <10>: Lane 2.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
                                                          <9>: Lane 1.
                                                          <8>: Lane 0. */
 	uint64_t eiests                       : 4;  /**< When electrical idle exit detection is enabled (GSER()_RX_EIE_DETEN[EIEDE] is
@@ -6319,8 +8521,8 @@ union cvmx_gserx_rx_eie_detsts {
                                                          idle symbols) for data transitions to be detected and for EIESTS to stay set accordingly.
                                                          Under most conditions, EIESTS
                                                          will stay asserted until GSER()_RX_EIE_DETEN[EIEDE] is deasserted.
-                                                         <7>: Lane 3.
-                                                         <6>: Lane 2.
+                                                         <7>: Lane 3.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
+                                                         <6>: Lane 2.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
                                                          <5>: Lane 1.
                                                          <4>: Lane 0. */
 	uint64_t eieltch                      : 4;  /**< When electrical idle exit detection is enabled (GSER()_RX_EIE_DETEN[EIEDE] is
@@ -6329,8 +8531,8 @@ union cvmx_gserx_rx_eie_detsts {
                                                          GSER()_RX_EIE_DETEN[EIEDE] is deasserted. Note that there may be RX bit errors until
                                                          CDRLOCK
                                                          is set.
-                                                         <3>: Lane 3.
-                                                         <2>: Lane 2.
+                                                         <3>: Lane 3.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
+                                                         <2>: Lane 2.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
                                                          <1>: Lane 1.
                                                          <0>: Lane 0. */
 #else
@@ -6340,7 +8542,10 @@ union cvmx_gserx_rx_eie_detsts {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
+	struct cvmx_gserx_rx_eie_detsts_s     cn73xx;
 	struct cvmx_gserx_rx_eie_detsts_s     cn78xx;
+	struct cvmx_gserx_rx_eie_detsts_s     cn78xxp2;
+	struct cvmx_gserx_rx_eie_detsts_s     cnf75xx;
 };
 typedef union cvmx_gserx_rx_eie_detsts cvmx_gserx_rx_eie_detsts_t;
 
@@ -6374,7 +8579,10 @@ union cvmx_gserx_rx_eie_filter {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_rx_eie_filter_s     cn73xx;
 	struct cvmx_gserx_rx_eie_filter_s     cn78xx;
+	struct cvmx_gserx_rx_eie_filter_s     cn78xxp2;
+	struct cvmx_gserx_rx_eie_filter_s     cnf75xx;
 };
 typedef union cvmx_gserx_rx_eie_filter cvmx_gserx_rx_eie_filter_t;
 
@@ -6389,11 +8597,11 @@ union cvmx_gserx_rx_polarity {
 	struct cvmx_gserx_rx_polarity_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t rx_inv                       : 4;  /**< For links that are not in PCIE mode (including all CCPI links), control signal to invert
+	uint64_t rx_inv                       : 4;  /**< For links that are not in PCIE mode, control signal to invert
                                                          the polarity of received data. When asserted, the polarity of the received data is
                                                          inverted.
-                                                         <3>: Lane 3.
-                                                         <2>: Lane 2.
+                                                         <3>: Lane 3.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
+                                                         <2>: Lane 2.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
                                                          <1>: Lane 1.
                                                          <0>: Lane 0. */
 #else
@@ -6401,7 +8609,10 @@ union cvmx_gserx_rx_polarity {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_gserx_rx_polarity_s       cn73xx;
 	struct cvmx_gserx_rx_polarity_s       cn78xx;
+	struct cvmx_gserx_rx_polarity_s       cn78xxp2;
+	struct cvmx_gserx_rx_polarity_s       cnf75xx;
 };
 typedef union cvmx_gserx_rx_polarity cvmx_gserx_rx_polarity_t;
 
@@ -6448,9 +8659,105 @@ union cvmx_gserx_rx_pwr_ctrl_p1 {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_gserx_rx_pwr_ctrl_p1_s    cn73xx;
 	struct cvmx_gserx_rx_pwr_ctrl_p1_s    cn78xx;
+	struct cvmx_gserx_rx_pwr_ctrl_p1_s    cn78xxp2;
+	struct cvmx_gserx_rx_pwr_ctrl_p1_s    cnf75xx;
 };
 typedef union cvmx_gserx_rx_pwr_ctrl_p1 cvmx_gserx_rx_pwr_ctrl_p1_t;
+
+/**
+ * cvmx_gser#_rx_pwr_ctrl_p2
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_rx_pwr_ctrl_p2 {
+	uint64_t u64;
+	struct cvmx_gserx_rx_pwr_ctrl_p2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t p2_rx_resetn                 : 1;  /**< Place the reciever in reset (active low). */
+	uint64_t p2_rx_allow_pll_pd           : 1;  /**< When asserted, it permits PLL powerdown (PLL is
+                                                         powered down if all other factors permit). */
+	uint64_t p2_rx_pcs_reset              : 1;  /**< When asserted, the RX Power state machine puts the Raw PCS
+                                                         RX logic in reset state to save power. */
+	uint64_t p2_rx_agc_en                 : 1;  /**< AGC enable. */
+	uint64_t p2_rx_dfe_en                 : 1;  /**< DFE enable. */
+	uint64_t p2_rx_cdr_en                 : 1;  /**< CDR enable. */
+	uint64_t p2_rx_cdr_coast              : 1;  /**< CDR coast; freezes the frequency of the CDR. */
+	uint64_t p2_rx_cdr_clr                : 1;  /**< CDR clear; clears the frequency register in the CDR. */
+	uint64_t p2_rx_subblk_pd              : 5;  /**< RX sub-block powerdown to RX:
+                                                         <4> = CTLE.
+                                                         <3> = Reserved.
+                                                         <2> = Lane DLL.
+                                                         <1> = DFE/Samplers.
+                                                         <0> = Termination.
+                                                         Software needs to clear the Terminatin bit in SATA mode
+                                                         (GSER()_CFG[SATA] is set). */
+	uint64_t p2_rx_chpd                   : 1;  /**< RX lane power down. */
+#else
+	uint64_t p2_rx_chpd                   : 1;
+	uint64_t p2_rx_subblk_pd              : 5;
+	uint64_t p2_rx_cdr_clr                : 1;
+	uint64_t p2_rx_cdr_coast              : 1;
+	uint64_t p2_rx_cdr_en                 : 1;
+	uint64_t p2_rx_dfe_en                 : 1;
+	uint64_t p2_rx_agc_en                 : 1;
+	uint64_t p2_rx_pcs_reset              : 1;
+	uint64_t p2_rx_allow_pll_pd           : 1;
+	uint64_t p2_rx_resetn                 : 1;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_gserx_rx_pwr_ctrl_p2_s    cn73xx;
+	struct cvmx_gserx_rx_pwr_ctrl_p2_s    cn78xx;
+	struct cvmx_gserx_rx_pwr_ctrl_p2_s    cn78xxp2;
+	struct cvmx_gserx_rx_pwr_ctrl_p2_s    cnf75xx;
+};
+typedef union cvmx_gserx_rx_pwr_ctrl_p2 cvmx_gserx_rx_pwr_ctrl_p2_t;
+
+/**
+ * cvmx_gser#_rx_txdir_ctrl_1
+ *
+ * These registers are for diagnostic use only.
+ * These registers are reset by hardware only during chip cold reset.
+ * The values of the CSR fields in these registers do not change during chip warm or soft resets.
+ */
+union cvmx_gserx_rx_txdir_ctrl_1 {
+	uint64_t u64;
+	struct cvmx_gserx_rx_txdir_ctrl_1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_12_63               : 52;
+	uint64_t rx_precorr_chg_dir           : 1;  /**< When asserted, the default direction output for the far-end TX Pre is reversed. */
+	uint64_t rx_tap1_chg_dir              : 1;  /**< When asserted, the default direction output for the far-end TX Post is reversed. */
+	uint64_t rx_tap1_hi_thrs              : 5;  /**< The high threshold for the local RX Tap1 count.
+                                                         The far-end TX POST direction output, pcs_mac_rx_txpost_dir,
+                                                         is set to INCREMENT if the local RX tap1 value from the VMA (after RX-EQ)
+                                                         is higher than this value, and the local RX boost value is higher than
+                                                         its high threshold (RX_BOOST_HI_THRS). Note that if RX_TAP1_CHG_DIR is asserted,
+                                                         then the direction is DECREMENT. */
+	uint64_t rx_tap1_lo_thrs              : 5;  /**< The low threshold for the local RX Tap1 count.
+                                                         The far-end TX POST direction output, pcs_mac_rx_txpost_dir,
+                                                         is set to DECREMENT if the local RX tap1 value from the VMA (after RX-EQ)
+                                                         is lower than this value, and the local RX boost value is lower than
+                                                         its low threshold (RX_BOOST_LO_THRS). Note that if RX_TAP1_CHG_DIR is asserted,
+                                                         then the direction is INCREMENT. */
+#else
+	uint64_t rx_tap1_lo_thrs              : 5;
+	uint64_t rx_tap1_hi_thrs              : 5;
+	uint64_t rx_tap1_chg_dir              : 1;
+	uint64_t rx_precorr_chg_dir           : 1;
+	uint64_t reserved_12_63               : 52;
+#endif
+	} s;
+	struct cvmx_gserx_rx_txdir_ctrl_1_s   cn73xx;
+	struct cvmx_gserx_rx_txdir_ctrl_1_s   cn78xx;
+	struct cvmx_gserx_rx_txdir_ctrl_1_s   cn78xxp2;
+	struct cvmx_gserx_rx_txdir_ctrl_1_s   cnf75xx;
+};
+typedef union cvmx_gserx_rx_txdir_ctrl_1 cvmx_gserx_rx_txdir_ctrl_1_t;
 
 /**
  * cvmx_gser#_sata_cfg
@@ -6475,6 +8782,61 @@ union cvmx_gserx_sata_cfg {
 typedef union cvmx_gserx_sata_cfg cvmx_gserx_sata_cfg_t;
 
 /**
+ * cvmx_gser#_sata_lane#_tx_amp#
+ *
+ * SATA lane TX launch amplitude at Gen 1, 2 and 3 speeds.
+ * * AMP(0) is for Gen1.
+ * * AMP(1) is for Gen2.
+ * * AMP(2) is for Gen3.
+ */
+union cvmx_gserx_sata_lanex_tx_ampx {
+	uint64_t u64;
+	struct cvmx_gserx_sata_lanex_tx_ampx_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_7_63                : 57;
+	uint64_t tx_amp_gen                   : 7;  /**< This status value sets the Tx driver launch amplitude in the
+                                                         case where the PHY is running at the Gen1, Gen2, and Gen3
+                                                         rates. Used for tuning at the board level for Rx eye compliance.
+                                                         This register is used for SATA lanes only for GSER(4). */
+#else
+	uint64_t tx_amp_gen                   : 7;
+	uint64_t reserved_7_63                : 57;
+#endif
+	} s;
+	struct cvmx_gserx_sata_lanex_tx_ampx_s cn73xx;
+	struct cvmx_gserx_sata_lanex_tx_ampx_s cnf75xx;
+};
+typedef union cvmx_gserx_sata_lanex_tx_ampx cvmx_gserx_sata_lanex_tx_ampx_t;
+
+/**
+ * cvmx_gser#_sata_lane#_tx_preemph#
+ *
+ * SATA TX pre-emphasis at Gen 1, 2 and 3 speeds. The values of the CSR
+ * fields in these registers do not change during chip warm or soft resets.
+ * * PREEMPH(0) is for Gen1.
+ * * PREEMPH(1) is for Gen2.
+ * * PREEMPH(2) is for Gen3.
+ */
+union cvmx_gserx_sata_lanex_tx_preemphx {
+	uint64_t u64;
+	struct cvmx_gserx_sata_lanex_tx_preemphx_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_7_63                : 57;
+	uint64_t tx_preemph                   : 7;  /**< This static value sets the Tx driver de-emphasis value in the
+                                                         case where the PHY is running at the Gen1, Gen2, and Gen3
+                                                         rates. Used for tuning at the board level for Rx eye compliance.
+                                                         This register is used for SATA lanes only for GSER(4). */
+#else
+	uint64_t tx_preemph                   : 7;
+	uint64_t reserved_7_63                : 57;
+#endif
+	} s;
+	struct cvmx_gserx_sata_lanex_tx_preemphx_s cn73xx;
+	struct cvmx_gserx_sata_lanex_tx_preemphx_s cnf75xx;
+};
+typedef union cvmx_gserx_sata_lanex_tx_preemphx cvmx_gserx_sata_lanex_tx_preemphx_t;
+
+/**
  * cvmx_gser#_sata_lane_rst
  *
  * Lane Reset Control.
@@ -6485,8 +8847,10 @@ union cvmx_gserx_sata_lane_rst {
 	struct cvmx_gserx_sata_lane_rst_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
-	uint64_t l1_rst                       : 1;  /**< Independent reset for Lane 1. */
-	uint64_t l0_rst                       : 1;  /**< Independent reset for Lane 0. */
+	uint64_t l1_rst                       : 1;  /**< Independent reset for lane 1.
+                                                         This register is used for SATA lanes only for GSER(4). */
+	uint64_t l0_rst                       : 1;  /**< Independent reset for lane 0.
+                                                         This register is used for SATA lanes only for GSER(4). */
 #else
 	uint64_t l0_rst                       : 1;
 	uint64_t l1_rst                       : 1;
@@ -6495,6 +8859,8 @@ union cvmx_gserx_sata_lane_rst {
 	} s;
 	struct cvmx_gserx_sata_lane_rst_s     cn70xx;
 	struct cvmx_gserx_sata_lane_rst_s     cn70xxp1;
+	struct cvmx_gserx_sata_lane_rst_s     cn73xx;
+	struct cvmx_gserx_sata_lane_rst_s     cnf75xx;
 };
 typedef union cvmx_gserx_sata_lane_rst cvmx_gserx_sata_lane_rst_t;
 
@@ -6739,7 +9105,8 @@ union cvmx_gserx_sata_status {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
 	uint64_t p1_rdy                       : 1;  /**< PHY Lane 1 is ready to send and receive data. */
-	uint64_t p0_rdy                       : 1;  /**< PHY Lane 0 is ready to send and receive data. */
+	uint64_t p0_rdy                       : 1;  /**< PHY Lane 0 is ready to send and receive data.
+                                                         This register is used for SATA lanes only for GSER(4). */
 #else
 	uint64_t p0_rdy                       : 1;
 	uint64_t p1_rdy                       : 1;
@@ -6748,18 +9115,27 @@ union cvmx_gserx_sata_status {
 	} s;
 	struct cvmx_gserx_sata_status_s       cn70xx;
 	struct cvmx_gserx_sata_status_s       cn70xxp1;
+	struct cvmx_gserx_sata_status_s       cn73xx;
+	struct cvmx_gserx_sata_status_s       cnf75xx;
 };
 typedef union cvmx_gserx_sata_status cvmx_gserx_sata_status_t;
 
 /**
  * cvmx_gser#_sata_tx_invert
  *
- * SATA Transmit Polarity Inversion.
+ * TX Lane Data Invert Control.
  *
  */
 union cvmx_gserx_sata_tx_invert {
 	uint64_t u64;
 	struct cvmx_gserx_sata_tx_invert_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_0_63                : 64;
+#else
+	uint64_t reserved_0_63                : 64;
+#endif
+	} s;
+	struct cvmx_gserx_sata_tx_invert_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_2_63                : 62;
 	uint64_t tx1_invert                   : 1;  /**< Instructs the PHY to perform a polarity inversion on the Lane 1
@@ -6775,9 +9151,24 @@ union cvmx_gserx_sata_tx_invert {
 	uint64_t tx1_invert                   : 1;
 	uint64_t reserved_2_63                : 62;
 #endif
-	} s;
-	struct cvmx_gserx_sata_tx_invert_s    cn70xx;
-	struct cvmx_gserx_sata_tx_invert_s    cn70xxp1;
+	} cn70xx;
+	struct cvmx_gserx_sata_tx_invert_cn70xx cn70xxp1;
+	struct cvmx_gserx_sata_tx_invert_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_2_63                : 62;
+	uint64_t l1_inv                       : 1;  /**< Instructs the SATA PCS to perform a polarity inversion on the
+                                                         lane 1 transmitted data.
+                                                         This register is used for SATA lanes only for GSER(4). */
+	uint64_t l0_inv                       : 1;  /**< Instructs the SATA PCS to perform a polarity inversion on the
+                                                         lane 0 transmitted data.
+                                                         This register is used for SATA lanes only for GSER(4). */
+#else
+	uint64_t l0_inv                       : 1;
+	uint64_t l1_inv                       : 1;
+	uint64_t reserved_2_63                : 62;
+#endif
+	} cn73xx;
+	struct cvmx_gserx_sata_tx_invert_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_sata_tx_invert cvmx_gserx_sata_tx_invert_t;
 
@@ -6798,7 +9189,10 @@ union cvmx_gserx_scratch {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_scratch_s           cn73xx;
 	struct cvmx_gserx_scratch_s           cn78xx;
+	struct cvmx_gserx_scratch_s           cn78xxp2;
+	struct cvmx_gserx_scratch_s           cnf75xx;
 };
 typedef union cvmx_gserx_scratch cvmx_gserx_scratch_t;
 
@@ -6814,7 +9208,13 @@ union cvmx_gserx_slicex_rx_sdll_ctrl {
 	struct cvmx_gserx_slicex_rx_sdll_ctrl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t pcs_sds_oob_clk_ctrl         : 2;  /**< Not Supported. */
+	uint64_t pcs_sds_oob_clk_ctrl         : 2;  /**< OOB clock oscillator output frequency selection:
+                                                         0x0 = 506 Mhz (min) 682 Mhz (typ) 782 Mhz (max).
+                                                         0x1 = 439 Mhz (min) 554 Mhz (typ) 595 Mhz (max).
+                                                         0x2 = 379 Mhz (min) 453 Mhz (typ) 482 Mhz (max).
+                                                         0x3 = 303 Mhz (min) 378 Mhz (typ) 414 Mhz (max).
+                                                         This parameter is for debugging purposes and should not
+                                                         be written in normal operation. */
 	uint64_t reserved_7_13                : 7;
 	uint64_t pcs_sds_rx_sdll_tune         : 3;  /**< Tuning bits for the regulator and the loop filter. */
 	uint64_t pcs_sds_rx_sdll_swsel        : 4;  /**< DMON control; selects which signal is passed to the output
@@ -6823,7 +9223,7 @@ union cvmx_gserx_slicex_rx_sdll_ctrl {
                                                          of the Slice DLL).
                                                          0x2 = dllout[1] (second output clock phase, out of 8 phases,
                                                          of the Slice DLL).
-                                                         0x4 = piclk (output clock of the PI)
+                                                         0x4 = piclk (output clock of the PI).
                                                          0x8 = vdda_int.
                                                          All other values in this field are reserved. */
 #else
@@ -6834,7 +9234,38 @@ union cvmx_gserx_slicex_rx_sdll_ctrl {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_gserx_slicex_rx_sdll_ctrl_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t pcs_sds_oob_clk_ctrl         : 2;  /**< OOB clock oscillator output frequency selection:
+                                                         0x0 = 506 Mhz (min) 682 Mhz (typ) 782 Mhz (max).
+                                                         0x1 = 439 Mhz (min) 554 Mhz (typ) 595 Mhz (max).
+                                                         0x2 = 379 Mhz (min) 453 Mhz (typ) 482 Mhz (max).
+                                                         0x3 = 303 Mhz (min) 378 Mhz (typ) 414 Mhz (max).
+                                                         This parameter is for debugging purposes and should not
+                                                         be written in normal operation. */
+	uint64_t reserved_13_7                : 7;
+	uint64_t pcs_sds_rx_sdll_tune         : 3;  /**< Tuning bits for the regulator and the loop filter. */
+	uint64_t pcs_sds_rx_sdll_swsel        : 4;  /**< DMON control; selects which signal is passed to the output
+                                                         of DMON.
+                                                         0x1 = dllout[0] (first output clock phase, out of 8 phases,
+                                                         of the Slice DLL).
+                                                         0x2 = dllout[1] (second output clock phase, out of 8 phases,
+                                                         of the Slice DLL).
+                                                         0x4 = piclk (output clock of the PI).
+                                                         0x8 = vdda_int.
+                                                         All other values in this field are reserved. */
+#else
+	uint64_t pcs_sds_rx_sdll_swsel        : 4;
+	uint64_t pcs_sds_rx_sdll_tune         : 3;
+	uint64_t reserved_13_7                : 7;
+	uint64_t pcs_sds_oob_clk_ctrl         : 2;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_slicex_rx_sdll_ctrl_s cn78xx;
+	struct cvmx_gserx_slicex_rx_sdll_ctrl_cn73xx cn78xxp2;
+	struct cvmx_gserx_slicex_rx_sdll_ctrl_cn73xx cnf75xx;
 };
 typedef union cvmx_gserx_slicex_rx_sdll_ctrl cvmx_gserx_slicex_rx_sdll_ctrl_t;
 
@@ -6866,7 +9297,28 @@ union cvmx_gserx_slice_cfg {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
+	struct cvmx_gserx_slice_cfg_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_12_63               : 52;
+	uint64_t tx_rx_detect_lvl_enc         : 4;  /**< Determines the RX Detect level, pcs_sds_tx_rx_detect_lvl[9:0],
+                                                         (which is a 1-hot signal), where the level is equal to to
+                                                         2^TX_RX_DETECT_LVL_ENC. */
+	uint64_t reserved_7_6                 : 2;
+	uint64_t pcs_sds_rx_pcie_pterm        : 2;  /**< Reserved. */
+	uint64_t pcs_sds_rx_pcie_nterm        : 2;  /**< Reserved. */
+	uint64_t pcs_sds_tx_stress_eye        : 2;  /**< Controls TX stress eye. */
+#else
+	uint64_t pcs_sds_tx_stress_eye        : 2;
+	uint64_t pcs_sds_rx_pcie_nterm        : 2;
+	uint64_t pcs_sds_rx_pcie_pterm        : 2;
+	uint64_t reserved_7_6                 : 2;
+	uint64_t tx_rx_detect_lvl_enc         : 4;
+	uint64_t reserved_12_63               : 52;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_slice_cfg_s         cn78xx;
+	struct cvmx_gserx_slice_cfg_cn73xx    cn78xxp2;
+	struct cvmx_gserx_slice_cfg_cn73xx    cnf75xx;
 };
 typedef union cvmx_gserx_slice_cfg cvmx_gserx_slice_cfg_t;
 
@@ -6923,9 +9375,102 @@ union cvmx_gserx_spd {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_gserx_spd_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_0_63                : 64;
+#else
+	uint64_t reserved_0_63                : 64;
+#endif
+	} cn73xx;
 	struct cvmx_gserx_spd_s               cn78xx;
+	struct cvmx_gserx_spd_s               cn78xxp2;
+	struct cvmx_gserx_spd_cn73xx          cnf75xx;
 };
 typedef union cvmx_gserx_spd cvmx_gserx_spd_t;
+
+/**
+ * cvmx_gser#_srio_pcs_cfg_0
+ *
+ * These registers are for diagnostic use only. These registers are reset by hardware only during
+ * chip cold reset. The values of the CSR fields in these registers do not change during chip
+ * warm or soft resets.
+ */
+union cvmx_gserx_srio_pcs_cfg_0 {
+	uint64_t u64;
+	struct cvmx_gserx_srio_pcs_cfg_0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t rx_ofst                      : 4;  /**< For links that are in SRIO mode, configures the receiver offset. */
+	uint64_t com_thr                      : 4;  /**< For links that are in SRIO mode, configures the comma character threshold. */
+	uint64_t skp_max                      : 4;  /**< For links that are in SRIO mode, configures the maximum number of skip characters inserted
+                                                         by the
+                                                         SRIO PCS on the Rx data stream to the SRIO MAC */
+	uint64_t skp_min                      : 4;  /**< For links that are in SRIO mode, configures the minumum number of skip characters inserted
+                                                         by the
+                                                         SRIO PCS on the Rx data stream to the SRIO MAC. */
+#else
+	uint64_t skp_min                      : 4;
+	uint64_t skp_max                      : 4;
+	uint64_t com_thr                      : 4;
+	uint64_t rx_ofst                      : 4;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_gserx_srio_pcs_cfg_0_s    cnf75xx;
+};
+typedef union cvmx_gserx_srio_pcs_cfg_0 cvmx_gserx_srio_pcs_cfg_0_t;
+
+/**
+ * cvmx_gser#_srio_pcs_cfg_1
+ *
+ * These registers are for diagnostic use only. These registers are reset by hardware only during
+ * chip cold reset. The values of the CSR fields in these registers do not change during chip
+ * warm or soft resets.
+ */
+union cvmx_gserx_srio_pcs_cfg_1 {
+	uint64_t u64;
+	struct cvmx_gserx_srio_pcs_cfg_1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t err_thrshld                  : 2;  /**< For links that are in SRIO mode, sets the error thereshold in the SRIO PCS block. */
+	uint64_t tx_byp                       : 1;  /**< For links that are in SRIO mode, when set configures the Tx bypass diagnostic test mode. */
+	uint64_t tx_byp_inv                   : 1;  /**< For links that are in SRIO mode, when the Tx bypass diagnostic test mode is selected
+                                                         GSER()_SRIO_PCS_CFG_1.TX_BYP[ENB] inverts the Tx data. */
+	uint64_t reserved_10_11               : 2;
+	uint64_t tx_byp_val                   : 10; /**< For links that are in SRIO mode, configures the 10-bit transmit bypass value used when the
+                                                         SRIO PCS is configured for the Tx bypass diagnostic test mode
+                                                         GSER()_SRIO_PCS_CFG_1.TX_BYP[ENB]. */
+#else
+	uint64_t tx_byp_val                   : 10;
+	uint64_t reserved_10_11               : 2;
+	uint64_t tx_byp_inv                   : 1;
+	uint64_t tx_byp                       : 1;
+	uint64_t err_thrshld                  : 2;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_gserx_srio_pcs_cfg_1_cnf75xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t err_thrshld                  : 2;  /**< For links that are in SRIO mode, sets the error thereshold in the SRIO PCS block. */
+	uint64_t tx_byp                       : 1;  /**< For links that are in SRIO mode, when set configures the Tx bypass diagnostic test mode. */
+	uint64_t tx_byp_inv                   : 1;  /**< For links that are in SRIO mode, when the Tx bypass diagnostic test mode is selected
+                                                         GSER()_SRIO_PCS_CFG_1.TX_BYP[ENB] inverts the Tx data. */
+	uint64_t reserved_11_10               : 2;
+	uint64_t tx_byp_val                   : 10; /**< For links that are in SRIO mode, configures the 10-bit transmit bypass value used when the
+                                                         SRIO PCS is configured for the Tx bypass diagnostic test mode
+                                                         GSER()_SRIO_PCS_CFG_1.TX_BYP[ENB]. */
+#else
+	uint64_t tx_byp_val                   : 10;
+	uint64_t reserved_11_10               : 2;
+	uint64_t tx_byp_inv                   : 1;
+	uint64_t tx_byp                       : 1;
+	uint64_t err_thrshld                  : 2;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cnf75xx;
+};
+typedef union cvmx_gserx_srio_pcs_cfg_1 cvmx_gserx_srio_pcs_cfg_1_t;
 
 /**
  * cvmx_gser#_srst
@@ -6945,7 +9490,10 @@ union cvmx_gserx_srst {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_gserx_srst_s              cn73xx;
 	struct cvmx_gserx_srst_s              cn78xx;
+	struct cvmx_gserx_srst_s              cn78xxp2;
+	struct cvmx_gserx_srst_s              cnf75xx;
 };
 typedef union cvmx_gserx_srst cvmx_gserx_srst_t;
 
@@ -6960,10 +9508,10 @@ union cvmx_gserx_tx_vboost {
 	struct cvmx_gserx_tx_vboost_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t vboost                       : 4;  /**< For links that are not in PCIE mode (including all CCPI links), boosts the TX Vswing from
+	uint64_t vboost                       : 4;  /**< For links that are not in PCIE mode, boosts the TX Vswing from
                                                          VDD to 1.0 VPPD.
-                                                         <3>: Lane 3.
-                                                         <2>: Lane 2.
+                                                         <3>: Lane 3.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
+                                                         <2>: Lane 2.  Not supported in GSER2, GSER3, GSER4, GSER5, GSER6, GSER7, or GSER8.
                                                          <1>: Lane 1.
                                                          <0>: Lane 0. */
 #else
@@ -6971,8 +9519,66 @@ union cvmx_gserx_tx_vboost {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_gserx_tx_vboost_s         cn73xx;
 	struct cvmx_gserx_tx_vboost_s         cn78xx;
+	struct cvmx_gserx_tx_vboost_s         cn78xxp2;
+	struct cvmx_gserx_tx_vboost_s         cnf75xx;
 };
 typedef union cvmx_gserx_tx_vboost cvmx_gserx_tx_vboost_t;
+
+/**
+ * cvmx_gser#_txclk_evt_cntr
+ *
+ * Added in pass 2.
+ *
+ */
+union cvmx_gserx_txclk_evt_cntr {
+	uint64_t u64;
+	struct cvmx_gserx_txclk_evt_cntr_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t count                        : 32; /**< This register can only be reliably read when GSER()_TXCLK_EVT_CTRL[ENB]
+                                                         is clear.
+                                                         When GSER()_TXCLK_EVT_CTRL[CLR] is set, [COUNT] goes to zero.
+                                                         When GSER()_TXCLK_EVT_CTRL[ENB] is set, [COUNT] is incremented
+                                                         in positve edges of the QLM reference clock.
+                                                         When GSER()_TXCLK_EVT_CTRL[ENB] is not set, [COUNT] value is held;
+                                                         this must be used when [COUNT] is being read for reliable results. */
+#else
+	uint64_t count                        : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_gserx_txclk_evt_cntr_s    cn73xx;
+	struct cvmx_gserx_txclk_evt_cntr_s    cn78xxp2;
+	struct cvmx_gserx_txclk_evt_cntr_s    cnf75xx;
+};
+typedef union cvmx_gserx_txclk_evt_cntr cvmx_gserx_txclk_evt_cntr_t;
+
+/**
+ * cvmx_gser#_txclk_evt_ctrl
+ *
+ * Added in pass 2.
+ *
+ */
+union cvmx_gserx_txclk_evt_ctrl {
+	uint64_t u64;
+	struct cvmx_gserx_txclk_evt_ctrl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_2_63                : 62;
+	uint64_t clr                          : 1;  /**< When set, clears GSER()_TXCLK_EVT_CNTR[COUNT]. */
+	uint64_t enb                          : 1;  /**< When set, enables the GSER()_TXCLK_EVT_CNTR[COUNT] to increment
+                                                         on positive edges of the QLM reference clock. */
+#else
+	uint64_t enb                          : 1;
+	uint64_t clr                          : 1;
+	uint64_t reserved_2_63                : 62;
+#endif
+	} s;
+	struct cvmx_gserx_txclk_evt_ctrl_s    cn73xx;
+	struct cvmx_gserx_txclk_evt_ctrl_s    cn78xxp2;
+	struct cvmx_gserx_txclk_evt_ctrl_s    cnf75xx;
+};
+typedef union cvmx_gserx_txclk_evt_ctrl cvmx_gserx_txclk_evt_ctrl_t;
 
 #endif

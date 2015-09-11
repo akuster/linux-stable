@@ -18,6 +18,7 @@
 #define CVMX_GR_TAG_STYLE(x)        cvmx_get_gr_tag('c','v','m','_','s','t','y','l','e','_',(x+'0'),'.','.','.','.','.')
 #define CVMX_GR_TAG_QPG_ENTRY(x)    cvmx_get_gr_tag('c','v','m','_','q','p','g','e','t','_',(x+'0'),'.','.','.','.','.')
 #define CVMX_GR_TAG_BPID(x)         cvmx_get_gr_tag('c','v','m','_','b','p','i','d','s','_',(x+'0'),'.','.','.','.','.')
+#define CVMX_GR_TAG_MTAG_IDX(x)     cvmx_get_gr_tag('c','v','m','_','m','t','a','g','x','_',(x+'0'),'.','.','.','.','.')
 #define CVMX_GR_TAG_PCAM(x,y,z) \
 	cvmx_get_gr_tag('c','v','m','_','p','c','a','m','_',(x+'0'),(y+'0'),(z+'0'),'.','.','.','.')
 

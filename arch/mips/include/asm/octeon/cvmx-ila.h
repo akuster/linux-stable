@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -40,13 +40,17 @@
 /**
  * @file
  *
- * Interface to the GMX hardware.
+ * This file contains defines for the ILA interface
  *
- * <hr>$Revision: 112021 $<hr>
+ * <hr>$Revision: 49448 $<hr>
+ *
+ *
  */
 
-#ifndef __CVMX_GMX_H__
-#define __CVMX_GMX_H__
+#ifndef __CVMX_HELPER_ILA_H__
+#define __CVMX_HELPER_ILA_H__
+
+#include "cvmx-ilk.h"
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
@@ -54,15 +58,61 @@ extern "C" {
 /* *INDENT-ON* */
 #endif
 
-/* CSR typedefs have been moved to cvmx-gmx-defs.h */
+#define CVMX_ILA_GBL_BASE 10 
 
-int cvmx_gmx_set_backpressure_override(uint32_t interface, uint32_t port_mask);
+/**
+ * This header is placed in front of all received ILA look-aside mode packets
+ */
+typedef union {
+	uint64_t u64;
 
-int cvmx_agl_set_backpressure_override(uint32_t interface, uint32_t port_mask);
+	struct {
+#ifdef __BIG_ENDIAN_BITFIELD
+		uint32_t reserved_63_57:7;	/**< bits 63...57 */
+		uint32_t app_spec0:15;		/**< Application Specific 0 */
+		uint32_t chan1:1;		/**< Channel 1 XON */
+		uint32_t chan0:1;		/**< Channel 0 XON */
+		uint32_t la_mode:1;		/**< Protocol Type */
+		uint32_t app_spec1:6;		/**< Application Specific 1 */
+		uint32_t ilk_channel:1;		/**< ILK channel number, 0 or 1 */
+		uint32_t app_spec2:8;		/**< Application Specific 2 */
+		uint32_t reserved_23_0:24;	/**< Unpredictable, may be any value */
+#else
+		uint32_t reserved_23_0:24;	/**< Unpredictable, may be any value */
+		uint32_t app_spec2:8;		/**< Application Specific 2 */
+		uint32_t ilk_channel:1;		/**< ILK channel number, 0 or 1 */
+		uint32_t app_spec1:6;		/**< Application Specific 1 */
+		uint32_t la_mode:1;		/**< Protocol Type */
+		uint32_t chan0:1;		/**< Channel 0 XON */
+		uint32_t chan1:1;		/**< Channel 1 XON */
+		uint32_t app_spec0:15;		/**< Application Specific 0 */
+		uint32_t reserved_63_57:7;	/**< bits 63...57 */
+#endif
+	} s;
+} cvmx_ila_header_t;
+
+
+/**
+ * Initialize ILK-LA interface
+ *
+ * @param lane_mask  Lanes to initialize ILK-LA interface.
+ * @return  0 on success and -1 on failure.
+ */
+extern int cvmx_ila_initialize(int lane_mask);
+
+/**
+ * Enable or disable LA mode in ILK header.
+ *
+ * @param channel channel
+ * @param mode   If set, enable LA mode in ILK header, else disable
+ *
+ * @return ILK header
+ */
+extern cvmx_ila_header_t cvmx_ila_configure_header(int channel, int mode);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
 }
 /* *INDENT-ON* */
 #endif
-#endif
+#endif /* __CVMX_HELPER_ILA_H__ */

@@ -42,7 +42,7 @@
  *
  * Small helper utilities.
  *
- * <hr>$Revision: 107050 $<hr>
+ * <hr>$Revision: 111417 $<hr>
  */
 
 #ifndef __CVMX_HELPER_UTIL_H__
@@ -201,7 +201,6 @@ static inline void cvmx_helper_free_pki_pkt_data(cvmx_wqe_t *work)
 	cvmx_wqe_78xx_t *wqe = (cvmx_wqe_78xx_t*)work;
 
 	if (!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
-		cvmx_dprintf("ERROR: free_pki_pkt_data: Supported only on 78xx\n");
 		return;
 	}
 	/* Make sure errata pki-20776 has been applied*/
@@ -239,7 +238,6 @@ static inline void cvmx_wqe_pki_free(cvmx_wqe_t *work)
 	cvmx_fpa3_gaura_t aura;
 
 	if (!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
-		cvmx_dprintf("ERROR: cvmx_wqe_free: Supported only on 78xx\n");
 		return;
 	}
 	/* Do nothing if the first packet buffer shares WQE buffer */
