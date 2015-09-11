@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2011-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2011-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -42,7 +42,7 @@
  *
  * Helper utilities for qlm.
  *
- * <hr>$Revision: 113334 $<hr>
+ * <hr>$Revision: 122709 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -150,7 +150,9 @@ int cvmx_qlm_get_num(void)
 		return 2;
 	else if (OCTEON_IS_MODEL(OCTEON_CN78XX))
 		return 8;
-	//cvmx_dprintf("Warning: cvmx_qlm_get_num: This chip does not have QLMs\n");
+	else if (OCTEON_IS_MODEL(OCTEON_CN73XX))
+		return 7;
+	/* cvmx_dprintf("Warning: cvmx_qlm_get_num: This chip does not have QLMs\n"); */
 	return 0;
 }
 
@@ -159,7 +161,7 @@ int cvmx_qlm_get_num(void)
  *
  * @param xiface  interface to look up
  *
- * @return 0 on success other on failure
+ * @return the qlm number based on the xiface
  */
 int cvmx_qlm_interface(int xiface)
 {
@@ -173,7 +175,33 @@ int cvmx_qlm_interface(int xiface)
 			return 0;
 		else
 			cvmx_dprintf("Warning: cvmx_qlm_interface: Invalid interface %d\n", xi.interface);
-	} else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+	} else if (octeon_has_feature(OCTEON_FEATURE_BGX)) {
+		cvmx_dprintf("Warning: not supported\n");
+		return -1;
+	} else {
+		/* Must be cn68XX */
+		switch (xi.interface) {
+		case 1:
+			return 0;
+		default:
+			return xi.interface;
+		}
+	}
+	return -1;
+}
+
+/**
+ * Return the qlm number based for a port in the interface
+ *
+ * @param xiface  interface to look up
+ * @param index  index in an interface
+ *
+ * @return the qlm number based on the xiface
+ */
+int cvmx_qlm_lmac(int xiface, int index)
+{
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 		cvmx_bgxx_cmr_global_config_t gconfig;
 		cvmx_gserx_phy_ctl_t phy_ctl;
 		cvmx_gserx_cfg_t gserx_cfg;
@@ -181,7 +209,8 @@ int cvmx_qlm_interface(int xiface)
 
 		if (xi.interface < 6) {
 			if (xi.interface < 2) {
-				gconfig.u64 = cvmx_read_csr_node(xi.node, CVMX_BGXX_CMR_GLOBAL_CONFIG(xi.interface));
+				gconfig.u64 = cvmx_read_csr_node(xi.node,
+						CVMX_BGXX_CMR_GLOBAL_CONFIG(xi.interface));
 				if (gconfig.s.pmux_sds_sel)
 					qlm = xi.interface + 2; /* QLM 2 or 3 */
 				else
@@ -212,16 +241,127 @@ int cvmx_qlm_interface(int xiface)
 			}
 		}
 		return -1;
-	} else {
-		/* Must be cn68XX */
-		switch (xi.interface) {
-		case 1:
-			return 0;
-		default:
-			return xi.interface;
+	} else if (OCTEON_IS_MODEL(OCTEON_CN73XX)) {
+		cvmx_gserx_phy_ctl_t phy_ctl;
+		cvmx_gserx_cfg_t gserx_cfg;
+		int qlm;
+
+		/* (interface)0->QLM2, 1->QLM3, 2->DLM5/3->DLM6 */
+		if (xi.interface < 2) {
+			qlm = xi.interface + 2; /* (0,1)->ret(2,3) */
+
+			phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(qlm));
+			if (phy_ctl.s.phy_pd || phy_ctl.s.phy_reset) {
+				return -1;
+			}
+			gserx_cfg.u64 = cvmx_read_csr(CVMX_GSERX_CFG(qlm));
+			if (gserx_cfg.s.bgx)
+				return qlm;
+			else
+				return -1;
+		} else if (xi.interface == 2) {
+			cvmx_gserx_cfg_t g1, g2;
+			g1.u64 = cvmx_read_csr(CVMX_GSERX_CFG(5));
+			g2.u64 = cvmx_read_csr(CVMX_GSERX_CFG(6));
+			/* Check if both QLM5 & QLM6 are BGX2 */
+			if (g2.s.bgx) {
+				if (g1.s.bgx) {
+					cvmx_gserx_phy_ctl_t phy_ctl1;
+					phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(5));
+					phy_ctl1.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(6));
+					if ((phy_ctl.s.phy_pd
+					     || phy_ctl.s.phy_reset)
+					    && (phy_ctl1.s.phy_pd
+					        || phy_ctl1.s.phy_reset))
+						return -1;
+					if (index >= 2)
+						return 6;
+					return 5;
+				} else { /* QLM6 is BGX2 */
+					phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(6));
+					if (phy_ctl.s.phy_pd
+					    || phy_ctl.s.phy_reset)
+						return -1;
+					return 6;
+				}
+			} else if (g1.s.bgx) {
+				phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(5));
+				if (phy_ctl.s.phy_pd || phy_ctl.s.phy_reset)
+					return -1;
+				return 5;
+			}
 		}
+		return -1;
+	} else if (OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		cvmx_gserx_phy_ctl_t phy_ctl;
+		cvmx_gserx_cfg_t gserx_cfg;
+		int qlm;
+		if (xi.interface == 0) {
+			cvmx_gserx_cfg_t g1, g2;
+			g1.u64 = cvmx_read_csr(CVMX_GSERX_CFG(4));
+			g2.u64 = cvmx_read_csr(CVMX_GSERX_CFG(5));
+			/* Check if both QLM4 & QLM5 are BGX0 */
+			if (g2.s.bgx) {
+				if (g1.s.bgx) {
+					cvmx_gserx_phy_ctl_t phy_ctl1;
+					phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(5));
+					phy_ctl1.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(6));
+					if ((phy_ctl.s.phy_pd
+					     || phy_ctl.s.phy_reset)
+					    && (phy_ctl1.s.phy_pd
+					        || phy_ctl1.s.phy_reset))
+						return -1;
+					return 4;
+				} else { /* QLM5 is BGX0 */
+					phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(6));
+					if (phy_ctl.s.phy_pd
+					    || phy_ctl.s.phy_reset)
+						return -1;
+					return 5;
+				}
+			} else if (g1.s.bgx) {
+				phy_ctl.u64 = cvmx_read_csr(CVMX_GSERX_PHY_CTL(5));
+				if (phy_ctl.s.phy_pd || phy_ctl.s.phy_reset)
+					return -1;
+				return 4;
+			}
+		} else if (xi.interface < 2) {
+			qlm = (xi.interface == 1) ? 2 : 3;
+			gserx_cfg.u64 = cvmx_read_csr(CVMX_GSERX_CFG(qlm));
+			if (gserx_cfg.s.srio)
+				return qlm;
+		}
+		return -1;
 	}
 	return -1;
+}
+
+/**
+ * Return if only DLM5/DLM6/DLM5+DLM6 is used by BGX
+ *
+ * @param BGX  BGX to search for.
+ *
+ * @return muxes used 0 = DLM5+DLM6, 1 = DLM5, 2 = DLM6.
+ */
+int cvmx_qlm_mux_interface(int bgx)
+{
+	int mux = 0;
+	cvmx_gserx_cfg_t gser1, gser2;
+
+	if (OCTEON_IS_MODEL(OCTEON_CN73XX) && bgx != 2)
+		return -1;
+
+	gser1.u64 = cvmx_read_csr(CVMX_GSERX_CFG(5));
+	gser2.u64 = cvmx_read_csr(CVMX_GSERX_CFG(6));
+
+	if (gser1.s.bgx && gser2.s.bgx) {
+		mux = 0;
+	} else if (gser1.s.bgx) {
+		mux = 1;  // BGX2 is using DLM5 only
+	} else if (gser2.s.bgx) {
+		mux = 2;  // BGX2 is using DLM6 only
+	}
+	return mux;
 }
 
 /**
@@ -237,7 +377,10 @@ int cvmx_qlm_get_lanes(int qlm)
 		return 2;
 	else if (OCTEON_IS_MODEL(OCTEON_CNF71XX))
 		return 2;
-
+	else if (OCTEON_IS_MODEL(OCTEON_CN73XX))
+		return (qlm < 4) ? 4/*QLM0,1,2,3*/ : 2/*DLM4,5,6*/;
+	else if (OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		return (qlm == 2 || qlm == 3) ? 4/*QLM2,3*/ : 2/*DLM0,1,4,5*/;
 	return 4;
 }
 
@@ -264,7 +407,7 @@ const __cvmx_qlm_jtag_field_t *cvmx_qlm_jtag_get_field(void)
 		return __cvmx_qlm_jtag_field_cn52xx;
 #endif
 	else {
-		//cvmx_dprintf("cvmx_qlm_jtag_get_field: Needs update for this chip\n");
+		/* cvmx_dprintf("cvmx_qlm_jtag_get_field: Needs update for this chip\n"); */
 		return NULL;
 	}
 }
@@ -879,9 +1022,42 @@ int cvmx_qlm_get_gbaud_mhz(int qlm)
 		mpll_multiplier.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_MPLL_MULTIPLIER(qlm, 0));
 		freq = meas_refclock * mpll_multiplier.s.mpll_multiplier;
 		freq = (freq + 500000) / 1000000;
+
 		return freq;
 	} else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 		return cvmx_qlm_get_gbaud_mhz_node(cvmx_get_node_num(), qlm);
+	} else if (OCTEON_IS_MODEL(OCTEON_CN73XX)
+		   || OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		cvmx_gserx_lane_mode_t lane_mode;
+		lane_mode.u64 = cvmx_read_csr(CVMX_GSERX_LANE_MODE(qlm));
+		switch (lane_mode.s.lmode) {
+		case R_25G_REFCLK100:
+			return 2500;
+		case R_5G_REFCLK100:
+			return 5000;
+		case R_8G_REFCLK100:
+			return 8000;
+		case R_125G_REFCLK15625_KX:
+			return 1250;
+		case R_3125G_REFCLK15625_XAUI:
+			return 3125;
+		case R_103125G_REFCLK15625_KR:
+			return 10312;
+		case R_125G_REFCLK15625_SGMII:
+			return 1250;
+		case R_5G_REFCLK15625_QSGMII:
+			return 5000;
+		case R_625G_REFCLK15625_RXAUI:
+			return 6250;
+		case R_25G_REFCLK125:
+			return 2500;
+		case R_5G_REFCLK125:
+			return 5000;
+		case R_8G_REFCLK125:
+			return 8000;
+		default:
+			return 0;
+		}
 	}
 	return 0;
 }
@@ -1242,6 +1418,7 @@ static enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn6xxx(int qlm)
 void __cvmx_qlm_set_mult(int qlm, int baud_mhz, int old_multiplier)
 {
 	cvmx_gserx_dlmx_mpll_multiplier_t mpll_multiplier;
+	cvmx_gserx_dlmx_ref_clkdiv2_t clkdiv;
 	uint64_t meas_refclock, mult;
 
 	if (!OCTEON_IS_MODEL(OCTEON_CN70XX))
@@ -1256,7 +1433,15 @@ void __cvmx_qlm_set_mult(int qlm, int baud_mhz, int old_multiplier)
 		return;
 	}
 
-	mult = (uint64_t)baud_mhz * 1000000 + (meas_refclock/2);
+	/* The baud rate multiplier needs to be adjusted on the CN70XX if
+	 * the reference clock is > 100MHz.
+	 */
+	if (qlm == 0) {
+		clkdiv.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_REF_CLKDIV2(qlm, 0));
+		if (clkdiv.s.ref_clkdiv2)
+			baud_mhz *= 2;
+	}
+	mult = (uint64_t)baud_mhz * 1000000 + (meas_refclock / 2);
 	mult /= meas_refclock;
 
 #ifdef CVMX_BUILD_FOR_UBOOT
@@ -1275,9 +1460,11 @@ void __cvmx_qlm_set_mult(int qlm, int baud_mhz, int old_multiplier)
 	     21-1, 21-2, and 21-3. This is not required with the HRM
 	     sequence. */
 	do {
-		mpll_multiplier.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_MPLL_MULTIPLIER(qlm, 0));
+		mpll_multiplier.u64 =
+			cvmx_read_csr(CVMX_GSERX_DLMX_MPLL_MULTIPLIER(qlm, 0));
 		mpll_multiplier.s.mpll_multiplier = --old_multiplier;
-		cvmx_write_csr(CVMX_GSERX_DLMX_MPLL_MULTIPLIER(qlm, 0), mpll_multiplier.u64);
+		cvmx_write_csr(CVMX_GSERX_DLMX_MPLL_MULTIPLIER(qlm, 0),
+			       mpll_multiplier.u64);
 		/* Wait for 1 ms */
 		cvmx_wait_usec(1000);
 	} while (old_multiplier > (int)mult);
@@ -1289,11 +1476,11 @@ enum cvmx_qlm_mode cvmx_qlm_get_mode_cn78xx(int node, int qlm)
 #ifdef CVMX_BUILD_FOR_UBOOT
 	int qlm_mode[2][9] = {
 		{-1, -1, -1, -1, -1, -1, -1, -1},
-		{-1, -1, -1, -1, -1, -1, -1, -1} };
+		{-1, -1, -1, -1, -1, -1, -1, -1}};
 #else
 	static int qlm_mode[2][9] = {
 		{-1, -1, -1, -1, -1, -1, -1, -1},
-		{-1, -1, -1, -1, -1, -1, -1, -1} };
+		{-1, -1, -1, -1, -1, -1, -1, -1}};
 #endif
 
 	if (qlm >= 8)
@@ -1361,39 +1548,37 @@ enum cvmx_qlm_mode cvmx_qlm_get_mode_cn78xx(int node, int qlm)
 		cvmx_bgxx_cmrx_config_t cmr_config;
 		cvmx_bgxx_spux_br_pmd_control_t pmd_control;
 		int bgx = (qlm < 2) ? qlm : qlm - 2;
-		
+
 		cmr_config.u64 = cvmx_read_csr_node(node, CVMX_BGXX_CMRX_CONFIG(0, bgx));
 		pmd_control.u64 = cvmx_read_csr_node(node, CVMX_BGXX_SPUX_BR_PMD_CONTROL(0, bgx));
-		
+
 		switch(cmr_config.s.lmac_type) {
-		case 0:
-			qlm_mode[node][qlm] = CVMX_QLM_MODE_SGMII;
-			break;
-		case 1:
-			qlm_mode[node][qlm] = CVMX_QLM_MODE_XAUI;
-			break;
-		case 2:
-			qlm_mode[node][qlm] = CVMX_QLM_MODE_RXAUI;
-			break;
-		case 3:	
+		case 0: qlm_mode[node][qlm] = CVMX_QLM_MODE_SGMII; break;
+		case 1:	qlm_mode[node][qlm] = CVMX_QLM_MODE_XAUI; break;
+		case 2:	qlm_mode[node][qlm] = CVMX_QLM_MODE_RXAUI; break;
+		case 3:
 			/* Use training to determine if we're in 10GBASE-KR or XFI */
 			if (pmd_control.s.train_en)
 				qlm_mode[node][qlm] = CVMX_QLM_MODE_10G_KR;
 			else
 				qlm_mode[node][qlm] = CVMX_QLM_MODE_XFI;
+#ifndef CVMX_BUILD_FOR_UBOOT
 			pmd_control.s.train_en = 0;
 			cvmx_write_csr_node(node,
 				CVMX_BGXX_SPUX_BR_PMD_CONTROL(0, bgx), pmd_control.u64);
+#endif
 			break;
-		case 4:	
-			/* Use training to determine if we're in 10GBASE-KR or XFI */
+		case 4:
+			/* Use training to determine if we're in 40GBASE-KR or XLAUI */
 			if (pmd_control.s.train_en)
 				qlm_mode[node][qlm] = CVMX_QLM_MODE_40G_KR4;
 			else
 				qlm_mode[node][qlm] = CVMX_QLM_MODE_XLAUI;
+#ifndef CVMX_BUILD_FOR_UBOOT
 			pmd_control.s.train_en = 0;
 			cvmx_write_csr_node(node,
 				CVMX_BGXX_SPUX_BR_PMD_CONTROL(0, bgx), pmd_control.u64);
+#endif
 			break;
 		default:
 			qlm_mode[node][qlm] = CVMX_QLM_MODE_DISABLED;
@@ -1403,6 +1588,340 @@ enum cvmx_qlm_mode cvmx_qlm_get_mode_cn78xx(int node, int qlm)
 		qlm_mode[node][qlm] = CVMX_QLM_MODE_DISABLED;
 
 	return qlm_mode[node][qlm];
+}
+
+enum cvmx_qlm_mode __cvmx_qlm_get_mode_cn73xx(int qlm)
+{
+	cvmx_gserx_cfg_t gserx_cfg;
+#ifdef CVMX_BUILD_FOR_UBOOT
+	int qlm_mode[7] = {-1, -1, -1, -1, -1, -1, -1};
+#else
+	static int qlm_mode[7] = {-1, -1, -1, -1, -1, -1, -1};
+#endif
+
+	if (qlm_mode[qlm] != -1)
+		return qlm_mode[qlm];
+
+	if (qlm > 6) {
+		cvmx_dprintf("Invalid QLM(%d) passed\n", qlm);
+		return -1;
+	}
+
+	gserx_cfg.u64 = cvmx_read_csr(CVMX_GSERX_CFG(qlm));
+	if (gserx_cfg.s.pcie) {
+		cvmx_pemx_cfg_t pemx_cfg;
+		switch (qlm) {
+		case 0: /* Either PEM0 x4 or PEM0 x8 */
+		case 1: /* Either PEM0 x8 or PEM1 x4 */
+		{
+			pemx_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(0));
+			if (pemx_cfg.cn78xx.lanes8)
+				qlm_mode[qlm] = CVMX_QLM_MODE_PCIE_1X8; /* PEM0 x8 */
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_PCIE;     /* PEM0/PEM1 x4 */
+			break;
+		}
+		case 2: /* Either PEM2 x4 or PEM2 x8 */
+		{
+			pemx_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(2));
+			if (pemx_cfg.cn78xx.lanes8)
+				qlm_mode[qlm] = CVMX_QLM_MODE_PCIE_1X8;  /* PEM2 x8 */
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_PCIE;      /* PEM2 x4 */
+			break;
+		}
+		case 5:
+		case 6:	/* PEM3 x2 */
+			qlm_mode[qlm] = CVMX_QLM_MODE_PCIE_1X2; /* PEM3 x2 */
+			break;
+		case 3: /* Either PEM2 x8 or PEM3 x4 */
+		{
+			pemx_cfg.u64 = cvmx_read_csr(CVMX_PEMX_CFG(2));
+			if (pemx_cfg.cn78xx.lanes8)
+				qlm_mode[qlm] = CVMX_QLM_MODE_PCIE_1X8;  /* PEM2 x8 */
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_PCIE; /* PEM3 x4 */
+			break;
+		}
+		default:
+			qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		}
+	} else if (gserx_cfg.s.bgx) {
+		cvmx_bgxx_cmrx_config_t cmr_config;
+		cvmx_bgxx_cmr_rx_lmacs_t bgx_cmr_rx_lmacs;
+		cvmx_bgxx_spux_br_pmd_control_t pmd_control;
+		int bgx = 0;
+		int start = 0, end = 4, index;
+		int lane_mask = 0, train_mask = 0;
+		int mux = 0; // 0:BGX2 (DLM5/DLM6), 1:BGX2(DLM5), 2:BGX2(DLM6)
+		if (qlm < 4)
+			bgx = qlm - 2;
+		else if (qlm == 5 || qlm == 6) {
+			bgx = 2;
+			mux = cvmx_qlm_mux_interface(bgx);
+			if (mux == 0) {
+				start = 0;
+				end = 4;
+			} else if (mux == 1) {
+				start = 0;
+				end = 2;
+			} else if (mux == 2) {
+				start = 2;
+				end = 4;
+			} else {
+				qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+				return qlm_mode[qlm];
+			}
+		}
+
+		for (index = start; index < end; index++) {
+			cmr_config.u64 = cvmx_read_csr(CVMX_BGXX_CMRX_CONFIG(index, bgx));
+			pmd_control.u64 = cvmx_read_csr(CVMX_BGXX_SPUX_BR_PMD_CONTROL(index, bgx));
+			lane_mask |= (cmr_config.s.lmac_type << (index * 4));
+			train_mask |= (pmd_control.s.train_en << (index * 4));
+		}
+
+		/* Need to include DLM5 lmacs when only DLM6 DLM is used */
+		if (mux == 2)
+			bgx_cmr_rx_lmacs.u64 = cvmx_read_csr(CVMX_BGXX_CMR_RX_LMACS(2));
+		switch(lane_mask) {
+		case 0:
+			if (mux == 1)
+				qlm_mode[qlm] = CVMX_QLM_MODE_SGMII_2X1;
+			else if (mux == 2) {
+				qlm_mode[qlm] = CVMX_QLM_MODE_SGMII_2X1;
+				bgx_cmr_rx_lmacs.s.lmacs = 4;
+			}
+				qlm_mode[qlm] = CVMX_QLM_MODE_SGMII;
+			break;
+		case 0x1:
+			qlm_mode[qlm] = CVMX_QLM_MODE_XAUI;
+			break;
+		case 0x2:
+			if (mux == 1)
+				qlm_mode[qlm] = CVMX_QLM_MODE_RXAUI_1X2; // NONE+RXAUI
+			else if (mux == 0)
+				qlm_mode[qlm] = CVMX_QLM_MODE_MIXED; // RXAUI+SGMII
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		case 0x202:
+			if (mux == 2) {
+				qlm_mode[qlm] = CVMX_QLM_MODE_RXAUI_1X2; // RXAUI+RXAUI
+				bgx_cmr_rx_lmacs.s.lmacs = 4;
+			} else if (mux == 1)
+				qlm_mode[qlm] = CVMX_QLM_MODE_RXAUI_1X2; // RXAUI+RXAUI
+			else if (mux == 0)
+				qlm_mode[qlm] = CVMX_QLM_MODE_RXAUI;
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		case 0x22:
+			qlm_mode[qlm] = CVMX_QLM_MODE_RXAUI;
+			break;
+		case 0x3333:
+			/* Use training to determine if we're in 10GBASE-KR or XFI */
+			if (train_mask)
+				qlm_mode[qlm] = CVMX_QLM_MODE_10G_KR;
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_XFI;
+			break;
+		case 0x4:
+			/* Use training to determine if we're in 40GBASE-KR or XLAUI */
+			if (train_mask)
+				qlm_mode[qlm] = CVMX_QLM_MODE_40G_KR4;
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_XLAUI;
+			break;
+		case 0x0005:
+			qlm_mode[qlm] = CVMX_QLM_MODE_RGMII_SGMII;
+			break;
+		case 0x3335:
+			if (train_mask)
+				qlm_mode[qlm] = CVMX_QLM_MODE_RGMII_10G_KR;
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_RGMII_XFI;
+			break;
+		case 0x45:
+			if (train_mask)
+				qlm_mode[qlm] = CVMX_QLM_MODE_RGMII_40G_KR4;
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_RGMII_XLAUI;
+			break;
+		case 0x225:
+			qlm_mode[qlm] = CVMX_QLM_MODE_RGMII_RXAUI;
+			break;
+		case 0x15:
+			qlm_mode[qlm] = CVMX_QLM_MODE_RGMII_XAUI;
+			break;
+
+		case 0x200:
+			if (mux == 2) {
+				qlm_mode[qlm] = CVMX_QLM_MODE_RXAUI_1X2;
+				bgx_cmr_rx_lmacs.s.lmacs = 4;
+			} else
+		case 0x205:
+		case 0x233:
+		case 0x3302:
+		case 0x3305:
+			if (mux == 0)
+				qlm_mode[qlm] = CVMX_QLM_MODE_MIXED;
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		case 0x3300:
+			if (mux == 0)
+				qlm_mode[qlm] = CVMX_QLM_MODE_MIXED;
+			else if (mux == 2) {
+				if (train_mask)
+					qlm_mode[qlm] = CVMX_QLM_MODE_10G_KR_1X2;
+				else
+					qlm_mode[qlm] = CVMX_QLM_MODE_XFI_1X2;
+				bgx_cmr_rx_lmacs.s.lmacs = 4;
+			} else
+				qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		case 0x33:
+			if (mux == 1 || mux == 2) {
+				if (train_mask)
+					qlm_mode[qlm] = CVMX_QLM_MODE_10G_KR_1X2;
+				else
+					qlm_mode[qlm] = CVMX_QLM_MODE_XFI_1X2;
+				if (mux == 2)
+					bgx_cmr_rx_lmacs.s.lmacs = 4;
+			} else
+				qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		case 0x0035:
+			if (mux == 0)
+				qlm_mode[qlm] = CVMX_QLM_MODE_MIXED;
+			else if (train_mask)
+				qlm_mode[qlm] = CVMX_QLM_MODE_RGMII_10G_KR_1X1;
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_RGMII_XFI_1X1;
+			break;
+		case 0x235:
+			if (mux == 0)
+				qlm_mode[qlm] = CVMX_QLM_MODE_MIXED;
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		default:
+			qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		}
+		if (mux == 2) {
+			cvmx_write_csr(CVMX_BGXX_CMR_RX_LMACS(2), bgx_cmr_rx_lmacs.u64);
+			cvmx_write_csr(CVMX_BGXX_CMR_TX_LMACS(2), bgx_cmr_rx_lmacs.u64);
+		}
+	} else if (gserx_cfg.s.sata)
+		qlm_mode[qlm] = CVMX_QLM_MODE_SATA_2X1;
+	else
+		qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+
+	return qlm_mode[qlm];
+}
+
+enum cvmx_qlm_mode __cvmx_qlm_get_mode_cnf75xx(int qlm)
+{
+	cvmx_gserx_cfg_t gserx_cfg;
+#ifdef CVMX_BUILD_FOR_UBOOT
+	int qlm_mode[9] = {-1, -1, -1, -1, -1, -1, -1};
+#else
+	static int qlm_mode[9] = {-1, -1, -1, -1, -1, -1, -1};
+#endif
+
+	if (qlm_mode[qlm] != -1)
+		return qlm_mode[qlm];
+
+	if (qlm > 9) {
+		cvmx_dprintf("Invalid QLM(%d) passed\n", qlm);
+		return -1;
+	}
+
+	if (qlm == 2 || qlm == 3) {
+		cvmx_sriox_status_reg_t status_reg;
+		int port = (qlm == 2) ? 0 : 1;
+		status_reg.u64 = cvmx_read_csr(CVMX_SRIOX_STATUS_REG(port));
+		/* FIXME add different width */
+		if (status_reg.s.srio)
+			qlm_mode[qlm] = CVMX_QLM_MODE_SRIO_1X4;
+		else
+			qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+		return qlm_mode[qlm];
+	}
+
+	gserx_cfg.u64 = cvmx_read_csr(CVMX_GSERX_CFG(qlm));
+	if (gserx_cfg.s.pcie) {
+		switch (qlm) {
+		case 0: /* Either PEM0 x2 or PEM0 x4 */
+		case 1: /* Either PEM1 x2 or PEM0 x4 */
+		{
+			/* FIXME later */
+			qlm_mode[qlm] = CVMX_QLM_MODE_PCIE;
+			break;
+		}
+		default:
+			qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		}
+	} else if (gserx_cfg.s.bgx) {
+		cvmx_bgxx_cmrx_config_t cmr_config;
+		cvmx_bgxx_spux_br_pmd_control_t pmd_control;
+		int bgx = 0;
+		int start = 0, end = 4, index;
+		int lane_mask = 0, train_mask = 0;
+		int mux = 0; // 0:BGX0 (DLM4/DLM5), 1:BGX0(DLM4), 2:BGX0(DLM5)
+		cvmx_gserx_cfg_t gser1, gser2;
+		gser1.u64 = cvmx_read_csr(CVMX_GSERX_CFG(4));
+		gser2.u64 = cvmx_read_csr(CVMX_GSERX_CFG(5));
+		if (gser1.s.bgx && gser2.s.bgx) {
+			start = 0;
+			end = 4;
+		} else if (gser1.s.bgx) {
+			start = 0;
+			end = 2;
+			mux = 1;
+		} else if (gser2.s.bgx) {
+			start = 2;
+			end = 4;
+			mux = 2;
+		} else {
+			qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			return qlm_mode[qlm];
+		}
+
+		for (index = start; index < end; index++) {
+			cmr_config.u64 = cvmx_read_csr(CVMX_BGXX_CMRX_CONFIG(index, bgx));
+			pmd_control.u64 = cvmx_read_csr(CVMX_BGXX_SPUX_BR_PMD_CONTROL(index, bgx));
+			lane_mask |= (cmr_config.s.lmac_type << (index * 4));
+			train_mask |= (pmd_control.s.train_en << (index * 4));
+		}
+
+		switch(lane_mask) {
+		case 0:
+			if (mux == 1 || mux == 2)
+				qlm_mode[qlm] = CVMX_QLM_MODE_SGMII_2X1;
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_SGMII;
+			break;
+		case 0x3300:
+			if (mux == 0)
+				qlm_mode[qlm] = CVMX_QLM_MODE_MIXED;
+			else if (mux == 2)
+				qlm_mode[qlm] = CVMX_QLM_MODE_XFI_1X2;
+			else
+				qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		default:
+			qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+			break;
+		}
+	} else
+		qlm_mode[qlm] = CVMX_QLM_MODE_DISABLED;
+
+	return qlm_mode[qlm];
 }
 
 /*
@@ -1416,18 +1935,30 @@ enum cvmx_qlm_mode cvmx_qlm_get_mode(int qlm)
 		return __cvmx_qlm_get_mode_cn70xx(qlm);
 	else if (OCTEON_IS_MODEL(OCTEON_CN78XX))
 		return cvmx_qlm_get_mode_cn78xx(cvmx_get_node_num(), qlm);
+	else if (OCTEON_IS_MODEL(OCTEON_CN73XX))
+		return __cvmx_qlm_get_mode_cn73xx(qlm);
+	else if (OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		return __cvmx_qlm_get_mode_cnf75xx(qlm);
 
 	return CVMX_QLM_MODE_DISABLED;
 }
 
-int cvmx_qlm_measure_clock_cn78xx(int node, int qlm)
+int cvmx_qlm_measure_clock_cn7xxx(int node, int qlm)
 {
 	cvmx_gserx_cfg_t cfg;
 	cvmx_gserx_refclk_sel_t refclk_sel;
 	cvmx_gserx_lane_mode_t lane_mode;
 
-	if (qlm >= 8)
-		return -1; /* FIXME for OCI */
+	if (OCTEON_IS_MODEL(OCTEON_CN73XX)) {
+		if (node != 0 || qlm >= 7)
+			return -1;
+	} else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		if (qlm >= 8 || node > 1)
+			return -1; /* FIXME for OCI */
+	} else {
+		cvmx_dprintf("%s: Unsupported OCTEON model\n", __func__);
+		return -1;
+	}
 
 	cfg.u64 = cvmx_read_csr_node(node, CVMX_GSERX_CFG(qlm));
 
@@ -1471,18 +2002,35 @@ int cvmx_qlm_measure_clock_cn78xx(int node, int qlm)
 }
 
 /**
+ * Measure the reference clock of a QLM on a multi-node setup
+ *
+ * @param node   node to measure
+ * @param qlm    QLM to measure
+ *
+ * @return Clock rate in Hz
+ */
+int cvmx_qlm_measure_clock_node(int node, int qlm)
+{
+	if (octeon_has_feature(OCTEON_FEATURE_MULTINODE))
+		return cvmx_qlm_measure_clock_cn7xxx(node, qlm);
+	else
+		return cvmx_qlm_measure_clock(qlm);
+}
+
+/**
  * Measure the reference clock of a QLM
  *
  * @param qlm    QLM to measure
  *
  * @return Clock rate in Hz
- *       */
+ */
 int cvmx_qlm_measure_clock(int qlm)
 {
 	cvmx_mio_ptp_clock_cfg_t ptp_clock;
 	uint64_t count;
 	uint64_t start_cycle, stop_cycle;
 	int evcnt_offset = 0x10;
+	int incr_count = 1;
 #ifdef CVMX_BUILD_FOR_UBOOT
 	int ref_clock[16] = {0};
 #else
@@ -1495,8 +2043,8 @@ int cvmx_qlm_measure_clock(int qlm)
 	if (OCTEON_IS_MODEL(OCTEON_CN3XXX) || OCTEON_IS_MODEL(OCTEON_CN5XXX))
 		return -1;
 
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
-		return cvmx_qlm_measure_clock_cn78xx(cvmx_get_node_num(), qlm);
+	if (OCTEON_IS_OCTEON3() && !OCTEON_IS_MODEL(OCTEON_CN70XX))
+		return cvmx_qlm_measure_clock_cn7xxx(cvmx_get_node_num(), qlm);
 
 	/* Force the reference to 156.25Mhz when running in simulation.
 	   This supports the most speeds */
@@ -1507,6 +2055,14 @@ int cvmx_qlm_measure_clock(int qlm)
 	if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM)
 		return 156250000;
 #endif
+	if (OCTEON_IS_MODEL(OCTEON_CN70XX) && qlm == 0) {
+		cvmx_gserx_dlmx_ref_clkdiv2_t ref_clkdiv2;
+
+		ref_clkdiv2.u64 = cvmx_read_csr(CVMX_GSERX_DLMX_REF_CLKDIV2(qlm, 0));
+		if (ref_clkdiv2.s.ref_clkdiv2)
+			incr_count = 2;
+	}
+
 	/* Fix reference clock for OCI QLMs */
 
 	/* Disable the PTP event counter while we configure it */
@@ -1541,9 +2097,112 @@ int cvmx_qlm_measure_clock(int qlm)
 	cvmx_write_csr(CVMX_MIO_PTP_CLOCK_CFG, ptp_clock.u64);
 	/* Clock counted down, so reverse it */
 	count = 1000000000 - count;
+	count *= incr_count;
 	/* Return the rate */
 	ref_clock[qlm] = count * cvmx_clock_get_rate(CVMX_CLOCK_CORE) / (stop_cycle - start_cycle);
 	return ref_clock[qlm];
+}
+
+/*
+ * Perform RX equalization on a QLM
+ *
+ * @param node	Node the QLM is on
+ * @param qlm	QLM to perform RX equalization on
+ * @param lane	Lane to use, or -1 for all lanes
+ *
+ * @return Zero on sucess, negative if any lane failed RX equalization
+ */
+int __cvmx_qlm_rx_equalization(int node, int qlm, int lane)
+{
+	cvmx_gserx_phy_ctl_t phy_ctl;
+	cvmx_gserx_spd_t gserx_spd;
+	int fail, gbaud, l;
+	enum cvmx_qlm_mode mode;
+	int max_lanes = 4;
+
+	/* Errata (GSER-20075) GSER(0..13)_BR_RX3_EER[RXT_ERR] is
+	   GSER(0..13)_BR_RX2_EER[RXT_ERR]. Since lanes 2-3 are tied together,
+	   we only do RX equalization on 2 and ignore 3 */
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
+		max_lanes = 3;
+
+	/* Don't touch QLMs if it is reset or powered down */
+	phy_ctl.u64 = cvmx_read_csr_node(node, CVMX_GSERX_PHY_CTL(qlm));
+	if (phy_ctl.s.phy_pd || phy_ctl.s.phy_reset)
+		return -1;
+
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		gbaud = cvmx_qlm_get_gbaud_mhz_node(node, qlm);
+	else
+		gbaud = cvmx_qlm_get_gbaud_mhz(qlm);
+
+	/* Apply RX Equalization for speed >= 8G */
+	if (qlm < 8) {
+		if (gbaud < 6250)
+			return 0;
+	} else { // OCI
+		gserx_spd.u64 = cvmx_read_csr_node(node, CVMX_GSERX_SPD(qlm));
+		/* Supported with SW init at 6.25G */
+		if (gserx_spd.s.spd == 0xf) {
+			if (gbaud < 6250)
+				return 0;
+		} else { /* Only supported at 8G or higher */
+			if (gbaud < 8000)
+				return 0;
+		}
+	}
+
+	/* Don't run on PCIe Links */
+	mode = cvmx_qlm_get_mode(qlm);
+	if (mode == CVMX_QLM_MODE_PCIE
+	    || mode == CVMX_QLM_MODE_PCIE_1X8
+	    || mode == CVMX_QLM_MODE_PCIE_1X2
+	    || mode == CVMX_QLM_MODE_PCIE_2X1)
+		return -1;
+
+	fail = 0;
+
+	for (l = 0; l < max_lanes; l++) {
+		cvmx_gserx_br_rxx_ctl_t rxx_ctl;
+		cvmx_gserx_br_rxx_eer_t rxx_eer;
+
+		if ((lane != -1) && (lane != l))
+			continue;
+
+		/* Enable software control */
+		rxx_ctl.u64 = cvmx_read_csr_node(node, CVMX_GSERX_BR_RXX_CTL(l, qlm));
+		rxx_ctl.s.rxt_swm = 1;
+		cvmx_write_csr_node(node, CVMX_GSERX_BR_RXX_CTL(l, qlm), rxx_ctl.u64);
+
+		/* Clear the completion flag and initiate a new request */
+		rxx_eer.u64 = cvmx_read_csr_node(node, CVMX_GSERX_BR_RXX_EER(l, qlm));
+		rxx_eer.s.rxt_esv = 0;
+		rxx_eer.s.rxt_eer = 1;
+		cvmx_write_csr_node(node, CVMX_GSERX_BR_RXX_EER(l, qlm), rxx_eer.u64);
+	}
+
+	/* Wait for RX equalization to complete */
+	for (l = 0; l < max_lanes; l++) {
+		cvmx_gserx_br_rxx_eer_t rxx_eer;
+		cvmx_gserx_br_rxx_ctl_t rxx_ctl;
+
+		if ((lane != -1) && (lane != l))
+			continue;
+
+		CVMX_WAIT_FOR_FIELD64_NODE(node, CVMX_GSERX_BR_RXX_EER(l, qlm),
+				cvmx_gserx_br_rxx_eer_t, rxt_esv, ==, 1, 1000000);
+		rxx_eer.u64 = cvmx_read_csr_node(node, CVMX_GSERX_BR_RXX_EER(l, qlm));
+		/* Switch back to hardware control */
+		rxx_ctl.u64 = cvmx_read_csr_node(node, CVMX_GSERX_BR_RXX_CTL(l, qlm));
+		rxx_ctl.s.rxt_swm = 0;
+		cvmx_write_csr_node(node, CVMX_GSERX_BR_RXX_CTL(l, qlm), rxx_ctl.u64);
+		if (!rxx_eer.s.rxt_esv) {
+			//cvmx_dprintf("%d:QLM%d: Lane %d RX equalization timeout\n", node, qlm, lane);
+			fail = 1;
+		}
+	}
+
+	return (fail) ? -1 : 0;
 }
 
 void cvmx_qlm_display_registers(int qlm)
@@ -1618,3 +2277,781 @@ void __cvmx_helper_errata_qlm_disable_2nd_order_cdr(int qlm)
 	}
 	cvmx_helper_qlm_jtag_update(qlm);
 }
+
+
+#ifdef CVMX_DUMP_GSER
+/**
+ * Dump configuration and status of GSER (use for 73xx, 75xx, 76xx, 78xx)
+ */
+/* The following (high level) funcs are implemented in this section */
+int cvmx_dump_gser_config(unsigned gser);
+int cvmx_dump_gser_status(unsigned gser);
+int cvmx_dump_gser_config_node(unsigned node, unsigned gser);
+int cvmx_dump_gser_status_node(unsigned node, unsigned gser);
+
+/*
+ * The following macros helps to easyly print 'formated table'
+ * for up to 4 Lanes of single GSER device (smae macros used for BGX)
+ * MACROS automaticaly handle data types ('unsigned' or 'const char *') and
+ * indexing (by predefined 'ind' string used as index).
+ * NOTE that there different groups of macros:
+ *  'PRn' 	means it prints unconditionaly, data are 'unsigned' type
+ *  'PRns'	means it prints unconditionaly, data are 'const char *' type
+ *  'PRc' 	means it print only if 'cond' argument is 'true'
+ *  'PRd' 	means it print only if 'data' argument is != 0
+ *  'PRcd' 	means it print only if ('cond'== true && 'data' != 0)
+ *  'PRM' 	means it print only when 'mask' bits are != 0, skip otherwise
+ * 		NOTE: the loop is 'for (_mask = mask; _mask > 0; _mask >>= 1)'
+ * 		which means order is mask_bits 0,1,2,3.. and the last unset bits
+ * 		will not be handled at all (i.e. not 'skipped' with '<   ---   >')
+ * Other useful combinations of them exists like:
+ *  'PRMc' 	means it print only when 'mask' bits are != 0 and 'cond' = true
+ *  'PRMcs' 	same as above but data type is 'const char *' instead of 'unsigned'
+ * For example one use 'PRMcd' to print 'data' only for 'mask' mapped LMAC fields
+ * if 'cond' is met and 'data' != 0 (example: Frame Check 'FSCERR' (check for
+ * FCS errors) was enabled with 'cond' and err realy happens (detected) (i.e.
+ * 'data' != 0) and only then it will be printed
+ * (and only for LMACs mapped with 'mask' bits = 1, other fields skipped)
+ * NOTE: Where applicable references to Hardware Manual are available.
+ */
+
+
+/* define FORCE_COND=1 in order to force prints unconditionally (DEBUG, test)
+ * define FORCE_COND=0 in order to prints conditionally (NORMAL MODE, skip unimportant)
+ * if run time control is needed just define FORCE_COND as local static variable
+ * Enable only one of the following '#define FORCED_COND(cond)' macros
+ * use it like this: 'if ( FORCED_COND(cond) )'
+ */
+/* #define FORCE_COND	1	*/
+/* #define FORCED_COND(cond)	((cond) || FORCE_COND) */
+/* ..or.. the next line to exclude all overhead code */
+#define FORCED_COND(cond)	(cond)
+
+#ifndef USE_PRx_MACROS
+#define USE_PRx_MACROS
+
+/* Always print - no test of 'data' values */
+/* for (1..N) printf(format, data) */
+#define PRn(header, N, format, data)			\
+do {							\
+	unsigned ind;					\
+	cvmx_dprintf("%-48s", header);			\
+	for (ind = 0; ind < N; ind++)			\
+		cvmx_dprintf(format, data);		\
+	cvmx_dprintf("\n");				\
+} while(0);
+
+#define PRns	PRn
+
+/* Always print - no test, skip data for mask[x]=0 */
+#define PRMn(header, mask, format, data)				\
+do {									\
+	unsigned ind, _mask;						\
+	cvmx_dprintf("%-48s", header);					\
+	for (_mask = mask, ind = 0; _mask > 0; _mask >>= 1, ind++)	\
+		if (_mask & 1)						\
+			cvmx_dprintf(format, data);			\
+		else							\
+			cvmx_dprintf("%15s","");			\
+	cvmx_dprintf("\n");						\
+} while(0);
+
+#define PRMns PRMn
+
+/* mask + data != 0 */
+#define PRMd(header, mask, format, data)					\
+do {										\
+	unsigned cnt, ind, _mask = mask;					\
+	for (cnt = 0, ind = 0; _mask > 0; _mask >>= 1, ind++)			\
+		if (data != 0)							\
+			cnt++;							\
+	if (FORCED_COND(cnt)) { /* at least one item != 0 =>print */		\
+		cvmx_dprintf("%-48s", header);					\
+		for (_mask = mask, ind = 0; _mask > 0; _mask >>= 1, ind++)	\
+			if (FORCED_COND((_mask & 1) && data!= 0))		\
+				cvmx_dprintf(format, data);			\
+			else							\
+				cvmx_dprintf("%15s","");			\
+		cvmx_dprintf("\n");						\
+	}									\
+} while(0);
+
+/* mask + cond != 0 */
+#define PRMc(header, mask, cond, format, data)					\
+do {										\
+	unsigned cnt, ind, _mask = mask;					\
+	for (cnt = 0, ind = 0; _mask > 0; _mask >>= 1, ind++)			\
+		if (cond != 0)							\
+			cnt++;							\
+	if (FORCED_COND(cnt)) { /* at least one item != 0 =>print */		\
+		cvmx_dprintf("%-48s", header);					\
+		for (_mask = mask, ind = 0; _mask > 0; _mask >>= 1, ind++)	\
+			if (FORCED_COND((_mask & 1) && cond))			\
+				cvmx_dprintf(format, data);			\
+			else							\
+				cvmx_dprintf("%15s","");			\
+		cvmx_dprintf("\n");						\
+	}									\
+} while(0);
+
+#define PRMcs	PRMc
+
+/* for (mask[i]==1) if (cond && data) printf(format, data) */
+#define PRMcd(header, mask, cond, format, data)					\
+do {										\
+	unsigned cnt, ind, _mask = mask;					\
+	for (cnt = 0, ind = 0; _mask > 0; _mask >>= 1, ind++)			\
+		if (cond && data != 0)						\
+			cnt++;							\
+	if (FORCED_COND(cnt)) { /* at least one item != 0 =>print */		\
+		cvmx_dprintf("%-48s", header);					\
+		for (_mask = mask, ind = 0; _mask > 0; _mask >>= 1, ind++)	\
+		if ( FORCED_COND(cond && (data!=0) && (_mask & 1)) )		\
+			cvmx_dprintf(format, data);				\
+		else								\
+			cvmx_dprintf("%15s","");				\
+		cvmx_dprintf("\n");						\
+	}									\
+} while(0);
+
+/* Test 'data' int values and print only if data != 0 */
+/* for (1..N) if (data != 0) printf(format, data) */
+#define PRd(header, N, format, data)					\
+do {									\
+	unsigned ind, cnt;						\
+	for (cnt = 0, ind = 0; ind < N; ind++)				\
+		if (data != 0)						\
+			cnt++;						\
+	if (FORCED_COND(cnt)) { /* at least one item != 0 =>print */	\
+		cvmx_dprintf("%-48s", header);				\
+		for (ind = 0; ind < N; ind++)				\
+			cvmx_dprintf(format, data);			\
+		cvmx_dprintf("\n");					\
+	}								\
+} while(0);
+
+/* for (1..N) if (cond) printf(format, data) */
+#define PRc(header, N, cond, format, data)				\
+do {									\
+	unsigned ind, cnt;						\
+	for (cnt = 0, ind = 0; ind < N; ind++)				\
+		if (cond != 0)						\
+			cnt++;						\
+	if (FORCED_COND(cnt)) { /* at least one item != 0 =>print */	\
+		cvmx_dprintf("%-48s", header);				\
+		for (ind = 0; ind < N; ind++)				\
+		if ( FORCED_COND(cond) )				\
+			cvmx_dprintf(format, data);			\
+		else							\
+			cvmx_dprintf("%15s","");			\
+		cvmx_dprintf("\n");					\
+	}								\
+} while(0);
+
+#define PRcs PRc
+
+/* for (1..N) if (cond && data) printf(format, data) */
+#define PRcd(header, N, cond, format, data)				\
+do {									\
+	unsigned ind, cnt;						\
+	for (cnt = 0, ind = 0; ind < N; ind++)				\
+		if (cond && data != 0)					\
+			cnt++;						\
+	if (FORCED_COND(cnt)) { /* at least one item != 0 =>print */	\
+		cvmx_dprintf("%-48s", header);				\
+		for (ind = 0; ind < N; ind++)				\
+		if ( FORCED_COND(cond && data) )			\
+			cvmx_dprintf(format, data);			\
+		else							\
+			cvmx_dprintf("%15s","");			\
+		cvmx_dprintf("\n");					\
+	}								\
+} while(0);
+
+#endif
+
+static const char *SPD_string[] = {
+	"100 MHz, 1.25 Gb, R_125G_REFCLK15625_KX",
+	"100 MHz, 2.5 Gb, R_25G_REFCLK100",
+	"100 MHz, 5 Gb, R_5G_REFCLK100",
+	"100 MHz, 8 Gb, R_8G_REFCLK100",
+	"125 MHz, 1.25 Gb, R_125G_REFCLK15625_KX",
+	"125 MHz, 2.5 Gb, R_25G_REFCLK125",
+	"125 MHz, 3.125, Gb R_3125G_REFCLK15625_XAUI",
+	"125 MHz, 5 Gb, R_5G_REFCLK125",
+	"125 MHz, 6.25 Gb, R_625G_REFCLK15625_RXAUI",
+	"125 MHz, 8 Gb, R_8G_REFCLK125",
+	"156.25 MHz, 2.5 Gb, R_25G_REFCLK100",
+	"156.25 MHz, 3.125 Gb, R_3125G_REFCLK15625_XAUI",
+	"156.25 MHz, 5 Gb, R_5G_REFCLK125",
+	"156.25 MHz, 6.25 Gb, R_625G_REFCLK15625_RXAUI",
+	"156.25 MHz, 10.3125 Gb, R_103125G_REFCLK15625_KR",
+	"SW_MODE"
+};
+
+static const char *LMODE_string[] = {
+	"R_25G_REFCLK100",
+	"R_5G_REFCLK100",
+	"R_8G_REFCLK100",
+	"R_125G_REFCLK15625_KX (not supported)",
+	"R_3125G_REFCLK15625_XAUI",
+	"R_103125G_REFCLK15625_KR",
+	"R_125G_REFCLK15625_SGMII",
+	"R_5G_REFCLK15625_QSGMII (not supported)",
+	"R_625G_REFCLK15625_RXAUI",
+	"R_25G_REFCLK125",
+	"R_5G_REFCLK125",
+	"R_8G_REFCLK125",
+	"UNKNOWN LMODE",
+	"UNKNOWN LMODE",
+	"UNKNOWN LMODE",
+	"UNKNOWN LMODE"
+};
+
+
+
+/**
+ * Return number of GSERs per model
+ * (FIXME: Add models when needed - (return -1 if model is not defined)
+ */
+int cvmx_get_gser_num(void)
+{
+	if (!octeon_has_feature(OCTEON_FEATURE_MULTINODE))/*cn78xx*/
+		return 8; /* (8 QLMs + 6 OCI)* 2 nodes */
+	else if (OCTEON_IS_MODEL(OCTEON_CN73XX))
+		return 7; /* QLM0,1,2,3 + DLM5,6,7 */
+	else if (OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		return 9;/* QLM0,1 + DLM0,1,2,3,4,5,6 */
+	return -1;
+}
+
+const char * qlm_mode_name(enum cvmx_qlm_mode mode) {
+	switch(mode) {
+		case CVMX_QLM_MODE_DISABLED:
+			return "CVMX_QLM_MODE_DISABLED";
+		case CVMX_QLM_MODE_SGMII:
+			return "CVMX_QLM_MODE_SGMII";
+		case CVMX_QLM_MODE_XAUI:
+			return "CVMX_QLM_MODE_XAUI";
+		case CVMX_QLM_MODE_RXAUI:
+			return "CVMX_QLM_MODE_RXAUI";
+		case CVMX_QLM_MODE_PCIE:
+			return "CVMX_QLM_MODE_PCIE";/* gen3 / gen2 / gen1 */
+		case CVMX_QLM_MODE_PCIE_1X2:
+			return "CVMX_QLM_MODE_PCIE_1X2";/* 1x2 gen2 / gen1 */
+		case CVMX_QLM_MODE_PCIE_2X1:
+			return "CVMX_QLM_MODE_PCIE_2X1";/* 2x1 gen2 / gen1 */
+		case CVMX_QLM_MODE_PCIE_1X1:
+			return "CVMX_QLM_MODE_PCIE_1X1";/* 1x1 gen2 / gen1 */
+		case CVMX_QLM_MODE_SRIO_1X4:
+			return "CVMX_QLM_MODE_SRIO_1X4";/* 1x4 short / long */
+		case CVMX_QLM_MODE_SRIO_2X2:
+			return "CVMX_QLM_MODE_SRIO_2X2";/* 2x2 short / long */
+		case CVMX_QLM_MODE_SRIO_4X1:
+			return "CVMX_QLM_MODE_SRIO_4X1";/* 4x1 short / long */
+		case CVMX_QLM_MODE_ILK:
+			return "CVMX_QLM_MODE_ILK";
+		case CVMX_QLM_MODE_QSGMII:
+			return "CVMX_QLM_MODE_QSGMII";
+		case CVMX_QLM_MODE_SGMII_SGMII:
+			return "CVMX_QLM_MODE_SGMII_SGMII";
+		case CVMX_QLM_MODE_SGMII_DISABLED:
+			return "CVMX_QLM_MODE_SGMII_DISABLED";
+		case CVMX_QLM_MODE_DISABLED_SGMII:
+			return "CVMX_QLM_MODE_DISABLED_SGMII";
+		case CVMX_QLM_MODE_SGMII_QSGMII:
+			return "CVMX_QLM_MODE_SGMII_QSGMII";
+		case CVMX_QLM_MODE_QSGMII_QSGMII:
+			return "CVMX_QLM_MODE_QSGMII_QSGMII";
+		case CVMX_QLM_MODE_QSGMII_DISABLED:
+			return "CVMX_QLM_MODE_QSGMII_DISABLED";
+		case CVMX_QLM_MODE_DISABLED_QSGMII:
+			return "CVMX_QLM_MODE_DISABLED_QSGMII";
+		case CVMX_QLM_MODE_QSGMII_SGMII:
+			return "CVMX_QLM_MODE_QSGMII_SGMII";
+		case CVMX_QLM_MODE_RXAUI_1X2:
+			return "CVMX_QLM_MODE_RXAUI_1X2";
+		case CVMX_QLM_MODE_SATA_2X1:
+			return "CVMX_QLM_MODE_SATA_2X1";
+		case CVMX_QLM_MODE_XLAUI:
+			return "CVMX_QLM_MODE_XLAUI";
+		case CVMX_QLM_MODE_XFI:
+			return "CVMX_QLM_MODE_XFI";
+		case CVMX_QLM_MODE_10G_KR:
+			return "CVMX_QLM_MODE_10G_KR";
+		case CVMX_QLM_MODE_40G_KR4:
+			return "CVMX_QLM_MODE_40G_KR4";
+		case CVMX_QLM_MODE_PCIE_1X8:
+			return "CVMX_QLM_MODE_PCIE_1X8";/* 1x8 gen3/gen2/gen1 */
+		case CVMX_QLM_MODE_RGMII_SGMII:
+			return "CVMX_QLM_MODE_RGMII_SGMII";
+		case CVMX_QLM_MODE_RGMII_XFI:
+			return "CVMX_QLM_MODE_RGMII_XFI";
+		case CVMX_QLM_MODE_RGMII_10G_KR:
+			return "CVMX_QLM_MODE_RGMII_10G_KR";
+		case CVMX_QLM_MODE_RGMII_RXAUI:
+			return "CVMX_QLM_MODE_RGMII_RXAUI";
+		case CVMX_QLM_MODE_RGMII_XAUI:
+			return "CVMX_QLM_MODE_RGMII_XAUI";
+		case CVMX_QLM_MODE_RGMII_XLAUI:
+			return "CVMX_QLM_MODE_RGMII_XLAUI";
+		case CVMX_QLM_MODE_RGMII_40G_KR4:
+			return "CVMX_QLM_MODE_RGMII_40G_KR4";
+		case CVMX_QLM_MODE_OCI:
+			return "CVMX_QLM_MODE_OCI";
+		default: return "UNKNOWN QLM MODE";
+	}
+};
+
+
+int cvmx_dump_gser_sata_config(unsigned node, unsigned gser, unsigned N)
+{
+	cvmx_gserx_sata_lane_rst_t	sata_lane_rst;
+	cvmx_gserx_sata_tx_invert_t	sata_tx_invert;
+	/* cvmx_gserx_sata_lanex_tx_ampx_t	sata_lane_tx_amp; */
+	/* cvmx_gserx_sata_lanex_tx_preemphx_t	sata_lane_tx_preemph; */
+
+	cvmx_dprintf("/* GSER%d SATA configuration */\n", gser);
+	PRn("Lanes:", N, "      lane%d    ", ind);
+
+	/* SATA_LANE_RST	(lane0,1) */
+	sata_lane_rst.u64 = cvmx_read_csr_node(node,
+				CVMX_GSERX_SATA_LANE_RST(gser));
+	PRns("Lane is hold in Reset(l0_rst)", N,
+		"       %3s     ",
+		sata_lane_rst.u64 & (1<<ind) ? "Yes" : " No");
+
+	/* TX_INVERT	(lane0,1) */
+	sata_tx_invert.u64 = cvmx_read_csr_node(node,
+				CVMX_GSERX_SATA_TX_INVERT(gser));
+	PRns("Tx Invert(l0_inv)", N,
+		"       %3s     ",
+		sata_tx_invert.u64 & (1<<ind) ? "Yes" : " No");
+
+	/* TX_PREEMPT	(gen1,2,3) - skip */
+	/* TX_AMPL	(gen1,2,3) - skip */
+
+	return 0;
+}
+
+int cvmx_dump_gser_pcie_config(unsigned node, unsigned gser, unsigned N)
+{
+	cvmx_gserx_pipe_lpbk_t 		pipe_lpbk;
+
+	cvmx_dprintf("/* GSER%d PCIe configuration */\n", gser);
+
+	/* GSER(0..6)_PIPE_LPBK - PCIE PCS PIPE Lookback Registers */
+	pipe_lpbk.u64 = cvmx_read_csr_node(node, CVMX_GSERX_PIPE_LPBK(gser));
+	PRns("PCIe Loopback? (pcie_lpbk)", 1, "       %3s     ",
+		pipe_lpbk.s.pcie_lpbk ? "Yes" : " No");
+	return 0;
+}
+
+int cvmx_dump_gser_lane_config(unsigned node, unsigned gser, unsigned N)
+{
+	cvmx_gserx_cfg_t 		cfg;
+	cvmx_gserx_lane_poff_t		lane_poff;
+	cvmx_gserx_lane_lpbken_t	lane_lpbken;
+	cvmx_gserx_rx_coast_t 		rx_coast;
+	cvmx_gserx_rx_eie_deten_t	rx_eie_deten;
+	cvmx_gserx_rx_polarity_t	rx_polarity;
+
+	cvmx_dprintf("/* GSER%d LANE configuration */\n", gser);
+	PRn("Lanes:", N, "      lane%d    ", ind);
+
+	cfg.u64 = cvmx_read_csr(CVMX_GSERX_CFG(gser));
+
+	/* GSER(0..6)_LANE_POFF */
+	lane_poff.u64 = cvmx_read_csr_node(node, CVMX_GSERX_LANE_POFF(gser));
+	PRcs("Per-lane Power Down (non-PCIe) (lpoff)", N,
+		/*cond*/(cfg.s.pcie==0)/* i.e non-PCIe mode */,
+		"       %3s     ",
+		(lane_poff.s.lpoff & (1<<ind)) ? "Yes" : " No");
+
+	/* GSER(0..6)_LANE_LPBKEN */
+	lane_lpbken.u64 = cvmx_read_csr_node(node, CVMX_GSERX_LANE_LPBKEN(gser));
+	PRcs("Tx-to-Rx Loopback(non-PCIe, non-SATA)(lpbken)", N,
+		/*cond*/!(cfg.s.pcie || cfg.s.sata),/* i.e non-PCIe, non-SATA */
+		"       %3s     ",
+	(lane_lpbken.s.lpbken & (1<<ind)) ? "Yes" : " No");
+
+	/* GSER(0..6)_RX_COAST */
+	rx_coast.u64 = cvmx_read_csr_node(node, CVMX_GSERX_RX_COAST(gser));
+	PRcs("Freeze CDR frequency (non-PCIe, non-SATA)(coast)", N,
+		/*cond*/!(cfg.s.pcie || cfg.s.sata),/* i.e non-PCIe, non-SATA */
+		"       %3s     ",
+		(rx_coast.s.coast & (1<<ind)) ? "Yes" : " No");
+
+	/* GSER(0..6)_RX_EIE_DETEN - RX Electrical Idle Detect Enable Register */
+	rx_eie_deten.u64 = cvmx_read_csr_node(node, CVMX_GSERX_RX_EIE_DETEN(gser));
+	PRns("EIE (Electrical Idle Exit) Detect Enabled(eiede)", N,
+		"    %8s   ",
+		(rx_eie_deten.s.eiede & (1<<ind)) ? " Enabled" : "Disabled");
+
+	/* GSER(0..6)_RX_POLARITY */
+	rx_polarity.u64 = cvmx_read_csr_node(node, CVMX_GSERX_RX_POLARITY(gser));
+	PRns("Rx Inverted? (Polarity)(rx_inv)", N, "       %3s     ",
+		(rx_polarity.s.rx_inv & (1<<ind)) ? "Yes" : " No");
+	/*
+	 * training/diag only or raw PCS regs or not related to normal mode - skip
+	 * GSER(0..6)_BR_RX(0..3)_CTL - Base-R RX Control Registers
+	 * GSER(0..6)_BR_RX(0..3)_EER - Base-R RX Equalization Evaluation Request
+	 * GSER(0..6)_BR_TX(0..3)_CTL - Base-R TX Control Registers
+	 * GSER Base-R TX Coefficient Update Registers - GSER(0..6)_BR_TX(0..3)_CUR
+	 * GSER Base-R TX Coefficient Tap Registers - GSER(0..6)_BR_TX(0..3)_TAP
+	 * GSER Lane SerDes RX Configuration 0 Registers - GSER(0..6)_LANE(0..3)_RX_CFG_0
+	 * GSER Lane SerDes RX Configuration 1 Registers - GSER(0..6)_LANE(0..3)_RX_CFG_1
+	 * GSER Lane SerDes RX Configuration 2 Registers - GSER(0..6)_LANE(0..3)_RX_CFG_2
+	 * GSER Lane SerDes RX Configuration 3 Registers - GSER(0..6)_LANE(0..3)_RX_CFG_3
+	 * GSER Lane SerDes RX Configuration 4 Registers - GSER(0..6)_LANE(0..3)_RX_CFG_4
+	 * GSER Lane SerDes RX Configuration 5 Registers - GSER(0..6)_LANE(0..3)_RX_CFG_5
+	 * GSER Lane SerDes RX CDR Control 1 Registers - GSER(0..6)_LANE(0..3)_RX_CDR_CTRL_1
+	 * GSER Lane SerDes RX CDR Control 2 Registers - GSER(0..6)_LANE(0..3)_RX_CDR_CTRL_2
+	 * GSER Lane RX Loop Control Registers - GSER(0..6)_LANE(0..3)_RX_LOOP_CTRL
+	 * GSER Lane RX Pre-Correlation Control Registers - GSER(0..6)_LANE(0..3)_RX_CTLE_CTRL
+	 * GSER Lane RX Precorrelation Control Registers - GSER(0..6)_LANE(0..3)_RX_PRECORR_CTRL
+	 * GSER Lane RX Precorrelation Count Registers - GSER(0..6)_LANE(0..3)_RX_PRECORR_VAL
+	 * GSER Lane TX Configuration 0 Registers - GSER(0..6)_LANE(0..3)_TX_CFG_0
+	 * GSER Lane TX Configuration 1 Registers - GSER(0..6)_LANE(0..3)_TX_CFG_1
+	 * GSER Lane TX Configuration 2 Registers - GSER(0..6)_LANE(0..3)_TX_CFG_2
+	 * GSER Lane TX Configuration 3 Registers - GSER(0..6)_LANE(0..3)_TX_CFG_3
+	 * GSER Lane TX Configuration Pre-Emphasis Registers - GSER(0..6)_LANE(0..3)_TX_PRE_EMPHASIS
+	 * GSER Lane PMA Loopback Control Registers - GSER(0..6)_LANE(0..3)_PMA_LOOPBACK_CTRL
+	 * GSER Lane Power Control Registers - GSER(0..6)_LANE(0..3)_PWR_CTRL
+	 * GSER Lane SerDes Pin Monitor 1 Registers - GSER(0..6)_LANE(0..3)_SDS_PIN_MON_0
+	 * GSER Lane SerDes Pin Monitor 1 Registers - GSER(0..6)_LANE(0..3)_SDS_PIN_MON_1
+	 * GSER Lane SerDes Pin Monitor 1 Registers - GSER(0..6)_LANE(0..3)_SDS_PIN_MON_2
+	 * GSER Lane RX VMA Control Registers - GSER(0..6)_LANE(0..3)_RX_VMA_CTRL
+	 * GSER Lane SerDes RX CDR Miscellaneous Control 0 Registers - GSER(0..6)_LANE(0..3)_RX_CDR_MISC_CTRL_0
+	 * GSER Lane RX Adaptive Equalizer Control Registers 0 - GSER(0..6)_LANE(0..3)_RX_VALBBD_CTRL_0
+	 * GSER Lane RX Adaptive Equalizer Control Registers 1 - GSER(0..6)_LANE(0..3)_RX_VALBBD_CTRL_1
+	 * GSER Lane RX Adaptive Equalizer Control Registers 2 - GSER(0..6)_LANE(0..3)_RX_VALBBD_CTRL_2
+	 * GSER Lane RX Miscellaneous Override Registers - GSER(0..6)_LANE(0..3)_RX_MISC_OVRRD
+	 * GSER Lane SerDes RX Adaptive Equalizer 0 Registers - GSER(0..6)_LANE(0..3)_RX_AEQ_OUT_0
+	 * GSER Lane SerDes RX Adaptive Equalizer 1 Registers - GSER(0..6)_LANE(0..3)_RX_AEQ_OUT_1
+	 * GSER Lane SerDes RX Adaptive Equalizer 2 Registers - GSER(0..6)_LANE(0..3)_RX_AEQ_OUT_2
+	 * GSER Lane SerDes RX CDR Status 0 Registers - GSER(0..6)_LANE(0..3)_RX_VMA_STATUS_0
+	 * GSER Lane SerDes RX CDR Status 1 Registers - GSER(0..6)_LANE(0..3)_RX_VMA_STATUS_1
+	 * GSER Lane SerDes RX CDR Status 1 Registers - GSER(0..6)_LANE(0..3)_RX_CDR_STATUS_1
+	 * GSER Lane SerDes RX CDR Status 2 Registers - GSER(0..6)_LANE(0..3)_RX_CDR_STATUS_2
+	 *
+	 * GSER Lane Miscellaneous Configuration 0 Registers - GSER(0..6)_LANE(0..3)_MISC_CFG_0
+	 * GSER Lane Miscellaneous Configuration 1 Registers - GSER(0..6)_LANE(0..3)_MISC_CFG_1
+	 * GSER Lane LBERT Pattern Configuration Registers - GSER(0..6)_LANE(0..3)_LBERT_PAT_CFG
+	 * GSER Lane LBERT Pattern Configuration Registers - GSER(0..6)_LANE(0..3)_LBERT_PAT_CFG
+	 * GSER Lane LBERT Configuration Registers - GSER(0..6)_LANE(0..3)_LBERT_CFG
+	 * GSER Lane LBERT Error Counter Registers - GSER(0..6)_LANE(0..3)_LBERT_ECNT
+	 * GSER Lane Raw PCS Control Interface Configuration 0 Registers - GSER(0..6)_LANE(0..3)_PCS_CTLIFC_0
+	 * GSER Lane Raw PCS Control Interface Configuration 1 Registers - GSER(0..6)_LANE(0..3)_PCS_CTLIFC_1
+	 * GSER Lane Raw PCS Control Interface Configuration 2 Registers - GSER(0..6)_LANE(0..3)_PCS_CTLIFC_2
+	 */
+
+	return 0;
+}
+
+int cvmx_dump_gser_common_config(unsigned node, unsigned gser, unsigned N)
+{
+	unsigned gser_max, modes;
+	int spd_mhz;
+	enum cvmx_qlm_mode gser_mode;
+	cvmx_gserx_cfg_t 		cfg;
+	cvmx_gserx_phy_ctl_t	 	phy_ctl;
+	cvmx_gserx_refclk_sel_t		refclk_sel;
+	cvmx_gserx_iddq_mode_t		iddq_mode;
+	cvmx_gserx_spd_t		spd;
+	cvmx_gserx_dbg_t		dbg;
+	cvmx_gserx_lane_mode_t 		lane_mode;
+	cvmx_gserx_rx_eie_filter_t	rx_eie_filter;
+	cvmx_gserx_srst_t		srst;
+	cvmx_gserx_lane_srst_t		lane_srst;
+
+	gser_max = cvmx_get_gser_num();
+	if (gser > gser_max)
+		return -1;
+
+	gser_mode = cvmx_qlm_get_mode(gser);
+
+	cvmx_dprintf("/* GSER%d common configuration */\n", gser);
+
+	/* check that only one of the model supported modes is set */
+	cfg.u64 = cvmx_read_csr(CVMX_GSERX_CFG(gser));
+
+	modes = cfg.s.pcie + cfg.s.bgx + cfg.s.sata + cfg.s.ila;
+	if (1 != modes) {
+		cvmx_dprintf("ERROR: Zero or more than one(%d) mode configured\n",
+			     modes);
+		return -1;
+	}
+	if (!OCTEON_IS_MODEL(OCTEON_CN73XX) && cfg.s.sata) {
+		/* i.e cfg.s.sata can be =1(supported) only on 73xx */
+		cvmx_dprintf("ERROR: GSER SATA mode supported only for 73xx.\n");
+		return -1;
+	}
+	if (!OCTEON_IS_MODEL(OCTEON_CN78XX) && cfg.s.ila) {
+		/* i.e cfg.s.ila can be =1(supported) only on 78xx */
+		cvmx_dprintf("ERROR: GSER ILK mode supported only for 78xx.\n");
+		return -1;
+	}
+
+	PRns("GSER Mode (PCIe/ILK/SATA/BGX) is", 1, "    %8s   ",
+		cfg.s.pcie ? "  PCIe  " :
+		cfg.s.sata ? "  SATA  " : /* .sata reserved if not supported */
+		cfg.s.ila  ? " ILK/ILA" : /* .ila=0(reset) if ILK is not supported */
+		(cfg.s.bgx && cfg.s.bgx_quad) ? "BGX_QUAD" :
+		(cfg.s.bgx && cfg.s.bgx_dual) ? "BGX_DUAL" :
+		cfg.s.bgx ? "   BGX  " : "???????");
+	PRns("GSER mode is", 1, " %s", qlm_mode_name(gser_mode));
+	PRns("GSER Number of Lanes is", 1, "        %1d      ", N);
+
+	spd_mhz = cvmx_qlm_get_gbaud_mhz_node(node, gser);
+	PRns("GSER Speed [MHz] is", 1, "     %5d     ", spd_mhz);
+
+	/* GSERX_PHY_CTL */
+	phy_ctl.u64 = cvmx_read_csr_node(node, CVMX_GSERX_PHY_CTL(gser));
+	PRns("Powered Down (phy_pd)", 1, "       %3s     ",
+		phy_ctl.s.phy_pd ? "Yes" : " No");
+	PRns("Hold in Reset (phy_reset)", 1, "       %3s     ",
+		phy_ctl.s.phy_reset ? "Yes" : " No");
+
+	/* GSERX_REFCLK_SEL */
+	refclk_sel.u64 = cvmx_read_csr_node(node, CVMX_GSERX_REFCLK_SEL(gser));
+	PRns("Reference Clock is (com_clk_sel)", 1, "    %8s   ",
+		refclk_sel.s.com_clk_sel ? "External" : "Internal");
+	PRcs("Use External Clock (use_com1)", 1,
+		/*cond*/ refclk_sel.s.com_clk_sel,/* i.e. External clk */
+		"      %4s     ", refclk_sel.s.use_com1 ? "CLK1" : "CLK0");
+	PRcs("(PCIe ONLY)Reference Clock is(pcie_refclk125)", 1,
+		/*cond*/cfg.s.pcie/* i.e PCIe mode only */,
+		"    %7s    ",
+		refclk_sel.s.pcie_refclk125 ? "125 Mhz" : " 100 Mhz");
+
+	/* GSERX_IDDQ_MODE */
+	iddq_mode.u64 = cvmx_read_csr_node(node, CVMX_GSERX_IDDQ_MODE(gser));
+	PRns("PHY powered down for IDDQ testing(phy_iddq_mode)", 1,
+		"       %3s     ", iddq_mode.s.phy_iddq_mode ? "Yes" : " No");
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		/*  NOTE: this reg is reserved for 73xx and 75xx */
+		/*  GSERX_SPD */
+		spd.u64 = cvmx_read_csr_node(node, CVMX_GSERX_SPD(gser));
+		PRns("Speed (if supported) REF_CLK/RATE/LMODE", 1,
+			"       %s     ", SPD_string[spd.s.spd]);
+	}
+
+	/* GSERX_SRST */
+	srst.u64 = cvmx_read_csr_node(node, CVMX_GSERX_SRST(gser));
+	PRns("All per-lane State Reset(excl. PHY & CFG)(srst)", 1,
+		"       %3s     ", srst.s.srst ? "Yes" : " No");
+
+	/* GSERX_DBG */
+	dbg.u64 = cvmx_read_csr_node(node, CVMX_GSERX_DBG(gser));
+	PRcs("DEBUG Enabled for non-BGX (rxqtm_on)", 1,
+		/*cond*/ (cfg.s.bgx==0)/* i.e. non-BGX */,
+		"       %3s     ",
+		dbg.s.rxqtm_on ? "Yes" : " No");
+
+	/* GSER(0..13)_LANE_SRST - skip -diag only */
+	lane_srst.u64 = cvmx_read_csr_node(node, CVMX_GSERX_LANE_SRST(gser));
+	PRcs("All lanes State Reset(non-PCIe, non-SATA)(lsrst)", 1,
+		/*cond*/!(cfg.s.pcie || cfg.s.sata),/* i.e non-PCIe, non-SATA */
+		"       %3s     ",
+		lane_srst.s.lsrst ? "Yes" : " No");
+
+	/* GSER(0..13)_LANE_MODE */
+	lane_mode.u64 = cvmx_read_csr_node(node, CVMX_GSERX_LANE_MODE(gser));
+	PRns("LMODE name (LMODE)->index PHY table", 1,
+		"       %s     ", LMODE_string[lane_mode.s.lmode]);
+	/* GSER(0..6)_TX_VBOOST - skip */
+
+	/* GSER(0..6)_RX_EIE_FILTER - RX Electrical Idle Detect Filter Settings */
+	rx_eie_filter.u64 = cvmx_read_csr_node(node, CVMX_GSERX_RX_EIE_FILTER(gser));
+	PRn("EIE (Electrical Idle Exit) Filter count(eii_filt)", 1,
+		"     %5d     ", rx_eie_filter.s.eii_filt);
+
+	/* training/diag only or raw PCS regs or not related to normal mode - skip
+	 * GSER(0..6)_REFCLK_EVT_CTRL - skip
+	 * GSER(0..6)_REFCLK_EVT_CNTR - skip
+	 * GSER(0..6)_TXCLK_EVT_CTRL  - skip
+	 * GSER(0..6)_TXCLK_EVT_CNTR  - skip
+	 * GSER Analog Test Registers - GSER(0..6)_ANA_ATEST
+	 * GSER Analog Select Registers - GSER(0..6)_ANA_SEL
+	 * GSER Slice Configuration Registers - GSER(0..6)_SLICE_CFG
+	 * GSER RX Power Controls in Power State P2 Registers - GSER(0..6)_RX_PWR_CTRL_P2
+	 * GSER Monitor for SerDes Global to Raw PCS Global interface Registers - GSER(0..6)_GLBL_PLL_MONITOR
+	 * GSER Slice RX SDLL Registers - GSER(0..6)_SLICE(0..1)_RX_SDLL_CTRL
+	 * GSER Global Test Analog and Digital Monitor Registers - GSER(0..6)_GLBL_TAD
+	 * GSER Global Test Mode Analog/Digital Monitor Enable Registers - GSER(0..6)_GLBL_TM_ADMON
+	 * GSER TX and RX Equalization Wait Times Registers - GSER(0..6)_EQ_WAIT_TIME
+	 * GSER Receiver Detect Wait Times Registers - GSER(0..6)_RDET_TIME
+	 * GSER PLL Protocol Mode 0 Registers - GSER(0..6)_PLL_P(0..11)_MODE_0
+	 * GSER PLL Protocol Mode 1 Registers - GSER(0..6)_PLL_P(0..11)_MODE_1
+	 * GSER Lane Protocol Mode 0 Registers - GSER(0..6)_LANE_P(0..11)_MODE_0
+	 * GSER Lane Protocol Mode 1 Registers - GSER(0..6)_LANE_P(0..11)_MODE_1
+	 * GSER Lane VMA Coarse Control 0 Registers - GSER(0..6)_LANE_VMA_COARSE_CTRL_0
+	 * GSER Lane VMA Coarse Control 1 Registers - GSER(0..6)_LANE_VMA_COARSE_CTRL_1
+	 * GSER Lane VMA Coarse Control 2 Registers - GSER(0..6)_LANE_VMA_COARSE_CTRL_2
+	 * GSER Lane VMA Fine Control 0 Registers - GSER(0..6)_LANE_VMA_FINE_CTRL_0
+	 * GSER Lane VMA Fine Control 1 Registers - GSER(0..6)_LANE_VMA_FINE_CTRL_1
+	 * GSER Lane VMA Coarse Control 2 Registers - GSER(0..6)_LANE_VMA_FINE_CTRL_2
+	 */
+	return 0;
+}
+
+int cvmx_dump_gser_sata_status(unsigned node, unsigned gser, unsigned N)
+{
+	cvmx_gserx_sata_status_t	sata_status;
+
+	cvmx_dprintf("/* GSER%d SATA status */\n", gser);
+	PRn("Lanes:", N, "      lane%d    ", ind);
+
+	/* STATUS	(lane0,1) */
+	sata_status.u64 = cvmx_read_csr_node(node,
+				CVMX_GSERX_SATA_STATUS(gser));
+	PRns("PHY Lane is Ready to send/receive data(p0_rdy)", N,
+		"       %3s     ",
+		sata_status.u64 & (1<<ind) ? "Yes" : " No");
+	return 0;
+}
+
+int cvmx_dump_gser_lane_status(unsigned node, unsigned gser, unsigned N)
+{
+	cvmx_gserx_rx_eie_detsts_t	rx_eie_detsts;
+
+	cvmx_dprintf("/* GSER%d LANE status */\n", gser);
+	PRn("Lanes:", N, "      lane%d    ", ind);
+	/* GSER(0..6)_RX_EIE_DETSTS */
+	rx_eie_detsts.u64 = cvmx_read_csr_node(node, CVMX_GSERX_RX_EIE_DETSTS(gser));
+	PRns("CDR (Clock/Data Recovery) locked(cdrlock)", N,
+		"       %3s     ",
+		(rx_eie_detsts.s.cdrlock & (1<<ind)) ? "Yes" : " No");
+	PRns("EIE (Electrical Idle Exit) detect status(eiests)", N,
+		"  %12s ", (rx_eie_detsts.s.eiests & (1<<ind))
+			? "  Detected  " : "NOT Detected");
+	PRns("EIE (Electrical Idle Exit) latch status(eieltch)", N,
+		"   %11s ", (rx_eie_detsts.s.eieltch & (1<<ind))
+			? "  Latched  " : "NOT Latched");
+	return 0;
+}
+
+int cvmx_dump_gser_common_status(unsigned node, unsigned gser, unsigned N)
+{
+	enum cvmx_qlm_mode gser_mode;
+	int spd_mhz;
+	cvmx_gserx_qlm_stat_t		qlm_stat;
+	cvmx_gserx_pll_stat_t		pll_stat;
+
+	cvmx_dprintf("/* GSER%d common status */\n", gser);
+
+	gser_mode = cvmx_qlm_get_mode(gser);
+	PRns("GSER mode is", 1, " %s", qlm_mode_name(gser_mode));
+	PRns("GSER Number of Lanes is", 1, "        %1d      ", N);
+	spd_mhz = cvmx_qlm_get_gbaud_mhz_node(node, gser);
+	PRns("GSER Speed [MHz] is", 1, "     %5d     ", spd_mhz);
+
+	/* GSERX_QLM_STAT */
+	qlm_stat.u64 = cvmx_read_csr_node(node, CVMX_GSERX_QLM_STAT(gser));
+	PRns("Reset Ready/Completed (rst_rdy)", 1, "       %3s     ",
+		qlm_stat.s.rst_rdy ? "Yes" : " No");
+	PRns("There is a PLL ref clk(GSER is Powered)(dcok)", 1,
+		"       %3s     ", qlm_stat.s.dcok ? "Yes" : " No");
+	/* GSERX_PLL_STAT */
+	pll_stat.u64 = cvmx_read_csr_node(node, CVMX_GSERX_PLL_STAT(gser));
+	PRns("PLL Locked (pll_lock)", 1, "       %3s     ",
+		pll_stat.s.pll_lock ? "Yes" : " No");
+
+	return 0;
+}
+
+/**
+ * Dump QLM/DLM configuration per GSER
+ * @param node - node (use '0' for single node)
+ * @param gser - which QLM/DLM to dump config for
+ * CN73xx: GSER(0..6) mapped to [Q|D]LM(0..6)
+ */
+int cvmx_dump_gser_config_node(unsigned node, unsigned gser)
+{
+	unsigned gser_max;
+	cvmx_gserx_cfg_t cfg;
+	int N;
+
+	gser_max = cvmx_get_gser_num();
+	if (gser > gser_max) {
+		cvmx_dprintf("Unsupported model - add to cvmx_get_gser_num()\n");
+		return -1;
+	}
+
+	N = cvmx_qlm_get_lanes(gser);
+	if (N < 0) {
+		cvmx_dprintf("Unsupported model - add to cvmx_qlm_get_lanes()\n");
+		return -1;
+	}
+
+	/* Check if QLM is configured */
+	cfg.u64 = cvmx_read_csr_node(node, CVMX_GSERX_CFG(gser));
+	if (cfg.u64 == 0) {
+		cvmx_dprintf("ERROR:GSER%d: QLM mode is not configured(gser_cfg.u64=0)\n", gser);
+		return -1;
+	}
+
+	cvmx_dump_gser_common_config(node, gser, N);
+	cvmx_dump_gser_lane_config(node, gser, N);
+	if (cfg.s.pcie)
+		cvmx_dump_gser_pcie_config(node, gser, N);
+
+	else if (OCTEON_IS_MODEL(OCTEON_CN73XX) && cfg.s.sata)
+
+		/* NOTE: 78xx, 76xx and 75xx GSERs do not support SATA */
+		cvmx_dump_gser_sata_config(node, gser, N);
+
+	return 0;
+}
+
+/**
+ * Dump QLM/DLM status per GSER
+ * @param node - node (use '0' for single node)
+ * @param gser - which QLM/DLM to dump config for
+ * CN73xx: GSER(0..6) mapped to [Q|D]LM(0..6)
+ */
+int cvmx_dump_gser_status_node(unsigned node, unsigned gser)
+{
+	unsigned gser_max;
+	cvmx_gserx_cfg_t cfg;
+	int N;
+
+	gser_max = cvmx_get_gser_num();
+	if (gser > gser_max) {
+		cvmx_dprintf("Unsupported model - add to cvmx_get_gser_num()\n");
+		return -1;
+	}
+
+	N = cvmx_qlm_get_lanes(gser);
+	if (N < 0) {
+		cvmx_dprintf("Unsupported model - add to cvmx_qlm_get_lanes()\n");
+		return -1;
+	}
+
+	/* Check if QLM is configured */
+	cfg.u64 = cvmx_read_csr_node(node, CVMX_GSERX_CFG(gser));
+	if (cfg.u64 == 0) {
+		cvmx_dprintf("ERROR:GSER%d: QLM mode is not configured(gser_cfg.u64=0)\n", gser);
+		return -1;
+	}
+
+	cvmx_dump_gser_common_status(node, gser, N);
+	cvmx_dump_gser_lane_status(node, gser, N);
+	if (cfg.s.sata)
+		cvmx_dump_gser_sata_status(node, gser, N);
+
+	return 0;
+}
+
+int cvmx_dump_gser_config(unsigned gser)
+{
+	return cvmx_dump_gser_config_node(0, gser);
+}
+
+int cvmx_dump_gser_status(unsigned gser)
+{
+	return cvmx_dump_gser_status_node(0, gser);
+}
+
+#endif

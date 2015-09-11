@@ -51,6 +51,7 @@
 #include <asm/octeon/cvmx-pki-resources.h>
 #include <asm/octeon/cvmx-helper-util.h>
 #include <asm/octeon/cvmx-ipd.h>
+#include <asm/octeon/cvmx-helper-pki.h>
 #include <asm/octeon/cvmx-global-resources.h>
 #else
 #include "cvmx.h"
@@ -551,6 +552,7 @@ EXPORT_SYMBOL(cvmx_helper_pki_port_shutdown);
  */
 void cvmx_helper_pki_shutdown(int node)
 {
+	int i, k;
 	/* remove pcam entries */
 	/* Disable PKI */
 	cvmx_pki_disable(node);
@@ -561,6 +563,25 @@ void cvmx_helper_pki_shutdown(int node)
 	/* Free all the allocated PKI resources
 	except fpa pools & aura which will be done in fpa block */
 	__cvmx_pki_global_rsrc_free(node);
+	/* Setup some configuration registers to the reset state.*/
+	for (i = 0; i < CVMX_PKI_NUM_PKIND; i++) {
+		for (k = 0; k < (int)CVMX_PKI_NUM_CLUSTER; k++) {
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_CFG(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_STYLE(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_SKIP(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_L2_CUSTOM(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_LG_CUSTOM(i, k), 0);			
+		}
+		cvmx_write_csr_node(node, CVMX_PKI_PKINDX_ICGSEL(k), 0);			
+	}
+	for (i = 0; i < CVMX_PKI_NUM_FINAL_STYLE; i++) {
+		for (k = 0; k < (int)CVMX_PKI_NUM_CLUSTER; k++) {
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_STYLEX_CFG(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_STYLEX_CFG2(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_STYLEX_ALG(i, k), 0);			
+		}
+		cvmx_write_csr_node(node, CVMX_PKI_STYLEX_BUF(k), (0x5 << 22) | 0x20);			
+	}
 }
 EXPORT_SYMBOL(cvmx_helper_pki_shutdown);
 
@@ -775,15 +796,15 @@ int __cvmx_helper_pki_port_rsrcs(int node, struct cvmx_pki_prt_schd *prtsch)
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 	int rs;
 
-       /* Erratum 22557: Disable per-port allocation for CN78XX pass 1.X */
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) {
+	/* Erratum 22557: Disable per-port allocation for CN78XX pass 1.X */
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) { 
 		static bool warned = false;
 		prtsch->pool_per_prt = 0;
 		if (!warned)
 			cvmx_printf("WARNING: %s: "
 			"Ports configured in single-pool mode "
 			"per erratum 22557.\n", __func__);
-			warned = true;
+		warned = true;
 	}
 	/* Reserve pool resources */
 	if (prtsch->pool_per_prt && prtsch->pool_num < 0) {
@@ -946,7 +967,7 @@ int cvmx_helper_pki_set_gbl_schd(int node, struct cvmx_pki_global_schd *gblsch)
 {
 	int rs;
 
-	if (gblsch->setup_pool) {
+	if (gblsch->setup_pool && gblsch->pool_num < 0) {
 		if (pki_helper_debug)
 			cvmx_dprintf("%s: gbl setup global pool %d buff_size %d blocks %d\n",
 				__func__, gblsch->pool_num,
@@ -969,7 +990,7 @@ int cvmx_helper_pki_set_gbl_schd(int node, struct cvmx_pki_global_schd *gblsch)
 		if (pki_helper_debug)
 			cvmx_dprintf("pool alloced is %d\n", gblsch->pool_num);
 	}
-	if (gblsch->setup_aura) {
+	if (gblsch->setup_aura && gblsch->aura_num < 0) {
 		if (pki_helper_debug)
 			cvmx_dprintf("%s: gbl setup global aura %d pool %d blocks %d\n",
 				__func__, gblsch->aura_num, gblsch->pool_num,
@@ -993,7 +1014,7 @@ int cvmx_helper_pki_set_gbl_schd(int node, struct cvmx_pki_global_schd *gblsch)
 			cvmx_dprintf("aura alloced is %d\n", gblsch->aura_num);
 
 	}
-	if (gblsch->setup_sso_grp) {
+	if (gblsch->setup_sso_grp && gblsch->sso_grp < 0) {
 		//unsigned grp_node;
 		//grp_node = (abs)(gblsch->setup_sso_grp + CVMX_PKI_FIND_AVAILABLE_RSRC);/*vinita_to_do to extract node*/
 		rs = cvmx_sso_reserve_group(node);
@@ -1701,7 +1722,7 @@ void cvmx_helper_pki_set_fcs_op(int node, int interface, int nports, int has_fcs
 {
 	int index;
 	int pknd;
-	int cluster = 0;
+	unsigned cluster = 0;
 	cvmx_pki_clx_pkindx_cfg_t pkind_cfg;
 
 	for (index = 0; index < nports; index++) {

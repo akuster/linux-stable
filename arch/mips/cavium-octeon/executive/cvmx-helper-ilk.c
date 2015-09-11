@@ -728,6 +728,18 @@ retry:
 	ilk_rxx_int.u64 = cvmx_read_csr_node(node, CVMX_ILK_RXX_INT(interface));
 
 	if (ilk_rxx_cfg1.s.rx_bdry_lock_ena == 0) {
+		/* (GSER-21957) GSER RX Equalization may make >= 5gbaud non-KR
+		   channel better */
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) {
+			int qlm, lane_mask;
+			for (qlm = 4; qlm < 8; qlm++) {
+				lane_mask = 1 << (qlm - 4) * 4;
+				if (lane_mask & cvmx_ilk_lane_mask[node][interface]) {
+					__cvmx_qlm_rx_equalization(node, qlm, -1);
+				}
+			}
+		}
+
 		/* Clear the boundary lock status bit */
 		ilk_rxx_int.u64 = 0;
 		ilk_rxx_int.s.word_sync_done = 1;
@@ -809,7 +821,7 @@ retry:
 	result.s.link_up = 1;
 	result.s.full_duplex = 1;
  	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		int qlm = cvmx_qlm_interface(xiface);
+		int qlm = cvmx_qlm_lmac(xiface, 0);
 		result.s.speed = cvmx_qlm_get_gbaud_mhz(qlm) * 64 / 67;
 	} else
 		result.s.speed = cvmx_qlm_get_gbaud_mhz(1 + interface) * 64 / 67;

@@ -42,7 +42,7 @@
  *
  * Interface to the TWSI / I2C bus
  *
- * <hr>$Revision: 109848 $<hr>
+ * <hr>$Revision: 109574 $<hr>
  *
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL

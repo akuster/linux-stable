@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -43,7 +43,7 @@
  * File defining functions for working with different Octeon
  * models.
  *
- * <hr>$Revision: 113335 $<hr>
+ * <hr>$Revision: 122055 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/octeon.h>
@@ -72,7 +72,7 @@
  */
 int octeon_model_version_check(uint32_t chip_id __attribute__ ((unused)))
 {
-	/* printf("Model Number: %s\n", octeon_model_get_string(chip_id)); */
+	//printf("Model Number: %s\n", octeon_model_get_string(chip_id));
 #if !OCTEON_IS_COMMON_BINARY()
 	/* Check for special case of mismarked 3005 samples, and adjust cpuid */
 	if (chip_id == OCTEON_CN3010_PASS1 && (cvmx_read_csr(0x80011800800007B8ull) & (1ull << 34)))
@@ -451,14 +451,16 @@ const char *octeon_model_get_string_buffer(uint32_t chip_id, char *buffer)
 		if (fus_dat3.cn78xx.nozip
 		    && fus_dat3.cn78xx.nodfa_dte
 		    && fus_dat3.cn78xx.nohna_dte) {
-			if (fus_dat3.cn78xx.nozip &&
+			if (fus_dat3.cn78xx.nozip && 
 				!fus_dat2.cn78xx.raid_en &&
 				fus_dat3.cn78xx.nohna_dte) {
 				suffix = "CP";
-			} else {
+			}
+			else {
 				suffix = "SCP";
 			}
-		} else if (fus_dat2.cn78xx.raid_en == 0)
+		}
+		else if (fus_dat2.cn78xx.raid_en == 0)
 			suffix = "HCP";
 		else
 			suffix = "AAP";
@@ -470,6 +472,34 @@ const char *octeon_model_get_string_buffer(uint32_t chip_id, char *buffer)
 		if (fus_dat2.cn70xx.nocrypto)
 			suffix = "CP";
 		else if (fus_dat3.cn70xx.nodfa_dte)
+			suffix = "SCP";
+		else
+			suffix = "AAP";
+		break;
+	case 0x97:		/* CN73XX */
+		if (num_cores == 6)	/* Other core counts match generic */
+			core_model = "35";
+		family = "73";
+		if (fus_dat3.cn73xx.l2c_crip == 2)
+			family = "72";
+		if (fus_dat3.cn73xx.nozip
+				&& fus_dat3.cn73xx.nodfa_dte
+				&& fus_dat3.cn73xx.nohna_dte) {
+			if (!fus_dat2.cn73xx.raid_en) {
+				suffix = "CP";
+			}
+			else {
+				suffix = "SCP";
+			}
+		}
+		else 
+			suffix = "AAP";
+		break;
+	case 0x98:		/* CN75XX */
+		family = "F75";
+		if (fus_dat3.cn78xx.nozip
+		    && fus_dat3.cn78xx.nodfa_dte
+		    && fus_dat3.cn78xx.nohna_dte)
 			suffix = "SCP";
 		else
 			suffix = "AAP";

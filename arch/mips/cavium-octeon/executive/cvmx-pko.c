@@ -1,4 +1,4 @@
-/***********************license start***************
+/***********************license start*************** 
  * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
@@ -84,7 +84,7 @@ static const int debug = 0;
  */
 
 #define pko_for_each_port(__p)					\
-	for (__p = 0; __p < CVMX_HELPER_CFG_MAX_PKO_PORT; __p++)	\
+    for (__p = 0; __p < CVMX_HELPER_CFG_MAX_PKO_PORT; __p++)	\
 	if (__cvmx_helper_cfg_pko_queue_base(__p) != CVMX_HELPER_CFG_INVALID_VALUE)
 
 
@@ -222,7 +222,7 @@ EXPORT_SYMBOL(cvmx_pko_get_num_queues);
 void cvmx_pko_show_queue_map(void)
 {
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
-		cvmx_dprintf("%s: not supported on this chip\n", __FUNCTION__);
+		cvmx_dprintf("%s: not supported on this chip\n",__FUNCTION__);
 		return;
 	} else if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
 		int port;
@@ -238,7 +238,7 @@ void cvmx_pko_show_queue_map(void)
 		int port;
 		int pko_output_ports;
 		pko_output_ports = 40;
-		cvmx_dprintf("pko queue info\n");
+		cvmx_dprintf("pko queue info \n");
 		for (port = 0; port < pko_output_ports; port++) {
 			cvmx_dprintf("%3d=%3d-%3d ",
 				port,
@@ -449,8 +449,8 @@ void cvmx_pko_hw_init(uint8_t pool, unsigned bufsize)
 					union cvmx_pko_reg_engine_storagex engine_storage;
 
 #define PKO_ASSIGN_ENGINE_STORAGE(index)                        \
-		engine_storage.s.engine##index =                        \
-		__cvmx_pko_memory_per_engine_o68(16 * i + (index))
+        engine_storage.s.engine##index =                        \
+            __cvmx_pko_memory_per_engine_o68(16 * i + (index))
 
 					engine_storage.u64 = 0;
 					PKO_ASSIGN_ENGINE_STORAGE(0);
@@ -601,7 +601,7 @@ cvmx_pko_return_value_t cvmx_pko_config_port(int port, int base_queue,
 		cvmx_dprintf("%s: port=%d queue=%d-%d pri %#x %#x %#x %#x\n",
 			__func__,
 			port, base_queue, (base_queue+num_queues-1),
-			priority[0], priority[1], priority[2], priority[3]);
+			priority[0],priority[1], priority[2], priority[3]);
 
 	/* The need to handle ILLEGAL_PID port argument
 	 * is obsolete now, the code here can be simplified.
@@ -750,7 +750,7 @@ cvmx_pko_return_value_t cvmx_pko_config_port(int port, int base_queue,
 					return (CVMX_PKO_NO_MEMORY);
 				case CVMX_CMD_QUEUE_ALREADY_SETUP:
 					cvmx_dprintf("ERROR: %s: "
-					"Port already setup. port=%d\n",
+					"Port already setup. port=%d \n",
 					__func__, (int) port);
 					return (CVMX_PKO_PORT_ALREADY_SETUP);
 				case CVMX_CMD_QUEUE_INVALID_PARAM:
@@ -801,7 +801,7 @@ static cvmx_pko_return_value_t cvmx_pko2_config_port(short ipd_port, int base_qu
 
 	if (debug)
 		cvmx_dprintf("%s: ipd_port %d pko_iport %d qbase %d qnum %d\n",
-		__func__, ipd_port, pko_port, base_queue, num_queues);
+		__func__, ipd_port, pko_port, base_queue, num_queues );
 
 	static_priority_base = -1;
 	static_priority_end = -1;
@@ -907,10 +907,10 @@ static cvmx_pko_return_value_t cvmx_pko2_config_port(short ipd_port, int base_qu
 			if (cmd_res != CVMX_CMD_QUEUE_SUCCESS) {
 				switch (cmd_res) {
 				case CVMX_CMD_QUEUE_NO_MEMORY:
-					cvmx_dprintf("ERROR: %s: Unable to allocate output buffer\n", __func__);
+					cvmx_dprintf("ERROR: %s: Unable to allocate output buffer\n",__func__);
 					break;
 				case CVMX_CMD_QUEUE_ALREADY_SETUP:
-					cvmx_dprintf("ERROR: %s: Port already setup\n", __func__);
+					cvmx_dprintf("ERROR: %s: Port already setup\n",__func__);
 					break;
 				case CVMX_CMD_QUEUE_INVALID_PARAM:
 				default:
@@ -1020,7 +1020,7 @@ int cvmx_pko_rate_limit_bits(int port, uint64_t bits_s, int burst)
  *       order. It is not MP-safe and caller should guarantee
  *       atomicity.
  */
-void cvmx_pko_get_port_status(uint64_t ipd_port, uint64_t clear, cvmx_pko_port_status_t *status)
+void cvmx_pko_get_port_status(uint64_t ipd_port, uint64_t clear, cvmx_pko_port_status_t * status)
 {
 	cvmx_pko_reg_read_idx_t pko_reg_read_idx;
 	cvmx_pko_mem_count0_t pko_mem_count0;
@@ -1102,13 +1102,13 @@ EXPORT_SYMBOL(cvmx_pko_get_port_status);
  * @param queue is the queue identifier to be queried
  * @return the number of commands pending transmission or -1 on error
  */
-int cvmx_pko_queue_pend_count(cvmx_cmd_queue_id_t queue)
+int cvmx_pko_queue_pend_count( cvmx_cmd_queue_id_t queue)
 {
 	int count;
 
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		int node = cvmx_get_node_num();
-		count = cvmx_pko3_dq_query(node, queue);
+		count = cvmx_pko3_dq_query(node,queue);
 	} else {
 		count = cvmx_cmd_queue_length(CVMX_CMD_QUEUE_PKO(queue));
 	}

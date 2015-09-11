@@ -43,7 +43,7 @@
  * Simple allocate only memory allocator.  Used to allocate memory at
  * application start time.
  *
- * <hr>$Revision: 113619 $<hr>
+ * <hr>$Revision: 112705 $<hr>
  *
  */
 
@@ -463,8 +463,8 @@ static int __cvmx_validate_mem_range(uint64_t *min_addr_ptr,
 		/* Narrow range requests to be bounded by the 32 bit limits.  octeon_phy_mem_block_alloc()
 		 ** will reject inconsistent req_size/range requests, so we don't repeat those checks here.
 		 ** If max unspecified, set to 32 bit maximum. */
-		/* cvmx_dprintf("linux_mem32_min=%llx linux_mem32_max=%llx\n", (unsigned long long) linux_mem32_min,
-			     (unsigned long long) linux_mem32_max); */
+		//cvmx_dprintf("linux_mem32_min=%llx linux_mem32_max=%llx\n", (unsigned long long) linux_mem32_min,
+		//	     (unsigned long long) linux_mem32_max);
 		*min_addr_ptr = MIN(MAX(*min_addr_ptr, linux_mem32_min),
 				    linux_mem32_max);
 		if (!*max_addr_ptr)

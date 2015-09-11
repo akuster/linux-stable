@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -43,7 +43,7 @@
  * Implementation of the Level 2 Cache (L2C) control,
  * measurement, and debugging facilities.
  *
- * <hr>$Revision: 113624 $<hr>
+ * <hr>$Revision: 115982 $<hr>
  *
  */
 
@@ -196,7 +196,7 @@ int cvmx_l2c_set_hw_way_partition2(uint32_t mask)
 	uint32_t valid_mask;
 	int node = cvmx_get_node_num();
 
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (CVMX_L2C_IOBS < 2)
 		return -1;
 
 	valid_mask = (0x1 << cvmx_l2c_get_num_assoc()) - 1;
@@ -208,10 +208,9 @@ int cvmx_l2c_set_hw_way_partition2(uint32_t mask)
 int cvmx_l2c_get_hw_way_partition2(void)
 {
 	int node = cvmx_get_node_num();
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN78XX))) {
-		cvmx_warn("only one IOB on this chip");
+	if (CVMX_L2C_IOBS < 2)
 		return -1;
-	}
+
 	return cvmx_read_csr_node(node, CVMX_L2C_WPAR_IOBX(1)) & 0xffff;
 }
 
@@ -398,9 +397,13 @@ int cvmx_l2c_lock_line(uint64_t addr)
 				 && l2c_tadx_tag.cn70xx.valid
 				 && l2c_tadx_tag.cn70xx.tag == tag)
 				break;
+			else if ((OCTEON_IS_MODEL(OCTEON_CN73XX)
+				  || OCTEON_IS_MODEL(OCTEON_CNF75XX))
+				 && l2c_tadx_tag.cn73xx.tag == tag)
+				break;
 			else if (l2c_tadx_tag.cn78xx.ts != 0
 				 && l2c_tadx_tag.cn78xx.tag == tag)
-				break;
+			        break;
 
 			 /* cvmx_dprintf("caddr=%lx tad=%d tagu64=%lx valid=%x tag=%x \n", caddr,
 			   tad, l2c_tadx_tag.u64, l2c_tadx_tag.cn70xx.valid, l2c_tadx_tag.cn70xx.tag); */
@@ -740,8 +743,8 @@ static union __cvmx_l2c_tag __read_l2_tag(uint64_t assoc, uint64_t index)
 		      "sd    $0, 0(%[dbg_addr])\n\t"	/* Exit debug mode, wait for store */
 		      "ld    $0, 0(%[dbg_addr])\n\t" "cache 9, 0($0)\n\t"	/* Invalidate dcache to discard debug data */
 		      ".set pop":[tag_val] "=r"(tag_val)
-		      : [dbg_addr] "r"(dbg_addr), [dbg_val] "r"(debug_val), [tag_addr] "r"(debug_tag_addr)
-		      : "memory");
+		      :[dbg_addr] "r"(dbg_addr),[dbg_val] "r"(debug_val),[tag_addr] "r"(debug_tag_addr)
+		      :"memory");
 
 	cvmx_local_irq_restore(flags);
 
@@ -786,6 +789,14 @@ union cvmx_l2c_tag cvmx_l2c_get_tag_v2(uint32_t association, uint32_t index, uin
 			tag.s.L = l2c_tadx_tag.cn78xx.lock;
 			tag.s.U = l2c_tadx_tag.cn78xx.used;
 			tag.s.addr = l2c_tadx_tag.cn78xx.tag;
+		} else if (OCTEON_IS_MODEL(OCTEON_CN73XX)
+			   || OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+			if (l2c_tadx_tag.cn73xx.ts != 0)
+				tag.s.V = 1;
+			tag.s.D = l2c_tadx_tag.cn73xx.sblkdty;
+			tag.s.L = l2c_tadx_tag.cn73xx.lock;
+			tag.s.U = l2c_tadx_tag.cn73xx.used;
+			tag.s.addr = l2c_tadx_tag.cn73xx.tag;
 		} else {
 			tag.s.V = l2c_tadx_tag.cn61xx.valid;
 			tag.s.D = l2c_tadx_tag.cn61xx.dirty;
@@ -879,6 +890,14 @@ union cvmx_l2c_tag cvmx_l2c_get_tag(uint32_t association, uint32_t index)
 			tag.s.L = l2c_tadx_tag.cn78xx.lock;
 			tag.s.U = l2c_tadx_tag.cn78xx.used;
 			tag.s.addr = l2c_tadx_tag.cn78xx.tag;
+		} else if (OCTEON_IS_MODEL(OCTEON_CN73XX)
+			   || OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+			if (l2c_tadx_tag.cn73xx.ts == 0)
+				tag.s.V = 1;
+			tag.s.D = l2c_tadx_tag.cn73xx.sblkdty;
+			tag.s.L = l2c_tadx_tag.cn73xx.lock;
+			tag.s.U = l2c_tadx_tag.cn73xx.used;
+			tag.s.addr = l2c_tadx_tag.cn73xx.tag;
 		} else {
 			tag.s.V = l2c_tadx_tag.cn61xx.valid;
 			tag.s.D = l2c_tadx_tag.cn61xx.dirty;
@@ -938,7 +957,9 @@ union cvmx_l2c_tag cvmx_l2c_get_tag(uint32_t association, uint32_t index)
 int cvmx_l2c_address_to_tad(uint64_t addr)
 {
 	uint32_t tad;
-	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX)
+	    || OCTEON_IS_MODEL(OCTEON_CN73XX)
+	    || OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
 		cvmx_l2c_ctl_t l2c_ctl;
 		l2c_ctl.u64 = cvmx_read_csr(CVMX_L2C_CTL);
 		if (!l2c_ctl.s.disidxalias) {
@@ -992,18 +1013,22 @@ uint32_t cvmx_l2c_address_to_index(uint64_t addr)
 	}
 
 	if (indxalias) {
-		if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+		/* For 4 TADs */
+		if (OCTEON_IS_MODEL(OCTEON_CN68XX)
+		    || OCTEON_IS_MODEL(OCTEON_CN73XX)
+		    || OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
 			uint32_t a_14_12 = (idx / (CVMX_L2C_MEMBANK_SELECT_SIZE / (1 << CVMX_L2C_IDX_ADDR_SHIFT))) & 0x7;
 			idx ^= (idx / cvmx_l2c_get_num_sets()) & 0x3ff;
 			idx ^= a_14_12 & 0x3;
 			idx ^= a_14_12 << 2;
+		/* For 8 TADs */
 		} else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 			uint32_t a_14_12 = (idx / (CVMX_L2C_MEMBANK_SELECT_SIZE / (1 << CVMX_L2C_IDX_ADDR_SHIFT))) & 0x7;
-			uint64_t above_normal_index = (idx / cvmx_l2c_get_num_sets()) & 0xff;	/* A<27:20> */
-			idx ^= above_normal_index;		  /* XOR in A<27:20> */
-			idx ^= (above_normal_index & 0x1F) << 8;  /* XOR in A<24:20> */
-			idx ^= a_14_12;				  /* XOR in A<14:12> */
-			idx ^= (a_14_12 & 0x3) << 3;		  /* XOR in A<13:12> */
+			uint64_t above_normal_index = (idx / cvmx_l2c_get_num_sets()) & 0xff;	// A<27:20>
+			idx ^= above_normal_index;		  // XOR in A<27:20>
+			idx ^= (above_normal_index & 0x1F) << 8;  // XOR in A<24:20>
+			idx ^= a_14_12;				  // XOR in A<14:12>
+			idx ^= (a_14_12 & 0x3) << 3;		  // XOR in A<13:12>
 		} else if (OCTEON_IS_OCTEON2()
 			   || OCTEON_IS_MODEL(OCTEON_CN70XX)) {
 			uint32_t a_14_12 = (idx / (CVMX_L2C_MEMBANK_SELECT_SIZE / (1 << CVMX_L2C_IDX_ADDR_SHIFT))) & 0x7;
@@ -1033,7 +1058,9 @@ int cvmx_l2c_get_set_bits(void)
 		l2_set_bits = 13;	/* 8192 sets */
 	else if (OCTEON_IS_MODEL(OCTEON_CN56XX)
 		 || OCTEON_IS_MODEL(OCTEON_CN58XX)
-		 || OCTEON_IS_MODEL(OCTEON_CN68XX))
+		 || OCTEON_IS_MODEL(OCTEON_CN68XX)
+		 || OCTEON_IS_MODEL(OCTEON_CN73XX)
+		 || OCTEON_IS_MODEL(OCTEON_CNF75XX))
 		l2_set_bits = 11;	/* 2048 sets */
 	else if (OCTEON_IS_MODEL(OCTEON_CN38XX)
 		 || OCTEON_IS_MODEL(OCTEON_CN63XX)
@@ -1073,7 +1100,10 @@ int cvmx_l2c_get_num_assoc(void)
 		|| OCTEON_IS_MODEL(OCTEON_CN50XX)
 		|| OCTEON_IS_MODEL(OCTEON_CN38XX))
 		l2_assoc = 8;
-	else if (OCTEON_IS_OCTEON2() || OCTEON_IS_MODEL(OCTEON_CN78XX))
+	else if (OCTEON_IS_OCTEON2()
+		 || OCTEON_IS_MODEL(OCTEON_CN78XX)
+		 || OCTEON_IS_MODEL(OCTEON_CN73XX)
+		 || OCTEON_IS_MODEL(OCTEON_CNF75XX))
 		l2_assoc = 16;
 	else if (OCTEON_IS_MODEL(OCTEON_CN31XX)
 		|| OCTEON_IS_MODEL(OCTEON_CN30XX))
@@ -1104,7 +1134,7 @@ int cvmx_l2c_get_num_assoc(void)
 	}
 
 	/* Check to see if part of the cache is disabled */
-	if (OCTEON_IS_OCTEON2() || OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+	if (OCTEON_IS_OCTEON2() || OCTEON_IS_OCTEON3()) {
 		union cvmx_mio_fus_dat3 mio_fus_dat3;
 		union cvmx_l2c_wpar_iobx l2c_wpar_iob;
 
@@ -1131,7 +1161,7 @@ int cvmx_l2c_get_num_assoc(void)
 			l2_assoc = 12;
 		else if (l2c_wpar_iob.s.mask)
 			l2_assoc = cvmx_dpop(~(l2c_wpar_iob.s.mask) & 0xffff);
-	} else if (!OCTEON_IS_OCTEON3()) {
+	} else {
 		union cvmx_l2d_fus3 val;
 		val.u64 = cvmx_read_csr(CVMX_L2D_FUS3);
 		/*
@@ -1243,7 +1273,7 @@ void cvmx_l2c_set_big_size_node(int node, uint64_t mem_size, int mode)
 		}
 
 		/*
-		 * The BIG/HOLE is logic is not supported in pass1 as per
+  		 * The BIG/HOLE is logic is not supported in pass1 as per
 		 * Errata L2C-17736
 		 */
 		if (mode == 0 && OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
