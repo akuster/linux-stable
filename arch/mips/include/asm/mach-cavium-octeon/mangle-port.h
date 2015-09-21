@@ -11,28 +11,24 @@
 #include <asm/byteorder.h>
 
 #ifdef __BIG_ENDIAN
-
-# define __swizzle_addr_b(port)	(port)
-# define __swizzle_addr_w(port)	(port)
-# define __swizzle_addr_l(port)	(port)
-# define __swizzle_addr_q(port)	(port)
-
+#define __swizzle_addr_b(port)	(port)
+#define __swizzle_addr_w(port)	(port)
+#define __swizzle_addr_l(port)	(port)
+#define __swizzle_addr_q(port)	(port)
 #else /* __LITTLE_ENDIAN */
-
 static inline bool __should_swizzle_addr(unsigned long p)
 {
-	/* boot bus? */
-	return ((p >> 40) & 0xff) == 0;
+	switch ((p >> 40) & 0xff) {
+	case 0: /* boot bus */
+		return true;
+	default:
+		return false;
+	}
 }
-
-# define __swizzle_addr_b(port)	\
-	(__should_swizzle_addr(port) ? (port) ^ 7 : (port))
-# define __swizzle_addr_w(port)	\
-	(__should_swizzle_addr(port) ? (port) ^ 6 : (port))
-# define __swizzle_addr_l(port)	\
-	(__should_swizzle_addr(port) ? (port) ^ 4 : (port))
-# define __swizzle_addr_q(port)	(port)
-
+#define __swizzle_addr_b(port)	(__should_swizzle_addr(port) ? (port) ^ 7 : (port))
+#define __swizzle_addr_w(port)	(__should_swizzle_addr(port) ? (port) ^ 6 : (port))
+#define __swizzle_addr_l(port)	(__should_swizzle_addr(port) ? (port) ^ 4 : (port))
+#define __swizzle_addr_q(port)	(port)
 #endif /* __BIG_ENDIAN */
 
 /*

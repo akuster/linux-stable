@@ -45,18 +45,23 @@
 #define cpu_has_ic_fills_f_dc	0
 #define cpu_has_64bits		1
 #define cpu_has_octeon_cache	1
-#define cpu_has_saa		octeon_has_saa()
+#ifdef CONFIG_CAVIUM_OCTEON2
+#define cpu_has_octeon2_isa     1
+#define cpu_has_saa		1
+#else
+#define cpu_has_saa		0
+#endif
 #define cpu_has_mips32r1	0
 #define cpu_has_mips32r2	0
 #define cpu_has_mips64r1	0
 #define cpu_has_mips64r2	1
+#define cpu_has_mips_r2_exec_hazard 0
 #define cpu_has_dsp		0
 #define cpu_has_dsp2		0
 #define cpu_has_mipsmt		0
 #define cpu_has_vint		0
 #define cpu_has_veic		0
 #define cpu_hwrena_impl_bits	0xc0000000
-#define cpu_has_wsbh            1
 
 #define cpu_has_rixi		(cpu_data[0].cputype != CPU_CAVIUM_OCTEON)
 
@@ -73,17 +78,12 @@
 #define ARCH_HAS_USABLE_BUILTIN_POPCOUNT 1
 #endif
 
-static inline int octeon_has_saa(void)
-{
-	int id;
-	asm volatile ("mfc0 %0, $15,0" : "=r" (id));
-	return id >= 0x000d0300;
-}
-
 /*
  * The last 256MB are reserved for device to device mappings and the
  * BAR1 hole.
  */
 #define MAX_DMA32_PFN (((1ULL << 32) - (1ULL << 28)) >> PAGE_SHIFT)
+
+#define cpu_has_local_ebase	0
 
 #endif
