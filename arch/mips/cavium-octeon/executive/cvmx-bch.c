@@ -90,6 +90,7 @@ CVMX_SHARED cvmx_bch_app_config_t bch_config = {
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 extern int cvm_oct_alloc_fpa_pool(int pool, int size);
+const unsigned bch_buf_count = 16;
 #endif
 
 /**
@@ -104,16 +105,22 @@ int cvmx_bch_initialize(void)
 	cvmx_cmd_queue_result_t result;
 	int bch_pool;
 	uint64_t bch_pool_size;
+	int i, buf_cnt;
 
 	/* Initialize FPA pool for BCH pool buffers */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
-	int i;
 	bch_pool = CVMX_FPA_OUTPUT_BUFFER_POOL;
 	bch_pool_size = CVMX_FPA_OUTPUT_BUFFER_POOL_SIZE;
+	buf_cnt = bch_buf_count;
 
-	debug("pool: %d, pool size: %llu\n", bch_pool, bch_pool_size);
+	debug("pool: %d, pool size: %llu, bufcount %d\n",
+		bch_pool, bch_pool_size, buf_cnt);
 	/* Setup the FPA */
-	cvmx_fpa1_enable();
+	if (octeon_has_feature(OCTEON_FEATURE_FPA3))
+		/* FIXME */
+		return -ENOMEM;
+	else
+		cvmx_fpa1_enable();
 
 	bch_pool = cvm_oct_alloc_fpa_pool(bch_pool, bch_pool_size);
 	if (bch_pool < 0) {
@@ -122,23 +129,28 @@ int cvmx_bch_initialize(void)
 		return -ENOMEM;
 	}
 
-	for (i = 0; i < 16; i++)
-		cvmx_fpa1_free(kmalloc(bch_pool_size, GFP_KERNEL), bch_pool, 0);
+	for (i = 0; i < buf_cnt; i++)
+		cvmx_fpa_free(kmalloc(bch_pool_size, GFP_KERNEL), bch_pool, 0);
 #else
 	bch_pool = (int)cvmx_fpa_get_bch_pool();
 	bch_pool_size = cvmx_fpa_get_bch_pool_block_size();
+	i = buf_cnt = bch_config.command_queue_pool.buffer_count;
 
 	debug("%s: pool: %d, pool size: %llu, buffer count: %llu\n", __func__,
-	      bch_pool, bch_pool_size,
-	      bch_config.command_queue_pool.buffer_count);
+	      bch_pool, bch_pool_size, buf_cnt);
 
 	cvmx_fpa_global_initialize();
 
-	if (bch_config.command_queue_pool.buffer_count != 0)
-		__cvmx_helper_initialize_fpa_pool(bch_pool, bch_pool_size,
-			bch_config.command_queue_pool.buffer_count,
-			"BCH Buffers");
-
+	if (buf_cnt != 0) {
+		i = cvmx_fpa_setup_pool(bch_pool, "BCH Buffers", NULL,
+			bch_pool_size, buf_cnt);
+		if (i < 0) {
+			cvmx_printf("ERROR: %s: failed to init pool %d\n",
+				__func__, bch_pool);
+			return -1;
+		}
+		bch_pool = i;
+	}
 #endif
 	result = cvmx_cmd_queue_initialize(CVMX_CMD_QUEUE_BCH, 0, bch_pool,
 					   bch_pool_size);
@@ -152,18 +164,46 @@ int cvmx_bch_initialize(void)
 	}
 
 	bch_cmd_buf.u64 = 0;
-	bch_cmd_buf.s.dwb = bch_pool_size / 128;
-	bch_cmd_buf.s.pool = bch_pool;
-	bch_cmd_buf.s.size = bch_pool_size / 8;
-	bch_cmd_buf.s.ptr = cvmx_ptr_to_phys(
-		cvmx_cmd_queue_buffer(CVMX_CMD_QUEUE_BCH)) >> 7;
-	cvmx_write_csr(CVMX_BCH_CMD_BUF, bch_cmd_buf.u64);
-	cvmx_write_csr(CVMX_BCH_GEN_INT, 7);
-	cvmx_write_csr(CVMX_BCH_GEN_INT_EN, 0);
+
+	if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
+		bch_cmd_buf.cn70xx.dwb = bch_pool_size / 128;
+		bch_cmd_buf.cn70xx.pool = bch_pool;
+		bch_cmd_buf.cn70xx.size = bch_pool_size / 8;
+		bch_cmd_buf.cn70xx.ptr = cvmx_ptr_to_phys(
+			cvmx_cmd_queue_buffer(CVMX_CMD_QUEUE_BCH)) >> 7;
+		cvmx_write_csr(CVMX_BCH_CMD_BUF, bch_cmd_buf.u64);
+	} else if (OCTEON_IS_MODEL(OCTEON_CN73XX) ||
+		OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		cvmx_bch_cmd_ptr_t bch_cmd_ptr;
+
+		bch_cmd_buf.cn73xx.ldwb = bch_pool_size / 128;
+		bch_cmd_buf.cn73xx.aura = bch_pool;
+		bch_cmd_buf.cn73xx.size = bch_pool_size / 8;
+		bch_cmd_ptr.cn73xx.ptr = cvmx_ptr_to_phys(
+			cvmx_cmd_queue_buffer(CVMX_CMD_QUEUE_BCH)) >> 7;
+		cvmx_write_csr(CVMX_BCH_CMD_PTR, bch_cmd_ptr.u64);
+		cvmx_write_csr(CVMX_BCH_CMD_BUF, bch_cmd_buf.u64);
+	}
+
+	/* Clear pending error interrupts */
+	if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
+		cvmx_write_csr(CVMX_BCH_GEN_INT, 7);
+		cvmx_write_csr(CVMX_BCH_GEN_INT_EN, 0);
+	}
+
 	bch_ctl.u64 = cvmx_read_csr(CVMX_BCH_CTL);
-	bch_ctl.s.free_ena = 1;
-	bch_ctl.s.one_cmd = 0;
-	bch_ctl.s.erase_disable = 0;
+
+	/* Enable the unit */
+	if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
+		bch_ctl.cn70xx.free_ena = 1;
+		bch_ctl.cn70xx.one_cmd = 0;
+		bch_ctl.cn70xx.erase_disable = 0;
+	} else if (OCTEON_IS_MODEL(OCTEON_CN73XX) ||
+		OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		bch_ctl.cn73xx.one_cmd = 0;
+		bch_ctl.cn73xx.erase_disable = 0;
+	}
+
 	cvmx_write_csr(CVMX_BCH_CTL, bch_ctl.u64);
 	cvmx_read_csr(CVMX_BCH_CMD_BUF);
 	return 0;
@@ -182,28 +222,30 @@ int cvmx_bch_shutdown(void)
 
 	debug("%s: ENTER\n", __func__);
 	bch_ctl.u64 = cvmx_read_csr(CVMX_BCH_CTL);
-	bch_ctl.s.reset = 1;
-	cvmx_write_csr(CVMX_BCH_CTL, bch_ctl.u64);
-	cvmx_wait(4);
 
-#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
-	bch_pool = CVMX_FPA_OUTPUT_BUFFER_POOL;
-#else
-	bch_pool = (int)cvmx_fpa_get_bch_pool();
-#endif
+	if (OCTEON_IS_MODEL(OCTEON_CN70XX)) {
+		bch_ctl.cn70xx.reset = 1;
+	} else if (OCTEON_IS_MODEL(OCTEON_CN73XX) ||
+		OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		bch_ctl.cn73xx.reset = 1;
+	}
+
+	cvmx_write_csr(CVMX_BCH_CTL, bch_ctl.u64);
+	cvmx_wait(128);
+
 	cvmx_cmd_queue_shutdown(CVMX_CMD_QUEUE_BCH);
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
-	/* FIXME: BCH cleanup in SE : AJ */
+	bch_pool = CVMX_FPA_OUTPUT_BUFFER_POOL;
 	{
 		int i;
-		for (i = 0; i < 16; i++)
-			kfree(cvmx_fpa1_alloc(bch_pool));
+		for (i = 0; i < bch_buf_count; i++)
+			kfree(cvmx_fpa_alloc(bch_pool));
 	}
 #else
+	bch_pool = (int)cvmx_fpa_get_bch_pool();
 	cvmx_fpa_shutdown_pool(bch_pool);
 #endif
-	/* AJ: Fix for FPA3 */
 	return 0;
 }
 EXPORT_SYMBOL(cvmx_bch_shutdown);

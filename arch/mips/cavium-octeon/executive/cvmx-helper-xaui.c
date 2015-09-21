@@ -43,7 +43,7 @@
  * Functions for XAUI initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 107050 $<hr>
+ * <hr>$Revision: 106932 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -192,7 +192,7 @@ int __cvmx_helper_xaui_probe(int xiface)
 
 /**
  * @INTERNAL
- * Bringup XAUI interface. After this call packet I/O should be
+ * Bringup XAUI interface. After this call packet I/O should be 
  * fully functional.
  *
  * @param interface Interface to bring up

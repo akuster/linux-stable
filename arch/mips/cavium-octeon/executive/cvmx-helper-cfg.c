@@ -52,6 +52,7 @@
 #include <asm/octeon/cvmx-helper-util.h>
 #include <asm/octeon/cvmx-helper-cfg.h>
 #include <asm/octeon/cvmx-helper-ilk.h>
+#include <asm/octeon/cvmx-helper-bgx.h>
 #include <asm/octeon/cvmx-ilk.h>
 #include <asm/octeon/cvmx-range.h>
 #include <asm/octeon/cvmx-global-resources.h>
@@ -66,6 +67,7 @@
 #include "cvmx-ilk.h"
 #include "cvmx-adma.h"
 #include "cvmx-helper-ilk.h"
+#include "cvmx-helper-bgx.h"
 #include "cvmx-pip.h"
 #include "cvmx-range.h"
 #include "cvmx-global-resources.h"
@@ -75,6 +77,8 @@
 #if !defined(min)
 # define min( a, b ) ( ( a ) < ( b ) ) ? ( a ) : ( b )
 #endif
+
+int cvmx_npi_max_pknds;
 
 CVMX_SHARED struct cvmx_cfg_port_param cvmx_cfg_port[CVMX_MAX_NODES][CVMX_HELPER_MAX_IFACE][CVMX_HELPER_CFG_MAX_PORT_PER_IFACE] =
 	{[0 ... CVMX_MAX_NODES - 1][0 ... CVMX_HELPER_MAX_IFACE - 1] =
@@ -157,7 +161,10 @@ static const int dbg = 0;
 int __cvmx_helper_cfg_pknd(int xiface, int index)
 {
 	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
-	return cvmx_cfg_port[xi.node][xi.interface][index].ccpp_pknd;
+	int pkind;
+
+	pkind = cvmx_cfg_port[xi.node][xi.interface][index].ccpp_pknd;
+	return pkind;
 }
 
 int __cvmx_helper_cfg_bpid(int xiface, int index)
@@ -505,27 +512,22 @@ void cvmx_helper_cfg_init_pko_port_map(void)
 void cvmx_helper_cfg_set_jabber_and_frame_max()
 {
 	int interface, port;
+	/*Set the frame max size and jabber size to 65535. */
+	const unsigned max_frame = 65535;
 
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+	// FIXME: should support node argument for remote node init
+	if (octeon_has_feature(OCTEON_FEATURE_BGX)) {
 		int ipd_port;
 		int node = cvmx_get_node_num();
 
-		/*Set the frame max size and jabber size to 65535. */
 		for (interface = 0; interface < cvmx_helper_get_number_of_interfaces(); interface++) {
-			/* Set the frame max size and jabber size to 65535, as the defaults
-		   	are too small. */
 			int xiface = cvmx_helper_node_interface_to_xiface(node, interface);
 			cvmx_helper_interface_mode_t imode = cvmx_helper_interface_get_mode(xiface);
-			int num_ports = cvmx_helper_ports_on_interface(interface);
-
+			int num_ports = cvmx_helper_ports_on_interface(xiface);
+			// FIXME: should be an easier way to determine
+			// that an interface is Ethernet/BGX
 			switch (imode) {
 			case CVMX_HELPER_INTERFACE_MODE_SGMII:
-				for (port = 0; port < num_ports; port++) {
-					ipd_port = cvmx_helper_get_ipd_port(xiface, port);
-					cvmx_pki_set_max_frm_len(ipd_port, -1);
-					cvmx_write_csr_node(node, CVMX_BGXX_GMP_GMI_RXX_JABBER(port, interface), 65535);
-				}
-				break;
 			case CVMX_HELPER_INTERFACE_MODE_XAUI:
 			case CVMX_HELPER_INTERFACE_MODE_RXAUI:
 			case CVMX_HELPER_INTERFACE_MODE_XLAUI:
@@ -534,8 +536,10 @@ void cvmx_helper_cfg_set_jabber_and_frame_max()
 			case CVMX_HELPER_INTERFACE_MODE_40G_KR4:
 				for (port = 0; port < num_ports; port++) {
 					ipd_port = cvmx_helper_get_ipd_port(xiface, port);
-					cvmx_pki_set_max_frm_len(ipd_port, -1);
-					cvmx_write_csr_node(node, CVMX_BGXX_SMUX_RX_JABBER(port, interface), 65535);
+					cvmx_pki_set_max_frm_len(
+						ipd_port, max_frame);
+					cvmx_helper_bgx_set_jabber(
+						xiface, port, max_frame);
 				}
 				break;
 			default:
@@ -546,10 +550,11 @@ void cvmx_helper_cfg_set_jabber_and_frame_max()
 
 		/*Set the frame max size and jabber size to 65535. */
 		for (interface = 0; interface < cvmx_helper_get_number_of_interfaces(); interface++) {
+			int xiface = cvmx_helper_node_interface_to_xiface(cvmx_get_node_num(), interface);
 			/* Set the frame max size and jabber size to 65535, as the defaults
 		   	are too small. */
-			cvmx_helper_interface_mode_t imode = cvmx_helper_interface_get_mode(interface);
-			int num_ports = cvmx_helper_ports_on_interface(interface);
+			cvmx_helper_interface_mode_t imode = cvmx_helper_interface_get_mode(xiface);
+			int num_ports = cvmx_helper_ports_on_interface(xiface);
 
 			switch (imode) {
 			case CVMX_HELPER_INTERFACE_MODE_SGMII:
@@ -607,7 +612,7 @@ void cvmx_helper_cfg_store_short_packets_in_wqe()
 	cvmx_ipd_ctl_status_t ipd_ctl_status;
 	unsigned dyn_rs = 1;
 
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+	if (octeon_has_feature(OCTEON_FEATURE_PKI))
 		return;
 
 	/* NO_WPTR combines WQE with 1st MBUF, RS is redundant */
@@ -654,7 +659,7 @@ int __cvmx_helper_cfg_pko_port_eid(int pko_port)
 #define IPD2PKO_CACHE_Y(ipd_port)	(ipd_port) >> 8
 #define IPD2PKO_CACHE_X(ipd_port)	(ipd_port) & 0xff
 
-inline int __cvmx_helper_cfg_ipd2pko_cachex(int ipd_port)
+static inline int __cvmx_helper_cfg_ipd2pko_cachex(int ipd_port)
 {
 	int ipd_x = IPD2PKO_CACHE_X(ipd_port);
 	if (ipd_port & 0x800)
@@ -691,7 +696,7 @@ int cvmx_helper_cfg_ipd2pko_port_base(int ipd_port)
 	int ipd_y, ipd_x;
 
 	/* Internal PKO ports are not present in PKO3 */
-	if(OCTEON_IS_MODEL(OCTEON_CN78XX))
+	if(octeon_has_feature(OCTEON_FEATURE_PKI))
 		return ipd_port;
 
 	ipd_y = IPD2PKO_CACHE_Y(ipd_port);
@@ -902,12 +907,31 @@ int __cvmx_helper_init_port_valid(void)
 	int i, j, n;
 	bool valid;
 	static void *fdt_addr = 0;
+	int rc;
 
 	if (fdt_addr == 0)
 		fdt_addr = __cvmx_phys_addr_to_ptr(cvmx_sysinfo_get()->fdt_addr,
 						   (128*1024));
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
-		return __cvmx_helper_parse_78xx_bgx_dt(fdt_addr);
+	if (octeon_has_feature(OCTEON_FEATURE_BGX)) {
+		rc = __cvmx_helper_parse_bgx_dt(fdt_addr);
+		if (!rc && octeon_has_feature(OCTEON_FEATURE_BGX_XCV))
+			rc = __cvmx_helper_parse_bgx_rgmii_dt(fdt_addr);
+
+		/* Some ports are not in sequence, the device tree does not clear them */
+		for (i = 0; i < CVMX_HELPER_MAX_GMX; i++) {
+			int j;
+			for (j = 0; j < cvmx_helper_interface_enumerate(i); j++) {
+				cvmx_bgxx_cmrx_config_t cmr_config;
+				cmr_config.u64 = cvmx_read_csr(CVMX_BGXX_CMRX_CONFIG(j, i));
+				if (cmr_config.s.lane_to_sds == 0xe4
+				    && cmr_config.s.lmac_type != 4
+				    && cmr_config.s.lmac_type != 1
+				    && cmr_config.s.lmac_type != 5)
+					cvmx_helper_set_port_valid(i, j, false);
+			}
+		}
+		return rc;
+	}
 
 	/* TODO: Update this to behave more like 78XX */
 	for (i = 0; i < cvmx_helper_get_number_of_interfaces(); i++) {
@@ -1033,6 +1057,11 @@ int __cvmx_helper_init_port_config_data(int node)
 				}
 			} else {
 				for (j = 0; j < n; j++) {
+
+					if (j == n/cvmx_npi_max_pknds) {
+						pknd++;
+						bpid++;
+					}
 					cvmx_cfg_port[node][i][j].ccpp_pknd = pknd;
 					cvmx_cfg_port[node][i][j].ccpp_bpid = bpid;
 				}

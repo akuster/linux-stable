@@ -43,7 +43,7 @@
  * Functions for SGMII initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 108660 $<hr>
+ * <hr>$Revision: 122069 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -682,7 +682,8 @@ cvmx_helper_link_info_t __cvmx_helper_sgmii_link_get(int ipd_port)
 
 	pcsx_miscx_ctl_reg.u64 =
 		cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
-	if (pcsx_miscx_ctl_reg.s.mac_phy) {
+	if (pcsx_miscx_ctl_reg.s.mac_phy ||
+	    cvmx_helper_get_port_force_link_up(interface, index)) {
 		/* PHY Mode */
 		/* Note that this also works for 1000base-X mode */
 

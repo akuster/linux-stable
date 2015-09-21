@@ -83,7 +83,7 @@ int __cvmx_helper_errata_fix_ipd_ptr_alignment(void)
 #define FIX_IPD_FIRST_BUFF_PAYLOAD_BYTES     (cvmx_fpa_get_packet_pool_block_size() \
 						- 8 - cvmx_ipd_cfg.first_mbuf_skip )
 #define FIX_IPD_NON_FIRST_BUFF_PAYLOAD_BYTES (cvmx_fpa_get_packet_pool_block_size() \
-						- 8 - cvmx_ipd_cfg.not_first_mbuf_skip )
+                                              - 8 - cvmx_ipd_cfg.not_first_mbuf_skip )
 #define FIX_IPD_OUTPORT 0
 #define INTERFACE(port) (port >> 4)	/* Ports 0-15 are interface 0, 16-31 are interface 1 */
 #define INDEX(port) (port & 0xf)
@@ -248,7 +248,7 @@ fix_ipd_exit:
  * @param work   Work queue entry to fix
  * @return Zero on success. Negative on failure
  */
-int cvmx_helper_fix_ipd_packet_chain(cvmx_wqe_t *work)
+int cvmx_helper_fix_ipd_packet_chain(cvmx_wqe_t * work)
 {
 	uint64_t number_buffers = work->word2.s.bufs;
 

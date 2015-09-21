@@ -36,8 +36,6 @@
  * CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK ARISING OUT OF USE OR
  * PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
  ***********************license end**************************************/
-
-
 /*
  * File version info: $Rev:$
  *
@@ -47,25 +45,24 @@
 #include <linux/module.h>
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-pko3.h>
+#include <asm/octeon/cvmx-pko3-resources.h>
+#include <asm/octeon/cvmx-pko3-queue.h>
 #include <asm/octeon/cvmx-helper-pko3.h>
 #include <asm/octeon/cvmx-bootmem.h>
 #include <asm/octeon/cvmx-clock.h>
 #else
 #include "cvmx.h"
 #include "cvmx-pko3.h"
+#include "cvmx-pko3-resources.h"
+#include "cvmx-pko3-queue.h"
 #include "cvmx-helper-pko3.h"
 #include "cvmx-bootmem.h"
 #endif
-
-
 
 /* Smalles Round-Robin quantum to use +1 */
 #define	CVMX_PKO3_RR_QUANTUM_MIN	0x10
 
 static int debug = 0;	/* 1 for basic, 2 for detailed trace */
-
-/* Minimum MTU assumed for shaping configuration */
-static unsigned __pko3_min_mtu = 9080;	/* Could be per-port in the future */
 
 struct cvmx_pko3_dq {
 #ifdef __BIG_ENDIAN_BITFIELD
@@ -98,7 +95,7 @@ int cvmx_pko3_get_queue_base(int ipd_port)
 	struct cvmx_xport xp = cvmx_helper_ipd_port_to_xport(ipd_port);
 
 	/* get per-node table */
-	if(__cvmx_pko3_dq_table == NULL)
+	if (cvmx_unlikely(__cvmx_pko3_dq_table == NULL))
 		__cvmx_pko3_dq_table_setup();
 
 	i = CVMX_PKO3_SWIZZLE_IPD ^ xp.port;
@@ -106,8 +103,11 @@ int cvmx_pko3_get_queue_base(int ipd_port)
 	/* get per-node table */
 	dq_table = __cvmx_pko3_dq_table + CVMX_PKO3_IPD_NUM_MAX * xp.node;
 
-	if(dq_table[i].dq_count > 0)
+	if (cvmx_likely(dq_table[i].dq_count > 0))
 		ret = xp.node << 10 | dq_table[i].dq_base;
+	else if (debug)
+		cvmx_printf("ERROR: %s: no queues for ipd_port=%#x\n",
+			__func__, ipd_port);
 
 	return ret;
 }
@@ -121,7 +121,7 @@ int cvmx_pko3_get_queue_num(int ipd_port)
 	struct cvmx_xport xp = cvmx_helper_ipd_port_to_xport(ipd_port);
 
 	/* get per-node table */
-	if(__cvmx_pko3_dq_table == NULL)
+	if (cvmx_unlikely(__cvmx_pko3_dq_table == NULL))
 		__cvmx_pko3_dq_table_setup();
 
 	i = CVMX_PKO3_SWIZZLE_IPD ^ xp.port;
@@ -129,10 +129,37 @@ int cvmx_pko3_get_queue_num(int ipd_port)
 	/* get per-node table */
 	dq_table = __cvmx_pko3_dq_table + CVMX_PKO3_IPD_NUM_MAX * xp.node;
 
-	if(dq_table[i].dq_count > 0)
+	if (cvmx_likely(dq_table[i].dq_count > 0))
 		ret = dq_table[i].dq_count;
+	else if (debug)
+		cvmx_dprintf("ERROR: %s: no queues for ipd_port=%#x\n",
+			__func__, ipd_port);
 
 	return ret;
+}
+
+/**
+ * Get L1/Port Queue number assigned to interface port.
+ *
+ * @param xiface is interface number.
+ * @param index is port index.
+ */
+int cvmx_pko3_get_port_queue(int xiface, int index)
+{
+	int queue;
+	cvmx_pko_l1_sqx_topology_t qtop;
+	int mac = __cvmx_pko3_get_mac_num(xiface, index);
+	int nqueues = cvmx_pko3_num_level_queues(CVMX_PKO_PORT_QUEUES);
+	cvmx_xiface_t xi = cvmx_helper_xiface_to_node_interface(xiface);
+
+	for (queue = 0; queue < nqueues; queue++) {
+		qtop.u64 = cvmx_read_csr_node(xi.node, CVMX_PKO_L1_SQX_TOPOLOGY(queue));
+		if (qtop.s.link == mac)
+			break;
+	}
+	if (queue >= nqueues)
+		return -1;
+	return queue;
 }
 
 /**
@@ -170,6 +197,9 @@ int __cvmx_pko3_dq_table_setup(void)
 		"cvmx_pko3_global_dq_table",
 		__cvmx_pko3_dq_table_init);
 
+	if (debug)
+		cvmx_dprintf("%s: dq_table_ptr=%p\n", __func__, ptr);
+
 	if(ptr == NULL)
 		return -1;
 
@@ -179,9 +209,9 @@ int __cvmx_pko3_dq_table_setup(void)
 
 /*
  * @INTERNAL
- * Register a range of Descriptor Queues wth an interface port
+ * Register a range of Descriptor Queues with an interface port
  *
- * This function poulates the DQ-to-IPD translation table
+ * This function populates the DQ-to-IPD translation table
  * used by the application to retreive the DQ range (typically ordered
  * by priority) for a given IPD-port, which is either a physical port,
  * or a channel on a channelized interface (i.e. ILK).
@@ -193,7 +223,7 @@ int __cvmx_pko3_dq_table_setup(void)
  * @param dq_count is the number of consecutive Descriptor Queues leading
  *        the same channel or port.
  *
- * Only a consecurive range of Descriptor Queues can be associated with any
+ * Only a consecutive range of Descriptor Queues can be associated with any
  * given channel/port, and usually they are ordered from most to least
  * in terms of scheduling priority.
  *
@@ -217,7 +247,7 @@ int __cvmx_pko3_ipd_dq_register(int xiface, int index,
 		int p;
 		p = cvmx_helper_get_ipd_port(xiface, index);
 		if (p < 0) {
-			cvmx_dprintf("ERROR: %s: xiface %#x has no IPD port\n",
+			cvmx_printf("ERROR: %s: xiface %#x has no IPD port\n",
 			__func__, xiface);
 			return -1;
 		}
@@ -235,12 +265,12 @@ int __cvmx_pko3_ipd_dq_register(int xiface, int index,
 	dq_table = __cvmx_pko3_dq_table + CVMX_PKO3_IPD_NUM_MAX * xi.node;
 
 	if(debug)
-		cvmx_dprintf("%s: ipd=%#x ix=%#x dq %u cnt %u\n",
+		cvmx_dprintf("%s: ipd_port=%#x ix=%#x dq %u cnt %u\n",
 			__func__, ipd_port, i, dq_base, dq_count);
 
 	/* Check the IPD port has not already been configured */
 	if(dq_table[i].dq_count > 0 ) {
-		cvmx_dprintf("%s: ERROR: IPD %#x already registered\n",
+		cvmx_printf("%s: ERROR: IPD %#x already registered\n",
 			__func__, ipd_port);
 		return -1;
 	}
@@ -273,7 +303,7 @@ int __cvmx_pko3_ipd_dq_unregister(int xiface, int index)
 		int p;
 		p = cvmx_helper_get_ipd_port(xiface, index);
 		if (p < 0) {
-			cvmx_dprintf("ERROR: %s: xiface %#x has no IPD port\n",
+			cvmx_printf("ERROR: %s: xiface %#x has no IPD port\n",
 			__func__, xiface);
 			return -1;
 		}
@@ -292,13 +322,13 @@ int __cvmx_pko3_ipd_dq_unregister(int xiface, int index)
 	dq_table = __cvmx_pko3_dq_table + CVMX_PKO3_IPD_NUM_MAX * xi.node;
 
 	if (dq_table[i].dq_count == 0) {
-		cvmx_dprintf("%s:ipd=%#x already released\n",
+		cvmx_printf("WARNING: %s:ipd=%#x already released\n",
 			__func__, ipd_port);
 		return -1;
 	}
 
 	if(debug)
-		cvmx_dprintf("%s:ipd=%#x release dq %u cnt %u\n",
+		cvmx_dprintf("%s:ipd_port=%#x release dq %u cnt %u\n",
 			     __func__, ipd_port,
 			     dq_table[i].dq_base,
 			     dq_table[i].dq_count);
@@ -313,14 +343,14 @@ int __cvmx_pko3_ipd_dq_unregister(int xiface, int index)
  * Convert normal CHAN_E (i.e. IPD port) value to compressed channel form
  * that is used to populate PKO_LUT.
  *
- * Note: This code may be CN78XX specific, not the same for all PKO3
- * implementations.
+ * Note: This code may be model specific.
  */
-static uint16_t cvmx_pko3_chan_2_xchan(uint16_t ipd_port)
+static int cvmx_pko3_chan_2_xchan(uint16_t ipd_port)
 {
 	uint16_t xchan;
 	uint8_t off;
-	static const uint8_t xchan_base[16] = {
+	static const uint8_t *xchan_base = NULL;
+	static const uint8_t xchan_base_cn78xx[16] = {
 		/* IPD 0x000 */ 0x3c0 >> 4,	/* LBK */
 		/* IPD 0x100 */ 0x380 >> 4,	/* DPI */
 		/* IPD 0x200 */ 0xfff >> 4,	/* not used */
@@ -338,11 +368,58 @@ static uint16_t cvmx_pko3_chan_2_xchan(uint16_t ipd_port)
 		/* IPD 0xe00 */ 0xfff >> 4,	/* not used */
 		/* IPD 0xf00 */ 0xfff >> 4	/* not used */
 	};
+	static const uint8_t xchan_base_cn73xx[16] = {
+		/* IPD 0x000 */ 0x0c0 >> 4,	/* LBK */
+		/* IPD 0x100 */ 0x100 >> 4,	/* DPI */
+		/* IPD 0x200 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x300 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x400 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x500 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x600 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x700 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x800 */ 0x000 >> 4,	/* BGX0 */
+		/* IPD 0x900 */ 0x040 >> 4,	/* BGX1 */
+		/* IPD 0xa00 */ 0x080 >> 4,	/* BGX2 */
+		/* IPD 0xb00 */ 0xfff >> 4,	/* not used */
+		/* IPD 0xc00 */ 0xfff >> 4,	/* not used */
+		/* IPD 0xd00 */ 0xfff >> 4,	/* not used */
+		/* IPD 0xe00 */ 0xfff >> 4,	/* not used */
+		/* IPD 0xf00 */ 0xfff >> 4	/* not used */
+	};
+	// FIXME: These values are wild guess, check with CSR again!
+	static const uint8_t xchan_base_cn75xx[16] = {
+		/* IPD 0x000 */ 0x040 >> 4,	/* LBK */
+		/* IPD 0x100 */ 0x080 >> 4,	/* DPI */
+		/* IPD 0x200 */ 0xeee >> 4,	/* SRIO0  noop */
+		/* IPD 0x300 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x400 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x500 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x600 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x700 */ 0xfff >> 4,	/* not used */
+		/* IPD 0x800 */ 0x000 >> 4,	/* BGX0 */
+		/* IPD 0x900 */ 0x020 >> 4,	/* BGX1 */
+		/* IPD 0xa00 */ 0xfff >> 4,	/* not used */
+		/* IPD 0xb00 */ 0xfff >> 4,	/* not used */
+		/* IPD 0xc00 */ 0xfff >> 4,	/* not used */
+		/* IPD 0xd00 */ 0xfff >> 4,	/* not used */
+		/* IPD 0xe00 */ 0xfff >> 4,	/* not used */
+		/* IPD 0xf00 */ 0xfff >> 4	/* not used */
+	};
+
+        if (OCTEON_IS_MODEL(OCTEON_CN73XX))
+		xchan_base = xchan_base_cn73xx;
+        if (OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		xchan_base = xchan_base_cn75xx;
+        if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		xchan_base = xchan_base_cn78xx;
+
+	if (xchan_base == NULL)
+		return -1;
 
 	xchan = ipd_port >> 8;
 
-	/* ILKx has 8 bits logical channels, others just 6 */
-	if (((xchan & 0xfe) == 0x04))
+	/* ILKx, DPI has 8 bits logical channels, others just 6 */
+	if (((xchan & 0xfe) == 0x04) || xchan == 0x01)
 		off = ipd_port & 0xff;
 	else
 		off = ipd_port & 0x3f;
@@ -350,7 +427,9 @@ static uint16_t cvmx_pko3_chan_2_xchan(uint16_t ipd_port)
 	xchan = xchan_base[ xchan & 0xF ];
 
 	if(xchan == 0xff)
-		return 0xffff;
+		return -1;	/* Invalid IPD_PORT */
+	else if (xchan == 0xee)
+		return -2;	/* LUT not used */
 	else
 		return (xchan << 4) | off;
 }
@@ -373,7 +452,7 @@ void cvmx_pko3_map_channel(unsigned node,
 {
 	union cvmx_pko_l3_l2_sqx_channel sqx_channel;
 	cvmx_pko_lutx_t lutx;
-	uint16_t xchan;
+	int xchan;
 
 	sqx_channel.u64 = cvmx_read_csr_node(node,
 		CVMX_PKO_L3_L2_SQX_CHANNEL(l2_l3_q_num));
@@ -386,9 +465,13 @@ void cvmx_pko3_map_channel(unsigned node,
 	/* Convert CHAN_E into compressed channel */
 	xchan =  cvmx_pko3_chan_2_xchan(channel);
 
-	if(xchan & 0xf000) {
-		cvmx_dprintf("%s: ERROR: channel %#x not recognized\n",
-			__func__, channel);
+	if (debug)
+		cvmx_dprintf("%s: ipd_port=%#x xchan=%#x\n", __func__, channel, xchan);
+
+	if(xchan < 0) {
+		if (xchan == -1)
+			cvmx_printf("%s: ERROR: channel %#x not recognized\n",
+				__func__, channel);
 		return;
 	}
 
@@ -412,22 +495,16 @@ void cvmx_pko3_map_channel(unsigned node,
  *
  * @param node is to specify the node to which this configuration is applied.
  * @param port_queue is the port queue number to be configured.
- * @param child_base is the first child queue number in the static prioriy childs.
- * @param child_rr_prio is the round robin childs priority.
  * @param mac_num is the mac number of the mac that will be tied to this port_queue.
  */
-static void cvmx_pko_configure_port_queue(int node, int port_queue,
-					 int child_base, int child_rr_prio,
-					 int mac_num)
+static void cvmx_pko_configure_port_queue(int node, int port_queue, int mac_num)
 {
 	cvmx_pko_l1_sqx_topology_t pko_l1_topology;
 	cvmx_pko_l1_sqx_shape_t pko_l1_shape;
 	cvmx_pko_l1_sqx_link_t pko_l1_link;
 
 	pko_l1_topology.u64 = 0;
-	pko_l1_topology.s.prio_anchor = child_base;
 	pko_l1_topology.s.link = mac_num;
-	pko_l1_topology.s.rr_prio = child_rr_prio;
 	cvmx_write_csr_node(node, CVMX_PKO_L1_SQX_TOPOLOGY(port_queue), pko_l1_topology.u64);
 
 	pko_l1_shape.u64 = 0;
@@ -445,17 +522,34 @@ static void cvmx_pko_configure_port_queue(int node, int port_queue,
  * in hardware.
  *
  * @param node is to specify the node to which this configuration is applied.
- * @param queue is the level2 queue number to be configured.
- * @param parent_queue is the parent queue at next level for this l2 queue.
+ * @param queue is the level3 queue number to be configured.
+ * @param parent_queue is the parent queue at next level for this l3 queue.
  * @param prio is this queue's priority in parent's scheduler.
  * @param rr_quantum is this queue's round robin quantum value.
- * @return returns none.
+ * @param child_base is the first child queue number in the static prioriy childs.
+ * @param child_rr_prio is the round robin childs priority.
  */
 static void cvmx_pko_configure_l2_queue(int node, int queue, int parent_queue,
-					       int prio, int rr_quantum)
+					       int prio, int rr_quantum,
+					       int child_base, int child_rr_prio)
 {
-	cvmx_pko_l2_sqx_schedule_t pko_sq_sched;
-	cvmx_pko_l2_sqx_topology_t pko_sq_topology;
+	cvmx_pko_l3_sqx_schedule_t pko_sq_sched;
+	cvmx_pko_l3_sqx_topology_t pko_child_topology;
+	cvmx_pko_l2_sqx_topology_t pko_parent_topology;
+
+	/* parent topology configuration */
+	pko_parent_topology.u64 = cvmx_read_csr_node(node,
+			CVMX_PKO_L1_SQX_TOPOLOGY(parent_queue));
+	pko_parent_topology.s.prio_anchor = child_base;
+	pko_parent_topology.s.rr_prio = child_rr_prio;
+	cvmx_write_csr_node(node,
+			CVMX_PKO_L1_SQX_TOPOLOGY(parent_queue),
+			pko_parent_topology.u64);
+
+	if (debug>1) cvmx_dprintf("CVMX_PKO_L1_SQX_TOPOLOGY(%u): "
+		"PRIO_ANCHOR=%u PARENT=%u\n",
+		parent_queue, pko_parent_topology.s.prio_anchor,
+		pko_parent_topology.s.parent);
 
 	/* scheduler configuration for this sq in the parent queue */
 	pko_sq_sched.u64 = 0;
@@ -463,12 +557,13 @@ static void cvmx_pko_configure_l2_queue(int node, int queue, int parent_queue,
 	pko_sq_sched.s.rr_quantum = rr_quantum;
 	cvmx_write_csr_node(node, CVMX_PKO_L2_SQX_SCHEDULE(queue), pko_sq_sched.u64);
 
-	/* topology configuration */
-	pko_sq_topology.u64 = 0;
-	pko_sq_topology.s.parent = parent_queue;
-	cvmx_write_csr_node(node, CVMX_PKO_L2_SQX_TOPOLOGY(queue), pko_sq_topology.u64);
+	/* child topology configuration */
+	pko_child_topology.u64 = 0;
+	pko_child_topology.s.parent = parent_queue;
+	cvmx_write_csr_node(node, CVMX_PKO_L2_SQX_TOPOLOGY(queue), pko_child_topology.u64);
 
 }
+
 
 /*
  * @INTERNAL
@@ -633,22 +728,35 @@ static void cvmx_pko_configure_dq(int node, int dq, int parent_queue,
 	cvmx_pko_dqx_topology_t pko_dq_topology;
 	cvmx_pko_l5_sqx_topology_t pko_parent_topology;
 	cvmx_pko_dqx_wm_ctl_t pko_dq_wm_ctl;
+	unsigned long long parent_topology_reg;
+	char lvl;
 
 	if (debug)
 		cvmx_dprintf("%s: dq %u parent %u child_base %u\n",
 			     __func__, dq, parent_queue, child_base);
 
+	if (__cvmx_pko3_sq_lvl_max() == CVMX_PKO_L5_QUEUES) {
+		parent_topology_reg = CVMX_PKO_L5_SQX_TOPOLOGY(parent_queue);
+		lvl = 5;
+	} else if (__cvmx_pko3_sq_lvl_max() == CVMX_PKO_L3_QUEUES) {
+		parent_topology_reg = CVMX_PKO_L3_SQX_TOPOLOGY(parent_queue);
+		lvl = 3;
+	} else
+		return;
+
+	if (debug)
+		cvmx_dprintf("%s: parent_topology_reg=%#llx\n",
+			__func__, parent_topology_reg);
+
 	/* parent topology configuration */
-	pko_parent_topology.u64 = cvmx_read_csr_node(node,
-			CVMX_PKO_L5_SQX_TOPOLOGY(parent_queue));
+	pko_parent_topology.u64 = cvmx_read_csr_node(node, parent_topology_reg);
 	pko_parent_topology.s.prio_anchor = child_base;
 	pko_parent_topology.s.rr_prio = child_rr_prio;
-	cvmx_write_csr_node(node,
-			CVMX_PKO_L5_SQX_TOPOLOGY(parent_queue),
+	cvmx_write_csr_node(node, parent_topology_reg,
 			pko_parent_topology.u64);
 
-	if (debug>1) cvmx_dprintf("CVMX_PKO_L5_SQX_TOPOLOGY(%u): "
-		"PRIO_ANCHOR=%u PARENT=%u\n",
+	if (debug>1) cvmx_dprintf("CVMX_PKO_L%d_SQX_TOPOLOGY(%u): "
+		"PRIO_ANCHOR=%u PARENT=%u\n", lvl,
 		parent_queue, pko_parent_topology.s.prio_anchor,
 		pko_parent_topology.s.parent);
 
@@ -689,21 +797,42 @@ static void cvmx_pko_configure_dq(int node, int dq, int parent_queue,
  * The initial content of the table will be setup in accordance
  * to the specific SoC model and its implemented resources
  */
-static const struct {
-	unsigned sq_level_base,
-		sq_level_count;
-	/* 4 function pointers for L3 .. L6=DQ */
-	void (*cfg_sq_func[])(
+struct pko3_cfg_tab_s {
+	/* function pointer for to configure the given level, last=DQ */
+	struct {
+		uint8_t parent_level;
+		void (*cfg_sq_func)(
 			int node, int queue, int parent_queue,
 			int prio, int rr_quantum,
 			int child_base, int child_rr_prio);
-} __cvmx_pko3_sq_config_table = {
-	3, 4,
+	//XXX for debugging exagerated size
+	} lvl[256];
+};
+
+
+static const struct pko3_cfg_tab_s pko3_cn78xx_cfg = {
 	{
-	cvmx_pko_configure_l3_queue,
-	cvmx_pko_configure_l4_queue,
-	cvmx_pko_configure_l5_queue,
-	cvmx_pko_configure_dq
+	[CVMX_PKO_L2_QUEUES] =
+		{CVMX_PKO_PORT_QUEUES, cvmx_pko_configure_l2_queue },
+	[CVMX_PKO_L3_QUEUES] =
+		{CVMX_PKO_L2_QUEUES, cvmx_pko_configure_l3_queue },
+	[CVMX_PKO_L4_QUEUES] =
+		{CVMX_PKO_L3_QUEUES, cvmx_pko_configure_l4_queue },
+	[CVMX_PKO_L5_QUEUES] =
+		{CVMX_PKO_L4_QUEUES, cvmx_pko_configure_l5_queue },
+	[CVMX_PKO_DESCR_QUEUES] =
+		{CVMX_PKO_L5_QUEUES, cvmx_pko_configure_dq }
+	}
+};
+
+static const struct pko3_cfg_tab_s pko3_cn73xx_cfg = {
+	{
+	[CVMX_PKO_L2_QUEUES] =
+		{CVMX_PKO_PORT_QUEUES, cvmx_pko_configure_l2_queue },
+	[CVMX_PKO_L3_QUEUES] =
+		{CVMX_PKO_L2_QUEUES, cvmx_pko_configure_l3_queue },
+	[CVMX_PKO_DESCR_QUEUES] =
+		{CVMX_PKO_L3_QUEUES, cvmx_pko_configure_dq }
 	}
 };
 
@@ -717,85 +846,20 @@ static const struct {
  *
  * @param node on which to operate
  * @param mac_num is the LMAC number to that is associated with the Port Queue,
- * @param which is identical to the Port Queue number that is configured
- * @param child_base is the number of the first L2 SQ attached to the PQ
- * @param child_count is the number of L2 SQ children to attach to PQ
- * @param stat_prio_count is the priority setting for the children L2 SQs
- *
- * If <stat_prio_count> is -1, the L2 children will have equal Round-Robin
- * relationship with eachother. If <stat_prio_count> is 0, all L2 children
- * will be arranged in Weighted-Round-Robin, with the first having the most
- * precedence. If <stat_prio_count> is between 1 and 8, it indicates how
- * many children will have static priority settings (with the first having
- * the most precedence), with the remaining L2 children having WRR scheduling.
+ * @param pq_num is the number of the L1 PQ attached to the MAC
  *
  * @returns 0 on success, -1 on failure.
- *
- * Note: this function supports the configuration of node-local unit.
  */
-int cvmx_pko3_pq_config_children(unsigned node, unsigned mac_num,
-			 unsigned child_base,
-			unsigned child_count, int stat_prio_count)
+int cvmx_pko3_pq_config(unsigned node, unsigned mac_num, unsigned pq_num)
 {
-	unsigned pq_num;
-	unsigned rr_quantum, rr_count;
-	unsigned child, prio, rr_prio;
-
-	/* L1/PQ number is 1-to-1 from MAC number */
-	pq_num = mac_num;
-
-	/* First static priority is 0 - wuth the most precedence */
-	prio = 0;
-
-	if (stat_prio_count > (signed) child_count)
-		stat_prio_count = child_count;
-
-	/* Valid PRIO field is 0..9, limit maximum static priorities */
-	if (stat_prio_count > 9)
-		stat_prio_count = 9;
-
-	/* Special case of a single child */
-	if (child_count == 1) {
-		rr_count = 0;
-		rr_prio = 0xF;
-	/* Special case for Fair-RR */
-	} else if (stat_prio_count < 0) {
-		rr_count = child_count;
-		rr_prio = 0;
-	} else {
-		rr_count = child_count - stat_prio_count;
-		rr_prio = stat_prio_count;
-	}
-
-	/* Compute highest RR_QUANTUM */
-	if (stat_prio_count > 0)
-		rr_quantum = CVMX_PKO3_RR_QUANTUM_MIN * rr_count;
-	else
-		rr_quantum = CVMX_PKO3_RR_QUANTUM_MIN;
+	char b1[10];
 
 	if(debug)
-		cvmx_dprintf("%s: L1/PQ%u MAC%u child_base %u rr_pri %u\n",
-		__func__, pq_num, mac_num, child_base, rr_prio);
+		cvmx_dprintf("%s: MAC%u -> %s\n",
+			__func__, mac_num,
+			 __cvmx_pko3_sq_str(b1, CVMX_PKO_PORT_QUEUES, pq_num));
 
-	cvmx_pko_configure_port_queue(node,
-		pq_num, child_base, rr_prio, mac_num);
-
-
-	for(child = child_base; child < (child_base + child_count); child ++) {
-		if (debug)
-			cvmx_dprintf("%s: "
-				"L2/SQ%u->PQ%u prio %u rr_quantum %#x\n",
-				__func__,
-				child, pq_num, prio, rr_quantum);
-
-		cvmx_pko_configure_l2_queue(node,
-			child, pq_num, prio, rr_quantum);
-
-		if (prio < rr_prio)
-			prio ++;
-		else if (stat_prio_count > 0)
-			rr_quantum -= CVMX_PKO3_RR_QUANTUM_MIN;
-	} /* for child */
+	cvmx_pko_configure_port_queue(node, pq_num, mac_num);
 
 	return 0;
 }
@@ -811,7 +875,7 @@ int cvmx_pko3_pq_config_children(unsigned node, unsigned mac_num,
  * when multiple children are assigned a single parent.
  *
  * @param node on which to operate
- * @param parent_level is the level of the parent queue, 2 to 5.
+ * @param child_level  is the level of the child queue
  * @param parent_queue is the number of the parent Scheduler Queue
  * @param child_base is the number of the first child SQ or DQ to assign to
  * @param child_count is the number of consecutive children to assign
@@ -828,23 +892,41 @@ int cvmx_pko3_pq_config_children(unsigned node, unsigned mac_num,
  *
  * Note: this function supports the configuration of node-local unit.
  */
-int cvmx_pko3_sq_config_children(unsigned int node, unsigned parent_level,
+int cvmx_pko3_sq_config_children(unsigned int node,
+			enum cvmx_pko3_level_e child_level,
 			unsigned parent_queue, unsigned child_base,
 			unsigned child_count, int stat_prio_count)
 {
-	unsigned child_level;
+	enum cvmx_pko3_level_e parent_level;
+	unsigned num_elem = 0;
 	unsigned rr_quantum, rr_count;
 	unsigned child, prio, rr_prio;
-	unsigned func_idx;
+	const struct pko3_cfg_tab_s *cfg_tbl = NULL;
+	char b1[10], b2[10];
 
-	child_level = parent_level + 1;
+        if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		num_elem = NUM_ELEMENTS(pko3_cn78xx_cfg.lvl);
+		cfg_tbl = &pko3_cn78xx_cfg;
+	}
+        if (OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		num_elem = NUM_ELEMENTS(pko3_cn73xx_cfg.lvl);
+		cfg_tbl = &pko3_cn73xx_cfg;
+	}
 
-	if (child_level < __cvmx_pko3_sq_config_table.sq_level_base ||
-	    child_level >= __cvmx_pko3_sq_config_table.sq_level_base +
-			__cvmx_pko3_sq_config_table.sq_level_count)
+	if (cfg_tbl == NULL || child_level >= num_elem) {
+		cvmx_printf("ERROR: %s: model or level %#x invalid\n",
+			__func__, child_level);
 		return -1;
+	}
 
-	func_idx = child_level - __cvmx_pko3_sq_config_table.sq_level_base;
+	parent_level = cfg_tbl->lvl[child_level].parent_level;
+
+	if (cfg_tbl->lvl[child_level].cfg_sq_func == NULL ||
+	    cfg_tbl->lvl[child_level].parent_level == 0) {
+		cvmx_printf("ERROR: %s: queue level %#x invalid\n",
+			__func__, child_level);
+		return -1;
+	}
 
 	/* First static priority is 0 - top precedence */
 	prio = 0;
@@ -876,21 +958,22 @@ int cvmx_pko3_sq_config_children(unsigned int node, unsigned parent_level,
 		rr_quantum = CVMX_PKO3_RR_QUANTUM_MIN;
 
 	if(debug)
-		cvmx_dprintf("%s: Parent L%u/SQ%u child_base %u rr_pri %u\n",
-		__func__, parent_level, parent_queue, child_base, rr_prio);
+		cvmx_dprintf("%s: Parent %s child_base %u rr_pri %u\n",
+		__func__, __cvmx_pko3_sq_str(b1, parent_level, parent_queue),
+		child_base, rr_prio);
 
 	/* Parent is configured with child */
 
 	for(child = child_base; child < (child_base + child_count); child ++) {
 		if (debug)
 			cvmx_dprintf("%s: "
-				"L%u/SQ%u->L%u/SQ%u prio %u rr_quantum %#x\n",
-				__func__,
-				child_level, child,
-				parent_level, parent_queue,
-				prio, rr_quantum);
+			    "Child %s of %s prio %u rr_quantum %#x\n",
+			    __func__,
+			    __cvmx_pko3_sq_str(b1, child_level, child),
+			    __cvmx_pko3_sq_str(b2, parent_level, parent_queue),
+			    prio, rr_quantum);
 
-		__cvmx_pko3_sq_config_table.cfg_sq_func[func_idx](
+		cfg_tbl->lvl[child_level].cfg_sq_func(
 			node, child, parent_queue, prio, rr_quantum,
 			child_base, rr_prio);
 
@@ -957,14 +1040,13 @@ static int cvmx_pko3_shaper_rate_compute(unsigned long tclk,
 
 	/* Find the biggest divider that has the short float fit */
 	for (div_exp = 0; div_exp <= max_exp; div_exp++) {
-		tmp = (rate_tocks << div_exp) / tclk;
+		tmp = ((rate_tocks << div_exp) + (tclk / 2)) / tclk;
 		if (tmp > fmax) {
 			if (div_exp > 0)
 				div_exp --;
 			break;
 		}
 	}
-
 	/* Make sure divider, rate are within valid range */
 	if (div_exp > max_exp) {
 		/* Minimum reached */
@@ -974,7 +1056,6 @@ static int cvmx_pko3_shaper_rate_compute(unsigned long tclk,
 		if ((rate_tocks / tclk) > fmax)
 			rate_tocks = fmax * tclk;
 	}
-
 	/* Store common divider */
 	reg->s.rate_divider_exponent = div_exp;
 
@@ -983,12 +1064,8 @@ static int cvmx_pko3_shaper_rate_compute(unsigned long tclk,
 	 * should not be less than RATE/Tclk
 	 */
 
-	/* Find the minimum burst size needed for rate */
-	min_burst = (rate_tocks << div_exp) / tclk;
-
-	/* Override with minimum MTU (could become per-port cfg) */
-	if (min_burst < __pko3_min_mtu)
-		min_burst = __pko3_min_mtu;
+	/* Find the minimum burst size needed for rate (burst ~ 4x rate) */
+	min_burst = (rate_tocks << (div_exp + 4)) / tclk;
 
 	/* Apply the minimum */
 	if (burst_tocks < min_burst)
@@ -1004,16 +1081,15 @@ static int cvmx_pko3_shaper_rate_compute(unsigned long tclk,
 	tmp = (burst_tocks << 8);
 	CVMX_SHOFT_FROM_U64(tmp, mant, exp);
 	reg->s.burst_mantissa = mant;
-	reg->s.burst_exponent = exp - 8;
+	reg->s.burst_exponent = exp - 8 - 1;
 
 	if (debug)
 		cvmx_dprintf("%s: RATE=%llu BURST=%llu DIV_EXP=%d\n",
 			__func__,
 			CVMX_SHOFT_TO_U64(reg->s.rate_mantissa,
-					reg->s.rate_exponent),
+				reg->s.rate_exponent),
 			CVMX_SHOFT_TO_U64(reg->s.burst_mantissa,
-					reg->s.burst_exponent),
-			div_exp);
+				(reg->s.burst_exponent + 1)), div_exp);
 
 	/* Validate the resulting rate */
 	rate_v = CVMX_SHOFT_TO_U64(reg->s.rate_mantissa,
@@ -1024,7 +1100,7 @@ static int cvmx_pko3_shaper_rate_compute(unsigned long tclk,
 	rate_v >>= div_exp;
 
 	burst_v = CVMX_SHOFT_TO_U64(reg->s.burst_mantissa,
-				reg->s.burst_exponent);
+				(reg->s.burst_exponent + 1));
 	/* Convert in additional bytes as in argument */
 	burst_v = burst_v << (tock_bytes_exp);
 
@@ -1041,7 +1117,10 @@ static int cvmx_pko3_shaper_rate_compute(unsigned long tclk,
 			__func__, rate_v, burst_v);
 
 	rate_v = (rate_v * 1000000ULL) / rate_kbips;
-	burst_v = (burst_v * 1000000ULL) / burst_bytes;
+	if (burst_bytes > 0)
+		burst_v = (burst_v * 1000000ULL) / burst_bytes;
+	else
+		burst_v = 0;
 
 	if (debug)
 		cvmx_dprintf("%s: error rate=%llu burst=%llu ppm\n",
@@ -1073,11 +1152,11 @@ static int cvmx_pko3_shaper_rate_compute(unsigned long tclk,
  * is returned as a positive integer.
  */
 int cvmx_pko3_port_cir_set(unsigned node, unsigned pq_num,
-		unsigned long rate_kbips, unsigned burst_bytes)
+		unsigned long rate_kbips, unsigned burst_bytes, int adj_bytes)
 {
-	const unsigned time_wheel_turn = 96; /* S-Clock cycles */
 	unsigned long tclk;
 	cvmx_pko_l1_sqx_cir_t sqx_cir;
+	cvmx_pko_l1_sqx_shape_t shape;
 	int rc;
 
 	if (debug)
@@ -1088,30 +1167,28 @@ int cvmx_pko3_port_cir_set(unsigned node, unsigned pq_num,
 
 	/* When rate == 0, disable the shaper */
 	if( rate_kbips == 0ULL) {
-		/* Disable shaping */
 		sqx_cir.s.enable = 0;
-		cvmx_write_csr_node(node,
-			CVMX_PKO_L1_SQX_CIR(pq_num), sqx_cir.u64);
+		cvmx_write_csr_node(node, CVMX_PKO_L1_SQX_CIR(pq_num), sqx_cir.u64);
 		return 0;
 	}
-
 	/* Compute time-wheel frequency */
-	tclk = cvmx_clock_get_rate_node(node, CVMX_CLOCK_SCLK)/
-		time_wheel_turn;
+	tclk = cvmx_pko3_pq_tw_clock_rate_node(node);
 
 	/* Compute shaper values */
-	rc = cvmx_pko3_shaper_rate_compute(tclk, &sqx_cir,
-		rate_kbips, burst_bytes);
-
-	/* Refuse to set register if insane rates, 25% = 250,000 PPM  */
-	if (rc < 250000)
-		return rc;
-
-	/* Enable shaping */
-	sqx_cir.s.enable = 1;
+	rc = cvmx_pko3_shaper_rate_compute(tclk, &sqx_cir, rate_kbips, burst_bytes);
 
 	/* Apply new settings */
+	sqx_cir.s.enable = 1;
+	sqx_cir.s. rate_divider_exponent = sqx_cir.s. rate_divider_exponent;
+	sqx_cir.s. rate_mantissa  = sqx_cir.s. rate_mantissa;
+	sqx_cir.s. rate_exponent  = sqx_cir.s. rate_exponent;
+	sqx_cir.s. burst_mantissa = sqx_cir.s. burst_mantissa;
+	sqx_cir.s. burst_exponent = sqx_cir.s. burst_exponent - 1;
 	cvmx_write_csr_node(node, CVMX_PKO_L1_SQX_CIR(pq_num), sqx_cir.u64);
+
+	shape.u64 = cvmx_read_csr_node(node, CVMX_PKO_L1_SQX_SHAPE(pq_num));
+	shape.s.adjust = adj_bytes;
+	cvmx_write_csr_node(node, CVMX_PKO_L1_SQX_SHAPE(pq_num), shape.u64);
 
 	return rc;
 }
@@ -1134,14 +1211,12 @@ int cvmx_pko3_port_cir_set(unsigned node, unsigned pq_num,
 int cvmx_pko3_dq_cir_set(unsigned node, unsigned dq_num,
 		unsigned long rate_kbips, unsigned burst_bytes)
 {
-	const unsigned time_wheel_turn = 768; /* S-Clock cycles */
 	unsigned long tclk;
 	cvmx_pko_l1_sqx_cir_t sqx_cir;
 	cvmx_pko_dqx_cir_t dqx_cir;
 	int rc;
 
-	dq_num &= (1<<10)-1;
-
+	dq_num &= cvmx_pko3_num_level_queues(CVMX_PKO_DESCR_QUEUES) - 1;
 	if (debug)
 		cvmx_dprintf("%s: dq=%u rate=%lu kbps, burst=%u bytes\n",
 			__func__, dq_num, rate_kbips, burst_bytes);
@@ -1150,34 +1225,23 @@ int cvmx_pko3_dq_cir_set(unsigned node, unsigned dq_num,
 
 	/* When rate == 0, disable the shaper */
 	if( rate_kbips == 0ULL) {
-		/* Disable shaping */
 		dqx_cir.s.enable = 0;
-		cvmx_write_csr_node(node,
-			CVMX_PKO_DQX_CIR(dq_num), dqx_cir.u64);
+		cvmx_write_csr_node(node, CVMX_PKO_DQX_CIR(dq_num), dqx_cir.u64);
 		return 0;
 	}
-
 	/* Compute time-wheel frequency */
-	tclk = cvmx_clock_get_rate_node(node, CVMX_CLOCK_SCLK)/
-		time_wheel_turn;
+	tclk = cvmx_pko3_dq_tw_clock_rate_node(node);
 
 	/* Compute shaper values */
-	rc = cvmx_pko3_shaper_rate_compute(tclk, &sqx_cir,
-		rate_kbips, burst_bytes);
+	rc = cvmx_pko3_shaper_rate_compute(tclk, &sqx_cir, rate_kbips, burst_bytes);
 
-	/* Refuse to set register if insane rates, 25% = 250,000 PPM  */
-	if (rc < 250000)
-		return rc;
-
-	/* Enable shaping */
+	/* Apply new settings */
 	dqx_cir.s.enable = 1;
 	dqx_cir.s. rate_divider_exponent = sqx_cir.s. rate_divider_exponent;
 	dqx_cir.s. rate_mantissa  = sqx_cir.s. rate_mantissa;
 	dqx_cir.s. rate_exponent  = sqx_cir.s. rate_exponent;
 	dqx_cir.s. burst_mantissa = sqx_cir.s. burst_mantissa;
-	dqx_cir.s. burst_exponent = sqx_cir.s. burst_exponent ;
-
-	/* Apply new settings */
+	dqx_cir.s. burst_exponent = sqx_cir.s. burst_exponent - 1;
 	cvmx_write_csr_node(node, CVMX_PKO_DQX_CIR(dq_num), dqx_cir.u64);
 
 	return rc;
@@ -1201,13 +1265,12 @@ int cvmx_pko3_dq_cir_set(unsigned node, unsigned dq_num,
 int cvmx_pko3_dq_pir_set(unsigned node, unsigned dq_num,
 		unsigned long rate_kbips, unsigned burst_bytes)
 {
-	const unsigned time_wheel_turn = 768; /* S-Clock cycles */
 	unsigned long tclk;
 	cvmx_pko_l1_sqx_cir_t sqx_cir;
 	cvmx_pko_dqx_pir_t dqx_pir;
 	int rc;
 
-	dq_num &= (1<<10)-1;
+	dq_num &= cvmx_pko3_num_level_queues(CVMX_PKO_DESCR_QUEUES) - 1;
 	if (debug)
 		cvmx_dprintf("%s: dq=%u rate=%lu kbps, burst=%u bytes\n",
 			__func__, dq_num, rate_kbips, burst_bytes);
@@ -1216,34 +1279,23 @@ int cvmx_pko3_dq_pir_set(unsigned node, unsigned dq_num,
 
 	/* When rate == 0, disable the shaper */
 	if( rate_kbips == 0ULL) {
-		/* Disable shaping */
 		dqx_pir.s.enable = 0;
-		cvmx_write_csr_node(node,
-			CVMX_PKO_DQX_PIR(dq_num), dqx_pir.u64);
+		cvmx_write_csr_node(node, CVMX_PKO_DQX_PIR(dq_num), dqx_pir.u64);
 		return 0;
 	}
-
 	/* Compute time-wheel frequency */
-	tclk = cvmx_clock_get_rate_node(node, CVMX_CLOCK_SCLK)/
-		time_wheel_turn;
+	tclk = cvmx_pko3_dq_tw_clock_rate_node(node);
 
 	/* Compute shaper values */
-	rc = cvmx_pko3_shaper_rate_compute(tclk, &sqx_cir,
-		rate_kbips, burst_bytes);
+	rc = cvmx_pko3_shaper_rate_compute(tclk, &sqx_cir, rate_kbips, burst_bytes);
 
-	/* Refuse to set register if insane rates, 25% = 250,000 PPM  */
-	if (rc < 250000)
-		return rc;
-
-	/* Enable shaping */
+	/* Apply new settings */
 	dqx_pir.s.enable = 1;
 	dqx_pir.s. rate_divider_exponent = sqx_cir.s. rate_divider_exponent;
 	dqx_pir.s. rate_mantissa  = sqx_cir.s. rate_mantissa;
 	dqx_pir.s. rate_exponent  = sqx_cir.s. rate_exponent;
 	dqx_pir.s. burst_mantissa = sqx_cir.s. burst_mantissa;
-	dqx_pir.s. burst_exponent = sqx_cir.s. burst_exponent ;
-
-	/* Apply new settings */
+	dqx_pir.s. burst_exponent = sqx_cir.s. burst_exponent - 1;
 	cvmx_write_csr_node(node, CVMX_PKO_DQX_PIR(dq_num), dqx_pir.u64);
 
 	return rc;
@@ -1276,30 +1328,27 @@ void cvmx_pko3_dq_red(unsigned node, unsigned dq_num, red_action_t red_act,
 {
 	cvmx_pko_dqx_shape_t dqx_shape;
 
-	dq_num &= (1<<10)-1;
-
+	dq_num &= cvmx_pko3_num_level_queues(CVMX_PKO_DESCR_QUEUES) - 1;
 	dqx_shape.u64 = 0;
 
-        if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) {
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) {
 		if (len_adjust < 0)
 			len_adjust = 0;
 	}
-
-        dqx_shape.s.adjust = len_adjust;
+	dqx_shape.s.adjust = len_adjust;
 
 	switch(red_act) {
-		default:
-		case CVMX_PKO3_SHAPE_RED_STALL:
-			dqx_shape.s.red_algo = 0x0;
-			break;
-		case CVMX_PKO3_SHAPE_RED_DISCARD:
-			dqx_shape.s.red_algo = 0x3;
-			break;
-		case CVMX_PKO3_SHAPE_RED_PASS:
-			dqx_shape.s.red_algo = 0x1;
-			break;
-		}
-
+	default:
+	case CVMX_PKO3_SHAPE_RED_STALL:
+		dqx_shape.s.red_algo = 0x0;
+		break;
+	case CVMX_PKO3_SHAPE_RED_DISCARD:
+		dqx_shape.s.red_algo = 0x3;
+		break;
+	case CVMX_PKO3_SHAPE_RED_PASS:
+		dqx_shape.s.red_algo = 0x1;
+		break;
+	}
 	cvmx_write_csr_node(node, CVMX_PKO_DQX_SHAPE(dq_num), dqx_shape.u64);
 }
 

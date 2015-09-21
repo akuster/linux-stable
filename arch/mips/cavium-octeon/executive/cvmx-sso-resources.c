@@ -64,6 +64,8 @@ static int cvmx_sso_get_num_groups(void)
 {
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
 		return 256;
+	if (OCTEON_IS_MODEL(OCTEON_CN73XX))
+		return 64;
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
 		return 64;
 	return 16;
@@ -83,7 +85,7 @@ static struct global_resource_tag cvmx_sso_get_resource(int node)
 
 int cvmx_sso_reserve_group_range(int node, int *base_group, int count)
 {
-	int start;
+	int start, i;
 	uint64_t owner = 0;
 	struct global_resource_tag tag = cvmx_sso_get_resource(node);
 
@@ -103,7 +105,8 @@ int cvmx_sso_reserve_group_range(int node, int *base_group, int count)
 		if (start < 0) {
 			return CVMX_RESOURCE_ALREADY_RESERVED;
 		} else {
-			*base_group = start;
+			for (i = 0; i < count; i++)
+				base_group[i] = start + i;
 			return 0;
 		}
 	}

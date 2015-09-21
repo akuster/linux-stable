@@ -221,7 +221,7 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 			/* Make sure QLM is in ILK mode */
 			gserx_cfg.u64 = cvmx_read_csr_node(node, CVMX_GSERX_CFG(qlm));
 			if (gserx_cfg.s.ila)
-				lane_mask_all |= ((1 << 4) - 1) << (4 * (qlm - 4));	
+				lane_mask_all |= ((1 << 4) - 1) << (4 * (qlm - 4));
 		}
 
 		if ((lane_mask_all & lane_mask) != lane_mask) {
@@ -297,7 +297,7 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 		if (cvmx_ilk_use_la_mode(interface, 0)) {
 			cvmx_ilk_txx_cfg1_t ilk_txx_cfg1;
 			cvmx_ilk_rxx_cfg1_t ilk_rxx_cfg1;
-	
+
 			ilk_txx_cfg1.u64 = cvmx_read_csr(CVMX_ILK_TXX_CFG1(interface));
 			ilk_rxx_cfg1.u64 = cvmx_read_csr(CVMX_ILK_RXX_CFG1(interface));
 			ilk_txx_cfg1.s.la_mode = 1;
@@ -320,6 +320,21 @@ int cvmx_ilk_start_interface(int interface, unsigned short lane_mask)
 	ilk_txx_cfg0.s.lane_ena = ilk_rxx_cfg0.s.lane_ena = lane_mask;
 	cvmx_write_csr_node(node, CVMX_ILK_TXX_CFG0(interface), ilk_txx_cfg0.u64);
 	cvmx_write_csr_node(node, CVMX_ILK_RXX_CFG0(interface), ilk_rxx_cfg0.u64);
+
+	/* For 10.3125Gbs data rate, set SER_LIMIT to 0x3ff for x8 & x12 mode */
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		cvmx_gserx_lane_mode_t lmode0, lmode1;
+		lmode0.u64 = cvmx_read_csr_node(node, CVMX_GSERX_LANE_MODE(5));
+		lmode1.u64 = cvmx_read_csr_node(node, CVMX_GSERX_LANE_MODE(7));
+		if ((lmode0.s.lmode == 5 || lmode1.s.lmode == 5)
+		     && (lane_mask == 0xfff || lane_mask == 0xfff0
+			 || lane_mask == 0xff || lane_mask == 0xff00)) {
+			cvmx_ilk_txx_cfg1_t ilk_txx_cfg1;
+			ilk_txx_cfg1.u64 = cvmx_read_csr_node(node, CVMX_ILK_TXX_CFG1(interface));
+			ilk_txx_cfg1.s.ser_limit = 0x3ff;
+			cvmx_write_csr_node(node, CVMX_ILK_TXX_CFG1(interface), ilk_txx_cfg1.u64);
+		}
+	}
 
 	/* write to local cache. for lane speed, if interface 0 has 8 lanes,
 	 * assume both qlms have the same speed */
@@ -490,7 +505,7 @@ int cvmx_ilk_rx_cal_conf(int intf, int cal_depth, cvmx_ilk_cal_entry_t * pent)
 	int res = -1, i;
 	cvmx_ilk_rxx_cfg0_t ilk_rxx_cfg0;
 	int num_entries;
-	int node = (intf >> 4) & 0xf; 
+	int node = (intf >> 4) & 0xf;
 	int interface = intf & 0xf;
 
 	if (!octeon_has_feature(OCTEON_FEATURE_ILK))
@@ -513,7 +528,7 @@ int cvmx_ilk_rx_cal_conf(int intf, int cal_depth, cvmx_ilk_cal_entry_t * pent)
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 		/* Update the calendar for each channel */
 		if ((cvmx_ilk_use_la_mode(interface, 0) == 0) ||
-		    (cvmx_ilk_use_la_mode(interface, 0) && 
+		    (cvmx_ilk_use_la_mode(interface, 0) &&
 		     cvmx_ilk_la_mode_enable_rx_calendar(interface))) {
 			for (i = 0; i < cal_depth; i++) {
 				__cvmx_ilk_write_rx_cal_entry(interface, i,
@@ -535,7 +550,7 @@ int cvmx_ilk_rx_cal_conf(int intf, int cal_depth, cvmx_ilk_cal_entry_t * pent)
 
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 		ilk_rxx_cfg0.u64 = cvmx_read_csr_node(node, CVMX_ILK_RXX_CFG0(interface));
-		/* 
+		/*
 		 * Make sure cal_ena is 0 for programming the calender table,
 		 * as per Errata ILK-19398
 		 */
@@ -667,7 +682,7 @@ EXPORT_SYMBOL(cvmx_ilk_cal_setup_rx);
 /**
  * configure calendar for tx
  *
- * @param interface The identifier of the packet interface to configure and
+ * @param intf      The identifier of the packet interface to configure and
  *                  use as a ILK interface. cn68xx has 2 interfaces: ilk0 and
  *                  ilk1.
  *
@@ -717,7 +732,7 @@ int cvmx_ilk_tx_cal_conf(int intf, int cal_depth, cvmx_ilk_cal_entry_t * pent)
 
 	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 		ilk_txx_cfg0.u64 = cvmx_read_csr_node(node, CVMX_ILK_TXX_CFG0(interface));
-		/* 
+		/*
 		 * Make sure cal_ena is 0 for programming the calender table,
 		 * as per Errata ILK-19398
 		 */
@@ -743,7 +758,7 @@ int cvmx_ilk_tx_cal_conf(int intf, int cal_depth, cvmx_ilk_cal_entry_t * pent)
 /**
  * enable calendar for tx
  *
- * @param interface The identifier of the packet interface to configure and
+ * @param intf	    The identifier of the packet interface to configure and
  *                  use as a ILK interface. cn68xx has 2 interfaces: ilk0 and
  *                  ilk1.
  *
@@ -804,7 +819,7 @@ int cvmx_ilk_cal_setup_tx(int intf, int cal_depth, cvmx_ilk_cal_entry_t * pent, 
 
 EXPORT_SYMBOL(cvmx_ilk_cal_setup_tx);
 
-//#define CVMX_ILK_STATS_ENA 1
+/* #define CVMX_ILK_STATS_ENA 1 */
 #ifdef CVMX_ILK_STATS_ENA
 static void cvmx_ilk_reg_dump_rx(int intf)
 {
@@ -884,7 +899,7 @@ static void cvmx_ilk_reg_dump_rx(int intf)
 		for (i = 0; i < CAL_NUM_DBG; i++) {
 			ilk_rxx_idx_cal.u64 = cvmx_read_csr(CVMX_ILK_RXX_IDX_CAL(interface));
 			cvmx_dprintf("ilk rxx idx cal: 0x%16lx\n", ilk_rxx_idx_cal.u64);
-	
+
 			ilk_rxx_mem_cal0.u64 = cvmx_read_csr(CVMX_ILK_RXX_MEM_CAL0(interface));
 			cvmx_dprintf("ilk rxx mem cal0: 0x%16lx\n", ilk_rxx_mem_cal0.u64);
 			ilk_rxx_mem_cal1.u64 = cvmx_read_csr(CVMX_ILK_RXX_MEM_CAL1(interface));
@@ -948,7 +963,7 @@ static void cvmx_ilk_reg_dump_tx(int intf)
 		for (i = 0; i < CAL_NUM_DBG; i++) {
 			ilk_txx_idx_cal.u64 = cvmx_read_csr(CVMX_ILK_TXX_IDX_CAL(interface));
 			cvmx_dprintf("ilk txx idx cal: 0x%16lx\n", ilk_txx_idx_cal.u64);
-	
+
 			ilk_txx_mem_cal0.u64 = cvmx_read_csr(CVMX_ILK_TXX_MEM_CAL0(interface));
 			cvmx_dprintf("ilk txx mem cal0: 0x%16lx\n", ilk_txx_mem_cal0.u64);
 			ilk_txx_mem_cal1.u64 = cvmx_read_csr(CVMX_ILK_TXX_MEM_CAL1(interface));
@@ -1194,7 +1209,7 @@ int cvmx_ilk_disable(int intf)
 /**
  * Provide interface enable status
  *
- * @param interface The identifier of the packet interface to disable. cn68xx
+ * @param xiface The identifier of the packet xiface to disable. cn68xx
  *                  has 2 interfaces: ilk0 and ilk1.
  *
  * @return Zero, not enabled; One, enabled.
@@ -1241,7 +1256,7 @@ cvmx_ilk_la_nsp_compact_hdr_t cvmx_ilk_enable_la_header(int ipd_port, int mode)
 	struct cvmx_xport xp = cvmx_helper_ipd_port_to_xport(ipd_port);
 	int xiface = cvmx_helper_get_interface_num(ipd_port);
 	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
-	
+
 	int ilk_interface = xi.interface - CVMX_ILK_GBL_BASE();
 	int skip = 0;
 	int crc = 1;
@@ -1352,7 +1367,7 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 				ilk_rxx_idx_stat0.s.clr = pstats->clr_on_rd;
 				cvmx_write_csr(CVMX_ILK_RXX_IDX_STAT0(interface), ilk_rxx_idx_stat0.u64);
 				ilk_rxx_mem_stat0.u64 = cvmx_read_csr(CVMX_ILK_RXX_MEM_STAT0(interface));
-	
+
 				/* get the number of rx bytes */
 				ilk_rxx_idx_stat1.u64 = 0;
 				ilk_rxx_idx_stat1.s.index = *chan_list;
@@ -1369,7 +1384,7 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 				rxx_pkt_cntx.u64 = cvmx_read_csr_node(node, CVMX_ILK_RXX_PKT_CNTX(*chan_list, interface));
 				rxx_byte_cntx.u64 = cvmx_read_csr_node(node, CVMX_ILK_RXX_BYTE_CNTX(*chan_list, interface));
 				cvmx_dprintf("ILK%d Channel%d Rx: %llu packets %llu bytes\n", interface,
-					     *chan_list, 
+					     *chan_list,
 					     (unsigned long long)rxx_pkt_cntx.s.rx_pkt,
 					     (unsigned long long)rxx_byte_cntx.s.rx_bytes);
 			}
@@ -1381,14 +1396,14 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 				ilk_txx_idx_stat0.s.clr = pstats->clr_on_rd;
 				cvmx_write_csr(CVMX_ILK_TXX_IDX_STAT0(interface), ilk_txx_idx_stat0.u64);
 				ilk_txx_mem_stat0.u64 = cvmx_read_csr(CVMX_ILK_TXX_MEM_STAT0(interface));
-	
+
 				/* get the number of tx bytes */
 				ilk_txx_idx_stat1.u64 = 0;
 				ilk_txx_idx_stat1.s.index = *pstats->chan_list;
 				ilk_txx_idx_stat1.s.clr = pstats->clr_on_rd;
 				cvmx_write_csr(CVMX_ILK_TXX_IDX_STAT1(interface), ilk_txx_idx_stat1.u64);
 				ilk_txx_mem_stat1.u64 = cvmx_read_csr(CVMX_ILK_TXX_MEM_STAT1(interface));
-	
+
 				cvmx_dprintf("ILK%d Channel%d Tx: %d packets %d bytes\n", interface,
 					     *chan_list, ilk_txx_mem_stat0.s.tx_pkt, (unsigned int)ilk_txx_mem_stat1.s.tx_bytes);
 			}
@@ -1416,30 +1431,30 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 		ilk_rxx_idx_stat0.s.inc = pstats->chan_step;
 		ilk_rxx_idx_stat0.s.clr = pstats->clr_on_rd;
 		cvmx_write_csr(CVMX_ILK_RXX_IDX_STAT0(interface), ilk_rxx_idx_stat0.u64);
-	
+
 		ilk_rxx_idx_stat1.u64 = 0;
 		ilk_rxx_idx_stat1.s.index = pstats->chan_start;
 		ilk_rxx_idx_stat1.s.inc = pstats->chan_step;
 		ilk_rxx_idx_stat1.s.clr = pstats->clr_on_rd;
 		cvmx_write_csr(CVMX_ILK_RXX_IDX_STAT1(interface), ilk_rxx_idx_stat1.u64);
-	
+
 		ilk_txx_idx_stat0.u64 = 0;
 		ilk_txx_idx_stat0.s.index = pstats->chan_start;
 		ilk_txx_idx_stat0.s.inc = pstats->chan_step;
 		ilk_txx_idx_stat0.s.clr = pstats->clr_on_rd;
 		cvmx_write_csr(CVMX_ILK_TXX_IDX_STAT0(interface), ilk_txx_idx_stat0.u64);
-	
+
 		ilk_txx_idx_stat1.u64 = 0;
 		ilk_txx_idx_stat1.s.index = pstats->chan_start;
 		ilk_txx_idx_stat1.s.inc = pstats->chan_step;
 		ilk_txx_idx_stat1.s.clr = pstats->clr_on_rd;
 		cvmx_write_csr(CVMX_ILK_TXX_IDX_STAT1(interface), ilk_txx_idx_stat1.u64);
-	
+
 		for (i = pstats->chan_start; i <= pstats->chan_end; i += pstats->chan_step) {
 			ilk_rxx_mem_stat0.u64 = cvmx_read_csr(CVMX_ILK_RXX_MEM_STAT0(interface));
 			ilk_rxx_mem_stat1.u64 = cvmx_read_csr(CVMX_ILK_RXX_MEM_STAT1(interface));
 			cvmx_dprintf("ILK%d Channel%d Rx: %d packets %d bytes\n", interface, i, ilk_rxx_mem_stat0.s.rx_pkt, (unsigned int)ilk_rxx_mem_stat1.s.rx_bytes);
-	
+
 			ilk_txx_mem_stat0.u64 = cvmx_read_csr(CVMX_ILK_TXX_MEM_STAT0(interface));
 			ilk_txx_mem_stat1.u64 = cvmx_read_csr(CVMX_ILK_TXX_MEM_STAT1(interface));
 			cvmx_dprintf("ILK%d Channel%d Tx: %d packets %d bytes\n", interface, i, ilk_rxx_mem_stat0.s.rx_pkt, (unsigned int)ilk_rxx_mem_stat1.s.rx_bytes);
@@ -1472,7 +1487,7 @@ void cvmx_ilk_show_stats(int interface, cvmx_ilk_stats_ctrl_t * pstats)
 /**
  * enable or disable loopbacks
  *
- * @param interface The identifier of the packet interface to disable. cn68xx
+ * @param xiface The identifier of the packet xiface to disable. cn68xx
  *                  has 2 interfaces: ilk0 and ilk1.
  * @param enable    Enable or disable loopback
  * @param mode      Internal or external loopback
