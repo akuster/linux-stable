@@ -72,14 +72,14 @@ static int init_debufs(void)
 		return -1;
 	}
 
-	show_dentry = debugfs_create_file("statistics", 0222, dir, NULL,
+	show_dentry = debugfs_create_file("statistics", S_IRUGO, dir, NULL,
 					  &oct_ilm_ops);
 	if (!show_dentry) {
 		pr_err("oct_ilm: failed to create debugfs entry oct_ilm/statistics\n");
 		return -1;
 	}
 
-	show_dentry = debugfs_create_file("reset", 0222, dir, NULL,
+	show_dentry = debugfs_create_file("reset", S_IWUSR | S_IWGRP, dir, NULL,
 					  &reset_statistics_ops);
 	if (!show_dentry) {
 		pr_err("oct_ilm: failed to create debugfs entry oct_ilm/reset\n");
@@ -194,7 +194,8 @@ err_irq:
 static __exit void oct_ilm_module_exit(void)
 {
 	disable_timer(TIMER_NUM);
-	debugfs_remove_recursive(dir);
+	if (dir)
+		debugfs_remove_recursive(dir);
 	free_irq(OCTEON_IRQ_TIMER0 + TIMER_NUM, 0);
 }
 

@@ -17,8 +17,10 @@
 
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-ipd-defs.h>
+#include <asm/octeon/cvmx-fpa-defs.h>
 #include <asm/octeon/cvmx-mio-defs.h>
 #include <asm/octeon/cvmx-rst-defs.h>
+
 
 static u64 f;
 static u64 rdiv;
@@ -39,20 +41,17 @@ void __init octeon_setup_delays(void)
 
 	if (current_cpu_type() == CPU_CAVIUM_OCTEON2) {
 		union cvmx_mio_rst_boot rst_boot;
-
 		rst_boot.u64 = cvmx_read_csr(CVMX_MIO_RST_BOOT);
 		rdiv = rst_boot.s.c_mul;	/* CPU clock */
 		sdiv = rst_boot.s.pnr_mul;	/* I/O clock */
 		f = (0x8000000000000000ull / sdiv) * 2;
 	} else if (current_cpu_type() == CPU_CAVIUM_OCTEON3) {
 		union cvmx_rst_boot rst_boot;
-
 		rst_boot.u64 = cvmx_read_csr(CVMX_RST_BOOT);
-		rdiv = rst_boot.s.c_mul;	/* CPU clock */
-		sdiv = rst_boot.s.pnr_mul;	/* I/O clock */
+		rdiv = rst_boot.s.c_mul;        /* CPU clock */
+		sdiv = rst_boot.s.pnr_mul;      /* I/O clock */
 		f = (0x8000000000000000ull / sdiv) * 2;
 	}
-
 }
 
 /*
@@ -65,8 +64,12 @@ void __init octeon_setup_delays(void)
  */
 void octeon_init_cvmcount(void)
 {
+	u64 clk_reg;
 	unsigned long flags;
 	unsigned loops = 2;
+	bool has_fpa_clk_cnt = current_cpu_type() == CPU_CAVIUM_OCTEON3 && !OCTEON_IS_MODEL(OCTEON_CN70XX);
+
+	clk_reg = has_fpa_clk_cnt ? CVMX_FPA_CLK_COUNT : CVMX_IPD_CLK_COUNT;
 
 	/* Clobber loops so GCC will not unroll the following while loop. */
 	asm("" : "+r" (loops));
@@ -77,18 +80,24 @@ void octeon_init_cvmcount(void)
 	 * which should give more deterministic timing.
 	 */
 	while (loops--) {
-		u64 ipd_clk_count = cvmx_read_csr(CVMX_IPD_CLK_COUNT);
+		u64 clk_count = cvmx_read_csr(clk_reg);
 		if (rdiv != 0) {
-			ipd_clk_count *= rdiv;
+			clk_count *= rdiv;
 			if (f != 0) {
 				asm("dmultu\t%[cnt],%[f]\n\t"
 				    "mfhi\t%[cnt]"
-				    : [cnt] "+r" (ipd_clk_count)
+				    : [cnt] "+r" (clk_count)
 				    : [f] "r" (f)
 				    : "hi", "lo");
 			}
 		}
-		write_c0_cvmcount(ipd_clk_count);
+		write_c0_cvmcount(clk_count);
+		/*
+		 * cn70XX-P1 core-19049 requires synchronized Count for
+		 * KVM guest timers to report with required GTOffset
+		 * of 0.
+		 */
+		write_c0_count((u32)clk_count);
 	}
 	local_irq_restore(flags);
 }
@@ -98,22 +107,30 @@ static cycle_t octeon_cvmcount_read(struct clocksource *cs)
 	return read_c0_cvmcount();
 }
 
-static struct clocksource clocksource_mips = {
+static struct clocksource csrc_octeon = {
 	.name		= "OCTEON_CVMCOUNT",
 	.read		= octeon_cvmcount_read,
 	.mask		= CLOCKSOURCE_MASK(64),
 	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
 };
 
+static bool use_fpa_clk;
+unsigned long long csrc_fpa_clk_sched_clock(void);
+void csrc_fpa_clk_init(void);
+
 unsigned long long notrace sched_clock(void)
 {
 	/* 64-bit arithmatic can overflow, so use 128-bit.  */
 	u64 t1, t2, t3;
 	unsigned long long rv;
-	u64 mult = clocksource_mips.mult;
-	u64 shift = clocksource_mips.shift;
-	u64 cnt = read_c0_cvmcount();
+	u64 mult, shift, cnt;
 
+	if (use_fpa_clk)
+		return csrc_fpa_clk_sched_clock();
+
+	mult = csrc_octeon.mult;
+	shift = csrc_octeon.shift;
+	cnt = read_c0_cvmcount();
 	asm (
 		"dmultu\t%[cnt],%[mult]\n\t"
 		"nor\t%[t1],$0,%[shift]\n\t"
@@ -131,8 +148,16 @@ unsigned long long notrace sched_clock(void)
 
 void __init plat_time_init(void)
 {
-	clocksource_mips.rating = 300;
-	clocksource_register_hz(&clocksource_mips, octeon_get_clock_rate());
+#ifdef CONFIG_NUMA
+	if (num_online_nodes() > 1)
+		use_fpa_clk = true;
+#endif
+	if (use_fpa_clk) {
+		csrc_fpa_clk_init();
+	} else {
+		csrc_octeon.rating = 300;
+		clocksource_register_hz(&csrc_octeon, octeon_get_clock_rate());
+	}
 }
 
 void __udelay(unsigned long us)
