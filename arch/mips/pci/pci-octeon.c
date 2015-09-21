@@ -13,6 +13,7 @@
 #include <linux/delay.h>
 #include <linux/platform_device.h>
 #include <linux/swiotlb.h>
+#include <linux/moduleparam.h>
 
 #include <asm/time.h>
 
@@ -22,6 +23,9 @@
 #include <asm/octeon/pci-octeon.h>
 
 #include <dma-coherence.h>
+/* Module parameter to disable PCI probing */
+static int pci_disable;
+module_param(pci_disable, int, S_IRUGO);
 
 #define USE_OCTEON_INTERNAL_ARBITER
 
@@ -205,8 +209,7 @@ const char *octeon_get_pci_interrupts(void)
 	 * INTD# = 3)
 	 */
 	switch (octeon_bootinfo->board_type) {
-	case CVMX_BOARD_TYPE_NAO38:
-		/* This is really the NAC38 */
+	case CVMX_BOARD_TYPE_NAC38:
 		return "AAAAADABAAAAAAAAAAAAAAAAAAAAAAAA";
 	case CVMX_BOARD_TYPE_EBH3100:
 	case CVMX_BOARD_TYPE_CN3010_EVB_HS5:
@@ -214,8 +217,6 @@ const char *octeon_get_pci_interrupts(void)
 		return "AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	case CVMX_BOARD_TYPE_BBGW_REF:
 		return "AABCD";
-	case CVMX_BOARD_TYPE_CUST_DSR1000N:
-		return "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
 	case CVMX_BOARD_TYPE_THUNDER:
 	case CVMX_BOARD_TYPE_EBH3000:
 	default:
@@ -273,6 +274,9 @@ static int octeon_read_config(struct pci_bus *bus, unsigned int devfn,
 	pci_addr.s.func = devfn & 0x7;
 	pci_addr.s.reg = reg;
 
+#if PCI_CONFIG_SPACE_DELAY
+	udelay(PCI_CONFIG_SPACE_DELAY);
+#endif
 	switch (size) {
 	case 4:
 		*val = le32_to_cpu(cvmx_read64_uint32(pci_addr.u64));
@@ -307,6 +311,9 @@ static int octeon_write_config(struct pci_bus *bus, unsigned int devfn,
 	pci_addr.s.func = devfn & 0x7;
 	pci_addr.s.reg = reg;
 
+#if PCI_CONFIG_SPACE_DELAY
+	udelay(PCI_CONFIG_SPACE_DELAY);
+#endif
 	switch (size) {
 	case 4:
 		cvmx_write64_uint32(pci_addr.u64, cpu_to_le32(val));
@@ -323,8 +330,8 @@ static int octeon_write_config(struct pci_bus *bus, unsigned int devfn,
 
 
 static struct pci_ops octeon_pci_ops = {
-	.read	= octeon_read_config,
-	.write	= octeon_write_config,
+	octeon_read_config,
+	octeon_write_config,
 };
 
 static struct resource octeon_pci_mem_resource = {
@@ -567,6 +574,10 @@ static int __init octeon_pci_setup(void)
 	union cvmx_npi_mem_access_subidx mem_access;
 	int index;
 
+	/* Disable PCI if instructed on the command line */
+	if (pci_disable)
+		return 0;
+
 	/* Only these chips have PCI */
 	if (octeon_has_feature(OCTEON_FEATURE_PCIE))
 		return 0;
@@ -576,8 +587,7 @@ static int __init octeon_pci_setup(void)
 
 	/* Only use the big bars on chips that support it */
 	if (OCTEON_IS_MODEL(OCTEON_CN31XX) ||
-	    OCTEON_IS_MODEL(OCTEON_CN38XX_PASS2) ||
-	    OCTEON_IS_MODEL(OCTEON_CN38XX_PASS1))
+	    OCTEON_IS_MODEL(OCTEON_CN38XX_PASS2))
 		octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_SMALL;
 	else
 		octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_BIG;
@@ -704,7 +714,7 @@ static int __init octeon_pci_setup(void)
 
 	if (IS_ERR(platform_device_register_simple("octeon_pci_edac",
 						   -1, NULL, 0)))
-		pr_err("Registration of co_pci_edac failed!\n");
+		pr_err("Registation of co_pci_edac failed!\n");
 
 	octeon_pci_dma_init();
 
