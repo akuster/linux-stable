@@ -2786,7 +2786,7 @@ static int __init octeon_irq_init_ciu3(struct device_node *ciu_node,
 	for (i = 0; i < MAX_CIU3_DOMAINS; i++)
 		ciu3_info->domain[i] = domain;
 
-	octeon_ciu3_info_per_node[node] = ciu3_info;
+	//octeon_ciu3_info_per_node[node] = ciu3_info;
 
 	if (node == cvmx_get_node_num()) {
 		/* Only do per CPU things if it is the CIU of the boot node. */
