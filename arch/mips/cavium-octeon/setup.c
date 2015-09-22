@@ -985,14 +985,13 @@ void __init plat_mem_setup(void)
 			initrd_end = initrd_start + initrd_block->size;
 			add_memory_region(initrd_block->base_addr, initrd_block->size,
 					BOOT_MEM_INIT_RAM);
-			initrd_in_reserved = 1;
 			total += initrd_block->size;
 		}
 	}
 #endif
         if (named_memory_blocks[0][0]) {
-                phys_t kernel_begin, kernel_end;
-                phys_t block_begin, block_size;
+                phys_addr_t kernel_begin, kernel_end;
+                phys_addr_t block_begin, block_size;
                 /* Memory from named blocks only */
                 int i;
 
@@ -1123,7 +1122,6 @@ void __init mach_bootmem_init(void)
 		case BOOT_MEM_RAM:
 			is_usable = true;
 			break;
-		case BOOT_MEM_KERNEL:
 		case BOOT_MEM_INIT_RAM:
 			is_usable = false;
 			break;
@@ -1255,8 +1253,7 @@ extern const char __dtb_octeon_68xx_begin;
 extern const char __dtb_octeon_68xx_end;
 void __init device_tree_init(void)
 {
-	int dt_size;
-	struct boot_param_header *fdt;
+	const void *fdt;
 	bool do_prune;
 
 	if (octeon_bootinfo->minor_version >= 3 && octeon_bootinfo->fdt_addr) {
@@ -1264,29 +1261,23 @@ void __init device_tree_init(void)
 		pr_info("Using passed Device Tree <%p>.\n", fdt);
 		if (fdt_check_header(fdt))
 			panic("Corrupt Device Tree passed to kernel.");
-		dt_size = be32_to_cpu(fdt->totalsize);
 		do_prune = false;
 	} else if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
-		fdt = (struct boot_param_header *)&__dtb_octeon_68xx_begin;
-		dt_size = &__dtb_octeon_68xx_end - &__dtb_octeon_68xx_begin;
+		fdt = &__dtb_octeon_68xx_begin;
 		do_prune = true;
 	} else {
-		fdt = (struct boot_param_header *)&__dtb_octeon_3xxx_begin;
-		dt_size = &__dtb_octeon_3xxx_end - &__dtb_octeon_3xxx_begin;
+		fdt = &__dtb_octeon_3xxx_begin;
 		do_prune = true;
 	}
 
 	/* Copy the default tree from init memory. */
-	initial_boot_params = early_init_dt_alloc_memory_arch(dt_size, 8);
-	if (initial_boot_params == NULL)
-		panic("Could not allocate initial_boot_params");
-	memcpy(initial_boot_params, fdt, dt_size);
+	initial_boot_params = (void *)fdt;
 
 	if (do_prune) {
 		octeon_prune_device_tree();
 		pr_info("Using internal Device Tree.\n");
 	}
-	unflatten_device_tree();
+	unflatten_and_copy_device_tree();
 }
 
 static int __initdata disable_octeon_edac_p;
