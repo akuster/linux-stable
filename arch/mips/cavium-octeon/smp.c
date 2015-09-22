@@ -19,9 +19,9 @@
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-boot-vector.h>
 
-unsigned long octeon_processor_boot = ~0ul;
-__cpuinitdata unsigned long octeon_processor_sp;
-__cpuinitdata unsigned long octeon_processor_gp;
+volatile unsigned long octeon_processor_boot = ~0ul;
+volatile unsigned long octeon_processor_sp;
+volatile unsigned long octeon_processor_gp;
 
 #ifdef CONFIG_HOTPLUG_CPU
 static struct cvmx_boot_vector_element *octeon_bootvector;
@@ -47,7 +47,7 @@ static void octeon_crash_dump(void)
 
 static octeon_message_fn_t  octeon_message_functions[8] = {
 	scheduler_ipi,
-	smp_call_function_interrupt,
+	generic_smp_call_function_interrupt,
 	octeon_icache_flush,
 #ifdef CONFIG_KEXEC
 	octeon_crash_dump,
@@ -182,7 +182,7 @@ static void octeon_smp_setup(void)
 
 	/* The present CPUs get the lowest CPU numbers. */
 	cpus = 1;
-	for (id = 0; id < CONFIG_MIPS_NR_CPU_NR_MAP; id++) {
+	for (id = 0; id < NR_CPUS; id++) {
 		if ((id != coreid) && cvmx_coremask_is_core_set(&sysinfo->core_mask, id)) {
 			set_cpu_possible(cpus, true);
 			set_cpu_present(cpus, true);
@@ -222,7 +222,7 @@ static void octeon_smp_setup(void)
  * Firmware CPU startup hook
  *
  */
-static void __cpuinit octeon_boot_secondary(int cpu, struct task_struct *idle)
+static void octeon_boot_secondary(int cpu, struct task_struct *idle)
 {
 	int count;
 
@@ -462,7 +462,7 @@ static irqreturn_t octeon_78xx_reched_interrupt(int irq, void *dev_id)
 
 static irqreturn_t octeon_78xx_call_function_interrupt(int irq, void *dev_id)
 {
-	smp_call_function_interrupt();
+	generic_smp_call_function_interrupt();
 	return IRQ_HANDLED;
 }
 
