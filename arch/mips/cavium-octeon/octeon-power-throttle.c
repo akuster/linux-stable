@@ -363,7 +363,7 @@ static struct attribute_group octeon_power_throttle_attr_group = {
 	.name	= "power_throttle"
 };
 
-static __cpuinit int octeon_power_throttle_add_dev(struct device *dev)
+static int octeon_power_throttle_add_dev(struct device *dev)
 {
 	return sysfs_create_group(&dev->kobj,
 				  &octeon_power_throttle_attr_group);
