@@ -88,10 +88,8 @@ CVMX_SHARED cvmx_bch_app_config_t bch_config = {
 	.aura = 6
 };
 
-#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 extern int cvm_oct_alloc_fpa_pool(int pool, int size);
 const unsigned bch_buf_count = 16;
-#endif
 
 /**
  * Initialize the BCH block
