@@ -24,7 +24,6 @@ obj-$(CONFIG_SMP)		      += smp.o
 obj-$(CONFIG_NUMA)                      += octeon-numa.o
 obj-$(CONFIG_NUMA)                     += csrc-fpa-clk.o
 obj-$(CONFIG_SYSFS)                   += octeon-power-throttle.o
-obj-$(CONFIG_SYSFS)                   += cacheinfo.o
 obj-$(CONFIG_MTD)                    += flash_setup.o
 obj-$(CONFIG_OCTEON_ILM)             += oct_ilm.o
 obj-$(CONFIG_CAVIUM_OCTEON_NAND)       += octeon-nand.o
