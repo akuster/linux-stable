@@ -23,7 +23,7 @@ asmlinkage void octeon_replug_ll(void);
 
 static struct cvmx_app_hotplug_global *hgp;
 
-DECLARE_PER_CPU(struct cpu, cpu_devices);
+DEFINE_PER_CPU(struct cpu, cpu_devices);
 
 /* Need __ref to be able to call register_cpu().  This is OK as this
  * file is only compiled for HOTPLUG_CPU so the resulting call to a
