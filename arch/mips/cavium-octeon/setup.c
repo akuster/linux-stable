@@ -581,7 +581,7 @@ void __init prom_init(void)
 	u64 t;
 	int argc;
 
-	octeon_scache_init = octeon_soc_scache_init;
+	octeon_soc_scache_init();
 	/*
 	 * The bootloader passes a pointer to the boot descriptor in
 	 * $a3, this is available as fw_arg3.
