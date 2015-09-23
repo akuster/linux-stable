@@ -6,6 +6,7 @@
  * Copyright (C) 2004 - 2014 Cavium, Inc.
  */
 #include <linux/cpu.h>
+#include <linux/cpumask.h>
 #include <linux/delay.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
@@ -426,7 +427,7 @@ static int octeon_cpu_callback(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
-static struct notifier_block __cpuinitdata octeon_cpu_notifer = {
+static struct notifier_block octeon_cpu_notifer = {
 	.notifier_call = octeon_cpu_callback,
 };
 
