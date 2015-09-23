@@ -351,7 +351,7 @@ static int octeon_cpu_disable(void)
 		return -EBUSY;
 
 	set_cpu_online(cpu, false);
-	cpu_clear(cpu, cpu_callin_map);
+	cpumask_clear_cpu(cpu, &cpu_callin_map);
 	octeon_fixup_irqs();
 
 	flush_cache_all();
