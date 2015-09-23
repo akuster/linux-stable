@@ -6,6 +6,7 @@
  * Copyright (C) 2014 Cavium, Inc.
  */
 #include <linux/init.h>
+#include <linux/module.h>
 #include <linux/cpu.h>
 #include <linux/device.h>
 #include <linux/percpu.h>
