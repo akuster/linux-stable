@@ -31,6 +31,5 @@ obj-$(CONFIG_PCI) += cvmx-pcie.o
 
 obj-$(CONFIG_USB_OCTEON_HCD)		+= cvmx-usb.o
 obj-$(CONFIG_CAVIUM_OCTEON_RAPIDIO) 	+= cvmx-dma-engine.o
-obj-$(CONFIG_CAVIUM_OCTEON_NAND)	+= cvmx-bch.o cvmx-nand.o
 obj-$(CONFIG_CAVIUM_OCTEON_ERROR_TREE)	+= cvmx-error-trees.o
 obj-$(CONFIG_CAVIUM_GDB)		+= cvmx-debug.o cvmx-debug-handler.o cvmx-debug-uart.o cvmx-debug-remote.o
