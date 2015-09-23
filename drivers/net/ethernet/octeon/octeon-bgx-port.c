@@ -509,7 +509,7 @@ static int bgx_port_probe(struct platform_device *pdev)
 	else
 		cvmx_helper_set_port_phy_present(priv->xiface, priv->index, true);
 
-	r = dev_set_drvdata(&pdev->dev, priv);
+	dev_set_drvdata(&pdev->dev, priv);
 
 	if (priv->phy_np)
 		__cvmx_helper_bgx_port_init(priv->ipd_port, 1);
