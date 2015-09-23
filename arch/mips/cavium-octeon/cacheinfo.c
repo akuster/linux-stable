@@ -163,7 +163,7 @@ static struct cache_desc *get_cache_desc(const struct cache *cache)
 	return NULL;
 }
 
-static void __cpuinit cache_init(struct cache *cache, unsigned int cpu_id,
+static void cache_init(struct cache *cache, unsigned int cpu_id,
 				 int level, int type)
 {
 	cache->type = type;
@@ -176,7 +176,7 @@ static void __cpuinit cache_init(struct cache *cache, unsigned int cpu_id,
 }
 
 /* Allocates and initializes a new cache structure */
-static struct cache *__cpuinit new_cache(int type, int level,
+static struct cache *new_cache(int type, int level,
 					 unsigned int cpu_id)
 {
 	struct cache *cache;
@@ -326,7 +326,7 @@ static struct cache *cache_lookup_by_cpuid(unsigned int cpu_id)
 	return cache;
 }
 
-static void __cpuinit link_cache_lists(struct cache *smaller,
+static void link_cache_lists(struct cache *smaller,
 				       struct cache *bigger)
 {
 	while (smaller->next_local) {
@@ -338,7 +338,7 @@ static void __cpuinit link_cache_lists(struct cache *smaller,
 	smaller->next_local = bigger;
 }
 
-static struct cache *__cpuinit cache_chain_instantiate(unsigned int cpu_id)
+static struct cache *cache_chain_instantiate(unsigned int cpu_id)
 {
 	struct cache *l2_cache = NULL, *l1i_cache = NULL, *l1d_cache = NULL;
 	unsigned int l1i_size = 0, l1d_size = 0;
@@ -385,7 +385,7 @@ err:
 	return NULL;
 }
 
-static struct cache_dir *__cpuinit cacheinfo_create_cache_dir(unsigned int cpu_id)
+static struct cache_dir *cacheinfo_create_cache_dir(unsigned int cpu_id)
 {
 	struct cache_dir *cache_dir;
 	struct device *dev;
@@ -599,7 +599,7 @@ static struct kobj_type cache_index_type = {
 	.default_attrs = cache_index_default_attrs,
 };
 
-static void __cpuinit cacheinfo_create_index_opt_attrs(struct cache_index_dir *dir)
+static void cacheinfo_create_index_opt_attrs(struct cache_index_dir *dir)
 {
 	const char *cache_type;
 	struct cache *cache;
@@ -639,7 +639,7 @@ static void __cpuinit cacheinfo_create_index_opt_attrs(struct cache_index_dir *d
 	kfree(buf);
 }
 
-static void __cpuinit cacheinfo_create_index_dir(struct cache *cache, int index,
+static void cacheinfo_create_index_dir(struct cache *cache, int index,
 						 struct cache_dir *cache_dir)
 {
 	struct cache_index_dir *index_dir;
@@ -666,7 +666,7 @@ err:
 	kfree(index_dir);
 }
 
-static void __cpuinit cacheinfo_sysfs_populate(unsigned int cpu_id,
+static void cacheinfo_sysfs_populate(unsigned int cpu_id,
 					       struct cache *cache_list)
 {
 	struct cache_dir *cache_dir;
@@ -685,7 +685,7 @@ static void __cpuinit cacheinfo_sysfs_populate(unsigned int cpu_id,
 	}
 }
 
-void __cpuinit cacheinfo_cpu_online(unsigned int cpu_id)
+void cacheinfo_cpu_online(unsigned int cpu_id)
 {
 	struct cache *cache;
 	struct cache *iter;
@@ -786,17 +786,17 @@ void cacheinfo_cpu_offline(unsigned int cpu_id)
 
 
 
-static void __cpuinit register_cpu_online(unsigned int cpu_id)
+static void register_cpu_online(unsigned int cpu_id)
 {
 	cacheinfo_cpu_online(cpu_id);
 }
 
-static void __cpuinit unregister_cpu_online(unsigned int cpu_id)
+static void unregister_cpu_online(unsigned int cpu_id)
 {
 	cacheinfo_cpu_offline(cpu_id);
 }
 
-static int __cpuinit sysfs_cpu_notify(struct notifier_block *self,
+static int sysfs_cpu_notify(struct notifier_block *self,
 				      unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned int)(long)hcpu;
@@ -815,7 +815,7 @@ static int __cpuinit sysfs_cpu_notify(struct notifier_block *self,
 	return NOTIFY_OK;
 }
 
-static struct notifier_block __cpuinitdata sysfs_cpu_nb = {
+static struct notifier_block sysfs_cpu_nb = {
 	.notifier_call = sysfs_cpu_notify,
 };
 
