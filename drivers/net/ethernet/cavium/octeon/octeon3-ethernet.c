@@ -1876,7 +1876,7 @@ static int octeon3_eth_ndo_stop(struct net_device *netdev)
 
 		octeon3_rm_napi_from_cxt(priv->numa_node, rx->napiw);
 		rx->napiw = NULL;
-		BUG_ON(!__bitmap_empty(rx->napi_idx_bitmap, CVMX_MAX_CORES));
+		//BUG_ON(!__bitmap_empty(rx->napi_idx_bitmap, CVMX_MAX_CORES));
 	}
 
 	/* Free the packet buffers */
