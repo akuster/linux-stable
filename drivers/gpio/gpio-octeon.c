@@ -6,10 +6,9 @@
  * Copyright (C) 2011, 2012 Cavium Inc.
  */
 
-#include <linux/platform_device.h>
-#include <linux/kernel.h>
+#include <linux/of_device.h>
 #include <linux/module.h>
-#include <linux/gpio.h>
+#include <linux/of_gpio.h>
 #include <linux/io.h>
 
 #include <asm/octeon/octeon.h>
@@ -18,11 +17,18 @@
 #define RX_DAT 0x80
 #define TX_SET 0x88
 #define TX_CLEAR 0x90
+
+struct octeon_gpio {
+	struct gpio_chip chip;
+	u64 register_base;
+	unsigned int (*cfg_reg)(unsigned int);
+};
+
 /*
  * The address offset of the GPIO configuration register for a given
  * line.
  */
-static unsigned int bit_cfg_reg(unsigned int offset)
+static unsigned int bit_cfg_reg38(unsigned int offset)
 {
 	/*
 	 * The register stride is 8, with a discontinuity after the
@@ -34,16 +40,16 @@ static unsigned int bit_cfg_reg(unsigned int offset)
 		return 8 * (offset - 16) + 0x100;
 }
 
-struct octeon_gpio {
-	struct gpio_chip chip;
-	u64 register_base;
-};
+static unsigned int bit_cfg_reg78(unsigned int gpio)
+{
+	return (8 * gpio) + 0x100;
+}
 
 static int octeon_gpio_dir_in(struct gpio_chip *chip, unsigned offset)
 {
 	struct octeon_gpio *gpio = container_of(chip, struct octeon_gpio, chip);
 
-	cvmx_write_csr(gpio->register_base + bit_cfg_reg(offset), 0);
+	cvmx_write_csr(gpio->register_base + gpio->cfg_reg(offset), 0);
 	return 0;
 }
 
@@ -66,7 +72,7 @@ static int octeon_gpio_dir_out(struct gpio_chip *chip, unsigned offset,
 	cfgx.u64 = 0;
 	cfgx.s.tx_oe = 1;
 
-	cvmx_write_csr(gpio->register_base + bit_cfg_reg(offset), cfgx.u64);
+	cvmx_write_csr(gpio->register_base + gpio->cfg_reg(offset), cfgx.u64);
 	return 0;
 }
 
@@ -78,17 +84,36 @@ static int octeon_gpio_get(struct gpio_chip *chip, unsigned offset)
 	return ((1ull << offset) & read_bits) != 0;
 }
 
+static struct of_device_id octeon_gpio_match[] = {
+	{
+		.compatible = "cavium,octeon-3860-gpio",
+		.data = bit_cfg_reg38,
+	},
+	{
+		.compatible = "cavium,octeon-7890-gpio",
+		.data = bit_cfg_reg78,
+	},
+	{},
+};
+MODULE_DEVICE_TABLE(of, octeon_gpio_match);
+
 static int octeon_gpio_probe(struct platform_device *pdev)
 {
 	struct octeon_gpio *gpio;
 	struct gpio_chip *chip;
 	struct resource *res_mem;
+	const struct of_device_id *of_id;
 	int err = 0;
+
+	of_id = of_match_device(octeon_gpio_match, &pdev->dev);
+	if (!of_id)
+		return -EINVAL;
 
 	gpio = devm_kzalloc(&pdev->dev, sizeof(*gpio), GFP_KERNEL);
 	if (!gpio)
 		return -ENOMEM;
 	chip = &gpio->chip;
+	gpio->cfg_reg = of_id->data;
 
 	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res_mem == NULL) {
@@ -109,19 +134,26 @@ static int octeon_gpio_probe(struct platform_device *pdev)
 	pdev->dev.platform_data = chip;
 	chip->label = "octeon-gpio";
 	chip->dev = &pdev->dev;
+	chip->of_node = pdev->dev.of_node;
 	chip->owner = THIS_MODULE;
-	chip->base = 0;
+	/*
+	* Node zero is at base of 0, other nodes are automatically
+	* allocated.
+	*/
+	chip->base = of_node_to_nid(chip->of_node) ? -1 : 0;
 	chip->can_sleep = false;
 	chip->ngpio = 20;
 	chip->direction_input = octeon_gpio_dir_in;
 	chip->get = octeon_gpio_get;
 	chip->direction_output = octeon_gpio_dir_out;
 	chip->set = octeon_gpio_set;
+	chip->of_gpio_n_cells = 2;
+	chip->of_xlate = of_gpio_simple_xlate;
 	err = gpiochip_add(chip);
 	if (err)
 		goto out;
 
-	dev_info(&pdev->dev, "OCTEON GPIO driver probed.\n");
+	dev_info(&pdev->dev, "OCTEON GPIO: base = %d\n", chip->base);
 out:
 	return err;
 }
@@ -130,20 +162,13 @@ static int octeon_gpio_remove(struct platform_device *pdev)
 {
 	struct gpio_chip *chip = pdev->dev.platform_data;
 	gpiochip_remove(chip);
-	return 0;
+    return 0;
 }
-
-static struct of_device_id octeon_gpio_match[] = {
-	{
-		.compatible = "cavium,octeon-3860-gpio",
-	},
-	{},
-};
-MODULE_DEVICE_TABLE(of, octeon_gpio_match);
 
 static struct platform_driver octeon_gpio_driver = {
 	.driver = {
 		.name		= "octeon_gpio",
+		.owner		= THIS_MODULE,
 		.of_match_table = octeon_gpio_match,
 	},
 	.probe		= octeon_gpio_probe,
