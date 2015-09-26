@@ -1715,7 +1715,7 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	octeon3_napi_init_node(priv->numa_node, netdev);
 
 	/* Register ethtool methods */
-	netdev->ethtool_ops = octeon3_ethtool_ops;
+	netdev->ethtool_ops = &octeon3_ethtool_ops;
 
 	return 0;
 err:
