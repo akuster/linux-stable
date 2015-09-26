@@ -1,18 +1,35 @@
-/*
- * This file is based on code from OCTEON SDK by Cavium Networks.
+/**********************************************************************
+ * Author: Cavium, Inc.
  *
- * Copyright (c) 2003-2010 Cavium Networks
+ * Contact: support@cavium.com
+ * This file is part of the OCTEON SDK
+ *
+ * Copyright (c) 2003-2012 Cavium, Inc.
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
  * published by the Free Software Foundation.
- */
-
+ *
+ * This file is distributed in the hope that it will be useful, but
+ * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+ * NONINFRINGEMENT.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this file; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * or visit http://www.gnu.org/licenses/.
+ *
+ * This file may also be available under a different license from Cavium.
+ * Contact Cavium, Inc. for more information
+ **********************************************************************/
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/cache.h>
 #include <linux/cpumask.h>
 #include <linux/netdevice.h>
+#include <linux/init.h>
 #include <linux/etherdevice.h>
 #include <linux/ip.h>
 #include <linux/string.h>
@@ -26,26 +43,128 @@
 #include <net/xfrm.h>
 #endif /* CONFIG_XFRM */
 
-#include <linux/atomic.h>
-
 #include <asm/octeon/octeon.h>
+#include <asm/octeon/octeon-hw-status.h>
 
 #include "ethernet-defines.h"
-#include "ethernet-mem.h"
-#include "ethernet-rx.h"
 #include "octeon-ethernet.h"
-#include "ethernet-util.h"
 
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-wqe.h>
-#include <asm/octeon/cvmx-fau.h>
+#include <asm/octeon/cvmx-hwfau.h>
 #include <asm/octeon/cvmx-pow.h>
 #include <asm/octeon/cvmx-pip.h>
+#include <asm/octeon/cvmx-ipd.h>
+#include <asm/octeon/cvmx-srio.h>
 #include <asm/octeon/cvmx-scratch.h>
 
 #include <asm/octeon/cvmx-gmxx-defs.h>
+#include <asm/octeon/cvmx-sso-defs.h>
 
-static struct napi_struct cvm_oct_napi;
+struct cvm_napi_wrapper {
+	struct napi_struct napi;
+	int available;
+} ____cacheline_aligned_in_smp;
+
+static struct cvm_napi_wrapper cvm_oct_napi[NR_CPUS] __cacheline_aligned_in_smp;
+
+struct cvm_oct_core_state {
+	int baseline_cores;
+	/* We want to read this without having to acquire the lock,
+	 * make it volatile so we are likely to get a fairly current
+	 * value.
+	 */
+	volatile int active_cores;
+	/* cvm_napi_wrapper.available and active_cores must be kept
+	 * consistent with this lock.
+	 */
+	spinlock_t lock;
+} ____cacheline_aligned_in_smp;
+
+static struct cvm_oct_core_state core_state __cacheline_aligned_in_smp;
+
+#ifdef CONFIG_SMP
+static int cvm_oct_enable_one_message;
+#endif
+
+static void cvm_oct_enable_napi(void)
+{
+	int cpu = smp_processor_id();
+	napi_schedule(&cvm_oct_napi[cpu].napi);
+}
+
+static void cvm_oct_enable_one_cpu(void)
+{
+	int cpu;
+	unsigned long flags;
+	spin_lock_irqsave(&core_state.lock, flags);
+	/* ... if a CPU is available, Turn on NAPI polling for that CPU.  */
+	for_each_online_cpu(cpu) {
+		if (cvm_oct_napi[cpu].available > 0) {
+			cvm_oct_napi[cpu].available--;
+			core_state.active_cores++;
+			spin_unlock_irqrestore(&core_state.lock, flags);
+			if (cpu == smp_processor_id()) {
+				cvm_oct_enable_napi();
+			} else {
+#ifdef CONFIG_SMP
+				octeon_send_ipi_single(cpu, cvm_oct_enable_one_message);
+#else
+				BUG();
+#endif
+			}
+			goto out;
+		}
+	}
+	spin_unlock_irqrestore(&core_state.lock, flags);
+out:
+	return;
+}
+
+static void cvm_oct_no_more_work(struct napi_struct *napi)
+{
+	struct cvm_napi_wrapper *nr = container_of(napi, struct cvm_napi_wrapper, napi);
+	int current_active;
+	unsigned long flags;
+
+	spin_lock_irqsave(&core_state.lock, flags);
+
+	core_state.active_cores--;
+	current_active = core_state.active_cores;
+	nr->available++;
+	BUG_ON(nr->available != 1);
+
+	spin_unlock_irqrestore(&core_state.lock, flags);
+
+	if (current_active == 0) {
+		/* No more CPUs doing processing, enable interrupts so
+		 * we can start processing again when there is
+		 * something to do.
+		 */
+		if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+			union cvmx_sso_wq_int_thrx int_thr;
+			int_thr.u64 = 0;
+			int_thr.s.iq_thr = 1;
+			int_thr.s.ds_thr = 1;
+			/*
+			 * Enable SSO interrupt when our port has at
+			 * least one packet.
+			 */
+			cvmx_write_csr(CVMX_SSO_WQ_INT_THRX(pow_receive_group),
+				       int_thr.u64);
+		} else {
+			union cvmx_pow_wq_int_thrx int_thr;
+			int_thr.u64 = 0;
+			int_thr.s.iq_thr = 1;
+			int_thr.s.ds_thr = 1;
+			/* Enable POW interrupt when our port has at
+			 * least one packet.
+			 */
+			cvmx_write_csr(CVMX_POW_WQ_INT_THRX(pow_receive_group),
+				       int_thr.u64);
+		}
+	}
+}
 
 /**
  * cvm_oct_do_interrupt - interrupt handler.
@@ -55,9 +174,36 @@ static struct napi_struct cvm_oct_napi;
  */
 static irqreturn_t cvm_oct_do_interrupt(int cpl, void *dev_id)
 {
+	int cpu = smp_processor_id();
+	unsigned long flags;
+
 	/* Disable the IRQ and start napi_poll. */
-	disable_irq_nosync(OCTEON_IRQ_WORKQ0 + pow_receive_group);
-	napi_schedule(&cvm_oct_napi);
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+		cvmx_write_csr(CVMX_SSO_WQ_INT_THRX(pow_receive_group), 0);
+		cvmx_write_csr(CVMX_SSO_WQ_INT, 1ULL << pow_receive_group);
+	} else {
+		union cvmx_pow_wq_int wq_int;
+
+		cvmx_write_csr(CVMX_POW_WQ_INT_THRX(pow_receive_group), 0);
+
+		wq_int.u64 = 0;
+		wq_int.s.wq_int = 1 << pow_receive_group;
+		cvmx_write_csr(CVMX_POW_WQ_INT, wq_int.u64);
+	}
+
+	spin_lock_irqsave(&core_state.lock, flags);
+
+	/* ... and NAPI better not be running on this CPU.  */
+	BUG_ON(cvm_oct_napi[cpu].available != 1);
+	cvm_oct_napi[cpu].available--;
+
+	/* There better be cores available...  */
+	core_state.active_cores++;
+	BUG_ON(core_state.active_cores > core_state.baseline_cores);
+
+	spin_unlock_irqrestore(&core_state.lock, flags);
+
+	cvm_oct_enable_napi();
 
 	return IRQ_HANDLED;
 }
@@ -68,38 +214,46 @@ static irqreturn_t cvm_oct_do_interrupt(int cpl, void *dev_id)
  *
  * Returns Non-zero if the packet can be dropped, zero otherwise.
  */
-static inline int cvm_oct_check_rcv_error(cvmx_wqe_t *work)
+static int cvm_oct_check_rcv_error(cvmx_wqe_t *work)
 {
-	if ((work->word2.snoip.err_code == 10) && (work->len <= 64)) {
-		/*
-		 * Ignore length errors on min size packets. Some
+	bool err  = false;
+	int port = cvmx_wqe_get_port(work);
+
+	if ((work->word2.snoip.err_code == 10) && (work->word1.len <= 64)) {
+		/* Ignore length errors on min size packets. Some
 		 * equipment incorrectly pads packets to 64+4FCS
 		 * instead of 60+4FCS.  Note these packets still get
 		 * counted as frame errors.
 		 */
-	} else if (work->word2.snoip.err_code == 5 ||
-		   work->word2.snoip.err_code == 7) {
-		/*
-		 * We received a packet with either an alignment error
+	} else if (USE_10MBPS_PREAMBLE_WORKAROUND &&
+		   ((work->word2.snoip.err_code == 5)
+		    || (work->word2.snoip.err_code == 7))) {
+
+		/* We received a packet with either an alignment error
 		 * or a FCS error. This may be signalling that we are
-		 * running 10Mbps with GMXX_RXX_FRM_CTL[PRE_CHK]
+		 * running 10Mbps with GMXX_RXX_FRM_CTL[PRE_CHK}
 		 * off. If this is the case we need to parse the
 		 * packet to determine if we can remove a non spec
 		 * preamble and generate a correct packet.
 		 */
-		int interface = cvmx_helper_get_interface_num(work->ipprt);
-		int index = cvmx_helper_get_interface_index_num(work->ipprt);
+		int interface = cvmx_helper_get_interface_num(port);
+		int index = cvmx_helper_get_interface_index_num(port);
 		union cvmx_gmxx_rxx_frm_ctl gmxx_rxx_frm_ctl;
+		uint64_t frm_ctl_reg;
 
-		gmxx_rxx_frm_ctl.u64 =
-		    cvmx_read_csr(CVMX_GMXX_RXX_FRM_CTL(index, interface));
+		if (cvmx_helper_interface_get_mode(interface) ==
+			CVMX_HELPER_INTERFACE_MODE_AGL)
+			frm_ctl_reg = CVMX_AGL_GMX_RXX_FRM_CTL(index);
+		else
+			frm_ctl_reg = CVMX_GMXX_RXX_FRM_CTL(index, interface);
+
+		gmxx_rxx_frm_ctl.u64 = cvmx_read_csr(frm_ctl_reg);
 		if (gmxx_rxx_frm_ctl.s.pre_chk == 0) {
 
-			uint8_t *ptr =
-			    cvmx_phys_to_ptr(work->packet_ptr.s.addr);
+			u8 *ptr = phys_to_virt(work->packet_ptr.s.addr);
 			int i = 0;
 
-			while (i < work->len - 1) {
+			while (i < work->word1.len - 1) {
 				if (*ptr != 0x55)
 					break;
 				ptr++;
@@ -107,38 +261,31 @@ static inline int cvm_oct_check_rcv_error(cvmx_wqe_t *work)
 			}
 
 			if (*ptr == 0xd5) {
-				/*
-				  printk_ratelimited("Port %d received 0xd5 preamble\n",
-					  work->ipprt);
-				 */
 				work->packet_ptr.s.addr += i + 1;
-				work->len -= i + 5;
+				work->word1.len -= i + 5;
 			} else if ((*ptr & 0xf) == 0xd) {
-				/*
-				  printk_ratelimited("Port %d received 0x?d preamble\n",
-					  work->ipprt);
-				 */
 				work->packet_ptr.s.addr += i;
-				work->len -= i + 4;
-				for (i = 0; i < work->len; i++) {
-					*ptr =
-					    ((*ptr & 0xf0) >> 4) |
-					    ((*(ptr + 1) & 0xf) << 4);
+				work->word1.len -= i + 4;
+				for (i = 0; i < work->word1.len; i++) {
+					*ptr = ((*ptr & 0xf0) >> 4) | ((*(ptr + 1) & 0xf) << 4);
 					ptr++;
 				}
 			} else {
 				printk_ratelimited("Port %d unknown preamble, packet dropped\n",
-						   work->ipprt);
-				/*
-				   cvmx_helper_dump_packet(work);
-				 */
+						   port);
+				/* cvmx_helper_dump_packet(work); */
 				cvm_oct_free_work(work);
 				return 1;
 			}
+		} else {
+			err  = true;
 		}
 	} else {
+			err  = true;
+	}
+	if (err) {
 		printk_ratelimited("Port %d receive error code %d, packet dropped\n",
-				   work->ipprt, work->word2.snoip.err_code);
+				   port, work->word2.snoip.err_code);
 		cvm_oct_free_work(work);
 		return 1;
 	}
@@ -147,265 +294,45 @@ static inline int cvm_oct_check_rcv_error(cvmx_wqe_t *work)
 }
 
 /**
- * cvm_oct_napi_poll - the NAPI poll function.
- * @napi: The NAPI instance, or null if called from cvm_oct_poll_controller
- * @budget: Maximum number of packets to receive.
+ * cvm_oct_ptp_to_ktime - Convert a hardware PTP timestamp into a
+ * kernel timestamp.
  *
- * Returns the number of packets processed.
+ * @ptptime: 64 bit PTP timestamp, normally in nanoseconds
+ *
+ * Return ktime_t
  */
-static int cvm_oct_napi_poll(struct napi_struct *napi, int budget)
+static ktime_t cvm_oct_ptp_to_ktime(u64 ptptime)
 {
-	const int	coreid = cvmx_get_core_num();
-	uint64_t	old_group_mask;
-	uint64_t	old_scratch;
-	int		rx_count = 0;
-	int		did_work_request = 0;
-	int		packet_not_copied;
+	ktime_t ktimebase;
+	u64 ptpbase;
+	unsigned long flags;
 
-	/* Prefetch cvm_oct_device since we know we need it soon */
-	prefetch(cvm_oct_device);
+	local_irq_save(flags);
+	/* Fill the icache with the code */
+	ktime_get_real();
+	/* Flush all pending operations */
+	mb();
+	/* Read the time and PTP clock as close together as
+	 * possible. It is important that this sequence take the same
+	 * amount of time to reduce jitter
+	 */
+	ktimebase = ktime_get_real();
+	ptpbase = octeon_read_ptp_csr(CVMX_MIO_PTP_CLOCK_HI);
+	local_irq_restore(flags);
 
-	if (USE_ASYNC_IOBDMA) {
-		/* Save scratch in case userspace is using it */
-		CVMX_SYNCIOBDMA;
-		old_scratch = cvmx_scratch_read64(CVMX_SCR_SCRATCH);
-	}
-
-	/* Only allow work for our group (and preserve priorities) */
-	old_group_mask = cvmx_read_csr(CVMX_POW_PP_GRP_MSKX(coreid));
-	cvmx_write_csr(CVMX_POW_PP_GRP_MSKX(coreid),
-		       (old_group_mask & ~0xFFFFull) | 1 << pow_receive_group);
-
-	if (USE_ASYNC_IOBDMA) {
-		cvmx_pow_work_request_async(CVMX_SCR_SCRATCH, CVMX_POW_NO_WAIT);
-		did_work_request = 1;
-	}
-
-	while (rx_count < budget) {
-		struct sk_buff *skb = NULL;
-		struct sk_buff **pskb = NULL;
-		int skb_in_hw;
-		cvmx_wqe_t *work;
-
-		if (USE_ASYNC_IOBDMA && did_work_request)
-			work = cvmx_pow_work_response_async(CVMX_SCR_SCRATCH);
-		else
-			work = cvmx_pow_work_request_sync(CVMX_POW_NO_WAIT);
-
-		prefetch(work);
-		did_work_request = 0;
-		if (work == NULL) {
-			union cvmx_pow_wq_int wq_int;
-
-			wq_int.u64 = 0;
-			wq_int.s.iq_dis = 1 << pow_receive_group;
-			wq_int.s.wq_int = 1 << pow_receive_group;
-			cvmx_write_csr(CVMX_POW_WQ_INT, wq_int.u64);
-			break;
-		}
-		pskb = (struct sk_buff **)(cvm_oct_get_buffer_ptr(work->packet_ptr) -
-			sizeof(void *));
-		prefetch(pskb);
-
-		if (USE_ASYNC_IOBDMA && rx_count < (budget - 1)) {
-			cvmx_pow_work_request_async_nocheck(CVMX_SCR_SCRATCH,
-							    CVMX_POW_NO_WAIT);
-			did_work_request = 1;
-		}
-		rx_count++;
-
-		skb_in_hw = work->word2.s.bufs == 1;
-		if (likely(skb_in_hw)) {
-			skb = *pskb;
-			prefetch(&skb->head);
-			prefetch(&skb->len);
-		}
-		prefetch(cvm_oct_device[work->ipprt]);
-
-		/* Immediately throw away all packets with receive errors */
-		if (unlikely(work->word2.snoip.rcv_error)) {
-			if (cvm_oct_check_rcv_error(work))
-				continue;
-		}
-
-		/*
-		 * We can only use the zero copy path if skbuffs are
-		 * in the FPA pool and the packet fits in a single
-		 * buffer.
-		 */
-		if (likely(skb_in_hw)) {
-			skb->data = skb->head + work->packet_ptr.s.addr -
-				cvmx_ptr_to_phys(skb->head);
-			prefetch(skb->data);
-			skb->len = work->len;
-			skb_set_tail_pointer(skb, skb->len);
-			packet_not_copied = 1;
-		} else {
-			/*
-			 * We have to copy the packet. First allocate
-			 * an skbuff for it.
-			 */
-			skb = dev_alloc_skb(work->len);
-			if (!skb) {
-				cvm_oct_free_work(work);
-				continue;
-			}
-
-			/*
-			 * Check if we've received a packet that was
-			 * entirely stored in the work entry.
-			 */
-			if (unlikely(work->word2.s.bufs == 0)) {
-				uint8_t *ptr = work->packet_data;
-
-				if (likely(!work->word2.s.not_IP)) {
-					/*
-					 * The beginning of the packet
-					 * moves for IP packets.
-					 */
-					if (work->word2.s.is_v6)
-						ptr += 2;
-					else
-						ptr += 6;
-				}
-				memcpy(skb_put(skb, work->len), ptr, work->len);
-				/* No packet buffers to free */
-			} else {
-				int segments = work->word2.s.bufs;
-				union cvmx_buf_ptr segment_ptr =
-				    work->packet_ptr;
-				int len = work->len;
-
-				while (segments--) {
-					union cvmx_buf_ptr next_ptr =
-					    *(union cvmx_buf_ptr *)cvmx_phys_to_ptr(segment_ptr.s.addr - 8);
-
-			/*
-			 * Octeon Errata PKI-100: The segment size is
-			 * wrong. Until it is fixed, calculate the
-			 * segment size based on the packet pool
-			 * buffer size. When it is fixed, the
-			 * following line should be replaced with this
-			 * one: int segment_size =
-			 * segment_ptr.s.size;
-			 */
-					int segment_size =
-					    CVMX_FPA_PACKET_POOL_SIZE -
-					    (segment_ptr.s.addr -
-					     (((segment_ptr.s.addr >> 7) -
-					       segment_ptr.s.back) << 7));
-					/*
-					 * Don't copy more than what
-					 * is left in the packet.
-					 */
-					if (segment_size > len)
-						segment_size = len;
-					/* Copy the data into the packet */
-					memcpy(skb_put(skb, segment_size),
-					       cvmx_phys_to_ptr(segment_ptr.s.addr),
-					       segment_size);
-					len -= segment_size;
-					segment_ptr = next_ptr;
-				}
-			}
-			packet_not_copied = 0;
-		}
-
-		if (likely((work->ipprt < TOTAL_NUMBER_OF_PORTS) &&
-			   cvm_oct_device[work->ipprt])) {
-			struct net_device *dev = cvm_oct_device[work->ipprt];
-			struct octeon_ethernet *priv = netdev_priv(dev);
-
-			/*
-			 * Only accept packets for devices that are
-			 * currently up.
-			 */
-			if (likely(dev->flags & IFF_UP)) {
-				skb->protocol = eth_type_trans(skb, dev);
-				skb->dev = dev;
-
-				if (unlikely(work->word2.s.not_IP ||
-					     work->word2.s.IP_exc ||
-					     work->word2.s.L4_error ||
-					     !work->word2.s.tcp_or_udp))
-					skb->ip_summed = CHECKSUM_NONE;
-				else
-					skb->ip_summed = CHECKSUM_UNNECESSARY;
-
-				/* Increment RX stats for virtual ports */
-				if (work->ipprt >= CVMX_PIP_NUM_INPUT_PORTS) {
-#ifdef CONFIG_64BIT
-					atomic64_add(1,
-						     (atomic64_t *)&priv->stats.rx_packets);
-					atomic64_add(skb->len,
-						     (atomic64_t *)&priv->stats.rx_bytes);
-#else
-					atomic_add(1,
-						   (atomic_t *)&priv->stats.rx_packets);
-					atomic_add(skb->len,
-						   (atomic_t *)&priv->stats.rx_bytes);
-#endif
-				}
-				netif_receive_skb(skb);
-			} else {
-				/* Drop any packet received for a device that isn't up */
-				/*
-				  printk_ratelimited("%s: Device not up, packet dropped\n",
-					   dev->name);
-				*/
-#ifdef CONFIG_64BIT
-				atomic64_add(1,
-					     (atomic64_t *)&priv->stats.rx_dropped);
-#else
-				atomic_add(1,
-					   (atomic_t *)&priv->stats.rx_dropped);
-#endif
-				dev_kfree_skb_irq(skb);
-			}
-		} else {
-			/*
-			 * Drop any packet received for a device that
-			 * doesn't exist.
-			 */
-			printk_ratelimited("Port %d not controlled by Linux, packet dropped\n",
-				   work->ipprt);
-			dev_kfree_skb_irq(skb);
-		}
-		/*
-		 * Check to see if the skbuff and work share the same
-		 * packet buffer.
-		 */
-		if (likely(packet_not_copied)) {
-			/*
-			 * This buffer needs to be replaced, increment
-			 * the number of buffers we need to free by
-			 * one.
-			 */
-			cvmx_fau_atomic_add32(FAU_NUM_PACKET_BUFFERS_TO_FREE,
-					      1);
-
-			cvmx_fpa_free(work, CVMX_FPA_WQE_POOL, 1);
-		} else {
-			cvm_oct_free_work(work);
-		}
-	}
-	/* Restore the original POW group mask */
-	cvmx_write_csr(CVMX_POW_PP_GRP_MSKX(coreid), old_group_mask);
-	if (USE_ASYNC_IOBDMA) {
-		/* Restore the scratch area */
-		cvmx_scratch_write64(CVMX_SCR_SCRATCH, old_scratch);
-	}
-	cvm_oct_rx_refill_pool(0);
-
-	if (rx_count < budget && napi != NULL) {
-		/* No more work */
-		napi_complete(napi);
-		enable_irq(OCTEON_IRQ_WORKQ0 + pow_receive_group);
-	}
-	return rx_count;
+	return ktime_sub_ns(ktimebase, ptpbase - ptptime);
 }
 
+#undef CVM_OCT_NAPI_68
+#include "ethernet-napi.c"
+
+#define CVM_OCT_NAPI_68
+#include "ethernet-napi.c"
+
+static int (*cvm_oct_napi_poll)(struct napi_struct *, int);
+
 #ifdef CONFIG_NET_POLL_CONTROLLER
+
 /**
  * cvm_oct_poll_controller - poll for receive packets
  * device.
@@ -418,52 +345,257 @@ void cvm_oct_poll_controller(struct net_device *dev)
 }
 #endif
 
-void cvm_oct_rx_initialize(void)
+static struct kmem_cache *cvm_oct_kmem_sso;
+static int cvm_oct_sso_fptr_count;
+
+static int cvm_oct_sso_initialize(int num_wqe)
+{
+	union cvmx_sso_cfg sso_cfg;
+	union cvmx_fpa_fpfx_marks fpa_marks;
+	int i;
+	int rwq_bufs;
+
+	if (!OCTEON_IS_MODEL(OCTEON_CN68XX))
+		return 0;
+
+	rwq_bufs = 48 + DIV_ROUND_UP(num_wqe, 26);
+	cvm_oct_sso_fptr_count = rwq_bufs;
+	cvm_oct_kmem_sso = kmem_cache_create("octeon_ethernet_sso", 256, 128, 0, NULL);
+	if (cvm_oct_kmem_sso == NULL) {
+		pr_err("cannot create kmem_cache for octeon_ethernet_sso\n");
+		return -ENOMEM;
+	}
+
+	/*
+	 * CN68XX-P1 may reset with the wrong values, put in
+	 * the correct values.
+	 */
+	fpa_marks.u64 = 0;
+	fpa_marks.s.fpf_wr = 0xa4;
+	fpa_marks.s.fpf_rd = 0x40;
+	cvmx_write_csr(CVMX_FPA_FPF8_MARKS, fpa_marks.u64);
+
+	/* Make sure RWI/RWO is disabled. */
+	sso_cfg.u64 = cvmx_read_csr(CVMX_SSO_CFG);
+	sso_cfg.s.rwen = 0;
+	cvmx_write_csr(CVMX_SSO_CFG, sso_cfg.u64);
+
+	while (rwq_bufs) {
+		union cvmx_sso_rwq_psh_fptr fptr;
+		void *mem;
+
+		mem = kmem_cache_alloc(cvm_oct_kmem_sso, GFP_KERNEL);
+		if (mem == NULL) {
+			pr_err("cannot allocate memory from octeon_ethernet_sso\n");
+			return -ENOMEM;
+		}
+		for (;;) {
+			fptr.u64 = cvmx_read_csr(CVMX_SSO_RWQ_PSH_FPTR);
+			if (!fptr.s.full)
+				break;
+			__delay(1000);
+		}
+		fptr.s.fptr = virt_to_phys(mem) >> 7;
+		cvmx_write_csr(CVMX_SSO_RWQ_PSH_FPTR, fptr.u64);
+		rwq_bufs--;
+	}
+	for (i = 0; i < 8; i++) {
+		union cvmx_sso_rwq_head_ptrx head_ptr;
+		union cvmx_sso_rwq_tail_ptrx tail_ptr;
+		void *mem;
+
+		mem = kmem_cache_alloc(cvm_oct_kmem_sso, GFP_KERNEL);
+		if (mem == NULL) {
+			pr_err("cannot allocate memory from octeon_ethernet_sso\n");
+			return -ENOMEM;
+		}
+
+		head_ptr.u64 = 0;
+		tail_ptr.u64 = 0;
+		head_ptr.s.ptr = virt_to_phys(mem) >> 7;
+		tail_ptr.s.ptr = head_ptr.s.ptr;
+		cvmx_write_csr(CVMX_SSO_RWQ_HEAD_PTRX(i), head_ptr.u64);
+		cvmx_write_csr(CVMX_SSO_RWQ_TAIL_PTRX(i), tail_ptr.u64);
+	}
+	/* Now enable the SS0  RWI/RWO */
+	sso_cfg.u64 = cvmx_read_csr(CVMX_SSO_CFG);
+	sso_cfg.s.rwen = 1;
+	sso_cfg.s.rwq_byp_dis = 0;
+	sso_cfg.s.rwio_byp_dis = 0;
+	cvmx_write_csr(CVMX_SSO_CFG, sso_cfg.u64);
+
+	return 0;
+}
+
+void cvm_oct_rx_initialize(int num_wqe)
 {
 	int i;
 	struct net_device *dev_for_napi = NULL;
-	union cvmx_pow_wq_int_thrx int_thr;
-	union cvmx_pow_wq_int_pc int_pc;
 
-	for (i = 0; i < TOTAL_NUMBER_OF_PORTS; i++) {
-		if (cvm_oct_device[i]) {
-			dev_for_napi = cvm_oct_device[i];
-			break;
-		}
-	}
-
-	if (NULL == dev_for_napi)
+	if (list_empty(&cvm_oct_list))
 		panic("No net_devices were allocated.");
 
-	netif_napi_add(dev_for_napi, &cvm_oct_napi, cvm_oct_napi_poll,
-		       rx_napi_weight);
-	napi_enable(&cvm_oct_napi);
+#ifdef CONFIG_SMP
+	cvm_oct_enable_one_message = octeon_request_ipi_handler(cvm_oct_enable_napi);
+	if (cvm_oct_enable_one_message < 0)
+		panic("cvm_oct_rx_initialize: No IPI handler handles available\n");
+#endif
 
-	/* Register an IRQ handler to receive POW interrupts */
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		cvm_oct_napi_poll = cvm_oct_napi_poll_68;
+	else
+		cvm_oct_napi_poll = cvm_oct_napi_poll_38;
+
+	dev_for_napi = list_first_entry(&cvm_oct_list,
+					struct octeon_ethernet,
+					list)->netdev;
+
+	if (max_rx_cpus >= 1  && max_rx_cpus < num_online_cpus())
+		core_state.baseline_cores = max_rx_cpus;
+	else
+		core_state.baseline_cores = num_online_cpus();
+
+	for_each_possible_cpu(i) {
+		cvm_oct_napi[i].available = 1;
+		netif_napi_add(dev_for_napi, &cvm_oct_napi[i].napi,
+			       cvm_oct_napi_poll, rx_napi_weight);
+		napi_enable(&cvm_oct_napi[i].napi);
+	}
+	/* Before interrupts are enabled, no RX processing will occur,
+	 * so we can initialize all those things out side of the
+	 * lock.
+	 */
+	spin_lock_init(&core_state.lock);
+
+	/* Register an IRQ hander for to receive POW interrupts */
 	i = request_irq(OCTEON_IRQ_WORKQ0 + pow_receive_group,
-			cvm_oct_do_interrupt, 0, "Ethernet", cvm_oct_device);
+			cvm_oct_do_interrupt, 0, dev_for_napi->name, &cvm_oct_list);
 
 	if (i)
 		panic("Could not acquire Ethernet IRQ %d\n",
 		      OCTEON_IRQ_WORKQ0 + pow_receive_group);
 
-	disable_irq_nosync(OCTEON_IRQ_WORKQ0 + pow_receive_group);
+	if (cvm_oct_sso_initialize(num_wqe))
+		goto err;
 
-	int_thr.u64 = 0;
-	int_thr.s.tc_en = 1;
-	int_thr.s.tc_thr = 1;
-	/* Enable POW interrupt when our port has at least one packet */
-	cvmx_write_csr(CVMX_POW_WQ_INT_THRX(pow_receive_group), int_thr.u64);
-
-	int_pc.u64 = 0;
-	int_pc.s.pc_thr = 5;
-	cvmx_write_csr(CVMX_POW_WQ_INT_PC, int_pc.u64);
-
-	/* Schedule NAPI now. This will indirectly enable the interrupt. */
-	napi_schedule(&cvm_oct_napi);
+	/* Scheduld NAPI now.  This will indirectly enable interrupts. */
+	preempt_disable();
+	cvm_oct_enable_one_cpu();
+	preempt_enable();
+	return;
+err:
+	free_irq(OCTEON_IRQ_WORKQ0 + pow_receive_group, &cvm_oct_list);
+	return;
 }
 
-void cvm_oct_rx_shutdown(void)
+void cvm_oct_rx_shutdown0(void)
 {
-	netif_napi_del(&cvm_oct_napi);
+	int i;
+
+	/* Disable POW/SSO interrupt */
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		cvmx_write_csr(CVMX_SSO_WQ_INT_THRX(pow_receive_group), 0);
+	else
+		cvmx_write_csr(CVMX_POW_WQ_INT_THRX(pow_receive_group), 0);
+
+	/* Free the interrupt handler */
+	free_irq(OCTEON_IRQ_WORKQ0 + pow_receive_group, &cvm_oct_list);
+
+#ifdef CONFIG_SMP
+	octeon_release_ipi_handler(cvm_oct_enable_one_message);
+#endif
+
+	/* Shutdown all of the NAPIs */
+	for_each_possible_cpu(i)
+		netif_napi_del(&cvm_oct_napi[i].napi);
+}
+
+void cvm_oct_rx_shutdown1(void)
+{
+	union cvmx_fpa_quex_available queue_available;
+	union cvmx_sso_cfg sso_cfg;
+	union cvmx_sso_rwq_pop_fptr pop_fptr;
+	union cvmx_sso_rwq_psh_fptr fptr;
+	union cvmx_sso_fpage_cnt fpage_cnt;
+	int num_to_transfer, count, i;
+	void *mem;
+	const int sso_fpe_bit = 45;
+
+	if (!OCTEON_IS_MODEL(OCTEON_CN68XX))
+		return;
+
+	/* Spurious FPE errors will happen doing this cleanup.
+	 * Disable the indication.
+	 */
+	octeon_hw_status_disable(CVMX_SSO_ERR, 1ull << sso_fpe_bit);
+
+	sso_cfg.u64 = cvmx_read_csr(CVMX_SSO_CFG);
+	sso_cfg.s.rwen = 0;
+	sso_cfg.s.rwq_byp_dis = 1;
+	cvmx_write_csr(CVMX_SSO_CFG, sso_cfg.u64);
+	cvmx_read_csr(CVMX_SSO_CFG);
+	queue_available.u64 = cvmx_read_csr(CVMX_FPA_QUEX_AVAILABLE(8));
+
+	/* Make CVMX_FPA_QUEX_AVAILABLE(8) % 16 == 0*/
+	for (num_to_transfer = (16 - queue_available.s.que_siz) % 16;
+	     num_to_transfer > 0; num_to_transfer--) {
+		do {
+			pop_fptr.u64 = cvmx_read_csr(CVMX_SSO_RWQ_POP_FPTR);
+		} while (!pop_fptr.s.val);
+		for (;;) {
+			fptr.u64 = cvmx_read_csr(CVMX_SSO_RWQ_PSH_FPTR);
+			if (!fptr.s.full)
+				break;
+			__delay(1000);
+		}
+		fptr.s.fptr = pop_fptr.s.fptr;
+		cvmx_write_csr(CVMX_SSO_RWQ_PSH_FPTR, fptr.u64);
+	}
+	cvmx_read_csr(CVMX_SSO_CFG);
+
+	do {
+		queue_available.u64 = cvmx_read_csr(CVMX_FPA_QUEX_AVAILABLE(8));
+	} while (queue_available.s.que_siz % 16);
+
+	sso_cfg.s.rwen = 1;
+	sso_cfg.s.rwq_byp_dis = 0;
+	cvmx_write_csr(CVMX_SSO_CFG, sso_cfg.u64);
+
+	for (i = 0; i < 8; i++) {
+		union cvmx_sso_rwq_head_ptrx head_ptr;
+		union cvmx_sso_rwq_tail_ptrx tail_ptr;
+
+		head_ptr.u64 = cvmx_read_csr(CVMX_SSO_RWQ_HEAD_PTRX(i));
+		tail_ptr.u64 = cvmx_read_csr(CVMX_SSO_RWQ_TAIL_PTRX(i));
+		WARN_ON(head_ptr.s.ptr != tail_ptr.s.ptr);
+
+		mem = phys_to_virt(((u64)head_ptr.s.ptr) << 7);
+		kmem_cache_free(cvm_oct_kmem_sso, mem);
+	}
+
+	count = 0;
+
+	do {
+		do {
+			pop_fptr.u64 = cvmx_read_csr(CVMX_SSO_RWQ_POP_FPTR);
+			if (pop_fptr.s.val) {
+				mem = phys_to_virt(((u64)pop_fptr.s.fptr) << 7);
+				kmem_cache_free(cvm_oct_kmem_sso, mem);
+				count++;
+			}
+		} while (pop_fptr.s.val);
+		fpage_cnt.u64 = cvmx_read_csr(CVMX_SSO_FPAGE_CNT);
+	} while (fpage_cnt.s.fpage_cnt);
+
+	WARN_ON(count != cvm_oct_sso_fptr_count);
+
+	sso_cfg.s.rwen = 0;
+	sso_cfg.s.rwq_byp_dis = 0;
+	cvmx_write_csr(CVMX_SSO_CFG, sso_cfg.u64);
+	kmem_cache_destroy(cvm_oct_kmem_sso);
+	cvm_oct_kmem_sso = NULL;
+
+	/* Clear any FPE indicators, and reenable. */
+	cvmx_write_csr(CVMX_SSO_ERR, 1ull << sso_fpe_bit);
+	octeon_hw_status_enable(CVMX_SSO_ERR, 1ull << sso_fpe_bit);
 }

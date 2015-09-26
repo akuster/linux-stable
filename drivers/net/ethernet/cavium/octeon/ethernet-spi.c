@@ -1,23 +1,39 @@
-/*
- * This file is based on code from OCTEON SDK by Cavium Networks.
+/**********************************************************************
+ * Author: Cavium, Inc.
  *
- * Copyright (c) 2003-2007 Cavium Networks
+ * Contact: support@cavium.com
+ * This file is part of the OCTEON SDK
+ *
+ * Copyright (c) 2003-2012 Cavium, Inc.
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
  * published by the Free Software Foundation.
- */
-
+ *
+ * This file is distributed in the hope that it will be useful, but
+ * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+ * NONINFRINGEMENT.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this file; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * or visit http://www.gnu.org/licenses/.
+ *
+ * This file may also be available under a different license from Cavium.
+ * Contact Cavium, Inc. for more information
+ **********************************************************************/
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/interrupt.h>
 #include <net/dst.h>
 
+#include <asm/octeon/octeon-hw-status.h>
 #include <asm/octeon/octeon.h>
 
 #include "ethernet-defines.h"
 #include "octeon-ethernet.h"
-#include "ethernet-util.h"
 
 #include <asm/octeon/cvmx-spi.h>
 
@@ -25,141 +41,71 @@
 #include <asm/octeon/cvmx-spxx-defs.h>
 #include <asm/octeon/cvmx-stxx-defs.h>
 
-static int number_spi_ports;
+#define MASK_FOR_BIT(_X) (1ull << (_X))
+
+#define INT_BIT_SPX_PRTNXA 0
+#define INT_BIT_SPX_ABNORM 1
+#define INT_BIT_SPX_SPIOVR 4
+#define INT_BIT_SPX_CLSERR 5
+#define INT_BIT_SPX_DRWNNG 6
+#define INT_BIT_SPX_RSVERR 7
+#define INT_BIT_SPX_TPAOVR 8
+#define INT_BIT_SPX_DIPERR 9
+#define INT_BIT_SPX_SYNCERR 10
+#define INT_BIT_SPX_CALERR 11
+
+#define SPX_MASK (				\
+	MASK_FOR_BIT(INT_BIT_SPX_PRTNXA) |	\
+	MASK_FOR_BIT(INT_BIT_SPX_ABNORM) |	\
+	MASK_FOR_BIT(INT_BIT_SPX_SPIOVR) |	\
+	MASK_FOR_BIT(INT_BIT_SPX_CLSERR) |	\
+	MASK_FOR_BIT(INT_BIT_SPX_DRWNNG) |	\
+	MASK_FOR_BIT(INT_BIT_SPX_RSVERR) |	\
+	MASK_FOR_BIT(INT_BIT_SPX_TPAOVR) |	\
+	MASK_FOR_BIT(INT_BIT_SPX_DIPERR) |	\
+	MASK_FOR_BIT(INT_BIT_SPX_CALERR))
+
+#define INT_BIT_SPX_SPF 31
+
+#define INT_BIT_STX_CALPAR0 0
+#define INT_BIT_STX_CALPAR1 1
+#define INT_BIT_STX_OVRBST 2
+#define INT_BIT_STX_DATOVR 3
+#define INT_BIT_STX_DIPERR 4
+#define INT_BIT_STX_NOSYNC 5
+#define INT_BIT_STX_UNXFRM 6
+#define INT_BIT_STX_FRMERR 7
+#define INT_BIT_STX_SYNCERR 8
+#define STX_MASK (					\
+		MASK_FOR_BIT(INT_BIT_STX_CALPAR0) |	\
+		MASK_FOR_BIT(INT_BIT_STX_CALPAR1) |	\
+		MASK_FOR_BIT(INT_BIT_STX_OVRBST) |	\
+		MASK_FOR_BIT(INT_BIT_STX_DATOVR) |	\
+		MASK_FOR_BIT(INT_BIT_STX_DIPERR) |	\
+		MASK_FOR_BIT(INT_BIT_STX_NOSYNC) |	\
+		MASK_FOR_BIT(INT_BIT_STX_UNXFRM) |	\
+		MASK_FOR_BIT(INT_BIT_STX_FRMERR) |	\
+		MASK_FOR_BIT(INT_BIT_STX_SYNCERR))
+
 static int need_retrain[2] = { 0, 0 };
 
-static void cvm_oct_spxx_int_pr(union cvmx_spxx_int_reg spx_int_reg, int index)
+static int cvm_oct_spi_hw_status(struct notifier_block *nb, unsigned long val, void *v)
 {
-	if (spx_int_reg.s.spf)
-		pr_err("SPI%d: SRX Spi4 interface down\n", index);
-	if (spx_int_reg.s.calerr)
-		pr_err("SPI%d: SRX Spi4 Calendar table parity error\n", index);
-	if (spx_int_reg.s.syncerr)
-		pr_err("SPI%d: SRX Consecutive Spi4 DIP4 errors have exceeded SPX_ERR_CTL[ERRCNT]\n",
-		       index);
-	if (spx_int_reg.s.diperr)
-		pr_err("SPI%d: SRX Spi4 DIP4 error\n", index);
-	if (spx_int_reg.s.tpaovr)
-		pr_err("SPI%d: SRX Selected port has hit TPA overflow\n",
-		       index);
-	if (spx_int_reg.s.rsverr)
-		pr_err("SPI%d: SRX Spi4 reserved control word detected\n",
-		       index);
-	if (spx_int_reg.s.drwnng)
-		pr_err("SPI%d: SRX Spi4 receive FIFO drowning/overflow\n",
-		       index);
-	if (spx_int_reg.s.clserr)
-		pr_err("SPI%d: SRX Spi4 packet closed on non-16B alignment without EOP\n",
-		       index);
-	if (spx_int_reg.s.spiovr)
-		pr_err("SPI%d: SRX Spi4 async FIFO overflow\n", index);
-	if (spx_int_reg.s.abnorm)
-		pr_err("SPI%d: SRX Abnormal packet termination (ERR bit)\n",
-		       index);
-	if (spx_int_reg.s.prtnxa)
-		pr_err("SPI%d: SRX Port out of range\n", index);
-}
+	struct octeon_ethernet *priv = container_of(nb, struct octeon_ethernet, hw_status_notifier);
 
-static void cvm_oct_stxx_int_pr(union cvmx_stxx_int_reg stx_int_reg, int index)
-{
-	if (stx_int_reg.s.syncerr)
-		pr_err("SPI%d: STX Interface encountered a fatal error\n",
-		       index);
-	if (stx_int_reg.s.frmerr)
-		pr_err("SPI%d: STX FRMCNT has exceeded STX_DIP_CNT[MAXFRM]\n",
-		       index);
-	if (stx_int_reg.s.unxfrm)
-		pr_err("SPI%d: STX Unexpected framing sequence\n", index);
-	if (stx_int_reg.s.nosync)
-		pr_err("SPI%d: STX ERRCNT has exceeded STX_DIP_CNT[MAXDIP]\n",
-		       index);
-	if (stx_int_reg.s.diperr)
-		pr_err("SPI%d: STX DIP2 error on the Spi4 Status channel\n",
-		       index);
-	if (stx_int_reg.s.datovr)
-		pr_err("SPI%d: STX Spi4 FIFO overflow error\n", index);
-	if (stx_int_reg.s.ovrbst)
-		pr_err("SPI%d: STX Transmit packet burst too big\n", index);
-	if (stx_int_reg.s.calpar1)
-		pr_err("SPI%d: STX Calendar Table Parity Error Bank%d\n",
-		       index, 1);
-	if (stx_int_reg.s.calpar0)
-		pr_err("SPI%d: STX Calendar Table Parity Error Bank%d\n",
-		       index, 0);
-}
-
-static irqreturn_t cvm_oct_spi_spx_int(int index)
-{
-	union cvmx_spxx_int_reg spx_int_reg;
-	union cvmx_stxx_int_reg stx_int_reg;
-
-	spx_int_reg.u64 = cvmx_read_csr(CVMX_SPXX_INT_REG(index));
-	cvmx_write_csr(CVMX_SPXX_INT_REG(index), spx_int_reg.u64);
-	if (!need_retrain[index]) {
-		spx_int_reg.u64 &= cvmx_read_csr(CVMX_SPXX_INT_MSK(index));
-		cvm_oct_spxx_int_pr(spx_int_reg, index);
+	if (val == OCTEON_HW_STATUS_SOURCE_ASSERTED) {
+		struct octeon_hw_status_data *d = v;
+		if (d->reg == CVMX_SPXX_INT_REG(priv->interface) ||
+		    d->reg == CVMX_STXX_INT_REG(priv->interface)) {
+			if (need_retrain[priv->interface])
+				return NOTIFY_STOP;
+			need_retrain[priv->interface] = 1;
+			octeon_hw_status_disable(CVMX_SPXX_INT_REG(priv->interface), SPX_MASK);
+			octeon_hw_status_disable(CVMX_STXX_INT_REG(priv->interface), STX_MASK);
+		}
 	}
-
-	stx_int_reg.u64 = cvmx_read_csr(CVMX_STXX_INT_REG(index));
-	cvmx_write_csr(CVMX_STXX_INT_REG(index), stx_int_reg.u64);
-	if (!need_retrain[index]) {
-		stx_int_reg.u64 &= cvmx_read_csr(CVMX_STXX_INT_MSK(index));
-		cvm_oct_stxx_int_pr(stx_int_reg, index);
-	}
-
-	cvmx_write_csr(CVMX_SPXX_INT_MSK(index), 0);
-	cvmx_write_csr(CVMX_STXX_INT_MSK(index), 0);
-	need_retrain[index] = 1;
-
-	return IRQ_HANDLED;
+	return NOTIFY_DONE;
 }
-
-static irqreturn_t cvm_oct_spi_rml_interrupt(int cpl, void *dev_id)
-{
-	irqreturn_t return_status = IRQ_NONE;
-	union cvmx_npi_rsl_int_blocks rsl_int_blocks;
-
-	/* Check and see if this interrupt was caused by the GMX block */
-	rsl_int_blocks.u64 = cvmx_read_csr(CVMX_NPI_RSL_INT_BLOCKS);
-	if (rsl_int_blocks.s.spx1) /* 19 - SPX1_INT_REG & STX1_INT_REG */
-		return_status = cvm_oct_spi_spx_int(1);
-
-	if (rsl_int_blocks.s.spx0) /* 18 - SPX0_INT_REG & STX0_INT_REG */
-		return_status = cvm_oct_spi_spx_int(0);
-
-	return return_status;
-}
-
-static void cvm_oct_spi_enable_error_reporting(int interface)
-{
-	union cvmx_spxx_int_msk spxx_int_msk;
-	union cvmx_stxx_int_msk stxx_int_msk;
-
-	spxx_int_msk.u64 = cvmx_read_csr(CVMX_SPXX_INT_MSK(interface));
-	spxx_int_msk.s.calerr = 1;
-	spxx_int_msk.s.syncerr = 1;
-	spxx_int_msk.s.diperr = 1;
-	spxx_int_msk.s.tpaovr = 1;
-	spxx_int_msk.s.rsverr = 1;
-	spxx_int_msk.s.drwnng = 1;
-	spxx_int_msk.s.clserr = 1;
-	spxx_int_msk.s.spiovr = 1;
-	spxx_int_msk.s.abnorm = 1;
-	spxx_int_msk.s.prtnxa = 1;
-	cvmx_write_csr(CVMX_SPXX_INT_MSK(interface), spxx_int_msk.u64);
-
-	stxx_int_msk.u64 = cvmx_read_csr(CVMX_STXX_INT_MSK(interface));
-	stxx_int_msk.s.frmerr = 1;
-	stxx_int_msk.s.unxfrm = 1;
-	stxx_int_msk.s.nosync = 1;
-	stxx_int_msk.s.diperr = 1;
-	stxx_int_msk.s.datovr = 1;
-	stxx_int_msk.s.ovrbst = 1;
-	stxx_int_msk.s.calpar1 = 1;
-	stxx_int_msk.s.calpar0 = 1;
-	cvmx_write_csr(CVMX_STXX_INT_MSK(interface), stxx_int_msk.u64);
-}
-
 static void cvm_oct_spi_poll(struct net_device *dev)
 {
 	static int spi4000_port;
@@ -167,32 +113,27 @@ static void cvm_oct_spi_poll(struct net_device *dev)
 	int interface;
 
 	for (interface = 0; interface < 2; interface++) {
-
-		if ((priv->port == interface * 16) && need_retrain[interface]) {
-
-			if (cvmx_spi_restart_interface
-			    (interface, CVMX_SPI_MODE_DUPLEX, 10) == 0) {
+		if ((priv->ipd_port == interface * 16) && need_retrain[interface]) {
+			if (cvmx_spi_restart_interface(interface, CVMX_SPI_MODE_DUPLEX, 10) == 0) {
 				need_retrain[interface] = 0;
-				cvm_oct_spi_enable_error_reporting(interface);
+				octeon_hw_status_enable(CVMX_SPXX_INT_REG(priv->interface), SPX_MASK);
+				octeon_hw_status_enable(CVMX_STXX_INT_REG(priv->interface), STX_MASK);
 			}
 		}
 
-		/*
-		 * The SPI4000 TWSI interface is very slow. In order
+		/* The SPI4000 TWSI interface is very slow. In order
 		 * not to bring the system to a crawl, we only poll a
 		 * single port every second. This means negotiation
 		 * speed changes take up to 10 seconds, but at least
 		 * we don't waste absurd amounts of time waiting for
 		 * TWSI.
 		 */
-		if (priv->port == spi4000_port) {
-			/*
-			 * This function does nothing if it is called on an
+		if (priv->ipd_port == spi4000_port) {
+			/* This function does nothing if it is called on an
 			 * interface without a SPI4000.
 			 */
-			cvmx_spi4000_check_speed(interface, priv->port);
-			/*
-			 * Normal ordering increments. By decrementing
+			cvmx_spi4000_check_speed(interface, priv->ipd_port);
+			/* Normal ordering increments. By decrementing
 			 * we only match once per iteration.
 			 */
 			spi4000_port--;
@@ -204,19 +145,55 @@ static void cvm_oct_spi_poll(struct net_device *dev)
 
 int cvm_oct_spi_init(struct net_device *dev)
 {
-	int r;
+	int r, i;
+	struct octeon_hw_status_reg sr[3];
 	struct octeon_ethernet *priv = netdev_priv(dev);
 
-	if (number_spi_ports == 0) {
-		r = request_irq(OCTEON_IRQ_RML, cvm_oct_spi_rml_interrupt,
-				IRQF_SHARED, "SPI", &number_spi_ports);
+	if ((priv->ipd_port == 0) || (priv->ipd_port == 16)) {
+
+		priv->hw_status_notifier.priority = 10;
+		priv->hw_status_notifier.notifier_call = cvm_oct_spi_hw_status;
+		r = octeon_hw_status_notifier_register(&priv->hw_status_notifier);
 		if (r)
 			return r;
-	}
-	number_spi_ports++;
 
-	if ((priv->port == 0) || (priv->port == 16)) {
-		cvm_oct_spi_enable_error_reporting(INTERFACE(priv->port));
+		memset(sr, 0, sizeof(sr));
+		sr[0].reg = 46; /* RML */
+		sr[0].reg_is_hwint = 1;
+		sr[0].has_child = 1;
+
+		sr[1].reg = CVMX_NPI_RSL_INT_BLOCKS;
+		sr[1].bit = priv->interface + 18;
+		sr[1].has_child = 1;
+
+		sr[2].reg = CVMX_SPXX_INT_REG(priv->interface);
+		sr[2].mask_reg = CVMX_SPXX_INT_MSK(priv->interface);
+		sr[2].ack_w1c = 1;
+
+		for (i = 0; i < 32; i++) {
+			if ((1ull << i) & SPX_MASK) {
+				sr[2].bit = i;
+				octeon_hw_status_add_source(sr);
+			}
+		}
+
+		sr[2].bit = INT_BIT_SPX_SPF;
+		sr[2].ack_w1c = 0;
+		octeon_hw_status_add_source(sr);
+		octeon_hw_status_enable(sr[2].reg, SPX_MASK);
+
+		sr[2].reg = CVMX_STXX_INT_REG(priv->interface);
+		sr[2].mask_reg = CVMX_STXX_INT_MSK(priv->interface);
+		sr[2].ack_w1c = 1;
+
+		for (i = 0; i < 32; i++) {
+			if ((1ull << i) & STX_MASK) {
+				sr[2].bit = i;
+				octeon_hw_status_add_source(sr);
+			}
+		}
+		octeon_hw_status_enable(sr[2].reg, STX_MASK);
+
 		priv->poll = cvm_oct_spi_poll;
 	}
 	cvm_oct_common_init(dev);
@@ -225,15 +202,38 @@ int cvm_oct_spi_init(struct net_device *dev)
 
 void cvm_oct_spi_uninit(struct net_device *dev)
 {
-	int interface;
+	int i;
+	struct octeon_ethernet *priv = netdev_priv(dev);
 
-	cvm_oct_common_uninit(dev);
-	number_spi_ports--;
-	if (number_spi_ports == 0) {
-		for (interface = 0; interface < 2; interface++) {
-			cvmx_write_csr(CVMX_SPXX_INT_MSK(interface), 0);
-			cvmx_write_csr(CVMX_STXX_INT_MSK(interface), 0);
+	if (priv->hw_status_notifier.notifier_call) {
+		struct octeon_hw_status_reg sr;
+		memset(&sr, 0, sizeof(sr));
+
+		sr.reg = CVMX_SPXX_INT_REG(priv->interface);
+		sr.mask_reg = CVMX_SPXX_INT_MSK(priv->interface);
+		sr.ack_w1c = 1;
+
+		for (i = 0; i < 32; i++) {
+			if ((1ull << i) & SPX_MASK) {
+				sr.bit = i;
+				octeon_hw_status_remove_source(&sr);
+			}
 		}
-		free_irq(OCTEON_IRQ_RML, &number_spi_ports);
+		sr.bit = INT_BIT_SPX_SPF;
+		sr.ack_w1c = 0;
+		octeon_hw_status_remove_source(&sr);
+
+		sr.reg = CVMX_STXX_INT_REG(priv->interface);
+		sr.mask_reg = CVMX_STXX_INT_MSK(priv->interface);
+		sr.ack_w1c = 1;
+		for (i = 0; i < 32; i++) {
+			if ((1ull << i) & STX_MASK) {
+				sr.bit = i;
+				octeon_hw_status_remove_source(&sr);
+			}
+		}
+
+		octeon_hw_status_notifier_unregister(&priv->hw_status_notifier);
+		priv->hw_status_notifier.notifier_call = NULL;
 	}
 }
