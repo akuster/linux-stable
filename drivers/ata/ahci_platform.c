@@ -54,6 +54,12 @@ static int ahci_probe(struct platform_device *pdev)
 	if (of_device_is_compatible(dev->of_node, "hisilicon,hisi-ahci"))
 		hpriv->flags |= AHCI_HFLAG_NO_FBS | AHCI_HFLAG_NO_NCQ;
 
+	if (of_device_is_compatible(dev->of_node, "cavium,octeon-7130-ahci")) {
+		/* Set a good dma_mask */
+		pdev->dev.coherent_dma_mask = DMA_BIT_MASK(64);
+		pdev->dev.dma_mask = &pdev->dev.coherent_dma_mask;
+	}
+
 	rc = ahci_platform_init_host(pdev, hpriv, &ahci_port_info,
 				     &ahci_platform_sht);
 	if (rc)
@@ -77,6 +83,7 @@ static const struct of_device_id ahci_of_match[] = {
 	{ .compatible = "snps,dwc-ahci", },
 	{ .compatible = "hisilicon,hisi-ahci", },
 	{ .compatible = "fsl,qoriq-ahci", },
+    { .compatible = "cavium,octeon-7130-ahci", },
 	{},
 };
 MODULE_DEVICE_TABLE(of, ahci_of_match);
