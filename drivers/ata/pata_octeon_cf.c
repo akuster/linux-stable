@@ -153,7 +153,7 @@ static void octeon_cf_set_piomode(struct ata_port *ap, struct ata_device *dev)
 	T = (int)((1000000000000LL * div) / octeon_get_io_clock_rate());
 
 	if (ata_timing_compute(dev, dev->pio_mode, &timing, T, T))
-		BUG();
+		WARN_ON(true);
 
 	t1 = timing.setup;
 	if (t1)
@@ -576,7 +576,7 @@ static void octeon_cf_dma_start(struct ata_queued_cmd *qc)
 
 	/* Get the scatter list entry we need to DMA into */
 	sg = qc->cursg;
-	BUG_ON(!sg);
+	WARN_ON(!sg);
 
 	/*
 	 * Clear the DMA complete status.
@@ -817,7 +817,7 @@ static unsigned int octeon_cf_qc_issue(struct ata_queued_cmd *qc)
 
 	case ATAPI_PROT_DMA:
 		dev_err(ap->dev, "Error, ATAPI not supported\n");
-		BUG();
+		WARN_ON(true);
 
 	default:
 		return ata_sff_qc_issue(qc);
@@ -865,7 +865,7 @@ static int octeon_cf_probe(struct platform_device *pdev)
 	if (node == NULL)
 		return -EINVAL;
 
-	cf_port = devm_kzalloc(&pdev->dev, sizeof(*cf_port), GFP_KERNEL);
+	cf_port = kzalloc(sizeof(*cf_port), GFP_KERNEL);
 	if (!cf_port)
 		return -ENOMEM;
 
@@ -881,9 +881,10 @@ static int octeon_cf_probe(struct platform_device *pdev)
 	n_size = of_n_size_cells(node);
 
 	reg_prop = of_find_property(node, "reg", &reg_len);
-	if (!reg_prop || reg_len < sizeof(__be32))
-		return -EINVAL;
-
+	if (!reg_prop || reg_len < sizeof(__be32)) {
+		rv = -EINVAL;
+		goto free_cf_port;
+	}
 	cs_num = reg_prop->value;
 	cf_port->cs0 = be32_to_cpup(cs_num);
 
@@ -900,13 +901,16 @@ static int octeon_cf_probe(struct platform_device *pdev)
 				res_dma = platform_get_resource(dma_dev, IORESOURCE_MEM, 0);
 				if (!res_dma) {
 					of_node_put(dma_node);
-					return -EINVAL;
+					rv = -EINVAL;
+					goto free_cf_port;
 				}
 				cf_port->dma_base = (u64)devm_ioremap_nocache(&pdev->dev, res_dma->start,
 									 resource_size(res_dma));
+
 				if (!cf_port->dma_base) {
 					of_node_put(dma_node);
-					return -EINVAL;
+					rv = -EINVAL;
+					goto free_cf_port;
 				}
 
 				irq_handler = octeon_cf_interrupt;
@@ -917,34 +921,41 @@ static int octeon_cf_probe(struct platform_device *pdev)
 			of_node_put(dma_node);
 		}
 		res_cs1 = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-		if (!res_cs1)
-			return -EINVAL;
-
+		if (!res_cs1) {
+			rv = -EINVAL;
+			goto free_cf_port;
+		}
 		cs1 = devm_ioremap_nocache(&pdev->dev, res_cs1->start,
 					   resource_size(res_cs1));
+
 		if (!cs1)
-			return rv;
+			goto free_cf_port;
 
-		if (reg_len < (n_addr + n_size + 1) * sizeof(__be32))
-			return -EINVAL;
-
+		if (reg_len < (n_addr + n_size + 1) * sizeof(__be32)) {
+			rv = -EINVAL;
+			goto free_cf_port;
+		}
 		cs_num += n_addr + n_size;
 		cf_port->cs1 = be32_to_cpup(cs_num);
 	}
 
 	res_cs0 = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res_cs0)
-		return -EINVAL;
+
+	if (!res_cs0) {
+		rv = -EINVAL;
+		goto free_cf_port;
+	}
 
 	cs0 = devm_ioremap_nocache(&pdev->dev, res_cs0->start,
 				   resource_size(res_cs0));
+
 	if (!cs0)
-		return rv;
+		goto free_cf_port;
 
 	/* allocate host */
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host)
-		return rv;
+		goto free_cf_port;
 
 	ap = host->ports[0];
 	ap->private_data = cf_port;
@@ -1009,12 +1020,17 @@ static int octeon_cf_probe(struct platform_device *pdev)
 
 	ata_port_desc(ap, "cmd %p ctl %p", base, ap->ioaddr.ctl_addr);
 
+
 	dev_info(&pdev->dev, "version " DRV_VERSION" %d bit%s.\n",
 		 is_16bit ? 16 : 8,
 		 cf_port->is_true_ide ? ", True IDE" : "");
 
 	return ata_host_activate(host, irq, irq_handler,
 				 IRQF_SHARED, &octeon_cf_sht);
+
+free_cf_port:
+	kfree(cf_port);
+	return rv;
 }
 
 static void octeon_cf_shutdown(struct device *dev)
@@ -1059,6 +1075,7 @@ static struct platform_driver octeon_cf_driver = {
 	.probe		= octeon_cf_probe,
 	.driver		= {
 		.name	= DRV_NAME,
+		.owner	= THIS_MODULE,
 		.of_match_table = octeon_cf_match,
 		.shutdown = octeon_cf_shutdown
 	},
