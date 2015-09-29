@@ -7,6 +7,7 @@
  * devices and properties.
  */
 / {
+
 	compatible = "cavium,octeon-3860";
 	#address-cells = <2>;
 	#size-cells = <2>;
@@ -598,5 +599,8 @@
 			label = "usb2";
 			gpios = <&gpio 10 1>; /* Active low */
 		};
+	};
+	chosen {
+		bootargs = "console=ttyS0,115200 coremask=f root=/dev/ram";
 	};
  };

@@ -7,6 +7,7 @@
  * devices and properties.
  */
 / {
+
 	compatible = "cavium,octeon-6880";
 	#address-cells = <2>;
 	#size-cells = <2>;
@@ -621,5 +622,8 @@
 		uctl = &uctl;
 		led0 = &led0;
 		flash0 = &flash0;
+	};
+	chosen {
+		bootargs = "console=ttyS0,115200 coremask=f root=/dev/ram";
 	};
  };
