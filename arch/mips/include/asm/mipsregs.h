@@ -2173,11 +2173,6 @@ static inline unsigned int get_ebase_cpunum(void)
 }
 int allocate_kscratch(void);
 
-static inline unsigned int get_ebase_cpunum(void)
-{
-	return read_c0_ebase() & 0x3ff; /* Low 10 bits of ebase. */
-}
-
 #endif /* !__ASSEMBLY__ */
 
 #endif /* _ASM_MIPSREGS_H */
