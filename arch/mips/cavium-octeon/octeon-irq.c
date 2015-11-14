@@ -319,15 +319,15 @@ static void octeon_irq_ciu_enable_local(struct irq_data *data)
 {
 	unsigned long *pen;
 	unsigned long flags;
-	union octeon_ciu_chip_data cd;
+	struct octeon_ciu_chip_data *cd;
 	raw_spinlock_t *lock = this_cpu_ptr(&octeon_irq_ciu_spinlock);
 
 	cd = irq_data_get_irq_chip_data(data);
 
 	raw_spin_lock_irqsave(lock, flags);
-	if (cd.s.line == 0) {
+	if (cd->line == 0) {
 		pen = this_cpu_ptr(&octeon_irq_ciu0_en_mirror);
-		__set_bit(cd.s.bit, pen);
+		__set_bit(cd->bit, pen);
 		/*
 		 * Must be visible to octeon_irq_ip{2,3}_ciu() before
 		 * enabling the irq.
@@ -336,7 +336,7 @@ static void octeon_irq_ciu_enable_local(struct irq_data *data)
 		cvmx_write_csr(CVMX_CIU_INTX_EN0(cvmx_get_core_num() * 2), *pen);
 	} else {
 		pen = this_cpu_ptr(&octeon_irq_ciu1_en_mirror);
-		__set_bit(cd.s.bit, pen);
+		__set_bit(cd->bit, pen);
 		/*
 		 * Must be visible to octeon_irq_ip{2,3}_ciu() before
 		 * enabling the irq.
@@ -351,15 +351,15 @@ static void octeon_irq_ciu_disable_local(struct irq_data *data)
 {
 	unsigned long *pen;
 	unsigned long flags;
-	union octeon_ciu_chip_data cd;
+	struct octeon_ciu_chip_data *cd;
 	raw_spinlock_t *lock = this_cpu_ptr(&octeon_irq_ciu_spinlock);
 
 	cd = irq_data_get_irq_chip_data(data);
 
 	raw_spin_lock_irqsave(lock, flags);
-	if (cd.s.line == 0) {
+	if (cd->line == 0) {
 		pen = this_cpu_ptr(&octeon_irq_ciu0_en_mirror);
-		__clear_bit(cd.s.bit, pen);
+		__clear_bit(cd->bit, pen);
 		/*
 		 * Must be visible to octeon_irq_ip{2,3}_ciu() before
 		 * enabling the irq.
@@ -368,7 +368,7 @@ static void octeon_irq_ciu_disable_local(struct irq_data *data)
 		cvmx_write_csr(CVMX_CIU_INTX_EN0(cvmx_get_core_num() * 2), *pen);
 	} else {
 		pen = this_cpu_ptr(&octeon_irq_ciu1_en_mirror);
-		__clear_bit(cd.s.bit, pen);
+		__clear_bit(cd->bit, pen);
 		/*
 		 * Must be visible to octeon_irq_ip{2,3}_ciu() before
 		 * enabling the irq.
@@ -547,11 +547,11 @@ static void octeon_irq_ciu_enable_local_v2(struct irq_data *data)
 
 	if (cd->line == 0) {
 		int index = cvmx_get_core_num() * 2;
-		set_bit(cd.s.bit, this_cpu_ptr(&octeon_irq_ciu0_en_mirror));
+		set_bit(cd->bit, this_cpu_ptr(&octeon_irq_ciu0_en_mirror));
 		cvmx_write_csr(CVMX_CIU_INTX_EN0_W1S(index), mask);
 	} else {
 		int index = cvmx_get_core_num() * 2 + 1;
-		set_bit(cd.s.bit, this_cpu_ptr(&octeon_irq_ciu1_en_mirror));
+		set_bit(cd->bit, this_cpu_ptr(&octeon_irq_ciu1_en_mirror));
 		cvmx_write_csr(CVMX_CIU_INTX_EN1_W1S(index), mask);
 	}
 }
@@ -566,11 +566,11 @@ static void octeon_irq_ciu_disable_local_v2(struct irq_data *data)
 
 	if (cd->line == 0) {
 		int index = cvmx_get_core_num() * 2;
-		clear_bit(cd.s.bit, this_cpu_ptr(&octeon_irq_ciu0_en_mirror));
+		clear_bit(cd->bit, this_cpu_ptr(&octeon_irq_ciu0_en_mirror));
 		cvmx_write_csr(CVMX_CIU_INTX_EN0_W1C(index), mask);
 	} else {
 		int index = cvmx_get_core_num() * 2 + 1;
-		clear_bit(cd.s.bit, this_cpu_ptr(&octeon_irq_ciu1_en_mirror));
+		clear_bit(cd->bit, this_cpu_ptr(&octeon_irq_ciu1_en_mirror));
 		cvmx_write_csr(CVMX_CIU_INTX_EN1_W1C(index), mask);
 	}
 }

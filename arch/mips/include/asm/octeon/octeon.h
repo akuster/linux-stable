@@ -315,10 +315,8 @@ struct octeon_ciu_chip_data {
 	union {
 		struct {		/* only used for ciu3 */
 			u64 ciu3_addr;
-			union {
-				unsigned int intsn;
-				unsigned int idt; /* For errbit irq */
-			};
+			unsigned int intsn;
+            unsigned int idt; 
 		};
 		struct {		/* only used for ciu/ciu2 */
 			u8 line;
