@@ -45,10 +45,8 @@
  *
  */
 
-#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <linux/module.h>
 #include <asm/octeon/cvmx.h>
-#include <asm/octeon/cvmx-app-init.h>
 #include <asm/octeon/cvmx-smix-defs.h>
 #include <asm/octeon/cvmx-gmxx-defs.h>
 #include <asm/octeon/cvmx-asxx-defs.h>
@@ -58,26 +56,8 @@
 #include <asm/octeon/cvmx-helper-board.h>
 #include <asm/octeon/cvmx-helper-cfg.h>
 #include <asm/octeon/cvmx-twsi.h>
-#else
-#include "cvmx.h"
-#include "cvmx-app-init.h"
-#include "cvmx-sysinfo.h"
-#include "cvmx-twsi.h"
-#include "cvmx-mdio.h"
-#include "cvmx-helper.h"
-#include "cvmx-helper-util.h"
-#include "cvmx-helper-board.h"
-#include "cvmx-helper-cfg.h"
-#include "cvmx-gpio.h"
-#include "octeon_mem_map.h"
-#include "cvmx-bootmem.h"
+#include <asm/octeon/cvmx-bootinfo.h>
 
-#ifdef __U_BOOT__
-# include "cvmx-helper-fdt.h"
-#else
-# include "libfdt/cvmx-helper-fdt.h"
-#endif
-#endif
 
 /**
  * cvmx_override_board_link_get(int ipd_port) is a function
@@ -89,10 +69,8 @@
  */
 CVMX_SHARED cvmx_helper_link_info_t(*cvmx_override_board_link_get)(int ipd_port) = NULL;
 
-#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 /** Set this to 1 to enable lots of debugging output */
 static const int device_tree_dbg = 0;
-#endif
 
 /**
  * @INTERNAL
