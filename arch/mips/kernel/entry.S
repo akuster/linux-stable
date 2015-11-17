@@ -10,7 +10,6 @@
 
 #include <asm/asm.h>
 #include <asm/asmmacro.h>
-#include <asm/compiler.h>
 #include <asm/regdef.h>
 #include <asm/mipsregs.h>
 #include <asm/stackframe.h>
@@ -188,7 +187,7 @@ syscall_exit_work:
  * For C code use the inline version named instruction_hazard().
  */
 LEAF(mips_ihb)
-	.set	MIPS_ISA_LEVEL_RAW
+	.set	mips32r2
 	jr.hb	ra
 	nop
 	END(mips_ihb)
