@@ -160,55 +160,6 @@ static inline void octeon_send_ipi_mask(const struct cpumask *mask,
 		octeon_send_ipi_single(cpu, action);
 }
 
-/**
- * Detect available CPUs, populate cpu_possible_mask
- */
-static void octeon_smp_hotplug_setup(void)
-{
-#ifdef CONFIG_HOTPLUG_CPU
-	struct linux_app_boot_info *labi;
-
-	if (!setup_max_cpus)
-		return;
-
-	labi = (struct linux_app_boot_info *)PHYS_TO_XKSEG_CACHED(LABI_ADDR_IN_BOOTLOADER);
-	if (labi->labi_signature != LABI_SIGNATURE) {
-		pr_info("The bootloader on this board does not support HOTPLUG_CPU.");
-		return;
-	}
-
-	octeon_bootloader_entry_addr = labi->InitTLBStart_addr;
-#endif
-}
-
-#ifdef CONFIG_HOTPLUG_CPU
-
-/*
- * Initialize the content of struct * cvmx_app_hotplug_global
- * if it is allocated, atomically.
- */
-static void octeon_hotplug_global_init(void *arg)
-{
-	struct linux_app_boot_info *labi;
-	cvmx_app_hotplug_global_t *hgp = arg;
-	memset(hgp, 0, CVMX_APP_HOTPLUG_INFO_REGION_SIZE);
-
-	hgp->magic_version = CVMX_HOTPLUG_MAGIC_VERSION;
-
-	cvmx_spinlock_init(&hgp->hotplug_global_lock);
-
-	/* Get legacy LABI data structure for initial parameters */
-	labi = phys_to_virt(LABI_ADDR_IN_BOOTLOADER);
-
-	/* Valicate signature */
-	if (labi->labi_signature != LABI_SIGNATURE)
-		return;
-
-	/* Initialize available cores from LABI */
-	cvmx_coremask_set64(&hgp->avail_coremask,
-		(uint64_t) labi->avail_coremask);
-}
-#endif
 
 static void octeon_smp_setup(void)
 {
@@ -369,13 +320,6 @@ static void octeon_smp_finish(void)
 	local_irq_enable();
 }
 
-/**
- * Hook for after all CPUs are online
- */
-static void octeon_cpus_done(void)
-{
-}
-
 #ifdef CONFIG_HOTPLUG_CPU
 
 static int octeon_cpu_disable(void)
@@ -384,9 +328,6 @@ static int octeon_cpu_disable(void)
 
 	if (cpu == 0)
 		return -EBUSY;
-
-	if (!octeon_bootloader_entry_addr)
-		return -ENOTSUPP;
 
 	set_cpu_online(cpu, false);
 	cpu_clear(cpu, cpu_callin_map);
@@ -557,7 +498,6 @@ static struct plat_smp_ops octeon_78xx_smp_ops = {
 	.send_ipi_mask		= octeon_78xx_send_ipi_mask,
 	.init_secondary		= octeon_init_secondary,
 	.smp_finish		= octeon_smp_finish,
-	.cpus_done		= octeon_cpus_done,
 	.boot_secondary		= octeon_boot_secondary,
 	.smp_setup		= octeon_smp_setup,
 	.prepare_cpus		= octeon_78xx_prepare_cpus,

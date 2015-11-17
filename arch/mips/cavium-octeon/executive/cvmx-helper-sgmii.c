@@ -404,7 +404,6 @@ static int __cvmx_helper_sgmii_hardware_init_link_speed(int interface,
 static int __cvmx_helper_sgmii_hardware_init(int interface, int num_ports)
 {
 	int index;
-	int do_link_set = 1;
 
 	/*
 	 * CN63XX Pass 1.0 errata G-14395 requires the QLM De-emphasis
@@ -445,7 +444,7 @@ static int __cvmx_helper_sgmii_hardware_init(int interface, int num_ports)
 		if (!cvmx_helper_is_port_valid(interface, index))
 			continue;
 		__cvmx_helper_sgmii_hardware_init_one_time(interface, index);
-		 * proper link state. In the simulator there is no
+		 /* proper link state. In the simulator there is no
 		 * link state polling and hence it is set from
 		 * here.
 		 */
