@@ -108,7 +108,7 @@ static inline unsigned int cvmx_get_node_num(void)
 #include "cvmx-rst-defs.h"
 #include "cvmx-rnm-defs.h"
 
-#include "cvmx-app-init.h"
+#include "cvmx-bootinfo.h"
 #include "cvmx-bootmem.h"
 #include "cvmx-l2c.h"
 
