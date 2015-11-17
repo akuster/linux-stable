@@ -50,7 +50,7 @@
 #define __CVMX_SYSINFO_H__
 
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-#include "cvmx-app-init.h"
+#include "cvmx-bootinfo.h"
 #include "cvmx-access.h"
 #endif
 #include "cvmx-coremask.h"

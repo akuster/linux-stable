@@ -56,7 +56,7 @@
 #endif
 
 #if defined(CVMX_BUILD_FOR_LINUX_USER) || defined(CVMX_BUILD_FOR_STANDALONE)
-#include <octeon-app-init.h>
+#include <octeon-bootinfo.h>
 #include "cvmx-sysinfo.h"
 
 /**
