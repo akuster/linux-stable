@@ -366,6 +366,7 @@
 #endif
 		LONG_L	sp, PT_R29(sp)
 		.set	mips3
+#endif
 		eret
 		.set	mips0
 		.endm
