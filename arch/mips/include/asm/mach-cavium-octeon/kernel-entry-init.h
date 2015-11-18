@@ -158,7 +158,7 @@ continue_in_mapped_space:
 	andi	v1, 0xff00
 	li	v0, 0x9500		# cn78XX or later
 	subu	v1, v1, v0
-	li	t2, 2 + CONFIG_CAVIUM_OCTEON_EXTRA_CVMSEG_SIZE
+	li	t2, 2 + CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE
 	bltz	v1, 1f
 	addiu	t2, 1			# t2 has cvmseg_size
 1:
