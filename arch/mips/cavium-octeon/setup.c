@@ -492,12 +492,6 @@ void octeon_user_io_init(void)
 	/* R/W If set, CVMSEG is available for loads/stores in
 	 * kernel/debug mode. */
 	cvmmemctl.s.cvmsegenak = 1;
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
-		/* Enable LMTDMA */
-		cvmmemctl.s.lmtena = 1;
-		/* Scratch line to use for LMT operation */
-		cvmmemctl.s.lmtline = 2;
-	}
 	/* R/W If set, CVMSEG is available for loads/stores in
 	 * supervisor mode. */
 	cvmmemctl.s.cvmsegenas = 0;
