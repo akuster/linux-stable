@@ -268,15 +268,6 @@ static int cpu2core(int cpu)
 #endif
 }
 
-static int core2cpu(int coreid)
-{
-#ifdef CONFIG_SMP
-	return cpu_number_map(coreid);
-#else
-	return 0;
-#endif
-}
-
 /**
  * Poke the watchdog when an interrupt is received
  *
@@ -287,9 +278,9 @@ static int core2cpu(int coreid)
  */
 static irqreturn_t octeon_wdt_poke_irq(int cpl, void *dev_id)
 {
-	unsigned int core = cvmx_get_core_num();
-	int cpu = core2cpu(core);
-	int node = cvmx_get_node_num();
+    int cpu = raw_smp_processor_id();
+    unsigned int core = cpu2core(cpu);
+    int node = cpu_to_node(cpu);
 
 	if (do_coundown) {
 		if (per_cpu_countdown[cpu] > 0) {
