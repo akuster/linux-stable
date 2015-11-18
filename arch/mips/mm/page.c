@@ -377,6 +377,7 @@ static void build_copy_load(u32 **buf, int reg, int off)
 		uasm_i_ld(buf, reg, off, A1);
 	} else {
 		uasm_i_lw(buf, reg, off, A1);
+    }
 }
 
 static void build_copy_store(u32 **buf, int reg, int off)
