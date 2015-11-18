@@ -1449,7 +1449,7 @@ static int octeon3_eth_ndo_init(struct net_device *netdev)
 	octeon3_napi_init_node(priv->numa_node, netdev);
 
 	/* Register ethtool methods */
-	SET_ETHTOOL_OPS(netdev, &octeon3_ethtool_ops);
+    netdev->ethtool_ops = &octeon3_ethtool_ops;
 
 	__cvmx_export_config();
 
@@ -1660,7 +1660,7 @@ static int octeon3_eth_ndo_start_xmit(struct sk_buff *skb, struct net_device *ne
 	bool can_recycle_skb = false;
 	int aura = 0;
 	void *buffers_needed = NULL;
-	void **buf;
+    void **buf;
 
 	frag_count = 0;
 	if (skb_has_frag_list(skb))
