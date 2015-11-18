@@ -292,7 +292,7 @@ static unsigned long __init init_initrd(void)
  * Initialize the bootmem allocator. It also setup initrd related data
  * if needed.
  */
-#if defined(CONFIG_SGI_IP27) defined(mach_bootmem_init) || (defined(CONFIG_CPU_LOONGSON3) && defined(CONFIG_NUMA))
+#if defined(CONFIG_SGI_IP27) ||  defined(mach_bootmem_init) || (defined(CONFIG_CPU_LOONGSON3) && defined(CONFIG_NUMA))
 
 #ifndef mach_bootmem_init
 static void mach_bootmem_init(void) {}
