@@ -120,12 +120,12 @@ static int cvmx_helper_fcs_op(int interface, int nports, int has_fcs)
 	int pknd;
 	union cvmx_pip_sub_pkind_fcsx pkind_fcsx;
 	union cvmx_pip_prt_cfgx port_cfg;
-	unsigned int node = cvmx_get_node_num();
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(interface);
 
 	if (!octeon_has_feature(OCTEON_FEATURE_PKND))
 		return 0;
 	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
-		cvmx_helper_pki_set_fcs_op(node, interface, nports, has_fcs);
+		cvmx_helper_pki_set_fcs_op(xi.node, xi.interface, nports, has_fcs);
 		return 0;
 	}
 
@@ -232,45 +232,45 @@ static int __cvmx_helper_ipd_port_setup(int ipd_port)
  * interface. The number of ports on the interface must already
  * have been probed.
  *
- * @param interface Interface to setup IPD/PIP for
+ * @param xiface xiface to setup IPD/PIP for
  *
  * @return Zero on success, negative on failure
  */
-int __cvmx_helper_ipd_setup_interface(int interface)
+int __cvmx_helper_ipd_setup_interface(int xiface)
 {
 	cvmx_helper_interface_mode_t mode;
-	int ipd_port = cvmx_helper_get_ipd_port(interface, 0);
-	int num_ports = cvmx_helper_ports_on_interface(interface);
+	int num_ports = cvmx_helper_ports_on_interface(xiface);
+	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
+	int ipd_port = cvmx_helper_get_ipd_port(xiface, 0);
 	int delta;
-	unsigned int node = cvmx_get_node_num();
 
 	if (num_ports == CVMX_HELPER_CFG_INVALID_VALUE)
 		return 0;
 
 	delta = 1;
 	if (octeon_has_feature(OCTEON_FEATURE_PKND)) {
-		if (interface < CVMX_HELPER_MAX_GMX)
+		if (xi.interface < CVMX_HELPER_MAX_GMX)
 			delta = 16;
 	}
 
 	while (num_ports--) {
-		if (!cvmx_helper_is_port_valid(interface, num_ports))
+		if (!cvmx_helper_is_port_valid(xiface, num_ports))
 			continue;
 		if (octeon_has_feature(OCTEON_FEATURE_PKI))
-			__cvmx_helper_pki_port_setup(node, ipd_port);
+			__cvmx_helper_pki_port_setup(xi.node, ipd_port);
 		else
 			__cvmx_helper_ipd_port_setup(ipd_port);
 		ipd_port += delta;
 	}
 	/* FCS settings */
-	cvmx_helper_fcs_op(interface,
-			   cvmx_helper_ports_on_interface(interface),
-			   __cvmx_helper_get_has_fcs(interface));
+	cvmx_helper_fcs_op(xiface,
+			   cvmx_helper_ports_on_interface(xiface),
+			   __cvmx_helper_get_has_fcs(xiface));
 
-	mode = cvmx_helper_interface_get_mode(interface);
-	
+	mode = cvmx_helper_interface_get_mode(xiface);
+
 	if (mode == CVMX_HELPER_INTERFACE_MODE_LOOP)
-			__cvmx_helper_loop_enable(interface);
+			__cvmx_helper_loop_enable(xiface);
 
 	return 0;
 }

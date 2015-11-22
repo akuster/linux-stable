@@ -87,9 +87,8 @@ static void octeon_kexec_smp_down(void *ignored)
 		cpu_relax();
 
 	asm volatile (
-	"	sync\n"
-	"	synci	($0)\n");
-
+	"       sync\n"
+	"       synci   ($0)\n");
 	relocated_kexec_smp_wait(NULL);
 }
 #endif
@@ -124,6 +123,7 @@ static int octeon_kexec_prepare(struct kimage *image)
 			break;
 		}
 	}
+
 	return 0;
 }
 
@@ -134,8 +134,11 @@ static void octeon_generic_shutdown(void)
 	secondary_kexec_args[2] = 0UL; /* running on secondary cpu */
 	secondary_kexec_args[3] = (unsigned long)octeon_boot_desc_ptr;
 	/* disable watchdogs */
-	for_each_online_cpu(cpu)
-		cvmx_write_csr(CVMX_CIU_WDOGX(cpu_logical_map(cpu)), 0);
+	for_each_online_cpu(cpu) {
+		int node = cpu_to_node(cpu);
+		unsigned int core = cpu_logical_map(cpu) & 0x3f;
+		cvmx_write_csr_node(node, CVMX_CIU_WDOGX(core), 0);
+	}
 #else
 	cvmx_write_csr(CVMX_CIU_WDOGX(cvmx_get_core_num()), 0);
 #endif
@@ -146,6 +149,7 @@ static void octeon_generic_shutdown(void)
 static void octeon_shutdown(void)
 {
 	octeon_generic_shutdown();
+	octeon_error_tree_shutdown();
 #ifdef CONFIG_SMP
 	smp_call_function(octeon_kexec_smp_down, NULL, 0);
 	smp_wmb();
@@ -159,13 +163,14 @@ static void octeon_shutdown(void)
 static void octeon_crash_shutdown(struct pt_regs *regs)
 {
 	octeon_generic_shutdown();
+	octeon_error_tree_shutdown();
 	default_machine_crash_shutdown(regs);
 }
 
 #endif /* CONFIG_KEXEC */
 
 #ifndef CONFIG_CAVIUM_RESERVE32
-#define	 CONFIG_CAVIUM_RESERVE32	0ULL
+#define         CONFIG_CAVIUM_RESERVE32        0ULL
 #endif
 
 uint64_t octeon_reserve32_memory;
@@ -174,6 +179,7 @@ EXPORT_SYMBOL(octeon_reserve32_memory);
 static int octeon_uart;
 
 extern asmlinkage void handle_int(void);
+extern asmlinkage void plat_irq_dispatch(void);
 
 /* If an initrd named block is specified, its name goes here. */
 static char __initdata rd_name[64];
@@ -295,7 +301,6 @@ void octeon_check_cpu_bist(void)
 	if (bist_val & mask)
 		pr_err("Core%d BIST Failure: COP0_CVM_MEM_CTL = 0x%llx\n",
 		       coreid, bist_val);
-
 	if (current_cpu_type() == CPU_CAVIUM_OCTEON3) {
 		bist_val = read_octeon_c0_errctl();
 		bist_val |= 1;
@@ -342,7 +347,6 @@ static void octeon_kill_core(void *arg)
 		/* A break instruction causes the simulator stop a core */
 		asm volatile ("break" ::: "memory");
 	}
-
 	local_irq_disable();
 	/* Disable watchdog on this core. */
 	cvmx_write_csr(CVMX_CIU_WDOGX(cvmx_get_core_num()), 0);
@@ -438,7 +442,6 @@ void octeon_user_io_init(void)
 #else
 	cvmmemctl.s.xkmemenau = 0;
 #endif
-
 	/* R/W If set (and SX set), supervisor-level loads/stores can
 	 * use XKPHYS addresses with VA<48>==1 */
 	cvmmemctl.s.xkioenas = 0;
@@ -450,7 +453,6 @@ void octeon_user_io_init(void)
 #else
 	cvmmemctl.s.xkioenau = 0;
 #endif
-
 	/* R/W If set, all stores act as SYNCW (NOMERGE must be set
 	 * when this is set) RW, reset to 0. */
 	cvmmemctl.s.allsyncw = 0;
@@ -492,6 +494,12 @@ void octeon_user_io_init(void)
 	/* R/W If set, CVMSEG is available for loads/stores in
 	 * kernel/debug mode. */
 	cvmmemctl.s.cvmsegenak = 1;
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		/* Enable LMTDMA */
+		cvmmemctl.s.lmtena = 1;
+		/* Scratch line to use for LMT operation */
+		cvmmemctl.s.lmtline = 2;
+	}
 	/* R/W If set, CVMSEG is available for loads/stores in
 	 * supervisor mode. */
 	cvmmemctl.s.cvmsegenas = 0;
@@ -514,7 +522,7 @@ void octeon_user_io_init(void)
 			  octeon_cvmseg_lines * 128);
 
 	if (current_cpu_type() != CPU_CAVIUM_OCTEON3 ||
-	    OCTEON_IS_MODEL(OCTEON_CN70XX)) {
+	  OCTEON_IS_MODEL(OCTEON_CN70XX)) {
 		union cvmx_iob_fau_timeout fau_timeout;
 		/* Set a default for the hardware timeouts */
 		fau_timeout.u64 = 0;
@@ -537,6 +545,7 @@ void octeon_user_io_init(void)
 		nm_tim.s.nw_tim = 3;
 		cvmx_write_csr(CVMX_POW_NW_TIM, nm_tim.u64);
 	}
+
 	write_octeon_c0_icacheerr(0);
 	write_c0_derraddr1(0);
 }
@@ -557,10 +566,9 @@ static void octeon_soc_scache_init(void)
 
 	if (smp_processor_id() == 0)
 		pr_notice("Secondary unified cache %ldkB, %d-way, %d sets, linesize %d bytes.\n",
-			  scache_size >> 10, c->scache.ways,
-			  c->scache.sets, c->scache.linesz);
+				scache_size >> 10, c->scache.ways,
+				c->scache.sets, c->scache.linesz);
 }
-
 /**
  * Early entry point for arch setup
  */
@@ -704,15 +712,14 @@ void __init prom_init(void)
 	if (CONFIG_CAVIUM_RESERVE32 > 0) {
 		int64_t addr = -1;
 		addr = cvmx_bootmem_phy_named_block_alloc(
-				CONFIG_CAVIUM_RESERVE32 << 20,
-				0, 0, 2 << 20,
-				"CAVIUM_RESERVE32", 0);
+			CONFIG_CAVIUM_RESERVE32 << 20,
+			0, 0, 2 << 20,
+			"CAVIUM_RESERVE32", 0);
 		if (addr < 0)
 			pr_err("Failed to allocate CAVIUM_RESERVE32 memory area\n");
 		else
 			octeon_reserve32_memory = addr;
 	}
-
 	octeon_check_cpu_bist();
 
 	octeon_uart = octeon_get_boot_uart();
@@ -829,6 +836,22 @@ append_arg:
 #ifdef CONFIG_CAVIUM_GDB
 	cvmx_debug_init();
 #endif
+
+#ifdef CONFIG_PCI
+	if (octeon_has_feature(OCTEON_FEATURE_PCIE)) {
+		if (octeon_has_feature(OCTEON_FEATURE_NPEI))
+			octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_PCIE;
+		else
+			octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_PCIE2;
+	} else {
+		if (OCTEON_IS_MODEL(OCTEON_CN31XX) ||
+		    OCTEON_IS_MODEL(OCTEON_CN38XX_PASS2))
+			octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_SMALL;
+		else
+			octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_BIG;
+	}
+#endif
+
 	pr_info("Cavium Inc. SDK-" SDK_VERSION "\n");
 }
 
@@ -944,6 +967,15 @@ void __init plat_mem_setup(void)
 	u64 limit_max, limit_min;
 	const struct cvmx_bootmem_named_block_desc *named_block;
 	u64 system_limit = cvmx_bootmem_available_mem(mem_alloc_size);
+
+#ifndef CONFIG_NUMA
+	int last_core;
+	struct cvmx_sysinfo *sysinfo = cvmx_sysinfo_get();
+
+	last_core = cvmx_coremask_get_last_core(&sysinfo->core_mask);
+	if (last_core >= CVMX_COREMASK_MAX_CORES_PER_NODE)
+		panic("Must build kernel with CONFIG_NUMA for multi-node system.");
+#endif
 
 #ifdef CONFIG_BLK_DEV_INITRD
 	if (rd_name[0]) {

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -56,7 +56,7 @@
 #define CVMX_SATA_UAHC_GBL_BISTAFR CVMX_SATA_UAHC_GBL_BISTAFR_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_BISTAFR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_BISTAFR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000A0ull);
 }
@@ -67,7 +67,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_BISTAFR_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_BISTCR CVMX_SATA_UAHC_GBL_BISTCR_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_BISTCR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_BISTCR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000A4ull);
 }
@@ -78,7 +78,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_BISTCR_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_BISTDECR CVMX_SATA_UAHC_GBL_BISTDECR_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_BISTDECR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_BISTDECR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000B0ull);
 }
@@ -89,7 +89,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_BISTDECR_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_BISTFCTR CVMX_SATA_UAHC_GBL_BISTFCTR_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_BISTFCTR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_BISTFCTR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000A8ull);
 }
@@ -100,7 +100,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_BISTFCTR_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_BISTSR CVMX_SATA_UAHC_GBL_BISTSR_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_BISTSR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_BISTSR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000ACull);
 }
@@ -111,7 +111,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_BISTSR_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_CAP CVMX_SATA_UAHC_GBL_CAP_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_CAP_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_CAP not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C0000000000ull);
 }
@@ -122,7 +122,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_CAP_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_CAP2 CVMX_SATA_UAHC_GBL_CAP2_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_CAP2_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_CAP2 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C0000000024ull);
 }
@@ -133,7 +133,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_CAP2_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_CCC_CTL CVMX_SATA_UAHC_GBL_CCC_CTL_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_CCC_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_CCC_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C0000000014ull);
 }
@@ -144,7 +144,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_CCC_CTL_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_CCC_PORTS CVMX_SATA_UAHC_GBL_CCC_PORTS_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_CCC_PORTS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_CCC_PORTS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C0000000018ull);
 }
@@ -155,7 +155,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_CCC_PORTS_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_GHC CVMX_SATA_UAHC_GBL_GHC_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_GHC_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_GHC not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C0000000004ull);
 }
@@ -166,7 +166,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_GHC_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_GPARAM1R CVMX_SATA_UAHC_GBL_GPARAM1R_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_GPARAM1R_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_GPARAM1R not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000E8ull);
 }
@@ -177,7 +177,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_GPARAM1R_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_GPARAM2R CVMX_SATA_UAHC_GBL_GPARAM2R_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_GPARAM2R_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_GPARAM2R not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000ECull);
 }
@@ -188,7 +188,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_GPARAM2R_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_IDR CVMX_SATA_UAHC_GBL_IDR_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_IDR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_IDR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000FCull);
 }
@@ -199,7 +199,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_IDR_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_IS CVMX_SATA_UAHC_GBL_IS_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_IS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_IS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C0000000008ull);
 }
@@ -210,7 +210,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_IS_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_OOBR CVMX_SATA_UAHC_GBL_OOBR_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_OOBR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_OOBR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000BCull);
 }
@@ -221,7 +221,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_OOBR_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_PI CVMX_SATA_UAHC_GBL_PI_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_PI_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_PI not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C000000000Cull);
 }
@@ -232,7 +232,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_PI_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_PPARAMR CVMX_SATA_UAHC_GBL_PPARAMR_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_PPARAMR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_PPARAMR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000F0ull);
 }
@@ -243,7 +243,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_PPARAMR_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_TESTR CVMX_SATA_UAHC_GBL_TESTR_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_TESTR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_TESTR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000F4ull);
 }
@@ -254,7 +254,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_TESTR_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_TIMER1MS CVMX_SATA_UAHC_GBL_TIMER1MS_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_TIMER1MS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_TIMER1MS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000E0ull);
 }
@@ -265,7 +265,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_TIMER1MS_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_VERSIONR CVMX_SATA_UAHC_GBL_VERSIONR_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_VERSIONR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_VERSIONR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C00000000F8ull);
 }
@@ -276,7 +276,7 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_VERSIONR_FUNC(void)
 #define CVMX_SATA_UAHC_GBL_VS CVMX_SATA_UAHC_GBL_VS_FUNC()
 static inline uint64_t CVMX_SATA_UAHC_GBL_VS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UAHC_GBL_VS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00016C0000000010ull);
 }
@@ -287,7 +287,8 @@ static inline uint64_t CVMX_SATA_UAHC_GBL_VS_FUNC(void)
 static inline uint64_t CVMX_SATA_UAHC_PX_CI(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_CI(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000138ull) + ((offset) & 1) * 128;
 }
@@ -298,7 +299,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_CI(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_CLB(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_CLB(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000100ull) + ((offset) & 1) * 128;
 }
@@ -309,7 +311,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_CLB(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_CMD(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_CMD(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000118ull) + ((offset) & 1) * 128;
 }
@@ -320,7 +323,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_CMD(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_DMACR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_DMACR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000170ull) + ((offset) & 1) * 128;
 }
@@ -331,7 +335,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_DMACR(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_FB(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_FB(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000108ull) + ((offset) & 1) * 128;
 }
@@ -342,7 +347,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_FB(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_FBS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_FBS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000140ull) + ((offset) & 1) * 128;
 }
@@ -353,7 +359,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_FBS(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_IE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_IE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000114ull) + ((offset) & 1) * 128;
 }
@@ -364,7 +371,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_IE(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_IS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_IS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000110ull) + ((offset) & 1) * 128;
 }
@@ -375,7 +383,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_IS(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_PHYCR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_PHYCR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000178ull) + ((offset) & 1) * 128;
 }
@@ -386,7 +395,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_PHYCR(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_PHYSR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_PHYSR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C000000017Cull) + ((offset) & 1) * 128;
 }
@@ -397,7 +407,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_PHYSR(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_SACT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_SACT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000134ull) + ((offset) & 1) * 128;
 }
@@ -408,7 +419,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_SACT(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_SCTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_SCTL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C000000012Cull) + ((offset) & 1) * 128;
 }
@@ -419,7 +431,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_SCTL(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_SERR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_SERR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000130ull) + ((offset) & 1) * 128;
 }
@@ -430,7 +443,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_SERR(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_SIG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_SIG(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000124ull) + ((offset) & 1) * 128;
 }
@@ -441,7 +455,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_SIG(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_SNTF(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_SNTF(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C000000013Cull) + ((offset) & 1) * 128;
 }
@@ -452,7 +467,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_SNTF(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_SSTS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_SSTS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000128ull) + ((offset) & 1) * 128;
 }
@@ -463,7 +479,8 @@ static inline uint64_t CVMX_SATA_UAHC_PX_SSTS(unsigned long offset)
 static inline uint64_t CVMX_SATA_UAHC_PX_TFD(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_SATA_UAHC_PX_TFD(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00016C0000000120ull) + ((offset) & 1) * 128;
 }
@@ -474,7 +491,7 @@ static inline uint64_t CVMX_SATA_UAHC_PX_TFD(unsigned long offset)
 #define CVMX_SATA_UCTL_BIST_STATUS CVMX_SATA_UCTL_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_SATA_UCTL_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UCTL_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x000118006C000008ull);
 }
@@ -485,7 +502,7 @@ static inline uint64_t CVMX_SATA_UCTL_BIST_STATUS_FUNC(void)
 #define CVMX_SATA_UCTL_CTL CVMX_SATA_UCTL_CTL_FUNC()
 static inline uint64_t CVMX_SATA_UCTL_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UCTL_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x000118006C000000ull);
 }
@@ -493,10 +510,21 @@ static inline uint64_t CVMX_SATA_UCTL_CTL_FUNC(void)
 #define CVMX_SATA_UCTL_CTL (CVMX_ADD_IO_SEG(0x000118006C000000ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SATA_UCTL_ECC CVMX_SATA_UCTL_ECC_FUNC()
+static inline uint64_t CVMX_SATA_UCTL_ECC_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX)))
+		cvmx_warn("CVMX_SATA_UCTL_ECC not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x000118006C0000F0ull);
+}
+#else
+#define CVMX_SATA_UCTL_ECC (CVMX_ADD_IO_SEG(0x000118006C0000F0ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SATA_UCTL_INTSTAT CVMX_SATA_UCTL_INTSTAT_FUNC()
 static inline uint64_t CVMX_SATA_UCTL_INTSTAT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UCTL_INTSTAT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x000118006C000030ull);
 }
@@ -507,7 +535,7 @@ static inline uint64_t CVMX_SATA_UCTL_INTSTAT_FUNC(void)
 #define CVMX_SATA_UCTL_SHIM_CFG CVMX_SATA_UCTL_SHIM_CFG_FUNC()
 static inline uint64_t CVMX_SATA_UCTL_SHIM_CFG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX)))
 		cvmx_warn("CVMX_SATA_UCTL_SHIM_CFG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x000118006C0000E8ull);
 }
@@ -526,6 +554,17 @@ static inline uint64_t CVMX_SATA_UCTL_SPARE0_FUNC(void)
 #define CVMX_SATA_UCTL_SPARE0 (CVMX_ADD_IO_SEG(0x000118006C000010ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SATA_UCTL_SPARE0_ECO CVMX_SATA_UCTL_SPARE0_ECO_FUNC()
+static inline uint64_t CVMX_SATA_UCTL_SPARE0_ECO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX)))
+		cvmx_warn("CVMX_SATA_UCTL_SPARE0_ECO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x000118006C000010ull);
+}
+#else
+#define CVMX_SATA_UCTL_SPARE0_ECO (CVMX_ADD_IO_SEG(0x000118006C000010ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SATA_UCTL_SPARE1 CVMX_SATA_UCTL_SPARE1_FUNC()
 static inline uint64_t CVMX_SATA_UCTL_SPARE1_FUNC(void)
 {
@@ -536,17 +575,30 @@ static inline uint64_t CVMX_SATA_UCTL_SPARE1_FUNC(void)
 #else
 #define CVMX_SATA_UCTL_SPARE1 (CVMX_ADD_IO_SEG(0x000118006C0000F8ull))
 #endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SATA_UCTL_SPARE1_ECO CVMX_SATA_UCTL_SPARE1_ECO_FUNC()
+static inline uint64_t CVMX_SATA_UCTL_SPARE1_ECO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX)))
+		cvmx_warn("CVMX_SATA_UCTL_SPARE1_ECO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x000118006C0000F8ull);
+}
+#else
+#define CVMX_SATA_UCTL_SPARE1_ECO (CVMX_ADD_IO_SEG(0x000118006C0000F8ull))
+#endif
 
 /**
  * cvmx_sata_uahc_gbl_bistafr
  *
- * INTERNAL: See DWC_ahsata databook v4.10a
- * This register is shared between SATA ports.  Before accessing this
+ * This register is shared between SATA ports. Before accessing this
  * register, first select the required port by writing the port number
- * to the SATA_UAHC_GBL_TESTR[PSEL] field.
+ * to the SATA()_UAHC_GBL_TESTR[PSEL] field.
+ *
  * This register contains the pattern definition (bits 23:16 of the
  * first DWORD) and the data pattern (bits 7:0 of the second DWORD)
  * fields of the received BIST activate FIS.
+ *
+ * INTERNAL: See DWC_ahsata databook v4.20a.
  */
 union cvmx_sata_uahc_gbl_bistafr {
 	uint32_t u32;
@@ -554,19 +606,19 @@ union cvmx_sata_uahc_gbl_bistafr {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_16_31               : 16;
 	uint32_t ncp                          : 8;  /**< Bits 7:0 of the second DWORD of BIST activate FIS.
-                                                         0xF1 = low transition density pattern (LTDP)
-                                                         0xB5 = high transition density pattern (HTDP)
-                                                         0xAB = low frequency spectral component pattern (LFSCP)
-                                                         0x7F = simultaneous switching outputs pattern (SSOP)
-                                                         0x78 = mid frequency test pattern (MFTP)
-                                                         0x4A = high frequency test pattern (HFTP)
-                                                         0x7E = low frequency test pattern (LFTP)
-                                                         All other values = lone bit pattern (LBP) */
+                                                         0xF1 = low transition density pattern (LTDP).
+                                                         0xB5 = high transition density pattern (HTDP).
+                                                         0xAB = low frequency spectral component pattern (LFSCP).
+                                                         0x7F = simultaneous switching outputs pattern (SSOP).
+                                                         0x78 = mid frequency test pattern (MFTP).
+                                                         0x4A = high frequency test pattern (HFTP).
+                                                         0x7E = low frequency test pattern (LFTP).
+                                                         else = lone bit pattern (LBP). */
 	uint32_t pd                           : 8;  /**< Bits 23:16 of the first DWORD of the BIST activate FIS. Only the following values are
                                                          supported:
-                                                         0x10 = Far-end retimed
-                                                         0xC0 = Far-end transmit only
-                                                         0xE0 = Far-end transmit only with scrambler bypassed */
+                                                         0x10 = Far-end retimed.
+                                                         0xC0 = Far-end transmit only.
+                                                         0xE0 = Far-end transmit only with scrambler bypassed. */
 #else
 	uint32_t pd                           : 8;
 	uint32_t ncp                          : 8;
@@ -575,6 +627,7 @@ union cvmx_sata_uahc_gbl_bistafr {
 	} s;
 	struct cvmx_sata_uahc_gbl_bistafr_s   cn70xx;
 	struct cvmx_sata_uahc_gbl_bistafr_s   cn70xxp1;
+	struct cvmx_sata_uahc_gbl_bistafr_s   cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_bistafr cvmx_sata_uahc_gbl_bistafr_t;
 
@@ -638,16 +691,18 @@ union cvmx_sata_uahc_gbl_bistcr {
 	} s;
 	struct cvmx_sata_uahc_gbl_bistcr_s    cn70xx;
 	struct cvmx_sata_uahc_gbl_bistcr_s    cn70xxp1;
+	struct cvmx_sata_uahc_gbl_bistcr_s    cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_bistcr cvmx_sata_uahc_gbl_bistcr_t;
 
 /**
  * cvmx_sata_uahc_gbl_bistdecr
  *
- * INTERNAL: See DWC_ahsata databook v4.10a
- * This register is shared between SATA ports.  Before accessing this
+ * This register is shared between SATA ports. Before accessing this
  * register, first select the required port by writing the port number
- * to the SATA_UAHC_GBL_TESTR[PSEL] field.
+ * to the SATA()_UAHC_GBL_TESTR[PSEL] field.
+ *
+ * INTERNAL: See DWC_ahsata databook v4.20a.
  */
 union cvmx_sata_uahc_gbl_bistdecr {
 	uint32_t u32;
@@ -660,16 +715,18 @@ union cvmx_sata_uahc_gbl_bistdecr {
 	} s;
 	struct cvmx_sata_uahc_gbl_bistdecr_s  cn70xx;
 	struct cvmx_sata_uahc_gbl_bistdecr_s  cn70xxp1;
+	struct cvmx_sata_uahc_gbl_bistdecr_s  cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_bistdecr cvmx_sata_uahc_gbl_bistdecr_t;
 
 /**
  * cvmx_sata_uahc_gbl_bistfctr
  *
- * INTERNAL: See DWC_ahsata databook v4.10a
- * This register is shared between SATA ports.  Before accessing this
+ * This register is shared between SATA ports. Before accessing this
  * register, first select the required port by writing the port number
- * to the SATA_UAHC_GBL_TESTR[PSEL] field.
+ * to the SATA()_UAHC_GBL_TESTR[PSEL] field.
+ *
+ * INTERNAL: See DWC_ahsata databook v4.20a.
  */
 union cvmx_sata_uahc_gbl_bistfctr {
 	uint32_t u32;
@@ -682,6 +739,7 @@ union cvmx_sata_uahc_gbl_bistfctr {
 	} s;
 	struct cvmx_sata_uahc_gbl_bistfctr_s  cn70xx;
 	struct cvmx_sata_uahc_gbl_bistfctr_s  cn70xxp1;
+	struct cvmx_sata_uahc_gbl_bistfctr_s  cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_bistfctr cvmx_sata_uahc_gbl_bistfctr_t;
 
@@ -706,6 +764,7 @@ union cvmx_sata_uahc_gbl_bistsr {
 	} s;
 	struct cvmx_sata_uahc_gbl_bistsr_s    cn70xx;
 	struct cvmx_sata_uahc_gbl_bistsr_s    cn70xxp1;
+	struct cvmx_sata_uahc_gbl_bistsr_s    cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_bistsr cvmx_sata_uahc_gbl_bistsr_t;
 
@@ -766,6 +825,7 @@ union cvmx_sata_uahc_gbl_cap {
 	} s;
 	struct cvmx_sata_uahc_gbl_cap_s       cn70xx;
 	struct cvmx_sata_uahc_gbl_cap_s       cn70xxp1;
+	struct cvmx_sata_uahc_gbl_cap_s       cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_cap cvmx_sata_uahc_gbl_cap_t;
 
@@ -798,6 +858,7 @@ union cvmx_sata_uahc_gbl_cap2 {
 	} s;
 	struct cvmx_sata_uahc_gbl_cap2_s      cn70xx;
 	struct cvmx_sata_uahc_gbl_cap2_s      cn70xxp1;
+	struct cvmx_sata_uahc_gbl_cap2_s      cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_cap2 cvmx_sata_uahc_gbl_cap2_t;
 
@@ -826,6 +887,7 @@ union cvmx_sata_uahc_gbl_ccc_ctl {
 	} s;
 	struct cvmx_sata_uahc_gbl_ccc_ctl_s   cn70xx;
 	struct cvmx_sata_uahc_gbl_ccc_ctl_s   cn70xxp1;
+	struct cvmx_sata_uahc_gbl_ccc_ctl_s   cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_ccc_ctl cvmx_sata_uahc_gbl_ccc_ctl_t;
 
@@ -848,6 +910,7 @@ union cvmx_sata_uahc_gbl_ccc_ports {
 	} s;
 	struct cvmx_sata_uahc_gbl_ccc_ports_s cn70xx;
 	struct cvmx_sata_uahc_gbl_ccc_ports_s cn70xxp1;
+	struct cvmx_sata_uahc_gbl_ccc_ports_s cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_ccc_ports cvmx_sata_uahc_gbl_ccc_ports_t;
 
@@ -874,6 +937,7 @@ union cvmx_sata_uahc_gbl_ghc {
 	} s;
 	struct cvmx_sata_uahc_gbl_ghc_s       cn70xx;
 	struct cvmx_sata_uahc_gbl_ghc_s       cn70xxp1;
+	struct cvmx_sata_uahc_gbl_ghc_s       cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_ghc cvmx_sata_uahc_gbl_ghc_t;
 
@@ -920,6 +984,7 @@ union cvmx_sata_uahc_gbl_gparam1r {
 	} s;
 	struct cvmx_sata_uahc_gbl_gparam1r_s  cn70xx;
 	struct cvmx_sata_uahc_gbl_gparam1r_s  cn70xxp1;
+	struct cvmx_sata_uahc_gbl_gparam1r_s  cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_gparam1r cvmx_sata_uahc_gbl_gparam1r_t;
 
@@ -932,6 +997,39 @@ typedef union cvmx_sata_uahc_gbl_gparam1r cvmx_sata_uahc_gbl_gparam1r_t;
 union cvmx_sata_uahc_gbl_gparam2r {
 	uint32_t u32;
 	struct cvmx_sata_uahc_gbl_gparam2r_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t reserved_31_31               : 1;
+	uint32_t rxoob_clk_units              : 1;  /**< RX OOB clock frequency units. */
+	uint32_t rxoob_clk_u                  : 10; /**< Upper bits of the RX OOB clock frequency. */
+	uint32_t bist_m                       : 1;  /**< BIST loopback checking depth (BIST_MODE). */
+	uint32_t fbs_mem_s                    : 1;  /**< Context RAM memory location (FBS_MEM_S). */
+	uint32_t fbs_pmpn                     : 2;  /**< Maximum number of port multiplier ports (FBS_PMPN_MAX). */
+	uint32_t fbs_support                  : 1;  /**< FIS-based switching support (FBS_SUPPORT). */
+	uint32_t dev_cp                       : 1;  /**< Cold presence detect (DEV_CP_DET). */
+	uint32_t dev_mp                       : 1;  /**< Mechanical presence switch (DEV_MP_SWITCH). */
+	uint32_t encode_m                     : 1;  /**< 8b/10b encoding/decoding (ENCODE_MODE). */
+	uint32_t rxoob_clk_m                  : 1;  /**< RX OOB clock mode (RXOOB_CLK_MODE). */
+	uint32_t rx_oob_m                     : 1;  /**< RX OOB mode (RX_OOB_MODE). */
+	uint32_t tx_oob_m                     : 1;  /**< TX OOB mode (TX_OOB_MODE). */
+	uint32_t reserved_0_8                 : 9;
+#else
+	uint32_t reserved_0_8                 : 9;
+	uint32_t tx_oob_m                     : 1;
+	uint32_t rx_oob_m                     : 1;
+	uint32_t rxoob_clk_m                  : 1;
+	uint32_t encode_m                     : 1;
+	uint32_t dev_mp                       : 1;
+	uint32_t dev_cp                       : 1;
+	uint32_t fbs_support                  : 1;
+	uint32_t fbs_pmpn                     : 2;
+	uint32_t fbs_mem_s                    : 1;
+	uint32_t bist_m                       : 1;
+	uint32_t rxoob_clk_u                  : 10;
+	uint32_t rxoob_clk_units              : 1;
+	uint32_t reserved_31_31               : 1;
+#endif
+	} s;
+	struct cvmx_sata_uahc_gbl_gparam2r_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_20_31               : 12;
 	uint32_t bist_m                       : 1;  /**< BIST loopback checking depth (BIST_MODE). */
@@ -959,9 +1057,41 @@ union cvmx_sata_uahc_gbl_gparam2r {
 	uint32_t bist_m                       : 1;
 	uint32_t reserved_20_31               : 12;
 #endif
-	} s;
-	struct cvmx_sata_uahc_gbl_gparam2r_s  cn70xx;
-	struct cvmx_sata_uahc_gbl_gparam2r_s  cn70xxp1;
+	} cn70xx;
+	struct cvmx_sata_uahc_gbl_gparam2r_cn70xx cn70xxp1;
+	struct cvmx_sata_uahc_gbl_gparam2r_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t reserved_31_31               : 1;
+	uint32_t rxoob_clk_units              : 1;  /**< RX OOB clock frequency units. */
+	uint32_t rxoob_clk_u                  : 10; /**< Upper bits of the RX OOB clock frequency. */
+	uint32_t bist_m                       : 1;  /**< BIST loopback checking depth (BIST_MODE). */
+	uint32_t fbs_mem_s                    : 1;  /**< Context RAM memory location (FBS_MEM_S). */
+	uint32_t fbs_pmpn                     : 2;  /**< Maximum number of port multiplier ports (FBS_PMPN_MAX). */
+	uint32_t fbs_support                  : 1;  /**< FIS-based switching support (FBS_SUPPORT). */
+	uint32_t dev_cp                       : 1;  /**< Cold presence detect (DEV_CP_DET). */
+	uint32_t dev_mp                       : 1;  /**< Mechanical presence switch (DEV_MP_SWITCH). */
+	uint32_t encode_m                     : 1;  /**< 8b/10b encoding/decoding (ENCODE_MODE). */
+	uint32_t rxoob_clk_m                  : 1;  /**< RX OOB clock mode (RXOOB_CLK_MODE). */
+	uint32_t rx_oob_m                     : 1;  /**< RX OOB mode (RX_OOB_MODE). */
+	uint32_t tx_oob_m                     : 1;  /**< TX OOB mode (TX_OOB_MODE). */
+	uint32_t rxoob_clk_l                  : 9;  /**< RX OOB clock frequency (RXOOB_CLK). */
+#else
+	uint32_t rxoob_clk_l                  : 9;
+	uint32_t tx_oob_m                     : 1;
+	uint32_t rx_oob_m                     : 1;
+	uint32_t rxoob_clk_m                  : 1;
+	uint32_t encode_m                     : 1;
+	uint32_t dev_mp                       : 1;
+	uint32_t dev_cp                       : 1;
+	uint32_t fbs_support                  : 1;
+	uint32_t fbs_pmpn                     : 2;
+	uint32_t fbs_mem_s                    : 1;
+	uint32_t bist_m                       : 1;
+	uint32_t rxoob_clk_u                  : 10;
+	uint32_t rxoob_clk_units              : 1;
+	uint32_t reserved_31_31               : 1;
+#endif
+	} cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_gparam2r cvmx_sata_uahc_gbl_gparam2r_t;
 
@@ -982,6 +1112,7 @@ union cvmx_sata_uahc_gbl_idr {
 	} s;
 	struct cvmx_sata_uahc_gbl_idr_s       cn70xx;
 	struct cvmx_sata_uahc_gbl_idr_s       cn70xxp1;
+	struct cvmx_sata_uahc_gbl_idr_s       cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_idr cvmx_sata_uahc_gbl_idr_t;
 
@@ -1004,6 +1135,7 @@ union cvmx_sata_uahc_gbl_is {
 	} s;
 	struct cvmx_sata_uahc_gbl_is_s        cn70xx;
 	struct cvmx_sata_uahc_gbl_is_s        cn70xxp1;
+	struct cvmx_sata_uahc_gbl_is_s        cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_is cvmx_sata_uahc_gbl_is_t;
 
@@ -1034,6 +1166,7 @@ union cvmx_sata_uahc_gbl_oobr {
 	} s;
 	struct cvmx_sata_uahc_gbl_oobr_s      cn70xx;
 	struct cvmx_sata_uahc_gbl_oobr_s      cn70xxp1;
+	struct cvmx_sata_uahc_gbl_oobr_s      cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_oobr cvmx_sata_uahc_gbl_oobr_t;
 
@@ -1056,6 +1189,7 @@ union cvmx_sata_uahc_gbl_pi {
 	} s;
 	struct cvmx_sata_uahc_gbl_pi_s        cn70xx;
 	struct cvmx_sata_uahc_gbl_pi_s        cn70xxp1;
+	struct cvmx_sata_uahc_gbl_pi_s        cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_pi cvmx_sata_uahc_gbl_pi_t;
 
@@ -1088,6 +1222,7 @@ union cvmx_sata_uahc_gbl_pparamr {
 	} s;
 	struct cvmx_sata_uahc_gbl_pparamr_s   cn70xx;
 	struct cvmx_sata_uahc_gbl_pparamr_s   cn70xxp1;
+	struct cvmx_sata_uahc_gbl_pparamr_s   cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_pparamr cvmx_sata_uahc_gbl_pparamr_t;
 
@@ -1101,6 +1236,26 @@ union cvmx_sata_uahc_gbl_testr {
 	uint32_t u32;
 	struct cvmx_sata_uahc_gbl_testr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t reserved_25_31               : 7;
+	uint32_t bsel                         : 1;  /**< This field is used to select a bank for BIST or Data Protection
+                                                         operation. The options for this field are:
+                                                         0x0 - BIST registers selected
+                                                         0x1 - Data Protection registers selected */
+	uint32_t reserved_19_23               : 5;
+	uint32_t psel                         : 3;  /**< Port select. */
+	uint32_t reserved_1_15                : 15;
+	uint32_t test_if                      : 1;  /**< Test interface. */
+#else
+	uint32_t test_if                      : 1;
+	uint32_t reserved_1_15                : 15;
+	uint32_t psel                         : 3;
+	uint32_t reserved_19_23               : 5;
+	uint32_t bsel                         : 1;
+	uint32_t reserved_25_31               : 7;
+#endif
+	} s;
+	struct cvmx_sata_uahc_gbl_testr_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t reserved_19_31               : 13;
 	uint32_t psel                         : 3;  /**< Port select. */
 	uint32_t reserved_1_15                : 15;
@@ -1111,9 +1266,9 @@ union cvmx_sata_uahc_gbl_testr {
 	uint32_t psel                         : 3;
 	uint32_t reserved_19_31               : 13;
 #endif
-	} s;
-	struct cvmx_sata_uahc_gbl_testr_s     cn70xx;
-	struct cvmx_sata_uahc_gbl_testr_s     cn70xxp1;
+	} cn70xx;
+	struct cvmx_sata_uahc_gbl_testr_cn70xx cn70xxp1;
+	struct cvmx_sata_uahc_gbl_testr_s     cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_testr cvmx_sata_uahc_gbl_testr_t;
 
@@ -1136,6 +1291,7 @@ union cvmx_sata_uahc_gbl_timer1ms {
 	} s;
 	struct cvmx_sata_uahc_gbl_timer1ms_s  cn70xx;
 	struct cvmx_sata_uahc_gbl_timer1ms_s  cn70xxp1;
+	struct cvmx_sata_uahc_gbl_timer1ms_s  cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_timer1ms cvmx_sata_uahc_gbl_timer1ms_t;
 
@@ -1156,6 +1312,7 @@ union cvmx_sata_uahc_gbl_versionr {
 	} s;
 	struct cvmx_sata_uahc_gbl_versionr_s  cn70xx;
 	struct cvmx_sata_uahc_gbl_versionr_s  cn70xxp1;
+	struct cvmx_sata_uahc_gbl_versionr_s  cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_versionr cvmx_sata_uahc_gbl_versionr_t;
 
@@ -1178,6 +1335,7 @@ union cvmx_sata_uahc_gbl_vs {
 	} s;
 	struct cvmx_sata_uahc_gbl_vs_s        cn70xx;
 	struct cvmx_sata_uahc_gbl_vs_s        cn70xxp1;
+	struct cvmx_sata_uahc_gbl_vs_s        cn73xx;
 };
 typedef union cvmx_sata_uahc_gbl_vs cvmx_sata_uahc_gbl_vs_t;
 
@@ -1198,6 +1356,7 @@ union cvmx_sata_uahc_px_ci {
 	} s;
 	struct cvmx_sata_uahc_px_ci_s         cn70xx;
 	struct cvmx_sata_uahc_px_ci_s         cn70xxp1;
+	struct cvmx_sata_uahc_px_ci_s         cn73xx;
 };
 typedef union cvmx_sata_uahc_px_ci cvmx_sata_uahc_px_ci_t;
 
@@ -1220,6 +1379,7 @@ union cvmx_sata_uahc_px_clb {
 	} s;
 	struct cvmx_sata_uahc_px_clb_s        cn70xx;
 	struct cvmx_sata_uahc_px_clb_s        cn70xxp1;
+	struct cvmx_sata_uahc_px_clb_s        cn73xx;
 };
 typedef union cvmx_sata_uahc_px_clb cvmx_sata_uahc_px_clb_t;
 
@@ -1285,6 +1445,7 @@ union cvmx_sata_uahc_px_cmd {
 	} s;
 	struct cvmx_sata_uahc_px_cmd_s        cn70xx;
 	struct cvmx_sata_uahc_px_cmd_s        cn70xxp1;
+	struct cvmx_sata_uahc_px_cmd_s        cn73xx;
 };
 typedef union cvmx_sata_uahc_px_cmd cvmx_sata_uahc_px_cmd_t;
 
@@ -1311,6 +1472,7 @@ union cvmx_sata_uahc_px_dmacr {
 	} s;
 	struct cvmx_sata_uahc_px_dmacr_s      cn70xx;
 	struct cvmx_sata_uahc_px_dmacr_s      cn70xxp1;
+	struct cvmx_sata_uahc_px_dmacr_s      cn73xx;
 };
 typedef union cvmx_sata_uahc_px_dmacr cvmx_sata_uahc_px_dmacr_t;
 
@@ -1333,6 +1495,7 @@ union cvmx_sata_uahc_px_fb {
 	} s;
 	struct cvmx_sata_uahc_px_fb_s         cn70xx;
 	struct cvmx_sata_uahc_px_fb_s         cn70xxp1;
+	struct cvmx_sata_uahc_px_fb_s         cn73xx;
 };
 typedef union cvmx_sata_uahc_px_fb cvmx_sata_uahc_px_fb_t;
 
@@ -1367,6 +1530,7 @@ union cvmx_sata_uahc_px_fbs {
 	} s;
 	struct cvmx_sata_uahc_px_fbs_s        cn70xx;
 	struct cvmx_sata_uahc_px_fbs_s        cn70xxp1;
+	struct cvmx_sata_uahc_px_fbs_s        cn73xx;
 };
 typedef union cvmx_sata_uahc_px_fbs cvmx_sata_uahc_px_fbs_t;
 
@@ -1423,6 +1587,7 @@ union cvmx_sata_uahc_px_ie {
 	} s;
 	struct cvmx_sata_uahc_px_ie_s         cn70xx;
 	struct cvmx_sata_uahc_px_ie_s         cn70xxp1;
+	struct cvmx_sata_uahc_px_ie_s         cn73xx;
 };
 typedef union cvmx_sata_uahc_px_ie cvmx_sata_uahc_px_ie_t;
 
@@ -1479,6 +1644,7 @@ union cvmx_sata_uahc_px_is {
 	} s;
 	struct cvmx_sata_uahc_px_is_s         cn70xx;
 	struct cvmx_sata_uahc_px_is_s         cn70xxp1;
+	struct cvmx_sata_uahc_px_is_s         cn73xx;
 };
 typedef union cvmx_sata_uahc_px_is cvmx_sata_uahc_px_is_t;
 
@@ -1499,6 +1665,7 @@ union cvmx_sata_uahc_px_phycr {
 	} s;
 	struct cvmx_sata_uahc_px_phycr_s      cn70xx;
 	struct cvmx_sata_uahc_px_phycr_s      cn70xxp1;
+	struct cvmx_sata_uahc_px_phycr_s      cn73xx;
 };
 typedef union cvmx_sata_uahc_px_phycr cvmx_sata_uahc_px_phycr_t;
 
@@ -1519,6 +1686,7 @@ union cvmx_sata_uahc_px_physr {
 	} s;
 	struct cvmx_sata_uahc_px_physr_s      cn70xx;
 	struct cvmx_sata_uahc_px_physr_s      cn70xxp1;
+	struct cvmx_sata_uahc_px_physr_s      cn73xx;
 };
 typedef union cvmx_sata_uahc_px_physr cvmx_sata_uahc_px_physr_t;
 
@@ -1539,6 +1707,7 @@ union cvmx_sata_uahc_px_sact {
 	} s;
 	struct cvmx_sata_uahc_px_sact_s       cn70xx;
 	struct cvmx_sata_uahc_px_sact_s       cn70xxp1;
+	struct cvmx_sata_uahc_px_sact_s       cn73xx;
 };
 typedef union cvmx_sata_uahc_px_sact cvmx_sata_uahc_px_sact_t;
 
@@ -1569,6 +1738,7 @@ union cvmx_sata_uahc_px_sctl {
 	} s;
 	struct cvmx_sata_uahc_px_sctl_s       cn70xx;
 	struct cvmx_sata_uahc_px_sctl_s       cn70xxp1;
+	struct cvmx_sata_uahc_px_sctl_s       cn73xx;
 };
 typedef union cvmx_sata_uahc_px_sctl cvmx_sata_uahc_px_sctl_t;
 
@@ -1627,6 +1797,7 @@ union cvmx_sata_uahc_px_serr {
 	} s;
 	struct cvmx_sata_uahc_px_serr_s       cn70xx;
 	struct cvmx_sata_uahc_px_serr_s       cn70xxp1;
+	struct cvmx_sata_uahc_px_serr_s       cn73xx;
 };
 typedef union cvmx_sata_uahc_px_serr cvmx_sata_uahc_px_serr_t;
 
@@ -1647,6 +1818,7 @@ union cvmx_sata_uahc_px_sig {
 	} s;
 	struct cvmx_sata_uahc_px_sig_s        cn70xx;
 	struct cvmx_sata_uahc_px_sig_s        cn70xxp1;
+	struct cvmx_sata_uahc_px_sig_s        cn73xx;
 };
 typedef union cvmx_sata_uahc_px_sig cvmx_sata_uahc_px_sig_t;
 
@@ -1669,6 +1841,7 @@ union cvmx_sata_uahc_px_sntf {
 	} s;
 	struct cvmx_sata_uahc_px_sntf_s       cn70xx;
 	struct cvmx_sata_uahc_px_sntf_s       cn70xxp1;
+	struct cvmx_sata_uahc_px_sntf_s       cn73xx;
 };
 typedef union cvmx_sata_uahc_px_sntf cvmx_sata_uahc_px_sntf_t;
 
@@ -1695,6 +1868,7 @@ union cvmx_sata_uahc_px_ssts {
 	} s;
 	struct cvmx_sata_uahc_px_ssts_s       cn70xx;
 	struct cvmx_sata_uahc_px_ssts_s       cn70xxp1;
+	struct cvmx_sata_uahc_px_ssts_s       cn73xx;
 };
 typedef union cvmx_sata_uahc_px_ssts cvmx_sata_uahc_px_ssts_t;
 
@@ -1719,6 +1893,7 @@ union cvmx_sata_uahc_px_tfd {
 	} s;
 	struct cvmx_sata_uahc_px_tfd_s        cn70xx;
 	struct cvmx_sata_uahc_px_tfd_s        cn70xxp1;
+	struct cvmx_sata_uahc_px_tfd_s        cn73xx;
 };
 typedef union cvmx_sata_uahc_px_tfd cvmx_sata_uahc_px_tfd_t;
 
@@ -1771,6 +1946,7 @@ union cvmx_sata_uctl_bist_status {
 	} s;
 	struct cvmx_sata_uctl_bist_status_s   cn70xx;
 	struct cvmx_sata_uctl_bist_status_s   cn70xxp1;
+	struct cvmx_sata_uctl_bist_status_s   cn73xx;
 };
 typedef union cvmx_sata_uctl_bist_status cvmx_sata_uctl_bist_status_t;
 
@@ -1826,7 +2002,7 @@ union cvmx_sata_uctl_ctl {
                                                          0x2 = divide by 3 0x6 = divide by 16
                                                          0x3 = divide by 4 0x7 = divide by 24 */
 	uint64_t reserved_5_23                : 19;
-	uint64_t csclk_en                     : 1;  /**< Turns on the USB UCTL interface clock (coprocessor clock). This enables access to UAHC
+	uint64_t csclk_en                     : 1;  /**< Turns on the SATA UCTL interface clock (coprocessor clock). This enables access to UAHC
                                                          registers via the IOI, as well as UCTL registers starting from 0x30 via the RSL bus. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t sata_uahc_rst                : 1;  /**< Software reset; resets UAHC; active-high.
@@ -1857,8 +2033,85 @@ union cvmx_sata_uctl_ctl {
 	} s;
 	struct cvmx_sata_uctl_ctl_s           cn70xx;
 	struct cvmx_sata_uctl_ctl_s           cn70xxp1;
+	struct cvmx_sata_uctl_ctl_s           cn73xx;
 };
 typedef union cvmx_sata_uctl_ctl cvmx_sata_uctl_ctl_t;
+
+/**
+ * cvmx_sata_uctl_ecc
+ *
+ * This register can be used to disable ECC correction, insert ECC errors, and debug ECC
+ * failures.
+ * * The ECC_ERR* fields are captured when there are no outstanding ECC errors indicated in
+ * INTSTAT and a new ECC error arrives. Prioritization for multiple events occurring on the same
+ * cycle is indicated by the ECC_ERR_SOURCE enumeration: highest encoded value has highest
+ * priority.
+ * * The *ECC_*_DIS fields disable ECC correction; SBE and DBE errors are still reported. If
+ * *ECC_*_DIS = 0x1, then no data-correction occurs.
+ * * The *ECC_FLIP_SYND fields flip the syndrome<1:0> bits to generate single-bit/double-bit
+ * error for testing.
+ *
+ * 0x0 = normal operation.
+ * 0x1 = SBE on bit[0].
+ * 0x2 = SBE on bit[1].
+ * 0x3 = DBE on bit[1:0].
+ *
+ * This register is accessible only when UCTL()_CTL[H_CLK_EN] = 1.
+ *
+ * This register can be reset by IOI reset or with UCTL()_CTL[UCTL_RST].
+ */
+union cvmx_sata_uctl_ecc {
+	uint64_t u64;
+	struct cvmx_sata_uctl_ecc_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_63_63               : 1;
+	uint64_t ecc_err_source               : 5;  /**< Source of ECC error, see UCTL_ECC_ERR_SOURCE_E. */
+	uint64_t ecc_err_syndrome             : 18; /**< Syndrome bits of the ECC error. */
+	uint64_t ecc_err_address              : 8;  /**< RAM address of the ECC error. */
+	uint64_t reserved_24_31               : 8;
+	uint64_t uctl_xm_r_ecc_flip_synd      : 2;  /**< Insert ECC error for testing purposes. */
+	uint64_t uctl_xm_r_ecc_cor_dis        : 1;  /**< Enables ECC correction on UCTL AxiMaster read-data FIFO. */
+	uint64_t uctl_xm_w_ecc_flip_synd      : 2;  /**< Insert ECC error for testing purposes. */
+	uint64_t uctl_xm_w_ecc_cor_dis        : 1;  /**< Enables ECC correction on UCTL AxiMaster write-data FIFO. */
+	uint64_t uahc_rx_ecc_flip_synd_p0     : 2;  /**< Insert ECC error for testing purposes for the UAHC RX RAM on Port 0. */
+	uint64_t uahc_rx_ecc_cor_dis_p0       : 1;  /**< Enables ECC correction on the UAHC RX RAM on Port 0. */
+	uint64_t uahc_tx_ecc_flip_synd_p0     : 2;  /**< Insert ECC error for testing purposes for the UAHC TX RAM on Port 0. */
+	uint64_t uahc_tx_ecc_cor_dis_p0       : 1;  /**< Enables ECC correction on the UAHC TX RAM on Port 0. */
+	uint64_t uahc_fb_ecc_flip_synd_p0     : 2;  /**< Insert ECC error for testing purposes for the UAHC FB RAM on Port 0. */
+	uint64_t uahc_fb_ecc_cor_dis_p0       : 1;  /**< Enables ECC correction on the UAHC FB RAM on Port 0. */
+	uint64_t uahc_rx_ecc_flip_synd_p1     : 2;  /**< Insert ECC error for testing purposes for the UAHC RX RAM on Port 1. */
+	uint64_t uahc_rx_ecc_cor_dis_p1       : 1;  /**< Enables ECC correction on the UAHC RX RAM on Port 1. */
+	uint64_t uahc_tx_ecc_flip_synd_p1     : 2;  /**< Insert ECC error for testing purposes for the UAHC TX RAM on Port 1. */
+	uint64_t uahc_tx_ecc_cor_dis_p1       : 1;  /**< Enables ECC correction on the UAHC TX RAM on Port 1. */
+	uint64_t uahc_fb_ecc_flip_synd_p1     : 2;  /**< Insert ECC error for testing purposes for the UAHC FB RAM on Port 1. */
+	uint64_t uahc_fb_ecc_cor_dis_p1       : 1;  /**< Enables ECC correction on the UAHC FB RAM on Port 1. */
+#else
+	uint64_t uahc_fb_ecc_cor_dis_p1       : 1;
+	uint64_t uahc_fb_ecc_flip_synd_p1     : 2;
+	uint64_t uahc_tx_ecc_cor_dis_p1       : 1;
+	uint64_t uahc_tx_ecc_flip_synd_p1     : 2;
+	uint64_t uahc_rx_ecc_cor_dis_p1       : 1;
+	uint64_t uahc_rx_ecc_flip_synd_p1     : 2;
+	uint64_t uahc_fb_ecc_cor_dis_p0       : 1;
+	uint64_t uahc_fb_ecc_flip_synd_p0     : 2;
+	uint64_t uahc_tx_ecc_cor_dis_p0       : 1;
+	uint64_t uahc_tx_ecc_flip_synd_p0     : 2;
+	uint64_t uahc_rx_ecc_cor_dis_p0       : 1;
+	uint64_t uahc_rx_ecc_flip_synd_p0     : 2;
+	uint64_t uctl_xm_w_ecc_cor_dis        : 1;
+	uint64_t uctl_xm_w_ecc_flip_synd      : 2;
+	uint64_t uctl_xm_r_ecc_cor_dis        : 1;
+	uint64_t uctl_xm_r_ecc_flip_synd      : 2;
+	uint64_t reserved_24_31               : 8;
+	uint64_t ecc_err_address              : 8;
+	uint64_t ecc_err_syndrome             : 18;
+	uint64_t ecc_err_source               : 5;
+	uint64_t reserved_63_63               : 1;
+#endif
+	} s;
+	struct cvmx_sata_uctl_ecc_s           cn73xx;
+};
+typedef union cvmx_sata_uctl_ecc cvmx_sata_uctl_ecc_t;
 
 /**
  * cvmx_sata_uctl_intstat
@@ -1870,6 +2123,62 @@ typedef union cvmx_sata_uctl_ctl cvmx_sata_uctl_ctl_t;
 union cvmx_sata_uctl_intstat {
 	uint64_t u64;
 	struct cvmx_sata_uctl_intstat_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_42_63               : 22;
+	uint64_t fb_dbe_p0                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t rx_dbe_p0                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t tx_dbe_p0                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t fb_dbe_p1                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t rx_dbe_p1                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t tx_dbe_p1                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t fb_sbe_p0                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t rx_sbe_p0                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t tx_sbe_p0                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t fb_sbe_p1                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t rx_sbe_p1                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t tx_sbe_p1                    : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t xm_r_dbe                     : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t xm_r_sbe                     : 1;  /**< Detected single-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t xm_w_dbe                     : 1;  /**< Detected double-bit error on the UCTL AxiMaster write-data FIFO. */
+	uint64_t xm_w_sbe                     : 1;  /**< Detected single-bit error on the UCTL AxiMaster write-data FIFO. */
+	uint64_t reserved_3_25                : 23;
+	uint64_t xm_bad_dma                   : 1;  /**< Detected bad DMA access from UAHC to IOI. The error information is logged in
+                                                         SATA_UCTL_SHIM_CFG[XM_BAD_DMA_*]. Received a DMA request from UAHC that violates the
+                                                         assumptions made by the AXI-to-IOI shim. Such scenarios include: illegal length/size
+                                                         combinations and address out-of-bounds.
+                                                         For more information on exact failures, see description in
+                                                         SATA_UCTL_SHIM_CFG[XM_BAD_DMA_TYPE].
+                                                         The hardware does not translate the request correctly and results may violate IOI
+                                                         protocols. */
+	uint64_t xs_ncb_oob                   : 1;  /**< Detected out-of-bound register access to UAHC over IOI. The UAHC defines 1MB of register
+                                                         space, starting at offset 0x0. Any accesses outside of this register space cause this bit
+                                                         to be set to 1. The error information is logged in SATA_UCTL_SHIM_CFG[XS_NCB_OOB_*]. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t xs_ncb_oob                   : 1;
+	uint64_t xm_bad_dma                   : 1;
+	uint64_t reserved_3_25                : 23;
+	uint64_t xm_w_sbe                     : 1;
+	uint64_t xm_w_dbe                     : 1;
+	uint64_t xm_r_sbe                     : 1;
+	uint64_t xm_r_dbe                     : 1;
+	uint64_t tx_sbe_p1                    : 1;
+	uint64_t rx_sbe_p1                    : 1;
+	uint64_t fb_sbe_p1                    : 1;
+	uint64_t tx_sbe_p0                    : 1;
+	uint64_t rx_sbe_p0                    : 1;
+	uint64_t fb_sbe_p0                    : 1;
+	uint64_t tx_dbe_p1                    : 1;
+	uint64_t rx_dbe_p1                    : 1;
+	uint64_t fb_dbe_p1                    : 1;
+	uint64_t tx_dbe_p0                    : 1;
+	uint64_t rx_dbe_p0                    : 1;
+	uint64_t fb_dbe_p0                    : 1;
+	uint64_t reserved_42_63               : 22;
+#endif
+	} s;
+	struct cvmx_sata_uctl_intstat_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
 	uint64_t xm_bad_dma                   : 1;  /**< Detected bad DMA access from UAHC to IOI. The error information is logged in
@@ -1890,9 +2199,9 @@ union cvmx_sata_uctl_intstat {
 	uint64_t xm_bad_dma                   : 1;
 	uint64_t reserved_3_63                : 61;
 #endif
-	} s;
-	struct cvmx_sata_uctl_intstat_s       cn70xx;
-	struct cvmx_sata_uctl_intstat_s       cn70xxp1;
+	} cn70xx;
+	struct cvmx_sata_uctl_intstat_cn70xx  cn70xxp1;
+	struct cvmx_sata_uctl_intstat_s       cn73xx;
 };
 typedef union cvmx_sata_uctl_intstat cvmx_sata_uctl_intstat_t;
 
@@ -1910,6 +2219,41 @@ typedef union cvmx_sata_uctl_intstat cvmx_sata_uctl_intstat_t;
 union cvmx_sata_uctl_shim_cfg {
 	uint64_t u64;
 	struct cvmx_sata_uctl_shim_cfg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t xs_ncb_oob_wrn               : 1;  /**< Read/write error log for out-of-bound UAHC register access.
+                                                         0 = read, 1 = write. */
+	uint64_t reserved_60_62               : 3;
+	uint64_t xs_ncb_oob_osrc              : 12; /**< SRCID error log for out-of-bound UAHC register access. The IOI outbound SRCID for the OOB error. */
+	uint64_t xm_bad_dma_wrn               : 1;  /**< Read/write error log for bad DMA access from UAHC.
+                                                         0 = read error log, 1 = write error log. */
+	uint64_t reserved_44_46               : 3;
+	uint64_t xm_bad_dma_type              : 4;  /**< ErrType error log for bad DMA access from UAHC. Encodes the type of error encountered
+                                                         (error largest encoded value has priority). See SATA_UCTL_XM_BAD_DMA_TYPE_E. */
+	uint64_t reserved_14_39               : 26;
+	uint64_t dma_read_cmd                 : 2;  /**< Selects the IOI read command used by DMA accesses. See SATA_UCTL_DMA_READ_CMD_E. */
+	uint64_t reserved_11_11               : 1;
+	uint64_t dma_write_cmd                : 1;  /**< Selects the NCB write command used by DMA accesses. See UCTL_DMA_WRITE_CMD_E. */
+	uint64_t dma_endian_mode              : 2;  /**< Selects the endian format for DMA accesses to the L2C. See SATA_UCTL_ENDIAN_MODE_E. */
+	uint64_t reserved_2_7                 : 6;
+	uint64_t csr_endian_mode              : 2;  /**< Selects the endian format for IOI CSR accesses to the UAHC. Note that when UAHC CSRs are
+                                                         accessed via RSL, they are returned as big-endian. See SATA_UCTL_ENDIAN_MODE_E. */
+#else
+	uint64_t csr_endian_mode              : 2;
+	uint64_t reserved_2_7                 : 6;
+	uint64_t dma_endian_mode              : 2;
+	uint64_t dma_write_cmd                : 1;
+	uint64_t reserved_11_11               : 1;
+	uint64_t dma_read_cmd                 : 2;
+	uint64_t reserved_14_39               : 26;
+	uint64_t xm_bad_dma_type              : 4;
+	uint64_t reserved_44_46               : 3;
+	uint64_t xm_bad_dma_wrn               : 1;
+	uint64_t xs_ncb_oob_osrc              : 12;
+	uint64_t reserved_60_62               : 3;
+	uint64_t xs_ncb_oob_wrn               : 1;
+#endif
+	} s;
+	struct cvmx_sata_uctl_shim_cfg_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t xs_ncb_oob_wrn               : 1;  /**< Read/write error log for out-of-bound UAHC register access.
                                                          0 = read, 1 = write. */
@@ -1941,9 +2285,9 @@ union cvmx_sata_uctl_shim_cfg {
 	uint64_t reserved_57_62               : 6;
 	uint64_t xs_ncb_oob_wrn               : 1;
 #endif
-	} s;
-	struct cvmx_sata_uctl_shim_cfg_s      cn70xx;
-	struct cvmx_sata_uctl_shim_cfg_s      cn70xxp1;
+	} cn70xx;
+	struct cvmx_sata_uctl_shim_cfg_cn70xx cn70xxp1;
+	struct cvmx_sata_uctl_shim_cfg_s      cn73xx;
 };
 typedef union cvmx_sata_uctl_shim_cfg cvmx_sata_uctl_shim_cfg_t;
 
@@ -1969,6 +2313,28 @@ union cvmx_sata_uctl_spare0 {
 typedef union cvmx_sata_uctl_spare0 cvmx_sata_uctl_spare0_t;
 
 /**
+ * cvmx_sata_uctl_spare0_eco
+ *
+ * Accessible by: always
+ * Reset by: IOI reset (srst_n)
+ * This register is spare.
+ */
+union cvmx_sata_uctl_spare0_eco {
+	uint64_t u64;
+	struct cvmx_sata_uctl_spare0_eco_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t eco_rw                       : 32; /**< Spare. */
+#else
+	uint64_t eco_rw                       : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_sata_uctl_spare0_eco_s    cn73xx;
+};
+typedef union cvmx_sata_uctl_spare0_eco cvmx_sata_uctl_spare0_eco_t;
+
+/**
  * cvmx_sata_uctl_spare1
  *
  * Accessible by: only when A_CLKDIV_EN
@@ -1988,5 +2354,27 @@ union cvmx_sata_uctl_spare1 {
 	struct cvmx_sata_uctl_spare1_s        cn70xxp1;
 };
 typedef union cvmx_sata_uctl_spare1 cvmx_sata_uctl_spare1_t;
+
+/**
+ * cvmx_sata_uctl_spare1_eco
+ *
+ * Accessible by: only when A_CLKDIV_EN
+ * Reset by: IOI reset (srst_n) or SATA_UCTL_CTL[SATA_UCTL_RST]
+ * This register is spare.
+ */
+union cvmx_sata_uctl_spare1_eco {
+	uint64_t u64;
+	struct cvmx_sata_uctl_spare1_eco_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t eco_rw                       : 32; /**< INTERNAL: Reserved for ECO usage. */
+#else
+	uint64_t eco_rw                       : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_sata_uctl_spare1_eco_s    cn73xx;
+};
+typedef union cvmx_sata_uctl_spare1_eco cvmx_sata_uctl_spare1_eco_t;
 
 #endif

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -56,7 +56,7 @@
 #define CVMX_PKO_CHANNEL_LEVEL CVMX_PKO_CHANNEL_LEVEL_FUNC()
 static inline uint64_t CVMX_PKO_CHANNEL_LEVEL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_CHANNEL_LEVEL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400000800F0ull);
 }
@@ -67,7 +67,7 @@ static inline uint64_t CVMX_PKO_CHANNEL_LEVEL_FUNC(void)
 #define CVMX_PKO_DPFI_ENA CVMX_PKO_DPFI_ENA_FUNC()
 static inline uint64_t CVMX_PKO_DPFI_ENA_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_DPFI_ENA not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000C00018ull);
 }
@@ -78,7 +78,7 @@ static inline uint64_t CVMX_PKO_DPFI_ENA_FUNC(void)
 #define CVMX_PKO_DPFI_FLUSH CVMX_PKO_DPFI_FLUSH_FUNC()
 static inline uint64_t CVMX_PKO_DPFI_FLUSH_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_DPFI_FLUSH not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000C00008ull);
 }
@@ -89,7 +89,7 @@ static inline uint64_t CVMX_PKO_DPFI_FLUSH_FUNC(void)
 #define CVMX_PKO_DPFI_FPA_AURA CVMX_PKO_DPFI_FPA_AURA_FUNC()
 static inline uint64_t CVMX_PKO_DPFI_FPA_AURA_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_DPFI_FPA_AURA not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000C00010ull);
 }
@@ -100,7 +100,7 @@ static inline uint64_t CVMX_PKO_DPFI_FPA_AURA_FUNC(void)
 #define CVMX_PKO_DPFI_STATUS CVMX_PKO_DPFI_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_DPFI_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_DPFI_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000C00000ull);
 }
@@ -111,7 +111,9 @@ static inline uint64_t CVMX_PKO_DPFI_STATUS_FUNC(void)
 static inline uint64_t CVMX_PKO_DQX_BYTES(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_BYTES(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400000000D8ull) + ((offset) & 1023) * 512;
 }
@@ -122,7 +124,9 @@ static inline uint64_t CVMX_PKO_DQX_BYTES(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_CIR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_CIR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000280018ull) + ((offset) & 1023) * 512;
 }
@@ -133,7 +137,9 @@ static inline uint64_t CVMX_PKO_DQX_CIR(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_DROPPED_BYTES(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_DROPPED_BYTES(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400000000C8ull) + ((offset) & 1023) * 512;
 }
@@ -144,7 +150,9 @@ static inline uint64_t CVMX_PKO_DQX_DROPPED_BYTES(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_DROPPED_PACKETS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_DROPPED_PACKETS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400000000C0ull) + ((offset) & 1023) * 512;
 }
@@ -155,7 +163,9 @@ static inline uint64_t CVMX_PKO_DQX_DROPPED_PACKETS(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_FIFO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_FIFO(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000300078ull) + ((offset) & 1023) * 512;
 }
@@ -166,7 +176,9 @@ static inline uint64_t CVMX_PKO_DQX_FIFO(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_PACKETS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_PACKETS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400000000D0ull) + ((offset) & 1023) * 512;
 }
@@ -177,7 +189,9 @@ static inline uint64_t CVMX_PKO_DQX_PACKETS(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_PICK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_PICK(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000300070ull) + ((offset) & 1023) * 512;
 }
@@ -188,7 +202,9 @@ static inline uint64_t CVMX_PKO_DQX_PICK(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_PIR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_PIR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000280020ull) + ((offset) & 1023) * 512;
 }
@@ -199,7 +215,9 @@ static inline uint64_t CVMX_PKO_DQX_PIR(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_POINTERS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_POINTERS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000280078ull) + ((offset) & 1023) * 512;
 }
@@ -210,7 +228,9 @@ static inline uint64_t CVMX_PKO_DQX_POINTERS(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_SCHEDULE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_SCHEDULE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000280008ull) + ((offset) & 1023) * 512;
 }
@@ -221,7 +241,9 @@ static inline uint64_t CVMX_PKO_DQX_SCHEDULE(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_SCHED_STATE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_SCHED_STATE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000280028ull) + ((offset) & 1023) * 512;
 }
@@ -232,7 +254,9 @@ static inline uint64_t CVMX_PKO_DQX_SCHED_STATE(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_SHAPE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_SHAPE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000280010ull) + ((offset) & 1023) * 512;
 }
@@ -243,7 +267,9 @@ static inline uint64_t CVMX_PKO_DQX_SHAPE(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_SHAPE_STATE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_SHAPE_STATE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000280030ull) + ((offset) & 1023) * 512;
 }
@@ -254,7 +280,9 @@ static inline uint64_t CVMX_PKO_DQX_SHAPE_STATE(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_SW_XOFF(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_SW_XOFF(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400002800E0ull) + ((offset) & 1023) * 512;
 }
@@ -265,7 +293,9 @@ static inline uint64_t CVMX_PKO_DQX_SW_XOFF(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_TOPOLOGY(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_TOPOLOGY(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000300000ull) + ((offset) & 1023) * 512;
 }
@@ -273,10 +303,51 @@ static inline uint64_t CVMX_PKO_DQX_TOPOLOGY(unsigned long offset)
 #define CVMX_PKO_DQX_TOPOLOGY(offset) (CVMX_ADD_IO_SEG(0x0001540000300000ull) + ((offset) & 1023) * 512)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_DQX_WM_BUF_CNT(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
+		cvmx_warn("CVMX_PKO_DQX_WM_BUF_CNT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00015400008000E8ull) + ((offset) & 1023) * 512;
+}
+#else
+#define CVMX_PKO_DQX_WM_BUF_CNT(offset) (CVMX_ADD_IO_SEG(0x00015400008000E8ull) + ((offset) & 1023) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_DQX_WM_BUF_CTL(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
+		cvmx_warn("CVMX_PKO_DQX_WM_BUF_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00015400008000F0ull) + ((offset) & 1023) * 512;
+}
+#else
+#define CVMX_PKO_DQX_WM_BUF_CTL(offset) (CVMX_ADD_IO_SEG(0x00015400008000F0ull) + ((offset) & 1023) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_DQX_WM_BUF_CTL_W1C(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
+		cvmx_warn("CVMX_PKO_DQX_WM_BUF_CTL_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00015400008000F8ull) + ((offset) & 1023) * 512;
+}
+#else
+#define CVMX_PKO_DQX_WM_BUF_CTL_W1C(offset) (CVMX_ADD_IO_SEG(0x00015400008000F8ull) + ((offset) & 1023) * 512)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PKO_DQX_WM_CNT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_WM_CNT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000050ull) + ((offset) & 1023) * 512;
 }
@@ -287,7 +358,9 @@ static inline uint64_t CVMX_PKO_DQX_WM_CNT(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_WM_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_WM_CTL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000040ull) + ((offset) & 1023) * 512;
 }
@@ -298,7 +371,9 @@ static inline uint64_t CVMX_PKO_DQX_WM_CTL(unsigned long offset)
 static inline uint64_t CVMX_PKO_DQX_WM_CTL_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_DQX_WM_CTL_W1C(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000048ull) + ((offset) & 1023) * 512;
 }
@@ -309,7 +384,7 @@ static inline uint64_t CVMX_PKO_DQX_WM_CTL_W1C(unsigned long offset)
 #define CVMX_PKO_DQ_CSR_BUS_DEBUG CVMX_PKO_DQ_CSR_BUS_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_DQ_CSR_BUS_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_DQ_CSR_BUS_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400003001F8ull);
 }
@@ -320,7 +395,7 @@ static inline uint64_t CVMX_PKO_DQ_CSR_BUS_DEBUG_FUNC(void)
 #define CVMX_PKO_DQ_DEBUG CVMX_PKO_DQ_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_DQ_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_DQ_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000300128ull);
 }
@@ -331,7 +406,7 @@ static inline uint64_t CVMX_PKO_DQ_DEBUG_FUNC(void)
 #define CVMX_PKO_DRAIN_IRQ CVMX_PKO_DRAIN_IRQ_FUNC()
 static inline uint64_t CVMX_PKO_DRAIN_IRQ_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_DRAIN_IRQ not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000140ull);
 }
@@ -342,7 +417,7 @@ static inline uint64_t CVMX_PKO_DRAIN_IRQ_FUNC(void)
 #define CVMX_PKO_ENABLE CVMX_PKO_ENABLE_FUNC()
 static inline uint64_t CVMX_PKO_ENABLE_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_ENABLE not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000D00008ull);
 }
@@ -353,7 +428,9 @@ static inline uint64_t CVMX_PKO_ENABLE_FUNC(void)
 static inline uint64_t CVMX_PKO_FORMATX_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 127)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 127))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_PKO_FORMATX_CTL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000900800ull) + ((offset) & 127) * 8;
 }
@@ -364,7 +441,7 @@ static inline uint64_t CVMX_PKO_FORMATX_CTL(unsigned long offset)
 #define CVMX_PKO_L1_SQA_DEBUG CVMX_PKO_L1_SQA_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_L1_SQA_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_L1_SQA_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000080128ull);
 }
@@ -375,7 +452,7 @@ static inline uint64_t CVMX_PKO_L1_SQA_DEBUG_FUNC(void)
 #define CVMX_PKO_L1_SQB_DEBUG CVMX_PKO_L1_SQB_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_L1_SQB_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_L1_SQB_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000080130ull);
 }
@@ -386,7 +463,9 @@ static inline uint64_t CVMX_PKO_L1_SQB_DEBUG_FUNC(void)
 static inline uint64_t CVMX_PKO_L1_SQX_CIR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_CIR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000018ull) + ((offset) & 31) * 512;
 }
@@ -397,7 +476,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_CIR(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_DROPPED_BYTES(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_DROPPED_BYTES(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000088ull) + ((offset) & 31) * 512;
 }
@@ -408,7 +489,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_DROPPED_BYTES(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_DROPPED_PACKETS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_DROPPED_PACKETS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000080ull) + ((offset) & 31) * 512;
 }
@@ -419,7 +502,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_DROPPED_PACKETS(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_GREEN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_GREEN(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080058ull) + ((offset) & 31) * 512;
 }
@@ -430,7 +515,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_GREEN(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_GREEN_BYTES(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_GREEN_BYTES(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400000000B8ull) + ((offset) & 31) * 512;
 }
@@ -441,7 +528,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_GREEN_BYTES(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_GREEN_PACKETS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_GREEN_PACKETS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400000000B0ull) + ((offset) & 31) * 512;
 }
@@ -452,7 +541,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_GREEN_PACKETS(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_LINK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_LINK(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000038ull) + ((offset) & 31) * 512;
 }
@@ -463,7 +554,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_LINK(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_PICK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_PICK(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080070ull) + ((offset) & 31) * 512;
 }
@@ -474,7 +567,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_PICK(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_RED(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_RED(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080068ull) + ((offset) & 31) * 512;
 }
@@ -485,7 +580,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_RED(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_RED_BYTES(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_RED_BYTES(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000098ull) + ((offset) & 31) * 512;
 }
@@ -496,7 +593,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_RED_BYTES(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_RED_PACKETS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_RED_PACKETS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000090ull) + ((offset) & 31) * 512;
 }
@@ -507,7 +606,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_RED_PACKETS(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_SCHEDULE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_SCHEDULE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000008ull) + ((offset) & 31) * 512;
 }
@@ -518,7 +619,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_SCHEDULE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_SHAPE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_SHAPE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000010ull) + ((offset) & 31) * 512;
 }
@@ -529,7 +632,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_SHAPE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_SHAPE_STATE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_SHAPE_STATE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000000030ull) + ((offset) & 31) * 512;
 }
@@ -540,7 +645,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_SHAPE_STATE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_SW_XOFF(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_SW_XOFF(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400000000E0ull) + ((offset) & 31) * 512;
 }
@@ -551,7 +658,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_SW_XOFF(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_TOPOLOGY(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_TOPOLOGY(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080000ull) + ((offset) & 31) * 512;
 }
@@ -562,7 +671,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_TOPOLOGY(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_YELLOW(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_YELLOW(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080060ull) + ((offset) & 31) * 512;
 }
@@ -573,7 +684,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_YELLOW(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_YELLOW_BYTES(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_YELLOW_BYTES(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400000000A8ull) + ((offset) & 31) * 512;
 }
@@ -584,7 +697,9 @@ static inline uint64_t CVMX_PKO_L1_SQX_YELLOW_BYTES(unsigned long offset)
 static inline uint64_t CVMX_PKO_L1_SQX_YELLOW_PACKETS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_L1_SQX_YELLOW_PACKETS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400000000A0ull) + ((offset) & 31) * 512;
 }
@@ -595,7 +710,7 @@ static inline uint64_t CVMX_PKO_L1_SQX_YELLOW_PACKETS(unsigned long offset)
 #define CVMX_PKO_L1_SQ_CSR_BUS_DEBUG CVMX_PKO_L1_SQ_CSR_BUS_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_L1_SQ_CSR_BUS_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_L1_SQ_CSR_BUS_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400000801F8ull);
 }
@@ -606,7 +721,7 @@ static inline uint64_t CVMX_PKO_L1_SQ_CSR_BUS_DEBUG_FUNC(void)
 #define CVMX_PKO_L2_SQA_DEBUG CVMX_PKO_L2_SQA_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_L2_SQA_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_L2_SQA_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000100128ull);
 }
@@ -617,7 +732,7 @@ static inline uint64_t CVMX_PKO_L2_SQA_DEBUG_FUNC(void)
 #define CVMX_PKO_L2_SQB_DEBUG CVMX_PKO_L2_SQB_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_L2_SQB_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_L2_SQB_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000100130ull);
 }
@@ -628,7 +743,9 @@ static inline uint64_t CVMX_PKO_L2_SQB_DEBUG_FUNC(void)
 static inline uint64_t CVMX_PKO_L2_SQX_CIR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_CIR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080018ull) + ((offset) & 511) * 512;
 }
@@ -639,7 +756,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_CIR(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_GREEN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_GREEN(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100058ull) + ((offset) & 511) * 512;
 }
@@ -650,7 +769,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_GREEN(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_PICK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_PICK(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100070ull) + ((offset) & 511) * 512;
 }
@@ -661,7 +782,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_PICK(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_PIR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_PIR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080020ull) + ((offset) & 511) * 512;
 }
@@ -672,7 +795,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_PIR(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_POINTERS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_POINTERS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080078ull) + ((offset) & 511) * 512;
 }
@@ -683,7 +808,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_POINTERS(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_RED(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_RED(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100068ull) + ((offset) & 511) * 512;
 }
@@ -694,7 +821,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_RED(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_SCHEDULE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_SCHEDULE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080008ull) + ((offset) & 511) * 512;
 }
@@ -705,7 +834,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_SCHEDULE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_SCHED_STATE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_SCHED_STATE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080028ull) + ((offset) & 511) * 512;
 }
@@ -716,7 +847,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_SCHED_STATE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_SHAPE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_SHAPE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080010ull) + ((offset) & 511) * 512;
 }
@@ -727,7 +860,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_SHAPE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_SHAPE_STATE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_SHAPE_STATE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080030ull) + ((offset) & 511) * 512;
 }
@@ -738,7 +873,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_SHAPE_STATE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_SW_XOFF(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_SW_XOFF(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400000800E0ull) + ((offset) & 511) * 512;
 }
@@ -749,7 +886,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_SW_XOFF(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_TOPOLOGY(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_TOPOLOGY(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100000ull) + ((offset) & 511) * 512;
 }
@@ -760,7 +899,9 @@ static inline uint64_t CVMX_PKO_L2_SQX_TOPOLOGY(unsigned long offset)
 static inline uint64_t CVMX_PKO_L2_SQX_YELLOW(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L2_SQX_YELLOW(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100060ull) + ((offset) & 511) * 512;
 }
@@ -771,7 +912,7 @@ static inline uint64_t CVMX_PKO_L2_SQX_YELLOW(unsigned long offset)
 #define CVMX_PKO_L2_SQ_CSR_BUS_DEBUG CVMX_PKO_L2_SQ_CSR_BUS_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_L2_SQ_CSR_BUS_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_L2_SQ_CSR_BUS_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400001001F8ull);
 }
@@ -782,7 +923,9 @@ static inline uint64_t CVMX_PKO_L2_SQ_CSR_BUS_DEBUG_FUNC(void)
 static inline uint64_t CVMX_PKO_L3_L2_SQX_CHANNEL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_L2_SQX_CHANNEL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000080038ull) + ((offset) & 511) * 512;
 }
@@ -793,7 +936,7 @@ static inline uint64_t CVMX_PKO_L3_L2_SQX_CHANNEL(unsigned long offset)
 #define CVMX_PKO_L3_SQA_DEBUG CVMX_PKO_L3_SQA_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_L3_SQA_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_L3_SQA_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000180128ull);
 }
@@ -804,7 +947,7 @@ static inline uint64_t CVMX_PKO_L3_SQA_DEBUG_FUNC(void)
 #define CVMX_PKO_L3_SQB_DEBUG CVMX_PKO_L3_SQB_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_L3_SQB_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_L3_SQB_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000180130ull);
 }
@@ -815,7 +958,9 @@ static inline uint64_t CVMX_PKO_L3_SQB_DEBUG_FUNC(void)
 static inline uint64_t CVMX_PKO_L3_SQX_CIR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_CIR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100018ull) + ((offset) & 511) * 512;
 }
@@ -826,7 +971,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_CIR(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_GREEN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_GREEN(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000180058ull) + ((offset) & 511) * 512;
 }
@@ -837,7 +984,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_GREEN(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_PICK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_PICK(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000180070ull) + ((offset) & 511) * 512;
 }
@@ -848,7 +997,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_PICK(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_PIR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_PIR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100020ull) + ((offset) & 511) * 512;
 }
@@ -859,7 +1010,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_PIR(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_POINTERS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_POINTERS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100078ull) + ((offset) & 511) * 512;
 }
@@ -870,7 +1023,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_POINTERS(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_RED(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_RED(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000180068ull) + ((offset) & 511) * 512;
 }
@@ -881,7 +1036,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_RED(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_SCHEDULE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_SCHEDULE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100008ull) + ((offset) & 511) * 512;
 }
@@ -892,7 +1049,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_SCHEDULE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_SCHED_STATE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_SCHED_STATE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100028ull) + ((offset) & 511) * 512;
 }
@@ -903,7 +1062,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_SCHED_STATE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_SHAPE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_SHAPE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100010ull) + ((offset) & 511) * 512;
 }
@@ -914,7 +1075,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_SHAPE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_SHAPE_STATE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_SHAPE_STATE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000100030ull) + ((offset) & 511) * 512;
 }
@@ -925,7 +1088,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_SHAPE_STATE(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_SW_XOFF(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_SW_XOFF(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400001000E0ull) + ((offset) & 511) * 512;
 }
@@ -936,7 +1101,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_SW_XOFF(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_TOPOLOGY(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_TOPOLOGY(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000180000ull) + ((offset) & 511) * 512;
 }
@@ -947,7 +1114,9 @@ static inline uint64_t CVMX_PKO_L3_SQX_TOPOLOGY(unsigned long offset)
 static inline uint64_t CVMX_PKO_L3_SQX_YELLOW(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_L3_SQX_YELLOW(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000180060ull) + ((offset) & 511) * 512;
 }
@@ -958,7 +1127,7 @@ static inline uint64_t CVMX_PKO_L3_SQX_YELLOW(unsigned long offset)
 #define CVMX_PKO_L3_SQ_CSR_BUS_DEBUG CVMX_PKO_L3_SQ_CSR_BUS_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_L3_SQ_CSR_BUS_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_L3_SQ_CSR_BUS_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400001801F8ull);
 }
@@ -1321,7 +1490,9 @@ static inline uint64_t CVMX_PKO_L5_SQ_CSR_BUS_DEBUG_FUNC(void)
 static inline uint64_t CVMX_PKO_LUTX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 383))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 191)))))
 		cvmx_warn("CVMX_PKO_LUTX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000B00000ull) + ((offset) & 1023) * 8;
 }
@@ -1332,7 +1503,7 @@ static inline uint64_t CVMX_PKO_LUTX(unsigned long offset)
 #define CVMX_PKO_LUT_BIST_STATUS CVMX_PKO_LUT_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_LUT_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_LUT_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000B02018ull);
 }
@@ -1343,7 +1514,7 @@ static inline uint64_t CVMX_PKO_LUT_BIST_STATUS_FUNC(void)
 #define CVMX_PKO_LUT_ECC_CTL0 CVMX_PKO_LUT_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_LUT_ECC_CTL0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_LUT_ECC_CTL0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000BFFFD0ull);
 }
@@ -1354,7 +1525,7 @@ static inline uint64_t CVMX_PKO_LUT_ECC_CTL0_FUNC(void)
 #define CVMX_PKO_LUT_ECC_DBE_STS0 CVMX_PKO_LUT_ECC_DBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_LUT_ECC_DBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_LUT_ECC_DBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000BFFFF0ull);
 }
@@ -1365,7 +1536,7 @@ static inline uint64_t CVMX_PKO_LUT_ECC_DBE_STS0_FUNC(void)
 #define CVMX_PKO_LUT_ECC_DBE_STS_CMB0 CVMX_PKO_LUT_ECC_DBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_LUT_ECC_DBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_LUT_ECC_DBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000BFFFD8ull);
 }
@@ -1376,7 +1547,7 @@ static inline uint64_t CVMX_PKO_LUT_ECC_DBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_LUT_ECC_SBE_STS0 CVMX_PKO_LUT_ECC_SBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_LUT_ECC_SBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_LUT_ECC_SBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000BFFFF8ull);
 }
@@ -1387,7 +1558,7 @@ static inline uint64_t CVMX_PKO_LUT_ECC_SBE_STS0_FUNC(void)
 #define CVMX_PKO_LUT_ECC_SBE_STS_CMB0 CVMX_PKO_LUT_ECC_SBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_LUT_ECC_SBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_LUT_ECC_SBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000BFFFE8ull);
 }
@@ -1398,7 +1569,9 @@ static inline uint64_t CVMX_PKO_LUT_ECC_SBE_STS_CMB0_FUNC(void)
 static inline uint64_t CVMX_PKO_MACX_CFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 27)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 27))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 9)))))
 		cvmx_warn("CVMX_PKO_MACX_CFG(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000900000ull) + ((offset) & 31) * 8;
 }
@@ -1431,7 +1604,9 @@ static inline uint64_t CVMX_PKO_MCI0_MAX_CREDX(unsigned long offset)
 static inline uint64_t CVMX_PKO_MCI1_CRED_CNTX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 27)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 27))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 9)))))
 		cvmx_warn("CVMX_PKO_MCI1_CRED_CNTX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000A80100ull) + ((offset) & 31) * 8;
 }
@@ -1442,7 +1617,9 @@ static inline uint64_t CVMX_PKO_MCI1_CRED_CNTX(unsigned long offset)
 static inline uint64_t CVMX_PKO_MCI1_MAX_CREDX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 27)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 13))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 27))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 9)))))
 		cvmx_warn("CVMX_PKO_MCI1_MAX_CREDX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000A80000ull) + ((offset) & 31) * 8;
 }
@@ -1612,7 +1789,7 @@ static inline uint64_t CVMX_PKO_MEM_THROTTLE_PIPE_FUNC(void)
 #define CVMX_PKO_NCB_BIST_STATUS CVMX_PKO_NCB_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_NCB_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_NCB_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000EFFF00ull);
 }
@@ -1623,7 +1800,7 @@ static inline uint64_t CVMX_PKO_NCB_BIST_STATUS_FUNC(void)
 #define CVMX_PKO_NCB_ECC_CTL0 CVMX_PKO_NCB_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_NCB_ECC_CTL0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_NCB_ECC_CTL0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000EFFFD0ull);
 }
@@ -1634,7 +1811,7 @@ static inline uint64_t CVMX_PKO_NCB_ECC_CTL0_FUNC(void)
 #define CVMX_PKO_NCB_ECC_DBE_STS0 CVMX_PKO_NCB_ECC_DBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_NCB_ECC_DBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_NCB_ECC_DBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000EFFFF0ull);
 }
@@ -1645,7 +1822,7 @@ static inline uint64_t CVMX_PKO_NCB_ECC_DBE_STS0_FUNC(void)
 #define CVMX_PKO_NCB_ECC_DBE_STS_CMB0 CVMX_PKO_NCB_ECC_DBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_NCB_ECC_DBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_NCB_ECC_DBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000EFFFD8ull);
 }
@@ -1656,7 +1833,7 @@ static inline uint64_t CVMX_PKO_NCB_ECC_DBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_NCB_ECC_SBE_STS0 CVMX_PKO_NCB_ECC_SBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_NCB_ECC_SBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_NCB_ECC_SBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000EFFFF8ull);
 }
@@ -1667,7 +1844,7 @@ static inline uint64_t CVMX_PKO_NCB_ECC_SBE_STS0_FUNC(void)
 #define CVMX_PKO_NCB_ECC_SBE_STS_CMB0 CVMX_PKO_NCB_ECC_SBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_NCB_ECC_SBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_NCB_ECC_SBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000EFFFE8ull);
 }
@@ -1678,7 +1855,7 @@ static inline uint64_t CVMX_PKO_NCB_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_NCB_INT CVMX_PKO_NCB_INT_FUNC()
 static inline uint64_t CVMX_PKO_NCB_INT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_NCB_INT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000E00010ull);
 }
@@ -1689,7 +1866,7 @@ static inline uint64_t CVMX_PKO_NCB_INT_FUNC(void)
 #define CVMX_PKO_NCB_TX_ERR_INFO CVMX_PKO_NCB_TX_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_NCB_TX_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_NCB_TX_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000E00008ull);
 }
@@ -1700,7 +1877,7 @@ static inline uint64_t CVMX_PKO_NCB_TX_ERR_INFO_FUNC(void)
 #define CVMX_PKO_NCB_TX_ERR_WORD CVMX_PKO_NCB_TX_ERR_WORD_FUNC()
 static inline uint64_t CVMX_PKO_NCB_TX_ERR_WORD_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_NCB_TX_ERR_WORD not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000E00000ull);
 }
@@ -1711,7 +1888,7 @@ static inline uint64_t CVMX_PKO_NCB_TX_ERR_WORD_FUNC(void)
 #define CVMX_PKO_PDM_BIST_STATUS CVMX_PKO_PDM_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_PDM_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008FFF00ull);
 }
@@ -1722,7 +1899,7 @@ static inline uint64_t CVMX_PKO_PDM_BIST_STATUS_FUNC(void)
 #define CVMX_PKO_PDM_CFG CVMX_PKO_PDM_CFG_FUNC()
 static inline uint64_t CVMX_PKO_PDM_CFG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_CFG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800000ull);
 }
@@ -1733,7 +1910,7 @@ static inline uint64_t CVMX_PKO_PDM_CFG_FUNC(void)
 #define CVMX_PKO_PDM_CFG_DBG CVMX_PKO_PDM_CFG_DBG_FUNC()
 static inline uint64_t CVMX_PKO_PDM_CFG_DBG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_CFG_DBG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800FF8ull);
 }
@@ -1744,7 +1921,7 @@ static inline uint64_t CVMX_PKO_PDM_CFG_DBG_FUNC(void)
 #define CVMX_PKO_PDM_CP_DBG CVMX_PKO_PDM_CP_DBG_FUNC()
 static inline uint64_t CVMX_PKO_PDM_CP_DBG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_CP_DBG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800190ull);
 }
@@ -1755,7 +1932,9 @@ static inline uint64_t CVMX_PKO_PDM_CP_DBG_FUNC(void)
 static inline uint64_t CVMX_PKO_PDM_DQX_MINPAD(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_PKO_PDM_DQX_MINPAD(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00015400008F0000ull) + ((offset) & 1023) * 8;
 }
@@ -1766,7 +1945,7 @@ static inline uint64_t CVMX_PKO_PDM_DQX_MINPAD(unsigned long offset)
 #define CVMX_PKO_PDM_DRPBUF_DBG CVMX_PKO_PDM_DRPBUF_DBG_FUNC()
 static inline uint64_t CVMX_PKO_PDM_DRPBUF_DBG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_DRPBUF_DBG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008000B0ull);
 }
@@ -1777,7 +1956,7 @@ static inline uint64_t CVMX_PKO_PDM_DRPBUF_DBG_FUNC(void)
 #define CVMX_PKO_PDM_DWPBUF_DBG CVMX_PKO_PDM_DWPBUF_DBG_FUNC()
 static inline uint64_t CVMX_PKO_PDM_DWPBUF_DBG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_DWPBUF_DBG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008000A8ull);
 }
@@ -1788,7 +1967,7 @@ static inline uint64_t CVMX_PKO_PDM_DWPBUF_DBG_FUNC(void)
 #define CVMX_PKO_PDM_ECC_CTL0 CVMX_PKO_PDM_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ECC_CTL0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_ECC_CTL0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008FFFD0ull);
 }
@@ -1799,7 +1978,7 @@ static inline uint64_t CVMX_PKO_PDM_ECC_CTL0_FUNC(void)
 #define CVMX_PKO_PDM_ECC_CTL1 CVMX_PKO_PDM_ECC_CTL1_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ECC_CTL1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_ECC_CTL1 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008FFFD8ull);
 }
@@ -1810,7 +1989,7 @@ static inline uint64_t CVMX_PKO_PDM_ECC_CTL1_FUNC(void)
 #define CVMX_PKO_PDM_ECC_DBE_STS0 CVMX_PKO_PDM_ECC_DBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ECC_DBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_ECC_DBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008FFFF0ull);
 }
@@ -1821,7 +2000,7 @@ static inline uint64_t CVMX_PKO_PDM_ECC_DBE_STS0_FUNC(void)
 #define CVMX_PKO_PDM_ECC_DBE_STS_CMB0 CVMX_PKO_PDM_ECC_DBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ECC_DBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_ECC_DBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008FFFE0ull);
 }
@@ -1832,7 +2011,7 @@ static inline uint64_t CVMX_PKO_PDM_ECC_DBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PDM_ECC_SBE_STS0 CVMX_PKO_PDM_ECC_SBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ECC_SBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_ECC_SBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008FFFF8ull);
 }
@@ -1843,7 +2022,7 @@ static inline uint64_t CVMX_PKO_PDM_ECC_SBE_STS0_FUNC(void)
 #define CVMX_PKO_PDM_ECC_SBE_STS_CMB0 CVMX_PKO_PDM_ECC_SBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ECC_SBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_ECC_SBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008FFFE8ull);
 }
@@ -1854,7 +2033,7 @@ static inline uint64_t CVMX_PKO_PDM_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PDM_FILLB_DBG0 CVMX_PKO_PDM_FILLB_DBG0_FUNC()
 static inline uint64_t CVMX_PKO_PDM_FILLB_DBG0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_FILLB_DBG0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008002A0ull);
 }
@@ -1865,7 +2044,7 @@ static inline uint64_t CVMX_PKO_PDM_FILLB_DBG0_FUNC(void)
 #define CVMX_PKO_PDM_FILLB_DBG1 CVMX_PKO_PDM_FILLB_DBG1_FUNC()
 static inline uint64_t CVMX_PKO_PDM_FILLB_DBG1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_FILLB_DBG1 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008002A8ull);
 }
@@ -1876,7 +2055,7 @@ static inline uint64_t CVMX_PKO_PDM_FILLB_DBG1_FUNC(void)
 #define CVMX_PKO_PDM_FILLB_DBG2 CVMX_PKO_PDM_FILLB_DBG2_FUNC()
 static inline uint64_t CVMX_PKO_PDM_FILLB_DBG2_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_FILLB_DBG2 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008002B0ull);
 }
@@ -1887,7 +2066,7 @@ static inline uint64_t CVMX_PKO_PDM_FILLB_DBG2_FUNC(void)
 #define CVMX_PKO_PDM_FLSHB_DBG0 CVMX_PKO_PDM_FLSHB_DBG0_FUNC()
 static inline uint64_t CVMX_PKO_PDM_FLSHB_DBG0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_FLSHB_DBG0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008002B8ull);
 }
@@ -1898,7 +2077,7 @@ static inline uint64_t CVMX_PKO_PDM_FLSHB_DBG0_FUNC(void)
 #define CVMX_PKO_PDM_FLSHB_DBG1 CVMX_PKO_PDM_FLSHB_DBG1_FUNC()
 static inline uint64_t CVMX_PKO_PDM_FLSHB_DBG1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_FLSHB_DBG1 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008002C0ull);
 }
@@ -1906,10 +2085,21 @@ static inline uint64_t CVMX_PKO_PDM_FLSHB_DBG1_FUNC(void)
 #define CVMX_PKO_PDM_FLSHB_DBG1 (CVMX_ADD_IO_SEG(0x00015400008002C0ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PDM_INTF_DBG_RD CVMX_PKO_PDM_INTF_DBG_RD_FUNC()
+static inline uint64_t CVMX_PKO_PDM_INTF_DBG_RD_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_PKO_PDM_INTF_DBG_RD not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000900F20ull);
+}
+#else
+#define CVMX_PKO_PDM_INTF_DBG_RD (CVMX_ADD_IO_SEG(0x0001540000900F20ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PDM_ISRD_DBG CVMX_PKO_PDM_ISRD_DBG_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ISRD_DBG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_ISRD_DBG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800090ull);
 }
@@ -1920,7 +2110,7 @@ static inline uint64_t CVMX_PKO_PDM_ISRD_DBG_FUNC(void)
 #define CVMX_PKO_PDM_ISRD_DBG_DQ CVMX_PKO_PDM_ISRD_DBG_DQ_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ISRD_DBG_DQ_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_ISRD_DBG_DQ not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800290ull);
 }
@@ -1931,7 +2121,7 @@ static inline uint64_t CVMX_PKO_PDM_ISRD_DBG_DQ_FUNC(void)
 #define CVMX_PKO_PDM_ISRM_DBG CVMX_PKO_PDM_ISRM_DBG_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ISRM_DBG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_ISRM_DBG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800098ull);
 }
@@ -1942,7 +2132,7 @@ static inline uint64_t CVMX_PKO_PDM_ISRM_DBG_FUNC(void)
 #define CVMX_PKO_PDM_ISRM_DBG_DQ CVMX_PKO_PDM_ISRM_DBG_DQ_FUNC()
 static inline uint64_t CVMX_PKO_PDM_ISRM_DBG_DQ_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_ISRM_DBG_DQ not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800298ull);
 }
@@ -1953,7 +2143,7 @@ static inline uint64_t CVMX_PKO_PDM_ISRM_DBG_DQ_FUNC(void)
 #define CVMX_PKO_PDM_MEM_ADDR CVMX_PKO_PDM_MEM_ADDR_FUNC()
 static inline uint64_t CVMX_PKO_PDM_MEM_ADDR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_MEM_ADDR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800018ull);
 }
@@ -1964,7 +2154,7 @@ static inline uint64_t CVMX_PKO_PDM_MEM_ADDR_FUNC(void)
 #define CVMX_PKO_PDM_MEM_DATA CVMX_PKO_PDM_MEM_DATA_FUNC()
 static inline uint64_t CVMX_PKO_PDM_MEM_DATA_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_MEM_DATA not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800010ull);
 }
@@ -1975,7 +2165,7 @@ static inline uint64_t CVMX_PKO_PDM_MEM_DATA_FUNC(void)
 #define CVMX_PKO_PDM_MEM_RW_CTL CVMX_PKO_PDM_MEM_RW_CTL_FUNC()
 static inline uint64_t CVMX_PKO_PDM_MEM_RW_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_MEM_RW_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800020ull);
 }
@@ -1986,7 +2176,7 @@ static inline uint64_t CVMX_PKO_PDM_MEM_RW_CTL_FUNC(void)
 #define CVMX_PKO_PDM_MEM_RW_STS CVMX_PKO_PDM_MEM_RW_STS_FUNC()
 static inline uint64_t CVMX_PKO_PDM_MEM_RW_STS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_MEM_RW_STS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800028ull);
 }
@@ -1997,7 +2187,7 @@ static inline uint64_t CVMX_PKO_PDM_MEM_RW_STS_FUNC(void)
 #define CVMX_PKO_PDM_MWPBUF_DBG CVMX_PKO_PDM_MWPBUF_DBG_FUNC()
 static inline uint64_t CVMX_PKO_PDM_MWPBUF_DBG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_MWPBUF_DBG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400008000A0ull);
 }
@@ -2008,7 +2198,7 @@ static inline uint64_t CVMX_PKO_PDM_MWPBUF_DBG_FUNC(void)
 #define CVMX_PKO_PDM_STS CVMX_PKO_PDM_STS_FUNC()
 static inline uint64_t CVMX_PKO_PDM_STS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PDM_STS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000800008ull);
 }
@@ -2019,7 +2209,7 @@ static inline uint64_t CVMX_PKO_PDM_STS_FUNC(void)
 #define CVMX_PKO_PEB_BIST_STATUS CVMX_PKO_PEB_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_PEB_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900D00ull);
 }
@@ -2030,7 +2220,7 @@ static inline uint64_t CVMX_PKO_PEB_BIST_STATUS_FUNC(void)
 #define CVMX_PKO_PEB_ECC_CTL0 CVMX_PKO_PEB_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PEB_ECC_CTL0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_ECC_CTL0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400009FFFD0ull);
 }
@@ -2041,7 +2231,7 @@ static inline uint64_t CVMX_PKO_PEB_ECC_CTL0_FUNC(void)
 #define CVMX_PKO_PEB_ECC_CTL1 CVMX_PKO_PEB_ECC_CTL1_FUNC()
 static inline uint64_t CVMX_PKO_PEB_ECC_CTL1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_ECC_CTL1 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400009FFFA8ull);
 }
@@ -2052,7 +2242,7 @@ static inline uint64_t CVMX_PKO_PEB_ECC_CTL1_FUNC(void)
 #define CVMX_PKO_PEB_ECC_DBE_STS0 CVMX_PKO_PEB_ECC_DBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PEB_ECC_DBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_ECC_DBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400009FFFF0ull);
 }
@@ -2063,7 +2253,7 @@ static inline uint64_t CVMX_PKO_PEB_ECC_DBE_STS0_FUNC(void)
 #define CVMX_PKO_PEB_ECC_DBE_STS_CMB0 CVMX_PKO_PEB_ECC_DBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PEB_ECC_DBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_ECC_DBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400009FFFD8ull);
 }
@@ -2074,7 +2264,7 @@ static inline uint64_t CVMX_PKO_PEB_ECC_DBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PEB_ECC_SBE_STS0 CVMX_PKO_PEB_ECC_SBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PEB_ECC_SBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_ECC_SBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400009FFFF8ull);
 }
@@ -2085,7 +2275,7 @@ static inline uint64_t CVMX_PKO_PEB_ECC_SBE_STS0_FUNC(void)
 #define CVMX_PKO_PEB_ECC_SBE_STS_CMB0 CVMX_PKO_PEB_ECC_SBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PEB_ECC_SBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_ECC_SBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400009FFFE8ull);
 }
@@ -2093,10 +2283,21 @@ static inline uint64_t CVMX_PKO_PEB_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PEB_ECC_SBE_STS_CMB0 (CVMX_ADD_IO_SEG(0x00015400009FFFE8ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_PEB_ECO CVMX_PKO_PEB_ECO_FUNC()
+static inline uint64_t CVMX_PKO_PEB_ECO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_PKO_PEB_ECO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001540000901000ull);
+}
+#else
+#define CVMX_PKO_PEB_ECO (CVMX_ADD_IO_SEG(0x0001540000901000ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_PEB_ERR_INT CVMX_PKO_PEB_ERR_INT_FUNC()
 static inline uint64_t CVMX_PKO_PEB_ERR_INT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_ERR_INT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C00ull);
 }
@@ -2107,7 +2308,7 @@ static inline uint64_t CVMX_PKO_PEB_ERR_INT_FUNC(void)
 #define CVMX_PKO_PEB_EXT_HDR_DEF_ERR_INFO CVMX_PKO_PEB_EXT_HDR_DEF_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_PEB_EXT_HDR_DEF_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_EXT_HDR_DEF_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C08ull);
 }
@@ -2118,7 +2319,7 @@ static inline uint64_t CVMX_PKO_PEB_EXT_HDR_DEF_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_FCS_SOP_ERR_INFO CVMX_PKO_PEB_FCS_SOP_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_PEB_FCS_SOP_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_FCS_SOP_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C18ull);
 }
@@ -2129,7 +2330,7 @@ static inline uint64_t CVMX_PKO_PEB_FCS_SOP_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_JUMP_DEF_ERR_INFO CVMX_PKO_PEB_JUMP_DEF_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_PEB_JUMP_DEF_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_JUMP_DEF_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C10ull);
 }
@@ -2140,7 +2341,7 @@ static inline uint64_t CVMX_PKO_PEB_JUMP_DEF_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_MACX_CFG_WR_ERR_INFO CVMX_PKO_PEB_MACX_CFG_WR_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_PEB_MACX_CFG_WR_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_MACX_CFG_WR_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C50ull);
 }
@@ -2151,7 +2352,7 @@ static inline uint64_t CVMX_PKO_PEB_MACX_CFG_WR_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_MAX_LINK_ERR_INFO CVMX_PKO_PEB_MAX_LINK_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_PEB_MAX_LINK_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_MAX_LINK_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C48ull);
 }
@@ -2162,7 +2363,7 @@ static inline uint64_t CVMX_PKO_PEB_MAX_LINK_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_NCB_CFG CVMX_PKO_PEB_NCB_CFG_FUNC()
 static inline uint64_t CVMX_PKO_PEB_NCB_CFG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_NCB_CFG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900308ull);
 }
@@ -2173,7 +2374,7 @@ static inline uint64_t CVMX_PKO_PEB_NCB_CFG_FUNC(void)
 #define CVMX_PKO_PEB_PAD_ERR_INFO CVMX_PKO_PEB_PAD_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_PEB_PAD_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_PAD_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C28ull);
 }
@@ -2184,7 +2385,7 @@ static inline uint64_t CVMX_PKO_PEB_PAD_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_PSE_FIFO_ERR_INFO CVMX_PKO_PEB_PSE_FIFO_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_PEB_PSE_FIFO_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_PSE_FIFO_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C20ull);
 }
@@ -2195,7 +2396,7 @@ static inline uint64_t CVMX_PKO_PEB_PSE_FIFO_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_SUBD_ADDR_ERR_INFO CVMX_PKO_PEB_SUBD_ADDR_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_PEB_SUBD_ADDR_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_SUBD_ADDR_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C38ull);
 }
@@ -2206,7 +2407,7 @@ static inline uint64_t CVMX_PKO_PEB_SUBD_ADDR_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_SUBD_SIZE_ERR_INFO CVMX_PKO_PEB_SUBD_SIZE_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_PEB_SUBD_SIZE_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_SUBD_SIZE_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C40ull);
 }
@@ -2217,7 +2418,7 @@ static inline uint64_t CVMX_PKO_PEB_SUBD_SIZE_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_TRUNC_ERR_INFO CVMX_PKO_PEB_TRUNC_ERR_INFO_FUNC()
 static inline uint64_t CVMX_PKO_PEB_TRUNC_ERR_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_TRUNC_ERR_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900C30ull);
 }
@@ -2228,7 +2429,7 @@ static inline uint64_t CVMX_PKO_PEB_TRUNC_ERR_INFO_FUNC(void)
 #define CVMX_PKO_PEB_TSO_CFG CVMX_PKO_PEB_TSO_CFG_FUNC()
 static inline uint64_t CVMX_PKO_PEB_TSO_CFG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PEB_TSO_CFG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900310ull);
 }
@@ -2239,7 +2440,7 @@ static inline uint64_t CVMX_PKO_PEB_TSO_CFG_FUNC(void)
 #define CVMX_PKO_PQA_DEBUG CVMX_PKO_PQA_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_PQA_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PQA_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000128ull);
 }
@@ -2250,7 +2451,7 @@ static inline uint64_t CVMX_PKO_PQA_DEBUG_FUNC(void)
 #define CVMX_PKO_PQB_DEBUG CVMX_PKO_PQB_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_PQB_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PQB_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000130ull);
 }
@@ -2261,7 +2462,7 @@ static inline uint64_t CVMX_PKO_PQB_DEBUG_FUNC(void)
 #define CVMX_PKO_PQ_CSR_BUS_DEBUG CVMX_PKO_PQ_CSR_BUS_DEBUG_FUNC()
 static inline uint64_t CVMX_PKO_PQ_CSR_BUS_DEBUG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PQ_CSR_BUS_DEBUG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00015400000001F8ull);
 }
@@ -2272,7 +2473,7 @@ static inline uint64_t CVMX_PKO_PQ_CSR_BUS_DEBUG_FUNC(void)
 #define CVMX_PKO_PQ_DEBUG_GREEN CVMX_PKO_PQ_DEBUG_GREEN_FUNC()
 static inline uint64_t CVMX_PKO_PQ_DEBUG_GREEN_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PQ_DEBUG_GREEN not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000058ull);
 }
@@ -2283,7 +2484,7 @@ static inline uint64_t CVMX_PKO_PQ_DEBUG_GREEN_FUNC(void)
 #define CVMX_PKO_PQ_DEBUG_LINKS CVMX_PKO_PQ_DEBUG_LINKS_FUNC()
 static inline uint64_t CVMX_PKO_PQ_DEBUG_LINKS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PQ_DEBUG_LINKS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000068ull);
 }
@@ -2294,7 +2495,7 @@ static inline uint64_t CVMX_PKO_PQ_DEBUG_LINKS_FUNC(void)
 #define CVMX_PKO_PQ_DEBUG_YELLOW CVMX_PKO_PQ_DEBUG_YELLOW_FUNC()
 static inline uint64_t CVMX_PKO_PQ_DEBUG_YELLOW_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PQ_DEBUG_YELLOW not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000060ull);
 }
@@ -2305,7 +2506,7 @@ static inline uint64_t CVMX_PKO_PQ_DEBUG_YELLOW_FUNC(void)
 #define CVMX_PKO_PSE_DQ_BIST_STATUS CVMX_PKO_PSE_DQ_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_PSE_DQ_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_DQ_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000300138ull);
 }
@@ -2316,7 +2517,7 @@ static inline uint64_t CVMX_PKO_PSE_DQ_BIST_STATUS_FUNC(void)
 #define CVMX_PKO_PSE_DQ_ECC_CTL0 CVMX_PKO_PSE_DQ_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_DQ_ECC_CTL0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_DQ_ECC_CTL0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000300100ull);
 }
@@ -2327,7 +2528,7 @@ static inline uint64_t CVMX_PKO_PSE_DQ_ECC_CTL0_FUNC(void)
 #define CVMX_PKO_PSE_DQ_ECC_DBE_STS0 CVMX_PKO_PSE_DQ_ECC_DBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_DQ_ECC_DBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_DQ_ECC_DBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000300118ull);
 }
@@ -2338,7 +2539,7 @@ static inline uint64_t CVMX_PKO_PSE_DQ_ECC_DBE_STS0_FUNC(void)
 #define CVMX_PKO_PSE_DQ_ECC_DBE_STS_CMB0 CVMX_PKO_PSE_DQ_ECC_DBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_DQ_ECC_DBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_DQ_ECC_DBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000300120ull);
 }
@@ -2349,7 +2550,7 @@ static inline uint64_t CVMX_PKO_PSE_DQ_ECC_DBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_DQ_ECC_SBE_STS0 CVMX_PKO_PSE_DQ_ECC_SBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_DQ_ECC_SBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_DQ_ECC_SBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000300108ull);
 }
@@ -2360,7 +2561,7 @@ static inline uint64_t CVMX_PKO_PSE_DQ_ECC_SBE_STS0_FUNC(void)
 #define CVMX_PKO_PSE_DQ_ECC_SBE_STS_CMB0 CVMX_PKO_PSE_DQ_ECC_SBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_DQ_ECC_SBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_DQ_ECC_SBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000300110ull);
 }
@@ -2371,7 +2572,7 @@ static inline uint64_t CVMX_PKO_PSE_DQ_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_PQ_BIST_STATUS CVMX_PKO_PSE_PQ_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_PSE_PQ_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_PQ_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000138ull);
 }
@@ -2382,7 +2583,7 @@ static inline uint64_t CVMX_PKO_PSE_PQ_BIST_STATUS_FUNC(void)
 #define CVMX_PKO_PSE_PQ_ECC_CTL0 CVMX_PKO_PSE_PQ_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_PQ_ECC_CTL0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_PQ_ECC_CTL0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000100ull);
 }
@@ -2393,7 +2594,7 @@ static inline uint64_t CVMX_PKO_PSE_PQ_ECC_CTL0_FUNC(void)
 #define CVMX_PKO_PSE_PQ_ECC_DBE_STS0 CVMX_PKO_PSE_PQ_ECC_DBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_PQ_ECC_DBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_PQ_ECC_DBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000118ull);
 }
@@ -2404,7 +2605,7 @@ static inline uint64_t CVMX_PKO_PSE_PQ_ECC_DBE_STS0_FUNC(void)
 #define CVMX_PKO_PSE_PQ_ECC_DBE_STS_CMB0 CVMX_PKO_PSE_PQ_ECC_DBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_PQ_ECC_DBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_PQ_ECC_DBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000120ull);
 }
@@ -2415,7 +2616,7 @@ static inline uint64_t CVMX_PKO_PSE_PQ_ECC_DBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_PQ_ECC_SBE_STS0 CVMX_PKO_PSE_PQ_ECC_SBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_PQ_ECC_SBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_PQ_ECC_SBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000108ull);
 }
@@ -2426,7 +2627,7 @@ static inline uint64_t CVMX_PKO_PSE_PQ_ECC_SBE_STS0_FUNC(void)
 #define CVMX_PKO_PSE_PQ_ECC_SBE_STS_CMB0 CVMX_PKO_PSE_PQ_ECC_SBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_PQ_ECC_SBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_PQ_ECC_SBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000000110ull);
 }
@@ -2437,7 +2638,7 @@ static inline uint64_t CVMX_PKO_PSE_PQ_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_SQ1_BIST_STATUS CVMX_PKO_PSE_SQ1_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ1_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ1_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000080138ull);
 }
@@ -2448,7 +2649,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ1_BIST_STATUS_FUNC(void)
 #define CVMX_PKO_PSE_SQ1_ECC_CTL0 CVMX_PKO_PSE_SQ1_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_CTL0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ1_ECC_CTL0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000080100ull);
 }
@@ -2459,7 +2660,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_CTL0_FUNC(void)
 #define CVMX_PKO_PSE_SQ1_ECC_DBE_STS0 CVMX_PKO_PSE_SQ1_ECC_DBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_DBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ1_ECC_DBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000080118ull);
 }
@@ -2470,7 +2671,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_DBE_STS0_FUNC(void)
 #define CVMX_PKO_PSE_SQ1_ECC_DBE_STS_CMB0 CVMX_PKO_PSE_SQ1_ECC_DBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_DBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ1_ECC_DBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000080120ull);
 }
@@ -2481,7 +2682,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_DBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_SQ1_ECC_SBE_STS0 CVMX_PKO_PSE_SQ1_ECC_SBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_SBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ1_ECC_SBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000080108ull);
 }
@@ -2492,7 +2693,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_SBE_STS0_FUNC(void)
 #define CVMX_PKO_PSE_SQ1_ECC_SBE_STS_CMB0 CVMX_PKO_PSE_SQ1_ECC_SBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_SBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ1_ECC_SBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000080110ull);
 }
@@ -2503,7 +2704,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ1_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_SQ2_BIST_STATUS CVMX_PKO_PSE_SQ2_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ2_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ2_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000100138ull);
 }
@@ -2514,7 +2715,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ2_BIST_STATUS_FUNC(void)
 #define CVMX_PKO_PSE_SQ2_ECC_CTL0 CVMX_PKO_PSE_SQ2_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_CTL0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ2_ECC_CTL0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000100100ull);
 }
@@ -2525,7 +2726,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_CTL0_FUNC(void)
 #define CVMX_PKO_PSE_SQ2_ECC_DBE_STS0 CVMX_PKO_PSE_SQ2_ECC_DBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_DBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ2_ECC_DBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000100118ull);
 }
@@ -2536,7 +2737,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_DBE_STS0_FUNC(void)
 #define CVMX_PKO_PSE_SQ2_ECC_DBE_STS_CMB0 CVMX_PKO_PSE_SQ2_ECC_DBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_DBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ2_ECC_DBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000100120ull);
 }
@@ -2547,7 +2748,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_DBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_SQ2_ECC_SBE_STS0 CVMX_PKO_PSE_SQ2_ECC_SBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_SBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ2_ECC_SBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000100108ull);
 }
@@ -2558,7 +2759,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_SBE_STS0_FUNC(void)
 #define CVMX_PKO_PSE_SQ2_ECC_SBE_STS_CMB0 CVMX_PKO_PSE_SQ2_ECC_SBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_SBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ2_ECC_SBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000100110ull);
 }
@@ -2569,7 +2770,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ2_ECC_SBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_SQ3_BIST_STATUS CVMX_PKO_PSE_SQ3_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ3_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ3_BIST_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000180138ull);
 }
@@ -2580,7 +2781,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ3_BIST_STATUS_FUNC(void)
 #define CVMX_PKO_PSE_SQ3_ECC_CTL0 CVMX_PKO_PSE_SQ3_ECC_CTL0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_CTL0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ3_ECC_CTL0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000180100ull);
 }
@@ -2591,7 +2792,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_CTL0_FUNC(void)
 #define CVMX_PKO_PSE_SQ3_ECC_DBE_STS0 CVMX_PKO_PSE_SQ3_ECC_DBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_DBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ3_ECC_DBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000180118ull);
 }
@@ -2602,7 +2803,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_DBE_STS0_FUNC(void)
 #define CVMX_PKO_PSE_SQ3_ECC_DBE_STS_CMB0 CVMX_PKO_PSE_SQ3_ECC_DBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_DBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ3_ECC_DBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000180120ull);
 }
@@ -2613,7 +2814,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_DBE_STS_CMB0_FUNC(void)
 #define CVMX_PKO_PSE_SQ3_ECC_SBE_STS0 CVMX_PKO_PSE_SQ3_ECC_SBE_STS0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_SBE_STS0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ3_ECC_SBE_STS0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000180108ull);
 }
@@ -2624,7 +2825,7 @@ static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_SBE_STS0_FUNC(void)
 #define CVMX_PKO_PSE_SQ3_ECC_SBE_STS_CMB0 CVMX_PKO_PSE_SQ3_ECC_SBE_STS_CMB0_FUNC()
 static inline uint64_t CVMX_PKO_PSE_SQ3_ECC_SBE_STS_CMB0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PSE_SQ3_ECC_SBE_STS_CMB0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000180110ull);
 }
@@ -2767,7 +2968,9 @@ static inline uint64_t CVMX_PKO_PSE_SQ5_ECC_SBE_STS_CMB0_FUNC(void)
 static inline uint64_t CVMX_PKO_PTFX_STATUS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 27)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 27))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_PKO_PTFX_STATUS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000900100ull) + ((offset) & 31) * 8;
 }
@@ -2778,7 +2981,7 @@ static inline uint64_t CVMX_PKO_PTFX_STATUS(unsigned long offset)
 #define CVMX_PKO_PTF_IOBP_CFG CVMX_PKO_PTF_IOBP_CFG_FUNC()
 static inline uint64_t CVMX_PKO_PTF_IOBP_CFG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_PTF_IOBP_CFG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000900300ull);
 }
@@ -2789,23 +2992,14 @@ static inline uint64_t CVMX_PKO_PTF_IOBP_CFG_FUNC(void)
 static inline uint64_t CVMX_PKO_PTGFX_CFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 4)))))
 		cvmx_warn("CVMX_PKO_PTGFX_CFG(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001540000900200ull) + ((offset) & 7) * 8;
 }
 #else
 #define CVMX_PKO_PTGFX_CFG(offset) (CVMX_ADD_IO_SEG(0x0001540000900200ull) + ((offset) & 7) * 8)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-#define CVMX_PKO_RED_SEND_CFG CVMX_PKO_RED_SEND_CFG_FUNC()
-static inline uint64_t CVMX_PKO_RED_SEND_CFG_FUNC(void)
-{
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_PKO_RED_SEND_CFG not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00015400000800F8ull);
-}
-#else
-#define CVMX_PKO_RED_SEND_CFG (CVMX_ADD_IO_SEG(0x00015400000800F8ull))
 #endif
 #define CVMX_PKO_REG_BIST_RESULT (CVMX_ADD_IO_SEG(0x0001180050000080ull))
 #define CVMX_PKO_REG_CMD_BUF (CVMX_ADD_IO_SEG(0x0001180050000010ull))
@@ -3038,15 +3232,52 @@ static inline uint64_t CVMX_PKO_REG_TIMESTAMP_FUNC(void)
 #define CVMX_PKO_REG_TIMESTAMP (CVMX_ADD_IO_SEG(0x0001180050000060ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_PKO_SHAPER_CFG CVMX_PKO_SHAPER_CFG_FUNC()
+static inline uint64_t CVMX_PKO_SHAPER_CFG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_PKO_SHAPER_CFG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00015400000800F8ull);
+}
+#else
+#define CVMX_PKO_SHAPER_CFG (CVMX_ADD_IO_SEG(0x00015400000800F8ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_STATE_UID_IN_USEX_RD(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_PKO_STATE_UID_IN_USEX_RD(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001540000900F00ull) + ((offset) & 3) * 8;
+}
+#else
+#define CVMX_PKO_STATE_UID_IN_USEX_RD(offset) (CVMX_ADD_IO_SEG(0x0001540000900F00ull) + ((offset) & 3) * 8)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_PKO_STATUS CVMX_PKO_STATUS_FUNC()
 static inline uint64_t CVMX_PKO_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_PKO_STATUS not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001540000D00000ull);
 }
 #else
 #define CVMX_PKO_STATUS (CVMX_ADD_IO_SEG(0x0001540000D00000ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PKO_TXFX_PKT_CNT_RD(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 27))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
+		cvmx_warn("CVMX_PKO_TXFX_PKT_CNT_RD(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001540000900E00ull) + ((offset) & 31) * 8;
+}
+#else
+#define CVMX_PKO_TXFX_PKT_CNT_RD(offset) (CVMX_ADD_IO_SEG(0x0001540000900E00ull) + ((offset) & 31) * 8)
 #endif
 
 /**
@@ -3065,7 +3296,10 @@ union cvmx_pko_channel_level {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_pko_channel_level_s       cn73xx;
 	struct cvmx_pko_channel_level_s       cn78xx;
+	struct cvmx_pko_channel_level_s       cn78xxp2;
+	struct cvmx_pko_channel_level_s       cnf75xx;
 };
 typedef union cvmx_pko_channel_level cvmx_pko_channel_level_t;
 
@@ -3085,7 +3319,10 @@ union cvmx_pko_dpfi_ena {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_pko_dpfi_ena_s            cn73xx;
 	struct cvmx_pko_dpfi_ena_s            cn78xx;
+	struct cvmx_pko_dpfi_ena_s            cn78xxp2;
+	struct cvmx_pko_dpfi_ena_s            cnf75xx;
 };
 typedef union cvmx_pko_dpfi_ena cvmx_pko_dpfi_ena_t;
 
@@ -3107,7 +3344,10 @@ union cvmx_pko_dpfi_flush {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_pko_dpfi_flush_s          cn73xx;
 	struct cvmx_pko_dpfi_flush_s          cn78xx;
+	struct cvmx_pko_dpfi_flush_s          cn78xxp2;
+	struct cvmx_pko_dpfi_flush_s          cnf75xx;
 };
 typedef union cvmx_pko_dpfi_flush cvmx_pko_dpfi_flush_t;
 
@@ -3119,18 +3359,21 @@ union cvmx_pko_dpfi_fpa_aura {
 	struct cvmx_pko_dpfi_fpa_aura_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t node                         : 2;  /**< Node number of current chip, to ensure that the aura is on the local node. */
-	uint64_t laura                        : 10; /**< Local aura to use for PKO command buffering. Must be on local CCPI node.
-                                                         The FPA aura selected by LAURA must select an FPA pool whose
-                                                         FPA_POOL()_CFG[NAT_ALIGN]=1, and
-                                                         (FPA_POOL()_CFG[BUF_SIZE] - FPA_POOL()_CFG[BUF_OFFSET]) >= 4 KB/128. */
+	uint64_t node                         : 2;  /**< Reserved. INTERNAL:
+                                                         Node number of current chip, to ensure that the aura is on the local node. */
+	uint64_t laura                        : 10; /**< FPA local-node aura to use for PKO command buffering allocations and frees. The
+                                                         FPA aura selected by LAURA must correspond to a pool where the buffers (after
+                                                         any FPA_POOL()_CFG[BUF_OFFSET]) are at least 4 KB. */
 #else
 	uint64_t laura                        : 10;
 	uint64_t node                         : 2;
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
+	struct cvmx_pko_dpfi_fpa_aura_s       cn73xx;
 	struct cvmx_pko_dpfi_fpa_aura_s       cn78xx;
+	struct cvmx_pko_dpfi_fpa_aura_s       cn78xxp2;
+	struct cvmx_pko_dpfi_fpa_aura_s       cnf75xx;
 };
 typedef union cvmx_pko_dpfi_fpa_aura cvmx_pko_dpfi_fpa_aura_t;
 
@@ -3140,6 +3383,80 @@ typedef union cvmx_pko_dpfi_fpa_aura cvmx_pko_dpfi_fpa_aura_t;
 union cvmx_pko_dpfi_status {
 	uint64_t u64;
 	struct cvmx_pko_dpfi_status_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t ptr_cnt                      : 32; /**< The number of pointers currently in use for storing descriptors and meta-packets plus
+                                                         those available in the DPFI pointer cache. */
+	uint64_t reserved_27_31               : 5;
+	uint64_t xpd_fif_cnt                  : 4;  /**< XPD FIFO count. This FIFO has 8 entries and is used to hold pointers that are actively
+                                                         being returned to the FPA. Typically, the value of this counter is zero. Should the
+                                                         count be non-zero for a prolonged period it would indicate that the FPA is delayed in
+                                                         accepting pointers back from the PKO. */
+	uint64_t dalc_fif_cnt                 : 4;  /**< Deallocation FIFO count. This FIFO has 8 entries and is used to buffer pointers that
+                                                         are being returned to the DPFI by the PKO PDM. The PKO does not immediately return
+                                                         these pointers to the FPA but instead holds them and uses them to replenish the pointer
+                                                         Allocation FIFO saving an access to the FPA. Should the Deallocation FIFO become full
+                                                         the next pointer pushed into it will push out the oldest pointer and this overflow
+                                                         will be transfered to the XPD FIFO and a pointer return request made to the FPA.
+                                                         Normally, the Deallocation FIFO is empty or near empty. This FIFO can be drained and
+                                                         all pointers returned to the FPA by setting the FLUSH_EN bit in the PKO_DPFI_FLUSH CSR.
+                                                         When the flush is complete the CACHE_FLUSHED flag will be set in the PKO_DPFI_STATUS
+                                                         CSR and the DALC_FIF_CNT will be zero. */
+	uint64_t alc_fif_cnt                  : 5;  /**< Allocation FIFO count. This FIFO has 16 entries and acts as a pointer prefetch buffer.
+                                                         The DPFI attempts to keep this FIFO full at all times. Out of reset, the PKO requests
+                                                         pointers from the FPA to fill this FIFO. The PKO_READY flag will not be asserted until
+                                                         the the Alloc FIFO is full. Once the PKO is enabled, SEND_PACKET commands that are
+                                                         received by the PKO and require pointers are serviced from this FIFO. Once a pointer
+                                                         is popped, a request is made to the FPA to replenish it. The FIFO provides an elastic
+                                                         store of pointers to handle the occasional bursts of pointer requests from PKO without
+                                                         incurring the larger FPA latency. The count should normally read 16 and prolonged
+                                                         periods where the FIFO is less than full indicates that the FPA is delayed in providing
+                                                         pointers to the PKO. This FIFO can be drained and all pointers returned to the FPA by
+                                                         setting the FLUSH_EN bit in the PKO_DPFI_FLUSH CSR. When the flush is complete the
+                                                         CACHE_FLUSHED flag will be set in the PKO_DPFI_STATUS CSR and the ALC_FIF_CNT will
+                                                         be zero. */
+	uint64_t reserved_13_13               : 1;
+	uint64_t isrd_ptr1_rtn_full           : 1;  /**< ISRD pointer return register 1 contains a valid pointer. */
+	uint64_t isrd_ptr0_rtn_full           : 1;  /**< ISRD pointer return register 0 contains a valid pointer. */
+	uint64_t isrm_ptr1_rtn_full           : 1;  /**< ISRM pointer return register 1 contains a valid pointer. */
+	uint64_t isrm_ptr0_rtn_full           : 1;  /**< ISRM pointer return register 0 contains a valid pointer. */
+	uint64_t isrd_ptr1_val                : 1;  /**< ISRD pointer register 1 contains a valid pointer. */
+	uint64_t isrd_ptr0_val                : 1;  /**< ISRD pointer register 0 contains a valid pointer. */
+	uint64_t isrm_ptr1_val                : 1;  /**< ISRM pointer register 1 contains a valid pointer. */
+	uint64_t isrm_ptr0_val                : 1;  /**< ISRM pointer register 0 contains a valid pointer. */
+	uint64_t ptr_req_pend                 : 1;  /**< DPFI has pointer requests to FPA pending. */
+	uint64_t ptr_rtn_pend                 : 1;  /**< DPFI has pointer returns to FPA pending. */
+	uint64_t fpa_empty                    : 1;  /**< FPA empty status:
+                                                         0 = FPA is providing pointers when requested.
+                                                         1 = FPA responded to pointer request with 'no pointers available.' */
+	uint64_t dpfi_empty                   : 1;  /**< DPFI pointer cache is empty. */
+	uint64_t cache_flushed                : 1;  /**< Cache flushed:
+                                                         0 = Cache flush not enabled or in-progress.
+                                                         1 = Cache flush has completed. PKO_DPFI_STATUS[PTR_CNT] will read zero if all outstanding
+                                                         pointers have been returned to the FPA. */
+#else
+	uint64_t cache_flushed                : 1;
+	uint64_t dpfi_empty                   : 1;
+	uint64_t fpa_empty                    : 1;
+	uint64_t ptr_rtn_pend                 : 1;
+	uint64_t ptr_req_pend                 : 1;
+	uint64_t isrm_ptr0_val                : 1;
+	uint64_t isrm_ptr1_val                : 1;
+	uint64_t isrd_ptr0_val                : 1;
+	uint64_t isrd_ptr1_val                : 1;
+	uint64_t isrm_ptr0_rtn_full           : 1;
+	uint64_t isrm_ptr1_rtn_full           : 1;
+	uint64_t isrd_ptr0_rtn_full           : 1;
+	uint64_t isrd_ptr1_rtn_full           : 1;
+	uint64_t reserved_13_13               : 1;
+	uint64_t alc_fif_cnt                  : 5;
+	uint64_t dalc_fif_cnt                 : 4;
+	uint64_t xpd_fif_cnt                  : 4;
+	uint64_t reserved_27_31               : 5;
+	uint64_t ptr_cnt                      : 32;
+#endif
+	} s;
+	struct cvmx_pko_dpfi_status_s         cn73xx;
+	struct cvmx_pko_dpfi_status_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t ptr_cnt                      : 32; /**< The number of pointers currently in use for storing descriptors and meta-packets plus
                                                          those available in the DPFI pointer cache. */
@@ -3154,12 +3471,14 @@ union cvmx_pko_dpfi_status {
 	uint64_t isrm_ptr0_val                : 1;  /**< ISRM pointer register 0 contains a valid pointer. */
 	uint64_t ptr_req_pend                 : 1;  /**< DPFI has pointer requests to FPA pending. */
 	uint64_t ptr_rtn_pend                 : 1;  /**< DPFI has pointer returns to FPA pending. */
-	uint64_t fpa_empty                    : 1;  /**< 1 = FPA responded to pointer request with 'no pointers available.'
-                                                         0 = FPA is providing pointers when requested. */
+	uint64_t fpa_empty                    : 1;  /**< FPA empty status:
+                                                         0 = FPA is providing pointers when requested.
+                                                         1 = FPA responded to pointer request with 'no pointers available.' */
 	uint64_t dpfi_empty                   : 1;  /**< DPFI pointer cache is empty. */
-	uint64_t cache_flushed                : 1;  /**< 1 = Cache flush has completed. PKO_DPFI_STATUS[PTR_CNT] will read zero if all outstanding
-                                                         pointers have been returned to the FPA.
-                                                         0 = Cache flush not enabled or in-progress. */
+	uint64_t cache_flushed                : 1;  /**< Cache flushed:
+                                                         0 = Cache flush not enabled or in-progress.
+                                                         1 = Cache flush has completed. PKO_DPFI_STATUS[PTR_CNT] will read zero if all outstanding
+                                                         pointers have been returned to the FPA. */
 #else
 	uint64_t cache_flushed                : 1;
 	uint64_t dpfi_empty                   : 1;
@@ -3177,8 +3496,9 @@ union cvmx_pko_dpfi_status {
 	uint64_t reserved_13_31               : 19;
 	uint64_t ptr_cnt                      : 32;
 #endif
-	} s;
-	struct cvmx_pko_dpfi_status_s         cn78xx;
+	} cn78xx;
+	struct cvmx_pko_dpfi_status_s         cn78xxp2;
+	struct cvmx_pko_dpfi_status_s         cnf75xx;
 };
 typedef union cvmx_pko_dpfi_status cvmx_pko_dpfi_status_t;
 
@@ -3199,7 +3519,10 @@ union cvmx_pko_dqx_bytes {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_pko_dqx_bytes_s           cn73xx;
 	struct cvmx_pko_dqx_bytes_s           cn78xx;
+	struct cvmx_pko_dqx_bytes_s           cn78xxp2;
+	struct cvmx_pko_dqx_bytes_s           cnf75xx;
 };
 typedef union cvmx_pko_dqx_bytes cvmx_pko_dqx_bytes_t;
 
@@ -3225,12 +3548,14 @@ union cvmx_pko_dqx_cir {
                                                          specifying the number of time-wheel turns required before the accumulator is increased.
                                                          The rate count = (1 << RATE_DIVIDER_EXPONENT). The supported range for
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
-                                                         Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
+                                                         Note that for the L1-SQs, a time-wheel turn is 48 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 48) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -3245,14 +3570,17 @@ union cvmx_pko_dqx_cir {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_dqx_cir_s             cn73xx;
 	struct cvmx_pko_dqx_cir_s             cn78xx;
+	struct cvmx_pko_dqx_cir_s             cn78xxp2;
+	struct cvmx_pko_dqx_cir_s             cnf75xx;
 };
 typedef union cvmx_pko_dqx_cir cvmx_pko_dqx_cir_t;
 
 /**
  * cvmx_pko_dq#_dropped_bytes
  *
- * This register has the same bit fields as PKO_L1_SQ()_GREEN_BYTES.
+ * This register has the same bit fields as PKO_L1_SQ)_GREEN_BYTES.
  *
  */
 union cvmx_pko_dqx_dropped_bytes {
@@ -3266,7 +3594,10 @@ union cvmx_pko_dqx_dropped_bytes {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_pko_dqx_dropped_bytes_s   cn73xx;
 	struct cvmx_pko_dqx_dropped_bytes_s   cn78xx;
+	struct cvmx_pko_dqx_dropped_bytes_s   cn78xxp2;
+	struct cvmx_pko_dqx_dropped_bytes_s   cnf75xx;
 };
 typedef union cvmx_pko_dqx_dropped_bytes cvmx_pko_dqx_dropped_bytes_t;
 
@@ -3287,7 +3618,10 @@ union cvmx_pko_dqx_dropped_packets {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} s;
+	struct cvmx_pko_dqx_dropped_packets_s cn73xx;
 	struct cvmx_pko_dqx_dropped_packets_s cn78xx;
+	struct cvmx_pko_dqx_dropped_packets_s cn78xxp2;
+	struct cvmx_pko_dqx_dropped_packets_s cnf75xx;
 };
 typedef union cvmx_pko_dqx_dropped_packets cvmx_pko_dqx_dropped_packets_t;
 
@@ -3299,9 +3633,9 @@ union cvmx_pko_dqx_fifo {
 	struct cvmx_pko_dqx_fifo_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
-	uint64_t p_con                        : 1;  /**< Reserved. */
-	uint64_t head                         : 7;  /**< See PKO_L2_SQ()_POINTERS[PREV]. */
-	uint64_t tail                         : 7;  /**< See PKO_L2_SQ()_POINTERS[NEXT]. */
+	uint64_t p_con                        : 1;  /**< parent connect. Asserted when DQ is connected to its parent. */
+	uint64_t head                         : 7;  /**< DQ FIFO head pointer. */
+	uint64_t tail                         : 7;  /**< DQ FIFO tail pointer. */
 #else
 	uint64_t tail                         : 7;
 	uint64_t head                         : 7;
@@ -3309,7 +3643,10 @@ union cvmx_pko_dqx_fifo {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_pko_dqx_fifo_s            cn73xx;
 	struct cvmx_pko_dqx_fifo_s            cn78xx;
+	struct cvmx_pko_dqx_fifo_s            cn78xxp2;
+	struct cvmx_pko_dqx_fifo_s            cnf75xx;
 };
 typedef union cvmx_pko_dqx_fifo cvmx_pko_dqx_fifo_t;
 
@@ -3330,15 +3667,18 @@ union cvmx_pko_dqx_packets {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} s;
+	struct cvmx_pko_dqx_packets_s         cn73xx;
 	struct cvmx_pko_dqx_packets_s         cn78xx;
+	struct cvmx_pko_dqx_packets_s         cn78xxp2;
+	struct cvmx_pko_dqx_packets_s         cnf75xx;
 };
 typedef union cvmx_pko_dqx_packets cvmx_pko_dqx_packets_t;
 
 /**
  * cvmx_pko_dq#_pick
  *
- * This register has the same bit fields as PKO_L1_SQ()_PICK.
- *
+ * This CSR contains the meta for the DQ, and is for debug and reconfiguration
+ * only and should never be written. See also PKO_META_DESC_S.
  */
 union cvmx_pko_dqx_pick {
 	uint64_t u64;
@@ -3353,29 +3693,42 @@ union cvmx_pko_dqx_pick {
 	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
 	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
-	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S. */
-	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Has no effect on any shaper. */
-	uint64_t adjust                       : 9;  /**< The PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero if a PKO_SEND_EXT_S is not present in
-                                                         the corresponding descriptor. */
+	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S.  See also
+                                                         PKO_META_DESC_S[JUMP]. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline.
+                                                         See also PKO_META_DESC_S[FPD]. */
+	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Should always be zero.
+                                                         See also PKO_META_DESC_S[DS]. */
+	uint64_t adjust                       : 9;  /**< When [ADJUST] is 0x100, it indicates that this CSR does not contain a valid meta,
+                                                         and all other fields in this CSR are invalid and shouldn't be used.
+                                                         When [ADJUST] is not 0x100, it is the PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero
+                                                         if a PKO_SEND_EXT_S is not present in the corresponding descriptor. See also
+                                                         PKO_META_DESC_S[ADJUST]. */
 	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or CIR_ONLY
                                                          (i.e. [PIR_DIS]=PKO_SEND_EXT_S[COL<1>]). Zero if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. See PKO_COLORALG_E. [PIR_DIS] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[COL<1>]. */
 	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or
-                                                         EIR_PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
+                                                         PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
                                                          present in the corresponding descriptor. See PKO_COLORALG_E. [CIR_DIS] is used by the
-                                                         DQ through L2 shapers, but not used by the L1 rate limiters. */
+                                                         DQ through L2 shapers, but not used by the L1 rate limiters. See also
+                                                         PKO_META_DESC_S[COL<0>]. */
 	uint64_t red_algo_override            : 2;  /**< PKO_SEND_EXT_S[RA] from the corresponding packet descriptor. Zero
                                                          (i.e. PKO_REDALG_E::STD) if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. [RED_ALGO_OVERRIDE] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
-	uint64_t length                       : 16; /**< The packet length in bytes including pad.
-                                                               PKO_SEND_HDR_S[TOTAL] + CALCPAD
-                                                         where CALCPAD is zero when PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN], else
-                                                         CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the
-                                                         DQ the packet used. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[RA]. */
+	uint64_t length                       : 16; /**< Meta packet length. Generally, the size of the outgoing packet
+                                                         including pad, but excluding FCS and preamble.
+                                                         For metas corresponding to non-PKO_SEND_TSO_S descriptors:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(PKO_SEND_HDR_S[TOTAL], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       PKO_SEND_HDR_S[TOTAL]
+                                                         For metas corresponding to PKO_SEND_TSO_S TSO packet segments:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(FPS+PKO_SEND_TSO_S[SB], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       (FPS+PKO_SEND_TSO_S[SB])
+                                                         d is the DQ that the PKO SEND used. FPS is the number of payload bytes
+                                                         in the TSO segment (see PKO_SEND_TSO_S). See also PKO_META_DESC_S[LENGTH]. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -3394,7 +3747,10 @@ union cvmx_pko_dqx_pick {
 	uint64_t dq                           : 10;
 #endif
 	} s;
+	struct cvmx_pko_dqx_pick_s            cn73xx;
 	struct cvmx_pko_dqx_pick_s            cn78xx;
+	struct cvmx_pko_dqx_pick_s            cn78xxp2;
+	struct cvmx_pko_dqx_pick_s            cnf75xx;
 };
 typedef union cvmx_pko_dqx_pick cvmx_pko_dqx_pick_t;
 
@@ -3420,12 +3776,14 @@ union cvmx_pko_dqx_pir {
                                                          specifying the number of time-wheel turns required before the accumulator is increased.
                                                          The rate count = (1 << RATE_DIVIDER_EXPONENT). The supported range for
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
-                                                         Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
+                                                         Note that for the L1-SQs, a time-wheel turn is 48 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 48) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -3440,14 +3798,17 @@ union cvmx_pko_dqx_pir {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_dqx_pir_s             cn73xx;
 	struct cvmx_pko_dqx_pir_s             cn78xx;
+	struct cvmx_pko_dqx_pir_s             cn78xxp2;
+	struct cvmx_pko_dqx_pir_s             cnf75xx;
 };
 typedef union cvmx_pko_dqx_pir cvmx_pko_dqx_pir_t;
 
 /**
  * cvmx_pko_dq#_pointers
  *
- * This register has the same bit fields as PKO_L4_SQ()_POINTERS.
+ * This register has the same bit fields as PKO_L3_SQ(0..255)_POINTERS.
  *
  */
 union cvmx_pko_dqx_pointers {
@@ -3455,9 +3816,9 @@ union cvmx_pko_dqx_pointers {
 	struct cvmx_pko_dqx_pointers_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_26_63               : 38;
-	uint64_t prev                         : 10; /**< See PKO_L2_SQ()_POINTERS[PREV]. */
+	uint64_t prev                         : 10; /**< Previous pointer. The linked-list previous pointer. */
 	uint64_t reserved_10_15               : 6;
-	uint64_t next                         : 10; /**< See PKO_L2_SQ()_POINTERS[NEXT]. */
+	uint64_t next                         : 10; /**< Next pointer. The linked-list next pointer. */
 #else
 	uint64_t next                         : 10;
 	uint64_t reserved_10_15               : 6;
@@ -3465,7 +3826,22 @@ union cvmx_pko_dqx_pointers {
 	uint64_t reserved_26_63               : 38;
 #endif
 	} s;
+	struct cvmx_pko_dqx_pointers_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_24_63               : 40;
+	uint64_t prev                         : 8;  /**< Previous pointer. The linked-list previous pointer. */
+	uint64_t reserved_8_15                : 8;
+	uint64_t next                         : 8;  /**< Next pointer. The linked-list next pointer. */
+#else
+	uint64_t next                         : 8;
+	uint64_t reserved_8_15                : 8;
+	uint64_t prev                         : 8;
+	uint64_t reserved_24_63               : 40;
+#endif
+	} cn73xx;
 	struct cvmx_pko_dqx_pointers_s        cn78xx;
+	struct cvmx_pko_dqx_pointers_s        cn78xxp2;
+	struct cvmx_pko_dqx_pointers_cn73xx   cnf75xx;
 };
 typedef union cvmx_pko_dqx_pointers cvmx_pko_dqx_pointers_t;
 
@@ -3486,7 +3862,10 @@ union cvmx_pko_dqx_sched_state {
 	uint64_t reserved_25_63               : 39;
 #endif
 	} s;
+	struct cvmx_pko_dqx_sched_state_s     cn73xx;
 	struct cvmx_pko_dqx_sched_state_s     cn78xx;
+	struct cvmx_pko_dqx_sched_state_s     cn78xxp2;
+	struct cvmx_pko_dqx_sched_state_s     cnf75xx;
 };
 typedef union cvmx_pko_dqx_sched_state cvmx_pko_dqx_sched_state_t;
 
@@ -3509,33 +3888,60 @@ union cvmx_pko_dqx_schedule {
                                                          the shaper at the next level. */
 	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned
                                                          integer). The packet size used in all DWRR (RR_COUNT) calculations is:
-                                                         _  (PKO_nm_SHAPE[LENGTH_DISABLE] ? 0 : (PKO_SEND_HDR_S[TOTAL] + CALCPAD +
-                                                            PKO_SEND_EXT_S[SHAPECHG])) + PKO_nm_SHAPE[ADJUST]
-                                                         where nm corresponds to this PKO_nm_SCHEDULE CSR. CALCPAD is zero when
-                                                         PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN],
-                                                         else CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the DQ the
-                                                         packet used. PKO_SEND_EXT_S[SHAPECHG] is zero when a PKO_SEND_EXT_S is not present
-                                                         in the send descriptor. */
+                                                         _  (PKO_nm_SHAPE[LENGTH_DISABLE] ? 0 : (PKO_nm_PICK[LENGTH] + PKO_nm_PICK[ADJUST]))
+                                                            + PKO_nm_SHAPE[ADJUST]
+                                                         where nm corresponds to this PKO_nm_SCHEDULE CSR.
+                                                         Typically [RR_QUANTUM] should be at or near the MTU or more (to limit or prevent
+                                                         negative accumulations of PKO_*_SCHED_STATE[RR_COUNT] (i.e. the deficit count)). */
 #else
 	uint64_t rr_quantum                   : 24;
 	uint64_t prio                         : 4;
 	uint64_t reserved_28_63               : 36;
 #endif
 	} s;
+	struct cvmx_pko_dqx_schedule_s        cn73xx;
 	struct cvmx_pko_dqx_schedule_s        cn78xx;
+	struct cvmx_pko_dqx_schedule_s        cn78xxp2;
+	struct cvmx_pko_dqx_schedule_s        cnf75xx;
 };
 typedef union cvmx_pko_dqx_schedule cvmx_pko_dqx_schedule_t;
 
 /**
  * cvmx_pko_dq#_shape
  *
- * This register has the same bit fields as PKO_L5_SQ()_SHAPE.
+ * This register has the same bit fields as PKO_L3_SQ()_SHAPE.
  *
  */
 union cvmx_pko_dqx_shape {
 	uint64_t u64;
 	struct cvmx_pko_dqx_shape_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_27_63               : 37;
+	uint64_t schedule_list                : 2;  /**< Shaper scheduling list. Restricts shaper scheduling to specific lists.
+                                                         0x0 = Normal (selected for nearly all scheduling/shaping applications).
+                                                         0x1 = Green-only.
+                                                         0x2 = Yellow-only.
+                                                         0x3 = Red-only. */
+	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in DWRR scheduling
+                                                         and shaping calculations such that only the value of [ADJUST] is used. */
+	uint64_t reserved_13_23               : 11;
+	uint64_t yellow_disable               : 1;  /**< See PKO_L2_SQ()_SHAPE[YELLOW_DISABLE]. */
+	uint64_t red_disable                  : 1;  /**< See PKO_L2_SQ()_SHAPE[RED_DISABLE]. */
+	uint64_t red_algo                     : 2;  /**< See PKO_L2_SQ()_SHAPE[RED_ALGO]. */
+	uint64_t adjust                       : 9;  /**< See PKO_L2_SQ()_SHAPE[ADJUST]. */
+#else
+	uint64_t adjust                       : 9;
+	uint64_t red_algo                     : 2;
+	uint64_t red_disable                  : 1;
+	uint64_t yellow_disable               : 1;
+	uint64_t reserved_13_23               : 11;
+	uint64_t length_disable               : 1;
+	uint64_t schedule_list                : 2;
+	uint64_t reserved_27_63               : 37;
+#endif
+	} s;
+	struct cvmx_pko_dqx_shape_s           cn73xx;
+	struct cvmx_pko_dqx_shape_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
 	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in DWRR scheduling
@@ -3554,8 +3960,9 @@ union cvmx_pko_dqx_shape {
 	uint64_t length_disable               : 1;
 	uint64_t reserved_25_63               : 39;
 #endif
-	} s;
-	struct cvmx_pko_dqx_shape_s           cn78xx;
+	} cn78xx;
+	struct cvmx_pko_dqx_shape_cn78xx      cn78xxp2;
+	struct cvmx_pko_dqx_shape_s           cnf75xx;
 };
 typedef union cvmx_pko_dqx_shape cvmx_pko_dqx_shape_t;
 
@@ -3563,7 +3970,7 @@ typedef union cvmx_pko_dqx_shape cvmx_pko_dqx_shape_t;
  * cvmx_pko_dq#_shape_state
  *
  * This register has the same bit fields as PKO_L2_SQ()_SHAPE_STATE.
- *
+ * This register must not be written during normal operation.
  */
 union cvmx_pko_dqx_shape_state {
 	uint64_t u64;
@@ -3571,11 +3978,11 @@ union cvmx_pko_dqx_shape_state {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
 	uint64_t tw_timestamp                 : 6;  /**< Time-wheel timestamp. Debug access to the live time-wheel timestamp. */
-	uint64_t color                        : 2;  /**< Shaper color status. Debug access to the live shaper state.
-                                                         0x0 = Green - operating in 'committed' range.
-                                                         0x1 = Yellow - operating in 'excess/peak' range.
-                                                         0x2 = Red - operating in 'oversubscribed' range.
-                                                         0x3 = Reserved. */
+	uint64_t color                        : 2;  /**< Shaper connection status. Debug access to the live shaper state.
+                                                         0x0 = Green - shaper is connected into the green list.
+                                                         0x1 = Yellow - shaper is connected into the yellow list.
+                                                         0x2 = Red - shaper is connected into the red list.
+                                                         0x3 = Pruned - shaper is disconnected. */
 	uint64_t pir_accum                    : 26; /**< Peak information rate accumulator. Debug access to the live PIR accumulator. */
 	uint64_t cir_accum                    : 26; /**< Committed information rate accumulator. Debug access to the live CIR accumulator. */
 #else
@@ -3586,7 +3993,10 @@ union cvmx_pko_dqx_shape_state {
 	uint64_t reserved_60_63               : 4;
 #endif
 	} s;
+	struct cvmx_pko_dqx_shape_state_s     cn73xx;
 	struct cvmx_pko_dqx_shape_state_s     cn78xx;
+	struct cvmx_pko_dqx_shape_state_s     cn78xxp2;
+	struct cvmx_pko_dqx_shape_state_s     cnf75xx;
 };
 typedef union cvmx_pko_dqx_shape_state cvmx_pko_dqx_shape_state_t;
 
@@ -3601,18 +4011,32 @@ union cvmx_pko_dqx_sw_xoff {
 	struct cvmx_pko_dqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
-                                                         28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
-                                                         until the path has drained." */
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed.
+                                                         [DRAIN_IRQ] should be set whenever [DRAIN] is, and must not be set
+                                                         when [DRAIN] isn't set.  DRAIN_IRQ has no effect unless DRAIN and XOFF is also set. */
+	uint64_t drain_null_link              : 1;  /**< Drain null link. This setting only has effect when the L1 node is
+                                                         mapped to the NULL FIFO.  Conditions the drain path to drain through
+                                                         the NULL FIFO (i.e. link 14). As such, channel credits, HW_XOFF, and
+                                                         shaping are disabled on the draining path until the path has drained.
+                                                         [DRAIN_NULL_LINK] must not be set when [DRAIN] isn't set.
+                                                         DRAIN_NULL_LINK has no effect unless DRAIN and XOFF is also set. */
 	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. */
-	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is deasserted.
-                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] must be configured before using this
-                                                         register field. Writing to this register field before the associated
-                                                         PKO_*_TOPOLOGY[LINK/PARENT] value is configured can result in modifying the software
-                                                         XOFF state of the wrong SQ. */
+                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. [DRAIN] need never be
+                                                         set for the SQ1 level, but is useful at all other levels, including the DQ level.
+                                                         PKO_DRAIN_IRQ[INTR] should be clear prior to initiating a [DRAIN]=1 write to this CSR.
+                                                         After [DRAIN] is set for an SQ/DQ, it should not be set again, for this or any other
+                                                         SQ/DQ, until after a 0->1 transition has been observed on PKO_DRAIN_IRQ[INTR]
+                                                         (and/or the PKO_INTSN_E::PKO_PSE_PQ_DRAIN CIU interrupt has occured) and
+                                                         PKO_DRAIN_IRQ[INTR] has been cleared.  DRAIN has no effect unless XOFF is also set.
+                                                         Only one DRAIN command is allowed to be active at a time. */
+	uint64_t xoff                         : 1;  /**< XOFF. Stops meta flow out of the SQ/DQ. When [XOFF] is set, the corresponding
+                                                         PKO_*_PICK (i.e. the meta) in the SQ/DQ cannot be transferred to the
+                                                         next level. The corresponding PKO_*_PICK may become valid while [XOFF] is set,
+                                                         but it cannot change from valid to invalid while [XOFF] is set.
+                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] should normally be configured before
+                                                         [XOFF] is set. Setting [XOFF] before the associated PKO_*_TOPOLOGY[LINK/PARENT]
+                                                         value is configured can result in modifying the software XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
 	uint64_t drain                        : 1;
@@ -3621,7 +4045,10 @@ union cvmx_pko_dqx_sw_xoff {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_pko_dqx_sw_xoff_s         cn73xx;
 	struct cvmx_pko_dqx_sw_xoff_s         cn78xx;
+	struct cvmx_pko_dqx_sw_xoff_s         cn78xxp2;
+	struct cvmx_pko_dqx_sw_xoff_s         cnf75xx;
 };
 typedef union cvmx_pko_dqx_sw_xoff cvmx_pko_dqx_sw_xoff_t;
 
@@ -3641,9 +4068,101 @@ union cvmx_pko_dqx_topology {
 	uint64_t reserved_26_63               : 38;
 #endif
 	} s;
+	struct cvmx_pko_dqx_topology_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_24_63               : 40;
+	uint64_t parent                       : 8;  /**< See PKO_L2_SQ()_TOPOLOGY[PARENT]. */
+	uint64_t reserved_0_15                : 16;
+#else
+	uint64_t reserved_0_15                : 16;
+	uint64_t parent                       : 8;
+	uint64_t reserved_24_63               : 40;
+#endif
+	} cn73xx;
 	struct cvmx_pko_dqx_topology_s        cn78xx;
+	struct cvmx_pko_dqx_topology_s        cn78xxp2;
+	struct cvmx_pko_dqx_topology_cn73xx   cnf75xx;
 };
 typedef union cvmx_pko_dqx_topology cvmx_pko_dqx_topology_t;
+
+/**
+ * cvmx_pko_dq#_wm_buf_cnt
+ */
+union cvmx_pko_dqx_wm_buf_cnt {
+	uint64_t u64;
+	struct cvmx_pko_dqx_wm_buf_cnt_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_36_63               : 28;
+	uint64_t count                        : 36; /**< Watermark buffer count. The number of buffers allocated (from
+                                                         FPA aura PKO_DPFI_FPA_AURA[NODE,LAURA]) for this DQ. */
+#else
+	uint64_t count                        : 36;
+	uint64_t reserved_36_63               : 28;
+#endif
+	} s;
+	struct cvmx_pko_dqx_wm_buf_cnt_s      cn73xx;
+	struct cvmx_pko_dqx_wm_buf_cnt_s      cn78xx;
+	struct cvmx_pko_dqx_wm_buf_cnt_s      cn78xxp2;
+	struct cvmx_pko_dqx_wm_buf_cnt_s      cnf75xx;
+};
+typedef union cvmx_pko_dqx_wm_buf_cnt cvmx_pko_dqx_wm_buf_cnt_t;
+
+/**
+ * cvmx_pko_dq#_wm_buf_ctl
+ */
+union cvmx_pko_dqx_wm_buf_ctl {
+	uint64_t u64;
+	struct cvmx_pko_dqx_wm_buf_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_51_63               : 13;
+	uint64_t enable                       : 1;  /**< Watermark interrupt enable for [THRESHOLD] comparison to PKO_DQ()_WM_BUF_CNT[COUNT].
+                                                         See the [INTR] description. */
+	uint64_t reserved_49_49               : 1;
+	uint64_t intr                         : 1;  /**< Watermark Buffer Interrupt. If [INTR] is clear and [ENABLE] is set, PKO
+                                                         sets [INTR] and throws PKO_INTSN_E::PKO_DQ()_WM whenever it
+                                                         modifies PKO_DQ()_WM_BUF_CNT[COUNT] to equal or cross [THRESHOLD]. */
+	uint64_t reserved_36_47               : 12;
+	uint64_t threshold                    : 36; /**< Watermark interrupt Buffer Threshold for PKO_DQ()_WM_BUF_CNT[COUNT].
+                                                         See the [INTR] description. */
+#else
+	uint64_t threshold                    : 36;
+	uint64_t reserved_36_47               : 12;
+	uint64_t intr                         : 1;
+	uint64_t reserved_49_49               : 1;
+	uint64_t enable                       : 1;
+	uint64_t reserved_51_63               : 13;
+#endif
+	} s;
+	struct cvmx_pko_dqx_wm_buf_ctl_s      cn73xx;
+	struct cvmx_pko_dqx_wm_buf_ctl_s      cn78xx;
+	struct cvmx_pko_dqx_wm_buf_ctl_s      cn78xxp2;
+	struct cvmx_pko_dqx_wm_buf_ctl_s      cnf75xx;
+};
+typedef union cvmx_pko_dqx_wm_buf_ctl cvmx_pko_dqx_wm_buf_ctl_t;
+
+/**
+ * cvmx_pko_dq#_wm_buf_ctl_w1c
+ */
+union cvmx_pko_dqx_wm_buf_ctl_w1c {
+	uint64_t u64;
+	struct cvmx_pko_dqx_wm_buf_ctl_w1c_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_49_63               : 15;
+	uint64_t intr                         : 1;  /**< A copy of PKO_DQ()_WM_BUF_CTL[INTR]. When [INTR] is written with a one,
+                                                         PKO_DQ()_WM_BUF_CTL[INTR] is cleared. */
+	uint64_t reserved_0_47                : 48;
+#else
+	uint64_t reserved_0_47                : 48;
+	uint64_t intr                         : 1;
+	uint64_t reserved_49_63               : 15;
+#endif
+	} s;
+	struct cvmx_pko_dqx_wm_buf_ctl_w1c_s  cn73xx;
+	struct cvmx_pko_dqx_wm_buf_ctl_w1c_s  cn78xx;
+	struct cvmx_pko_dqx_wm_buf_ctl_w1c_s  cn78xxp2;
+	struct cvmx_pko_dqx_wm_buf_ctl_w1c_s  cnf75xx;
+};
+typedef union cvmx_pko_dqx_wm_buf_ctl_w1c cvmx_pko_dqx_wm_buf_ctl_w1c_t;
 
 /**
  * cvmx_pko_dq#_wm_cnt
@@ -3654,13 +4173,21 @@ union cvmx_pko_dqx_wm_cnt {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
 	uint64_t count                        : 48; /**< Watermark count. The running value of the watermark counter. This value is a count of
-                                                         bytes or packets as specified in PKO_DQ()_WM_CTL[KIND]. */
+                                                         bytes or packets as specified by PKO_DQ()_WM_CTL[KIND]. [COUNT] covers all metas
+                                                         for the DQ between when the PKO SEND LMTDMA/LMTST enqueues the descriptor until
+                                                         PKO PEB (i.e. the packet engines and FIFO's) first receives the meta descriptor.
+                                                         It includes all descriptors whose meta's are held in either L2/DRAM for the DQ
+                                                         (i.e. whose metas are held in PKO PDM) or any DQ or SQ (i.e. whose metas are held
+                                                         in PKO PSE). */
 #else
 	uint64_t count                        : 48;
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_pko_dqx_wm_cnt_s          cn73xx;
 	struct cvmx_pko_dqx_wm_cnt_s          cn78xx;
+	struct cvmx_pko_dqx_wm_cnt_s          cn78xxp2;
+	struct cvmx_pko_dqx_wm_cnt_s          cnf75xx;
 };
 typedef union cvmx_pko_dqx_wm_cnt cvmx_pko_dqx_wm_cnt_t;
 
@@ -3671,25 +4198,32 @@ union cvmx_pko_dqx_wm_ctl {
 	uint64_t u64;
 	struct cvmx_pko_dqx_wm_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_51_63               : 13;
-	uint64_t enable                       : 1;  /**< Watermark enable. */
-	uint64_t kind                         : 1;  /**< Watermark kind. The watermark logic can use a byte count or packet count. 0 = Byte count;
-                                                         1 = Packet count. */
-	uint64_t intr                         : 1;  /**< Watermark Interrupt. The interrupt bit is asserted and an interrupt message to the CIU is
-                                                         generated when the specified threshold is reached or crossed. Subsequent interrupt
-                                                         messages are only generated after this bit has been cleared. */
-	uint64_t threshold                    : 48; /**< Watermark Threshold. This threshold is compared to the watermark count of
-                                                         PKO_DQ()_WM_CNT[COUNT] and an interrupt is generated when the count reaches or
-                                                         crosses the threshold. */
+	uint64_t reserved_52_63               : 12;
+	uint64_t ncb_query_rsp                : 1;  /**< NCB query response.  Specifies what value is returned in the
+                                                         PKO_QUERY_RTN_S[DEPTH] field.  When set to '0', the value held in
+                                                         PKO_DQ()_WM_CNT[COUNT] is returned.  When set to '1 the value held
+                                                         in PKO_DQ()_WM_BUF_CNT[COUNT] is returned. */
+	uint64_t enable                       : 1;  /**< Reserved. */
+	uint64_t kind                         : 1;  /**< Selects the contents of PKO_DQ()_WM_CNT[COUNT].
+                                                         If [KIND] is clear, PKO_DQ()_WM_CNT[COUNT] is a byte count for the DQ - the
+                                                         sum of all PKO_META_DESC_S[LENGTH] and PKO_*_PICK[LENGTH] for the DQ.
+                                                         If [KIND] is set, PKO_DQ()_WM_CNT[COUNT] is a number of descriptors for the DQ.
+                                                         See PKO_DQ()_WM_CNT[COUNT]. */
+	uint64_t intr                         : 1;  /**< Reserved. */
+	uint64_t threshold                    : 48; /**< Reserved. */
 #else
 	uint64_t threshold                    : 48;
 	uint64_t intr                         : 1;
 	uint64_t kind                         : 1;
 	uint64_t enable                       : 1;
-	uint64_t reserved_51_63               : 13;
+	uint64_t ncb_query_rsp                : 1;
+	uint64_t reserved_52_63               : 12;
 #endif
 	} s;
+	struct cvmx_pko_dqx_wm_ctl_s          cn73xx;
 	struct cvmx_pko_dqx_wm_ctl_s          cn78xx;
+	struct cvmx_pko_dqx_wm_ctl_s          cn78xxp2;
+	struct cvmx_pko_dqx_wm_ctl_s          cnf75xx;
 };
 typedef union cvmx_pko_dqx_wm_ctl cvmx_pko_dqx_wm_ctl_t;
 
@@ -3701,9 +4235,7 @@ union cvmx_pko_dqx_wm_ctl_w1c {
 	struct cvmx_pko_dqx_wm_ctl_w1c_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_49_63               : 15;
-	uint64_t intr                         : 1;  /**< Interrupt. The interrupt bit is asserted and an interrupt message to the CIU is generated
-                                                         when the specified threshold is crossed. Subsequent interrupt messages are only generated
-                                                         after this bit has been cleared by writing 1. Throws PKO_INTSN_E::PKO_DQ()_WM. */
+	uint64_t intr                         : 1;  /**< Reserved. */
 	uint64_t reserved_0_47                : 48;
 #else
 	uint64_t reserved_0_47                : 48;
@@ -3711,7 +4243,10 @@ union cvmx_pko_dqx_wm_ctl_w1c {
 	uint64_t reserved_49_63               : 15;
 #endif
 	} s;
+	struct cvmx_pko_dqx_wm_ctl_w1c_s      cn73xx;
 	struct cvmx_pko_dqx_wm_ctl_w1c_s      cn78xx;
+	struct cvmx_pko_dqx_wm_ctl_w1c_s      cn78xxp2;
+	struct cvmx_pko_dqx_wm_ctl_w1c_s      cnf75xx;
 };
 typedef union cvmx_pko_dqx_wm_ctl_w1c cvmx_pko_dqx_wm_ctl_w1c_t;
 
@@ -3727,7 +4262,10 @@ union cvmx_pko_dq_csr_bus_debug {
 	uint64_t csr_bus_debug                : 64;
 #endif
 	} s;
+	struct cvmx_pko_dq_csr_bus_debug_s    cn73xx;
 	struct cvmx_pko_dq_csr_bus_debug_s    cn78xx;
+	struct cvmx_pko_dq_csr_bus_debug_s    cn78xxp2;
+	struct cvmx_pko_dq_csr_bus_debug_s    cnf75xx;
 };
 typedef union cvmx_pko_dq_csr_bus_debug cvmx_pko_dq_csr_bus_debug_t;
 
@@ -3743,7 +4281,10 @@ union cvmx_pko_dq_debug {
 	uint64_t dbg_vec                      : 64;
 #endif
 	} s;
+	struct cvmx_pko_dq_debug_s            cn73xx;
 	struct cvmx_pko_dq_debug_s            cn78xx;
+	struct cvmx_pko_dq_debug_s            cn78xxp2;
+	struct cvmx_pko_dq_debug_s            cnf75xx;
 };
 typedef union cvmx_pko_dq_debug cvmx_pko_dq_debug_t;
 
@@ -3764,7 +4305,10 @@ union cvmx_pko_drain_irq {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_pko_drain_irq_s           cn73xx;
 	struct cvmx_pko_drain_irq_s           cn78xx;
+	struct cvmx_pko_drain_irq_s           cn78xxp2;
+	struct cvmx_pko_drain_irq_s           cnf75xx;
 };
 typedef union cvmx_pko_drain_irq cvmx_pko_drain_irq_t;
 
@@ -3782,7 +4326,10 @@ union cvmx_pko_enable {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_pko_enable_s              cn73xx;
 	struct cvmx_pko_enable_s              cn78xx;
+	struct cvmx_pko_enable_s              cn78xxp2;
+	struct cvmx_pko_enable_s              cnf75xx;
 };
 typedef union cvmx_pko_enable cvmx_pko_enable_t;
 
@@ -3796,18 +4343,15 @@ typedef union cvmx_pko_enable cvmx_pko_enable_t;
  *
  * For example, if MARKPTR is 3 and [OFFSET] is 5 and the packet is YELLOW,
  * the PKO marking hardware would do this:
- *
- * _  byte[3]<2:0> |=   Y_VAL<3:1>
- * _  byte[3]<2:0> &= ~Y_MASK<3:1>
- * _  byte[4]<7>   |=   Y_VAL<0>
- * _  byte[4]<7>   &= ~Y_MASK<0>
- *
+ *    byte[3]<2:0> |=   Y_VAL<3:1>
+ *    byte[3]<2:0> &= ~Y_MASK<3:1>
+ *    byte[4]<7>   |=   Y_VAL<0>
+ *    byte[4]<7>   &= ~Y_MASK<0>
  * where byte[3] is the 3rd byte in the packet, and byte[4] the 4th.
  *
  * For another example, if MARKPTR is 3 and [OFFSET] is 0 and the packet is RED_SEND,
- *
- * _   byte[3]<7:4> |=   R_VAL<3:0>
- * _   byte[3]<7:4> &= ~R_MASK<3:0>
+ *    byte[3]<7:4> |=   R_VAL<3:0>
+ *    byte[3]<7:4> &= ~R_MASK<3:0>
  */
 union cvmx_pko_formatx_ctl {
 	uint64_t u64;
@@ -3834,7 +4378,10 @@ union cvmx_pko_formatx_ctl {
 	uint64_t reserved_27_63               : 37;
 #endif
 	} s;
+	struct cvmx_pko_formatx_ctl_s         cn73xx;
 	struct cvmx_pko_formatx_ctl_s         cn78xx;
+	struct cvmx_pko_formatx_ctl_s         cn78xxp2;
+	struct cvmx_pko_formatx_ctl_s         cnf75xx;
 };
 typedef union cvmx_pko_formatx_ctl cvmx_pko_formatx_ctl_t;
 
@@ -3857,12 +4404,14 @@ union cvmx_pko_l1_sqx_cir {
                                                          specifying the number of time-wheel turns required before the accumulator is increased.
                                                          The rate count = (1 << RATE_DIVIDER_EXPONENT). The supported range for
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
-                                                         Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
+                                                         Note that for the L1-SQs, a time-wheel turn is 48 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 48) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -3877,7 +4426,10 @@ union cvmx_pko_l1_sqx_cir {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_cir_s          cn73xx;
 	struct cvmx_pko_l1_sqx_cir_s          cn78xx;
+	struct cvmx_pko_l1_sqx_cir_s          cn78xxp2;
+	struct cvmx_pko_l1_sqx_cir_s          cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_cir cvmx_pko_l1_sqx_cir_t;
 
@@ -3898,7 +4450,10 @@ union cvmx_pko_l1_sqx_dropped_bytes {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_dropped_bytes_s cn73xx;
 	struct cvmx_pko_l1_sqx_dropped_bytes_s cn78xx;
+	struct cvmx_pko_l1_sqx_dropped_bytes_s cn78xxp2;
+	struct cvmx_pko_l1_sqx_dropped_bytes_s cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_dropped_bytes cvmx_pko_l1_sqx_dropped_bytes_t;
 
@@ -3919,7 +4474,10 @@ union cvmx_pko_l1_sqx_dropped_packets {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_dropped_packets_s cn73xx;
 	struct cvmx_pko_l1_sqx_dropped_packets_s cn78xx;
+	struct cvmx_pko_l1_sqx_dropped_packets_s cn78xxp2;
+	struct cvmx_pko_l1_sqx_dropped_packets_s cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_dropped_packets cvmx_pko_l1_sqx_dropped_packets_t;
 
@@ -3952,7 +4510,10 @@ union cvmx_pko_l1_sqx_green {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_green_s        cn73xx;
 	struct cvmx_pko_l1_sqx_green_s        cn78xx;
+	struct cvmx_pko_l1_sqx_green_s        cn78xxp2;
+	struct cvmx_pko_l1_sqx_green_s        cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_green cvmx_pko_l1_sqx_green_t;
 
@@ -3970,7 +4531,10 @@ union cvmx_pko_l1_sqx_green_bytes {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_green_bytes_s  cn73xx;
 	struct cvmx_pko_l1_sqx_green_bytes_s  cn78xx;
+	struct cvmx_pko_l1_sqx_green_bytes_s  cn78xxp2;
+	struct cvmx_pko_l1_sqx_green_bytes_s  cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_green_bytes cvmx_pko_l1_sqx_green_bytes_t;
 
@@ -3988,7 +4552,10 @@ union cvmx_pko_l1_sqx_green_packets {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_green_packets_s cn73xx;
 	struct cvmx_pko_l1_sqx_green_packets_s cn78xx;
+	struct cvmx_pko_l1_sqx_green_packets_s cn78xxp2;
+	struct cvmx_pko_l1_sqx_green_packets_s cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_green_packets cvmx_pko_l1_sqx_green_packets_t;
 
@@ -4026,12 +4593,46 @@ union cvmx_pko_l1_sqx_link {
 	uint64_t reserved_49_63               : 15;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_link_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t link                         : 4;  /**< Link index. Must match PKO_L1_SQ()_TOPOLOGY[LINK]. */
+	uint64_t reserved_32_43               : 12;
+	uint64_t cc_word_cnt                  : 20; /**< Channel credit word count. This value, plus 1 MTU, represents the maximum outstanding
+                                                         aggregate word count (words are 16 bytes) for all channels feeding into this PQ. Note that
+                                                         this 20-bit field represents a signed value that decrements towards zero as credits are
+                                                         used. Packets are not allowed to flow when the count is less than zero. As such, the most
+                                                         significant bit should normally be programmed as zero (positive count). This gives a
+                                                         maximum value for this field of 2^19 - 1. */
+	uint64_t cc_packet_cnt                : 10; /**< Channel credit packet count. This value, plus 1, represents the maximum outstanding
+                                                         aggregate packet count for all channels feeding into this PQ. Note that this 10-bit field
+                                                         represents a signed value that decrements towards zero as credits are used. Packets are
+                                                         not allowed to flow when the count is less than zero. As such the most significant bit
+                                                         should normally be programmed as zero (positive count). This gives a maximum value for
+                                                         this field of 2^9 - 1. */
+	uint64_t cc_enable                    : 1;  /**< Channel credit enable. Enables CC_WORD_CNT and CC_PACKET_CNT aggregate credit processing. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t cc_enable                    : 1;
+	uint64_t cc_packet_cnt                : 10;
+	uint64_t cc_word_cnt                  : 20;
+	uint64_t reserved_32_43               : 12;
+	uint64_t link                         : 4;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l1_sqx_link_s         cn78xx;
+	struct cvmx_pko_l1_sqx_link_s         cn78xxp2;
+	struct cvmx_pko_l1_sqx_link_cn73xx    cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_link cvmx_pko_l1_sqx_link_t;
 
 /**
  * cvmx_pko_l1_sq#_pick
+ *
+ * This CSR contains the meta for the L1 SQ, and is for debug and reconfiguration
+ * only and should never be written. See also PKO_META_DESC_S.
  */
 union cvmx_pko_l1_sqx_pick {
 	uint64_t u64;
@@ -4046,29 +4647,42 @@ union cvmx_pko_l1_sqx_pick {
 	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
 	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
-	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S. */
-	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Has no effect on any shaper. */
-	uint64_t adjust                       : 9;  /**< The PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero if a PKO_SEND_EXT_S is not present in
-                                                         the corresponding descriptor. */
+	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S.  See also
+                                                         PKO_META_DESC_S[JUMP]. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline.
+                                                         See also PKO_META_DESC_S[FPD]. */
+	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Should always be zero.
+                                                         See also PKO_META_DESC_S[DS]. */
+	uint64_t adjust                       : 9;  /**< When [ADJUST] is 0x100, it indicates that this CSR does not contain a valid meta,
+                                                         and all other fields in this CSR are invalid and shouldn't be used.
+                                                         When [ADJUST] is not 0x100, it is the PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero
+                                                         if a PKO_SEND_EXT_S is not present in the corresponding descriptor. See also
+                                                         PKO_META_DESC_S[ADJUST]. */
 	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or CIR_ONLY
                                                          (i.e. [PIR_DIS]=PKO_SEND_EXT_S[COL<1>]). Zero if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. See PKO_COLORALG_E. [PIR_DIS] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[COL<1>]. */
 	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or
-                                                         EIR_PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
+                                                         PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
                                                          present in the corresponding descriptor. See PKO_COLORALG_E. [CIR_DIS] is used by the
-                                                         DQ through L2 shapers, but not used by the L1 rate limiters. */
+                                                         DQ through L2 shapers, but not used by the L1 rate limiters. See also
+                                                         PKO_META_DESC_S[COL<0>]. */
 	uint64_t red_algo_override            : 2;  /**< PKO_SEND_EXT_S[RA] from the corresponding packet descriptor. Zero
                                                          (i.e. PKO_REDALG_E::STD) if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. [RED_ALGO_OVERRIDE] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
-	uint64_t length                       : 16; /**< The packet length in bytes including pad.
-                                                               PKO_SEND_HDR_S[TOTAL] + CALCPAD
-                                                         where CALCPAD is zero when PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN], else
-                                                         CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the
-                                                         DQ the packet used. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[RA]. */
+	uint64_t length                       : 16; /**< Meta packet length. Generally, the size of the outgoing packet
+                                                         including pad, but excluding FCS and preamble.
+                                                         For metas corresponding to non-PKO_SEND_TSO_S descriptors:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(PKO_SEND_HDR_S[TOTAL], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       PKO_SEND_HDR_S[TOTAL]
+                                                         For metas corresponding to PKO_SEND_TSO_S TSO packet segments:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(FPS+PKO_SEND_TSO_S[SB], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       (FPS+PKO_SEND_TSO_S[SB])
+                                                         d is the DQ that the PKO SEND used. FPS is the number of payload bytes
+                                                         in the TSO segment (see PKO_SEND_TSO_S). See also PKO_META_DESC_S[LENGTH]. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -4087,7 +4701,10 @@ union cvmx_pko_l1_sqx_pick {
 	uint64_t dq                           : 10;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_pick_s         cn73xx;
 	struct cvmx_pko_l1_sqx_pick_s         cn78xx;
+	struct cvmx_pko_l1_sqx_pick_s         cn78xxp2;
+	struct cvmx_pko_l1_sqx_pick_s         cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_pick cvmx_pko_l1_sqx_pick_t;
 
@@ -4112,7 +4729,10 @@ union cvmx_pko_l1_sqx_red {
 	uint64_t reserved_19_63               : 45;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_red_s          cn73xx;
 	struct cvmx_pko_l1_sqx_red_s          cn78xx;
+	struct cvmx_pko_l1_sqx_red_s          cn78xxp2;
+	struct cvmx_pko_l1_sqx_red_s          cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_red cvmx_pko_l1_sqx_red_t;
 
@@ -4133,7 +4753,10 @@ union cvmx_pko_l1_sqx_red_bytes {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_red_bytes_s    cn73xx;
 	struct cvmx_pko_l1_sqx_red_bytes_s    cn78xx;
+	struct cvmx_pko_l1_sqx_red_bytes_s    cn78xxp2;
+	struct cvmx_pko_l1_sqx_red_bytes_s    cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_red_bytes cvmx_pko_l1_sqx_red_bytes_t;
 
@@ -4154,7 +4777,10 @@ union cvmx_pko_l1_sqx_red_packets {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_red_packets_s  cn73xx;
 	struct cvmx_pko_l1_sqx_red_packets_s  cn78xx;
+	struct cvmx_pko_l1_sqx_red_packets_s  cn78xxp2;
+	struct cvmx_pko_l1_sqx_red_packets_s  cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_red_packets cvmx_pko_l1_sqx_red_packets_t;
 
@@ -4166,13 +4792,30 @@ union cvmx_pko_l1_sqx_schedule {
 	struct cvmx_pko_l1_sqx_schedule_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t dummy                        : 40; /**< Reserved. */
-	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned integer). */
+	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned
+                                                         integer).
+                                                         Typically [RR_QUANTUM] should be at or near the MTU or more (to limit or prevent
+                                                         negative accumulations of the deficit count). */
 #else
 	uint64_t rr_quantum                   : 24;
 	uint64_t dummy                        : 40;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_schedule_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_24_63               : 40;
+	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned
+                                                         integer).
+                                                         Typically [RR_QUANTUM] should be at or near the MTU or more (to limit or prevent
+                                                         negative accumulations of the deficit count). */
+#else
+	uint64_t rr_quantum                   : 24;
+	uint64_t reserved_24_63               : 40;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l1_sqx_schedule_s     cn78xx;
+	struct cvmx_pko_l1_sqx_schedule_cn73xx cn78xxp2;
+	struct cvmx_pko_l1_sqx_schedule_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_schedule cvmx_pko_l1_sqx_schedule_t;
 
@@ -4184,11 +4827,15 @@ union cvmx_pko_l1_sqx_shape {
 	struct cvmx_pko_l1_sqx_shape_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
-	uint64_t length_disable               : 1;  /**< N/A */
+	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in DWRR scheduling
+                                                         and shaping calculations such that only the value of [ADJUST] is used. */
 	uint64_t reserved_18_23               : 6;
 	uint64_t link                         : 5;  /**< Link index. Must match PKO_L1_SQ()_TOPOLOGY[LINK]. */
 	uint64_t reserved_9_12                : 4;
-	uint64_t adjust                       : 9;  /**< N/A */
+	uint64_t adjust                       : 9;  /**< Shaping and scheduling calculation adjustment. This 9-bit signed value
+                                                         allows -255 .. 255 bytes to be added to the packet length for rate
+                                                         limiting and scheduling calculations. [ADJUST] value 0x100 should
+                                                         not be used. */
 #else
 	uint64_t adjust                       : 9;
 	uint64_t reserved_9_12                : 4;
@@ -4198,12 +4845,38 @@ union cvmx_pko_l1_sqx_shape {
 	uint64_t reserved_25_63               : 39;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_shape_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_25_63               : 39;
+	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in DWRR scheduling
+                                                         and shaping calculations such that only the value of [ADJUST] is used. */
+	uint64_t reserved_17_23               : 7;
+	uint64_t link                         : 4;  /**< Link index. Must match PKO_L1_SQ()_TOPOLOGY[LINK]. */
+	uint64_t reserved_9_12                : 4;
+	uint64_t adjust                       : 9;  /**< Shaping and scheduling calculation adjustment. This 9-bit signed value
+                                                         allows -255 .. 255 bytes to be added to the packet length for rate
+                                                         limiting and scheduling calculations. [ADJUST] value 0x100 should
+                                                         not be used. */
+#else
+	uint64_t adjust                       : 9;
+	uint64_t reserved_9_12                : 4;
+	uint64_t link                         : 4;
+	uint64_t reserved_17_23               : 7;
+	uint64_t length_disable               : 1;
+	uint64_t reserved_25_63               : 39;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l1_sqx_shape_s        cn78xx;
+	struct cvmx_pko_l1_sqx_shape_s        cn78xxp2;
+	struct cvmx_pko_l1_sqx_shape_cn73xx   cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_shape cvmx_pko_l1_sqx_shape_t;
 
 /**
  * cvmx_pko_l1_sq#_shape_state
+ *
+ * This register must not be written during normal operation.
+ *
  */
 union cvmx_pko_l1_sqx_shape_state {
 	uint64_t u64;
@@ -4211,10 +4884,29 @@ union cvmx_pko_l1_sqx_shape_state {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
 	uint64_t tw_timestamp                 : 6;  /**< Time-wheel timestamp. Debug access to the live time-wheel timestamp. */
+	uint64_t color2                       : 1;  /**< Same value as COLOR. */
+	uint64_t color                        : 1;  /**< Shaper connection status. Debug access to the live shaper state.
+                                                         0 = Connected - shaper is connected.
+                                                         1 = Pruned - shaper is disconnected. */
+	uint64_t reserved_26_51               : 26;
+	uint64_t cir_accum                    : 26; /**< Committed information rate accumulator. Debug access to the live CIR accumulator. */
+#else
+	uint64_t cir_accum                    : 26;
+	uint64_t reserved_26_51               : 26;
+	uint64_t color                        : 1;
+	uint64_t color2                       : 1;
+	uint64_t tw_timestamp                 : 6;
+	uint64_t reserved_60_63               : 4;
+#endif
+	} s;
+	struct cvmx_pko_l1_sqx_shape_state_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_60_63               : 4;
+	uint64_t tw_timestamp                 : 6;  /**< Time-wheel timestamp. Debug access to the live time-wheel timestamp. */
 	uint64_t reserved_53_53               : 1;
-	uint64_t color                        : 1;  /**< Shaper color status. Debug access to the live shaper state.
-                                                         0 = Green - operating in 'committed' range.
-                                                         1 = Red - operating in 'oversubscribed' range or inactive. */
+	uint64_t color                        : 1;  /**< Shaper connection status. Debug access to the live shaper state.
+                                                         0 = Connected - shaper is connected.
+                                                         1 = Pruned - shaper is disconnected. */
 	uint64_t reserved_26_51               : 26;
 	uint64_t cir_accum                    : 26; /**< Committed information rate accumulator. Debug access to the live CIR accumulator. */
 #else
@@ -4225,8 +4917,10 @@ union cvmx_pko_l1_sqx_shape_state {
 	uint64_t tw_timestamp                 : 6;
 	uint64_t reserved_60_63               : 4;
 #endif
-	} s;
+	} cn73xx;
 	struct cvmx_pko_l1_sqx_shape_state_s  cn78xx;
+	struct cvmx_pko_l1_sqx_shape_state_cn73xx cn78xxp2;
+	struct cvmx_pko_l1_sqx_shape_state_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_shape_state cvmx_pko_l1_sqx_shape_state_t;
 
@@ -4238,18 +4932,32 @@ union cvmx_pko_l1_sqx_sw_xoff {
 	struct cvmx_pko_l1_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
-                                                         28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
-                                                         until the path has drained." */
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed.
+                                                         [DRAIN_IRQ] should be set whenever [DRAIN] is, and must not be set
+                                                         when [DRAIN] isn't set.  DRAIN_IRQ has no effect unless DRAIN and XOFF is also set. */
+	uint64_t drain_null_link              : 1;  /**< Drain null link. This setting only has effect when the L1 node is
+                                                         mapped to the NULL FIFO.  Conditions the drain path to drain through
+                                                         the NULL FIFO (i.e. link 14). As such, channel credits, HW_XOFF, and
+                                                         shaping are disabled on the draining path until the path has drained.
+                                                         [DRAIN_NULL_LINK] must not be set when [DRAIN] isn't set.
+                                                         DRAIN_NULL_LINK has no effect unless DRAIN and XOFF is also set. */
 	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. */
-	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is deasserted.
-                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] must be configured before using this
-                                                         register field. Writing to this register field before the associated
-                                                         PKO_*_TOPOLOGY[LINK/PARENT] value is configured can result in modifying the software
-                                                         XOFF state of the wrong SQ. */
+                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. [DRAIN] need never be
+                                                         set for the SQ1 level, but is useful at all other levels, including the DQ level.
+                                                         PKO_DRAIN_IRQ[INTR] should be clear prior to initiating a [DRAIN]=1 write to this CSR.
+                                                         After [DRAIN] is set for an SQ/DQ, it should not be set again, for this or any other
+                                                         SQ/DQ, until after a 0->1 transition has been observed on PKO_DRAIN_IRQ[INTR]
+                                                         (and/or the PKO_INTSN_E::PKO_PSE_PQ_DRAIN CIU interrupt has occured) and
+                                                         PKO_DRAIN_IRQ[INTR] has been cleared.  DRAIN has no effect unless XOFF is also set.
+                                                         Only one DRAIN command is allowed to be active at a time. */
+	uint64_t xoff                         : 1;  /**< XOFF. Stops meta flow out of the SQ/DQ. When [XOFF] is set, the corresponding
+                                                         PKO_*_PICK (i.e. the meta) in the SQ/DQ cannot be transferred to the
+                                                         next level. The corresponding PKO_*_PICK may become valid while [XOFF] is set,
+                                                         but it cannot change from valid to invalid while [XOFF] is set.
+                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] should normally be configured before
+                                                         [XOFF] is set. Setting [XOFF] before the associated PKO_*_TOPOLOGY[LINK/PARENT]
+                                                         value is configured can result in modifying the software XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
 	uint64_t drain                        : 1;
@@ -4258,7 +4966,10 @@ union cvmx_pko_l1_sqx_sw_xoff {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_sw_xoff_s      cn73xx;
 	struct cvmx_pko_l1_sqx_sw_xoff_s      cn78xx;
+	struct cvmx_pko_l1_sqx_sw_xoff_s      cn78xxp2;
+	struct cvmx_pko_l1_sqx_sw_xoff_s      cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_sw_xoff cvmx_pko_l1_sqx_sw_xoff_t;
 
@@ -4284,28 +4995,23 @@ union cvmx_pko_l1_sqx_topology {
 	uint64_t link                         : 5;  /**< Link index. Selects the MAC or NULL FIFO used by the L1 SQ.
                                                          Legal [LINK] values:
                                                          <pre>
-                                                                        Relevant
-                                                           [LINK]  PKO_MAC()_CFG CSR   Description
-                                                          -----------------------------------------------
-                                                             0       PKO_MAC0_CFG      LBK loopback
-                                                             1       PKO_MAC1_CFG      DPI packet output
-                                                             2       PKO_MAC2_CFG      ILK link 0
-                                                             3       PKO_MAC3_CFG      ILK link 1
-                                                             4       PKO_MAC4_CFG      BGX0 logical MAC 0
-                                                             5       PKO_MAC5_CFG      BGX0 logical MAC 1
-                                                             6       PKO_MAC6_CFG      BGX0 logical MAC 2
-                                                             7       PKO_MAC7_CFG      BGX0 logical MAC 3
-                                                             8       PKO_MAC8_CFG      BGX1 logical MAC 0
-                                                             9       PKO_MAC9_CFG      BGX1 logical MAC 1
-                                                            10       PKO_MAC10_CFG     BGX1 logical MAC 2
-                                                            11       PKO_MAC11_CFG     BGX1 logical MAC 3
-                                                            12       PKO_MAC12_CFG     BGX2 logical MAC 0
-                                                            - ...
-                                                            27       PKO_MAC27_CFG     BGX5 logical MAC 3
-                                                            28          None           NULL FIFO
+                                                                          Relevant
+                                                           [LINK]    PKO_MAC()_CFG CSR    Description
+                                                          -------------------------------------------------
+                                                             0         PKO_MAC0_CFG      LBK loopback
+                                                             1         PKO_MAC1_CFG      DPI packet output
+                                                             2         PKO_MAC2_CFG      BGX0  logical MAC 0
+                                                             3         PKO_MAC3_CFG      BGX0  logical MAC 1
+                                                             4         PKO_MAC4_CFG      BGX0  logical MAC 2
+                                                             5         PKO_MAC5_CFG      BGX0  logical MAC 3
+                                                             6         PKO_MAC6_CFG      SRIO0 logical MAC 0
+                                                             7         PKO_MAC7_CFG      SRIO0 logical MAC 1
+                                                             8         PKO_MAC8_CFG      SRIO1 logical MAC 0
+                                                             9         PKO_MAC9_CFG      SRIO1 logical MAC 1
+                                                            10            None           NULL FIFO
                                                          </pre>
                                                          When a MAC is used by the L1 SQ, [LINK] must be unique relative to
-                                                         other [LINK]'s. [LINK] should be 28 when the L1 SQ is not used. */
+                                                         other [LINK]'s. [LINK] should be 14 when the L1 SQ is not used. */
 	uint64_t reserved_5_15                : 11;
 	uint64_t rr_prio                      : 4;  /**< Round-robin priority. The priority assigned to the round-robin scheduler. A higher-level
                                                          queue is a child queue of this shaper when its PKO_*_TOPOLOGY[PARENT] selects this shaper,
@@ -4327,7 +5033,68 @@ union cvmx_pko_l1_sqx_topology {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_topology_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_40_63               : 24;
+	uint64_t prio_anchor                  : 8;  /**< Priority Anchor. The base index positioning the static priority child queues of this
+                                                         shaper. A higher-level queue is a child queue of this shaper when its
+                                                         PKO_*_TOPOLOGY[PARENT] selects this shaper, and it further is a static priority child
+                                                         queue when its PKO_*_SQn_SCHEDULE[PRIO] does not equal RR_PRIO. A static priority child
+                                                         queue with priority PRIO must be located at n=PRIO_ANCHOR+PRIO, where
+                                                         PRIO=PKO_*_SQn_SCHEDULE[PRIO]. There can be at most one static priority child queue at
+                                                         each priority. When there are no static priority child queues attached at any priority, or
+                                                         if this shaper isn't used, the hardware does not use PRIO_ANCHOR. In this case, we
+                                                         recommend PRIO_ANCHOR be zero. Note that there are 10 available priorities, 0 through 9,
+                                                         with priority 0 being the highest and priority 9 being the lowest. */
+	uint64_t reserved_20_31               : 12;
+	uint64_t link                         : 4;  /**< Link index. Selects the MAC or NULL FIFO used by the L1 SQ.
+                                                         Legal [LINK] values:
+                                                         <pre>
+                                                                          Relevant
+                                                           [LINK]    PKO_MAC()_CFG CSR    Description
+                                                          -------------------------------------------------
+                                                             0         PKO_MAC0_CFG      LBK loopback
+                                                             1         PKO_MAC1_CFG      DPI packet output
+                                                             2         PKO_MAC2_CFG      BGX0 logical MAC 0
+                                                             3         PKO_MAC3_CFG      BGX0 logical MAC 1
+                                                             4         PKO_MAC4_CFG      BGX0 logical MAC 2
+                                                             5         PKO_MAC5_CFG      BGX0 logical MAC 3
+                                                             6         PKO_MAC6_CFG      BGX1 logical MAC 0
+                                                             7         PKO_MAC7_CFG      BGX1 logical MAC 1
+                                                             8         PKO_MAC8_CFG      BGX1 logical MAC 2
+                                                             9         PKO_MAC9_CFG      BGX1 logical MAC 3
+                                                            10         PKO_MAC10_CFG     BGX2 logical MAC 0
+                                                            11         PKO_MAC11_CFG     BGX2 logical MAC 1
+                                                            12         PKO_MAC12_CFG     BGX2 logical MAC 2
+                                                            13         PKO_MAC13_CFG     BGX2 logical MAC 3
+                                                            14            None           NULL FIFO
+                                                         </pre>
+                                                         When a MAC is used by the L1 SQ, [LINK] must be unique relative to
+                                                         other [LINK]'s. [LINK] should be 14 when the L1 SQ is not used. */
+	uint64_t reserved_5_15                : 11;
+	uint64_t rr_prio                      : 4;  /**< Round-robin priority. The priority assigned to the round-robin scheduler. A higher-level
+                                                         queue is a child queue of this shaper when its PKO_*_TOPOLOGY[PARENT] selects this shaper,
+                                                         and it further is a round robin child queue when its PKO_*_SQn_SCHEDULE[PRIO] equals
+                                                         RR_PRIO. All round-robin queues attached to this shaper must have the same priority. But
+                                                         the number of round-robin child queues attached (at this priority) is limited only by the
+                                                         number of higher-level queues. When this shaper is not used, we recommend RR_PRIO be zero.
+                                                         When a shaper is used, RR_PRIO should be 0xF when there are no priorities with more than
+                                                         one child queue (i.e. when there are no round-robin child queues), and should otherwise be
+                                                         a legal priority (values 0-9). */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t rr_prio                      : 4;
+	uint64_t reserved_5_15                : 11;
+	uint64_t link                         : 4;
+	uint64_t reserved_20_31               : 12;
+	uint64_t prio_anchor                  : 8;
+	uint64_t reserved_40_63               : 24;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l1_sqx_topology_s     cn78xx;
+	struct cvmx_pko_l1_sqx_topology_s     cn78xxp2;
+	struct cvmx_pko_l1_sqx_topology_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_topology cvmx_pko_l1_sqx_topology_t;
 
@@ -4349,7 +5116,10 @@ union cvmx_pko_l1_sqx_yellow {
 	uint64_t reserved_19_63               : 45;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_yellow_s       cn73xx;
 	struct cvmx_pko_l1_sqx_yellow_s       cn78xx;
+	struct cvmx_pko_l1_sqx_yellow_s       cn78xxp2;
+	struct cvmx_pko_l1_sqx_yellow_s       cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_yellow cvmx_pko_l1_sqx_yellow_t;
 
@@ -4370,7 +5140,10 @@ union cvmx_pko_l1_sqx_yellow_bytes {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_yellow_bytes_s cn73xx;
 	struct cvmx_pko_l1_sqx_yellow_bytes_s cn78xx;
+	struct cvmx_pko_l1_sqx_yellow_bytes_s cn78xxp2;
+	struct cvmx_pko_l1_sqx_yellow_bytes_s cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_yellow_bytes cvmx_pko_l1_sqx_yellow_bytes_t;
 
@@ -4391,7 +5164,10 @@ union cvmx_pko_l1_sqx_yellow_packets {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqx_yellow_packets_s cn73xx;
 	struct cvmx_pko_l1_sqx_yellow_packets_s cn78xx;
+	struct cvmx_pko_l1_sqx_yellow_packets_s cn78xxp2;
+	struct cvmx_pko_l1_sqx_yellow_packets_s cnf75xx;
 };
 typedef union cvmx_pko_l1_sqx_yellow_packets cvmx_pko_l1_sqx_yellow_packets_t;
 
@@ -4407,7 +5183,10 @@ union cvmx_pko_l1_sq_csr_bus_debug {
 	uint64_t csr_bus_debug                : 64;
 #endif
 	} s;
+	struct cvmx_pko_l1_sq_csr_bus_debug_s cn73xx;
 	struct cvmx_pko_l1_sq_csr_bus_debug_s cn78xx;
+	struct cvmx_pko_l1_sq_csr_bus_debug_s cn78xxp2;
+	struct cvmx_pko_l1_sq_csr_bus_debug_s cnf75xx;
 };
 typedef union cvmx_pko_l1_sq_csr_bus_debug cvmx_pko_l1_sq_csr_bus_debug_t;
 
@@ -4426,7 +5205,10 @@ union cvmx_pko_l1_sqa_debug {
 	uint64_t dbg_vec                      : 64;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqa_debug_s        cn73xx;
 	struct cvmx_pko_l1_sqa_debug_s        cn78xx;
+	struct cvmx_pko_l1_sqa_debug_s        cn78xxp2;
+	struct cvmx_pko_l1_sqa_debug_s        cnf75xx;
 };
 typedef union cvmx_pko_l1_sqa_debug cvmx_pko_l1_sqa_debug_t;
 
@@ -4445,7 +5227,10 @@ union cvmx_pko_l1_sqb_debug {
 	uint64_t dbg_vec                      : 64;
 #endif
 	} s;
+	struct cvmx_pko_l1_sqb_debug_s        cn73xx;
 	struct cvmx_pko_l1_sqb_debug_s        cn78xx;
+	struct cvmx_pko_l1_sqb_debug_s        cn78xxp2;
+	struct cvmx_pko_l1_sqb_debug_s        cnf75xx;
 };
 typedef union cvmx_pko_l1_sqb_debug cvmx_pko_l1_sqb_debug_t;
 
@@ -4471,12 +5256,14 @@ union cvmx_pko_l2_sqx_cir {
                                                          specifying the number of time-wheel turns required before the accumulator is increased.
                                                          The rate count = (1 << RATE_DIVIDER_EXPONENT). The supported range for
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
-                                                         Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
+                                                         Note that for the L1-SQs, a time-wheel turn is 48 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 48) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -4491,7 +5278,10 @@ union cvmx_pko_l2_sqx_cir {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_cir_s          cn73xx;
 	struct cvmx_pko_l2_sqx_cir_s          cn78xx;
+	struct cvmx_pko_l2_sqx_cir_s          cn78xxp2;
+	struct cvmx_pko_l2_sqx_cir_s          cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_cir cvmx_pko_l2_sqx_cir_t;
 
@@ -4527,15 +5317,18 @@ union cvmx_pko_l2_sqx_green {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_green_s        cn73xx;
 	struct cvmx_pko_l2_sqx_green_s        cn78xx;
+	struct cvmx_pko_l2_sqx_green_s        cn78xxp2;
+	struct cvmx_pko_l2_sqx_green_s        cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_green cvmx_pko_l2_sqx_green_t;
 
 /**
  * cvmx_pko_l2_sq#_pick
  *
- * This register has the same bit fields as PKO_L1_SQ()_PICK.
- *
+ * This CSR contains the meta for the L2 SQ, and is for debug and reconfiguration
+ * only and should never be written. See also PKO_META_DESC_S.
  */
 union cvmx_pko_l2_sqx_pick {
 	uint64_t u64;
@@ -4550,29 +5343,42 @@ union cvmx_pko_l2_sqx_pick {
 	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
 	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
-	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S. */
-	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Has no effect on any shaper. */
-	uint64_t adjust                       : 9;  /**< The PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero if a PKO_SEND_EXT_S is not present in
-                                                         the corresponding descriptor. */
+	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S.  See also
+                                                         PKO_META_DESC_S[JUMP]. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline.
+                                                         See also PKO_META_DESC_S[FPD]. */
+	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Should always be zero.
+                                                         See also PKO_META_DESC_S[DS]. */
+	uint64_t adjust                       : 9;  /**< When [ADJUST] is 0x100, it indicates that this CSR does not contain a valid meta,
+                                                         and all other fields in this CSR are invalid and shouldn't be used.
+                                                         When [ADJUST] is not 0x100, it is the PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero
+                                                         if a PKO_SEND_EXT_S is not present in the corresponding descriptor. See also
+                                                         PKO_META_DESC_S[ADJUST]. */
 	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or CIR_ONLY
                                                          (i.e. [PIR_DIS]=PKO_SEND_EXT_S[COL<1>]). Zero if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. See PKO_COLORALG_E. [PIR_DIS] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[COL<1>]. */
 	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or
-                                                         EIR_PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
+                                                         PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
                                                          present in the corresponding descriptor. See PKO_COLORALG_E. [CIR_DIS] is used by the
-                                                         DQ through L2 shapers, but not used by the L1 rate limiters. */
+                                                         DQ through L2 shapers, but not used by the L1 rate limiters. See also
+                                                         PKO_META_DESC_S[COL<0>]. */
 	uint64_t red_algo_override            : 2;  /**< PKO_SEND_EXT_S[RA] from the corresponding packet descriptor. Zero
                                                          (i.e. PKO_REDALG_E::STD) if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. [RED_ALGO_OVERRIDE] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
-	uint64_t length                       : 16; /**< The packet length in bytes including pad.
-                                                               PKO_SEND_HDR_S[TOTAL] + CALCPAD
-                                                         where CALCPAD is zero when PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN], else
-                                                         CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the
-                                                         DQ the packet used. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[RA]. */
+	uint64_t length                       : 16; /**< Meta packet length. Generally, the size of the outgoing packet
+                                                         including pad, but excluding FCS and preamble.
+                                                         For metas corresponding to non-PKO_SEND_TSO_S descriptors:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(PKO_SEND_HDR_S[TOTAL], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       PKO_SEND_HDR_S[TOTAL]
+                                                         For metas corresponding to PKO_SEND_TSO_S TSO packet segments:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(FPS+PKO_SEND_TSO_S[SB], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       (FPS+PKO_SEND_TSO_S[SB])
+                                                         d is the DQ that the PKO SEND used. FPS is the number of payload bytes
+                                                         in the TSO segment (see PKO_SEND_TSO_S). See also PKO_META_DESC_S[LENGTH]. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -4591,7 +5397,10 @@ union cvmx_pko_l2_sqx_pick {
 	uint64_t dq                           : 10;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_pick_s         cn73xx;
 	struct cvmx_pko_l2_sqx_pick_s         cn78xx;
+	struct cvmx_pko_l2_sqx_pick_s         cn78xxp2;
+	struct cvmx_pko_l2_sqx_pick_s         cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_pick cvmx_pko_l2_sqx_pick_t;
 
@@ -4617,12 +5426,14 @@ union cvmx_pko_l2_sqx_pir {
                                                          specifying the number of time-wheel turns required before the accumulator is increased.
                                                          The rate count = (1 << RATE_DIVIDER_EXPONENT). The supported range for
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
-                                                         Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
+                                                         Note that for the L1-SQs, a time-wheel turn is 48 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 48) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -4637,7 +5448,10 @@ union cvmx_pko_l2_sqx_pir {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_pir_s          cn73xx;
 	struct cvmx_pko_l2_sqx_pir_s          cn78xx;
+	struct cvmx_pko_l2_sqx_pir_s          cn78xxp2;
+	struct cvmx_pko_l2_sqx_pir_s          cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_pir cvmx_pko_l2_sqx_pir_t;
 
@@ -4659,7 +5473,22 @@ union cvmx_pko_l2_sqx_pointers {
 	uint64_t reserved_25_63               : 39;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_pointers_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_24_63               : 40;
+	uint64_t prev                         : 8;  /**< Previous pointer. The linked-list previous pointer. */
+	uint64_t reserved_8_15                : 8;
+	uint64_t next                         : 8;  /**< Next pointer. The linked-list next pointer. */
+#else
+	uint64_t next                         : 8;
+	uint64_t reserved_8_15                : 8;
+	uint64_t prev                         : 8;
+	uint64_t reserved_24_63               : 40;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l2_sqx_pointers_s     cn78xx;
+	struct cvmx_pko_l2_sqx_pointers_s     cn78xxp2;
+	struct cvmx_pko_l2_sqx_pointers_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_pointers cvmx_pko_l2_sqx_pointers_t;
 
@@ -4684,7 +5513,10 @@ union cvmx_pko_l2_sqx_red {
 	uint64_t reserved_19_63               : 45;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_red_s          cn73xx;
 	struct cvmx_pko_l2_sqx_red_s          cn78xx;
+	struct cvmx_pko_l2_sqx_red_s          cn78xxp2;
+	struct cvmx_pko_l2_sqx_red_s          cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_red cvmx_pko_l2_sqx_red_t;
 
@@ -4702,7 +5534,10 @@ union cvmx_pko_l2_sqx_sched_state {
 	uint64_t reserved_25_63               : 39;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_sched_state_s  cn73xx;
 	struct cvmx_pko_l2_sqx_sched_state_s  cn78xx;
+	struct cvmx_pko_l2_sqx_sched_state_s  cn78xxp2;
+	struct cvmx_pko_l2_sqx_sched_state_s  cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_sched_state cvmx_pko_l2_sqx_sched_state_t;
 
@@ -4722,21 +5557,21 @@ union cvmx_pko_l2_sqx_schedule {
                                                          the shaper at the next level. */
 	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned
                                                          integer). The packet size used in all DWRR (RR_COUNT) calculations is:
-                                                         _  (PKO_nm_SHAPE[LENGTH_DISABLE] ? 0 : (PKO_SEND_HDR_S[TOTAL] + CALCPAD +
-                                                            PKO_SEND_EXT_S[SHAPECHG])) + PKO_nm_SHAPE[ADJUST]
-                                                         where nm corresponds to this PKO_nm_SCHEDULE CSR. CALCPAD is zero when
-                                                         PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN],
-                                                         else CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the DQ the
-                                                         packet used. PKO_SEND_EXT_S[SHAPECHG] is zero when a PKO_SEND_EXT_S is not present
-                                                         in the send descriptor. */
+                                                         _  (PKO_nm_SHAPE[LENGTH_DISABLE] ? 0 : (PKO_nm_PICK[LENGTH] + PKO_nm_PICK[ADJUST]))
+                                                            + PKO_nm_SHAPE[ADJUST]
+                                                         where nm corresponds to this PKO_nm_SCHEDULE CSR.
+                                                         Typically [RR_QUANTUM] should be at or near the MTU or more (to limit or prevent
+                                                         negative accumulations of PKO_*_SCHED_STATE[RR_COUNT] (i.e. the deficit count)). */
 #else
 	uint64_t rr_quantum                   : 24;
 	uint64_t prio                         : 4;
 	uint64_t reserved_28_63               : 36;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_schedule_s     cn73xx;
 	struct cvmx_pko_l2_sqx_schedule_s     cn78xx;
+	struct cvmx_pko_l2_sqx_schedule_s     cn78xxp2;
+	struct cvmx_pko_l2_sqx_schedule_s     cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_schedule cvmx_pko_l2_sqx_schedule_t;
 
@@ -4747,10 +5582,14 @@ union cvmx_pko_l2_sqx_shape {
 	uint64_t u64;
 	struct cvmx_pko_l2_sqx_shape_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_25_63               : 39;
+	uint64_t reserved_27_63               : 37;
+	uint64_t schedule_list                : 2;  /**< Shaper scheduling list. Restricts shaper scheduling to specific lists.
+                                                         0x0 = Normal (selected for nearly all scheduling/shaping applications).
+                                                         0x1 = Green-only.
+                                                         0x2 = Yellow-only.
+                                                         0x3 = Red-only. */
 	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in DWRR scheduling
-                                                         and shaping calculations such that only the values of
-                                                         [ADJUST] and PKO_SEND_EXT_S[SHAPECHG] are used. */
+                                                         and shaping calculations such that only the value of [ADJUST] is used. */
 	uint64_t reserved_13_23               : 11;
 	uint64_t yellow_disable               : 1;  /**< Disable yellow transitions. Disables green-to-yellow packet color marking transitions when
                                                          set. Not used by hardware when corresponding PKO_*_CIR[ENABLE] is clear. */
@@ -4758,8 +5597,8 @@ union cvmx_pko_l2_sqx_shape {
                                                          transitions when set. Not used by hardware when [RED_ALGO]/PKO_SEND_EXT_S[RA]=0x2/STALL
                                                          nor when corresponding PKO_*_PIR[ENABLE] is clear. */
 	uint64_t red_algo                     : 2;  /**< Shaper red state algorithm when not specified by the PKO SEND. Used by hardware
-                                                         only when the shaper is in RED state. (RED state is when
-                                                         PKO_*_SHAPE_STATE[COLOR]=0x2). When PKO_SEND_EXT_S[RA]!=STD (!=0) for a
+                                                         only when the shaper is in RED state. (A shaper is in RED state when
+                                                         PKO_*_SHAPE_STATE[PIR_ACCUM] is negative.) When PKO_SEND_EXT_S[RA]!=STD (!=0) for a
                                                          packet, this [RED_ALGO] is not used, and PKO_SEND_EXT_S[RA] instead defines
                                                          the shaper red state algorithm used for the packet. The
                                                          encoding for the [RED_ALGO]/PKO_SEND_EXT_S[RA] that is used:
@@ -4782,8 +5621,58 @@ union cvmx_pko_l2_sqx_shape {
                                                                affecting any RR_COUNT, CIR_ACCUM, or PIR_ACCUM state, and are then
                                                                discarded by PKO. See also PKO_REDALG_E::DISCARD. */
 	uint64_t adjust                       : 9;  /**< Shaping and scheduling calculation adjustment. This 9-bit signed value allows
-                                                         +/- 256 bytes to be added to the packet length for shaping and scheduling
-                                                         calculations. */
+                                                         -255 .. 255 bytes to be added to the packet length for shaping and scheduling
+                                                         calculations. [ADJUST] value 0x100 should not be used. */
+#else
+	uint64_t adjust                       : 9;
+	uint64_t red_algo                     : 2;
+	uint64_t red_disable                  : 1;
+	uint64_t yellow_disable               : 1;
+	uint64_t reserved_13_23               : 11;
+	uint64_t length_disable               : 1;
+	uint64_t schedule_list                : 2;
+	uint64_t reserved_27_63               : 37;
+#endif
+	} s;
+	struct cvmx_pko_l2_sqx_shape_s        cn73xx;
+	struct cvmx_pko_l2_sqx_shape_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_25_63               : 39;
+	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in DWRR scheduling
+                                                         and shaping calculations such that only the value of [ADJUST] is used. */
+	uint64_t reserved_13_23               : 11;
+	uint64_t yellow_disable               : 1;  /**< Disable yellow transitions. Disables green-to-yellow packet color marking transitions when
+                                                         set. Not used by hardware when corresponding PKO_*_CIR[ENABLE] is clear. */
+	uint64_t red_disable                  : 1;  /**< Disable red transitions. Disables green-to-red and yellow-to-red packet color marking
+                                                         transitions when set. Not used by hardware when [RED_ALGO]/PKO_SEND_EXT_S[RA]=0x2/STALL
+                                                         nor when corresponding PKO_*_PIR[ENABLE] is clear. */
+	uint64_t red_algo                     : 2;  /**< Shaper red state algorithm when not specified by the PKO SEND. Used by hardware
+                                                         only when the shaper is in RED state. (A shaper is in RED state when
+                                                         PKO_*_SHAPE_STATE[PIR_ACCUM] is negative.) When PKO_SEND_EXT_S[RA]!=STD (!=0) for a
+                                                         packet, this [RED_ALGO] is not used, and PKO_SEND_EXT_S[RA] instead defines
+                                                         the shaper red state algorithm used for the packet. The
+                                                         encoding for the [RED_ALGO]/PKO_SEND_EXT_S[RA] that is used:
+                                                         0x0 = STALL. See 0x2.
+                                                         0x1 = SEND. Send packets while the shaper is in RED state. When the shaper is
+                                                               in RED state, packets that traverse the shaper will be downgraded to RED_SEND.
+                                                               (if not already RED_SEND or RED_DROP) unless [RED_DISABLE] is set or
+                                                               PKO_SEND_EXT_S[COL] for the packet is CIR_ONLY or NO_COLOR.
+                                                               See also PKO_REDALG_E::SEND.
+                                                         0x2 = STALL. Stall packets while the shaper is in RED state until the shaper is
+                                                               YELLOW or GREEN state. Packets that traverse the shaper are never
+                                                               downgraded to the RED state in this mode.
+                                                               See also PKO_REDALG_E::STALL.
+                                                         0x3 = DISCARD. Continually discard packets while the shaper is in RED state.
+                                                               When the shaper is in RED state, all packets that traverse the shaper
+                                                               will be downgraded to RED_DROP (if not already RED_DROP), unless
+                                                               [RED_DISABLE] is set or PKO_SEND_EXT_S[COL] for the packet is CIR_ONLY
+                                                               or NO_COLOR. RED_DROP packets traverse all subsequent schedulers/shapers
+                                                               (all the way through L1), but do so as quickly as possible without
+                                                               affecting any RR_COUNT, CIR_ACCUM, or PIR_ACCUM state, and are then
+                                                               discarded by PKO. See also PKO_REDALG_E::DISCARD. */
+	uint64_t adjust                       : 9;  /**< Shaping and scheduling calculation adjustment. This 9-bit signed value allows
+                                                         -255 .. 255 bytes to be added to the packet length for shaping and scheduling
+                                                         calculations. [ADJUST] value 0x100 should not be used. */
 #else
 	uint64_t adjust                       : 9;
 	uint64_t red_algo                     : 2;
@@ -4793,13 +5682,17 @@ union cvmx_pko_l2_sqx_shape {
 	uint64_t length_disable               : 1;
 	uint64_t reserved_25_63               : 39;
 #endif
-	} s;
-	struct cvmx_pko_l2_sqx_shape_s        cn78xx;
+	} cn78xx;
+	struct cvmx_pko_l2_sqx_shape_cn78xx   cn78xxp2;
+	struct cvmx_pko_l2_sqx_shape_s        cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_shape cvmx_pko_l2_sqx_shape_t;
 
 /**
  * cvmx_pko_l2_sq#_shape_state
+ *
+ * This register must not be written during normal operation.
+ *
  */
 union cvmx_pko_l2_sqx_shape_state {
 	uint64_t u64;
@@ -4807,11 +5700,11 @@ union cvmx_pko_l2_sqx_shape_state {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
 	uint64_t tw_timestamp                 : 6;  /**< Time-wheel timestamp. Debug access to the live time-wheel timestamp. */
-	uint64_t color                        : 2;  /**< Shaper color status. Debug access to the live shaper state.
-                                                         0x0 = Green - operating in 'committed' range.
-                                                         0x1 = Yellow - operating in 'excess/peak' range.
-                                                         0x2 = Red - operating in 'oversubscribed' range.
-                                                         0x3 = Reserved. */
+	uint64_t color                        : 2;  /**< Shaper connection status. Debug access to the live shaper state.
+                                                         0x0 = Green - shaper is connected into the green list.
+                                                         0x1 = Yellow - shaper is connected into the yellow list.
+                                                         0x2 = Red - shaper is connected into the red list.
+                                                         0x3 = Pruned - shaper is disconnected. */
 	uint64_t pir_accum                    : 26; /**< Peak information rate accumulator. Debug access to the live PIR accumulator. */
 	uint64_t cir_accum                    : 26; /**< Committed information rate accumulator. Debug access to the live CIR accumulator. */
 #else
@@ -4822,7 +5715,10 @@ union cvmx_pko_l2_sqx_shape_state {
 	uint64_t reserved_60_63               : 4;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_shape_state_s  cn73xx;
 	struct cvmx_pko_l2_sqx_shape_state_s  cn78xx;
+	struct cvmx_pko_l2_sqx_shape_state_s  cn78xxp2;
+	struct cvmx_pko_l2_sqx_shape_state_s  cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_shape_state cvmx_pko_l2_sqx_shape_state_t;
 
@@ -4837,18 +5733,32 @@ union cvmx_pko_l2_sqx_sw_xoff {
 	struct cvmx_pko_l2_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
-                                                         28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
-                                                         until the path has drained." */
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed.
+                                                         [DRAIN_IRQ] should be set whenever [DRAIN] is, and must not be set
+                                                         when [DRAIN] isn't set.  DRAIN_IRQ has no effect unless DRAIN and XOFF is also set. */
+	uint64_t drain_null_link              : 1;  /**< Drain null link. This setting only has effect when the L1 node is
+                                                         mapped to the NULL FIFO.  Conditions the drain path to drain through
+                                                         the NULL FIFO (i.e. link 14). As such, channel credits, HW_XOFF, and
+                                                         shaping are disabled on the draining path until the path has drained.
+                                                         [DRAIN_NULL_LINK] must not be set when [DRAIN] isn't set.
+                                                         DRAIN_NULL_LINK has no effect unless DRAIN and XOFF is also set. */
 	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. */
-	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is deasserted.
-                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] must be configured before using this
-                                                         register field. Writing to this register field before the associated
-                                                         PKO_*_TOPOLOGY[LINK/PARENT] value is configured can result in modifying the software
-                                                         XOFF state of the wrong SQ. */
+                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. [DRAIN] need never be
+                                                         set for the SQ1 level, but is useful at all other levels, including the DQ level.
+                                                         PKO_DRAIN_IRQ[INTR] should be clear prior to initiating a [DRAIN]=1 write to this CSR.
+                                                         After [DRAIN] is set for an SQ/DQ, it should not be set again, for this or any other
+                                                         SQ/DQ, until after a 0->1 transition has been observed on PKO_DRAIN_IRQ[INTR]
+                                                         (and/or the PKO_INTSN_E::PKO_PSE_PQ_DRAIN CIU interrupt has occured) and
+                                                         PKO_DRAIN_IRQ[INTR] has been cleared.  DRAIN has no effect unless XOFF is also set.
+                                                         Only one DRAIN command is allowed to be active at a time. */
+	uint64_t xoff                         : 1;  /**< XOFF. Stops meta flow out of the SQ/DQ. When [XOFF] is set, the corresponding
+                                                         PKO_*_PICK (i.e. the meta) in the SQ/DQ cannot be transferred to the
+                                                         next level. The corresponding PKO_*_PICK may become valid while [XOFF] is set,
+                                                         but it cannot change from valid to invalid while [XOFF] is set.
+                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] should normally be configured before
+                                                         [XOFF] is set. Setting [XOFF] before the associated PKO_*_TOPOLOGY[LINK/PARENT]
+                                                         value is configured can result in modifying the software XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
 	uint64_t drain                        : 1;
@@ -4857,7 +5767,10 @@ union cvmx_pko_l2_sqx_sw_xoff {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_sw_xoff_s      cn73xx;
 	struct cvmx_pko_l2_sqx_sw_xoff_s      cn78xx;
+	struct cvmx_pko_l2_sqx_sw_xoff_s      cn78xxp2;
+	struct cvmx_pko_l2_sqx_sw_xoff_s      cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_sw_xoff cvmx_pko_l2_sqx_sw_xoff_t;
 
@@ -4889,7 +5802,32 @@ union cvmx_pko_l2_sqx_topology {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_topology_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_40_63               : 24;
+	uint64_t prio_anchor                  : 8;  /**< See PKO_L1_SQ()_TOPOLOGY[PRIO_ANCHOR]. */
+	uint64_t reserved_20_31               : 12;
+	uint64_t parent                       : 4;  /**< Parent queue index. The index of the shaping element at the next lower hierarchical level
+                                                         that accepts this shaping element's outputs. Refer to the PKO_*_SQn_TOPOLOGY
+                                                         [PRIO_ANCHOR,RR_PRIO] descriptions for constraints on which child queues can attach to
+                                                         which shapers at the next lower level. When this shaper is unused, we recommend that
+                                                         PARENT be zero. */
+	uint64_t reserved_5_15                : 11;
+	uint64_t rr_prio                      : 4;  /**< See PKO_L1_SQ()_TOPOLOGY[RR_PRIO]. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t rr_prio                      : 4;
+	uint64_t reserved_5_15                : 11;
+	uint64_t parent                       : 4;
+	uint64_t reserved_20_31               : 12;
+	uint64_t prio_anchor                  : 8;
+	uint64_t reserved_40_63               : 24;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l2_sqx_topology_s     cn78xx;
+	struct cvmx_pko_l2_sqx_topology_s     cn78xxp2;
+	struct cvmx_pko_l2_sqx_topology_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_topology cvmx_pko_l2_sqx_topology_t;
 
@@ -4914,7 +5852,10 @@ union cvmx_pko_l2_sqx_yellow {
 	uint64_t reserved_19_63               : 45;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqx_yellow_s       cn73xx;
 	struct cvmx_pko_l2_sqx_yellow_s       cn78xx;
+	struct cvmx_pko_l2_sqx_yellow_s       cn78xxp2;
+	struct cvmx_pko_l2_sqx_yellow_s       cnf75xx;
 };
 typedef union cvmx_pko_l2_sqx_yellow cvmx_pko_l2_sqx_yellow_t;
 
@@ -4930,7 +5871,10 @@ union cvmx_pko_l2_sq_csr_bus_debug {
 	uint64_t csr_bus_debug                : 64;
 #endif
 	} s;
+	struct cvmx_pko_l2_sq_csr_bus_debug_s cn73xx;
 	struct cvmx_pko_l2_sq_csr_bus_debug_s cn78xx;
+	struct cvmx_pko_l2_sq_csr_bus_debug_s cn78xxp2;
+	struct cvmx_pko_l2_sq_csr_bus_debug_s cnf75xx;
 };
 typedef union cvmx_pko_l2_sq_csr_bus_debug cvmx_pko_l2_sq_csr_bus_debug_t;
 
@@ -4949,7 +5893,10 @@ union cvmx_pko_l2_sqa_debug {
 	uint64_t dbg_vec                      : 64;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqa_debug_s        cn73xx;
 	struct cvmx_pko_l2_sqa_debug_s        cn78xx;
+	struct cvmx_pko_l2_sqa_debug_s        cn78xxp2;
+	struct cvmx_pko_l2_sqa_debug_s        cnf75xx;
 };
 typedef union cvmx_pko_l2_sqa_debug cvmx_pko_l2_sqa_debug_t;
 
@@ -4968,7 +5915,10 @@ union cvmx_pko_l2_sqb_debug {
 	uint64_t dbg_vec                      : 64;
 #endif
 	} s;
+	struct cvmx_pko_l2_sqb_debug_s        cn73xx;
 	struct cvmx_pko_l2_sqb_debug_s        cn78xx;
+	struct cvmx_pko_l2_sqb_debug_s        cn78xxp2;
+	struct cvmx_pko_l2_sqb_debug_s        cnf75xx;
 };
 typedef union cvmx_pko_l2_sqb_debug cvmx_pko_l2_sqb_debug_t;
 
@@ -4993,8 +5943,10 @@ union cvmx_pko_l3_l2_sqx_channel {
                                                          count is less than zero. As such the most significant bit should normally be programmed as
                                                          zero (positive count). This gives a maximum value for this field of 2^9 - 1. */
 	uint64_t cc_enable                    : 1;  /**< Channel credit enable. Enables CC_WORD_CNT and CC_PACKET_CNT credit processing. */
-	uint64_t hw_xoff                      : 1;  /**< Hardware XOFF status. The status of hardware XON/XOFF. This is writable to get around LUT
-                                                         issues and for reconfiguration. */
+	uint64_t hw_xoff                      : 1;  /**< Hardware XOFF status. The status of hardware XON/XOFF (i.e. hardware channel
+                                                         backpressure). This is writable to get around LUT issues and for reconfiguration.
+                                                         [HW_XOFF] should only be set when there is a valid PKO_LUT entry pointing to the SQ
+                                                         which is being backpressured. */
 #else
 	uint64_t hw_xoff                      : 1;
 	uint64_t cc_enable                    : 1;
@@ -5004,7 +5956,10 @@ union cvmx_pko_l3_l2_sqx_channel {
 	uint64_t reserved_44_63               : 20;
 #endif
 	} s;
+	struct cvmx_pko_l3_l2_sqx_channel_s   cn73xx;
 	struct cvmx_pko_l3_l2_sqx_channel_s   cn78xx;
+	struct cvmx_pko_l3_l2_sqx_channel_s   cn78xxp2;
+	struct cvmx_pko_l3_l2_sqx_channel_s   cnf75xx;
 };
 typedef union cvmx_pko_l3_l2_sqx_channel cvmx_pko_l3_l2_sqx_channel_t;
 
@@ -5030,12 +5985,14 @@ union cvmx_pko_l3_sqx_cir {
                                                          specifying the number of time-wheel turns required before the accumulator is increased.
                                                          The rate count = (1 << RATE_DIVIDER_EXPONENT). The supported range for
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
-                                                         Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
+                                                         Note that for the L1-SQs, a time-wheel turn is 48 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 48) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -5050,7 +6007,10 @@ union cvmx_pko_l3_sqx_cir {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_cir_s          cn73xx;
 	struct cvmx_pko_l3_sqx_cir_s          cn78xx;
+	struct cvmx_pko_l3_sqx_cir_s          cn78xxp2;
+	struct cvmx_pko_l3_sqx_cir_s          cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_cir cvmx_pko_l3_sqx_cir_t;
 
@@ -5075,15 +6035,37 @@ union cvmx_pko_l3_sqx_green {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_green_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_41_63               : 23;
+	uint64_t rr_active                    : 1;  /**< Round-robin red active. Indicates that the round-robin input is mapped to RED. */
+	uint64_t active_vec                   : 20; /**< Active vector. A 10-bit vector, ordered by priority, that indicate which inputs to this
+                                                         scheduling queue are active. For internal use only. */
+	uint64_t reserved_18_19               : 2;
+	uint64_t head                         : 8;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
+	uint64_t reserved_8_9                 : 2;
+	uint64_t tail                         : 8;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+#else
+	uint64_t tail                         : 8;
+	uint64_t reserved_8_9                 : 2;
+	uint64_t head                         : 8;
+	uint64_t reserved_18_19               : 2;
+	uint64_t active_vec                   : 20;
+	uint64_t rr_active                    : 1;
+	uint64_t reserved_41_63               : 23;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l3_sqx_green_s        cn78xx;
+	struct cvmx_pko_l3_sqx_green_s        cn78xxp2;
+	struct cvmx_pko_l3_sqx_green_cn73xx   cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_green cvmx_pko_l3_sqx_green_t;
 
 /**
  * cvmx_pko_l3_sq#_pick
  *
- * This register has the same bit fields as PKO_L1_SQ()_PICK.
- *
+ * This CSR contains the meta for the L3 SQ, and is for debug and reconfiguration
+ * only and should never be written. See also PKO_META_DESC_S.
  */
 union cvmx_pko_l3_sqx_pick {
 	uint64_t u64;
@@ -5098,29 +6080,42 @@ union cvmx_pko_l3_sqx_pick {
 	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
 	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
-	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S. */
-	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Has no effect on any shaper. */
-	uint64_t adjust                       : 9;  /**< The PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero if a PKO_SEND_EXT_S is not present in
-                                                         the corresponding descriptor. */
+	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S.  See also
+                                                         PKO_META_DESC_S[JUMP]. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline.
+                                                         See also PKO_META_DESC_S[FPD]. */
+	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Should always be zero.
+                                                         See also PKO_META_DESC_S[DS]. */
+	uint64_t adjust                       : 9;  /**< When [ADJUST] is 0x100, it indicates that this CSR does not contain a valid meta,
+                                                         and all other fields in this CSR are invalid and shouldn't be used.
+                                                         When [ADJUST] is not 0x100, it is the PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero
+                                                         if a PKO_SEND_EXT_S is not present in the corresponding descriptor. See also
+                                                         PKO_META_DESC_S[ADJUST]. */
 	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or CIR_ONLY
                                                          (i.e. [PIR_DIS]=PKO_SEND_EXT_S[COL<1>]). Zero if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. See PKO_COLORALG_E. [PIR_DIS] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[COL<1>]. */
 	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or
-                                                         EIR_PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
+                                                         PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
                                                          present in the corresponding descriptor. See PKO_COLORALG_E. [CIR_DIS] is used by the
-                                                         DQ through L2 shapers, but not used by the L1 rate limiters. */
+                                                         DQ through L2 shapers, but not used by the L1 rate limiters. See also
+                                                         PKO_META_DESC_S[COL<0>]. */
 	uint64_t red_algo_override            : 2;  /**< PKO_SEND_EXT_S[RA] from the corresponding packet descriptor. Zero
                                                          (i.e. PKO_REDALG_E::STD) if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. [RED_ALGO_OVERRIDE] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
-	uint64_t length                       : 16; /**< The packet length in bytes including pad.
-                                                               PKO_SEND_HDR_S[TOTAL] + CALCPAD
-                                                         where CALCPAD is zero when PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN], else
-                                                         CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the
-                                                         DQ the packet used. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[RA]. */
+	uint64_t length                       : 16; /**< Meta packet length. Generally, the size of the outgoing packet
+                                                         including pad, but excluding FCS and preamble.
+                                                         For metas corresponding to non-PKO_SEND_TSO_S descriptors:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(PKO_SEND_HDR_S[TOTAL], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       PKO_SEND_HDR_S[TOTAL]
+                                                         For metas corresponding to PKO_SEND_TSO_S TSO packet segments:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(FPS+PKO_SEND_TSO_S[SB], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       (FPS+PKO_SEND_TSO_S[SB])
+                                                         d is the DQ that the PKO SEND used. FPS is the number of payload bytes
+                                                         in the TSO segment (see PKO_SEND_TSO_S). See also PKO_META_DESC_S[LENGTH]. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -5139,14 +6134,17 @@ union cvmx_pko_l3_sqx_pick {
 	uint64_t dq                           : 10;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_pick_s         cn73xx;
 	struct cvmx_pko_l3_sqx_pick_s         cn78xx;
+	struct cvmx_pko_l3_sqx_pick_s         cn78xxp2;
+	struct cvmx_pko_l3_sqx_pick_s         cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_pick cvmx_pko_l3_sqx_pick_t;
 
 /**
  * cvmx_pko_l3_sq#_pir
  *
- * This register has the same bit fields as PKO_L1_SQ()_CIR.
+ * This register has the same bit fields as PKO_L1_SQ(0..15)_CIR.
  *
  */
 union cvmx_pko_l3_sqx_pir {
@@ -5165,12 +6163,14 @@ union cvmx_pko_l3_sqx_pir {
                                                          specifying the number of time-wheel turns required before the accumulator is increased.
                                                          The rate count = (1 << RATE_DIVIDER_EXPONENT). The supported range for
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
-                                                         Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
+                                                         Note that for the L1-SQs, a time-wheel turn is 48 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 48) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -5185,7 +6185,10 @@ union cvmx_pko_l3_sqx_pir {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_pir_s          cn73xx;
 	struct cvmx_pko_l3_sqx_pir_s          cn78xx;
+	struct cvmx_pko_l3_sqx_pir_s          cn78xxp2;
+	struct cvmx_pko_l3_sqx_pir_s          cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_pir cvmx_pko_l3_sqx_pir_t;
 
@@ -5210,7 +6213,22 @@ union cvmx_pko_l3_sqx_pointers {
 	uint64_t reserved_25_63               : 39;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_pointers_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_24_63               : 40;
+	uint64_t prev                         : 8;  /**< Previous pointer. The linked-list previous pointer. */
+	uint64_t reserved_8_15                : 8;
+	uint64_t next                         : 8;  /**< Next pointer. The linked-list next pointer. */
+#else
+	uint64_t next                         : 8;
+	uint64_t reserved_8_15                : 8;
+	uint64_t prev                         : 8;
+	uint64_t reserved_24_63               : 40;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l3_sqx_pointers_s     cn78xx;
+	struct cvmx_pko_l3_sqx_pointers_s     cn78xxp2;
+	struct cvmx_pko_l3_sqx_pointers_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_pointers cvmx_pko_l3_sqx_pointers_t;
 
@@ -5233,14 +6251,29 @@ union cvmx_pko_l3_sqx_red {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_red_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_18_63               : 46;
+	uint64_t head                         : 8;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
+	uint64_t reserved_8_9                 : 2;
+	uint64_t tail                         : 8;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+#else
+	uint64_t tail                         : 8;
+	uint64_t reserved_8_9                 : 2;
+	uint64_t head                         : 8;
+	uint64_t reserved_18_63               : 46;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l3_sqx_red_s          cn78xx;
+	struct cvmx_pko_l3_sqx_red_s          cn78xxp2;
+	struct cvmx_pko_l3_sqx_red_cn73xx     cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_red cvmx_pko_l3_sqx_red_t;
 
 /**
  * cvmx_pko_l3_sq#_sched_state
  *
- * This register has the same bit fields as PKO_L2_SQ()_SCHED_STATE.
+ * This register has the same bit fields as PKO_L2_SQ(0..255)_SCHED_STATE.
  *
  */
 union cvmx_pko_l3_sqx_sched_state {
@@ -5254,7 +6287,10 @@ union cvmx_pko_l3_sqx_sched_state {
 	uint64_t reserved_25_63               : 39;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_sched_state_s  cn73xx;
 	struct cvmx_pko_l3_sqx_sched_state_s  cn78xx;
+	struct cvmx_pko_l3_sqx_sched_state_s  cn78xxp2;
+	struct cvmx_pko_l3_sqx_sched_state_s  cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_sched_state cvmx_pko_l3_sqx_sched_state_t;
 
@@ -5277,21 +6313,21 @@ union cvmx_pko_l3_sqx_schedule {
                                                          the shaper at the next level. */
 	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned
                                                          integer). The packet size used in all DWRR (RR_COUNT) calculations is:
-                                                         _  (PKO_nm_SHAPE[LENGTH_DISABLE] ? 0 : (PKO_SEND_HDR_S[TOTAL] + CALCPAD +
-                                                            PKO_SEND_EXT_S[SHAPECHG])) + PKO_nm_SHAPE[ADJUST]
-                                                         where nm corresponds to this PKO_nm_SCHEDULE CSR. CALCPAD is zero when
-                                                         PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN],
-                                                         else CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the DQ the
-                                                         packet used. PKO_SEND_EXT_S[SHAPECHG] is zero when a PKO_SEND_EXT_S is not present
-                                                         in the send descriptor. */
+                                                         _  (PKO_nm_SHAPE[LENGTH_DISABLE] ? 0 : (PKO_nm_PICK[LENGTH] + PKO_nm_PICK[ADJUST]))
+                                                            + PKO_nm_SHAPE[ADJUST]
+                                                         where nm corresponds to this PKO_nm_SCHEDULE CSR.
+                                                         Typically [RR_QUANTUM] should be at or near the MTU or more (to limit or prevent
+                                                         negative accumulations of PKO_*_SCHED_STATE[RR_COUNT] (i.e. the deficit count)). */
 #else
 	uint64_t rr_quantum                   : 24;
 	uint64_t prio                         : 4;
 	uint64_t reserved_28_63               : 36;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_schedule_s     cn73xx;
 	struct cvmx_pko_l3_sqx_schedule_s     cn78xx;
+	struct cvmx_pko_l3_sqx_schedule_s     cn78xxp2;
+	struct cvmx_pko_l3_sqx_schedule_s     cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_schedule cvmx_pko_l3_sqx_schedule_t;
 
@@ -5301,6 +6337,33 @@ typedef union cvmx_pko_l3_sqx_schedule cvmx_pko_l3_sqx_schedule_t;
 union cvmx_pko_l3_sqx_shape {
 	uint64_t u64;
 	struct cvmx_pko_l3_sqx_shape_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_27_63               : 37;
+	uint64_t schedule_list                : 2;  /**< Shaper scheduling list. Restricts shaper scheduling to specific lists.
+                                                         0x0 = Normal (selected for nearly all scheduling/shaping applications).
+                                                         0x1 = Green-only.
+                                                         0x2 = Yellow-only.
+                                                         0x3 = Red-only. */
+	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in DWRR scheduling
+                                                         and shaping calculations such that only the value of [ADJUST] is used. */
+	uint64_t reserved_13_23               : 11;
+	uint64_t yellow_disable               : 1;  /**< See PKO_L2_SQ()_SHAPE[YELLOW_DISABLE]. */
+	uint64_t red_disable                  : 1;  /**< See PKO_L2_SQ()_SHAPE[RED_DISABLE]. */
+	uint64_t red_algo                     : 2;  /**< See PKO_L2_SQ()_SHAPE[RED_ALGO]. */
+	uint64_t adjust                       : 9;  /**< See PKO_L2_SQ()_SHAPE[ADJUST]. */
+#else
+	uint64_t adjust                       : 9;
+	uint64_t red_algo                     : 2;
+	uint64_t red_disable                  : 1;
+	uint64_t yellow_disable               : 1;
+	uint64_t reserved_13_23               : 11;
+	uint64_t length_disable               : 1;
+	uint64_t schedule_list                : 2;
+	uint64_t reserved_27_63               : 37;
+#endif
+	} s;
+	struct cvmx_pko_l3_sqx_shape_s        cn73xx;
+	struct cvmx_pko_l3_sqx_shape_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
 	uint64_t length_disable               : 1;  /**< Length disable. Disables the use of packet lengths in DWRR scheduling
@@ -5319,8 +6382,9 @@ union cvmx_pko_l3_sqx_shape {
 	uint64_t length_disable               : 1;
 	uint64_t reserved_25_63               : 39;
 #endif
-	} s;
-	struct cvmx_pko_l3_sqx_shape_s        cn78xx;
+	} cn78xx;
+	struct cvmx_pko_l3_sqx_shape_cn78xx   cn78xxp2;
+	struct cvmx_pko_l3_sqx_shape_s        cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_shape cvmx_pko_l3_sqx_shape_t;
 
@@ -5328,7 +6392,7 @@ typedef union cvmx_pko_l3_sqx_shape cvmx_pko_l3_sqx_shape_t;
  * cvmx_pko_l3_sq#_shape_state
  *
  * This register has the same bit fields as PKO_L2_SQ()_SHAPE_STATE.
- *
+ * This register must not be written during normal operation.
  */
 union cvmx_pko_l3_sqx_shape_state {
 	uint64_t u64;
@@ -5336,11 +6400,11 @@ union cvmx_pko_l3_sqx_shape_state {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
 	uint64_t tw_timestamp                 : 6;  /**< Time-wheel timestamp. Debug access to the live time-wheel timestamp. */
-	uint64_t color                        : 2;  /**< Shaper color status. Debug access to the live shaper state.
-                                                         0x0 = Green - operating in 'committed' range.
-                                                         0x1 = Yellow - operating in 'excess/peak' range.
-                                                         0x2 = Red - operating in 'oversubscribed' range.
-                                                         0x3 = Reserved. */
+	uint64_t color                        : 2;  /**< Shaper connection status. Debug access to the live shaper state.
+                                                         0x0 = Green - shaper is connected into the green list.
+                                                         0x1 = Yellow - shaper is connected into the yellow list.
+                                                         0x2 = Red - shaper is connected into the red list.
+                                                         0x3 = Pruned - shaper is disconnected. */
 	uint64_t pir_accum                    : 26; /**< Peak information rate accumulator. Debug access to the live PIR accumulator. */
 	uint64_t cir_accum                    : 26; /**< Committed information rate accumulator. Debug access to the live CIR accumulator. */
 #else
@@ -5351,7 +6415,10 @@ union cvmx_pko_l3_sqx_shape_state {
 	uint64_t reserved_60_63               : 4;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_shape_state_s  cn73xx;
 	struct cvmx_pko_l3_sqx_shape_state_s  cn78xx;
+	struct cvmx_pko_l3_sqx_shape_state_s  cn78xxp2;
+	struct cvmx_pko_l3_sqx_shape_state_s  cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_shape_state cvmx_pko_l3_sqx_shape_state_t;
 
@@ -5366,18 +6433,32 @@ union cvmx_pko_l3_sqx_sw_xoff {
 	struct cvmx_pko_l3_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
-                                                         28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
-                                                         until the path has drained." */
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed.
+                                                         [DRAIN_IRQ] should be set whenever [DRAIN] is, and must not be set
+                                                         when [DRAIN] isn't set.  DRAIN_IRQ has no effect unless DRAIN and XOFF is also set. */
+	uint64_t drain_null_link              : 1;  /**< Drain null link. This setting only has effect when the L1 node is
+                                                         mapped to the NULL FIFO.  Conditions the drain path to drain through
+                                                         the NULL FIFO (i.e. link 14). As such, channel credits, HW_XOFF, and
+                                                         shaping are disabled on the draining path until the path has drained.
+                                                         [DRAIN_NULL_LINK] must not be set when [DRAIN] isn't set.
+                                                         DRAIN_NULL_LINK has no effect unless DRAIN and XOFF is also set. */
 	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. */
-	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is deasserted.
-                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] must be configured before using this
-                                                         register field. Writing to this register field before the associated
-                                                         PKO_*_TOPOLOGY[LINK/PARENT] value is configured can result in modifying the software
-                                                         XOFF state of the wrong SQ. */
+                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. [DRAIN] need never be
+                                                         set for the SQ1 level, but is useful at all other levels, including the DQ level.
+                                                         PKO_DRAIN_IRQ[INTR] should be clear prior to initiating a [DRAIN]=1 write to this CSR.
+                                                         After [DRAIN] is set for an SQ/DQ, it should not be set again, for this or any other
+                                                         SQ/DQ, until after a 0->1 transition has been observed on PKO_DRAIN_IRQ[INTR]
+                                                         (and/or the PKO_INTSN_E::PKO_PSE_PQ_DRAIN CIU interrupt has occured) and
+                                                         PKO_DRAIN_IRQ[INTR] has been cleared.  DRAIN has no effect unless XOFF is also set.
+                                                         Only one DRAIN command is allowed to be active at a time. */
+	uint64_t xoff                         : 1;  /**< XOFF. Stops meta flow out of the SQ/DQ. When [XOFF] is set, the corresponding
+                                                         PKO_*_PICK (i.e. the meta) in the SQ/DQ cannot be transferred to the
+                                                         next level. The corresponding PKO_*_PICK may become valid while [XOFF] is set,
+                                                         but it cannot change from valid to invalid while [XOFF] is set.
+                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] should normally be configured before
+                                                         [XOFF] is set. Setting [XOFF] before the associated PKO_*_TOPOLOGY[LINK/PARENT]
+                                                         value is configured can result in modifying the software XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
 	uint64_t drain                        : 1;
@@ -5386,7 +6467,10 @@ union cvmx_pko_l3_sqx_sw_xoff {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_sw_xoff_s      cn73xx;
 	struct cvmx_pko_l3_sqx_sw_xoff_s      cn78xx;
+	struct cvmx_pko_l3_sqx_sw_xoff_s      cn78xxp2;
+	struct cvmx_pko_l3_sqx_sw_xoff_s      cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_sw_xoff cvmx_pko_l3_sqx_sw_xoff_t;
 
@@ -5414,7 +6498,28 @@ union cvmx_pko_l3_sqx_topology {
 	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_topology_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_40_63               : 24;
+	uint64_t prio_anchor                  : 8;  /**< See PKO_L1_SQ()_TOPOLOGY[PRIO_ANCHOR]. */
+	uint64_t reserved_24_31               : 8;
+	uint64_t parent                       : 8;  /**< See PKO_L2_SQ()_TOPOLOGY[PARENT]. */
+	uint64_t reserved_5_15                : 11;
+	uint64_t rr_prio                      : 4;  /**< See PKO_L1_SQ()_TOPOLOGY[RR_PRIO]. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t rr_prio                      : 4;
+	uint64_t reserved_5_15                : 11;
+	uint64_t parent                       : 8;
+	uint64_t reserved_24_31               : 8;
+	uint64_t prio_anchor                  : 8;
+	uint64_t reserved_40_63               : 24;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l3_sqx_topology_s     cn78xx;
+	struct cvmx_pko_l3_sqx_topology_s     cn78xxp2;
+	struct cvmx_pko_l3_sqx_topology_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_topology cvmx_pko_l3_sqx_topology_t;
 
@@ -5434,7 +6539,22 @@ union cvmx_pko_l3_sqx_yellow {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqx_yellow_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_18_63               : 46;
+	uint64_t head                         : 8;  /**< Head pointer. The index of round-robin linked-list head. For internal use only. */
+	uint64_t reserved_8_9                 : 2;
+	uint64_t tail                         : 8;  /**< Tail pointer. The index of round-robin linked-list tail. For internal use only. */
+#else
+	uint64_t tail                         : 8;
+	uint64_t reserved_8_9                 : 2;
+	uint64_t head                         : 8;
+	uint64_t reserved_18_63               : 46;
+#endif
+	} cn73xx;
 	struct cvmx_pko_l3_sqx_yellow_s       cn78xx;
+	struct cvmx_pko_l3_sqx_yellow_s       cn78xxp2;
+	struct cvmx_pko_l3_sqx_yellow_cn73xx  cnf75xx;
 };
 typedef union cvmx_pko_l3_sqx_yellow cvmx_pko_l3_sqx_yellow_t;
 
@@ -5450,7 +6570,10 @@ union cvmx_pko_l3_sq_csr_bus_debug {
 	uint64_t csr_bus_debug                : 64;
 #endif
 	} s;
+	struct cvmx_pko_l3_sq_csr_bus_debug_s cn73xx;
 	struct cvmx_pko_l3_sq_csr_bus_debug_s cn78xx;
+	struct cvmx_pko_l3_sq_csr_bus_debug_s cn78xxp2;
+	struct cvmx_pko_l3_sq_csr_bus_debug_s cnf75xx;
 };
 typedef union cvmx_pko_l3_sq_csr_bus_debug cvmx_pko_l3_sq_csr_bus_debug_t;
 
@@ -5469,7 +6592,10 @@ union cvmx_pko_l3_sqa_debug {
 	uint64_t dbg_vec                      : 64;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqa_debug_s        cn73xx;
 	struct cvmx_pko_l3_sqa_debug_s        cn78xx;
+	struct cvmx_pko_l3_sqa_debug_s        cn78xxp2;
+	struct cvmx_pko_l3_sqa_debug_s        cnf75xx;
 };
 typedef union cvmx_pko_l3_sqa_debug cvmx_pko_l3_sqa_debug_t;
 
@@ -5488,7 +6614,10 @@ union cvmx_pko_l3_sqb_debug {
 	uint64_t dbg_vec                      : 64;
 #endif
 	} s;
+	struct cvmx_pko_l3_sqb_debug_s        cn73xx;
 	struct cvmx_pko_l3_sqb_debug_s        cn78xx;
+	struct cvmx_pko_l3_sqb_debug_s        cn78xxp2;
+	struct cvmx_pko_l3_sqb_debug_s        cnf75xx;
 };
 typedef union cvmx_pko_l3_sqb_debug cvmx_pko_l3_sqb_debug_t;
 
@@ -5516,10 +6645,12 @@ union cvmx_pko_l4_sqx_cir {
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
                                                          Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 96) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -5535,6 +6666,7 @@ union cvmx_pko_l4_sqx_cir {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_cir_s          cn78xx;
+	struct cvmx_pko_l4_sqx_cir_s          cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_cir cvmx_pko_l4_sqx_cir_t;
 
@@ -5563,14 +6695,15 @@ union cvmx_pko_l4_sqx_green {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_green_s        cn78xx;
+	struct cvmx_pko_l4_sqx_green_s        cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_green cvmx_pko_l4_sqx_green_t;
 
 /**
  * cvmx_pko_l4_sq#_pick
  *
- * This register has the same bit fields as PKO_L1_SQ()_PICK.
- *
+ * This CSR contains the meta for the L4 SQ, and is for debug and reconfiguration
+ * only and should never be written. See also PKO_META_DESC_S.
  */
 union cvmx_pko_l4_sqx_pick {
 	uint64_t u64;
@@ -5585,29 +6718,42 @@ union cvmx_pko_l4_sqx_pick {
 	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
 	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
-	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S. */
-	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Has no effect on any shaper. */
-	uint64_t adjust                       : 9;  /**< The PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero if a PKO_SEND_EXT_S is not present in
-                                                         the corresponding descriptor. */
+	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S.  See also
+                                                         PKO_META_DESC_S[JUMP]. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline.
+                                                         See also PKO_META_DESC_S[FPD]. */
+	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Should always be zero.
+                                                         See also PKO_META_DESC_S[DS]. */
+	uint64_t adjust                       : 9;  /**< When [ADJUST] is 0x100, it indicates that this CSR does not contain a valid meta,
+                                                         and all other fields in this CSR are invalid and shouldn't be used.
+                                                         When [ADJUST] is not 0x100, it is the PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero
+                                                         if a PKO_SEND_EXT_S is not present in the corresponding descriptor. See also
+                                                         PKO_META_DESC_S[ADJUST]. */
 	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or CIR_ONLY
                                                          (i.e. [PIR_DIS]=PKO_SEND_EXT_S[COL<1>]). Zero if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. See PKO_COLORALG_E. [PIR_DIS] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[COL<1>]. */
 	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or
-                                                         EIR_PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
+                                                         PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
                                                          present in the corresponding descriptor. See PKO_COLORALG_E. [CIR_DIS] is used by the
-                                                         DQ through L2 shapers, but not used by the L1 rate limiters. */
+                                                         DQ through L2 shapers, but not used by the L1 rate limiters. See also
+                                                         PKO_META_DESC_S[COL<0>]. */
 	uint64_t red_algo_override            : 2;  /**< PKO_SEND_EXT_S[RA] from the corresponding packet descriptor. Zero
                                                          (i.e. PKO_REDALG_E::STD) if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. [RED_ALGO_OVERRIDE] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
-	uint64_t length                       : 16; /**< The packet length in bytes including pad.
-                                                               PKO_SEND_HDR_S[TOTAL] + CALCPAD
-                                                         where CALCPAD is zero when PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN], else
-                                                         CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the
-                                                         DQ the packet used. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[RA]. */
+	uint64_t length                       : 16; /**< Meta packet length. Generally, the size of the outgoing packet
+                                                         including pad, but excluding FCS and preamble.
+                                                         For metas corresponding to non-PKO_SEND_TSO_S descriptors:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(PKO_SEND_HDR_S[TOTAL], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       PKO_SEND_HDR_S[TOTAL]
+                                                         For metas corresponding to PKO_SEND_TSO_S TSO packet segments:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(FPS+PKO_SEND_TSO_S[SB], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       (FPS+PKO_SEND_TSO_S[SB])
+                                                         d is the DQ that the PKO SEND used. FPS is the number of payload bytes
+                                                         in the TSO segment (see PKO_SEND_TSO_S). See also PKO_META_DESC_S[LENGTH]. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -5627,6 +6773,7 @@ union cvmx_pko_l4_sqx_pick {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_pick_s         cn78xx;
+	struct cvmx_pko_l4_sqx_pick_s         cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_pick cvmx_pko_l4_sqx_pick_t;
 
@@ -5654,10 +6801,12 @@ union cvmx_pko_l4_sqx_pir {
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
                                                          Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 96) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -5673,6 +6822,7 @@ union cvmx_pko_l4_sqx_pir {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_pir_s          cn78xx;
+	struct cvmx_pko_l4_sqx_pir_s          cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_pir cvmx_pko_l4_sqx_pir_t;
 
@@ -5695,6 +6845,7 @@ union cvmx_pko_l4_sqx_pointers {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_pointers_s     cn78xx;
+	struct cvmx_pko_l4_sqx_pointers_s     cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_pointers cvmx_pko_l4_sqx_pointers_t;
 
@@ -5718,6 +6869,7 @@ union cvmx_pko_l4_sqx_red {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_red_s          cn78xx;
+	struct cvmx_pko_l4_sqx_red_s          cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_red cvmx_pko_l4_sqx_red_t;
 
@@ -5739,6 +6891,7 @@ union cvmx_pko_l4_sqx_sched_state {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_sched_state_s  cn78xx;
+	struct cvmx_pko_l4_sqx_sched_state_s  cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_sched_state cvmx_pko_l4_sqx_sched_state_t;
 
@@ -5761,14 +6914,11 @@ union cvmx_pko_l4_sqx_schedule {
                                                          the shaper at the next level. */
 	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned
                                                          integer). The packet size used in all DWRR (RR_COUNT) calculations is:
-                                                         _  (PKO_nm_SHAPE[LENGTH_DISABLE] ? 0 : (PKO_SEND_HDR_S[TOTAL] + CALCPAD +
-                                                            PKO_SEND_EXT_S[SHAPECHG])) + PKO_nm_SHAPE[ADJUST]
-                                                         where nm corresponds to this PKO_nm_SCHEDULE CSR. CALCPAD is zero when
-                                                         PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN],
-                                                         else CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the DQ the
-                                                         packet used. PKO_SEND_EXT_S[SHAPECHG] is zero when a PKO_SEND_EXT_S is not present
-                                                         in the send descriptor. */
+                                                         _  (PKO_nm_SHAPE[LENGTH_DISABLE] ? 0 : (PKO_nm_PICK[LENGTH] + PKO_nm_PICK[ADJUST]))
+                                                            + PKO_nm_SHAPE[ADJUST]
+                                                         where nm corresponds to this PKO_nm_SCHEDULE CSR.
+                                                         Typically [RR_QUANTUM] should be at or near the MTU or more (to limit or prevent
+                                                         negative accumulations of PKO_*_SCHED_STATE[RR_COUNT] (i.e. the deficit count)). */
 #else
 	uint64_t rr_quantum                   : 24;
 	uint64_t prio                         : 4;
@@ -5776,6 +6926,7 @@ union cvmx_pko_l4_sqx_schedule {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_schedule_s     cn78xx;
+	struct cvmx_pko_l4_sqx_schedule_s     cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_schedule cvmx_pko_l4_sqx_schedule_t;
 
@@ -5808,6 +6959,7 @@ union cvmx_pko_l4_sqx_shape {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_shape_s        cn78xx;
+	struct cvmx_pko_l4_sqx_shape_s        cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_shape cvmx_pko_l4_sqx_shape_t;
 
@@ -5815,7 +6967,7 @@ typedef union cvmx_pko_l4_sqx_shape cvmx_pko_l4_sqx_shape_t;
  * cvmx_pko_l4_sq#_shape_state
  *
  * This register has the same bit fields as PKO_L2_SQ()_SHAPE_STATE.
- *
+ * This register must not be written during normal operation.
  */
 union cvmx_pko_l4_sqx_shape_state {
 	uint64_t u64;
@@ -5823,11 +6975,11 @@ union cvmx_pko_l4_sqx_shape_state {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
 	uint64_t tw_timestamp                 : 6;  /**< Time-wheel timestamp. Debug access to the live time-wheel timestamp. */
-	uint64_t color                        : 2;  /**< Shaper color status. Debug access to the live shaper state.
-                                                         0x0 = Green - operating in 'committed' range.
-                                                         0x1 = Yellow - operating in 'excess/peak' range.
-                                                         0x2 = Red - operating in 'oversubscribed' range.
-                                                         0x3 = Reserved. */
+	uint64_t color                        : 2;  /**< Shaper connection status. Debug access to the live shaper state.
+                                                         0x0 = Green - shaper is connected into the green list.
+                                                         0x1 = Yellow - shaper is connected into the yellow list.
+                                                         0x2 = Red - shaper is connected into the red list.
+                                                         0x3 = Pruned - shaper is disconnected. */
 	uint64_t pir_accum                    : 26; /**< Peak information rate accumulator. Debug access to the live PIR accumulator. */
 	uint64_t cir_accum                    : 26; /**< Committed information rate accumulator. Debug access to the live CIR accumulator. */
 #else
@@ -5839,6 +6991,7 @@ union cvmx_pko_l4_sqx_shape_state {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_shape_state_s  cn78xx;
+	struct cvmx_pko_l4_sqx_shape_state_s  cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_shape_state cvmx_pko_l4_sqx_shape_state_t;
 
@@ -5853,18 +7006,32 @@ union cvmx_pko_l4_sqx_sw_xoff {
 	struct cvmx_pko_l4_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
-                                                         28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
-                                                         until the path has drained." */
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed.
+                                                         [DRAIN_IRQ] should be set whenever [DRAIN] is, and must not be set
+                                                         when [DRAIN] isn't set.  DRAIN_IRQ has no effect unless DRAIN and XOFF is also set. */
+	uint64_t drain_null_link              : 1;  /**< Drain null link. This setting only has effect when the L1 node is
+                                                         mapped to the NULL FIFO.  Conditions the drain path to drain through
+                                                         the NULL FIFO (i.e. link 14). As such, channel credits, HW_XOFF, and
+                                                         shaping are disabled on the draining path until the path has drained.
+                                                         [DRAIN_NULL_LINK] must not be set when [DRAIN] isn't set.
+                                                         DRAIN_NULL_LINK has no effect unless DRAIN and XOFF is also set. */
 	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. */
-	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is deasserted.
-                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] must be configured before using this
-                                                         register field. Writing to this register field before the associated
-                                                         PKO_*_TOPOLOGY[LINK/PARENT] value is configured can result in modifying the software
-                                                         XOFF state of the wrong SQ. */
+                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. [DRAIN] need never be
+                                                         set for the SQ1 level, but is useful at all other levels, including the DQ level.
+                                                         PKO_DRAIN_IRQ[INTR] should be clear prior to initiating a [DRAIN]=1 write to this CSR.
+                                                         After [DRAIN] is set for an SQ/DQ, it should not be set again, for this or any other
+                                                         SQ/DQ, until after a 0->1 transition has been observed on PKO_DRAIN_IRQ[INTR]
+                                                         (and/or the PKO_INTSN_E::PKO_PSE_PQ_DRAIN CIU interrupt has occured) and
+                                                         PKO_DRAIN_IRQ[INTR] has been cleared.  DRAIN has no effect unless XOFF is also set.
+                                                         Only one DRAIN command is allowed to be active at a time. */
+	uint64_t xoff                         : 1;  /**< XOFF. Stops meta flow out of the SQ/DQ. When [XOFF] is set, the corresponding
+                                                         PKO_*_PICK (i.e. the meta) in the SQ/DQ cannot be transferred to the
+                                                         next level. The corresponding PKO_*_PICK may become valid while [XOFF] is set,
+                                                         but it cannot change from valid to invalid while [XOFF] is set.
+                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] should normally be configured before
+                                                         [XOFF] is set. Setting [XOFF] before the associated PKO_*_TOPOLOGY[LINK/PARENT]
+                                                         value is configured can result in modifying the software XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
 	uint64_t drain                        : 1;
@@ -5874,6 +7041,7 @@ union cvmx_pko_l4_sqx_sw_xoff {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_sw_xoff_s      cn78xx;
+	struct cvmx_pko_l4_sqx_sw_xoff_s      cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_sw_xoff cvmx_pko_l4_sqx_sw_xoff_t;
 
@@ -5902,6 +7070,7 @@ union cvmx_pko_l4_sqx_topology {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_topology_s     cn78xx;
+	struct cvmx_pko_l4_sqx_topology_s     cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_topology cvmx_pko_l4_sqx_topology_t;
 
@@ -5925,6 +7094,7 @@ union cvmx_pko_l4_sqx_yellow {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqx_yellow_s       cn78xx;
+	struct cvmx_pko_l4_sqx_yellow_s       cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqx_yellow cvmx_pko_l4_sqx_yellow_t;
 
@@ -5941,6 +7111,7 @@ union cvmx_pko_l4_sq_csr_bus_debug {
 #endif
 	} s;
 	struct cvmx_pko_l4_sq_csr_bus_debug_s cn78xx;
+	struct cvmx_pko_l4_sq_csr_bus_debug_s cn78xxp2;
 };
 typedef union cvmx_pko_l4_sq_csr_bus_debug cvmx_pko_l4_sq_csr_bus_debug_t;
 
@@ -5960,6 +7131,7 @@ union cvmx_pko_l4_sqa_debug {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqa_debug_s        cn78xx;
+	struct cvmx_pko_l4_sqa_debug_s        cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqa_debug cvmx_pko_l4_sqa_debug_t;
 
@@ -5979,6 +7151,7 @@ union cvmx_pko_l4_sqb_debug {
 #endif
 	} s;
 	struct cvmx_pko_l4_sqb_debug_s        cn78xx;
+	struct cvmx_pko_l4_sqb_debug_s        cn78xxp2;
 };
 typedef union cvmx_pko_l4_sqb_debug cvmx_pko_l4_sqb_debug_t;
 
@@ -6006,10 +7179,12 @@ union cvmx_pko_l5_sqx_cir {
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
                                                          Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 96) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -6025,6 +7200,7 @@ union cvmx_pko_l5_sqx_cir {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_cir_s          cn78xx;
+	struct cvmx_pko_l5_sqx_cir_s          cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_cir cvmx_pko_l5_sqx_cir_t;
 
@@ -6053,14 +7229,15 @@ union cvmx_pko_l5_sqx_green {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_green_s        cn78xx;
+	struct cvmx_pko_l5_sqx_green_s        cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_green cvmx_pko_l5_sqx_green_t;
 
 /**
  * cvmx_pko_l5_sq#_pick
  *
- * This register has the same bit fields as PKO_L1_SQ()_PICK.
- *
+ * This CSR contains the meta for the L5 SQ, and is for debug and reconfiguration
+ * only and should never be written. See also PKO_META_DESC_S.
  */
 union cvmx_pko_l5_sqx_pick {
 	uint64_t u64;
@@ -6075,29 +7252,42 @@ union cvmx_pko_l5_sqx_pick {
 	uint64_t p_con                        : 1;  /**< Parent connected flag. This pick has more picks in front of it. */
 	uint64_t c_con                        : 1;  /**< Child connected flag. This pick has more picks behind it. */
 	uint64_t uid                          : 7;  /**< Unique ID. 7-bit unique value assigned at the DQ level, increments for each packet. */
-	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S. */
-	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline. */
-	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Has no effect on any shaper. */
-	uint64_t adjust                       : 9;  /**< The PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero if a PKO_SEND_EXT_S is not present in
-                                                         the corresponding descriptor. */
+	uint64_t jump                         : 1;  /**< Set when the corresponding descriptor contains a PKO_SEND_JUMP_S.  See also
+                                                         PKO_META_DESC_S[JUMP]. */
+	uint64_t fpd                          : 1;  /**< First packet descriptor. Set when corresponding descriptor is the first in a cacheline.
+                                                         See also PKO_META_DESC_S[FPD]. */
+	uint64_t ds                           : 1;  /**< PKO_SEND_HDR_S[DS] from the corresponding descriptor. Should always be zero.
+                                                         See also PKO_META_DESC_S[DS]. */
+	uint64_t adjust                       : 9;  /**< When [ADJUST] is 0x100, it indicates that this CSR does not contain a valid meta,
+                                                         and all other fields in this CSR are invalid and shouldn't be used.
+                                                         When [ADJUST] is not 0x100, it is the PKO_SEND_EXT_S[SHAPECHG] for the packet. Zero
+                                                         if a PKO_SEND_EXT_S is not present in the corresponding descriptor. See also
+                                                         PKO_META_DESC_S[ADJUST]. */
 	uint64_t pir_dis                      : 1;  /**< PIR disable. Peak shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or CIR_ONLY
                                                          (i.e. [PIR_DIS]=PKO_SEND_EXT_S[COL<1>]). Zero if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. See PKO_COLORALG_E. [PIR_DIS] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[COL<1>]. */
 	uint64_t cir_dis                      : 1;  /**< CIR disable. Committed shaper disabled. Set when PKO_SEND_EXT_S[COL] is NO_COLOR or
-                                                         EIR_PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
+                                                         PIR_ONLY (i.e. [CIR_DIS]=PKO_SEND_EXT_S[COL<0>]). Zero if a PKO_SEND_EXT_S is not
                                                          present in the corresponding descriptor. See PKO_COLORALG_E. [CIR_DIS] is used by the
-                                                         DQ through L2 shapers, but not used by the L1 rate limiters. */
+                                                         DQ through L2 shapers, but not used by the L1 rate limiters. See also
+                                                         PKO_META_DESC_S[COL<0>]. */
 	uint64_t red_algo_override            : 2;  /**< PKO_SEND_EXT_S[RA] from the corresponding packet descriptor. Zero
                                                          (i.e. PKO_REDALG_E::STD) if a PKO_SEND_EXT_S is not present in the
                                                          corresponding descriptor. [RED_ALGO_OVERRIDE] is used by the DQ through L2
-                                                         shapers, but not used by the L1 rate limiters. */
-	uint64_t length                       : 16; /**< The packet length in bytes including pad.
-                                                               PKO_SEND_HDR_S[TOTAL] + CALCPAD
-                                                         where CALCPAD is zero when PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN], else
-                                                         CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the
-                                                         DQ the packet used. */
+                                                         shapers, but not used by the L1 rate limiters. See also PKO_META_DESC_S[RA]. */
+	uint64_t length                       : 16; /**< Meta packet length. Generally, the size of the outgoing packet
+                                                         including pad, but excluding FCS and preamble.
+                                                         For metas corresponding to non-PKO_SEND_TSO_S descriptors:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(PKO_SEND_HDR_S[TOTAL], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       PKO_SEND_HDR_S[TOTAL]
+                                                         For metas corresponding to PKO_SEND_TSO_S TSO packet segments:
+                                                          [LENGTH] = PKO_PDM_DQd_MINPAD[MINPAD] ?
+                                                                       MAX(FPS+PKO_SEND_TSO_S[SB], PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                       (FPS+PKO_SEND_TSO_S[SB])
+                                                         d is the DQ that the PKO SEND used. FPS is the number of payload bytes
+                                                         in the TSO segment (see PKO_SEND_TSO_S). See also PKO_META_DESC_S[LENGTH]. */
 #else
 	uint64_t length                       : 16;
 	uint64_t red_algo_override            : 2;
@@ -6117,6 +7307,7 @@ union cvmx_pko_l5_sqx_pick {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_pick_s         cn78xx;
+	struct cvmx_pko_l5_sqx_pick_s         cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_pick cvmx_pko_l5_sqx_pick_t;
 
@@ -6144,10 +7335,12 @@ union cvmx_pko_l5_sqx_pir {
                                                          RATE_DIVIDER_EXPONENT is 0 to 12. Programmed values greater than 12 are treated as 12.
                                                          Note that for the L1-SQs, a time-wheel turn is 96 clocks (SCLK). For the other levels a
                                                          time-wheel turn is 768 clocks (SCLK).
-                                                         For L1_SQ: RATE = (SCLK_FREQUENCY / 96) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 <<RATE_DIVIDER_EXPONENT)
-                                                         For L[5:2]_SQ: RATE = (SCLK_FREQUENCY / 768) * (1.RATE_MANTISSA << RATE_EXPONENT) /
-                                                         (1 << RATE_DIVIDER_EXPONENT) */
+                                                         For L1_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 96) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1
+                                                         <<RATE_DIVIDER_EXPONENT)
+                                                         For L[5:2]_SQ: RATE (bytes/second) =
+                                                           (SCLK_FREQUENCY / 768) * ((1.RATE_MANTISSA) << RATE_EXPONENT) / (1 <<
+                                                         RATE_DIVIDER_EXPONENT) */
 	uint64_t rate_exponent                : 4;  /**< Rate exponent. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t rate_mantissa                : 8;  /**< Rate mantissa. The rate is specified as 1.RATE_MANTISSA << RATE_EXPONENT. */
 	uint64_t enable                       : 1;  /**< Enable. Enables CIR shaping. */
@@ -6163,6 +7356,7 @@ union cvmx_pko_l5_sqx_pir {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_pir_s          cn78xx;
+	struct cvmx_pko_l5_sqx_pir_s          cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_pir cvmx_pko_l5_sqx_pir_t;
 
@@ -6188,6 +7382,7 @@ union cvmx_pko_l5_sqx_pointers {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_pointers_s     cn78xx;
+	struct cvmx_pko_l5_sqx_pointers_s     cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_pointers cvmx_pko_l5_sqx_pointers_t;
 
@@ -6211,6 +7406,7 @@ union cvmx_pko_l5_sqx_red {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_red_s          cn78xx;
+	struct cvmx_pko_l5_sqx_red_s          cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_red cvmx_pko_l5_sqx_red_t;
 
@@ -6232,6 +7428,7 @@ union cvmx_pko_l5_sqx_sched_state {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_sched_state_s  cn78xx;
+	struct cvmx_pko_l5_sqx_sched_state_s  cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_sched_state cvmx_pko_l5_sqx_sched_state_t;
 
@@ -6254,14 +7451,11 @@ union cvmx_pko_l5_sqx_schedule {
                                                          the shaper at the next level. */
 	uint64_t rr_quantum                   : 24; /**< Round-robin (DWRR) quantum. The deficit-weighted round-robin quantum (24-bit unsigned
                                                          integer). The packet size used in all DWRR (RR_COUNT) calculations is:
-                                                         _  (PKO_nm_SHAPE[LENGTH_DISABLE] ? 0 : (PKO_SEND_HDR_S[TOTAL] + CALCPAD +
-                                                            PKO_SEND_EXT_S[SHAPECHG])) + PKO_nm_SHAPE[ADJUST]
-                                                         where nm corresponds to this PKO_nm_SCHEDULE CSR. CALCPAD is zero when
-                                                         PKO_PDM_DQd_MINPAD[MINPAD] is clear or when
-                                                         PKO_PDM_CFG[TOTAL]>=PKO_PDM_CFG[PKO_PAD_MINLEN],
-                                                         else CALCPAD=PKO_PDM_CFG[PKO_PAD_MINLEN]-PKO_SEND_HDR_S[TOTAL], where d is the DQ the
-                                                         packet used. PKO_SEND_EXT_S[SHAPECHG] is zero when a PKO_SEND_EXT_S is not present
-                                                         in the send descriptor. */
+                                                         _  (PKO_nm_SHAPE[LENGTH_DISABLE] ? 0 : (PKO_nm_PICK[LENGTH] + PKO_nm_PICK[ADJUST]))
+                                                            + PKO_nm_SHAPE[ADJUST]
+                                                         where nm corresponds to this PKO_nm_SCHEDULE CSR.
+                                                         Typically [RR_QUANTUM] should be at or near the MTU or more (to limit or prevent
+                                                         negative accumulations of PKO_*_SCHED_STATE[RR_COUNT] (i.e. the deficit count)). */
 #else
 	uint64_t rr_quantum                   : 24;
 	uint64_t prio                         : 4;
@@ -6269,6 +7463,7 @@ union cvmx_pko_l5_sqx_schedule {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_schedule_s     cn78xx;
+	struct cvmx_pko_l5_sqx_schedule_s     cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_schedule cvmx_pko_l5_sqx_schedule_t;
 
@@ -6298,6 +7493,7 @@ union cvmx_pko_l5_sqx_shape {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_shape_s        cn78xx;
+	struct cvmx_pko_l5_sqx_shape_s        cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_shape cvmx_pko_l5_sqx_shape_t;
 
@@ -6305,7 +7501,7 @@ typedef union cvmx_pko_l5_sqx_shape cvmx_pko_l5_sqx_shape_t;
  * cvmx_pko_l5_sq#_shape_state
  *
  * This register has the same bit fields as PKO_L2_SQ()_SHAPE_STATE.
- *
+ * This register must not be written during normal operation.
  */
 union cvmx_pko_l5_sqx_shape_state {
 	uint64_t u64;
@@ -6313,11 +7509,11 @@ union cvmx_pko_l5_sqx_shape_state {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
 	uint64_t tw_timestamp                 : 6;  /**< Time-wheel timestamp. Debug access to the live time-wheel timestamp. */
-	uint64_t color                        : 2;  /**< Shaper color status. Debug access to the live shaper state.
-                                                         0x0 = Green - operating in 'committed' range.
-                                                         0x1 = Yellow - operating in 'excess/peak' range.
-                                                         0x2 = Red - operating in 'oversubscribed' range.
-                                                         0x3 = Reserved. */
+	uint64_t color                        : 2;  /**< Shaper connection status. Debug access to the live shaper state.
+                                                         0x0 = Green - shaper is connected into the green list.
+                                                         0x1 = Yellow - shaper is connected into the yellow list.
+                                                         0x2 = Red - shaper is connected into the red list.
+                                                         0x3 = Pruned - shaper is disconnected. */
 	uint64_t pir_accum                    : 26; /**< Peak information rate accumulator. Debug access to the live PIR accumulator. */
 	uint64_t cir_accum                    : 26; /**< Committed information rate accumulator. Debug access to the live CIR accumulator. */
 #else
@@ -6329,6 +7525,7 @@ union cvmx_pko_l5_sqx_shape_state {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_shape_state_s  cn78xx;
+	struct cvmx_pko_l5_sqx_shape_state_s  cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_shape_state cvmx_pko_l5_sqx_shape_state_t;
 
@@ -6343,18 +7540,32 @@ union cvmx_pko_l5_sqx_sw_xoff {
 	struct cvmx_pko_l5_sqx_sw_xoff_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed. */
-	uint64_t drain_null_link              : 1;  /**< "Drain null link. Conditions the drain path to drain through the null link (i.e. link
-                                                         28). As such, channel credits, HW_XOFF, and shaping are disabled on the draining path
-                                                         until the path has drained." */
+	uint64_t drain_irq                    : 1;  /**< Drain IRQ. Enables an interrupt that fires when the drain operation has completed.
+                                                         [DRAIN_IRQ] should be set whenever [DRAIN] is, and must not be set
+                                                         when [DRAIN] isn't set.  DRAIN_IRQ has no effect unless DRAIN and XOFF is also set. */
+	uint64_t drain_null_link              : 1;  /**< Drain null link. This setting only has effect when the L1 node is
+                                                         mapped to the NULL FIFO.  Conditions the drain path to drain through
+                                                         the NULL FIFO (i.e. link 14). As such, channel credits, HW_XOFF, and
+                                                         shaping are disabled on the draining path until the path has drained.
+                                                         [DRAIN_NULL_LINK] must not be set when [DRAIN] isn't set.
+                                                         DRAIN_NULL_LINK has no effect unless DRAIN and XOFF is also set. */
 	uint64_t drain                        : 1;  /**< Drain. This control activates a drain path through the PSE that starts at this node and
                                                          ends at the SQ1 level. The drain path is prioritized over other paths through PSE and can
-                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. */
-	uint64_t xoff                         : 1;  /**< XOFF. The PQ is disabled when XOFF is asserted. PQ is enabled when XOFF is deasserted.
-                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] must be configured before using this
-                                                         register field. Writing to this register field before the associated
-                                                         PKO_*_TOPOLOGY[LINK/PARENT] value is configured can result in modifying the software
-                                                         XOFF state of the wrong SQ. */
+                                                         be used in combination with [DRAIN_NULL_LINK] and [DRAIN_IRQ]. [DRAIN] need never be
+                                                         set for the SQ1 level, but is useful at all other levels, including the DQ level.
+                                                         PKO_DRAIN_IRQ[INTR] should be clear prior to initiating a [DRAIN]=1 write to this CSR.
+                                                         After [DRAIN] is set for an SQ/DQ, it should not be set again, for this or any other
+                                                         SQ/DQ, until after a 0->1 transition has been observed on PKO_DRAIN_IRQ[INTR]
+                                                         (and/or the PKO_INTSN_E::PKO_PSE_PQ_DRAIN CIU interrupt has occured) and
+                                                         PKO_DRAIN_IRQ[INTR] has been cleared.  DRAIN has no effect unless XOFF is also set.
+                                                         Only one DRAIN command is allowed to be active at a time. */
+	uint64_t xoff                         : 1;  /**< XOFF. Stops meta flow out of the SQ/DQ. When [XOFF] is set, the corresponding
+                                                         PKO_*_PICK (i.e. the meta) in the SQ/DQ cannot be transferred to the
+                                                         next level. The corresponding PKO_*_PICK may become valid while [XOFF] is set,
+                                                         but it cannot change from valid to invalid while [XOFF] is set.
+                                                         NOTE: The associated PKO_*_TOPOLOGY[LINK/PARENT] should normally be configured before
+                                                         [XOFF] is set. Setting [XOFF] before the associated PKO_*_TOPOLOGY[LINK/PARENT]
+                                                         value is configured can result in modifying the software XOFF state of the wrong SQ. */
 #else
 	uint64_t xoff                         : 1;
 	uint64_t drain                        : 1;
@@ -6364,6 +7575,7 @@ union cvmx_pko_l5_sqx_sw_xoff {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_sw_xoff_s      cn78xx;
+	struct cvmx_pko_l5_sqx_sw_xoff_s      cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_sw_xoff cvmx_pko_l5_sqx_sw_xoff_t;
 
@@ -6392,6 +7604,7 @@ union cvmx_pko_l5_sqx_topology {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_topology_s     cn78xx;
+	struct cvmx_pko_l5_sqx_topology_s     cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_topology cvmx_pko_l5_sqx_topology_t;
 
@@ -6415,6 +7628,7 @@ union cvmx_pko_l5_sqx_yellow {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqx_yellow_s       cn78xx;
+	struct cvmx_pko_l5_sqx_yellow_s       cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqx_yellow cvmx_pko_l5_sqx_yellow_t;
 
@@ -6431,6 +7645,7 @@ union cvmx_pko_l5_sq_csr_bus_debug {
 #endif
 	} s;
 	struct cvmx_pko_l5_sq_csr_bus_debug_s cn78xx;
+	struct cvmx_pko_l5_sq_csr_bus_debug_s cn78xxp2;
 };
 typedef union cvmx_pko_l5_sq_csr_bus_debug cvmx_pko_l5_sq_csr_bus_debug_t;
 
@@ -6450,6 +7665,7 @@ union cvmx_pko_l5_sqa_debug {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqa_debug_s        cn78xx;
+	struct cvmx_pko_l5_sqa_debug_s        cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqa_debug cvmx_pko_l5_sqa_debug_t;
 
@@ -6469,11 +7685,28 @@ union cvmx_pko_l5_sqb_debug {
 #endif
 	} s;
 	struct cvmx_pko_l5_sqb_debug_s        cn78xx;
+	struct cvmx_pko_l5_sqb_debug_s        cn78xxp2;
 };
 typedef union cvmx_pko_l5_sqb_debug cvmx_pko_l5_sqb_debug_t;
 
 /**
  * cvmx_pko_lut#
+ *
+ * PKO_LUT has a location for each used PKI_CHAN_E. The following table
+ * shows the mapping between LINK/MAC_NUM's, PKI_CHAN_E channels, and
+ * PKO_LUT indices.
+ *
+ * <pre>
+ *   LINK/   PKI_CHAN_E    Corresponding
+ * MAC_NUM   Range         PKO_LUT index   Description
+ * -------   -----------   -------------   -----------------
+ *     0     0x000-0x03F   0x040-0x07F     LBK Loopback
+ *     1     0x100-0x13F   0x080-0x0BF     DPI packet output
+ *     2     0x800-0x80F   0x000-0x00F     BGX0 Logical MAC 0
+ *     3     0x810-0x81F   0x010-0x01F     BGX0 Logical MAC 1
+ *     4     0x820-0x82F   0x020-0x02F     BGX0 Logical MAC 2
+ *     5     0x830-0x83F   0x030-0x03F     BGX0 Logical MAC 3
+ * </pre>
  */
 union cvmx_pko_lutx {
 	uint64_t u64;
@@ -6492,7 +7725,26 @@ union cvmx_pko_lutx {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_pko_lutx_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t valid                        : 1;  /**< Declares if the index in the LUT is valid. */
+	uint64_t reserved_13_14               : 2;
+	uint64_t pq_idx                       : 4;  /**< PQ index for channel return processing in the PSE. */
+	uint64_t reserved_8_8                 : 1;
+	uint64_t queue_number                 : 8;  /**< Mapping from this channel to the programmed queue number. */
+#else
+	uint64_t queue_number                 : 8;
+	uint64_t reserved_8_8                 : 1;
+	uint64_t pq_idx                       : 4;
+	uint64_t reserved_13_14               : 2;
+	uint64_t valid                        : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
 	struct cvmx_pko_lutx_s                cn78xx;
+	struct cvmx_pko_lutx_s                cn78xxp2;
+	struct cvmx_pko_lutx_cn73xx           cnf75xx;
 };
 typedef union cvmx_pko_lutx cvmx_pko_lutx_t;
 
@@ -6510,7 +7762,10 @@ union cvmx_pko_lut_bist_status {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_pko_lut_bist_status_s     cn73xx;
 	struct cvmx_pko_lut_bist_status_s     cn78xx;
+	struct cvmx_pko_lut_bist_status_s     cn78xxp2;
+	struct cvmx_pko_lut_bist_status_s     cnf75xx;
 };
 typedef union cvmx_pko_lut_bist_status cvmx_pko_lut_bist_status_t;
 
@@ -6530,7 +7785,10 @@ union cvmx_pko_lut_ecc_ctl0 {
 	uint64_t c2q_lut_ram_flip             : 2;
 #endif
 	} s;
+	struct cvmx_pko_lut_ecc_ctl0_s        cn73xx;
 	struct cvmx_pko_lut_ecc_ctl0_s        cn78xx;
+	struct cvmx_pko_lut_ecc_ctl0_s        cn78xxp2;
+	struct cvmx_pko_lut_ecc_ctl0_s        cnf75xx;
 };
 typedef union cvmx_pko_lut_ecc_ctl0 cvmx_pko_lut_ecc_ctl0_t;
 
@@ -6549,7 +7807,10 @@ union cvmx_pko_lut_ecc_dbe_sts0 {
 	uint64_t c2q_lut_ram_dbe              : 1;
 #endif
 	} s;
+	struct cvmx_pko_lut_ecc_dbe_sts0_s    cn73xx;
 	struct cvmx_pko_lut_ecc_dbe_sts0_s    cn78xx;
+	struct cvmx_pko_lut_ecc_dbe_sts0_s    cn78xxp2;
+	struct cvmx_pko_lut_ecc_dbe_sts0_s    cnf75xx;
 };
 typedef union cvmx_pko_lut_ecc_dbe_sts0 cvmx_pko_lut_ecc_dbe_sts0_t;
 
@@ -6571,7 +7832,10 @@ union cvmx_pko_lut_ecc_dbe_sts_cmb0 {
 	uint64_t lut_dbe_cmb0                 : 1;
 #endif
 	} s;
+	struct cvmx_pko_lut_ecc_dbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_lut_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_lut_ecc_dbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_lut_ecc_dbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_lut_ecc_dbe_sts_cmb0 cvmx_pko_lut_ecc_dbe_sts_cmb0_t;
 
@@ -6590,7 +7854,10 @@ union cvmx_pko_lut_ecc_sbe_sts0 {
 	uint64_t c2q_lut_ram_sbe              : 1;
 #endif
 	} s;
+	struct cvmx_pko_lut_ecc_sbe_sts0_s    cn73xx;
 	struct cvmx_pko_lut_ecc_sbe_sts0_s    cn78xx;
+	struct cvmx_pko_lut_ecc_sbe_sts0_s    cn78xxp2;
+	struct cvmx_pko_lut_ecc_sbe_sts0_s    cnf75xx;
 };
 typedef union cvmx_pko_lut_ecc_sbe_sts0 cvmx_pko_lut_ecc_sbe_sts0_t;
 
@@ -6612,7 +7879,10 @@ union cvmx_pko_lut_ecc_sbe_sts_cmb0 {
 	uint64_t lut_sbe_cmb0                 : 1;
 #endif
 	} s;
+	struct cvmx_pko_lut_ecc_sbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_lut_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_lut_ecc_sbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_lut_ecc_sbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_lut_ecc_sbe_sts_cmb0 cvmx_pko_lut_ecc_sbe_sts_cmb0_t;
 
@@ -6628,19 +7898,14 @@ typedef union cvmx_pko_lut_ecc_sbe_sts_cmb0 cvmx_pko_lut_ecc_sbe_sts_cmb0_t;
  *   ---------------------------------
  *   PKO_MAC0_CFG   LBK loopback
  *   PKO_MAC1_CFG   DPI packet output
- *   PKO_MAC2_CFG   ILK link 0
- *   PKO_MAC3_CFG   ILK link 1
- *   PKO_MAC4_CFG   BGX0 logical MAC 0
- *   PKO_MAC5_CFG   BGX0 logical MAC 1
- *   PKO_MAC6_CFG   BGX0 logical MAC 2
- *   PKO_MAC7_CFG   BGX0 logical MAC 3
- *   PKO_MAC8_CFG   BGX1 logical MAC 0
- *   PKO_MAC9_CFG   BGX1 logical MAC 1
- *   PKO_MAC10_CFG  BGX1 logical MAC 2
- *   PKO_MAC11_CFG  BGX1 logical MAC 3
- *   PKO_MAC12_CFG  BGX2 logical MAC 0
- *   - ...
- *   PKO_MAC27_CFG  BGX5 logical MAC 3
+ *   PKO_MAC2_CFG   BGX0  logical MAC 0
+ *   PKO_MAC3_CFG   BGX0  logical MAC 1
+ *   PKO_MAC4_CFG   BGX0  logical MAC 2
+ *   PKO_MAC5_CFG   BGX0  logical MAC 3
+ *   PKO_MAC6_CFG   SRIO0 logical MAC 0
+ *   PKO_MAC7_CFG   SRIO0 logical MAC 1
+ *   PKO_MAC8_CFG   SRIO1 logical MAC 0
+ *   PKO_MAC9_CFG   SRIO1 logical MAC 1
  * </pre>
  */
 union cvmx_pko_macx_cfg {
@@ -6648,17 +7913,19 @@ union cvmx_pko_macx_cfg {
 	struct cvmx_pko_macx_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_17_63               : 47;
-	uint64_t min_pad_ena                  : 1;  /**< Minimum padding is enabled for this MAC/FIFO. */
+	uint64_t min_pad_ena                  : 1;  /**< Minimum padding enable. When [MIN_PAD_ENA] is set, PKO pads packets going
+                                                         through the MAC/FIFO (with zeroes) to a minimum of PKO_PDM_CFG[PKO_PAD_MINLEN]
+                                                         bytes. */
 	uint64_t fcs_ena                      : 1;  /**< Enable outside FCS for this MAC/FIFO. */
 	uint64_t fcs_sop_off                  : 8;  /**< FCS start of packet offset. For this MAC, the number of bytes in the front of each packet
                                                          to exclude from FCS. */
 	uint64_t skid_max_cnt                 : 2;  /**< Maximum number of SKID credits. 0x0 = 16; 0x1 = 32; 0x2 = 64. */
 	uint64_t fifo_num                     : 5;  /**< The PEB TX FIFO number assigned to the given MAC. A value of 31 means unassigned. Unused
                                                          MACs must have [FIFO_NUM] = 31. For each active MAC, a unique valid FIFO_NUM must
-                                                         be assigned. When all PKO_PTGF(0..6)_CFG[SIZE] are zero, legal [FIFO_NUM] values are
-                                                         0..27 and 31. [FIFO_NUM] can never select the NULL FIFO. At most one
+                                                         be assigned. When all PKO_PTGF(0..3)_CFG[SIZE] are zero, legal [FIFO_NUM] values are
+                                                         0..15 and 31. [FIFO_NUM] can never select the NULL FIFO. At most one
                                                          used MAC can be simultaneously assigned the same used [FIFO_NUM].
-                                                         [FIFO_NUM] values 28-30 are illegal and must not be used. */
+                                                         [FIFO_NUM] values 16-30 are illegal and must not be used. */
 #else
 	uint64_t fifo_num                     : 5;
 	uint64_t skid_max_cnt                 : 2;
@@ -6668,7 +7935,10 @@ union cvmx_pko_macx_cfg {
 	uint64_t reserved_17_63               : 47;
 #endif
 	} s;
+	struct cvmx_pko_macx_cfg_s            cn73xx;
 	struct cvmx_pko_macx_cfg_s            cn78xx;
+	struct cvmx_pko_macx_cfg_s            cn78xxp2;
+	struct cvmx_pko_macx_cfg_s            cnf75xx;
 };
 typedef union cvmx_pko_macx_cfg cvmx_pko_macx_cfg_t;
 
@@ -6680,13 +7950,14 @@ union cvmx_pko_mci0_cred_cntx {
 	struct cvmx_pko_mci0_cred_cntx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_13_63               : 51;
-	uint64_t cred_cnt                     : 13; /**< Credit count. */
+	uint64_t cred_cnt                     : 13; /**< Reserved. */
 #else
 	uint64_t cred_cnt                     : 13;
 	uint64_t reserved_13_63               : 51;
 #endif
 	} s;
 	struct cvmx_pko_mci0_cred_cntx_s      cn78xx;
+	struct cvmx_pko_mci0_cred_cntx_s      cn78xxp2;
 };
 typedef union cvmx_pko_mci0_cred_cntx cvmx_pko_mci0_cred_cntx_t;
 
@@ -6698,15 +7969,14 @@ union cvmx_pko_mci0_max_credx {
 	struct cvmx_pko_mci0_max_credx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t max_cred_lim                 : 12; /**< Max credit limit.  Should be set to (FIFO_CREDIT - MAC_CREDIT) / 16, where FIFO_CREDIT
-                                                         is the size of the TxFIFO for this MAC (2560, 5120 or 10240), and MAC_CREDIT is the size
-                                                         of the MAC FIFO. */
+	uint64_t max_cred_lim                 : 12; /**< Reserved. */
 #else
 	uint64_t max_cred_lim                 : 12;
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
 	struct cvmx_pko_mci0_max_credx_s      cn78xx;
+	struct cvmx_pko_mci0_max_credx_s      cn78xxp2;
 };
 typedef union cvmx_pko_mci0_max_credx cvmx_pko_mci0_max_credx_t;
 
@@ -6724,7 +7994,10 @@ union cvmx_pko_mci1_cred_cntx {
 	uint64_t reserved_13_63               : 51;
 #endif
 	} s;
+	struct cvmx_pko_mci1_cred_cntx_s      cn73xx;
 	struct cvmx_pko_mci1_cred_cntx_s      cn78xx;
+	struct cvmx_pko_mci1_cred_cntx_s      cn78xxp2;
+	struct cvmx_pko_mci1_cred_cntx_s      cnf75xx;
 };
 typedef union cvmx_pko_mci1_cred_cntx cvmx_pko_mci1_cred_cntx_t;
 
@@ -6743,7 +8016,10 @@ union cvmx_pko_mci1_max_credx {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
+	struct cvmx_pko_mci1_max_credx_s      cn73xx;
 	struct cvmx_pko_mci1_max_credx_s      cn78xx;
+	struct cvmx_pko_mci1_max_credx_s      cn78xxp2;
+	struct cvmx_pko_mci1_max_credx_s      cnf75xx;
 };
 typedef union cvmx_pko_mci1_max_credx cvmx_pko_mci1_max_credx_t;
 
@@ -7774,7 +9050,7 @@ union cvmx_pko_mem_debug6 {
 	struct cvmx_pko_mem_debug6_cn68xx     cn68xxp1;
 	struct cvmx_pko_mem_debug6_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_37_63               : 27;
+	uint64_t reserved_63_37               : 27;
 	uint64_t qid_offres                   : 4;  /**< Internal state */
 	uint64_t qid_offths                   : 4;  /**< Internal state */
 	uint64_t preempter                    : 1;  /**< Internal state */
@@ -7800,7 +9076,7 @@ union cvmx_pko_mem_debug6 {
 	uint64_t preempter                    : 1;
 	uint64_t qid_offths                   : 4;
 	uint64_t qid_offres                   : 4;
-	uint64_t reserved_37_63               : 27;
+	uint64_t reserved_63_37               : 27;
 #endif
 	} cn70xx;
 	struct cvmx_pko_mem_debug6_cn70xx     cn70xxp1;
@@ -8818,9 +10094,11 @@ union cvmx_pko_ncb_bist_status {
 	uint64_t ncbo_pdm_cmd_dat_ram_bist_status : 1;/**< BIST status for NCBO_PDM_CMD_DAT_RAM. */
 	uint64_t ncbi_l2_pdm_pref_ram_bist_status : 1;/**< BIST status for NCBI_L2_PDM_PREF_RAM. */
 	uint64_t ncbo_pp_fif_ram_bist_status  : 1;  /**< BIST status for NCBO_PP_FIF_RAM. */
-	uint64_t reserved_0_58                : 59;
+	uint64_t ncbo_skid_fif_ram_bist_status : 1; /**< BIST status for NCBO_SKID_FIF_RAM. */
+	uint64_t reserved_0_57                : 58;
 #else
-	uint64_t reserved_0_58                : 59;
+	uint64_t reserved_0_57                : 58;
+	uint64_t ncbo_skid_fif_ram_bist_status : 1;
 	uint64_t ncbo_pp_fif_ram_bist_status  : 1;
 	uint64_t ncbi_l2_pdm_pref_ram_bist_status : 1;
 	uint64_t ncbo_pdm_cmd_dat_ram_bist_status : 1;
@@ -8828,7 +10106,10 @@ union cvmx_pko_ncb_bist_status {
 	uint64_t ncbi_l2_out_ram_bist_status  : 1;
 #endif
 	} s;
+	struct cvmx_pko_ncb_bist_status_s     cn73xx;
 	struct cvmx_pko_ncb_bist_status_s     cn78xx;
+	struct cvmx_pko_ncb_bist_status_s     cn78xxp2;
+	struct cvmx_pko_ncb_bist_status_s     cnf75xx;
 };
 typedef union cvmx_pko_ncb_bist_status cvmx_pko_ncb_bist_status_t;
 
@@ -8849,9 +10130,13 @@ union cvmx_pko_ncb_ecc_ctl0 {
 	uint64_t ncbi_l2_pdm_pref_ram_cdis    : 1;  /**< NCBI_L2_PDM_PREF_RAM ECC correction disable. */
 	uint64_t ncbo_pp_fif_ram_flip         : 2;  /**< NCBO_PP_FIF_RAM flip syndrome bits on write. */
 	uint64_t ncbo_pp_fif_ram_cdis         : 1;  /**< NCBO_PP_FIF_RAM ECC correction disable. */
-	uint64_t reserved_0_48                : 49;
+	uint64_t ncbo_skid_fif_ram_flip       : 2;  /**< NCBO_SKID_FIF_RAM flip syndrome bits on write. */
+	uint64_t ncbo_skid_fif_ram_cdis       : 1;  /**< NCBO_SKID_FIF_RAM ECC correction disable. */
+	uint64_t reserved_0_45                : 46;
 #else
-	uint64_t reserved_0_48                : 49;
+	uint64_t reserved_0_45                : 46;
+	uint64_t ncbo_skid_fif_ram_cdis       : 1;
+	uint64_t ncbo_skid_fif_ram_flip       : 2;
 	uint64_t ncbo_pp_fif_ram_cdis         : 1;
 	uint64_t ncbo_pp_fif_ram_flip         : 2;
 	uint64_t ncbi_l2_pdm_pref_ram_cdis    : 1;
@@ -8864,7 +10149,10 @@ union cvmx_pko_ncb_ecc_ctl0 {
 	uint64_t ncbi_l2_out_ram_flip         : 2;
 #endif
 	} s;
+	struct cvmx_pko_ncb_ecc_ctl0_s        cn73xx;
 	struct cvmx_pko_ncb_ecc_ctl0_s        cn78xx;
+	struct cvmx_pko_ncb_ecc_ctl0_s        cn78xxp2;
+	struct cvmx_pko_ncb_ecc_ctl0_s        cnf75xx;
 };
 typedef union cvmx_pko_ncb_ecc_ctl0 cvmx_pko_ncb_ecc_ctl0_t;
 
@@ -8885,9 +10173,12 @@ union cvmx_pko_ncb_ecc_dbe_sts0 {
                                                          pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_l2_pipe.pdm_prefbuf_fifo */
 	uint64_t ncbo_pp_fif_ram_dbe          : 1;  /**< Double-bit error for NCBO_PP_FIF_RAM. INTERNAL: Instances:
                                                          pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo */
-	uint64_t reserved_0_58                : 59;
+	uint64_t ncbo_skid_fif_ram_dbe        : 1;  /**< Double-bit error for NCBO_SKID_FIF_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.skid_fifo */
+	uint64_t reserved_0_57                : 58;
 #else
-	uint64_t reserved_0_58                : 59;
+	uint64_t reserved_0_57                : 58;
+	uint64_t ncbo_skid_fif_ram_dbe        : 1;
 	uint64_t ncbo_pp_fif_ram_dbe          : 1;
 	uint64_t ncbi_l2_pdm_pref_ram_dbe     : 1;
 	uint64_t ncbo_pdm_cmd_dat_ram_dbe     : 1;
@@ -8895,7 +10186,10 @@ union cvmx_pko_ncb_ecc_dbe_sts0 {
 	uint64_t ncbi_l2_out_ram_dbe          : 1;
 #endif
 	} s;
+	struct cvmx_pko_ncb_ecc_dbe_sts0_s    cn73xx;
 	struct cvmx_pko_ncb_ecc_dbe_sts0_s    cn78xx;
+	struct cvmx_pko_ncb_ecc_dbe_sts0_s    cn78xxp2;
+	struct cvmx_pko_ncb_ecc_dbe_sts0_s    cnf75xx;
 };
 typedef union cvmx_pko_ncb_ecc_dbe_sts0 cvmx_pko_ncb_ecc_dbe_sts0_t;
 
@@ -8914,14 +10208,18 @@ union cvmx_pko_ncb_ecc_dbe_sts_cmb0 {
                                                          pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.pp_out_fifo
                                                          pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.ncb__pdm_cmnd_data_fifo
                                                          pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_l2_pipe.pdm_prefbuf_fifo
-                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo */
+                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo
+                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.skid_fifo */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
 	uint64_t ncb_dbe_cmb0                 : 1;
 #endif
 	} s;
+	struct cvmx_pko_ncb_ecc_dbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_ncb_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_ncb_ecc_dbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_ncb_ecc_dbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_ncb_ecc_dbe_sts_cmb0 cvmx_pko_ncb_ecc_dbe_sts_cmb0_t;
 
@@ -8942,9 +10240,12 @@ union cvmx_pko_ncb_ecc_sbe_sts0 {
                                                          pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_l2_pipe.pdm_prefbuf_fifo */
 	uint64_t ncbo_pp_fif_ram_sbe          : 1;  /**< Single-bit error for NCBO_PP_FIF_RAM. INTERNAL: Instances:
                                                          pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo */
-	uint64_t reserved_0_58                : 59;
+	uint64_t ncbo_skid_fif_ram_sbe        : 1;  /**< Single-bit error for NCBO_PP_FIF_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo */
+	uint64_t reserved_0_57                : 58;
 #else
-	uint64_t reserved_0_58                : 59;
+	uint64_t reserved_0_57                : 58;
+	uint64_t ncbo_skid_fif_ram_sbe        : 1;
 	uint64_t ncbo_pp_fif_ram_sbe          : 1;
 	uint64_t ncbi_l2_pdm_pref_ram_sbe     : 1;
 	uint64_t ncbo_pdm_cmd_dat_ram_sbe     : 1;
@@ -8952,7 +10253,10 @@ union cvmx_pko_ncb_ecc_sbe_sts0 {
 	uint64_t ncbi_l2_out_ram_sbe          : 1;
 #endif
 	} s;
+	struct cvmx_pko_ncb_ecc_sbe_sts0_s    cn73xx;
 	struct cvmx_pko_ncb_ecc_sbe_sts0_s    cn78xx;
+	struct cvmx_pko_ncb_ecc_sbe_sts0_s    cn78xxp2;
+	struct cvmx_pko_ncb_ecc_sbe_sts0_s    cnf75xx;
 };
 typedef union cvmx_pko_ncb_ecc_sbe_sts0 cvmx_pko_ncb_ecc_sbe_sts0_t;
 
@@ -8971,14 +10275,18 @@ union cvmx_pko_ncb_ecc_sbe_sts_cmb0 {
                                                          pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_txr.pp_out_fifo
                                                          pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.ncb__pdm_cmnd_data_fifo
                                                          pko_pnr2.nonpse.ncb.pko_ncbi_outb.ncbi_l2_pipe.pdm_prefbuf_fifo
-                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo */
+                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.pp_fifo
+                                                         pko_pnr2.nonpse.ncb.pko_ncbo_inb.splitter.skid_fifo */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
 	uint64_t ncb_sbe_cmb0                 : 1;
 #endif
 	} s;
+	struct cvmx_pko_ncb_ecc_sbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_ncb_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_ncb_ecc_sbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_ncb_ecc_sbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_ncb_ecc_sbe_sts_cmb0 cvmx_pko_ncb_ecc_sbe_sts_cmb0_t;
 
@@ -9011,7 +10319,10 @@ union cvmx_pko_ncb_int {
 	uint64_t reserved_2_63                : 62;
 #endif
 	} s;
+	struct cvmx_pko_ncb_int_s             cn73xx;
 	struct cvmx_pko_ncb_int_s             cn78xx;
+	struct cvmx_pko_ncb_int_s             cn78xxp2;
+	struct cvmx_pko_ncb_int_s             cnf75xx;
 };
 typedef union cvmx_pko_ncb_int cvmx_pko_ncb_int_t;
 
@@ -9041,7 +10352,10 @@ union cvmx_pko_ncb_tx_err_info {
 	uint64_t reserved_32_63               : 32;
 #endif
 	} s;
+	struct cvmx_pko_ncb_tx_err_info_s     cn73xx;
 	struct cvmx_pko_ncb_tx_err_info_s     cn78xx;
+	struct cvmx_pko_ncb_tx_err_info_s     cn78xxp2;
+	struct cvmx_pko_ncb_tx_err_info_s     cnf75xx;
 };
 typedef union cvmx_pko_ncb_tx_err_info cvmx_pko_ncb_tx_err_info_t;
 
@@ -9059,7 +10373,10 @@ union cvmx_pko_ncb_tx_err_word {
 	uint64_t err_word                     : 64;
 #endif
 	} s;
+	struct cvmx_pko_ncb_tx_err_word_s     cn73xx;
 	struct cvmx_pko_ncb_tx_err_word_s     cn78xx;
+	struct cvmx_pko_ncb_tx_err_word_s     cn78xxp2;
+	struct cvmx_pko_ncb_tx_err_word_s     cnf75xx;
 };
 typedef union cvmx_pko_ncb_tx_err_word cvmx_pko_ncb_tx_err_word_t;
 
@@ -9099,11 +10416,13 @@ union cvmx_pko_pdm_bist_status {
 	uint64_t flshb_m_dat_ram_bist_status  : 1;  /**< BIST status for FLSHB_M_DAT_RAM. */
 	uint64_t flshb_d_dat_ram_bist_status  : 1;  /**< BIST status for FLSHB_M_DAT_RAM. */
 	uint64_t minpad_ram_bist_status       : 1;  /**< BIST status for MINPAD_RAM. */
-	uint64_t mwp_hi_spt_ram_bist_status   : 1;  /**< Reserved. */
-	uint64_t mwp_lo_spt_ram_bist_status   : 1;  /**< Reserved. */
-	uint64_t reserved_0_35                : 36;
+	uint64_t mwp_hi_spt_ram_bist_status   : 1;  /**< BIST status for MWP_RAM_MEM3. */
+	uint64_t mwp_lo_spt_ram_bist_status   : 1;  /**< BIST status for MWP_RAM_MEM1. */
+	uint64_t buf_wm_ram_bist_status       : 1;  /**< BIST status for BUF_WM_RAM. */
+	uint64_t reserved_0_34                : 35;
 #else
-	uint64_t reserved_0_35                : 36;
+	uint64_t reserved_0_34                : 35;
+	uint64_t buf_wm_ram_bist_status       : 1;
 	uint64_t mwp_lo_spt_ram_bist_status   : 1;
 	uint64_t mwp_hi_spt_ram_bist_status   : 1;
 	uint64_t minpad_ram_bist_status       : 1;
@@ -9134,7 +10453,10 @@ union cvmx_pko_pdm_bist_status {
 	uint64_t flshb_cache_lo_ram_bist_status : 1;
 #endif
 	} s;
+	struct cvmx_pko_pdm_bist_status_s     cn73xx;
 	struct cvmx_pko_pdm_bist_status_s     cn78xx;
+	struct cvmx_pko_pdm_bist_status_s     cn78xxp2;
+	struct cvmx_pko_pdm_bist_status_s     cnf75xx;
 };
 typedef union cvmx_pko_pdm_bist_status cvmx_pko_pdm_bist_status_t;
 
@@ -9153,12 +10475,15 @@ union cvmx_pko_pdm_cfg {
                                                          DQ). For diagnostic use only. */
 	uint64_t dis_flsh_cache               : 1;  /**< Set to disable the flush buffer's cache. This makes all fills require full memory latency.
                                                          For diagnostic use only. */
-	uint64_t pko_pad_minlen               : 7;  /**< Minimum frame padding min length. */
+	uint64_t pko_pad_minlen               : 7;  /**< Minimum frame padding min length. Padding is enabled by PKO_MAC*_CFG[MIN_PAD_ENA]. See
+                                                         also PKO_PDM_DQ*_MINPAD[MINPAD]. */
 	uint64_t diag_mode                    : 1;  /**< Set to enable read/write to memories in PDM through CSR interface. For diagnostic use only. */
 	uint64_t alloc_lds                    : 1;  /**< Allocate LDS. This signal prevents the loads to IOBP from being allocated in on-chip cache
-                                                         (LDWB vs. LDD). Two modes as follows: 0 = No allocate (LDWB); 1 = Allocate (LDD). */
+                                                         (LDWB vs. LDD). Two modes as follows: 0 = No allocate (LDWB); 1 = Allocate (LDD).
+                                                         PKO PDM refetches DQ metas and descriptors via IOBP loads. */
 	uint64_t alloc_sts                    : 1;  /**< Allocate STS. This signal prevents the stores to NCB from being allocated in on-chip cache
-                                                         (STF vs. STT). Two modes as follows: 0 = No allocate (STT); 1 = Allocate (STF). */
+                                                         (STF vs. STT). Two modes as follows: 0 = No allocate (STT); 1 = Allocate (STF).
+                                                         PKO PDM stores DQ meta and descriptor overflow data via NCB. */
 #else
 	uint64_t alloc_sts                    : 1;
 	uint64_t alloc_lds                    : 1;
@@ -9170,7 +10495,10 @@ union cvmx_pko_pdm_cfg {
 	uint64_t reserved_13_63               : 51;
 #endif
 	} s;
+	struct cvmx_pko_pdm_cfg_s             cn73xx;
 	struct cvmx_pko_pdm_cfg_s             cn78xx;
+	struct cvmx_pko_pdm_cfg_s             cn78xxp2;
+	struct cvmx_pko_pdm_cfg_s             cnf75xx;
 };
 typedef union cvmx_pko_pdm_cfg cvmx_pko_pdm_cfg_t;
 
@@ -9184,14 +10512,16 @@ union cvmx_pko_pdm_cfg_dbg {
 	uint64_t reserved_32_63               : 32;
 	uint64_t cp_stall_thrshld             : 32; /**< Program this register to the 32-bit number of cycles to test for the PDM(CP) stalled on
                                                          inputs going into the ISRs. PKO_PDM_STS[CP_STALL_THRSHLD_HIT] indicates the threshold has
-                                                         been hit. INTERNAL: Do not list field in HRM. For lab debug only; will likely disappear in
-                                                         pass 2. */
+                                                         been hit. INTERNAL: Do not list field in HRM. For lab debug only. */
 #else
 	uint64_t cp_stall_thrshld             : 32;
 	uint64_t reserved_32_63               : 32;
 #endif
 	} s;
+	struct cvmx_pko_pdm_cfg_dbg_s         cn73xx;
 	struct cvmx_pko_pdm_cfg_dbg_s         cn78xx;
+	struct cvmx_pko_pdm_cfg_dbg_s         cn78xxp2;
+	struct cvmx_pko_pdm_cfg_dbg_s         cnf75xx;
 };
 typedef union cvmx_pko_pdm_cfg_dbg cvmx_pko_pdm_cfg_dbg_t;
 
@@ -9218,7 +10548,10 @@ union cvmx_pko_pdm_cp_dbg {
 	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
+	struct cvmx_pko_pdm_cp_dbg_s          cn73xx;
 	struct cvmx_pko_pdm_cp_dbg_s          cn78xx;
+	struct cvmx_pko_pdm_cp_dbg_s          cn78xxp2;
+	struct cvmx_pko_pdm_cp_dbg_s          cnf75xx;
 };
 typedef union cvmx_pko_pdm_cp_dbg cvmx_pko_pdm_cp_dbg_t;
 
@@ -9231,16 +10564,25 @@ union cvmx_pko_pdm_dqx_minpad {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
 	uint64_t minpad                       : 1;  /**< MINPAD setting per DQ. Each DQ has a separate CSR address; and bit 0 of the data
-                                                         read/write value is the MINPAD bit. When MINPAD is set, the send-packet header has the
-                                                         total field adjusted by MINLEN (PKO_PDM_CFG[PKO_PAD_MINLEN]) as follows:
-                                                         if (MINPAD)
-                                                         if (send_hdr.total < MINLEN) send_hdr.total = MINLEN */
+                                                         read/write value is [MINPAD]. [MINPAD] adjusts the meta length field based on
+                                                         the min packet length as follows:
+                                                             Meta[LENGTH] = [MINPAD] ?
+                                                                               MAX(X, PKO_PDM_CFG[PKO_PAD_MINLEN]) :
+                                                                               X
+                                                         where X is the packet/segment length before pad. PKO_META_DESC_S[LENGTH]
+                                                         and PKO_*_PICK[LENGTH] are Meta[LENGTH].
+                                                         [MINPAD] doesn't affect whether PKO applies pad to the packet or not,
+                                                         PKO_MAC*_CFG[MIN_PAD_ENA] does. When PKO_MAC*_CFG[MIN_PAD_ENA] is set,
+                                                         PKO pads packets through the MAC to PKO_PDM_CFG[PKO_PAD_MINLEN] bytes. */
 #else
 	uint64_t minpad                       : 1;
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_pko_pdm_dqx_minpad_s      cn73xx;
 	struct cvmx_pko_pdm_dqx_minpad_s      cn78xx;
+	struct cvmx_pko_pdm_dqx_minpad_s      cn78xxp2;
+	struct cvmx_pko_pdm_dqx_minpad_s      cnf75xx;
 };
 typedef union cvmx_pko_pdm_dqx_minpad cvmx_pko_pdm_dqx_minpad_t;
 
@@ -9280,7 +10622,10 @@ union cvmx_pko_pdm_drpbuf_dbg {
 	uint64_t reserved_43_63               : 21;
 #endif
 	} s;
+	struct cvmx_pko_pdm_drpbuf_dbg_s      cn73xx;
 	struct cvmx_pko_pdm_drpbuf_dbg_s      cn78xx;
+	struct cvmx_pko_pdm_drpbuf_dbg_s      cn78xxp2;
+	struct cvmx_pko_pdm_drpbuf_dbg_s      cnf75xx;
 };
 typedef union cvmx_pko_pdm_drpbuf_dbg cvmx_pko_pdm_drpbuf_dbg_t;
 
@@ -9292,21 +10637,21 @@ union cvmx_pko_pdm_dwpbuf_dbg {
 	struct cvmx_pko_pdm_dwpbuf_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
-	uint64_t cmd_proc                     : 1;  /**< Reserved. */
+	uint64_t cmd_proc                     : 1;  /**< Command process signal. */
 	uint64_t reserved_46_46               : 1;
-	uint64_t mem_data_val                 : 1;  /**< Reserved. */
-	uint64_t insert_np                    : 1;  /**< Reserved. */
+	uint64_t mem_data_val                 : 1;  /**< Memory data valid. */
+	uint64_t insert_np                    : 1;  /**< Next pointer insertion signal. */
 	uint64_t reserved_43_43               : 1;
 	uint64_t sel_nxt_ptr                  : 1;  /**< Sel_nxt_ptr signal. */
 	uint64_t load_val                     : 1;  /**< Load valid signal. */
 	uint64_t rdy                          : 1;  /**< Ready signal. */
-	uint64_t cur_state                    : 3;  /**< Current state from the pbuf controller. */
-	uint64_t mem_rdy                      : 1;  /**< Reserved. */
+	uint64_t cur_state                    : 3;  /**< Reserved. */
+	uint64_t mem_rdy                      : 1;  /**< Memory stage ready signal. */
 	uint64_t reserved_33_35               : 3;
-	uint64_t track_rd_cnt                 : 6;  /**< Track read count value. */
-	uint64_t track_wr_cnt                 : 6;  /**< Track write count value. */
+	uint64_t track_rd_cnt                 : 6;  /**< Reserved. */
+	uint64_t track_wr_cnt                 : 6;  /**< Reserved. */
 	uint64_t reserved_19_20               : 2;
-	uint64_t insert_dp                    : 2;  /**< Reserved. */
+	uint64_t insert_dp                    : 2;  /**< Descriptor insertion signals. */
 	uint64_t mem_addr                     : 13; /**< Memory address for pbuf ram. */
 	uint64_t mem_en                       : 4;  /**< Memory write/chip enable signals. The order of the bits is:
                                                          0x3 = Low wen.
@@ -9334,7 +10679,50 @@ union cvmx_pko_pdm_dwpbuf_dbg {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_pko_pdm_dwpbuf_dbg_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t cmd_proc                     : 1;  /**< Command process signal. */
+	uint64_t reserved_46_46               : 1;
+	uint64_t mem_data_val                 : 1;  /**< Memory data valid. */
+	uint64_t insert_np                    : 1;  /**< Next pointer insertion signal. */
+	uint64_t reserved_43_43               : 1;
+	uint64_t sel_nxt_ptr                  : 1;  /**< Sel_nxt_ptr signal. */
+	uint64_t load_val                     : 1;  /**< Load valid signal. */
+	uint64_t rdy                          : 1;  /**< Ready signal. */
+	uint64_t reserved_37_39               : 3;
+	uint64_t mem_rdy                      : 1;  /**< Memory stage ready signal. */
+	uint64_t reserved_19_35               : 17;
+	uint64_t insert_dp                    : 2;  /**< Descriptor insertion signals. */
+	uint64_t reserved_15_16               : 2;
+	uint64_t mem_addr                     : 11; /**< Memory address for pbuf ram. */
+	uint64_t mem_en                       : 4;  /**< Memory write/chip enable signals. The order of the bits is:
+                                                         0x3 = Low wen.
+                                                         0x2 = Low cen.
+                                                         0x1 = High wen.
+                                                         0x0 = High cen. */
+#else
+	uint64_t mem_en                       : 4;
+	uint64_t mem_addr                     : 11;
+	uint64_t reserved_15_16               : 2;
+	uint64_t insert_dp                    : 2;
+	uint64_t reserved_19_35               : 17;
+	uint64_t mem_rdy                      : 1;
+	uint64_t reserved_37_39               : 3;
+	uint64_t rdy                          : 1;
+	uint64_t load_val                     : 1;
+	uint64_t sel_nxt_ptr                  : 1;
+	uint64_t reserved_43_43               : 1;
+	uint64_t insert_np                    : 1;
+	uint64_t mem_data_val                 : 1;
+	uint64_t reserved_46_46               : 1;
+	uint64_t cmd_proc                     : 1;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pdm_dwpbuf_dbg_s      cn78xx;
+	struct cvmx_pko_pdm_dwpbuf_dbg_s      cn78xxp2;
+	struct cvmx_pko_pdm_dwpbuf_dbg_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pdm_dwpbuf_dbg cvmx_pko_pdm_dwpbuf_dbg_t;
 
@@ -9375,10 +10763,10 @@ union cvmx_pko_pdm_ecc_ctl0 {
 	uint64_t dwp_hi_ram_cdis              : 1;  /**< DWP_HI_RAM ECC correction disable. */
 	uint64_t dwp_lo_ram_flip              : 2;  /**< DWP_LO_RAM flip syndrome bits on write. */
 	uint64_t dwp_lo_ram_cdis              : 1;  /**< DWP_LO_RAM ECC correction disable. */
-	uint64_t mwp_hi_ram_flip              : 2;  /**< MWP_HI_RAM flip syndrome bits on write. */
-	uint64_t mwp_hi_ram_cdis              : 1;  /**< MWP_HI_RAM ECC correction disable. */
-	uint64_t mwp_lo_ram_flip              : 2;  /**< MWP_LO_RAM flip syndrome bits on write. */
-	uint64_t mwp_lo_ram_cdis              : 1;  /**< MWP_LO_RAM ECC correction disable. */
+	uint64_t mwp_hi_ram_flip              : 2;  /**< Reserved. */
+	uint64_t mwp_hi_ram_cdis              : 1;  /**< Reserved. */
+	uint64_t mwp_lo_ram_flip              : 2;  /**< Reserved. */
+	uint64_t mwp_lo_ram_cdis              : 1;  /**< Reserved. */
 	uint64_t fillb_m_rsp_ram_hi_flip      : 2;  /**< FILLB_M_RSP_RAM_HI flip syndrome bits on write. */
 	uint64_t fillb_m_rsp_ram_hi_cdis      : 1;  /**< FILLB_M_RSP_RAM_HI ECC correction disable. */
 	uint64_t fillb_m_rsp_ram_lo_flip      : 2;  /**< FILLB_M_RSP_RAM_LO flip syndrome bits on write. */
@@ -9434,7 +10822,94 @@ union cvmx_pko_pdm_ecc_ctl0 {
 	uint64_t flshb_cache_lo_ram_flip      : 2;
 #endif
 	} s;
+	struct cvmx_pko_pdm_ecc_ctl0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t flshb_cache_lo_ram_flip      : 2;  /**< FLSHB_CACHE_LO_RAM flip syndrome bits on write. */
+	uint64_t flshb_cache_lo_ram_cdis      : 1;  /**< FLSHB_CACHE_LO_RAM ECC correction disable. */
+	uint64_t flshb_cache_hi_ram_flip      : 2;  /**< FLSHB_CACHE_HI_RAM flip syndrome bits on write. */
+	uint64_t flshb_cache_hi_ram_cdis      : 1;  /**< FLSHB_CACHE_HI_RAM ECC correction disable. */
+	uint64_t isrm_ca_iinst_ram_flip       : 2;  /**< ISRM_CA_IINST_RAM flip syndrome bits on write. */
+	uint64_t isrm_ca_iinst_ram_cdis       : 1;  /**< ISRM_CA_IINST_RAM ECC correction disable. */
+	uint64_t isrm_ca_cm_ram_flip          : 2;  /**< ISRM_CA_CM_RAM flip syndrome bits on write. */
+	uint64_t isrm_ca_cm_ram_cdis          : 1;  /**< ISRM_CA_CM_RAM ECC correction disable. */
+	uint64_t isrm_st_ram2_flip            : 2;  /**< ISRM_ST_RAM2 flip syndrome bits on write. */
+	uint64_t isrm_st_ram2_cdis            : 1;  /**< ISRM_ST_RAM2 ECC correction disable. */
+	uint64_t isrm_st_ram1_flip            : 2;  /**< ISRM_ST_RAM1 flip syndrome bits on write. */
+	uint64_t isrm_st_ram1_cdis            : 1;  /**< ISRM_ST_RAM1 ECC correction disable. */
+	uint64_t isrm_st_ram0_flip            : 2;  /**< ISRM_ST_RAM0 flip syndrome bits on write. */
+	uint64_t isrm_st_ram0_cdis            : 1;  /**< ISRM_ST_RAM0 ECC correction disable. */
+	uint64_t isrd_st_ram3_flip            : 2;  /**< ISRD_ST_RAM3 flip syndrome bits on write. */
+	uint64_t isrd_st_ram3_cdis            : 1;  /**< ISRD_ST_RAM3 ECC correction disable. */
+	uint64_t isrd_st_ram2_flip            : 2;  /**< ISRD_ST_RAM2 flip syndrome bits on write. */
+	uint64_t isrd_st_ram2_cdis            : 1;  /**< ISRD_ST_RAM2 ECC correction disable. */
+	uint64_t isrd_st_ram1_flip            : 2;  /**< ISRD_ST_RAM1 flip syndrome bits on write. */
+	uint64_t isrd_st_ram1_cdis            : 1;  /**< ISRD_ST_RAM1 ECC correction disable. */
+	uint64_t isrd_st_ram0_flip            : 2;  /**< ISRD_ST_RAM0 flip syndrome bits on write. */
+	uint64_t isrd_st_ram0_cdis            : 1;  /**< ISRD_ST_RAM0 ECC correction disable. */
+	uint64_t drp_hi_ram_flip              : 2;  /**< DRP_HI_RAM flip syndrome bits on write. */
+	uint64_t drp_hi_ram_cdis              : 1;  /**< DRP_HI_RAM ECC correction disable. */
+	uint64_t drp_lo_ram_flip              : 2;  /**< DRP_LO_RAM flip syndrome bits on write. */
+	uint64_t drp_lo_ram_cdis              : 1;  /**< DRP_LO_RAM ECC correction disable. */
+	uint64_t dwp_hi_ram_flip              : 2;  /**< DWP_HI_RAM flip syndrome bits on write. */
+	uint64_t dwp_hi_ram_cdis              : 1;  /**< DWP_HI_RAM ECC correction disable. */
+	uint64_t dwp_lo_ram_flip              : 2;  /**< DWP_LO_RAM flip syndrome bits on write. */
+	uint64_t dwp_lo_ram_cdis              : 1;  /**< DWP_LO_RAM ECC correction disable. */
+	uint64_t reserved_13_18               : 6;
+	uint64_t fillb_m_rsp_ram_hi_flip      : 2;  /**< FILLB_M_RSP_RAM_HI flip syndrome bits on write. */
+	uint64_t fillb_m_rsp_ram_hi_cdis      : 1;  /**< FILLB_M_RSP_RAM_HI ECC correction disable. */
+	uint64_t fillb_m_rsp_ram_lo_flip      : 2;  /**< FILLB_M_RSP_RAM_LO flip syndrome bits on write. */
+	uint64_t fillb_m_rsp_ram_lo_cdis      : 1;  /**< FILLB_M_RSP_RAM_LO ECC correction disable. */
+	uint64_t fillb_d_rsp_ram_hi_flip      : 2;  /**< FILLB_D_RSP_RAM_LO flip syndrome bits on write. */
+	uint64_t fillb_d_rsp_ram_hi_cdis      : 1;  /**< FILLB_D_RSP_RAM_HI ECC correction disable. */
+	uint64_t fillb_d_rsp_ram_lo_flip      : 2;  /**< FILLB_D_DAT_RAM_LO flip syndrome bits on write. */
+	uint64_t fillb_d_rsp_ram_lo_cdis      : 1;  /**< FILLB_D_RSP_RAM_LO ECC correction disable. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t fillb_d_rsp_ram_lo_cdis      : 1;
+	uint64_t fillb_d_rsp_ram_lo_flip      : 2;
+	uint64_t fillb_d_rsp_ram_hi_cdis      : 1;
+	uint64_t fillb_d_rsp_ram_hi_flip      : 2;
+	uint64_t fillb_m_rsp_ram_lo_cdis      : 1;
+	uint64_t fillb_m_rsp_ram_lo_flip      : 2;
+	uint64_t fillb_m_rsp_ram_hi_cdis      : 1;
+	uint64_t fillb_m_rsp_ram_hi_flip      : 2;
+	uint64_t reserved_13_18               : 6;
+	uint64_t dwp_lo_ram_cdis              : 1;
+	uint64_t dwp_lo_ram_flip              : 2;
+	uint64_t dwp_hi_ram_cdis              : 1;
+	uint64_t dwp_hi_ram_flip              : 2;
+	uint64_t drp_lo_ram_cdis              : 1;
+	uint64_t drp_lo_ram_flip              : 2;
+	uint64_t drp_hi_ram_cdis              : 1;
+	uint64_t drp_hi_ram_flip              : 2;
+	uint64_t isrd_st_ram0_cdis            : 1;
+	uint64_t isrd_st_ram0_flip            : 2;
+	uint64_t isrd_st_ram1_cdis            : 1;
+	uint64_t isrd_st_ram1_flip            : 2;
+	uint64_t isrd_st_ram2_cdis            : 1;
+	uint64_t isrd_st_ram2_flip            : 2;
+	uint64_t isrd_st_ram3_cdis            : 1;
+	uint64_t isrd_st_ram3_flip            : 2;
+	uint64_t isrm_st_ram0_cdis            : 1;
+	uint64_t isrm_st_ram0_flip            : 2;
+	uint64_t isrm_st_ram1_cdis            : 1;
+	uint64_t isrm_st_ram1_flip            : 2;
+	uint64_t isrm_st_ram2_cdis            : 1;
+	uint64_t isrm_st_ram2_flip            : 2;
+	uint64_t isrm_ca_cm_ram_cdis          : 1;
+	uint64_t isrm_ca_cm_ram_flip          : 2;
+	uint64_t isrm_ca_iinst_ram_cdis       : 1;
+	uint64_t isrm_ca_iinst_ram_flip       : 2;
+	uint64_t flshb_cache_hi_ram_cdis      : 1;
+	uint64_t flshb_cache_hi_ram_flip      : 2;
+	uint64_t flshb_cache_lo_ram_cdis      : 1;
+	uint64_t flshb_cache_lo_ram_flip      : 2;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pdm_ecc_ctl0_s        cn78xx;
+	struct cvmx_pko_pdm_ecc_ctl0_s        cn78xxp2;
+	struct cvmx_pko_pdm_ecc_ctl0_cn73xx   cnf75xx;
 };
 typedef union cvmx_pko_pdm_ecc_ctl0 cvmx_pko_pdm_ecc_ctl0_t;
 
@@ -9445,12 +10920,14 @@ union cvmx_pko_pdm_ecc_ctl1 {
 	uint64_t u64;
 	struct cvmx_pko_pdm_ecc_ctl1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_12_63               : 52;
-	uint64_t mwp_mem0_ram_flip            : 2;  /**< Reserved. */
-	uint64_t mwp_mem1_ram_flip            : 2;  /**< Reserved. */
-	uint64_t mwp_mem2_ram_flip            : 2;  /**< Reserved. */
-	uint64_t mwp_mem3_ram_flip            : 2;  /**< Reserved. */
-	uint64_t mwp_ram_cdis                 : 1;  /**< Reserved. */
+	uint64_t reserved_15_63               : 49;
+	uint64_t buf_wm_ram_flip              : 2;  /**< BUF_WM_RAM flip syndrome bits on write. */
+	uint64_t buf_wm_ram_cdis              : 1;  /**< BUF_WM_RAM ECC correction disable for all four memories */
+	uint64_t mwp_mem0_ram_flip            : 2;  /**< MWP_MEM0_RAM flip syndrome bits on write. */
+	uint64_t mwp_mem1_ram_flip            : 2;  /**< MWP_MEM1_RAM flip syndrome bits on write. */
+	uint64_t mwp_mem2_ram_flip            : 2;  /**< MWP_MEM2_RAM flip syndrome bits on write. */
+	uint64_t mwp_mem3_ram_flip            : 2;  /**< MWP_MEM3_RAM flip syndrome bits on write. */
+	uint64_t mwp_ram_cdis                 : 1;  /**< MWP_RAM ECC correction disable for all four memories */
 	uint64_t minpad_ram_flip              : 2;  /**< MINPAD_RAM flip syndrome bits on write. */
 	uint64_t minpad_ram_cdis              : 1;  /**< MINPAD_RAM ECC correction disable. */
 #else
@@ -9461,10 +10938,15 @@ union cvmx_pko_pdm_ecc_ctl1 {
 	uint64_t mwp_mem2_ram_flip            : 2;
 	uint64_t mwp_mem1_ram_flip            : 2;
 	uint64_t mwp_mem0_ram_flip            : 2;
-	uint64_t reserved_12_63               : 52;
+	uint64_t buf_wm_ram_cdis              : 1;
+	uint64_t buf_wm_ram_flip              : 2;
+	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_pko_pdm_ecc_ctl1_s        cn73xx;
 	struct cvmx_pko_pdm_ecc_ctl1_s        cn78xx;
+	struct cvmx_pko_pdm_ecc_ctl1_s        cn78xxp2;
+	struct cvmx_pko_pdm_ecc_ctl1_s        cnf75xx;
 };
 typedef union cvmx_pko_pdm_ecc_ctl1 cvmx_pko_pdm_ecc_ctl1_t;
 
@@ -9518,11 +11000,15 @@ union cvmx_pko_pdm_ecc_dbe_sts0 {
 	uint64_t fillb_d_rsp_ram_lo_dbe       : 1;  /**< Double-bit error for FILLB_D_DAT_RAM_LO. INTERNAL: Instances:
                                                          pko_pnr1.pko_pnr1_pdm.fillb.d_rsp_ram_lo */
 	uint64_t minpad_ram_dbe               : 1;  /**< Double-bit error for MINPAD_RAM. INTERNAL: Instances: pko_pnr1.pko_pnr1_pdm.cp.minpad_ram */
-	uint64_t mwp_hi_spt_ram_dbe           : 1;  /**< Reserved. */
-	uint64_t mwp_lo_spt_ram_dbe           : 1;  /**< Reserved. */
-	uint64_t reserved_0_39                : 40;
+	uint64_t mwp_hi_spt_ram_dbe           : 1;  /**< Double-bit error for MWP_RAM_PBUF_MEM3. INTERNAL: Instances:
+                                                         pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_pbuf_mem3 */
+	uint64_t mwp_lo_spt_ram_dbe           : 1;  /**< Double-bit error for MWP_RAM_PBUF_MEM1. INTERNAL: Instances:
+                                                         pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_pbuf_mem1 */
+	uint64_t buf_wm_ram_dbe               : 1;  /**< Double-bit error for BUF_WM_RAM. */
+	uint64_t reserved_0_38                : 39;
 #else
-	uint64_t reserved_0_39                : 40;
+	uint64_t reserved_0_38                : 39;
+	uint64_t buf_wm_ram_dbe               : 1;
 	uint64_t mwp_lo_spt_ram_dbe           : 1;
 	uint64_t mwp_hi_spt_ram_dbe           : 1;
 	uint64_t minpad_ram_dbe               : 1;
@@ -9549,7 +11035,10 @@ union cvmx_pko_pdm_ecc_dbe_sts0 {
 	uint64_t flshb_cache_lo_ram_dbe       : 1;
 #endif
 	} s;
+	struct cvmx_pko_pdm_ecc_dbe_sts0_s    cn73xx;
 	struct cvmx_pko_pdm_ecc_dbe_sts0_s    cn78xx;
+	struct cvmx_pko_pdm_ecc_dbe_sts0_s    cn78xxp2;
+	struct cvmx_pko_pdm_ecc_dbe_sts0_s    cnf75xx;
 };
 typedef union cvmx_pko_pdm_ecc_dbe_sts0 cvmx_pko_pdm_ecc_dbe_sts0_t;
 
@@ -9591,7 +11080,10 @@ union cvmx_pko_pdm_ecc_dbe_sts_cmb0 {
 	uint64_t pdm_dbe_cmb0                 : 1;
 #endif
 	} s;
+	struct cvmx_pko_pdm_ecc_dbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pdm_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pdm_ecc_dbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pdm_ecc_dbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pdm_ecc_dbe_sts_cmb0 cvmx_pko_pdm_ecc_dbe_sts_cmb0_t;
 
@@ -9645,11 +11137,15 @@ union cvmx_pko_pdm_ecc_sbe_sts0 {
 	uint64_t fillb_d_rsp_ram_lo_sbe       : 1;  /**< Single-bit error for FILLB_D_RSP_RAM_LO. INTERNAL: Instances:
                                                          pko_pnr1.pko_pnr1_pdm.fillb.d_rsp_ram_lo */
 	uint64_t minpad_ram_sbe               : 1;  /**< Single-bit error for MINPAD_RAM. INTERNAL: Instances: pko_pnr1.pko_pnr1_pdm.cp.minpad_ram */
-	uint64_t mwp_hi_spt_ram_sbe           : 1;  /**< Reserved. */
-	uint64_t mwp_lo_spt_ram_sbe           : 1;  /**< Reserved. */
-	uint64_t reserved_0_39                : 40;
+	uint64_t mwp_hi_spt_ram_sbe           : 1;  /**< Single-bit error for MWP_RAM_PBUF_MEM3. INTERNAL: Instances:
+                                                         pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_pbuf_mem3 */
+	uint64_t mwp_lo_spt_ram_sbe           : 1;  /**< Single-bit error for MWP_RAM_PBUF_MEM1. INTERNAL: Instances:
+                                                         pko_pnr1.pko_pnr1_pdm.mwpbuf.ram_pbuf_mem1 */
+	uint64_t buf_wm_ram_sbe               : 1;  /**< Single-bit error for BUF_WM_RAM. */
+	uint64_t reserved_0_38                : 39;
 #else
-	uint64_t reserved_0_39                : 40;
+	uint64_t reserved_0_38                : 39;
+	uint64_t buf_wm_ram_sbe               : 1;
 	uint64_t mwp_lo_spt_ram_sbe           : 1;
 	uint64_t mwp_hi_spt_ram_sbe           : 1;
 	uint64_t minpad_ram_sbe               : 1;
@@ -9676,7 +11172,10 @@ union cvmx_pko_pdm_ecc_sbe_sts0 {
 	uint64_t flshb_cache_lo_ram_sbe       : 1;
 #endif
 	} s;
+	struct cvmx_pko_pdm_ecc_sbe_sts0_s    cn73xx;
 	struct cvmx_pko_pdm_ecc_sbe_sts0_s    cn78xx;
+	struct cvmx_pko_pdm_ecc_sbe_sts0_s    cn78xxp2;
+	struct cvmx_pko_pdm_ecc_sbe_sts0_s    cnf75xx;
 };
 typedef union cvmx_pko_pdm_ecc_sbe_sts0 cvmx_pko_pdm_ecc_sbe_sts0_t;
 
@@ -9718,7 +11217,10 @@ union cvmx_pko_pdm_ecc_sbe_sts_cmb0 {
 	uint64_t pdm_sbe_cmb0                 : 1;
 #endif
 	} s;
+	struct cvmx_pko_pdm_ecc_sbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pdm_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pdm_ecc_sbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pdm_ecc_sbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pdm_ecc_sbe_sts_cmb0 cvmx_pko_pdm_ecc_sbe_sts_cmb0_t;
 
@@ -9758,7 +11260,10 @@ union cvmx_pko_pdm_fillb_dbg0 {
 	uint64_t reserved_57_63               : 7;
 #endif
 	} s;
+	struct cvmx_pko_pdm_fillb_dbg0_s      cn73xx;
 	struct cvmx_pko_pdm_fillb_dbg0_s      cn78xx;
+	struct cvmx_pko_pdm_fillb_dbg0_s      cn78xxp2;
+	struct cvmx_pko_pdm_fillb_dbg0_s      cnf75xx;
 };
 typedef union cvmx_pko_pdm_fillb_dbg0 cvmx_pko_pdm_fillb_dbg0_t;
 
@@ -9798,7 +11303,10 @@ union cvmx_pko_pdm_fillb_dbg1 {
 	uint64_t reserved_57_63               : 7;
 #endif
 	} s;
+	struct cvmx_pko_pdm_fillb_dbg1_s      cn73xx;
 	struct cvmx_pko_pdm_fillb_dbg1_s      cn78xx;
+	struct cvmx_pko_pdm_fillb_dbg1_s      cn78xxp2;
+	struct cvmx_pko_pdm_fillb_dbg1_s      cnf75xx;
 };
 typedef union cvmx_pko_pdm_fillb_dbg1 cvmx_pko_pdm_fillb_dbg1_t;
 
@@ -9820,7 +11328,10 @@ union cvmx_pko_pdm_fillb_dbg2 {
 	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
+	struct cvmx_pko_pdm_fillb_dbg2_s      cn73xx;
 	struct cvmx_pko_pdm_fillb_dbg2_s      cn78xx;
+	struct cvmx_pko_pdm_fillb_dbg2_s      cn78xxp2;
+	struct cvmx_pko_pdm_fillb_dbg2_s      cnf75xx;
 };
 typedef union cvmx_pko_pdm_fillb_dbg2 cvmx_pko_pdm_fillb_dbg2_t;
 
@@ -9852,7 +11363,10 @@ union cvmx_pko_pdm_flshb_dbg0 {
 	uint64_t reserved_44_63               : 20;
 #endif
 	} s;
+	struct cvmx_pko_pdm_flshb_dbg0_s      cn73xx;
 	struct cvmx_pko_pdm_flshb_dbg0_s      cn78xx;
+	struct cvmx_pko_pdm_flshb_dbg0_s      cn78xxp2;
+	struct cvmx_pko_pdm_flshb_dbg0_s      cnf75xx;
 };
 typedef union cvmx_pko_pdm_flshb_dbg0 cvmx_pko_pdm_flshb_dbg0_t;
 
@@ -9870,9 +11384,46 @@ union cvmx_pko_pdm_flshb_dbg1 {
 	uint64_t cam_stdn                     : 32;
 #endif
 	} s;
+	struct cvmx_pko_pdm_flshb_dbg1_s      cn73xx;
 	struct cvmx_pko_pdm_flshb_dbg1_s      cn78xx;
+	struct cvmx_pko_pdm_flshb_dbg1_s      cn78xxp2;
+	struct cvmx_pko_pdm_flshb_dbg1_s      cnf75xx;
 };
 typedef union cvmx_pko_pdm_flshb_dbg1 cvmx_pko_pdm_flshb_dbg1_t;
+
+/**
+ * cvmx_pko_pdm_intf_dbg_rd
+ *
+ * For diagnostic use only.
+ *
+ */
+union cvmx_pko_pdm_intf_dbg_rd {
+	uint64_t u64;
+	struct cvmx_pko_pdm_intf_dbg_rd_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t in_flight                    : 8;  /**< Number of packets in-flight to PDM. */
+	uint64_t pdm_req_cred_cnt             : 8;  /**< PDM req/ack credit counter. */
+	uint64_t pse_buf_waddr                : 8;  /**< PSE buffer write address. */
+	uint64_t pse_buf_raddr                : 8;  /**< PSE buffer read address. */
+	uint64_t resp_buf_waddr               : 8;  /**< Interface buffer write address. */
+	uint64_t resp_buf_raddr               : 8;  /**< Interface buffer read address. */
+#else
+	uint64_t resp_buf_raddr               : 8;
+	uint64_t resp_buf_waddr               : 8;
+	uint64_t pse_buf_raddr                : 8;
+	uint64_t pse_buf_waddr                : 8;
+	uint64_t pdm_req_cred_cnt             : 8;
+	uint64_t in_flight                    : 8;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_pko_pdm_intf_dbg_rd_s     cn73xx;
+	struct cvmx_pko_pdm_intf_dbg_rd_s     cn78xx;
+	struct cvmx_pko_pdm_intf_dbg_rd_s     cn78xxp2;
+	struct cvmx_pko_pdm_intf_dbg_rd_s     cnf75xx;
+};
+typedef union cvmx_pko_pdm_intf_dbg_rd cvmx_pko_pdm_intf_dbg_rd_t;
 
 /**
  * cvmx_pko_pdm_isrd_dbg
@@ -9880,6 +11431,86 @@ typedef union cvmx_pko_pdm_flshb_dbg1 cvmx_pko_pdm_flshb_dbg1_t;
 union cvmx_pko_pdm_isrd_dbg {
 	uint64_t u64;
 	struct cvmx_pko_pdm_isrd_dbg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t isrd_vals_in                 : 4;  /**< Valid signals for ISRD input stage. Bits and descriptions:
+                                                         <63> = prof__isrdex_peb_fill_req_val.
+                                                         <62> = prof__isrdex_rd_req_val.
+                                                         <61> = cp__isr_cval.
+                                                         <60> = fillb__isrd_d_dval. */
+	uint64_t reserved_59_59               : 1;
+	uint64_t req_hptr                     : 6;  /**< Input arbitration request signals. */
+	uint64_t rdy_hptr                     : 6;  /**< Input arbitration request signals. */
+	uint64_t reserved_44_46               : 3;
+	uint64_t in_arb_reqs                  : 8;  /**< Input arbitration request signals. The order of the bits is:
+                                                         0x2B = Fill response - normal path request.
+                                                         0x2A = Fill response - flushb path request.
+                                                         0x29 = CP queue-open request.
+                                                         0x28 = CP queue-closed request.
+                                                         0x27 = CP queue-query request.
+                                                         0x26 = CP send-packet request.
+                                                         0x25 = PEB fill request.
+                                                         0x24 = PEB read request. */
+	uint64_t in_arb_gnts                  : 7;  /**< Input arbitration grant signals. The order of the bits is:
+                                                         0x23 = Fill response grant.
+                                                         0x22 = CP - queue-open grant.
+                                                         0x21 = CP - queue-close grant.
+                                                         0x20 = CP - queue-query grant.
+                                                         0x1F = CP - send-packet grant.
+                                                         0x1E = PEB fill grant.
+                                                         0x1D = PEB read grant. */
+	uint64_t cmt_arb_reqs                 : 7;  /**< Commit arbitration request signals. The order of the bits is:
+                                                         0x1C = Fill response grant.
+                                                         0x1B = CP - queue-open grant.
+                                                         0x1A = CP - queue-close grant.
+                                                         0x19 = CP - queue-query grant.
+                                                         0x18 = CP - send-packet grant.
+                                                         0x17 = PEB fill grant.
+                                                         0x16 = PEB read grant. */
+	uint64_t cmt_arb_gnts                 : 7;  /**< Commit arbitration grant signals. The order of the bits is:
+                                                         0x15 = Fill response grant.
+                                                         0x14 = CP - queue-open grant.
+                                                         0x13 = CP - queue-close grant.
+                                                         0x12 = CP - queue-query grant.
+                                                         0x11 = CP - send-packet grant.
+                                                         0x10 = PEB fill grant.
+                                                         0xF = PEB read grant. */
+	uint64_t in_use                       : 4;  /**< In use signals indicate the execution units are in use. The order of the bits is:
+                                                         0xE = PEB fill unit.
+                                                         0xD = PEB read unit.
+                                                         0xC = CP unit.
+                                                         0xB = Fill response unit. */
+	uint64_t has_cred                     : 4;  /**< Has credit signals indicate there is sufficient credit to commit. The order of the bits
+                                                         is:
+                                                         0xA = Flush buffer has credit
+                                                         0x9 = Fill buffer has credit
+                                                         0x8 = DW command output FIFO has credit
+                                                         0x7 = DR command output FIFO has credit */
+	uint64_t val_exec                     : 7;  /**< Valid bits for the execution units; means the unit can commit if it gets the grant of the
+                                                         commit arb and other conditions are met. The order of the bits is:
+                                                         0x6 = Fill response unit.
+                                                         0x5 = CP unit - queue-open.
+                                                         0x4 = CP unit - queue-close.
+                                                         0x3 = CP unit - queue-probe.
+                                                         0x2 = CP unit - send-packet.
+                                                         0x1 = PEB fill unit.
+                                                         0x0 = PEB read unit. */
+#else
+	uint64_t val_exec                     : 7;
+	uint64_t has_cred                     : 4;
+	uint64_t in_use                       : 4;
+	uint64_t cmt_arb_gnts                 : 7;
+	uint64_t cmt_arb_reqs                 : 7;
+	uint64_t in_arb_gnts                  : 7;
+	uint64_t in_arb_reqs                  : 8;
+	uint64_t reserved_44_46               : 3;
+	uint64_t rdy_hptr                     : 6;
+	uint64_t req_hptr                     : 6;
+	uint64_t reserved_59_59               : 1;
+	uint64_t isrd_vals_in                 : 4;
+#endif
+	} s;
+	struct cvmx_pko_pdm_isrd_dbg_s        cn73xx;
+	struct cvmx_pko_pdm_isrd_dbg_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_44_63               : 20;
 	uint64_t in_arb_reqs                  : 8;  /**< Input arbitration request signals. The order of the bits is:
@@ -9945,8 +11576,9 @@ union cvmx_pko_pdm_isrd_dbg {
 	uint64_t in_arb_reqs                  : 8;
 	uint64_t reserved_44_63               : 20;
 #endif
-	} s;
-	struct cvmx_pko_pdm_isrd_dbg_s        cn78xx;
+	} cn78xx;
+	struct cvmx_pko_pdm_isrd_dbg_s        cn78xxp2;
+	struct cvmx_pko_pdm_isrd_dbg_s        cnf75xx;
 };
 typedef union cvmx_pko_pdm_isrd_dbg cvmx_pko_pdm_isrd_dbg_t;
 
@@ -9976,7 +11608,10 @@ union cvmx_pko_pdm_isrd_dbg_dq {
 	uint64_t reserved_46_63               : 18;
 #endif
 	} s;
+	struct cvmx_pko_pdm_isrd_dbg_dq_s     cn73xx;
 	struct cvmx_pko_pdm_isrd_dbg_dq_s     cn78xx;
+	struct cvmx_pko_pdm_isrd_dbg_dq_s     cn78xxp2;
+	struct cvmx_pko_pdm_isrd_dbg_dq_s     cnf75xx;
 };
 typedef union cvmx_pko_pdm_isrd_dbg_dq cvmx_pko_pdm_isrd_dbg_dq_t;
 
@@ -9986,6 +11621,69 @@ typedef union cvmx_pko_pdm_isrd_dbg_dq cvmx_pko_pdm_isrd_dbg_dq_t;
 union cvmx_pko_pdm_isrm_dbg {
 	uint64_t u64;
 	struct cvmx_pko_pdm_isrm_dbg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t val_in                       : 3;  /**< Valids into ISRM.
+                                                         <63> = pse_ack_val.
+                                                         <62> = fillb__isrm_mp_dval.
+                                                         <61> = isrd__isrm_cval. */
+	uint64_t reserved_34_60               : 27;
+	uint64_t in_arb_reqs                  : 7;  /**< Input arbitration request signals. The order of the bits is:
+                                                         0x21 = PSE ACK.
+                                                         0x20 = Fill Response - normal path request.
+                                                         0x1F = Fill Response - flushb path request.
+                                                         0x1E = CP queue-open.
+                                                         0x1D = CP queue-closed.
+                                                         0x1C = CP queue-query.
+                                                         0x1B = CP send-packet. */
+	uint64_t in_arb_gnts                  : 6;  /**< Input arbitration grant signals. The order of the bits is:
+                                                         0x1A = PSE ACK.
+                                                         0x19 = Fill Response.
+                                                         0x18 = CP - queue-open.
+                                                         0x17 = CP - queue-close.
+                                                         0x16 = CP - queue-query.
+                                                         0x15 = CP - send-packet. */
+	uint64_t cmt_arb_reqs                 : 6;  /**< Commit arbitration request signals. The order of the bits is:
+                                                         0x14 = PSE ACK.
+                                                         0x13 = Fill Response.
+                                                         0x12 = CP - queue-open.
+                                                         0x11 = CP - queue-close.
+                                                         0x10 = CP - queue-query.
+                                                         0xF CP - send-packet. */
+	uint64_t cmt_arb_gnts                 : 6;  /**< Commit arbitration grant signals. The order of the bits is:
+                                                         0xE = PSE ACK.
+                                                         0xD = Fill Response.
+                                                         0xC = CP - queue-open.
+                                                         0xB = CP - queue-close.
+                                                         0xA = CP - queue-query.
+                                                         0x9 = CP - send-packet. */
+	uint64_t in_use                       : 3;  /**< In use signals indicate the execution units are in use. The order of the bits is:
+                                                         0x8 = (PSE) ACK unit.
+                                                         0x7 = Fill response unit.
+                                                         0x6 = CP unit. */
+	uint64_t has_cred                     : 3;  /**< Has credit signals indicate there is sufficient credit to commit. The order of the bits
+                                                         is:
+                                                         0x5 = Flush buffer has credit.
+                                                         0x4 = Fill buffer has credit.
+                                                         0x3 = MWP command output FIFO has credit. */
+	uint64_t val_exec                     : 3;  /**< Valid bits for the execution units; means the unit can commit if it gets the grant of the
+                                                         commit arb and other conditions are met. The order of the bits is:
+                                                         0x2 = (PSE) ACK unit.
+                                                         0x1 = Fill response unit.
+                                                         0x0 = CP unit - ALL. */
+#else
+	uint64_t val_exec                     : 3;
+	uint64_t has_cred                     : 3;
+	uint64_t in_use                       : 3;
+	uint64_t cmt_arb_gnts                 : 6;
+	uint64_t cmt_arb_reqs                 : 6;
+	uint64_t in_arb_gnts                  : 6;
+	uint64_t in_arb_reqs                  : 7;
+	uint64_t reserved_34_60               : 27;
+	uint64_t val_in                       : 3;
+#endif
+	} s;
+	struct cvmx_pko_pdm_isrm_dbg_s        cn73xx;
+	struct cvmx_pko_pdm_isrm_dbg_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_34_63               : 30;
 	uint64_t in_arb_reqs                  : 7;  /**< Input arbitration request signals. The order of the bits is:
@@ -10041,8 +11739,9 @@ union cvmx_pko_pdm_isrm_dbg {
 	uint64_t in_arb_reqs                  : 7;
 	uint64_t reserved_34_63               : 30;
 #endif
-	} s;
-	struct cvmx_pko_pdm_isrm_dbg_s        cn78xx;
+	} cn78xx;
+	struct cvmx_pko_pdm_isrm_dbg_s        cn78xxp2;
+	struct cvmx_pko_pdm_isrm_dbg_s        cnf75xx;
 };
 typedef union cvmx_pko_pdm_isrm_dbg cvmx_pko_pdm_isrm_dbg_t;
 
@@ -10068,7 +11767,10 @@ union cvmx_pko_pdm_isrm_dbg_dq {
 	uint64_t reserved_34_63               : 30;
 #endif
 	} s;
+	struct cvmx_pko_pdm_isrm_dbg_dq_s     cn73xx;
 	struct cvmx_pko_pdm_isrm_dbg_dq_s     cn78xx;
+	struct cvmx_pko_pdm_isrm_dbg_dq_s     cn78xxp2;
+	struct cvmx_pko_pdm_isrm_dbg_dq_s     cnf75xx;
 };
 typedef union cvmx_pko_pdm_isrm_dbg_dq cvmx_pko_pdm_isrm_dbg_dq_t;
 
@@ -10100,7 +11802,10 @@ union cvmx_pko_pdm_mem_addr {
 	uint64_t memsel                       : 3;
 #endif
 	} s;
+	struct cvmx_pko_pdm_mem_addr_s        cn73xx;
 	struct cvmx_pko_pdm_mem_addr_s        cn78xx;
+	struct cvmx_pko_pdm_mem_addr_s        cn78xxp2;
+	struct cvmx_pko_pdm_mem_addr_s        cnf75xx;
 };
 typedef union cvmx_pko_pdm_mem_addr cvmx_pko_pdm_mem_addr_t;
 
@@ -10118,7 +11823,10 @@ union cvmx_pko_pdm_mem_data {
 	uint64_t data                         : 64;
 #endif
 	} s;
+	struct cvmx_pko_pdm_mem_data_s        cn73xx;
 	struct cvmx_pko_pdm_mem_data_s        cn78xx;
+	struct cvmx_pko_pdm_mem_data_s        cn78xxp2;
+	struct cvmx_pko_pdm_mem_data_s        cnf75xx;
 };
 typedef union cvmx_pko_pdm_mem_data cvmx_pko_pdm_mem_data_t;
 
@@ -10138,7 +11846,10 @@ union cvmx_pko_pdm_mem_rw_ctl {
 	uint64_t reserved_2_63                : 62;
 #endif
 	} s;
+	struct cvmx_pko_pdm_mem_rw_ctl_s      cn73xx;
 	struct cvmx_pko_pdm_mem_rw_ctl_s      cn78xx;
+	struct cvmx_pko_pdm_mem_rw_ctl_s      cn78xxp2;
+	struct cvmx_pko_pdm_mem_rw_ctl_s      cnf75xx;
 };
 typedef union cvmx_pko_pdm_mem_rw_ctl cvmx_pko_pdm_mem_rw_ctl_t;
 
@@ -10156,7 +11867,10 @@ union cvmx_pko_pdm_mem_rw_sts {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_pko_pdm_mem_rw_sts_s      cn73xx;
 	struct cvmx_pko_pdm_mem_rw_sts_s      cn78xx;
+	struct cvmx_pko_pdm_mem_rw_sts_s      cn78xxp2;
+	struct cvmx_pko_pdm_mem_rw_sts_s      cnf75xx;
 };
 typedef union cvmx_pko_pdm_mem_rw_sts cvmx_pko_pdm_mem_rw_sts_t;
 
@@ -10168,24 +11882,29 @@ union cvmx_pko_pdm_mwpbuf_dbg {
 	struct cvmx_pko_pdm_mwpbuf_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_49_63               : 15;
-	uint64_t str_proc                     : 1;  /**< Reserved. */
-	uint64_t cmd_proc                     : 1;  /**< Reserved. */
-	uint64_t str_val                      : 1;  /**< Reserved. */
-	uint64_t mem_data_val                 : 1;  /**< Reserved. */
-	uint64_t insert_np                    : 1;  /**< Reserved. */
-	uint64_t insert_mp                    : 1;  /**< Reserved. */
+	uint64_t str_proc                     : 1;  /**< Stream process for data streaming. */
+	uint64_t cmd_proc                     : 1;  /**< Command process for memory-type instruction. */
+	uint64_t str_val                      : 1;  /**< streaming valid. */
+	uint64_t mem_data_val                 : 1;  /**< Memory data valid. */
+	uint64_t insert_np                    : 1;  /**< Next pointer insertion. */
+	uint64_t insert_mp                    : 1;  /**< Meta-packet insertion. */
 	uint64_t sel_nxt_ptr                  : 1;  /**< Sel_nxt_ptr signal. */
 	uint64_t load_val                     : 1;  /**< Load valid signal. */
 	uint64_t rdy                          : 1;  /**< Ready signal. */
-	uint64_t cur_state                    : 3;  /**< Current state from the pbuf controller. */
-	uint64_t mem_rdy                      : 1;  /**< Rreserved */
-	uint64_t str_rdy                      : 1;  /**< Reserved. */
-	uint64_t contention_type              : 2;  /**< Reserved. */
-	uint64_t track_rd_cnt                 : 6;  /**< Track read count value. */
-	uint64_t track_wr_cnt                 : 6;  /**< Track write count value. */
-	uint64_t mem_wen                      : 4;  /**< Reserved. */
+	uint64_t cur_state                    : 3;  /**< Stall count value. */
+	uint64_t mem_rdy                      : 1;  /**< Memory stage ready. */
+	uint64_t str_rdy                      : 1;  /**< Streaming logic ready. */
+	uint64_t contention_type              : 2;  /**< Contention detected and type mwpbuf__csr_conflict[1:0] bit 0 - a streamFill followed by a
+                                                         flush (same dq, same dst) bit 1 - a flush followed by a stream (same dq, same dst) */
+	uint64_t track_rd_cnt                 : 6;  /**< Reserved. */
+	uint64_t track_wr_cnt                 : 6;  /**< Reserved. */
+	uint64_t mem_wen                      : 4;  /**< Memory write enable signals. The order of the bits is:
+                                                         0x3 = wen mem3.
+                                                         0x2 = wen mem2.
+                                                         0x1 = wen mem1.
+                                                         0x0 = wen mem0. */
 	uint64_t mem_addr                     : 13; /**< Memory address for pbuf ram. */
-	uint64_t mem_en                       : 4;  /**< Memory write/chip enable signals. The order of the bits is:
+	uint64_t mem_en                       : 4;  /**< Memory chip enable signals. The order of the bits is:
                                                          0x3 = cen mem3.
                                                          0x2 = cen mem2.
                                                          0x1 = cen mem1.
@@ -10212,7 +11931,61 @@ union cvmx_pko_pdm_mwpbuf_dbg {
 	uint64_t reserved_49_63               : 15;
 #endif
 	} s;
+	struct cvmx_pko_pdm_mwpbuf_dbg_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_49_63               : 15;
+	uint64_t str_proc                     : 1;  /**< Stream process for data streaming. */
+	uint64_t cmd_proc                     : 1;  /**< Command process for memory-type instruction. */
+	uint64_t str_val                      : 1;  /**< streaming valid. */
+	uint64_t mem_data_val                 : 1;  /**< Memory data valid. */
+	uint64_t insert_np                    : 1;  /**< Next pointer insertion. */
+	uint64_t insert_mp                    : 1;  /**< Meta-packet insertion. */
+	uint64_t sel_nxt_ptr                  : 1;  /**< Sel_nxt_ptr signal. */
+	uint64_t load_val                     : 1;  /**< Load valid signal. */
+	uint64_t rdy                          : 1;  /**< Ready signal. */
+	uint64_t cur_state                    : 3;  /**< Stall count value. */
+	uint64_t mem_rdy                      : 1;  /**< Memory stage ready. */
+	uint64_t str_rdy                      : 1;  /**< Streaming logic ready. */
+	uint64_t contention_type              : 2;  /**< Contention detected and type mwpbuf__csr_conflict[1:0] bit 0 - a streamFill followed by a
+                                                         flush (same dq, same dst) bit 1 - a flush followed by a stream (same dq, same dst) */
+	uint64_t reserved_21_32               : 12;
+	uint64_t mem_wen                      : 4;  /**< Memory write enable signals. The order of the bits is:
+                                                         0x3 = wen mem3.
+                                                         0x2 = wen mem2.
+                                                         0x1 = wen mem1.
+                                                         0x0 = wen mem0. */
+	uint64_t reserved_15_16               : 2;
+	uint64_t mem_addr                     : 11; /**< Memory address for pbuf ram. */
+	uint64_t mem_en                       : 4;  /**< Memory chip enable signals. The order of the bits is:
+                                                         0x3 = cen mem3.
+                                                         0x2 = cen mem2.
+                                                         0x1 = cen mem1.
+                                                         0x0 = cen mem0. */
+#else
+	uint64_t mem_en                       : 4;
+	uint64_t mem_addr                     : 11;
+	uint64_t reserved_15_16               : 2;
+	uint64_t mem_wen                      : 4;
+	uint64_t reserved_21_32               : 12;
+	uint64_t contention_type              : 2;
+	uint64_t str_rdy                      : 1;
+	uint64_t mem_rdy                      : 1;
+	uint64_t cur_state                    : 3;
+	uint64_t rdy                          : 1;
+	uint64_t load_val                     : 1;
+	uint64_t sel_nxt_ptr                  : 1;
+	uint64_t insert_mp                    : 1;
+	uint64_t insert_np                    : 1;
+	uint64_t mem_data_val                 : 1;
+	uint64_t str_val                      : 1;
+	uint64_t cmd_proc                     : 1;
+	uint64_t str_proc                     : 1;
+	uint64_t reserved_49_63               : 15;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pdm_mwpbuf_dbg_s      cn78xx;
+	struct cvmx_pko_pdm_mwpbuf_dbg_s      cn78xxp2;
+	struct cvmx_pko_pdm_mwpbuf_dbg_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pdm_mwpbuf_dbg cvmx_pko_pdm_mwpbuf_dbg_t;
 
@@ -10225,8 +11998,7 @@ union cvmx_pko_pdm_sts {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_38_63               : 26;
 	uint64_t cp_stalled_thrshld_hit       : 1;  /**< Reserved. INTERNAL: This register is set to 1 if the PDM stalls the inputs for more than
-                                                         PKO_PDM_CFG_DBG[CP_STALL_THRSHLD]: Do not list field in HRM. For lab debug only; will
-                                                         likely disappear in pass 2. */
+                                                         PKO_PDM_CFG_DBG[CP_STALL_THRSHLD]: Do not list field in HRM. For lab debug only. */
 	uint64_t reserved_35_36               : 2;
 	uint64_t mwpbuf_data_val_err          : 1;  /**< Received signal that MWPBUF had data valid error. Throws
                                                          PKO_INTSN_E::PKO_MWPBUF_DATA_VAL_ERR. */
@@ -10278,7 +12050,7 @@ union cvmx_pko_pdm_sts {
                                                          PKO_PDM_STS[CP_SENDPKT_ERR_DROP_CODE]. Throws PKO_INTSN_E::PKO_CP_SENDPKT_ERR_DROP. */
 	uint64_t reserved_1_2                 : 2;
 	uint64_t desc_crc_err                 : 1;  /**< CRC error occurred in a descriptor. (State may have been corrupted.) Throws
-                                                         PKO_INTSN_E::PKO_DESC_CRC_ERR. INTERNAL: Note that this is a pass 2 feature. */
+                                                         PKO_INTSN_E::PKO_DESC_CRC_ERR. */
 #else
 	uint64_t desc_crc_err                 : 1;
 	uint64_t reserved_1_2                 : 2;
@@ -10304,7 +12076,10 @@ union cvmx_pko_pdm_sts {
 	uint64_t reserved_38_63               : 26;
 #endif
 	} s;
+	struct cvmx_pko_pdm_sts_s             cn73xx;
 	struct cvmx_pko_pdm_sts_s             cn78xx;
+	struct cvmx_pko_pdm_sts_s             cn78xxp2;
+	struct cvmx_pko_pdm_sts_s             cnf75xx;
 };
 typedef union cvmx_pko_pdm_sts cvmx_pko_pdm_sts_t;
 
@@ -10373,7 +12148,64 @@ union cvmx_pko_peb_bist_status {
 	uint64_t reserved_26_63               : 38;
 #endif
 	} s;
+	struct cvmx_pko_peb_bist_status_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_26_63               : 38;
+	uint64_t add_work_fifo                : 1;  /**< ADD_WORK_FIFO RAM BIST status. */
+	uint64_t pdm_pse_buf_ram              : 1;  /**< PDM_PSE_BUF RAM BIST status. */
+	uint64_t iobp0_fifo_ram               : 1;  /**< IOBP0_FIFO RAM BIST status. */
+	uint64_t iobp1_fifo_ram               : 1;  /**< IOBP1_FIFO RAM BIST status. */
+	uint64_t state_mem0                   : 1;  /**< STATE_MEM0 RAM BIST status. */
+	uint64_t reserved_19_20               : 2;
+	uint64_t state_mem3                   : 1;  /**< STATE_MEM3 RAM BIST status. */
+	uint64_t iobp1_uid_fifo_ram           : 1;  /**< IOBP1_UID_FIFO RAM BIST status. */
+	uint64_t nxt_link_ptr_ram             : 1;  /**< NXT_LINK_PTR RAM BIST status. */
+	uint64_t pd_bank0_ram                 : 1;  /**< PD_BANK0 RAM BIST status. */
+	uint64_t reserved_13_14               : 2;
+	uint64_t pd_bank3_ram                 : 1;  /**< PD_BANK3 RAM BIST status. */
+	uint64_t pd_var_bank_ram              : 1;  /**< PD_VAR_BANK RAM BIST status. */
+	uint64_t pdm_resp_buf_ram             : 1;  /**< PDM_RESP_BUF RAM BIST status. */
+	uint64_t tx_fifo_pkt_ram              : 1;  /**< TX_FIFO_PKT RAM BIST status. */
+	uint64_t tx_fifo_hdr_ram              : 1;  /**< TX_FIFO_HDR RAM BIST status. */
+	uint64_t tx_fifo_crc_ram              : 1;  /**< TX_FIFO_CRC RAM BIST status. */
+	uint64_t ts_addwork_ram               : 1;  /**< TS_ADDWORK RAM BIST status. */
+	uint64_t send_mem_ts_fifo             : 1;  /**< SEND_MEM_TS_FIFO RAM BIST status. */
+	uint64_t send_mem_stdn_fifo           : 1;  /**< SEND_MEM_STDN_FIFO RAM BIST status. */
+	uint64_t send_mem_fifo                : 1;  /**< SEND_MEM_FIFO RAM BIST status. */
+	uint64_t pkt_mrk_ram                  : 1;  /**< PKT_MRK RAM BIST status. */
+	uint64_t peb_st_inf_ram               : 1;  /**< PEB_ST_INF RAM BIST status. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t peb_st_inf_ram               : 1;
+	uint64_t pkt_mrk_ram                  : 1;
+	uint64_t send_mem_fifo                : 1;
+	uint64_t send_mem_stdn_fifo           : 1;
+	uint64_t send_mem_ts_fifo             : 1;
+	uint64_t ts_addwork_ram               : 1;
+	uint64_t tx_fifo_crc_ram              : 1;
+	uint64_t tx_fifo_hdr_ram              : 1;
+	uint64_t tx_fifo_pkt_ram              : 1;
+	uint64_t pdm_resp_buf_ram             : 1;
+	uint64_t pd_var_bank_ram              : 1;
+	uint64_t pd_bank3_ram                 : 1;
+	uint64_t reserved_13_14               : 2;
+	uint64_t pd_bank0_ram                 : 1;
+	uint64_t nxt_link_ptr_ram             : 1;
+	uint64_t iobp1_uid_fifo_ram           : 1;
+	uint64_t state_mem3                   : 1;
+	uint64_t reserved_19_20               : 2;
+	uint64_t state_mem0                   : 1;
+	uint64_t iobp1_fifo_ram               : 1;
+	uint64_t iobp0_fifo_ram               : 1;
+	uint64_t pdm_pse_buf_ram              : 1;
+	uint64_t add_work_fifo                : 1;
+	uint64_t reserved_26_63               : 38;
+#endif
+	} cn73xx;
 	struct cvmx_pko_peb_bist_status_s     cn78xx;
+	struct cvmx_pko_peb_bist_status_cn73xx cn78xxp2;
+	struct cvmx_pko_peb_bist_status_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_peb_bist_status cvmx_pko_peb_bist_status_t;
 
@@ -10473,7 +12305,92 @@ union cvmx_pko_peb_ecc_ctl0 {
 	uint64_t iobp1_uid_fifo_ram_flip      : 2;
 #endif
 	} s;
+	struct cvmx_pko_peb_ecc_ctl0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t iobp1_uid_fifo_ram_flip      : 2;  /**< IOBP1_UID_FIFO_RAM flip syndrome bits on write. */
+	uint64_t iobp1_uid_fifo_ram_cdis      : 1;  /**< IOBP1_UID_FIFO_RAM ECC correction disable. */
+	uint64_t iobp0_fifo_ram_flip          : 2;  /**< IOBP0_FIFO_RAM flip syndrome bits on write. */
+	uint64_t iobp0_fifo_ram_cdis          : 1;  /**< IOBP0_FIFO_RAM ECC correction disable. */
+	uint64_t iobp1_fifo_ram_flip          : 2;  /**< IOBP1_FIFO_RAM flip syndrome bits on write. */
+	uint64_t iobp1_fifo_ram_cdis          : 1;  /**< IOBP1_FIFO_RAM ECC correction disable. */
+	uint64_t pdm_resp_buf_ram_flip        : 2;  /**< PDM_RESP_BUF_RAM flip syndrome bits on write. */
+	uint64_t pdm_resp_buf_ram_cdis        : 1;  /**< PDM_RESP_BUF_RAM ECC correction disable. */
+	uint64_t pdm_pse_buf_ram_flip         : 2;  /**< PDM_PSE_BUF_RAM flip syndrome bits on write. */
+	uint64_t pdm_pse_buf_ram_cdis         : 1;  /**< PDM_PSE_BUF_RAM ECC correction disable. */
+	uint64_t reserved_46_48               : 3;
+	uint64_t peb_st_inf_ram_flip          : 2;  /**< PEB_ST_INF_RAM flip syndrome bits on write. */
+	uint64_t peb_st_inf_ram_cdis          : 1;  /**< PEB_ST_INF_RAM ECC correction disable. */
+	uint64_t pd_bank3_ram_flip            : 2;  /**< PD_BANK3_RAM flip syndrome bits on write. */
+	uint64_t pd_bank3_ram_cdis            : 1;  /**< PD_BANK3_RAM ECC correction disable. */
+	uint64_t reserved_34_39               : 6;
+	uint64_t pd_bank0_ram_flip            : 2;  /**< PD_BANK0_RAM flip syndrome bits on write. */
+	uint64_t pd_bank0_ram_cdis            : 1;  /**< PD_BANK0_RAM ECC correction disable. */
+	uint64_t pd_var_bank_ram_flip         : 2;  /**< PD_VAR_BANK_RAM flip syndrome bits on write. */
+	uint64_t pd_var_bank_ram_cdis         : 1;  /**< PD_VAR_BANK_RAM ECC correction disable. */
+	uint64_t tx_fifo_crc_ram_flip         : 2;  /**< TX_FIFO_CRC_RAM flip syndrome bits on write. */
+	uint64_t tx_fifo_crc_ram_cdis         : 1;  /**< TX_FIFO_CRC_RAM ECC correction disable. */
+	uint64_t tx_fifo_hdr_ram_flip         : 2;  /**< TX_FIFO_HDR_RAM flip syndrome bits on write. */
+	uint64_t tx_fifo_hdr_ram_cdis         : 1;  /**< TX_FIFO_HDR_RAM ECC correction disable. */
+	uint64_t tx_fifo_pkt_ram_flip         : 2;  /**< TX_FIFO_PKT_RAM flip syndrome bits on write. */
+	uint64_t tx_fifo_pkt_ram_cdis         : 1;  /**< TX_FIFO_PKT_RAM ECC correction disable. */
+	uint64_t add_work_fifo_flip           : 2;  /**< ADD_WORK_FIFO flip syndrome bits on write. */
+	uint64_t add_work_fifo_cdis           : 1;  /**< ADD_WORK_FIFO ECC correction disable. */
+	uint64_t send_mem_fifo_flip           : 2;  /**< SEND_MEM_FIFO flip syndrome bits on write. */
+	uint64_t send_mem_fifo_cdis           : 1;  /**< SEND_MEM_FIFO ECC correction disable. */
+	uint64_t send_mem_stdn_fifo_flip      : 2;  /**< SEND_MEM_STDN_FIFO flip syndrome bits on write. */
+	uint64_t send_mem_stdn_fifo_cdis      : 1;  /**< SEND_MEM_STDN_FIFO ECC correction disable. */
+	uint64_t send_mem_ts_fifo_flip        : 2;  /**< SEND_MEM_TS_FIFO flip syndrome bits on write. */
+	uint64_t send_mem_ts_fifo_cdis        : 1;  /**< SEND_MEM_TS_FIFO ECC correction disable. */
+	uint64_t nxt_link_ptr_ram_flip        : 2;  /**< NXT_LINK_PTR_RAM flip syndrome bits on write. */
+	uint64_t nxt_link_ptr_ram_cdis        : 1;  /**< NXT_LINK_PTR_RAM ECC correction disable. */
+	uint64_t pkt_mrk_ram_flip             : 2;  /**< PKT_MRK_RAM flip syndrome bits on write. */
+	uint64_t pkt_mrk_ram_cdis             : 1;  /**< PKT_MRK_RAM ECC correction disable. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t pkt_mrk_ram_cdis             : 1;
+	uint64_t pkt_mrk_ram_flip             : 2;
+	uint64_t nxt_link_ptr_ram_cdis        : 1;
+	uint64_t nxt_link_ptr_ram_flip        : 2;
+	uint64_t send_mem_ts_fifo_cdis        : 1;
+	uint64_t send_mem_ts_fifo_flip        : 2;
+	uint64_t send_mem_stdn_fifo_cdis      : 1;
+	uint64_t send_mem_stdn_fifo_flip      : 2;
+	uint64_t send_mem_fifo_cdis           : 1;
+	uint64_t send_mem_fifo_flip           : 2;
+	uint64_t add_work_fifo_cdis           : 1;
+	uint64_t add_work_fifo_flip           : 2;
+	uint64_t tx_fifo_pkt_ram_cdis         : 1;
+	uint64_t tx_fifo_pkt_ram_flip         : 2;
+	uint64_t tx_fifo_hdr_ram_cdis         : 1;
+	uint64_t tx_fifo_hdr_ram_flip         : 2;
+	uint64_t tx_fifo_crc_ram_cdis         : 1;
+	uint64_t tx_fifo_crc_ram_flip         : 2;
+	uint64_t pd_var_bank_ram_cdis         : 1;
+	uint64_t pd_var_bank_ram_flip         : 2;
+	uint64_t pd_bank0_ram_cdis            : 1;
+	uint64_t pd_bank0_ram_flip            : 2;
+	uint64_t reserved_34_39               : 6;
+	uint64_t pd_bank3_ram_cdis            : 1;
+	uint64_t pd_bank3_ram_flip            : 2;
+	uint64_t peb_st_inf_ram_cdis          : 1;
+	uint64_t peb_st_inf_ram_flip          : 2;
+	uint64_t reserved_46_48               : 3;
+	uint64_t pdm_pse_buf_ram_cdis         : 1;
+	uint64_t pdm_pse_buf_ram_flip         : 2;
+	uint64_t pdm_resp_buf_ram_cdis        : 1;
+	uint64_t pdm_resp_buf_ram_flip        : 2;
+	uint64_t iobp1_fifo_ram_cdis          : 1;
+	uint64_t iobp1_fifo_ram_flip          : 2;
+	uint64_t iobp0_fifo_ram_cdis          : 1;
+	uint64_t iobp0_fifo_ram_flip          : 2;
+	uint64_t iobp1_uid_fifo_ram_cdis      : 1;
+	uint64_t iobp1_uid_fifo_ram_flip      : 2;
+#endif
+	} cn73xx;
 	struct cvmx_pko_peb_ecc_ctl0_s        cn78xx;
+	struct cvmx_pko_peb_ecc_ctl0_cn73xx   cn78xxp2;
+	struct cvmx_pko_peb_ecc_ctl0_cn73xx   cnf75xx;
 };
 typedef union cvmx_pko_peb_ecc_ctl0 cvmx_pko_peb_ecc_ctl0_t;
 
@@ -10486,14 +12403,37 @@ union cvmx_pko_peb_ecc_ctl1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t ts_addwork_ram_flip          : 2;  /**< TS_ADDWORK_RAM flip syndrome bits on write. */
 	uint64_t ts_addwork_ram_cdis          : 1;  /**< TS_ADDWORK_RAM ECC correction disable. */
+	uint64_t state_mem0_flip              : 2;  /**< STATE_MEM0 flip syndrome bits on write. */
+	uint64_t state_mem0_cdis              : 1;  /**< STATE_MEM0 ECC correction disable. */
+	uint64_t reserved_52_57               : 6;
+	uint64_t state_mem3_flip              : 2;  /**< STATE_MEM3 flip syndrome bits on write. */
+	uint64_t state_mem3_cdis              : 1;  /**< STATE_MEM3 ECC correction disable. */
+	uint64_t reserved_0_48                : 49;
+#else
+	uint64_t reserved_0_48                : 49;
+	uint64_t state_mem3_cdis              : 1;
+	uint64_t state_mem3_flip              : 2;
+	uint64_t reserved_52_57               : 6;
+	uint64_t state_mem0_cdis              : 1;
+	uint64_t state_mem0_flip              : 2;
+	uint64_t ts_addwork_ram_cdis          : 1;
+	uint64_t ts_addwork_ram_flip          : 2;
+#endif
+	} s;
+	struct cvmx_pko_peb_ecc_ctl1_s        cn73xx;
+	struct cvmx_pko_peb_ecc_ctl1_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t ts_addwork_ram_flip          : 2;  /**< TS_ADDWORK_RAM flip syndrome bits on write. */
+	uint64_t ts_addwork_ram_cdis          : 1;  /**< TS_ADDWORK_RAM ECC correction disable. */
 	uint64_t reserved_0_60                : 61;
 #else
 	uint64_t reserved_0_60                : 61;
 	uint64_t ts_addwork_ram_cdis          : 1;
 	uint64_t ts_addwork_ram_flip          : 2;
 #endif
-	} s;
-	struct cvmx_pko_peb_ecc_ctl1_s        cn78xx;
+	} cn78xx;
+	struct cvmx_pko_peb_ecc_ctl1_cn78xx   cn78xxp2;
+	struct cvmx_pko_peb_ecc_ctl1_s        cnf75xx;
 };
 typedef union cvmx_pko_peb_ecc_ctl1 cvmx_pko_peb_ecc_ctl1_t;
 
@@ -10503,6 +12443,163 @@ typedef union cvmx_pko_peb_ecc_ctl1 cvmx_pko_peb_ecc_ctl1_t;
 union cvmx_pko_peb_ecc_dbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_peb_ecc_dbe_sts0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t iobp1_uid_fifo_ram_dbe       : 1;  /**< Double-bit error for IOBP1_UID_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i */
+	uint64_t iobp0_fifo_ram_dbe           : 1;  /**< Double-bit error for IOBP0_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_iobp0_fifo_i */
+	uint64_t iobp1_fifo_ram_dbe           : 1;  /**< Double-bit error for IOBP1_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_fifo_i */
+	uint64_t pdm_resp_buf_ram_dbe         : 1;  /**< Double-bit error for PDM_RESP_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pdm_resp_buf_i */
+	uint64_t pdm_pse_buf_ram_dbe          : 1;  /**< Double-bit error for PDM_PSE_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pse_buf_i */
+	uint64_t peb_sm_jmp_ram_dbe           : 1;  /**< Double-bit error for PEB_SM_JMP_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_sm_jmp_uid_mem_i */
+	uint64_t peb_st_inf_ram_dbe           : 1;  /**< Double-bit error for PEB_ST_INF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_state_info_mem_i */
+	uint64_t pd_bank3_ram_dbe             : 1;  /**< Double-bit error for PD_BANK3_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank3_i */
+	uint64_t pd_bank2_ram_dbe             : 1;  /**< Double-bit error for PD_BANK2_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank2_i */
+	uint64_t pd_bank1_ram_dbe             : 1;  /**< Double-bit error for PD_BANK1_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank1_i */
+	uint64_t pd_bank0_ram_dbe             : 1;  /**< Double-bit error for PD_BANK0_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank0_i */
+	uint64_t pd_var_bank_ram_dbe          : 1;  /**< Double-bit error for PD_VAR_BANK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_var_mem_bank_i */
+	uint64_t tx_fifo_crc_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_CRC_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_crc_i */
+	uint64_t tx_fifo_hdr_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_HDR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_hdr_i */
+	uint64_t tx_fifo_pkt_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_PKT_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_pkt_i */
+	uint64_t add_work_fifo_dbe            : 1;  /**< Double-bit error for ADD_WORK_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_add_work_fifo_i */
+	uint64_t send_mem_fifo_dbe            : 1;  /**< Double-bit error for SEND_MEM_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_fifo_i */
+	uint64_t send_mem_stdn_fifo_dbe       : 1;  /**< Double-bit error for SEND_MEM_STDN_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_stdn_fifo_i */
+	uint64_t send_mem_ts_fifo_dbe         : 1;  /**< Double-bit error for SEND_MEM_TS_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_ts_fifo_i */
+	uint64_t nxt_link_ptr_ram_dbe         : 1;  /**< Double-bit error for NXT_LINK_PTR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_nxt_link_ptr_mem_i */
+	uint64_t pkt_mrk_ram_dbe              : 1;  /**< Double-bit error for PKT_MRK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pkt_mrk_mem_i */
+	uint64_t ts_addwork_ram_dbe           : 1;  /**< Double-bit error for TS_ADDWORK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_ts_addwork_mem_i */
+	uint64_t state_mem0_dbe               : 1;  /**< Double-bit error for STATE_MEM0. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_proc_fifo_state_bank0_i */
+	uint64_t reserved_39_40               : 2;
+	uint64_t state_mem3_dbe               : 1;  /**< Double-bit error for STATE_MEM3. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_proc_fifo_state_bank3_i */
+	uint64_t reserved_0_37                : 38;
+#else
+	uint64_t reserved_0_37                : 38;
+	uint64_t state_mem3_dbe               : 1;
+	uint64_t reserved_39_40               : 2;
+	uint64_t state_mem0_dbe               : 1;
+	uint64_t ts_addwork_ram_dbe           : 1;
+	uint64_t pkt_mrk_ram_dbe              : 1;
+	uint64_t nxt_link_ptr_ram_dbe         : 1;
+	uint64_t send_mem_ts_fifo_dbe         : 1;
+	uint64_t send_mem_stdn_fifo_dbe       : 1;
+	uint64_t send_mem_fifo_dbe            : 1;
+	uint64_t add_work_fifo_dbe            : 1;
+	uint64_t tx_fifo_pkt_ram_dbe          : 1;
+	uint64_t tx_fifo_hdr_ram_dbe          : 1;
+	uint64_t tx_fifo_crc_ram_dbe          : 1;
+	uint64_t pd_var_bank_ram_dbe          : 1;
+	uint64_t pd_bank0_ram_dbe             : 1;
+	uint64_t pd_bank1_ram_dbe             : 1;
+	uint64_t pd_bank2_ram_dbe             : 1;
+	uint64_t pd_bank3_ram_dbe             : 1;
+	uint64_t peb_st_inf_ram_dbe           : 1;
+	uint64_t peb_sm_jmp_ram_dbe           : 1;
+	uint64_t pdm_pse_buf_ram_dbe          : 1;
+	uint64_t pdm_resp_buf_ram_dbe         : 1;
+	uint64_t iobp1_fifo_ram_dbe           : 1;
+	uint64_t iobp0_fifo_ram_dbe           : 1;
+	uint64_t iobp1_uid_fifo_ram_dbe       : 1;
+#endif
+	} s;
+	struct cvmx_pko_peb_ecc_dbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t iobp1_uid_fifo_ram_dbe       : 1;  /**< Double-bit error for IOBP1_UID_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i */
+	uint64_t iobp0_fifo_ram_dbe           : 1;  /**< Double-bit error for IOBP0_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_iobp0_fifo_i */
+	uint64_t iobp1_fifo_ram_dbe           : 1;  /**< Double-bit error for IOBP1_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_fifo_i */
+	uint64_t pdm_resp_buf_ram_dbe         : 1;  /**< Double-bit error for PDM_RESP_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pdm_resp_buf_i */
+	uint64_t pdm_pse_buf_ram_dbe          : 1;  /**< Double-bit error for PDM_PSE_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pse_buf_i */
+	uint64_t reserved_58_58               : 1;
+	uint64_t peb_st_inf_ram_dbe           : 1;  /**< Double-bit error for PEB_ST_INF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_state_info_mem_i */
+	uint64_t pd_bank3_ram_dbe             : 1;  /**< Double-bit error for PD_BANK3_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank3_i */
+	uint64_t reserved_54_55               : 2;
+	uint64_t pd_bank0_ram_dbe             : 1;  /**< Double-bit error for PD_BANK0_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank0_i */
+	uint64_t pd_var_bank_ram_dbe          : 1;  /**< Double-bit error for PD_VAR_BANK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_var_mem_bank_i */
+	uint64_t tx_fifo_crc_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_CRC_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_crc_i */
+	uint64_t tx_fifo_hdr_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_HDR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_hdr_i */
+	uint64_t tx_fifo_pkt_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_PKT_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_pkt_i */
+	uint64_t add_work_fifo_dbe            : 1;  /**< Double-bit error for ADD_WORK_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_add_work_fifo_i */
+	uint64_t send_mem_fifo_dbe            : 1;  /**< Double-bit error for SEND_MEM_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_fifo_i */
+	uint64_t send_mem_stdn_fifo_dbe       : 1;  /**< Double-bit error for SEND_MEM_STDN_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_stdn_fifo_i */
+	uint64_t send_mem_ts_fifo_dbe         : 1;  /**< Double-bit error for SEND_MEM_TS_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_ts_fifo_i */
+	uint64_t nxt_link_ptr_ram_dbe         : 1;  /**< Double-bit error for NXT_LINK_PTR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_nxt_link_ptr_mem_i */
+	uint64_t pkt_mrk_ram_dbe              : 1;  /**< Double-bit error for PKT_MRK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pkt_mrk_mem_i */
+	uint64_t ts_addwork_ram_dbe           : 1;  /**< Double-bit error for TS_ADDWORK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_ts_addwork_mem_i */
+	uint64_t state_mem0_dbe               : 1;  /**< Double-bit error for STATE_MEM0. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_proc_fifo_state_bank0_i */
+	uint64_t reserved_39_40               : 2;
+	uint64_t state_mem3_dbe               : 1;  /**< Double-bit error for STATE_MEM3. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_proc_fifo_state_bank3_i */
+	uint64_t reserved_0_37                : 38;
+#else
+	uint64_t reserved_0_37                : 38;
+	uint64_t state_mem3_dbe               : 1;
+	uint64_t reserved_39_40               : 2;
+	uint64_t state_mem0_dbe               : 1;
+	uint64_t ts_addwork_ram_dbe           : 1;
+	uint64_t pkt_mrk_ram_dbe              : 1;
+	uint64_t nxt_link_ptr_ram_dbe         : 1;
+	uint64_t send_mem_ts_fifo_dbe         : 1;
+	uint64_t send_mem_stdn_fifo_dbe       : 1;
+	uint64_t send_mem_fifo_dbe            : 1;
+	uint64_t add_work_fifo_dbe            : 1;
+	uint64_t tx_fifo_pkt_ram_dbe          : 1;
+	uint64_t tx_fifo_hdr_ram_dbe          : 1;
+	uint64_t tx_fifo_crc_ram_dbe          : 1;
+	uint64_t pd_var_bank_ram_dbe          : 1;
+	uint64_t pd_bank0_ram_dbe             : 1;
+	uint64_t reserved_54_55               : 2;
+	uint64_t pd_bank3_ram_dbe             : 1;
+	uint64_t peb_st_inf_ram_dbe           : 1;
+	uint64_t reserved_58_58               : 1;
+	uint64_t pdm_pse_buf_ram_dbe          : 1;
+	uint64_t pdm_resp_buf_ram_dbe         : 1;
+	uint64_t iobp1_fifo_ram_dbe           : 1;
+	uint64_t iobp0_fifo_ram_dbe           : 1;
+	uint64_t iobp1_uid_fifo_ram_dbe       : 1;
+#endif
+	} cn73xx;
+	struct cvmx_pko_peb_ecc_dbe_sts0_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t iobp1_uid_fifo_ram_dbe       : 1;  /**< Double-bit error for IOBP1_UID_FIFO_RAM. INTERNAL: Instances:
                                                          pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i */
@@ -10574,8 +12671,76 @@ union cvmx_pko_peb_ecc_dbe_sts0 {
 	uint64_t iobp0_fifo_ram_dbe           : 1;
 	uint64_t iobp1_uid_fifo_ram_dbe       : 1;
 #endif
-	} s;
-	struct cvmx_pko_peb_ecc_dbe_sts0_s    cn78xx;
+	} cn78xx;
+	struct cvmx_pko_peb_ecc_dbe_sts0_cn78xxp2 {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t iobp1_uid_fifo_ram_dbe       : 1;  /**< Double-bit error for IOBP1_UID_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i */
+	uint64_t iobp0_fifo_ram_dbe           : 1;  /**< Double-bit error for IOBP0_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_iobp0_fifo_i */
+	uint64_t iobp1_fifo_ram_dbe           : 1;  /**< Double-bit error for IOBP1_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_fifo_i */
+	uint64_t pdm_resp_buf_ram_dbe         : 1;  /**< Double-bit error for PDM_RESP_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pdm_resp_buf_i */
+	uint64_t pdm_pse_buf_ram_dbe          : 1;  /**< Double-bit error for PDM_PSE_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pse_buf_i */
+	uint64_t reserved_58_58               : 1;
+	uint64_t peb_st_inf_ram_dbe           : 1;  /**< Double-bit error for PEB_ST_INF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_state_info_mem_i */
+	uint64_t pd_bank3_ram_dbe             : 1;  /**< Double-bit error for PD_BANK3_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank3_i */
+	uint64_t reserved_54_55               : 2;
+	uint64_t pd_bank0_ram_dbe             : 1;  /**< Double-bit error for PD_BANK0_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank0_i */
+	uint64_t pd_var_bank_ram_dbe          : 1;  /**< Double-bit error for PD_VAR_BANK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_var_mem_bank_i */
+	uint64_t tx_fifo_crc_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_CRC_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_crc_i */
+	uint64_t tx_fifo_hdr_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_HDR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_hdr_i */
+	uint64_t tx_fifo_pkt_ram_dbe          : 1;  /**< Double-bit error for TX_FIFO_PKT_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_pkt_i */
+	uint64_t add_work_fifo_dbe            : 1;  /**< Double-bit error for ADD_WORK_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_add_work_fifo_i */
+	uint64_t send_mem_fifo_dbe            : 1;  /**< Double-bit error for SEND_MEM_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_fifo_i */
+	uint64_t send_mem_stdn_fifo_dbe       : 1;  /**< Double-bit error for SEND_MEM_STDN_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_stdn_fifo_i */
+	uint64_t send_mem_ts_fifo_dbe         : 1;  /**< Double-bit error for SEND_MEM_TS_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_ts_fifo_i */
+	uint64_t nxt_link_ptr_ram_dbe         : 1;  /**< Double-bit error for NXT_LINK_PTR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_nxt_link_ptr_mem_i */
+	uint64_t pkt_mrk_ram_dbe              : 1;  /**< Double-bit error for PKT_MRK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pkt_mrk_mem_i */
+	uint64_t ts_addwork_ram_dbe           : 1;  /**< Double-bit error for TS_ADDWORK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_ts_addwork_mem_i */
+	uint64_t reserved_0_41                : 42;
+#else
+	uint64_t reserved_0_41                : 42;
+	uint64_t ts_addwork_ram_dbe           : 1;
+	uint64_t pkt_mrk_ram_dbe              : 1;
+	uint64_t nxt_link_ptr_ram_dbe         : 1;
+	uint64_t send_mem_ts_fifo_dbe         : 1;
+	uint64_t send_mem_stdn_fifo_dbe       : 1;
+	uint64_t send_mem_fifo_dbe            : 1;
+	uint64_t add_work_fifo_dbe            : 1;
+	uint64_t tx_fifo_pkt_ram_dbe          : 1;
+	uint64_t tx_fifo_hdr_ram_dbe          : 1;
+	uint64_t tx_fifo_crc_ram_dbe          : 1;
+	uint64_t pd_var_bank_ram_dbe          : 1;
+	uint64_t pd_bank0_ram_dbe             : 1;
+	uint64_t reserved_54_55               : 2;
+	uint64_t pd_bank3_ram_dbe             : 1;
+	uint64_t peb_st_inf_ram_dbe           : 1;
+	uint64_t reserved_58_58               : 1;
+	uint64_t pdm_pse_buf_ram_dbe          : 1;
+	uint64_t pdm_resp_buf_ram_dbe         : 1;
+	uint64_t iobp1_fifo_ram_dbe           : 1;
+	uint64_t iobp0_fifo_ram_dbe           : 1;
+	uint64_t iobp1_uid_fifo_ram_dbe       : 1;
+#endif
+	} cn78xxp2;
+	struct cvmx_pko_peb_ecc_dbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_peb_ecc_dbe_sts0 cvmx_pko_peb_ecc_dbe_sts0_t;
 
@@ -10617,7 +12782,10 @@ union cvmx_pko_peb_ecc_dbe_sts_cmb0 {
 	uint64_t peb_dbe_cmb0                 : 1;
 #endif
 	} s;
+	struct cvmx_pko_peb_ecc_dbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_peb_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_peb_ecc_dbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_peb_ecc_dbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_peb_ecc_dbe_sts_cmb0 cvmx_pko_peb_ecc_dbe_sts_cmb0_t;
 
@@ -10627,6 +12795,163 @@ typedef union cvmx_pko_peb_ecc_dbe_sts_cmb0 cvmx_pko_peb_ecc_dbe_sts_cmb0_t;
 union cvmx_pko_peb_ecc_sbe_sts0 {
 	uint64_t u64;
 	struct cvmx_pko_peb_ecc_sbe_sts0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t iobp1_uid_fifo_ram_sbe       : 1;  /**< Single-bit error for IOBP1_UID_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i */
+	uint64_t iobp0_fifo_ram_sbe           : 1;  /**< Single-bit error for IOBP0_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_iobp0_fifo_i */
+	uint64_t iobp1_fifo_ram_sbe           : 1;  /**< Single-bit error for IOBP1_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_fifo_i */
+	uint64_t pdm_resp_buf_ram_sbe         : 1;  /**< Single-bit error for PDM_RESP_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pdm_resp_buf_i */
+	uint64_t pdm_pse_buf_ram_sbe          : 1;  /**< Single-bit error for PDM_PSE_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pse_buf_i */
+	uint64_t peb_sm_jmp_ram_sbe           : 1;  /**< Single-bit error for PEB_SM_JMP_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_sm_jmp_uid_mem_i */
+	uint64_t peb_st_inf_ram_sbe           : 1;  /**< Single-bit error for PEB_ST_INF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_state_info_mem_i */
+	uint64_t pd_bank3_ram_sbe             : 1;  /**< Single-bit error for PD_BANK3_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank3_i */
+	uint64_t pd_bank2_ram_sbe             : 1;  /**< Single-bit error for PD_BANK2_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank2_i */
+	uint64_t pd_bank1_ram_sbe             : 1;  /**< Single-bit error for PD_BANK1_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank1_i */
+	uint64_t pd_bank0_ram_sbe             : 1;  /**< Single-bit error for PD_BANK0_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank0_i */
+	uint64_t pd_var_bank_ram_sbe          : 1;  /**< Single-bit error for PD_VAR_BANK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_var_mem_bank_i */
+	uint64_t tx_fifo_crc_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_CRC_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_crc_i */
+	uint64_t tx_fifo_hdr_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_HDR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_hdr_i */
+	uint64_t tx_fifo_pkt_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_PKT_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_pkt_i */
+	uint64_t add_work_fifo_sbe            : 1;  /**< Single-bit error for ADD_WORK_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_add_work_fifo_i */
+	uint64_t send_mem_fifo_sbe            : 1;  /**< Single-bit error for SEND_MEM_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_fifo_i */
+	uint64_t send_mem_stdn_fifo_sbe       : 1;  /**< Single-bit error for SEND_MEM_STDN_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_stdn_fifo_i */
+	uint64_t send_mem_ts_fifo_sbe         : 1;  /**< Single-bit error for SEND_MEM_TS_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_ts_fifo_i */
+	uint64_t nxt_link_ptr_ram_sbe         : 1;  /**< Single-bit error for NXT_LINK_PTR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_nxt_link_ptr_mem_i */
+	uint64_t pkt_mrk_ram_sbe              : 1;  /**< Single-bit error for PKT_MRK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pkt_mrk_mem_i */
+	uint64_t ts_addwork_ram_sbe           : 1;  /**< Single-bit error for TS_ADDWORK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_ts_addwork_mem_i */
+	uint64_t state_mem0_sbe               : 1;  /**< Single-bit error for STATE_MEM0. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_proc_fifo_state_bank0_i */
+	uint64_t reserved_39_40               : 2;
+	uint64_t state_mem3_sbe               : 1;  /**< Single-bit error for STATE_MEM3. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_proc_fifo_state_bank3_i */
+	uint64_t reserved_0_37                : 38;
+#else
+	uint64_t reserved_0_37                : 38;
+	uint64_t state_mem3_sbe               : 1;
+	uint64_t reserved_39_40               : 2;
+	uint64_t state_mem0_sbe               : 1;
+	uint64_t ts_addwork_ram_sbe           : 1;
+	uint64_t pkt_mrk_ram_sbe              : 1;
+	uint64_t nxt_link_ptr_ram_sbe         : 1;
+	uint64_t send_mem_ts_fifo_sbe         : 1;
+	uint64_t send_mem_stdn_fifo_sbe       : 1;
+	uint64_t send_mem_fifo_sbe            : 1;
+	uint64_t add_work_fifo_sbe            : 1;
+	uint64_t tx_fifo_pkt_ram_sbe          : 1;
+	uint64_t tx_fifo_hdr_ram_sbe          : 1;
+	uint64_t tx_fifo_crc_ram_sbe          : 1;
+	uint64_t pd_var_bank_ram_sbe          : 1;
+	uint64_t pd_bank0_ram_sbe             : 1;
+	uint64_t pd_bank1_ram_sbe             : 1;
+	uint64_t pd_bank2_ram_sbe             : 1;
+	uint64_t pd_bank3_ram_sbe             : 1;
+	uint64_t peb_st_inf_ram_sbe           : 1;
+	uint64_t peb_sm_jmp_ram_sbe           : 1;
+	uint64_t pdm_pse_buf_ram_sbe          : 1;
+	uint64_t pdm_resp_buf_ram_sbe         : 1;
+	uint64_t iobp1_fifo_ram_sbe           : 1;
+	uint64_t iobp0_fifo_ram_sbe           : 1;
+	uint64_t iobp1_uid_fifo_ram_sbe       : 1;
+#endif
+	} s;
+	struct cvmx_pko_peb_ecc_sbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t iobp1_uid_fifo_ram_sbe       : 1;  /**< Single-bit error for IOBP1_UID_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i */
+	uint64_t iobp0_fifo_ram_sbe           : 1;  /**< Single-bit error for IOBP0_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_iobp0_fifo_i */
+	uint64_t iobp1_fifo_ram_sbe           : 1;  /**< Single-bit error for IOBP1_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_fifo_i */
+	uint64_t pdm_resp_buf_ram_sbe         : 1;  /**< Single-bit error for PDM_RESP_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pdm_resp_buf_i */
+	uint64_t pdm_pse_buf_ram_sbe          : 1;  /**< Single-bit error for PDM_PSE_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pse_buf_i */
+	uint64_t reserved_58_58               : 1;
+	uint64_t peb_st_inf_ram_sbe           : 1;  /**< Single-bit error for PEB_ST_INF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_state_info_mem_i */
+	uint64_t pd_bank3_ram_sbe             : 1;  /**< Single-bit error for PD_BANK3_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank3_i */
+	uint64_t reserved_54_55               : 2;
+	uint64_t pd_bank0_ram_sbe             : 1;  /**< Single-bit error for PD_BANK0_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank0_i */
+	uint64_t pd_var_bank_ram_sbe          : 1;  /**< Single-bit error for PD_VAR_BANK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_var_mem_bank_i */
+	uint64_t tx_fifo_crc_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_CRC_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_crc_i */
+	uint64_t tx_fifo_hdr_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_HDR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_hdr_i */
+	uint64_t tx_fifo_pkt_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_PKT_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_pkt_i */
+	uint64_t add_work_fifo_sbe            : 1;  /**< Single-bit error for ADD_WORK_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_add_work_fifo_i */
+	uint64_t send_mem_fifo_sbe            : 1;  /**< Single-bit error for SEND_MEM_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_fifo_i */
+	uint64_t send_mem_stdn_fifo_sbe       : 1;  /**< Single-bit error for SEND_MEM_STDN_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_stdn_fifo_i */
+	uint64_t send_mem_ts_fifo_sbe         : 1;  /**< Single-bit error for SEND_MEM_TS_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_ts_fifo_i */
+	uint64_t nxt_link_ptr_ram_sbe         : 1;  /**< Single-bit error for NXT_LINK_PTR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_nxt_link_ptr_mem_i */
+	uint64_t pkt_mrk_ram_sbe              : 1;  /**< Single-bit error for PKT_MRK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pkt_mrk_mem_i */
+	uint64_t ts_addwork_ram_sbe           : 1;  /**< Single-bit error for TS_ADDWORK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_ts_addwork_mem_i */
+	uint64_t state_mem0_sbe               : 1;  /**< Single-bit error for STATE_MEM0. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_proc_fifo_state_bank0_i */
+	uint64_t reserved_39_40               : 2;
+	uint64_t state_mem3_sbe               : 1;  /**< Single-bit error for STATE_MEM3. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_proc_fifo_state_bank3_i */
+	uint64_t reserved_0_37                : 38;
+#else
+	uint64_t reserved_0_37                : 38;
+	uint64_t state_mem3_sbe               : 1;
+	uint64_t reserved_39_40               : 2;
+	uint64_t state_mem0_sbe               : 1;
+	uint64_t ts_addwork_ram_sbe           : 1;
+	uint64_t pkt_mrk_ram_sbe              : 1;
+	uint64_t nxt_link_ptr_ram_sbe         : 1;
+	uint64_t send_mem_ts_fifo_sbe         : 1;
+	uint64_t send_mem_stdn_fifo_sbe       : 1;
+	uint64_t send_mem_fifo_sbe            : 1;
+	uint64_t add_work_fifo_sbe            : 1;
+	uint64_t tx_fifo_pkt_ram_sbe          : 1;
+	uint64_t tx_fifo_hdr_ram_sbe          : 1;
+	uint64_t tx_fifo_crc_ram_sbe          : 1;
+	uint64_t pd_var_bank_ram_sbe          : 1;
+	uint64_t pd_bank0_ram_sbe             : 1;
+	uint64_t reserved_54_55               : 2;
+	uint64_t pd_bank3_ram_sbe             : 1;
+	uint64_t peb_st_inf_ram_sbe           : 1;
+	uint64_t reserved_58_58               : 1;
+	uint64_t pdm_pse_buf_ram_sbe          : 1;
+	uint64_t pdm_resp_buf_ram_sbe         : 1;
+	uint64_t iobp1_fifo_ram_sbe           : 1;
+	uint64_t iobp0_fifo_ram_sbe           : 1;
+	uint64_t iobp1_uid_fifo_ram_sbe       : 1;
+#endif
+	} cn73xx;
+	struct cvmx_pko_peb_ecc_sbe_sts0_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t iobp1_uid_fifo_ram_sbe       : 1;  /**< Single-bit error for IOBP1_UID_FIFO_RAM. INTERNAL: Instances:
                                                          pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i */
@@ -10698,8 +13023,76 @@ union cvmx_pko_peb_ecc_sbe_sts0 {
 	uint64_t iobp0_fifo_ram_sbe           : 1;
 	uint64_t iobp1_uid_fifo_ram_sbe       : 1;
 #endif
-	} s;
-	struct cvmx_pko_peb_ecc_sbe_sts0_s    cn78xx;
+	} cn78xx;
+	struct cvmx_pko_peb_ecc_sbe_sts0_cn78xxp2 {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t iobp1_uid_fifo_ram_sbe       : 1;  /**< Single-bit error for IOBP1_UID_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_uid_fifo_i */
+	uint64_t iobp0_fifo_ram_sbe           : 1;  /**< Single-bit error for IOBP0_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_iobp0_fifo_i */
+	uint64_t iobp1_fifo_ram_sbe           : 1;  /**< Single-bit error for IOBP1_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_iobp1_fifo_i */
+	uint64_t pdm_resp_buf_ram_sbe         : 1;  /**< Single-bit error for PDM_RESP_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pdm_resp_buf_i */
+	uint64_t pdm_pse_buf_ram_sbe          : 1;  /**< Single-bit error for PDM_PSE_BUF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_pdm_intf_i.pko_peb_pse_buf_i */
+	uint64_t reserved_58_58               : 1;
+	uint64_t peb_st_inf_ram_sbe           : 1;  /**< Single-bit error for PEB_ST_INF_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_state_info_mem_i */
+	uint64_t pd_bank3_ram_sbe             : 1;  /**< Single-bit error for PD_BANK3_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank3_i */
+	uint64_t reserved_54_55               : 2;
+	uint64_t pd_bank0_ram_sbe             : 1;  /**< Single-bit error for PD_BANK0_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_mem_bank0_i */
+	uint64_t pd_var_bank_ram_sbe          : 1;  /**< Single-bit error for PD_VAR_BANK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pd_var_mem_bank_i */
+	uint64_t tx_fifo_crc_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_CRC_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_crc_i */
+	uint64_t tx_fifo_hdr_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_HDR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_hdr_i */
+	uint64_t tx_fifo_pkt_ram_sbe          : 1;  /**< Single-bit error for TX_FIFO_PKT_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_tx_fifo_i.pko_peb_tx_fifo_pkt_i */
+	uint64_t add_work_fifo_sbe            : 1;  /**< Single-bit error for ADD_WORK_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_add_work_fifo_i */
+	uint64_t send_mem_fifo_sbe            : 1;  /**< Single-bit error for SEND_MEM_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_fifo_i */
+	uint64_t send_mem_stdn_fifo_sbe       : 1;  /**< Single-bit error for SEND_MEM_STDN_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_stdn_fifo_i */
+	uint64_t send_mem_ts_fifo_sbe         : 1;  /**< Single-bit error for SEND_MEM_TS_FIFO. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_sendmem_proc_i.pko_peb_send_mem_ts_fifo_i */
+	uint64_t nxt_link_ptr_ram_sbe         : 1;  /**< Single-bit error for NXT_LINK_PTR_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_nxt_link_ptr_mem_i */
+	uint64_t pkt_mrk_ram_sbe              : 1;  /**< Single-bit error for PKT_MRK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_state_mem_i.pko_peb_pkt_mrk_mem_i */
+	uint64_t ts_addwork_ram_sbe           : 1;  /**< Single-bit error for TS_ADDWORK_RAM. INTERNAL: Instances:
+                                                         pko_pnr3.pko_pnr3_peb.pko_peb_proc_i.pko_peb_addwork_proc_i.pko_peb_ts_addwork_mem_i */
+	uint64_t reserved_0_41                : 42;
+#else
+	uint64_t reserved_0_41                : 42;
+	uint64_t ts_addwork_ram_sbe           : 1;
+	uint64_t pkt_mrk_ram_sbe              : 1;
+	uint64_t nxt_link_ptr_ram_sbe         : 1;
+	uint64_t send_mem_ts_fifo_sbe         : 1;
+	uint64_t send_mem_stdn_fifo_sbe       : 1;
+	uint64_t send_mem_fifo_sbe            : 1;
+	uint64_t add_work_fifo_sbe            : 1;
+	uint64_t tx_fifo_pkt_ram_sbe          : 1;
+	uint64_t tx_fifo_hdr_ram_sbe          : 1;
+	uint64_t tx_fifo_crc_ram_sbe          : 1;
+	uint64_t pd_var_bank_ram_sbe          : 1;
+	uint64_t pd_bank0_ram_sbe             : 1;
+	uint64_t reserved_54_55               : 2;
+	uint64_t pd_bank3_ram_sbe             : 1;
+	uint64_t peb_st_inf_ram_sbe           : 1;
+	uint64_t reserved_58_58               : 1;
+	uint64_t pdm_pse_buf_ram_sbe          : 1;
+	uint64_t pdm_resp_buf_ram_sbe         : 1;
+	uint64_t iobp1_fifo_ram_sbe           : 1;
+	uint64_t iobp0_fifo_ram_sbe           : 1;
+	uint64_t iobp1_uid_fifo_ram_sbe       : 1;
+#endif
+	} cn78xxp2;
+	struct cvmx_pko_peb_ecc_sbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_peb_ecc_sbe_sts0 cvmx_pko_peb_ecc_sbe_sts0_t;
 
@@ -10741,9 +13134,32 @@ union cvmx_pko_peb_ecc_sbe_sts_cmb0 {
 	uint64_t peb_sbe_cmb0                 : 1;
 #endif
 	} s;
+	struct cvmx_pko_peb_ecc_sbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_peb_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_peb_ecc_sbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_peb_ecc_sbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_peb_ecc_sbe_sts_cmb0 cvmx_pko_peb_ecc_sbe_sts_cmb0_t;
+
+/**
+ * cvmx_pko_peb_eco
+ */
+union cvmx_pko_peb_eco {
+	uint64_t u64;
+	struct cvmx_pko_peb_eco_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t eco_rw                       : 32; /**< INTERNAL: Reserved for ECO usage. */
+#else
+	uint64_t eco_rw                       : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_pko_peb_eco_s             cn73xx;
+	struct cvmx_pko_peb_eco_s             cn78xxp2;
+	struct cvmx_pko_peb_eco_s             cnf75xx;
+};
+typedef union cvmx_pko_peb_eco cvmx_pko_peb_eco_t;
 
 /**
  * cvmx_pko_peb_err_int
@@ -10764,7 +13180,7 @@ union cvmx_pko_peb_err_int {
 	uint64_t peb_trunc_err                : 1;  /**< Asserted when a PD has truncated data. Throws PKO_INTSN_E::PEB_TRUNC_ERR. */
 	uint64_t peb_pad_err                  : 1;  /**< Asserted when a PD has data padded to it (SEND_HDR[TOTAL] < sum(SEND_DATA[size])). Throws
                                                          PKO_INTSN_E::PEB_PAD_ERR. */
-	uint64_t peb_pse_fifo_err             : 1;  /**< Asserted when PSE sends PD information for a nonconfigured FIFO. Throws
+	uint64_t peb_pse_fifo_err             : 1;  /**< Asserted when PSE sends PD information for a nonconfigured LINK. Throws
                                                          PKO_INTSN_E::PEB_PSE_FIFO_ERR. */
 	uint64_t peb_fcs_sop_err              : 1;  /**< Asserted when FCS SOP value greater than packet size detected. Throws
                                                          PKO_INTSN_E::PEB_FCS_SOP_ERR. */
@@ -10786,7 +13202,10 @@ union cvmx_pko_peb_err_int {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
+	struct cvmx_pko_peb_err_int_s         cn73xx;
 	struct cvmx_pko_peb_err_int_s         cn78xx;
+	struct cvmx_pko_peb_err_int_s         cn78xxp2;
+	struct cvmx_pko_peb_err_int_s         cnf75xx;
 };
 typedef union cvmx_pko_peb_err_int cvmx_pko_peb_err_int_t;
 
@@ -10808,7 +13227,10 @@ union cvmx_pko_peb_ext_hdr_def_err_info {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_pko_peb_ext_hdr_def_err_info_s cn73xx;
 	struct cvmx_pko_peb_ext_hdr_def_err_info_s cn78xx;
+	struct cvmx_pko_peb_ext_hdr_def_err_info_s cn78xxp2;
+	struct cvmx_pko_peb_ext_hdr_def_err_info_s cnf75xx;
 };
 typedef union cvmx_pko_peb_ext_hdr_def_err_info cvmx_pko_peb_ext_hdr_def_err_info_t;
 
@@ -10830,7 +13252,10 @@ union cvmx_pko_peb_fcs_sop_err_info {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_pko_peb_fcs_sop_err_info_s cn73xx;
 	struct cvmx_pko_peb_fcs_sop_err_info_s cn78xx;
+	struct cvmx_pko_peb_fcs_sop_err_info_s cn78xxp2;
+	struct cvmx_pko_peb_fcs_sop_err_info_s cnf75xx;
 };
 typedef union cvmx_pko_peb_fcs_sop_err_info cvmx_pko_peb_fcs_sop_err_info_t;
 
@@ -10852,7 +13277,10 @@ union cvmx_pko_peb_jump_def_err_info {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_pko_peb_jump_def_err_info_s cn73xx;
 	struct cvmx_pko_peb_jump_def_err_info_s cn78xx;
+	struct cvmx_pko_peb_jump_def_err_info_s cn78xxp2;
+	struct cvmx_pko_peb_jump_def_err_info_s cnf75xx;
 };
 typedef union cvmx_pko_peb_jump_def_err_info cvmx_pko_peb_jump_def_err_info_t;
 
@@ -10872,7 +13300,10 @@ union cvmx_pko_peb_macx_cfg_wr_err_info {
 	uint64_t reserved_8_63                : 56;
 #endif
 	} s;
+	struct cvmx_pko_peb_macx_cfg_wr_err_info_s cn73xx;
 	struct cvmx_pko_peb_macx_cfg_wr_err_info_s cn78xx;
+	struct cvmx_pko_peb_macx_cfg_wr_err_info_s cn78xxp2;
+	struct cvmx_pko_peb_macx_cfg_wr_err_info_s cnf75xx;
 };
 typedef union cvmx_pko_peb_macx_cfg_wr_err_info cvmx_pko_peb_macx_cfg_wr_err_info_t;
 
@@ -10894,7 +13325,10 @@ union cvmx_pko_peb_max_link_err_info {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_pko_peb_max_link_err_info_s cn73xx;
 	struct cvmx_pko_peb_max_link_err_info_s cn78xx;
+	struct cvmx_pko_peb_max_link_err_info_s cn78xxp2;
+	struct cvmx_pko_peb_max_link_err_info_s cnf75xx;
 };
 typedef union cvmx_pko_peb_max_link_err_info cvmx_pko_peb_max_link_err_info_t;
 
@@ -10906,13 +13340,16 @@ union cvmx_pko_peb_ncb_cfg {
 	struct cvmx_pko_peb_ncb_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t rstp                         : 1;  /**< Reserved. */
+	uint64_t rstp                         : 1;  /**< Convert STP operations to RSTP */
 #else
 	uint64_t rstp                         : 1;
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_pko_peb_ncb_cfg_s         cn73xx;
 	struct cvmx_pko_peb_ncb_cfg_s         cn78xx;
+	struct cvmx_pko_peb_ncb_cfg_s         cn78xxp2;
+	struct cvmx_pko_peb_ncb_cfg_s         cnf75xx;
 };
 typedef union cvmx_pko_peb_ncb_cfg cvmx_pko_peb_ncb_cfg_t;
 
@@ -10934,7 +13371,10 @@ union cvmx_pko_peb_pad_err_info {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_pko_peb_pad_err_info_s    cn73xx;
 	struct cvmx_pko_peb_pad_err_info_s    cn78xx;
+	struct cvmx_pko_peb_pad_err_info_s    cn78xxp2;
+	struct cvmx_pko_peb_pad_err_info_s    cnf75xx;
 };
 typedef union cvmx_pko_peb_pad_err_info cvmx_pko_peb_pad_err_info_t;
 
@@ -10944,6 +13384,21 @@ typedef union cvmx_pko_peb_pad_err_info cvmx_pko_peb_pad_err_info_t;
 union cvmx_pko_peb_pse_fifo_err_info {
 	uint64_t u64;
 	struct cvmx_pko_peb_pse_fifo_err_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_25_63               : 39;
+	uint64_t link                         : 5;  /**< LINK number associated with the captured PEB_PSE_FIFO_ERR. */
+	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_PSE_FIFO_ERR] is set. */
+	uint64_t fifo                         : 7;  /**< FIFO number associated with the captured PEB_PSE_FIFO_ERR. */
+	uint64_t chan                         : 12; /**< Channel number associated with the captured PEB_PSE_FIFO_ERR. */
+#else
+	uint64_t chan                         : 12;
+	uint64_t fifo                         : 7;
+	uint64_t val                          : 1;
+	uint64_t link                         : 5;
+	uint64_t reserved_25_63               : 39;
+#endif
+	} s;
+	struct cvmx_pko_peb_pse_fifo_err_info_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t val                          : 1;  /**< Asserted when PKO_PEB_ERR_INT[PEB_PSE_FIFO_ERR] is set. */
@@ -10955,8 +13410,10 @@ union cvmx_pko_peb_pse_fifo_err_info {
 	uint64_t val                          : 1;
 	uint64_t reserved_20_63               : 44;
 #endif
-	} s;
-	struct cvmx_pko_peb_pse_fifo_err_info_s cn78xx;
+	} cn73xx;
+	struct cvmx_pko_peb_pse_fifo_err_info_cn73xx cn78xx;
+	struct cvmx_pko_peb_pse_fifo_err_info_s cn78xxp2;
+	struct cvmx_pko_peb_pse_fifo_err_info_s cnf75xx;
 };
 typedef union cvmx_pko_peb_pse_fifo_err_info cvmx_pko_peb_pse_fifo_err_info_t;
 
@@ -10978,7 +13435,10 @@ union cvmx_pko_peb_subd_addr_err_info {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_pko_peb_subd_addr_err_info_s cn73xx;
 	struct cvmx_pko_peb_subd_addr_err_info_s cn78xx;
+	struct cvmx_pko_peb_subd_addr_err_info_s cn78xxp2;
+	struct cvmx_pko_peb_subd_addr_err_info_s cnf75xx;
 };
 typedef union cvmx_pko_peb_subd_addr_err_info cvmx_pko_peb_subd_addr_err_info_t;
 
@@ -11000,7 +13460,10 @@ union cvmx_pko_peb_subd_size_err_info {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_pko_peb_subd_size_err_info_s cn73xx;
 	struct cvmx_pko_peb_subd_size_err_info_s cn78xx;
+	struct cvmx_pko_peb_subd_size_err_info_s cn78xxp2;
+	struct cvmx_pko_peb_subd_size_err_info_s cnf75xx;
 };
 typedef union cvmx_pko_peb_subd_size_err_info cvmx_pko_peb_subd_size_err_info_t;
 
@@ -11022,7 +13485,10 @@ union cvmx_pko_peb_trunc_err_info {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_pko_peb_trunc_err_info_s  cn73xx;
 	struct cvmx_pko_peb_trunc_err_info_s  cn78xx;
+	struct cvmx_pko_peb_trunc_err_info_s  cn78xxp2;
+	struct cvmx_pko_peb_trunc_err_info_s  cnf75xx;
 };
 typedef union cvmx_pko_peb_trunc_err_info cvmx_pko_peb_trunc_err_info_t;
 
@@ -11033,18 +13499,31 @@ union cvmx_pko_peb_tso_cfg {
 	uint64_t u64;
 	struct cvmx_pko_peb_tso_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_24_63               : 40;
-	uint64_t fsf                          : 8;  /**< Reserved. */
-	uint64_t msf                          : 8;  /**< Reserved. */
-	uint64_t lsf                          : 8;  /**< Reserved. */
+	uint64_t reserved_44_63               : 20;
+	uint64_t fsf                          : 12; /**< Modify the TCP header flags for the first TSO segmented packet by logical AND
+                                                         with this configuration.
+                                                         _ FLAGS_new = (FLAGS_original) AND [FSF]. */
+	uint64_t reserved_28_31               : 4;
+	uint64_t msf                          : 12; /**< Modify the TCP header flags for the middle TSO segmented packets by logical AND
+                                                         with this configuration.
+                                                         _ FLAGS_new = (FLAGS_original) AND [MSF]. */
+	uint64_t reserved_12_15               : 4;
+	uint64_t lsf                          : 12; /**< Modify the TCP header flags for the last TSO segmented packet by logical AND
+                                                         with this configuration.
+                                                         _ FLAGS_new = (FLAGS_original) AND [LSF]. */
 #else
-	uint64_t lsf                          : 8;
-	uint64_t msf                          : 8;
-	uint64_t fsf                          : 8;
-	uint64_t reserved_24_63               : 40;
+	uint64_t lsf                          : 12;
+	uint64_t reserved_12_15               : 4;
+	uint64_t msf                          : 12;
+	uint64_t reserved_28_31               : 4;
+	uint64_t fsf                          : 12;
+	uint64_t reserved_44_63               : 20;
 #endif
 	} s;
+	struct cvmx_pko_peb_tso_cfg_s         cn73xx;
 	struct cvmx_pko_peb_tso_cfg_s         cn78xx;
+	struct cvmx_pko_peb_tso_cfg_s         cn78xxp2;
+	struct cvmx_pko_peb_tso_cfg_s         cnf75xx;
 };
 typedef union cvmx_pko_peb_tso_cfg cvmx_pko_peb_tso_cfg_t;
 
@@ -11060,7 +13539,10 @@ union cvmx_pko_pq_csr_bus_debug {
 	uint64_t csr_bus_debug                : 64;
 #endif
 	} s;
+	struct cvmx_pko_pq_csr_bus_debug_s    cn73xx;
 	struct cvmx_pko_pq_csr_bus_debug_s    cn78xx;
+	struct cvmx_pko_pq_csr_bus_debug_s    cn78xxp2;
+	struct cvmx_pko_pq_csr_bus_debug_s    cnf75xx;
 };
 typedef union cvmx_pko_pq_csr_bus_debug cvmx_pko_pq_csr_bus_debug_t;
 
@@ -11078,7 +13560,10 @@ union cvmx_pko_pq_debug_green {
 	uint64_t g_valid                      : 32;
 #endif
 	} s;
+	struct cvmx_pko_pq_debug_green_s      cn73xx;
 	struct cvmx_pko_pq_debug_green_s      cn78xx;
+	struct cvmx_pko_pq_debug_green_s      cn78xxp2;
+	struct cvmx_pko_pq_debug_green_s      cnf75xx;
 };
 typedef union cvmx_pko_pq_debug_green cvmx_pko_pq_debug_green_t;
 
@@ -11096,7 +13581,10 @@ union cvmx_pko_pq_debug_links {
 	uint64_t links_ready                  : 32;
 #endif
 	} s;
+	struct cvmx_pko_pq_debug_links_s      cn73xx;
 	struct cvmx_pko_pq_debug_links_s      cn78xx;
+	struct cvmx_pko_pq_debug_links_s      cn78xxp2;
+	struct cvmx_pko_pq_debug_links_s      cnf75xx;
 };
 typedef union cvmx_pko_pq_debug_links cvmx_pko_pq_debug_links_t;
 
@@ -11116,7 +13604,10 @@ union cvmx_pko_pq_debug_yellow {
 	uint64_t y_valid                      : 32;
 #endif
 	} s;
+	struct cvmx_pko_pq_debug_yellow_s     cn73xx;
 	struct cvmx_pko_pq_debug_yellow_s     cn78xx;
+	struct cvmx_pko_pq_debug_yellow_s     cn78xxp2;
+	struct cvmx_pko_pq_debug_yellow_s     cnf75xx;
 };
 typedef union cvmx_pko_pq_debug_yellow cvmx_pko_pq_debug_yellow_t;
 
@@ -11132,7 +13623,10 @@ union cvmx_pko_pqa_debug {
 	uint64_t dbg_vec                      : 64;
 #endif
 	} s;
+	struct cvmx_pko_pqa_debug_s           cn73xx;
 	struct cvmx_pko_pqa_debug_s           cn78xx;
+	struct cvmx_pko_pqa_debug_s           cn78xxp2;
+	struct cvmx_pko_pqa_debug_s           cnf75xx;
 };
 typedef union cvmx_pko_pqa_debug cvmx_pko_pqa_debug_t;
 
@@ -11151,7 +13645,10 @@ union cvmx_pko_pqb_debug {
 	uint64_t dbg_vec                      : 64;
 #endif
 	} s;
+	struct cvmx_pko_pqb_debug_s           cn73xx;
 	struct cvmx_pko_pqb_debug_s           cn78xx;
+	struct cvmx_pko_pqb_debug_s           cn78xxp2;
+	struct cvmx_pko_pqb_debug_s           cnf75xx;
 };
 typedef union cvmx_pko_pqb_debug cvmx_pko_pqb_debug_t;
 
@@ -11164,6 +13661,44 @@ typedef union cvmx_pko_pqb_debug cvmx_pko_pqb_debug_t;
 union cvmx_pko_pse_dq_bist_status {
 	uint64_t u64;
 	struct cvmx_pko_pse_dq_bist_status_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_8_63                : 56;
+	uint64_t rt7_sram                     : 1;  /**< Result table 7 - DQ FIFO[1023:896]. */
+	uint64_t rt6_sram                     : 1;  /**< Result table 6 - DQ FIFO[895:768]. */
+	uint64_t rt5_sram                     : 1;  /**< Result table 5 - DQ FIFO[767:640]. */
+	uint64_t reserved_4_4                 : 1;
+	uint64_t rt3_sram                     : 1;  /**< Result table 3 - DQ FIFO[511:384]. */
+	uint64_t rt2_sram                     : 1;  /**< Result table 2 - DQ FIFO[383:256]. */
+	uint64_t rt1_sram                     : 1;  /**< Result table 1 - DQ FIFO[255:128]. */
+	uint64_t rt0_sram                     : 1;  /**< Result table 0 - DQ FIFO[127:0]. */
+#else
+	uint64_t rt0_sram                     : 1;
+	uint64_t rt1_sram                     : 1;
+	uint64_t rt2_sram                     : 1;
+	uint64_t rt3_sram                     : 1;
+	uint64_t reserved_4_4                 : 1;
+	uint64_t rt5_sram                     : 1;
+	uint64_t rt6_sram                     : 1;
+	uint64_t rt7_sram                     : 1;
+	uint64_t reserved_8_63                : 56;
+#endif
+	} s;
+	struct cvmx_pko_pse_dq_bist_status_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_5_63                : 59;
+	uint64_t wt_sram                      : 1;  /**< Work table. */
+	uint64_t reserved_2_3                 : 2;
+	uint64_t rt1_sram                     : 1;  /**< Result table 1 - DQ FIFO[255:128]. */
+	uint64_t rt0_sram                     : 1;  /**< Result table 0 - DQ FIFO[127:0]. */
+#else
+	uint64_t rt0_sram                     : 1;
+	uint64_t rt1_sram                     : 1;
+	uint64_t reserved_2_3                 : 2;
+	uint64_t wt_sram                      : 1;
+	uint64_t reserved_5_63                : 59;
+#endif
+	} cn73xx;
+	struct cvmx_pko_pse_dq_bist_status_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_9_63                : 55;
 	uint64_t wt_sram                      : 1;  /**< Work table. */
@@ -11187,8 +13722,9 @@ union cvmx_pko_pse_dq_bist_status {
 	uint64_t wt_sram                      : 1;
 	uint64_t reserved_9_63                : 55;
 #endif
-	} s;
-	struct cvmx_pko_pse_dq_bist_status_s  cn78xx;
+	} cn78xx;
+	struct cvmx_pko_pse_dq_bist_status_cn78xx cn78xxp2;
+	struct cvmx_pko_pse_dq_bist_status_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_dq_bist_status cvmx_pko_pse_dq_bist_status_t;
 
@@ -11240,7 +13776,30 @@ union cvmx_pko_pse_dq_ecc_ctl0 {
 	uint64_t dq_wt_ram_flip               : 2;
 #endif
 	} s;
+	struct cvmx_pko_pse_dq_ecc_ctl0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t dq_wt_ram_flip               : 2;  /**< DQ_WT_RAM flip syndrome bits on write. */
+	uint64_t dq_wt_ram_cdis               : 1;  /**< DQ_WT_RAM ECC correction disable. */
+	uint64_t reserved_43_60               : 18;
+	uint64_t dq_rt1_flip                  : 2;  /**< DQ_RT1 flip syndrome bits on write. */
+	uint64_t dq_rt1_cdis                  : 1;  /**< DQ_RT1 ECC correction disable. */
+	uint64_t dq_rt0_flip                  : 2;  /**< DQ_RT0 flip syndrome bits on write. */
+	uint64_t dq_rt0_cdis                  : 1;  /**< DQ_RT0 ECC correction disable. */
+	uint64_t reserved_0_36                : 37;
+#else
+	uint64_t reserved_0_36                : 37;
+	uint64_t dq_rt0_cdis                  : 1;
+	uint64_t dq_rt0_flip                  : 2;
+	uint64_t dq_rt1_cdis                  : 1;
+	uint64_t dq_rt1_flip                  : 2;
+	uint64_t reserved_43_60               : 18;
+	uint64_t dq_wt_ram_cdis               : 1;
+	uint64_t dq_wt_ram_flip               : 2;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_dq_ecc_ctl0_s     cn78xx;
+	struct cvmx_pko_pse_dq_ecc_ctl0_s     cn78xxp2;
+	struct cvmx_pko_pse_dq_ecc_ctl0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_dq_ecc_ctl0 cvmx_pko_pse_dq_ecc_ctl0_t;
 
@@ -11274,7 +13833,24 @@ union cvmx_pko_pse_dq_ecc_dbe_sts0 {
 	uint64_t dq_wt_ram_dbe                : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_dq_ecc_dbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t dq_wt_ram_dbe                : 1;  /**< Double-bit error for DQ_WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_dq.wt_sram */
+	uint64_t reserved_57_62               : 6;
+	uint64_t dq_rt1_dbe                   : 1;  /**< Double-bit error for DQ_RT1_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_dq.rt1 */
+	uint64_t dq_rt0_dbe                   : 1;  /**< Double-bit error for DQ_RT0_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_dq.rt0 */
+	uint64_t reserved_0_54                : 55;
+#else
+	uint64_t reserved_0_54                : 55;
+	uint64_t dq_rt0_dbe                   : 1;
+	uint64_t dq_rt1_dbe                   : 1;
+	uint64_t reserved_57_62               : 6;
+	uint64_t dq_wt_ram_dbe                : 1;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_dq_ecc_dbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_dq_ecc_dbe_sts0_s cn78xxp2;
+	struct cvmx_pko_pse_dq_ecc_dbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_dq_ecc_dbe_sts0 cvmx_pko_pse_dq_ecc_dbe_sts0_t;
 
@@ -11292,20 +13868,17 @@ union cvmx_pko_pse_dq_ecc_dbe_sts_cmb0 {
                                                          INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_dq.wt_sram
                                                          pko_pnr2.pko_pse.pse_dq.rt0
-                                                         pko_pnr2.pko_pse.pse_dq.rt1
-                                                         pko_pnr2.pko_pse.pse_dq.rt2
-                                                         pko_pnr2.pko_pse.pse_dq.rt3
-                                                         pko_pnr2.pko_pse.pse_dq.rt4
-                                                         pko_pnr2.pko_pse.pse_dq.rt5
-                                                         pko_pnr2.pko_pse.pse_dq.rt6
-                                                         pko_pnr2.pko_pse.pse_dq.rt7 */
+                                                         pko_pnr2.pko_pse.pse_dq.rt1 */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
 	uint64_t pse_dq_dbe_cmb0              : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_dq_ecc_dbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pse_dq_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_dq_ecc_dbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pse_dq_ecc_dbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pse_dq_ecc_dbe_sts_cmb0 cvmx_pko_pse_dq_ecc_dbe_sts_cmb0_t;
 
@@ -11339,7 +13912,24 @@ union cvmx_pko_pse_dq_ecc_sbe_sts0 {
 	uint64_t dq_wt_ram_sbe                : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_dq_ecc_sbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t dq_wt_ram_sbe                : 1;  /**< Single-bit error for DQ_WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_dq.wt_sram */
+	uint64_t reserved_57_62               : 6;
+	uint64_t dq_rt1_sbe                   : 1;  /**< Single-bit error for DQ_RT1_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_dq.rt1 */
+	uint64_t dq_rt0_sbe                   : 1;  /**< Single-bit error for DQ_RT0_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_dq.rt0 */
+	uint64_t reserved_0_54                : 55;
+#else
+	uint64_t reserved_0_54                : 55;
+	uint64_t dq_rt0_sbe                   : 1;
+	uint64_t dq_rt1_sbe                   : 1;
+	uint64_t reserved_57_62               : 6;
+	uint64_t dq_wt_ram_sbe                : 1;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_dq_ecc_sbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_dq_ecc_sbe_sts0_s cn78xxp2;
+	struct cvmx_pko_pse_dq_ecc_sbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_dq_ecc_sbe_sts0 cvmx_pko_pse_dq_ecc_sbe_sts0_t;
 
@@ -11358,19 +13948,17 @@ union cvmx_pko_pse_dq_ecc_sbe_sts_cmb0 {
                                                          pko_pnr2.pko_pse.pse_dq.wt_sram
                                                          pko_pnr2.pko_pse.pse_dq.rt0
                                                          pko_pnr2.pko_pse.pse_dq.rt1
-                                                         pko_pnr2.pko_pse.pse_dq.rt2
-                                                         pko_pnr2.pko_pse.pse_dq.rt3
-                                                         pko_pnr2.pko_pse.pse_dq.rt4
-                                                         pko_pnr2.pko_pse.pse_dq.rt5
-                                                         pko_pnr2.pko_pse.pse_dq.rt6
-                                                         pko_pnr2.pko_pse.pse_dq.rt7 */
+                                                         pko_pnr2.pko_pse.pse_dq.rt2 */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
 	uint64_t pse_dq_sbe_cmb0              : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_dq_ecc_sbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pse_dq_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_dq_ecc_sbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pse_dq_ecc_sbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pse_dq_ecc_sbe_sts_cmb0 cvmx_pko_pse_dq_ecc_sbe_sts_cmb0_t;
 
@@ -11386,9 +13974,9 @@ union cvmx_pko_pse_pq_bist_status {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_15_63               : 49;
 	uint64_t tp_sram                      : 1;  /**< Topology parent - pko_pse_pq_srf32x5e */
-	uint64_t irq_fifo_sram                : 1;  /**< Interrupt message FIFO - pko_pse_pq_srf1024x10e */
+	uint64_t irq_fifo_sram                : 1;  /**< Reserved. */
 	uint64_t wmd_sram                     : 1;  /**< Dynamic watermark state - pko_pse_wmd_srf1024x49e */
-	uint64_t wms_sram                     : 1;  /**< Static watermark configuration - pko_pse_wms_srf1024x50e */
+	uint64_t wms_sram                     : 1;  /**< Reserved. */
 	uint64_t cxd_sram                     : 1;  /**< Dynamic channel state - pko_pse_cxd_srf32x31e */
 	uint64_t dqd_sram                     : 1;  /**< DQ dropped stats - pko_pse_stats_srf1024x88 */
 	uint64_t dqs_sram                     : 1;  /**< DQ sent stats - pko_pse_stats_srf1024x88 */
@@ -11419,7 +14007,46 @@ union cvmx_pko_pse_pq_bist_status {
 	uint64_t reserved_15_63               : 49;
 #endif
 	} s;
+	struct cvmx_pko_pse_pq_bist_status_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_15_63               : 49;
+	uint64_t tp_sram                      : 1;  /**< Topology parent - pko_pse_pq_srf32x5e */
+	uint64_t reserved_13_13               : 1;
+	uint64_t wmd_sram                     : 1;  /**< Dynamic watermark state - pko_pse_wmd_srf1024x49e */
+	uint64_t reserved_11_11               : 1;
+	uint64_t cxd_sram                     : 1;  /**< Dynamic channel state - pko_pse_cxd_srf32x31e */
+	uint64_t dqd_sram                     : 1;  /**< DQ dropped stats - pko_pse_stats_srf1024x88 */
+	uint64_t dqs_sram                     : 1;  /**< DQ sent stats - pko_pse_stats_srf1024x88 */
+	uint64_t pqd_sram                     : 1;  /**< PQ dropped stats - pko_pse_stats_srf32x88 */
+	uint64_t pqr_sram                     : 1;  /**< PQ read stats - pko_pse_stats_srf32x88 */
+	uint64_t pqy_sram                     : 1;  /**< PQ yellow stats - pko_pse_stats_srf32x88 */
+	uint64_t pqg_sram                     : 1;  /**< PQ green stats - pko_pse_stats_srf32x88 */
+	uint64_t std_sram                     : 1;  /**< Dynamic shaping state - pko_pse_std_srf32x105e */
+	uint64_t st_sram                      : 1;  /**< Static shaping configuration - pko_pse_sts_srf32x74e */
+	uint64_t reserved_1_1                 : 1;
+	uint64_t cxs_sram                     : 1;  /**< Static channel credit configuration - pko_pse_cx0_srf32x6e */
+#else
+	uint64_t cxs_sram                     : 1;
+	uint64_t reserved_1_1                 : 1;
+	uint64_t st_sram                      : 1;
+	uint64_t std_sram                     : 1;
+	uint64_t pqg_sram                     : 1;
+	uint64_t pqy_sram                     : 1;
+	uint64_t pqr_sram                     : 1;
+	uint64_t pqd_sram                     : 1;
+	uint64_t dqs_sram                     : 1;
+	uint64_t dqd_sram                     : 1;
+	uint64_t cxd_sram                     : 1;
+	uint64_t reserved_11_11               : 1;
+	uint64_t wmd_sram                     : 1;
+	uint64_t reserved_13_13               : 1;
+	uint64_t tp_sram                      : 1;
+	uint64_t reserved_15_63               : 49;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_pq_bist_status_s  cn78xx;
+	struct cvmx_pko_pse_pq_bist_status_s  cn78xxp2;
+	struct cvmx_pko_pse_pq_bist_status_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_pq_bist_status cvmx_pko_pse_pq_bist_status_t;
 
@@ -11434,8 +14061,8 @@ union cvmx_pko_pse_pq_ecc_ctl0 {
 	uint64_t pq_cxs_ram_cdis              : 1;  /**< PQ_CXS_RAM ECC correction disable. */
 	uint64_t pq_cxd_ram_flip              : 2;  /**< PQ_CXD_RAM flip syndrome bits on write. */
 	uint64_t pq_cxd_ram_cdis              : 1;  /**< PQ_CXD_RAM ECC correction disable. */
-	uint64_t irq_fifo_sram_flip           : 2;  /**< IRQ_FIFO_SRAM flip syndrome bits on write. */
-	uint64_t irq_fifo_sram_cdis           : 1;  /**< IRQ_FIFO_SRAM ECC correction disable. */
+	uint64_t irq_fifo_sram_flip           : 2;  /**< Reserved. */
+	uint64_t irq_fifo_sram_cdis           : 1;  /**< Reserved. */
 	uint64_t tp_sram_flip                 : 2;  /**< TP_SRAM flip syndrome bits on write. */
 	uint64_t tp_sram_cdis                 : 1;  /**< TP_SRAM ECC correction disable. */
 	uint64_t pq_std_ram_flip              : 2;  /**< PQ_STD_RAM flip syndrome bits on write. */
@@ -11444,8 +14071,8 @@ union cvmx_pko_pse_pq_ecc_ctl0 {
 	uint64_t pq_st_ram_cdis               : 1;  /**< PQ_ST_RAM ECC correction disable. */
 	uint64_t pq_wmd_ram_flip              : 2;  /**< PQ_WMD_RAM flip syndrome bits on write. */
 	uint64_t pq_wmd_ram_cdis              : 1;  /**< PQ_WMD_RAM ECC correction disable. */
-	uint64_t pq_wms_ram_flip              : 2;  /**< PQ_WMS_RAM flip syndrome bits on write. */
-	uint64_t pq_wms_ram_cdis              : 1;  /**< PQ_WMS_RAM ECC correction disable. */
+	uint64_t pq_wms_ram_flip              : 2;  /**< Reserved. */
+	uint64_t pq_wms_ram_cdis              : 1;  /**< Reserved. */
 	uint64_t reserved_0_39                : 40;
 #else
 	uint64_t reserved_0_39                : 40;
@@ -11467,7 +14094,42 @@ union cvmx_pko_pse_pq_ecc_ctl0 {
 	uint64_t pq_cxs_ram_flip              : 2;
 #endif
 	} s;
+	struct cvmx_pko_pse_pq_ecc_ctl0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pq_cxs_ram_flip              : 2;  /**< PQ_CXS_RAM flip syndrome bits on write. */
+	uint64_t pq_cxs_ram_cdis              : 1;  /**< PQ_CXS_RAM ECC correction disable. */
+	uint64_t pq_cxd_ram_flip              : 2;  /**< PQ_CXD_RAM flip syndrome bits on write. */
+	uint64_t pq_cxd_ram_cdis              : 1;  /**< PQ_CXD_RAM ECC correction disable. */
+	uint64_t reserved_55_57               : 3;
+	uint64_t tp_sram_flip                 : 2;  /**< TP_SRAM flip syndrome bits on write. */
+	uint64_t tp_sram_cdis                 : 1;  /**< TP_SRAM ECC correction disable. */
+	uint64_t pq_std_ram_flip              : 2;  /**< PQ_STD_RAM flip syndrome bits on write. */
+	uint64_t pq_std_ram_cdis              : 1;  /**< PQ_STD_RAM ECC correction disable. */
+	uint64_t pq_st_ram_flip               : 2;  /**< PQ_ST_RAM flip syndrome bits on write. */
+	uint64_t pq_st_ram_cdis               : 1;  /**< PQ_ST_RAM ECC correction disable. */
+	uint64_t pq_wmd_ram_flip              : 2;  /**< PQ_WMD_RAM flip syndrome bits on write. */
+	uint64_t pq_wmd_ram_cdis              : 1;  /**< PQ_WMD_RAM ECC correction disable. */
+	uint64_t reserved_0_42                : 43;
+#else
+	uint64_t reserved_0_42                : 43;
+	uint64_t pq_wmd_ram_cdis              : 1;
+	uint64_t pq_wmd_ram_flip              : 2;
+	uint64_t pq_st_ram_cdis               : 1;
+	uint64_t pq_st_ram_flip               : 2;
+	uint64_t pq_std_ram_cdis              : 1;
+	uint64_t pq_std_ram_flip              : 2;
+	uint64_t tp_sram_cdis                 : 1;
+	uint64_t tp_sram_flip                 : 2;
+	uint64_t reserved_55_57               : 3;
+	uint64_t pq_cxd_ram_cdis              : 1;
+	uint64_t pq_cxd_ram_flip              : 2;
+	uint64_t pq_cxs_ram_cdis              : 1;
+	uint64_t pq_cxs_ram_flip              : 2;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_pq_ecc_ctl0_s     cn78xx;
+	struct cvmx_pko_pse_pq_ecc_ctl0_s     cn78xxp2;
+	struct cvmx_pko_pse_pq_ecc_ctl0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_pq_ecc_ctl0 cvmx_pko_pse_pq_ecc_ctl0_t;
 
@@ -11479,20 +14141,18 @@ union cvmx_pko_pse_pq_ecc_dbe_sts0 {
 	struct cvmx_pko_pse_pq_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pq_cxs_ram_dbe               : 1;  /**< Double-bit error for PQ_CXS_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxs_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxs_sram */
 	uint64_t pq_cxd_ram_dbe               : 1;  /**< Double-bit error for PQ_CXD_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxd_sram */
-	uint64_t irq_fifo_sram_dbe            : 1;  /**< Double-bit error for IRQ_FIFO_SRAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.irq_fifo_sram */
-	uint64_t tp_sram_dbe                  : 1;  /**< Double-bit error for TP_SRAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.pq.tp_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxd_sram */
+	uint64_t irq_fifo_sram_dbe            : 1;  /**< Reserved. */
+	uint64_t tp_sram_dbe                  : 1;  /**< Double-bit error for TP_SRAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.pq.tp_sram */
 	uint64_t pq_std_ram_dbe               : 1;  /**< Double-bit error for PQ_STD_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.std_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.std_sram */
 	uint64_t pq_st_ram_dbe                : 1;  /**< Double-bit error for PQ_ST_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.st_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.st_sram */
 	uint64_t pq_wmd_ram_dbe               : 1;  /**< Double-bit error for PQ_WMD_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wmd_sram */
-	uint64_t pq_wms_ram_dbe               : 1;  /**< Double-bit error for PQ_WMS_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wms_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.wmd_sram */
+	uint64_t pq_wms_ram_dbe               : 1;  /**< Reserved. */
 	uint64_t reserved_0_55                : 56;
 #else
 	uint64_t reserved_0_55                : 56;
@@ -11506,7 +14166,35 @@ union cvmx_pko_pse_pq_ecc_dbe_sts0 {
 	uint64_t pq_cxs_ram_dbe               : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_pq_ecc_dbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pq_cxs_ram_dbe               : 1;  /**< Double-bit error for PQ_CXS_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxs_sram */
+	uint64_t pq_cxd_ram_dbe               : 1;  /**< Double-bit error for PQ_CXD_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxd_sram */
+	uint64_t reserved_61_61               : 1;
+	uint64_t tp_sram_dbe                  : 1;  /**< Double-bit error for TP_SRAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.pq.tp_sram */
+	uint64_t pq_std_ram_dbe               : 1;  /**< Double-bit error for PQ_STD_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.std_sram */
+	uint64_t pq_st_ram_dbe                : 1;  /**< Double-bit error for PQ_ST_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.st_sram */
+	uint64_t pq_wmd_ram_dbe               : 1;  /**< Double-bit error for PQ_WMD_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.wmd_sram */
+	uint64_t reserved_0_56                : 57;
+#else
+	uint64_t reserved_0_56                : 57;
+	uint64_t pq_wmd_ram_dbe               : 1;
+	uint64_t pq_st_ram_dbe                : 1;
+	uint64_t pq_std_ram_dbe               : 1;
+	uint64_t tp_sram_dbe                  : 1;
+	uint64_t reserved_61_61               : 1;
+	uint64_t pq_cxd_ram_dbe               : 1;
+	uint64_t pq_cxs_ram_dbe               : 1;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_pq_ecc_dbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_pq_ecc_dbe_sts0_s cn78xxp2;
+	struct cvmx_pko_pse_pq_ecc_dbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_pq_ecc_dbe_sts0 cvmx_pko_pse_pq_ecc_dbe_sts0_t;
 
@@ -11522,21 +14210,22 @@ union cvmx_pko_pse_pq_ecc_dbe_sts_cmb0 {
                                                          When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_PQ_DBE_CMB0.
                                                          INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxs_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.irq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.tp_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.std_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.st_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wmd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wms_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxs_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxd_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.tp_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.std_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.st_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.wmd_sram */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
 	uint64_t pse_pq_dbe_cmb0              : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_pq_ecc_dbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pse_pq_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_pq_ecc_dbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pse_pq_ecc_dbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pse_pq_ecc_dbe_sts_cmb0 cvmx_pko_pse_pq_ecc_dbe_sts_cmb0_t;
 
@@ -11548,20 +14237,18 @@ union cvmx_pko_pse_pq_ecc_sbe_sts0 {
 	struct cvmx_pko_pse_pq_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t pq_cxs_ram_sbe               : 1;  /**< Single-bit error for PQ_CXS_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxs_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxs_sram */
 	uint64_t pq_cxd_ram_sbe               : 1;  /**< Single-bit error for PQ_CXD_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxd_sram */
-	uint64_t irq_fifo_sram_sbe            : 1;  /**< Single-bit error for IRQ_FIFO_SRAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.irq_fifo_sram */
-	uint64_t tp_sram_sbe                  : 1;  /**< Single-bit error for TP_SRAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.pq.tp_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxd_sram */
+	uint64_t irq_fifo_sram_sbe            : 1;  /**< Reserved. */
+	uint64_t tp_sram_sbe                  : 1;  /**< Single-bit error for TP_SRAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.pq.tp_sram */
 	uint64_t pq_std_ram_sbe               : 1;  /**< Single-bit error for PQ_STD_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.std_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.std_sram */
 	uint64_t pq_st_ram_sbe                : 1;  /**< Single-bit error for PQ_ST_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.st_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.st_sram */
 	uint64_t pq_wmd_ram_sbe               : 1;  /**< Single-bit error for PQ_WMD_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wmd_sram */
-	uint64_t pq_wms_ram_sbe               : 1;  /**< Single-bit error for PQ_WMS_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wms_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.wmd_sram */
+	uint64_t pq_wms_ram_sbe               : 1;  /**< Reserved. */
 	uint64_t reserved_0_55                : 56;
 #else
 	uint64_t reserved_0_55                : 56;
@@ -11575,7 +14262,35 @@ union cvmx_pko_pse_pq_ecc_sbe_sts0 {
 	uint64_t pq_cxs_ram_sbe               : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_pq_ecc_sbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pq_cxs_ram_sbe               : 1;  /**< Single-bit error for PQ_CXS_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxs_sram */
+	uint64_t pq_cxd_ram_sbe               : 1;  /**< Single-bit error for PQ_CXD_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxd_sram */
+	uint64_t reserved_61_61               : 1;
+	uint64_t tp_sram_sbe                  : 1;  /**< Single-bit error for TP_SRAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.pq.tp_sram */
+	uint64_t pq_std_ram_sbe               : 1;  /**< Single-bit error for PQ_STD_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.std_sram */
+	uint64_t pq_st_ram_sbe                : 1;  /**< Single-bit error for PQ_ST_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.st_sram */
+	uint64_t pq_wmd_ram_sbe               : 1;  /**< Single-bit error for PQ_WMD_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.wmd_sram */
+	uint64_t reserved_0_56                : 57;
+#else
+	uint64_t reserved_0_56                : 57;
+	uint64_t pq_wmd_ram_sbe               : 1;
+	uint64_t pq_st_ram_sbe                : 1;
+	uint64_t pq_std_ram_sbe               : 1;
+	uint64_t tp_sram_sbe                  : 1;
+	uint64_t reserved_61_61               : 1;
+	uint64_t pq_cxd_ram_sbe               : 1;
+	uint64_t pq_cxs_ram_sbe               : 1;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_pq_ecc_sbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_pq_ecc_sbe_sts0_s cn78xxp2;
+	struct cvmx_pko_pse_pq_ecc_sbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_pq_ecc_sbe_sts0 cvmx_pko_pse_pq_ecc_sbe_sts0_t;
 
@@ -11591,21 +14306,22 @@ union cvmx_pko_pse_pq_ecc_sbe_sts_cmb0 {
                                                          When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_PQ_SBE_CMB0.
                                                          INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxs_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.cxd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.irq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.tp_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.std_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.st_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wmd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.pq.wms_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxs_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.cxd_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.tp_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.std_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.st_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.pq.wmd_sram */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
 	uint64_t pse_pq_sbe_cmb0              : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_pq_ecc_sbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pse_pq_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_pq_ecc_sbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pse_pq_ecc_sbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pse_pq_ecc_sbe_sts_cmb0 cvmx_pko_pse_pq_ecc_sbe_sts_cmb0_t;
 
@@ -11666,7 +14382,56 @@ union cvmx_pko_pse_sq1_bist_status {
 	uint64_t reserved_29_63               : 35;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq1_bist_status_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_29_63               : 35;
+	uint64_t sc_sram                      : 1;  /**< SQ[5:1] scheduling configuration */
+	uint64_t pc_sram                      : 1;  /**< SQ[1] physical channel - pko_pse_pc_srf32x12e */
+	uint64_t xon_sram                     : 1;  /**< XON SRAM */
+	uint64_t cc_sram                      : 1;  /**< SQ[1] channel credit OK state array */
+	uint64_t vc1_sram                     : 1;  /**< SQ[1] virtual channel - pko_pse_sq1_vc_srf256x9e */
+	uint64_t vc0_sram                     : 1;  /**< SQ[1] virtual channel - pko_pse_sq1_vc_srf256x9e */
+	uint64_t reserved_20_22               : 3;
+	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] topology parent configuration */
+	uint64_t xo_sram                      : 1;  /**< XOFF SRAM */
+	uint64_t rt_sram                      : 1;  /**< Result table */
+	uint64_t reserved_9_16                : 8;
+	uint64_t tw1_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 1 command FIFO SRAM */
+	uint64_t std_sram                     : 1;  /**< Dynamic shaping state */
+	uint64_t sts_sram                     : 1;  /**< Static shaping configuration */
+	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 0 command FIFO SRAM */
+	uint64_t cxd_sram                     : 1;  /**< SQ[1] dynamic channel credit state */
+	uint64_t cxs_sram                     : 1;  /**< SQ[1] static channel credit configuration */
+	uint64_t nt_sram                      : 1;  /**< SQ[5:1] next pointer table */
+	uint64_t pt_sram                      : 1;  /**< SQ[5:1] previous pointer table */
+	uint64_t wt_sram                      : 1;  /**< SQ[5:1] work table */
+#else
+	uint64_t wt_sram                      : 1;
+	uint64_t pt_sram                      : 1;
+	uint64_t nt_sram                      : 1;
+	uint64_t cxs_sram                     : 1;
+	uint64_t cxd_sram                     : 1;
+	uint64_t tw0_cmd_fifo                 : 1;
+	uint64_t sts_sram                     : 1;
+	uint64_t std_sram                     : 1;
+	uint64_t tw1_cmd_fifo                 : 1;
+	uint64_t reserved_9_16                : 8;
+	uint64_t rt_sram                      : 1;
+	uint64_t xo_sram                      : 1;
+	uint64_t tp0_sram                     : 1;
+	uint64_t reserved_20_22               : 3;
+	uint64_t vc0_sram                     : 1;
+	uint64_t vc1_sram                     : 1;
+	uint64_t cc_sram                      : 1;
+	uint64_t xon_sram                     : 1;
+	uint64_t pc_sram                      : 1;
+	uint64_t sc_sram                      : 1;
+	uint64_t reserved_29_63               : 35;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq1_bist_status_s cn78xx;
+	struct cvmx_pko_pse_sq1_bist_status_s cn78xxp2;
+	struct cvmx_pko_pse_sq1_bist_status_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq1_bist_status cvmx_pko_pse_sq1_bist_status_t;
 
@@ -11754,7 +14519,78 @@ union cvmx_pko_pse_sq1_ecc_ctl0 {
 	uint64_t cxs_ram_flip                 : 2;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq1_ecc_ctl0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t cxs_ram_flip                 : 2;  /**< CXS_RAM flip syndrome bits on write. */
+	uint64_t cxs_ram_cdis                 : 1;  /**< CXS_RAM ECC correction disable. */
+	uint64_t cxd_ram_flip                 : 2;  /**< CXD_RAM flip syndrome bits on write. */
+	uint64_t cxd_ram_cdis                 : 1;  /**< CXD_RAM ECC correction disable. */
+	uint64_t reserved_55_57               : 3;
+	uint64_t vc0_sram_flip                : 2;  /**< VC0_SRAM flip syndrome bits on write. */
+	uint64_t vc0_sram_cdis                : 1;  /**< VC0_SRAM ECC correction disable. */
+	uint64_t sq_pt_ram_flip               : 2;  /**< SQ_PT_RAM flip syndrome bits on write. */
+	uint64_t sq_pt_ram_cdis               : 1;  /**< SQ_PT_RAM ECC correction disable. */
+	uint64_t sq_nt_ram_flip               : 2;  /**< SQ_NT_RAM flip syndrome bits on write. */
+	uint64_t sq_nt_ram_cdis               : 1;  /**< SQ_NT_RAM ECC correction disable. */
+	uint64_t rt_ram_flip                  : 2;  /**< RT_RAM flip syndrome bits on write. */
+	uint64_t rt_ram_cdis                  : 1;  /**< RT_RAM ECC correction disable. */
+	uint64_t pc_ram_flip                  : 2;  /**< PC_RAM flip syndrome bits on write. */
+	uint64_t pc_ram_cdis                  : 1;  /**< PC_RAM ECC correction disable. */
+	uint64_t reserved_37_39               : 3;
+	uint64_t tw0_cmd_fifo_ram_flip        : 2;  /**< TW0_CMD_FIFO_RAM flip syndrome bits on write. */
+	uint64_t tw0_cmd_fifo_ram_cdis        : 1;  /**< TW0_CMD_FIFO_RAM ECC correction disable. */
+	uint64_t reserved_31_33               : 3;
+	uint64_t tp0_sram_flip                : 2;  /**< TP0_SRAM flip syndrome bits on write. */
+	uint64_t tp0_sram_cdis                : 1;  /**< TP0_SRAM ECC correction disable. */
+	uint64_t reserved_25_27               : 3;
+	uint64_t sts0_ram_flip                : 2;  /**< STS0_RAM flip syndrome bits on write. */
+	uint64_t sts0_ram_cdis                : 1;  /**< STS0_RAM ECC correction disable. */
+	uint64_t reserved_19_21               : 3;
+	uint64_t std0_ram_flip                : 2;  /**< STD0_RAM flip syndrome bits on write. */
+	uint64_t std0_ram_cdis                : 1;  /**< STD0_RAM ECC correction disable. */
+	uint64_t wt_ram_flip                  : 2;  /**< WT_RAM flip syndrome bits on write. */
+	uint64_t wt_ram_cdis                  : 1;  /**< WT_RAM ECC correction disable. */
+	uint64_t sc_ram_flip                  : 2;  /**< SC_RAM flip syndrome bits on write. */
+	uint64_t sc_ram_cdis                  : 1;  /**< SC_RAM ECC correction disable. */
+	uint64_t reserved_0_9                 : 10;
+#else
+	uint64_t reserved_0_9                 : 10;
+	uint64_t sc_ram_cdis                  : 1;
+	uint64_t sc_ram_flip                  : 2;
+	uint64_t wt_ram_cdis                  : 1;
+	uint64_t wt_ram_flip                  : 2;
+	uint64_t std0_ram_cdis                : 1;
+	uint64_t std0_ram_flip                : 2;
+	uint64_t reserved_19_21               : 3;
+	uint64_t sts0_ram_cdis                : 1;
+	uint64_t sts0_ram_flip                : 2;
+	uint64_t reserved_25_27               : 3;
+	uint64_t tp0_sram_cdis                : 1;
+	uint64_t tp0_sram_flip                : 2;
+	uint64_t reserved_31_33               : 3;
+	uint64_t tw0_cmd_fifo_ram_cdis        : 1;
+	uint64_t tw0_cmd_fifo_ram_flip        : 2;
+	uint64_t reserved_37_39               : 3;
+	uint64_t pc_ram_cdis                  : 1;
+	uint64_t pc_ram_flip                  : 2;
+	uint64_t rt_ram_cdis                  : 1;
+	uint64_t rt_ram_flip                  : 2;
+	uint64_t sq_nt_ram_cdis               : 1;
+	uint64_t sq_nt_ram_flip               : 2;
+	uint64_t sq_pt_ram_cdis               : 1;
+	uint64_t sq_pt_ram_flip               : 2;
+	uint64_t vc0_sram_cdis                : 1;
+	uint64_t vc0_sram_flip                : 2;
+	uint64_t reserved_55_57               : 3;
+	uint64_t cxd_ram_cdis                 : 1;
+	uint64_t cxd_ram_flip                 : 2;
+	uint64_t cxs_ram_cdis                 : 1;
+	uint64_t cxs_ram_flip                 : 2;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq1_ecc_ctl0_s    cn78xx;
+	struct cvmx_pko_pse_sq1_ecc_ctl0_s    cn78xxp2;
+	struct cvmx_pko_pse_sq1_ecc_ctl0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq1_ecc_ctl0 cvmx_pko_pse_sq1_ecc_ctl0_t;
 
@@ -11766,37 +14602,37 @@ union cvmx_pko_pse_sq1_ecc_dbe_sts0 {
 	struct cvmx_pko_pse_sq1_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t cxs_ram_dbe                  : 1;  /**< Double-bit error for CXS_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxs_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxs_sram */
 	uint64_t cxd_ram_dbe                  : 1;  /**< Double-bit error for CXD_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxd_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxd_sram */
 	uint64_t vc1_sram_dbe                 : 1;  /**< Double-bit error for VC1_SRAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc1_sram */
 	uint64_t vc0_sram_dbe                 : 1;  /**< Double-bit error for VC0_SRAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc0_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.vc0_sram */
 	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.nt_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.nt_sram */
 	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.pt_sram */
-	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq1.rt_sram */
-	uint64_t pc_ram_dbe                   : 1;  /**< Double-bit error for PC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq1.pc_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.pt_sram */
+	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.rt_sram */
+	uint64_t pc_ram_dbe                   : 1;  /**< Double-bit error for PC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.pc_sram */
 	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_0.sq_fifo_sram */
 	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_1.sq_fifo_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tw_1.sq_fifo_sram */
 	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp0_sram */
 	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp1_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tp0_sram */
 	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts1_sram */
 	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts0_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.sts0_sram */
 	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq2.std1_sram */
 	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std0_sram */
-	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq1.wt_sram */
-	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq1.sc_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.std0_sram */
+	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.wt_sram */
+	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.sc_sram */
 	uint64_t reserved_0_45                : 46;
 #else
 	uint64_t reserved_0_45                : 46;
@@ -11820,7 +14656,61 @@ union cvmx_pko_pse_sq1_ecc_dbe_sts0 {
 	uint64_t cxs_ram_dbe                  : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq1_ecc_dbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t cxs_ram_dbe                  : 1;  /**< Double-bit error for CXS_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxs_sram */
+	uint64_t cxd_ram_dbe                  : 1;  /**< Double-bit error for CXD_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxd_sram */
+	uint64_t reserved_61_61               : 1;
+	uint64_t vc0_sram_dbe                 : 1;  /**< Double-bit error for VC0_SRAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.vc0_sram */
+	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.nt_sram */
+	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.pt_sram */
+	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.rt_sram */
+	uint64_t pc_ram_dbe                   : 1;  /**< Double-bit error for PC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.pc_sram */
+	uint64_t reserved_55_55               : 1;
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tw_1.sq_fifo_sram */
+	uint64_t reserved_53_53               : 1;
+	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tp0_sram */
+	uint64_t reserved_51_51               : 1;
+	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.sts0_sram */
+	uint64_t reserved_49_49               : 1;
+	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.std0_sram */
+	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.wt_sram */
+	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.sc_sram */
+	uint64_t reserved_0_45                : 46;
+#else
+	uint64_t reserved_0_45                : 46;
+	uint64_t sc_ram_dbe                   : 1;
+	uint64_t wt_ram_dbe                   : 1;
+	uint64_t std0_ram_dbe                 : 1;
+	uint64_t reserved_49_49               : 1;
+	uint64_t sts0_ram_dbe                 : 1;
+	uint64_t reserved_51_51               : 1;
+	uint64_t tp0_sram_dbe                 : 1;
+	uint64_t reserved_53_53               : 1;
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;
+	uint64_t reserved_55_55               : 1;
+	uint64_t pc_ram_dbe                   : 1;
+	uint64_t rt_ram_dbe                   : 1;
+	uint64_t sq_nt_ram_dbe                : 1;
+	uint64_t sq_pt_ram_dbe                : 1;
+	uint64_t vc0_sram_dbe                 : 1;
+	uint64_t reserved_61_61               : 1;
+	uint64_t cxd_ram_dbe                  : 1;
+	uint64_t cxs_ram_dbe                  : 1;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq1_ecc_dbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_sq1_ecc_dbe_sts0_s cn78xxp2;
+	struct cvmx_pko_pse_sq1_ecc_dbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq1_ecc_dbe_sts0 cvmx_pko_pse_sq1_ecc_dbe_sts0_t;
 
@@ -11836,31 +14726,29 @@ union cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0 {
                                                          When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ1_DBE_CMB0.
                                                          INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxs_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pc_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sc_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxs_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxd_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.vc0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.nt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.pt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.pc_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.rt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tw_0.sq_fifo_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tp0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.std0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.sts0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.wt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.sc_sram */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
 	uint64_t pse_sq1_dbe_cmb0             : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0 cvmx_pko_pse_sq1_ecc_dbe_sts_cmb0_t;
 
@@ -11872,37 +14760,37 @@ union cvmx_pko_pse_sq1_ecc_sbe_sts0 {
 	struct cvmx_pko_pse_sq1_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t cxs_ram_sbe                  : 1;  /**< Single-bit error for CXS_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxs_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxs_sram */
 	uint64_t cxd_ram_sbe                  : 1;  /**< Single-bit error for CXD_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxd_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxd_sram */
 	uint64_t vc1_sram_sbe                 : 1;  /**< Single-bit error for VC1_SRAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc0_sram */
 	uint64_t vc0_sram_sbe                 : 1;  /**< Single-bit error for VC0_SRAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc1_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.vc1_sram */
 	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.nt_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.nt_sram */
 	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.pt_sram */
-	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq1.rt_sram */
-	uint64_t pc_ram_sbe                   : 1;  /**< Single-bit error for PC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq1.pc_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.pt_sram */
+	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.rt_sram */
+	uint64_t pc_ram_sbe                   : 1;  /**< Single-bit error for PC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.pc_sram */
 	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_0.sq_fifo_sram */
 	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_1.sq_fifo_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tw_1.sq_fifo_sram */
 	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp0_sram */
 	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp1_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tp0_sram */
 	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts0_sram */
 	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts1_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.sts1_sram */
 	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq2.std0_sram */
 	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std1_sram */
-	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq1.wt_sram */
-	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq1.sc_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.std1_sram */
+	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.wt_sram */
+	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.sc_sram */
 	uint64_t reserved_0_45                : 46;
 #else
 	uint64_t reserved_0_45                : 46;
@@ -11926,7 +14814,61 @@ union cvmx_pko_pse_sq1_ecc_sbe_sts0 {
 	uint64_t cxs_ram_sbe                  : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq1_ecc_sbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t cxs_ram_sbe                  : 1;  /**< Single-bit error for CXS_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxs_sram */
+	uint64_t cxd_ram_sbe                  : 1;  /**< Single-bit error for CXD_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxd_sram */
+	uint64_t reserved_61_61               : 1;
+	uint64_t vc0_sram_sbe                 : 1;  /**< Single-bit error for VC0_SRAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.vc1_sram */
+	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.nt_sram */
+	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.pt_sram */
+	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.rt_sram */
+	uint64_t pc_ram_sbe                   : 1;  /**< Single-bit error for PC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.pc_sram */
+	uint64_t reserved_55_55               : 1;
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tw_1.sq_fifo_sram */
+	uint64_t reserved_53_53               : 1;
+	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tp0_sram */
+	uint64_t reserved_51_51               : 1;
+	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.sts1_sram */
+	uint64_t reserved_49_49               : 1;
+	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.std1_sram */
+	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.wt_sram */
+	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq1.sc_sram */
+	uint64_t reserved_0_45                : 46;
+#else
+	uint64_t reserved_0_45                : 46;
+	uint64_t sc_ram_sbe                   : 1;
+	uint64_t wt_ram_sbe                   : 1;
+	uint64_t std0_ram_sbe                 : 1;
+	uint64_t reserved_49_49               : 1;
+	uint64_t sts0_ram_sbe                 : 1;
+	uint64_t reserved_51_51               : 1;
+	uint64_t tp0_sram_sbe                 : 1;
+	uint64_t reserved_53_53               : 1;
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;
+	uint64_t reserved_55_55               : 1;
+	uint64_t pc_ram_sbe                   : 1;
+	uint64_t rt_ram_sbe                   : 1;
+	uint64_t sq_nt_ram_sbe                : 1;
+	uint64_t sq_pt_ram_sbe                : 1;
+	uint64_t vc0_sram_sbe                 : 1;
+	uint64_t reserved_61_61               : 1;
+	uint64_t cxd_ram_sbe                  : 1;
+	uint64_t cxs_ram_sbe                  : 1;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq1_ecc_sbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_sq1_ecc_sbe_sts0_s cn78xxp2;
+	struct cvmx_pko_pse_sq1_ecc_sbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq1_ecc_sbe_sts0 cvmx_pko_pse_sq1_ecc_sbe_sts0_t;
 
@@ -11942,31 +14884,29 @@ union cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0 {
                                                          When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ1_SBE_CMB0.
                                                          INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxs_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.cxd_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.vc1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pc_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sc_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxs_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.cxd_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.vc0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.nt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.pt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.pc_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.rt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tw_0.sq_fifo_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tp0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.std0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.sts0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.wt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.sc_sram */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
 	uint64_t pse_sq1_sbe_cmb0             : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq1_ecc_sbe_sts_cmb0_t;
 
@@ -12015,7 +14955,42 @@ union cvmx_pko_pse_sq2_bist_status {
 	uint64_t reserved_29_63               : 35;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq2_bist_status_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_29_63               : 35;
+	uint64_t sc_sram                      : 1;  /**< Scheduling configuration. */
+	uint64_t reserved_20_27               : 8;
+	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] topology parent configuration. */
+	uint64_t reserved_18_18               : 1;
+	uint64_t rt_sram                      : 1;  /**< Result table. */
+	uint64_t reserved_8_16                : 9;
+	uint64_t std_sram                     : 1;  /**< Dynamic shaping state */
+	uint64_t sts_sram                     : 1;  /**< Static shaping configuration. */
+	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 0 command FIFO SRAM. */
+	uint64_t reserved_3_4                 : 2;
+	uint64_t nt_sram                      : 1;  /**< Next pointer table. */
+	uint64_t pt_sram                      : 1;  /**< Previous pointer table. */
+	uint64_t wt_sram                      : 1;  /**< Work table. */
+#else
+	uint64_t wt_sram                      : 1;
+	uint64_t pt_sram                      : 1;
+	uint64_t nt_sram                      : 1;
+	uint64_t reserved_3_4                 : 2;
+	uint64_t tw0_cmd_fifo                 : 1;
+	uint64_t sts_sram                     : 1;
+	uint64_t std_sram                     : 1;
+	uint64_t reserved_8_16                : 9;
+	uint64_t rt_sram                      : 1;
+	uint64_t reserved_18_18               : 1;
+	uint64_t tp0_sram                     : 1;
+	uint64_t reserved_20_27               : 8;
+	uint64_t sc_sram                      : 1;
+	uint64_t reserved_29_63               : 35;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq2_bist_status_s cn78xx;
+	struct cvmx_pko_pse_sq2_bist_status_s cn78xxp2;
+	struct cvmx_pko_pse_sq2_bist_status_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq2_bist_status cvmx_pko_pse_sq2_bist_status_t;
 
@@ -12083,7 +15058,60 @@ union cvmx_pko_pse_sq2_ecc_ctl0 {
 	uint64_t sq_pt_ram_flip               : 2;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq2_ecc_ctl0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t sq_pt_ram_flip               : 2;  /**< SQ_PT_RAM flip syndrome bits on write. */
+	uint64_t sq_pt_ram_cdis               : 1;  /**< SQ_PT_RAM ECC correction disable. */
+	uint64_t sq_nt_ram_flip               : 2;  /**< SQ_NT_RAM flip syndrome bits on write. */
+	uint64_t sq_nt_ram_cdis               : 1;  /**< SQ_NT_RAM ECC correction disable. */
+	uint64_t rt_ram_flip                  : 2;  /**< RT_RAM flip syndrome bits on write. */
+	uint64_t rt_ram_cdis                  : 1;  /**< RT_RAM ECC correction disable. */
+	uint64_t reserved_52_54               : 3;
+	uint64_t tw0_cmd_fifo_ram_flip        : 2;  /**< TW0_CMD_FIFO_RAM flip syndrome bits on write. */
+	uint64_t tw0_cmd_fifo_ram_cdis        : 1;  /**< TW0_CMD_FIFO_RAM ECC correction disable. */
+	uint64_t reserved_46_48               : 3;
+	uint64_t tp0_sram_flip                : 2;  /**< TP0_SRAM flip syndrome bits on write. */
+	uint64_t tp0_sram_cdis                : 1;  /**< TP0_SRAM ECC correction disable. */
+	uint64_t reserved_40_42               : 3;
+	uint64_t sts0_ram_flip                : 2;  /**< STS0_RAM flip syndrome bits on write. */
+	uint64_t sts0_ram_cdis                : 1;  /**< STS0_RAM ECC correction disable. */
+	uint64_t reserved_34_36               : 3;
+	uint64_t std0_ram_flip                : 2;  /**< STD0_RAM flip syndrome bits on write. */
+	uint64_t std0_ram_cdis                : 1;  /**< STD0_RAM ECC correction disable. */
+	uint64_t wt_ram_flip                  : 2;  /**< WT_RAM flip syndrome bits on write. */
+	uint64_t wt_ram_cdis                  : 1;  /**< WT_RAM ECC correction disable. */
+	uint64_t sc_ram_flip                  : 2;  /**< SC_RAM flip syndrome bits on write. */
+	uint64_t sc_ram_cdis                  : 1;  /**< SC_RAM ECC correction disable. */
+	uint64_t reserved_0_24                : 25;
+#else
+	uint64_t reserved_0_24                : 25;
+	uint64_t sc_ram_cdis                  : 1;
+	uint64_t sc_ram_flip                  : 2;
+	uint64_t wt_ram_cdis                  : 1;
+	uint64_t wt_ram_flip                  : 2;
+	uint64_t std0_ram_cdis                : 1;
+	uint64_t std0_ram_flip                : 2;
+	uint64_t reserved_34_36               : 3;
+	uint64_t sts0_ram_cdis                : 1;
+	uint64_t sts0_ram_flip                : 2;
+	uint64_t reserved_40_42               : 3;
+	uint64_t tp0_sram_cdis                : 1;
+	uint64_t tp0_sram_flip                : 2;
+	uint64_t reserved_46_48               : 3;
+	uint64_t tw0_cmd_fifo_ram_cdis        : 1;
+	uint64_t tw0_cmd_fifo_ram_flip        : 2;
+	uint64_t reserved_52_54               : 3;
+	uint64_t rt_ram_cdis                  : 1;
+	uint64_t rt_ram_flip                  : 2;
+	uint64_t sq_nt_ram_cdis               : 1;
+	uint64_t sq_nt_ram_flip               : 2;
+	uint64_t sq_pt_ram_cdis               : 1;
+	uint64_t sq_pt_ram_flip               : 2;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq2_ecc_ctl0_s    cn78xx;
+	struct cvmx_pko_pse_sq2_ecc_ctl0_s    cn78xxp2;
+	struct cvmx_pko_pse_sq2_ecc_ctl0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq2_ecc_ctl0 cvmx_pko_pse_sq2_ecc_ctl0_t;
 
@@ -12095,28 +15123,28 @@ union cvmx_pko_pse_sq2_ecc_dbe_sts0 {
 	struct cvmx_pko_pse_sq2_ecc_dbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.nt_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.nt_sram */
 	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pt_sram */
-	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq2.rt_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.pt_sram */
+	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.rt_sram */
 	uint64_t tw1_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW1_CMD_FIFO_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_1.sq_fifo_sram */
 	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_0.sq_fifo_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tw_0.sq_fifo_sram */
 	uint64_t tp1_sram_dbe                 : 1;  /**< Double-bit error for TP1_SRAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp1_sram */
 	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp0_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tp0_sram */
 	uint64_t sts1_ram_dbe                 : 1;  /**< Double-bit error for STS1_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts1_sram */
 	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts0_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.sts0_sram */
 	uint64_t std1_ram_dbe                 : 1;  /**< Double-bit error for STD1_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.std1_sram */
 	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std0_sram */
-	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq2.wt_sram */
-	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq2.sc_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.std0_sram */
+	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.wt_sram */
+	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.sc_sram */
 	uint64_t reserved_0_50                : 51;
 #else
 	uint64_t reserved_0_50                : 51;
@@ -12135,7 +15163,48 @@ union cvmx_pko_pse_sq2_ecc_dbe_sts0 {
 	uint64_t sq_pt_ram_dbe                : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq2_ecc_dbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.nt_sram */
+	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.pt_sram */
+	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.rt_sram */
+	uint64_t reserved_60_60               : 1;
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tw_0.sq_fifo_sram */
+	uint64_t reserved_58_58               : 1;
+	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tp0_sram */
+	uint64_t reserved_56_56               : 1;
+	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.sts0_sram */
+	uint64_t reserved_54_54               : 1;
+	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.std0_sram */
+	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.wt_sram */
+	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.sc_sram */
+	uint64_t reserved_0_50                : 51;
+#else
+	uint64_t reserved_0_50                : 51;
+	uint64_t sc_ram_dbe                   : 1;
+	uint64_t wt_ram_dbe                   : 1;
+	uint64_t std0_ram_dbe                 : 1;
+	uint64_t reserved_54_54               : 1;
+	uint64_t sts0_ram_dbe                 : 1;
+	uint64_t reserved_56_56               : 1;
+	uint64_t tp0_sram_dbe                 : 1;
+	uint64_t reserved_58_58               : 1;
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;
+	uint64_t reserved_60_60               : 1;
+	uint64_t rt_ram_dbe                   : 1;
+	uint64_t sq_nt_ram_dbe                : 1;
+	uint64_t sq_pt_ram_dbe                : 1;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq2_ecc_dbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_sq2_ecc_dbe_sts0_s cn78xxp2;
+	struct cvmx_pko_pse_sq2_ecc_dbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq2_ecc_dbe_sts0 cvmx_pko_pse_sq2_ecc_dbe_sts0_t;
 
@@ -12151,26 +15220,25 @@ union cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0 {
                                                          When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ2_DBE_CMB0.
                                                          INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sc_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.nt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.pt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.rt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tw_0.sq_fifo_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tp0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.std0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.sts0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.wt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.sc_sram */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
 	uint64_t pse_sq2_dbe_cmb0             : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0 cvmx_pko_pse_sq2_ecc_dbe_sts_cmb0_t;
 
@@ -12182,28 +15250,28 @@ union cvmx_pko_pse_sq2_ecc_sbe_sts0 {
 	struct cvmx_pko_pse_sq2_ecc_sbe_sts0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.nt_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.nt_sram */
 	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pt_sram */
-	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq2.rt_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.pt_sram */
+	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.rt_sram */
 	uint64_t tw1_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW1_CMD_FIFO_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_1.sq_fifo_sram */
 	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_0.sq_fifo_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tw_0.sq_fifo_sram */
 	uint64_t tp1_sram_sbe                 : 1;  /**< Single-bit error for TP1_SRAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp1_sram */
 	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp0_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tp0_sram */
 	uint64_t sts1_ram_sbe                 : 1;  /**< Single-bit error for STS1_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts1_sram */
 	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts0_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.sts0_sram */
 	uint64_t std1_ram_sbe                 : 1;  /**< Single-bit error for STD1_RAM. INTERNAL: Instances:
                                                          pko_pnr2.pko_pse.pse_sq2_pq.sq1.std1_sram */
 	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM. INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std0_sram */
-	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq2.wt_sram */
-	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq2_pq.sq2.sc_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.std0_sram */
+	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.wt_sram */
+	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.sc_sram */
 	uint64_t reserved_0_50                : 51;
 #else
 	uint64_t reserved_0_50                : 51;
@@ -12222,7 +15290,48 @@ union cvmx_pko_pse_sq2_ecc_sbe_sts0 {
 	uint64_t sq_pt_ram_sbe                : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq2_ecc_sbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.nt_sram */
+	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.pt_sram */
+	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.rt_sram */
+	uint64_t reserved_60_60               : 1;
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tw_0.sq_fifo_sram */
+	uint64_t reserved_58_58               : 1;
+	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tp0_sram */
+	uint64_t reserved_56_56               : 1;
+	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.sts0_sram */
+	uint64_t reserved_54_54               : 1;
+	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.std0_sram */
+	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.wt_sram */
+	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq3_pq.sq2.sc_sram */
+	uint64_t reserved_0_50                : 51;
+#else
+	uint64_t reserved_0_50                : 51;
+	uint64_t sc_ram_sbe                   : 1;
+	uint64_t wt_ram_sbe                   : 1;
+	uint64_t std0_ram_sbe                 : 1;
+	uint64_t reserved_54_54               : 1;
+	uint64_t sts0_ram_sbe                 : 1;
+	uint64_t reserved_56_56               : 1;
+	uint64_t tp0_sram_sbe                 : 1;
+	uint64_t reserved_58_58               : 1;
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;
+	uint64_t reserved_60_60               : 1;
+	uint64_t rt_ram_sbe                   : 1;
+	uint64_t sq_nt_ram_sbe                : 1;
+	uint64_t sq_pt_ram_sbe                : 1;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq2_ecc_sbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_sq2_ecc_sbe_sts0_s cn78xxp2;
+	struct cvmx_pko_pse_sq2_ecc_sbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq2_ecc_sbe_sts0 cvmx_pko_pse_sq2_ecc_sbe_sts0_t;
 
@@ -12238,26 +15347,25 @@ union cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0 {
                                                          When this bit is set, the corresponding interrupt is set.
                                                          Throws PKO_INTSN_E::PKO_PSE_SQ2_SBE_CMB0.
                                                          INTERNAL: Instances:
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.nt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.pt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.rt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq1.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.wt_sram
-                                                         pko_pnr2.pko_pse.pse_sq2_pq.sq2.sc_sram */
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.nt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.pt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.rt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.tw_0.sq_fifo_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.tp0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.std0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq1.sts0_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.wt_sram
+                                                         pko_pnr2.pko_pse.pse_sq3_pq.sq2.sc_sram */
 	uint64_t reserved_0_62                : 63;
 #else
 	uint64_t reserved_0_62                : 63;
 	uint64_t pse_sq2_sbe_cmb0             : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq2_ecc_sbe_sts_cmb0_t;
 
@@ -12318,7 +15426,42 @@ union cvmx_pko_pse_sq3_bist_status {
 	uint64_t reserved_29_63               : 35;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq3_bist_status_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_29_63               : 35;
+	uint64_t sc_sram                      : 1;  /**< Scheduling configuration */
+	uint64_t reserved_20_27               : 8;
+	uint64_t tp0_sram                     : 1;  /**< SQ[5:1] topology parent configuration */
+	uint64_t reserved_18_18               : 1;
+	uint64_t rt_sram                      : 1;  /**< Result table */
+	uint64_t reserved_8_16                : 9;
+	uint64_t std_sram                     : 1;  /**< Dynamic shaping state */
+	uint64_t sts_sram                     : 1;  /**< Static shaping configuration */
+	uint64_t tw0_cmd_fifo                 : 1;  /**< SQ[5:1] time wheel 0 command FIFO SRAM */
+	uint64_t reserved_3_4                 : 2;
+	uint64_t nt_sram                      : 1;  /**< Next pointer table */
+	uint64_t pt_sram                      : 1;  /**< Previous pointer table */
+	uint64_t wt_sram                      : 1;  /**< Work table */
+#else
+	uint64_t wt_sram                      : 1;
+	uint64_t pt_sram                      : 1;
+	uint64_t nt_sram                      : 1;
+	uint64_t reserved_3_4                 : 2;
+	uint64_t tw0_cmd_fifo                 : 1;
+	uint64_t sts_sram                     : 1;
+	uint64_t std_sram                     : 1;
+	uint64_t reserved_8_16                : 9;
+	uint64_t rt_sram                      : 1;
+	uint64_t reserved_18_18               : 1;
+	uint64_t tp0_sram                     : 1;
+	uint64_t reserved_20_27               : 8;
+	uint64_t sc_sram                      : 1;
+	uint64_t reserved_29_63               : 35;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq3_bist_status_s cn78xx;
+	struct cvmx_pko_pse_sq3_bist_status_s cn78xxp2;
+	struct cvmx_pko_pse_sq3_bist_status_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq3_bist_status cvmx_pko_pse_sq3_bist_status_t;
 
@@ -12418,7 +15561,60 @@ union cvmx_pko_pse_sq3_ecc_ctl0 {
 	uint64_t sq_pt_ram_flip               : 2;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq3_ecc_ctl0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t sq_pt_ram_flip               : 2;  /**< SQ_PT_RAM flip syndrome bits on write. */
+	uint64_t sq_pt_ram_cdis               : 1;  /**< SQ_PT_RAM ECC correction disable. */
+	uint64_t sq_nt_ram_flip               : 2;  /**< SQ_NT_RAM flip syndrome bits on write. */
+	uint64_t sq_nt_ram_cdis               : 1;  /**< SQ_NT_RAM ECC correction disable. */
+	uint64_t rt_ram_flip                  : 2;  /**< RT_RAM flip syndrome bits on write. */
+	uint64_t rt_ram_cdis                  : 1;  /**< RT_RAM ECC correction disable. */
+	uint64_t reserved_46_54               : 9;
+	uint64_t tw0_cmd_fifo_ram_flip        : 2;  /**< TW0_CMD_FIFO_RAM flip syndrome bits on write. */
+	uint64_t tw0_cmd_fifo_ram_cdis        : 1;  /**< TW0_CMD_FIFO_RAM ECC correction disable. */
+	uint64_t reserved_34_42               : 9;
+	uint64_t tp0_sram_flip                : 2;  /**< TP0_SRAM flip syndrome bits on write. */
+	uint64_t tp0_sram_cdis                : 1;  /**< TP0_SRAM ECC correction disable. */
+	uint64_t reserved_22_30               : 9;
+	uint64_t sts0_ram_flip                : 2;  /**< STS0_RAM flip syndrome bits on write. */
+	uint64_t sts0_ram_cdis                : 1;  /**< STS0_RAM ECC correction disable. */
+	uint64_t reserved_10_18               : 9;
+	uint64_t std0_ram_flip                : 2;  /**< STD0_RAM flip syndrome bits on write. */
+	uint64_t std0_ram_cdis                : 1;  /**< STD0_RAM ECC correction disable. */
+	uint64_t wt_ram_flip                  : 2;  /**< WT_RAM flip syndrome bits on write. */
+	uint64_t wt_ram_cdis                  : 1;  /**< WT_RAM ECC correction disable. */
+	uint64_t sc_ram_flip                  : 2;  /**< SC_RAM flip syndrome bits on write. */
+	uint64_t sc_ram_cdis                  : 1;  /**< SC_RAM ECC correction disable. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t sc_ram_cdis                  : 1;
+	uint64_t sc_ram_flip                  : 2;
+	uint64_t wt_ram_cdis                  : 1;
+	uint64_t wt_ram_flip                  : 2;
+	uint64_t std0_ram_cdis                : 1;
+	uint64_t std0_ram_flip                : 2;
+	uint64_t reserved_10_18               : 9;
+	uint64_t sts0_ram_cdis                : 1;
+	uint64_t sts0_ram_flip                : 2;
+	uint64_t reserved_22_30               : 9;
+	uint64_t tp0_sram_cdis                : 1;
+	uint64_t tp0_sram_flip                : 2;
+	uint64_t reserved_34_42               : 9;
+	uint64_t tw0_cmd_fifo_ram_cdis        : 1;
+	uint64_t tw0_cmd_fifo_ram_flip        : 2;
+	uint64_t reserved_46_54               : 9;
+	uint64_t rt_ram_cdis                  : 1;
+	uint64_t rt_ram_flip                  : 2;
+	uint64_t sq_nt_ram_cdis               : 1;
+	uint64_t sq_nt_ram_flip               : 2;
+	uint64_t sq_pt_ram_cdis               : 1;
+	uint64_t sq_pt_ram_flip               : 2;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq3_ecc_ctl0_s    cn78xx;
+	struct cvmx_pko_pse_sq3_ecc_ctl0_s    cn78xxp2;
+	struct cvmx_pko_pse_sq3_ecc_ctl0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq3_ecc_ctl0 cvmx_pko_pse_sq3_ecc_ctl0_t;
 
@@ -12494,7 +15690,48 @@ union cvmx_pko_pse_sq3_ecc_dbe_sts0 {
 	uint64_t sq_pt_ram_dbe                : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq3_ecc_dbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t sq_pt_ram_dbe                : 1;  /**< Double-bit error for SQ_PT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.nt_sram */
+	uint64_t sq_nt_ram_dbe                : 1;  /**< Double-bit error for SQ_NT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.pt_sram */
+	uint64_t rt_ram_dbe                   : 1;  /**< Double-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq5_sq3.sq3.rt_sram */
+	uint64_t reserved_58_60               : 3;
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;  /**< Double-bit error for TW0_CMD_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_0.sq_fifo_sram */
+	uint64_t reserved_54_56               : 3;
+	uint64_t tp0_sram_dbe                 : 1;  /**< Double-bit error for TP0_SRAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp0_sram */
+	uint64_t reserved_50_52               : 3;
+	uint64_t sts0_ram_dbe                 : 1;  /**< Double-bit error for STS0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts0_sram */
+	uint64_t reserved_46_48               : 3;
+	uint64_t std0_ram_dbe                 : 1;  /**< Double-bit error for STD0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std0_sram */
+	uint64_t wt_ram_dbe                   : 1;  /**< Double-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq5_sq3.sq3.wt_sram */
+	uint64_t sc_ram_dbe                   : 1;  /**< Double-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sc_sram */
+	uint64_t reserved_0_42                : 43;
+#else
+	uint64_t reserved_0_42                : 43;
+	uint64_t sc_ram_dbe                   : 1;
+	uint64_t wt_ram_dbe                   : 1;
+	uint64_t std0_ram_dbe                 : 1;
+	uint64_t reserved_46_48               : 3;
+	uint64_t sts0_ram_dbe                 : 1;
+	uint64_t reserved_50_52               : 3;
+	uint64_t tp0_sram_dbe                 : 1;
+	uint64_t reserved_54_56               : 3;
+	uint64_t tw0_cmd_fifo_ram_dbe         : 1;
+	uint64_t reserved_58_60               : 3;
+	uint64_t rt_ram_dbe                   : 1;
+	uint64_t sq_nt_ram_dbe                : 1;
+	uint64_t sq_pt_ram_dbe                : 1;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq3_ecc_dbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_sq3_ecc_dbe_sts0_s cn78xxp2;
+	struct cvmx_pko_pse_sq3_ecc_dbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq3_ecc_dbe_sts0 cvmx_pko_pse_sq3_ecc_dbe_sts0_t;
 
@@ -12514,21 +15751,9 @@ union cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0 {
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq5.pt_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq3.rt_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_2.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_3.sq_fifo_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp3_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std3_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts3_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq3.wt_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sc_sram */
 	uint64_t reserved_0_62                : 63;
@@ -12537,7 +15762,10 @@ union cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0 {
 	uint64_t pse_sq3_dbe_cmb0             : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0 cvmx_pko_pse_sq3_ecc_dbe_sts_cmb0_t;
 
@@ -12613,7 +15841,48 @@ union cvmx_pko_pse_sq3_ecc_sbe_sts0 {
 	uint64_t sq_pt_ram_sbe                : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq3_ecc_sbe_sts0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t sq_pt_ram_sbe                : 1;  /**< Single-bit error for SQ_PT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.nt_sram */
+	uint64_t sq_nt_ram_sbe                : 1;  /**< Single-bit error for SQ_NT_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.pt_sram */
+	uint64_t rt_ram_sbe                   : 1;  /**< Single-bit error for RT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq5_sq3.sq3.rt_sram */
+	uint64_t reserved_58_60               : 3;
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;  /**< Single-bit error for TW0_CMD_FIFO_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_0.sq_fifo_sram */
+	uint64_t reserved_54_56               : 3;
+	uint64_t tp0_sram_sbe                 : 1;  /**< Single-bit error for TP0_SRAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp0_sram */
+	uint64_t reserved_50_52               : 3;
+	uint64_t sts0_ram_sbe                 : 1;  /**< Single-bit error for STS0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts0_sram */
+	uint64_t reserved_46_48               : 3;
+	uint64_t std0_ram_sbe                 : 1;  /**< Single-bit error for STD0_RAM. INTERNAL: Instances:
+                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std0_sram */
+	uint64_t wt_ram_sbe                   : 1;  /**< Single-bit error for WT_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq5_sq3.sq3.wt_sram */
+	uint64_t sc_ram_sbe                   : 1;  /**< Single-bit error for SC_RAM. INTERNAL: Instances: pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sc_sram */
+	uint64_t reserved_0_42                : 43;
+#else
+	uint64_t reserved_0_42                : 43;
+	uint64_t sc_ram_sbe                   : 1;
+	uint64_t wt_ram_sbe                   : 1;
+	uint64_t std0_ram_sbe                 : 1;
+	uint64_t reserved_46_48               : 3;
+	uint64_t sts0_ram_sbe                 : 1;
+	uint64_t reserved_50_52               : 3;
+	uint64_t tp0_sram_sbe                 : 1;
+	uint64_t reserved_54_56               : 3;
+	uint64_t tw0_cmd_fifo_ram_sbe         : 1;
+	uint64_t reserved_58_60               : 3;
+	uint64_t rt_ram_sbe                   : 1;
+	uint64_t sq_nt_ram_sbe                : 1;
+	uint64_t sq_pt_ram_sbe                : 1;
+#endif
+	} cn73xx;
 	struct cvmx_pko_pse_sq3_ecc_sbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_sq3_ecc_sbe_sts0_s cn78xxp2;
+	struct cvmx_pko_pse_sq3_ecc_sbe_sts0_cn73xx cnf75xx;
 };
 typedef union cvmx_pko_pse_sq3_ecc_sbe_sts0 cvmx_pko_pse_sq3_ecc_sbe_sts0_t;
 
@@ -12633,21 +15902,9 @@ union cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0 {
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq5.pt_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq3.rt_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_0.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_1.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_2.sq_fifo_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.tw_3.sq_fifo_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq3.tp3_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.std3_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts0_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts1_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts2_sram
-                                                         pko_pnr2.pko_pse.pse_sq5_sq3.sq5.sts3_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq3.wt_sram
                                                          pko_pnr2.pko_pse.pse_sq5_sq3.sq3.sc_sram */
 	uint64_t reserved_0_62                : 63;
@@ -12656,7 +15913,10 @@ union cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0 {
 	uint64_t pse_sq3_sbe_cmb0             : 1;
 #endif
 	} s;
+	struct cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0_s cn73xx;
 	struct cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0_s cn78xxp2;
+	struct cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0_s cnf75xx;
 };
 typedef union cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq3_ecc_sbe_sts_cmb0_t;
 
@@ -12718,6 +15978,7 @@ union cvmx_pko_pse_sq4_bist_status {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq4_bist_status_s cn78xx;
+	struct cvmx_pko_pse_sq4_bist_status_s cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq4_bist_status cvmx_pko_pse_sq4_bist_status_t;
 
@@ -12818,6 +16079,7 @@ union cvmx_pko_pse_sq4_ecc_ctl0 {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq4_ecc_ctl0_s    cn78xx;
+	struct cvmx_pko_pse_sq4_ecc_ctl0_s    cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq4_ecc_ctl0 cvmx_pko_pse_sq4_ecc_ctl0_t;
 
@@ -12894,6 +16156,7 @@ union cvmx_pko_pse_sq4_ecc_dbe_sts0 {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq4_ecc_dbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_sq4_ecc_dbe_sts0_s cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq4_ecc_dbe_sts0 cvmx_pko_pse_sq4_ecc_dbe_sts0_t;
 
@@ -12937,6 +16200,7 @@ union cvmx_pko_pse_sq4_ecc_dbe_sts_cmb0 {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq4_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_sq4_ecc_dbe_sts_cmb0_s cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq4_ecc_dbe_sts_cmb0 cvmx_pko_pse_sq4_ecc_dbe_sts_cmb0_t;
 
@@ -13013,6 +16277,7 @@ union cvmx_pko_pse_sq4_ecc_sbe_sts0 {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq4_ecc_sbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_sq4_ecc_sbe_sts0_s cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq4_ecc_sbe_sts0 cvmx_pko_pse_sq4_ecc_sbe_sts0_t;
 
@@ -13056,6 +16321,7 @@ union cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0 {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0_s cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq4_ecc_sbe_sts_cmb0_t;
 
@@ -13117,6 +16383,7 @@ union cvmx_pko_pse_sq5_bist_status {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq5_bist_status_s cn78xx;
+	struct cvmx_pko_pse_sq5_bist_status_s cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq5_bist_status cvmx_pko_pse_sq5_bist_status_t;
 
@@ -13217,6 +16484,7 @@ union cvmx_pko_pse_sq5_ecc_ctl0 {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq5_ecc_ctl0_s    cn78xx;
+	struct cvmx_pko_pse_sq5_ecc_ctl0_s    cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq5_ecc_ctl0 cvmx_pko_pse_sq5_ecc_ctl0_t;
 
@@ -13293,6 +16561,7 @@ union cvmx_pko_pse_sq5_ecc_dbe_sts0 {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq5_ecc_dbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_sq5_ecc_dbe_sts0_s cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq5_ecc_dbe_sts0 cvmx_pko_pse_sq5_ecc_dbe_sts0_t;
 
@@ -13336,6 +16605,7 @@ union cvmx_pko_pse_sq5_ecc_dbe_sts_cmb0 {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq5_ecc_dbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_sq5_ecc_dbe_sts_cmb0_s cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq5_ecc_dbe_sts_cmb0 cvmx_pko_pse_sq5_ecc_dbe_sts_cmb0_t;
 
@@ -13412,6 +16682,7 @@ union cvmx_pko_pse_sq5_ecc_sbe_sts0 {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq5_ecc_sbe_sts0_s cn78xx;
+	struct cvmx_pko_pse_sq5_ecc_sbe_sts0_s cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq5_ecc_sbe_sts0 cvmx_pko_pse_sq5_ecc_sbe_sts0_t;
 
@@ -13455,6 +16726,7 @@ union cvmx_pko_pse_sq5_ecc_sbe_sts_cmb0 {
 #endif
 	} s;
 	struct cvmx_pko_pse_sq5_ecc_sbe_sts_cmb0_s cn78xx;
+	struct cvmx_pko_pse_sq5_ecc_sbe_sts_cmb0_s cn78xxp2;
 };
 typedef union cvmx_pko_pse_sq5_ecc_sbe_sts_cmb0 cvmx_pko_pse_sq5_ecc_sbe_sts_cmb0_t;
 
@@ -13465,7 +16737,8 @@ union cvmx_pko_ptfx_status {
 	uint64_t u64;
 	struct cvmx_pko_ptfx_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_20_63               : 44;
+	uint64_t reserved_30_63               : 34;
+	uint64_t tx_fifo_pkt_credit_cnt       : 10; /**< The number of used TxFIFO credits. For diagnostic use only. */
 	uint64_t total_in_flight_cnt          : 8;  /**< Total number of packets currently in-flight within PEB. Useful both for reconfiguration
                                                          (able to disable a FIFO when it is empty) and debugging. */
 	uint64_t in_flight_cnt                : 7;  /**< Number of packets currently in-flight within PEB for this link. Useful both for
@@ -13477,10 +16750,14 @@ union cvmx_pko_ptfx_status {
 	uint64_t mac_num                      : 5;
 	uint64_t in_flight_cnt                : 7;
 	uint64_t total_in_flight_cnt          : 8;
-	uint64_t reserved_20_63               : 44;
+	uint64_t tx_fifo_pkt_credit_cnt       : 10;
+	uint64_t reserved_30_63               : 34;
 #endif
 	} s;
+	struct cvmx_pko_ptfx_status_s         cn73xx;
 	struct cvmx_pko_ptfx_status_s         cn78xx;
+	struct cvmx_pko_ptfx_status_s         cn78xxp2;
+	struct cvmx_pko_ptfx_status_s         cnf75xx;
 };
 typedef union cvmx_pko_ptfx_status cvmx_pko_ptfx_status_t;
 
@@ -13491,38 +16768,43 @@ union cvmx_pko_ptf_iobp_cfg {
 	uint64_t u64;
 	struct cvmx_pko_ptf_iobp_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_43_63               : 21;
-	uint64_t iobp0_l2_allocate            : 1;  /**< Determine L2 allocation (1 = no allocation) when performing IOBP0 requests. */
+	uint64_t reserved_44_63               : 20;
+	uint64_t iobp1_ds_opt                 : 1;  /**< Optimize IOBP1 requests when data is to be dropped (NULL, RED, SEND_HDR_S[DS]=1). */
+	uint64_t iobp0_l2_allocate            : 1;  /**< Determine L2 allocation (1 = no allocation = LDT, 0 = allocation = LDD) when reading
+                                                         post-PKO_SEND_JUMP descriptors via IOBP0 requests. */
 	uint64_t iobp1_magic_addr             : 35; /**< IOBP1 read address to be used for any dummy reads */
 	uint64_t max_read_size                : 7;  /**< Maximum number of IOBP1 read requests outstanding to be allowed by any given PEB TX FIFO. */
 #else
 	uint64_t max_read_size                : 7;
 	uint64_t iobp1_magic_addr             : 35;
 	uint64_t iobp0_l2_allocate            : 1;
-	uint64_t reserved_43_63               : 21;
+	uint64_t iobp1_ds_opt                 : 1;
+	uint64_t reserved_44_63               : 20;
 #endif
 	} s;
+	struct cvmx_pko_ptf_iobp_cfg_s        cn73xx;
 	struct cvmx_pko_ptf_iobp_cfg_s        cn78xx;
+	struct cvmx_pko_ptf_iobp_cfg_s        cn78xxp2;
+	struct cvmx_pko_ptf_iobp_cfg_s        cnf75xx;
 };
 typedef union cvmx_pko_ptf_iobp_cfg cvmx_pko_ptf_iobp_cfg_t;
 
 /**
  * cvmx_pko_ptgf#_cfg
  *
- * This register configures a PKO TX FIFO group. PKO supports up to 29 independent
- * TX FIFOs, where 0-27 are physical and 28 is Virtual/NULL. (PKO drops packets
+ * This register configures a PKO TX FIFO group. PKO supports up to 17 independent
+ * TX FIFOs, where 0-15 are physical and 16 is Virtual/NULL. (PKO drops packets
  * targeting the NULL FIFO, returning their buffers to the FPA.) PKO puts each
- * FIFO into one of eight groups:
+ * FIFO into one of five groups:
  *
  * <pre>
- *   CSR Name       FIFO's in FIFO Group
- *   -----------------------------------
+ *    CSR Name       FIFO's in FIFO Group
+ *   ------------------------------------
  *   PKO_PTGF0_CFG      0,  1,  2,  3
  *   PKO_PTGF1_CFG      4,  5,  6,  7
  *   PKO_PTGF2_CFG      8,  9, 10, 11
- *   - ...
- *   PKO_PTGF6_CFG     24, 25, 26, 27
- *   PKO_PTGF7_CFG      Virtual/NULL
+ *   PKO_PTGF3_CFG     12, 13, 14, 15
+ *   PKO_PTGF4_CFG      Virtual/NULL
  * </pre>
  */
 union cvmx_pko_ptgfx_cfg {
@@ -13533,19 +16815,17 @@ union cvmx_pko_ptgfx_cfg {
 	uint64_t reset                        : 1;  /**< This bit resets the address pointers for the FIFOs in this group. This should only be
                                                          performed when a PTGF is empty and the SIZE field is to be changed. */
 	uint64_t rate                         : 3;  /**< The rate / number of inflight packets allowed for the FIFO's in this group.
-                                                         An individual FIFO can support up to 100 Gbit/sec (i.e. up to 64 inflight packets).
+                                                         An individual FIFO can support up to 50 Gbit/sec (i.e. up to 32 inflight packets).
                                                          The total aggregate rate across all FIFOs (including the NULL) should never exceed
-                                                         250 Gbit/sec (i.e. up to 160 inflight packets). This field represents the rate for
+                                                         125 Gbit/sec (i.e. up to 80 inflight packets). This field represents the rate for
                                                          each active FIFO in in the group; thus the calculation for throughput is a function
                                                          of the SIZE field and whether or not the FIFO's in the group are assigned to a MAC
                                                          in PKO_MAC()_CFG.
                                                          Encoding:
-                                                         0x0 = up to   6.25 Gbit/sec (i.e. up to  4 inflight packets).
-                                                         0x1 = up to  12.5  Gbit/sec (i.e. up to  8 inflight packets).
-                                                         0x2 = up to  25    Gbit/sec (i.e. up to 16 inflight packets).
-                                                         0x3 = up to  50    Gbit/sec (i.e. up to 32 inflight packets).
-                                                         0x4 = up to 100    Gbit/sec (i.e. up to 64 inflight packets).
-                                                         else reserved.
+                                                         0x0 = up to   6.25 Gbit/sec (i.e. up to  4 inflight packets)
+                                                         0x1 = up to  12.5  Gbit/sec (i.e. up to  8 inflight packets)
+                                                         0x2 = up to  25    Gbit/sec (i.e. up to 16 inflight packets)
+                                                         0x3 = up to  50    Gbit/sec (i.e. up to 32 inflight packets)
                                                          [RATE] applies to all FIFO groups including the NULL. */
 	uint64_t size                         : 3;  /**< Determines the size and availability of the FIFO's in the FIFO group.
                                                          10KB total storage is available to the FIFO group. Two or
@@ -13563,8 +16843,7 @@ union cvmx_pko_ptgfx_cfg {
                                                          </pre>
                                                          Note: 5-7 are illegal SIZE values and should not be used.
                                                          A FIFO labelled N/A in the above table must not be used, and no
-                                                         _PTGF(7)_CFG[SIZE] should not change from its reset value
-                                                         PKO_MAC(7)_CFG[FIFO_NUM] should select it. For example,
+                                                         PKO_MAC()_CFG[FIFO_NUM] should select it. For example,
                                                          if PKO_PTGF(2)_CFG[SIZE]=4, FIFO_NUM 8 is available (with
                                                          10KB), but FIFO_NUMs 9, 10, and 11 are not valid and should
                                                          not be used.
@@ -13573,9 +16852,11 @@ union cvmx_pko_ptgfx_cfg {
                                                          reset the address pointers for the FIFOs in this group.
                                                          The second write has the new [SIZE] value, and should clear
                                                          [RESET].
-                                                         PKO_PTGF(7)_CFG[SIZE] should not change from its reset value
+                                                         PKO_PTGF(4)_CFG[SIZE] should not change from its reset value
                                                          of zero. (The NULL FIFO has no real storage, and the SIZE table
-                                                         above does not apply to the NULL FIFO.) */
+                                                         above does not apply to the NULL FIFO.)
+                                                         A FIFO of size 2.5kB cannot be configured to have a RATE>25GBs
+                                                         A FIFO of size 5.0kB cannot be configured to have a RATE>50GBs */
 #else
 	uint64_t size                         : 3;
 	uint64_t rate                         : 3;
@@ -13583,37 +16864,68 @@ union cvmx_pko_ptgfx_cfg {
 	uint64_t reserved_7_63                : 57;
 #endif
 	} s;
+	struct cvmx_pko_ptgfx_cfg_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_7_63                : 57;
+	uint64_t reset                        : 1;  /**< This bit resets the address pointers for the FIFOs in this group. This should only be
+                                                         performed when a PTGF is empty and the SIZE field is to be changed. */
+	uint64_t reserved_5_5                 : 1;
+	uint64_t rate                         : 2;  /**< The rate / number of inflight packets allowed for the FIFO's in this group.
+                                                         An individual FIFO can support up to 50 Gbit/sec (i.e. up to 32 inflight packets).
+                                                         The total aggregate rate across all FIFOs (including the NULL) should never exceed
+                                                         125 Gbit/sec (i.e. up to 80 inflight packets). This field represents the rate for
+                                                         each active FIFO in in the group; thus the calculation for throughput is a function
+                                                         of the SIZE field and whether or not the FIFO's in the group are assigned to a MAC
+                                                         in PKO_MAC()_CFG.
+                                                         Encoding:
+                                                         0x0 = up to   6.25 Gbit/sec (i.e. up to  4 inflight packets)
+                                                         0x1 = up to  12.5  Gbit/sec (i.e. up to  8 inflight packets)
+                                                         0x2 = up to  25    Gbit/sec (i.e. up to 16 inflight packets)
+                                                         0x3 = up to  50    Gbit/sec (i.e. up to 32 inflight packets)
+                                                         [RATE] applies to all FIFO groups including the NULL. */
+	uint64_t size                         : 3;  /**< Determines the size and availability of the FIFO's in the FIFO group.
+                                                         10KB total storage is available to the FIFO group. Two or
+                                                         four FIFOs can be combined to produce a larger FIFO if desired.
+                                                         The supported SIZE values:
+                                                         <pre>
+                                                                   FIFO0   FIFO1   FIFO2   FIFO3
+                                                            SIZE   Size    Size    Size    Size
+                                                           --------------------------------------
+                                                             0     2.5KB   2.5KB   2.5KB   2.5KB
+                                                             1     5.0KB    N/A    2.5KB   2.5KB
+                                                             2     2.5KB   2.5KB   5.0KB    N/A
+                                                             3     5.0KB    N/A    5.0KB    N/A
+                                                             4    10.0KB    N/A     N/A     N/A
+                                                         </pre>
+                                                         Note: 5-7 are illegal SIZE values and should not be used.
+                                                         A FIFO labelled N/A in the above table must not be used, and no
+                                                         PKO_MAC()_CFG[FIFO_NUM] should select it. For example,
+                                                         if PKO_PTGF(2)_CFG[SIZE]=4, FIFO_NUM 8 is available (with
+                                                         10KB), but FIFO_NUMs 9, 10, and 11 are not valid and should
+                                                         not be used.
+                                                         Modifications to this field require two writes. The first
+                                                         write must not modify [SIZE], and must assert [RESET] to
+                                                         reset the address pointers for the FIFOs in this group.
+                                                         The second write has the new [SIZE] value, and should clear
+                                                         [RESET].
+                                                         PKO_PTGF(4)_CFG[SIZE] should not change from its reset value
+                                                         of zero. (The NULL FIFO has no real storage, and the SIZE table
+                                                         above does not apply to the NULL FIFO.)
+                                                         A FIFO of size 2.5kB cannot be configured to have a RATE>25GBs.
+                                                         A FIFO of size 5.0kB cannot be configured to have a RATE>50GBs. */
+#else
+	uint64_t size                         : 3;
+	uint64_t rate                         : 2;
+	uint64_t reserved_5_5                 : 1;
+	uint64_t reset                        : 1;
+	uint64_t reserved_7_63                : 57;
+#endif
+	} cn73xx;
 	struct cvmx_pko_ptgfx_cfg_s           cn78xx;
+	struct cvmx_pko_ptgfx_cfg_s           cn78xxp2;
+	struct cvmx_pko_ptgfx_cfg_cn73xx      cnf75xx;
 };
 typedef union cvmx_pko_ptgfx_cfg cvmx_pko_ptgfx_cfg_t;
-
-/**
- * cvmx_pko_red_send_cfg
- */
-union cvmx_pko_red_send_cfg {
-	uint64_t u64;
-	struct cvmx_pko_red_send_cfg_s {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_1_63                : 63;
-	uint64_t red_send_as_yellow           : 1;  /**< RED_SEND as YELLOW. Configures the way packets colored RED_SEND are
-                                                         handled by the DQ through L2 shapers.  Packets colored RED_DROP do not decrement
-                                                         the PIR in DQ through L2 shapers while packets colored YELLOW do.  (Neither RED_DROP
-                                                         nor YELLOW packets decrement the CIR in DQ through L2 shapers.)  Packets colored
-                                                         RED_SEND are treated as either RED_DROP or YELLOW in the DQ through L2 shapers
-                                                         as follows:
-                                                         0 = treat RED_SEND as RED_DROP.
-                                                         1 = treat RED_SEND as YELLOW.
-                                                         In the L1 shapers, RED_DROP packets do not decrement the CIR, while YELLOW do.
-                                                         RED_SEND packets are always treated the same as YELLOW is in the L1 shapers,
-                                                         irrespective of [RED_SEND_AS_YELLOW]. */
-#else
-	uint64_t red_send_as_yellow           : 1;
-	uint64_t reserved_1_63                : 63;
-#endif
-	} s;
-	struct cvmx_pko_red_send_cfg_s        cn78xx;
-};
-typedef union cvmx_pko_red_send_cfg cvmx_pko_red_send_cfg_t;
 
 /**
  * cvmx_pko_reg_bist_result
@@ -13916,8 +17228,20 @@ union cvmx_pko_reg_cmd_buf {
 	struct cvmx_pko_reg_cmd_buf_s         cn66xx;
 	struct cvmx_pko_reg_cmd_buf_s         cn68xx;
 	struct cvmx_pko_reg_cmd_buf_s         cn68xxp1;
-	struct cvmx_pko_reg_cmd_buf_s         cn70xx;
-	struct cvmx_pko_reg_cmd_buf_s         cn70xxp1;
+	struct cvmx_pko_reg_cmd_buf_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_23_63               : 41;
+	uint64_t pool                         : 3;  /**< Free list used to free command buffer segments */
+	uint64_t reserved_19_13               : 7;
+	uint64_t size                         : 13; /**< Number of uint64s per command buffer segment */
+#else
+	uint64_t size                         : 13;
+	uint64_t reserved_19_13               : 7;
+	uint64_t pool                         : 3;
+	uint64_t reserved_23_63               : 41;
+#endif
+	} cn70xx;
+	struct cvmx_pko_reg_cmd_buf_cn70xx    cn70xxp1;
 	struct cvmx_pko_reg_cmd_buf_s         cnf71xx;
 };
 typedef union cvmx_pko_reg_cmd_buf cvmx_pko_reg_cmd_buf_t;
@@ -15262,6 +18586,63 @@ union cvmx_pko_reg_timestamp {
 typedef union cvmx_pko_reg_timestamp cvmx_pko_reg_timestamp_t;
 
 /**
+ * cvmx_pko_shaper_cfg
+ */
+union cvmx_pko_shaper_cfg {
+	uint64_t u64;
+	struct cvmx_pko_shaper_cfg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_2_63                : 62;
+	uint64_t color_aware                  : 1;  /**< Color aware. Selects whether or not the PSE shapers take into account
+                                                         the color of the incoming packet.  0: color blind, 1: color aware */
+	uint64_t red_send_as_yellow           : 1;  /**< RED_SEND as YELLOW. Configures the way packets colored RED_SEND are
+                                                         handled by the DQ through L2 shapers when operating in COLOR_AWARE mode.
+                                                         Normally packets colored RED_DROP do not decrement the PIR in DQ through
+                                                         L2 shapers while packets colored YELLOW do.  (Neither RED_DROP nor
+                                                         YELLOW packets decrement the CIR in DQ through L2 shapers.)  Packets colored
+                                                         RED_SEND are treated as either RED_DROP or YELLOW in the DQ through L2 shapers
+                                                         as follows:
+                                                         0 = treat RED_SEND as RED_DROP.
+                                                         1 = treat RED_SEND as YELLOW.
+                                                         In the L1 shapers, RED_DROP packets do not decrement the CIR, while YELLOW do.
+                                                         RED_SEND packets are always treated the same as YELLOW is in the L1 shapers,
+                                                         irrespective of [RED_SEND_AS_YELLOW]. */
+#else
+	uint64_t red_send_as_yellow           : 1;
+	uint64_t color_aware                  : 1;
+	uint64_t reserved_2_63                : 62;
+#endif
+	} s;
+	struct cvmx_pko_shaper_cfg_s          cn73xx;
+	struct cvmx_pko_shaper_cfg_s          cn78xx;
+	struct cvmx_pko_shaper_cfg_s          cn78xxp2;
+	struct cvmx_pko_shaper_cfg_s          cnf75xx;
+};
+typedef union cvmx_pko_shaper_cfg cvmx_pko_shaper_cfg_t;
+
+/**
+ * cvmx_pko_state_uid_in_use#_rd
+ *
+ * For diagnostic use only.
+ *
+ */
+union cvmx_pko_state_uid_in_usex_rd {
+	uint64_t u64;
+	struct cvmx_pko_state_uid_in_usex_rd_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t in_use                       : 64; /**< When set, a state memory bucket (aka UID) is assigned. */
+#else
+	uint64_t in_use                       : 64;
+#endif
+	} s;
+	struct cvmx_pko_state_uid_in_usex_rd_s cn73xx;
+	struct cvmx_pko_state_uid_in_usex_rd_s cn78xx;
+	struct cvmx_pko_state_uid_in_usex_rd_s cn78xxp2;
+	struct cvmx_pko_state_uid_in_usex_rd_s cnf75xx;
+};
+typedef union cvmx_pko_state_uid_in_usex_rd cvmx_pko_state_uid_in_usex_rd_t;
+
+/**
  * cvmx_pko_status
  */
 union cvmx_pko_status {
@@ -15303,8 +18684,71 @@ union cvmx_pko_status {
 	uint64_t pko_rdy                      : 1;
 #endif
 	} s;
-	struct cvmx_pko_status_s              cn78xx;
+	struct cvmx_pko_status_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pko_rdy                      : 1;  /**< PKO ready for configuration. */
+	uint64_t reserved_62_24               : 39;
+	uint64_t c2qlut_rdy                   : 1;  /**< PKO C2Q LUT block ready for configuration. */
+	uint64_t ppfi_rdy                     : 1;  /**< PKO PPFI block ready for configuration. */
+	uint64_t iobp1_rdy                    : 1;  /**< PKO IOBP1 block ready for configuration. */
+	uint64_t ncb_rdy                      : 1;  /**< PKO NCB block ready for configuration. */
+	uint64_t pse_rdy                      : 1;  /**< PKO PSE block ready for configuration. */
+	uint64_t pdm_rdy                      : 1;  /**< PKO PDM block ready for configuration. */
+	uint64_t peb_rdy                      : 1;  /**< PKO PEB block ready for configuration. */
+	uint64_t csi_rdy                      : 1;  /**< PKO CSI block ready for configuration. */
+	uint64_t reserved_15_5                : 11;
+	uint64_t ncb_bist_status              : 1;  /**< PKO NCB block BIST status. 0 = BIST passed; 1 = BIST failed. */
+	uint64_t c2qlut_bist_status           : 1;  /**< PKO C2QLUT block BIST status. 0 = BIST passed; 1 = BIST failed. */
+	uint64_t pdm_bist_status              : 1;  /**< PKO PDM block BIST status. 0 = BIST passed; 1 = BIST failed. */
+	uint64_t peb_bist_status              : 1;  /**< PKO PEB block BIST status. 0 = BIST passed; 1 = BIST failed. */
+	uint64_t pse_bist_status              : 1;  /**< PKO PSE block BIST status. 0 = BIST passed; 1 = BIST failed. */
+#else
+	uint64_t pse_bist_status              : 1;
+	uint64_t peb_bist_status              : 1;
+	uint64_t pdm_bist_status              : 1;
+	uint64_t c2qlut_bist_status           : 1;
+	uint64_t ncb_bist_status              : 1;
+	uint64_t reserved_15_5                : 11;
+	uint64_t csi_rdy                      : 1;
+	uint64_t peb_rdy                      : 1;
+	uint64_t pdm_rdy                      : 1;
+	uint64_t pse_rdy                      : 1;
+	uint64_t ncb_rdy                      : 1;
+	uint64_t iobp1_rdy                    : 1;
+	uint64_t ppfi_rdy                     : 1;
+	uint64_t c2qlut_rdy                   : 1;
+	uint64_t reserved_62_24               : 39;
+	uint64_t pko_rdy                      : 1;
+#endif
+	} cn73xx;
+	struct cvmx_pko_status_cn73xx         cn78xx;
+	struct cvmx_pko_status_cn73xx         cn78xxp2;
+	struct cvmx_pko_status_cn73xx         cnf75xx;
 };
 typedef union cvmx_pko_status cvmx_pko_status_t;
+
+/**
+ * cvmx_pko_txf#_pkt_cnt_rd
+ *
+ * Added in pass 2.
+ *
+ */
+union cvmx_pko_txfx_pkt_cnt_rd {
+	uint64_t u64;
+	struct cvmx_pko_txfx_pkt_cnt_rd_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_8_63                : 56;
+	uint64_t cnt                          : 8;  /**< Number of packets currently sitting in the given TX FIFO. */
+#else
+	uint64_t cnt                          : 8;
+	uint64_t reserved_8_63                : 56;
+#endif
+	} s;
+	struct cvmx_pko_txfx_pkt_cnt_rd_s     cn73xx;
+	struct cvmx_pko_txfx_pkt_cnt_rd_s     cn78xx;
+	struct cvmx_pko_txfx_pkt_cnt_rd_s     cn78xxp2;
+	struct cvmx_pko_txfx_pkt_cnt_rd_s     cnf75xx;
+};
+typedef union cvmx_pko_txfx_pkt_cnt_rd cvmx_pko_txfx_pkt_cnt_rd_t;
 
 #endif

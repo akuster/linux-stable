@@ -43,7 +43,7 @@
  * Functions for SGMII initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 105303 $<hr>
+ * <hr>$Revision: 122069 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -158,7 +158,7 @@ static int __cvmx_helper_need_g15618(void)
 	if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM ||
 	    OCTEON_IS_MODEL(OCTEON_CN63XX) ||
 	    OCTEON_IS_MODEL(OCTEON_CN66XX_PASS1_X) ||
-	    OCTEON_IS_MODEL(OCTEON_CN68XX_PASS1_X))
+	    OCTEON_IS_MODEL(OCTEON_CN68XX))
 		return 1;
 	else
 		return 0;
@@ -404,6 +404,7 @@ static int __cvmx_helper_sgmii_hardware_init_link_speed(int interface,
 static int __cvmx_helper_sgmii_hardware_init(int interface, int num_ports)
 {
 	int index;
+	int do_link_set = 1;
 
 	/*
 	 * CN63XX Pass 1.0 errata G-14395 requires the QLM De-emphasis
@@ -444,13 +445,19 @@ static int __cvmx_helper_sgmii_hardware_init(int interface, int num_ports)
 		if (!cvmx_helper_is_port_valid(interface, index))
 			continue;
 		__cvmx_helper_sgmii_hardware_init_one_time(interface, index);
-		 /* proper link state. In the simulator there is no
+#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+		/*
+		 * Linux kernel driver will call ....link_set with the
+		 * proper link state. In the simulator there is no
 		 * link state polling and hence it is set from
 		 * here.
 		 */
-		if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM)
+		if (!(cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM))
+			do_link_set = 0;
+#endif
+		if (do_link_set)
 			__cvmx_helper_sgmii_link_set(ipd_port,
-				       __cvmx_helper_sgmii_link_get(ipd_port));
+					__cvmx_helper_sgmii_link_get(ipd_port));
 	}
 
 	return 0;
@@ -479,7 +486,7 @@ int __cvmx_helper_sgmii_enumerate(int xiface)
  * connected to it. The SGMII interface should still be down after
  * this call.
  *
- * @param interface Interface to probe
+ * @param xiface Interface to probe
  *
  * @return Number of ports on the interface. Zero to disable.
  */
@@ -525,7 +532,7 @@ int __cvmx_helper_sgmii_probe(int xiface)
  * I/O should be fully functional. This is called with IPD
  * enabled but PKO disabled.
  *
- * @param interface Interface to bring up
+ * @param xiface Interface to bring up
  *
  * @return Zero on success, negative on failure
  */
@@ -675,7 +682,8 @@ cvmx_helper_link_info_t __cvmx_helper_sgmii_link_get(int ipd_port)
 
 	pcsx_miscx_ctl_reg.u64 =
 		cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
-	if (pcsx_miscx_ctl_reg.s.mac_phy) {
+	if (pcsx_miscx_ctl_reg.s.mac_phy ||
+	    cvmx_helper_get_port_force_link_up(interface, index)) {
 		/* PHY Mode */
 		/* Note that this also works for 1000base-X mode */
 

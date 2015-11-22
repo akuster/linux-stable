@@ -47,6 +47,7 @@
 
 #include <linux/module.h>
 #include <asm/octeon/cvmx.h>
+#include <asm/octeon/octeon-boot-info.h>
 #include <asm/octeon/cvmx-smix-defs.h>
 #include <asm/octeon/cvmx-gmxx-defs.h>
 #include <asm/octeon/cvmx-asxx-defs.h>
@@ -69,8 +70,10 @@
  */
 CVMX_SHARED cvmx_helper_link_info_t(*cvmx_override_board_link_get)(int ipd_port) = NULL;
 
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 /** Set this to 1 to enable lots of debugging output */
 static const int device_tree_dbg = 0;
+#endif
 
 /**
  * @INTERNAL
@@ -82,6 +85,14 @@ static const int device_tree_dbg = 0;
  */
 static cvmx_helper_link_info_t
 __cvmx_get_cortina_phy_link_state(cvmx_phy_info_t *phy_info);
+
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+/**
+ * @INTERNAL
+ * Get link state of generic C22 compliant PHYs
+ */
+static cvmx_helper_link_info_t
+__cvmx_get_generic_8023_c22_phy_link_state(cvmx_phy_info_t *phy_info);
 
 /**
  * @INTERNAL
@@ -96,6 +107,21 @@ __get_generic_8023_c45_phy_link_state(cvmx_phy_info_t *phy_info);
  */
 static cvmx_helper_link_info_t
 __get_marvell_phy_link_state(cvmx_phy_info_t *phy_info);
+
+/**
+ * @INTERNAL
+ * Get link state of Aquantia PHY
+ */
+static cvmx_helper_link_info_t
+__get_aquantia_phy_link_state(cvmx_phy_info_t *phy_info);
+
+/**
+ * @INTERNAL
+ * Get link state of the Vitesse VSC8490 PHY
+ */
+static cvmx_helper_link_info_t
+__get_vitesse_vsc8490_phy_link_state(cvmx_phy_info_t *phy_info);
+#endif
 
 /**
  * @INTERNAL
@@ -137,7 +163,7 @@ static void cvmx_retry_i2c_write(int twsi_id, uint8_t dev_addr,
  * Returns the Ethernet node offset in the device tree
  *
  * @param     fdt_addr - pointer to flat device tree in memory
- * @param     alias    - offset of alias in device tree
+ * @param     aliases    - offset of alias in device tree
  * @param     ipd_port - ipd port number to look up
  *
  * @returns   offset of Ethernet node if >= 0, error if -1
@@ -238,6 +264,7 @@ static int __mdiobus_addr_to_unit(uint32_t addr)
 	return unit;
 }
 
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 /**
  * Parse the muxed MDIO interface information from the device tree
  *
@@ -373,6 +400,7 @@ static int __get_muxed_mdio_info_from_dt(cvmx_phy_info_t *phy_info,
 	}
 	return 0;
 }
+#endif
 
 /**
  * @INTERNAL
@@ -383,7 +411,7 @@ static int __get_muxed_mdio_info_from_dt(cvmx_phy_info_t *phy_info,
  * @return node, interface and port number, will be -1 for invalid address.
  */
 static struct cvmx_xiface
-__cvmx_78xx_bgx_reg_addr_to_xiface(uint64_t bgx_addr)
+__cvmx_bgx_reg_addr_to_xiface(uint64_t bgx_addr)
 {
 	struct cvmx_xiface xi = {-1, -1};
 
@@ -423,6 +451,20 @@ static void __cvmx_mdio_addr_to_node_bus(uint64_t addr, int *node, int *bus)
 			break;
 		case 0x0001180000003980:
 			*bus = 3;
+			break;
+		default:
+			*bus = -1;
+			cvmx_printf("%s: Invalid SMI bus address 0x%llx\n",
+				    __func__, (unsigned long long) addr);
+			break;
+		}
+	} else if (OCTEON_IS_MODEL(OCTEON_CN73XX)) {
+		switch (addr) {
+		case 0x0001180000003800:
+			*bus = 0;
+			break;
+		case 0x0001180000003880:
+			*bus = 1;
 			break;
 		default:
 			*bus = -1;
@@ -555,6 +597,7 @@ int __cvmx_helper_78xx_parse_phy(struct cvmx_phy_info *phy_info, int ipd_port)
 	int phy_addr;
 	int index = cvmx_helper_get_interface_index_num(ipd_port);
 	int xiface = cvmx_helper_get_interface_num(ipd_port);
+	int compat_len = 0;
 
 	if (fdt_addr == NULL)
 		fdt_addr = __cvmx_phys_addr_to_ptr(cvmx_sysinfo_get()->fdt_addr,
@@ -570,21 +613,27 @@ int __cvmx_helper_78xx_parse_phy(struct cvmx_phy_info *phy_info, int ipd_port)
 		 * device tree to get the node offsets.
 		 */
 		if (device_tree_dbg)
-			cvmx_dprintf("No config present, calling __cvmx_helper_parse_78xx_bgx_dt\n");
-		if (__cvmx_helper_parse_78xx_bgx_dt(fdt_addr)) {
-			cvmx_printf("Error: could not parse 78xx BGX\n");
+			cvmx_dprintf("No config present, calling __cvmx_helper_parse_bgx_dt\n");
+		if (__cvmx_helper_parse_bgx_dt(fdt_addr)) {
+			cvmx_printf("Error: could not parse BGX device tree\n");
+			return -1;
+		}
+		if (octeon_has_feature(OCTEON_FEATURE_BGX_XCV) &&
+		    __cvmx_helper_parse_bgx_rgmii_dt(fdt_addr)) {
+			cvmx_printf("Error: could not parse BGX XCV device tree\n");
 			return -1;
 		}
 		phy = cvmx_helper_get_phy_fdt_node_offset(xiface, index);
 		if (phy < 0) {
 			if (device_tree_dbg)
-				cvmx_dprintf("%s: Could not get PHY node offset for IPD port 0x%x\n",
-					     __func__, ipd_port);
+				cvmx_dprintf("%s: Could not get PHY node offset for IPD port 0x%x, xiface: 0x%x, index: %d\n",
+					     __func__, ipd_port, xiface, index);
 			return -1;
 		}
 	}
 
-	compat = (const char *)fdt_getprop(fdt_addr, phy, "compatible", NULL);
+	compat = (const char *)fdt_getprop(fdt_addr, phy, "compatible",
+					   &compat_len);
 	if (!compat) {
 		cvmx_printf("ERROR: %d:%d:no compatible prop in phy\n", xiface, index);
 		return -1;
@@ -611,6 +660,18 @@ int __cvmx_helper_78xx_parse_phy(struct cvmx_phy_info *phy_info, int ipd_port)
 	} else if (!memcmp("cortina", compat, strlen("cortina"))) {
 		phy_info->phy_type = CORTINA_PHY;
 		phy_info->link_function = __cvmx_get_cortina_phy_link_state;
+	} else if (!strcmp("vitesse,vsc8490", compat)) {
+		phy_info->phy_type = VITESSE_VSC8490_PHY;
+		phy_info->link_function = __get_vitesse_vsc8490_phy_link_state;
+	} else if (fdt_stringlist_contains(compat, compat_len,
+					   "ethernet-phy-ieee802.3-c22")) {
+		phy_info->phy_type = GENERIC_8023_C22_PHY;
+		phy_info->link_function =
+				__cvmx_get_generic_8023_c22_phy_link_state;
+	} else if (fdt_stringlist_contains(compat, compat_len,
+					   "ethernet-phy-ieee802.3-c45")) {
+		phy_info->phy_type = GENERIC_8023_C22_PHY;
+		phy_info->link_function = __get_generic_8023_c45_phy_link_state;
 	}
 
 	phy_info->ipd_port = ipd_port;
@@ -687,7 +748,7 @@ int __cvmx_helper_78xx_parse_phy(struct cvmx_phy_info *phy_info, int ipd_port)
  *
  * @return 0 for success, -1 on error.
  */
-int __cvmx_helper_parse_78xx_bgx_dt(void *fdt_addr)
+int __cvmx_helper_parse_bgx_dt(void *fdt_addr)
 {
 	int port_index;
 	int dbg = device_tree_dbg;
@@ -735,7 +796,7 @@ int __cvmx_helper_parse_78xx_bgx_dt(void *fdt_addr)
 		reg_addr = cvmx_fdt_translate_address(fdt_addr,
 						      fdt_interface_node,
 						      (uint32_t *)&reg_addr);
-		xi = __cvmx_78xx_bgx_reg_addr_to_xiface(reg_addr);
+		xi = __cvmx_bgx_reg_addr_to_xiface(reg_addr);
 		if (xi.node < 0) {
 			cvmx_dprintf("Device tree BGX node has invalid address 0x%llx\n",
 				     (unsigned long long)reg_addr);
@@ -765,7 +826,6 @@ int __cvmx_helper_parse_78xx_bgx_dt(void *fdt_addr)
 							  fdt_phy_node, NULL));
 			}
 			cvmx_helper_set_port_phy_present(xiface, port_index, true);
-
 		} else {
 			cvmx_helper_set_phy_fdt_node_offset(xiface, port_index,
 							    -1);
@@ -774,6 +834,121 @@ int __cvmx_helper_parse_78xx_bgx_dt(void *fdt_addr)
 					     __func__, xiface, port_index, fdt_phy_node);
 			cvmx_helper_set_port_phy_present(xiface, port_index, false);
 		}
+	}
+	return 0;
+}
+
+int __cvmx_helper_parse_bgx_rgmii_dt(const void *fdt_addr)
+{
+	uint64_t reg_addr;
+	struct cvmx_xiface xi;
+	int fdt_port_node = -1;
+	int fdt_interface_node;
+	int fdt_phy_node;
+	int port_index;
+	int xiface;
+	int dbg = device_tree_dbg;
+
+	/* There's only one xcv (RGMII) interface, so just search for the one
+	 * that's part of a BGX entry.
+	 */
+	while ((fdt_port_node = fdt_node_offset_by_compatible(fdt_addr,
+							      fdt_port_node,
+							      "cavium,octeon-7360-xcv")) >= 0) {
+		fdt_interface_node = fdt_parent_offset(fdt_addr, fdt_port_node);
+		if (fdt_interface_node < 0) {
+			cvmx_printf("Error: device tree corrupt!\n");
+			return -1;
+		}
+		if (dbg)
+			cvmx_dprintf("%s: XCV parent node compatible: %s\n",
+				     __func__,
+				     (char *)fdt_getprop(fdt_addr,
+							 fdt_interface_node,
+							 "compatible", NULL));
+		if (!fdt_node_check_compatible(fdt_addr, fdt_interface_node,
+					       "cavium,octeon-7890-bgx"))
+			break;
+	}
+	if (fdt_port_node == -FDT_ERR_NOTFOUND) {
+		if (dbg)
+			cvmx_dprintf("No XCV/RGMII interface found in device tree\n");
+		return 0;
+	} else if (fdt_port_node < 0) {
+		cvmx_dprintf("%s: Error %d parsing device tree\n",
+			     __func__, fdt_port_node);
+		return -1;
+	}
+	if (dbg) {
+		char path[256];
+		if (!fdt_get_path(fdt_addr, fdt_port_node, path, sizeof(path))) {
+			cvmx_dprintf("xcv path: %s\n", path);
+		}
+		if (!fdt_get_path(fdt_addr, fdt_interface_node, path,
+				  sizeof(path))) {
+			cvmx_dprintf("interface path: %s\n", path);
+		}
+	}
+	port_index = cvmx_fdt_get_int(fdt_addr, fdt_port_node, "reg", -1);
+	if (port_index != 0) {
+		cvmx_printf("%s: Error: port index (reg) must be 0, not %d.\n",
+			    __func__, port_index);
+		return -1;
+	}
+	reg_addr = cvmx_fdt_get_addr(fdt_addr, fdt_interface_node, "reg");
+	if (reg_addr == FDT_ADDR_T_NONE) {
+		cvmx_printf("%s: Error: could not get BGX interface address\n",
+			    __func__);
+		return -1;
+	}
+	/* We don't have to bother translating since only 78xx supports OCX and
+	 * doesn't support RGMII.
+	 */
+	xi = __cvmx_bgx_reg_addr_to_xiface(reg_addr);
+	if (dbg)
+		cvmx_dprintf("%s: xi.node: %d, xi.interface: 0x%x, addr: 0x%llx\n", __func__,
+			     xi.node, xi.interface,
+			     (unsigned long long)reg_addr);
+	if (xi.node < 0) {
+		cvmx_printf("%s: Device tree BGX node has invalid address 0x%llx\n",
+			    __func__, (unsigned long long)reg_addr);
+		return -1;
+	}
+	if (dbg) {
+		cvmx_dprintf("%s: Found XCV (RGMII) interface on interface %d\n",
+			     __func__, xi.interface);
+		cvmx_dprintf("  phy handle: 0x%x\n",
+			     cvmx_fdt_get_int(fdt_addr, fdt_port_node,
+					      "phy-handle", -1));
+	}
+	fdt_phy_node = cvmx_fdt_lookup_phandle(fdt_addr, fdt_port_node,
+					       "phy-handle");
+	if (dbg)
+		cvmx_dprintf("%s: phy-handle node: 0x%x\n", __func__,
+			     fdt_phy_node);
+	xiface = cvmx_helper_node_interface_to_xiface(xi.node, xi.interface);
+
+	cvmx_helper_set_port_fdt_node_offset(xiface, port_index,
+					     fdt_port_node);
+	if (fdt_phy_node >= 0) {
+		if (dbg) {
+			cvmx_dprintf("%s: Setting PHY fdt node offset for interface 0x%x, port %d to %d\n",
+				     __func__, xiface, port_index,
+				     fdt_phy_node);
+			cvmx_dprintf("%s: PHY node name: %s\n",
+				     __func__,
+				     fdt_get_name(fdt_addr,
+						  fdt_phy_node, NULL));
+		}
+		cvmx_helper_set_phy_fdt_node_offset(xiface, port_index,
+						    fdt_phy_node);
+		cvmx_helper_set_port_phy_present(xiface, port_index, true);
+	} else {
+		cvmx_helper_set_phy_fdt_node_offset(xiface, port_index, -1);
+		if (dbg)
+			cvmx_dprintf("%s: No PHY fdt node offset for interface 0x%x, port %d to %d\n",
+				     __func__, xiface, port_index, fdt_phy_node);
+		cvmx_helper_set_port_phy_present(xiface, port_index, false);
 	}
 	return 0;
 }
@@ -800,15 +975,18 @@ int __cvmx_helper_board_get_port_from_dt(void *fdt_addr, int ipd_port)
 	uint32_t *val;
 	int phy_node_offset;
 
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+	if (octeon_has_feature(OCTEON_FEATURE_BGX)) {
 		static int fdt_ports_initialized = 0;
 
 		port_index = cvmx_helper_get_interface_index_num(ipd_port);
 
 		if (!fdt_ports_initialized) {
-			if (!__cvmx_helper_parse_78xx_bgx_dt(fdt_addr))
+			if (octeon_has_feature(OCTEON_FEATURE_BGX_XCV))
+				if (!__cvmx_helper_parse_bgx_rgmii_dt(fdt_addr))
+					fdt_ports_initialized = 1;
+			if (!__cvmx_helper_parse_bgx_dt(fdt_addr)) {
 				fdt_ports_initialized = 1;
-			else {
+			} else {
 				cvmx_dprintf("%s: Error parsing FDT\n",
 					     __func__);
 				return -1;
@@ -949,7 +1127,7 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 	if (dbg)
 		cvmx_dprintf("%s(%p, %d)\n", __func__, phy_info, ipd_port);
 
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+	if (octeon_has_feature(OCTEON_FEATURE_BGX))
 		return __cvmx_helper_78xx_parse_phy(phy_info, ipd_port);
 
 	if (fdt_addr == 0)
@@ -1039,8 +1217,13 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 		if (dbg)
 			cvmx_dprintf("Vitesse PHY detected for ipd_port %d\n",
 				     ipd_port);
-		if (!fdt_node_check_compatible(fdt_addr, phy,
-					       "ethernet-phy-ieee802.3-c22")) {
+		if (!fdt_node_check_compatible(fdt_addr, phy, "vitesse,vsc8490")) {
+			phy_info->phy_type = VITESSE_VSC8490_PHY;
+			if (dbg)
+				cvmx_dprintf("Vitesse VSC8490 detected\n");
+			phy_info->link_function = __get_vitesse_vsc8490_phy_link_state;
+		} else if (!fdt_node_check_compatible(fdt_addr, phy,
+						      "ethernet-phy-ieee802.3-c22")) {
 			phy_info->phy_type = GENERIC_8023_C22_PHY;
 			phy_info->link_function =
 					__cvmx_get_generic_8023_c22_phy_link_state;
@@ -1053,6 +1236,11 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
 			if (dbg)
 				cvmx_dprintf("Vitesse 802.3 c45 detected\n");
 		}
+	} else if (!memcmp("aquantia", phy_compatible_str, strlen("aquantia"))) {
+		phy_info->phy_type = AQUANTIA_PHY;
+		phy_info->link_function = __get_aquantia_phy_link_state;
+		if (dbg)
+			cvmx_dprintf("Aquantia c45 PHY detected\n");
 	} else if (!memcmp("cortina", phy_compatible_str, strlen("cortina"))) {
 		phy_info->phy_type = CORTINA_PHY;
 		phy_info->link_function = __cvmx_get_cortina_phy_link_state;
@@ -1189,7 +1377,7 @@ int __get_phy_info_from_dt(cvmx_phy_info_t *phy_info, int ipd_port)
  * This function outputs the cvmx_phy_info_t data structure for the specified
  * port.
  *
- * @param - phy_info - phy info data structure
+ * @param phy_info - phy info data structure
  * @param ipd_port - port to get phy info for
  *
  * @return 0 for success, -1 if info not available
@@ -1516,26 +1704,6 @@ int cvmx_helper_board_get_mii_address(int ipd_port)
 			return 7 - ipd_port;
 		else
 			return -1;
-	case CVMX_BOARD_TYPE_CUST_DSR1000N:
-		/*
-		 * Port 2 connects to Broadcom PHY (B5081). Other ports (0-1)
-		 * connect to a switch (BCM53115).
-		 */
-		if (ipd_port == 2)
-			return 8;
-		else
-			return -1;
-
-	/* can these come purely from of_xxx()?? */
-	case CVMX_BOARD_TYPE_EAP7000_REF:
-	case CVMX_BOARD_TYPE_ROUTER7000_REF:
-		if (ipd_port == 16) /* qca833x = eth1 */
-			return 1;
-		if (ipd_port == 0) /* sgmii at803x = eth0 */
-			return 4;
-		if (ipd_port == 24) /* rgmii at803x = agl0 */
-			return 5;
-		return -1;
 	}
 
 	/* Some unknown board. Somebody forgot to update this function... */
@@ -1563,15 +1731,24 @@ __cvmx_get_cortina_phy_link_state(cvmx_phy_info_t *phy_info)
 	uint32_t bus = phy_addr >> 8;
 	int value;
 	uint32_t id;
-	bool is_cs4223 = false;
 #define CS4XXX_GLOBAL_CHIPID_LSB			0x0000
 #define CS4XXX_GLOBAL_CHIPID_MSB			0x0001
 #define CS4321_GIGEPCS_LINE_STATUS			0xC01
 #define CS4321_GPIO_GPIO_INTS				0x16D
 #define CS4321_GLOBAL_GT_10KHZ_REF_CLK_CNT0		0x2E
 #define CS4223_PP_LINE_SDS_DSP_MSEQ_STATUS		0x1237
+#define CS4223_PP_LINE_SDS_DSP_MSEQ_DUPLEX_LOS_S	(1 << 0)
+#define CS4223_PP_LINE_SDS_DSP_MSEQ_LOCAL_LOS_S		(1 << 1)
+#define CS4223_PP_LINE_SDS_DSP_MSEQ_DUPLEX_LOCKD_S	(1 << 2)
+#define CS4223_PP_LINE_SDS_DSP_MSEQ_LOCAL_LOCD_S	(1 << 3)
+#define CS4223_PP_LINE_SDS_DSP_MSEQ_EXTERNAL_LOS_S	(1 << 4)
 #define CS4223_PP_LINE_SDS_DSP_MSEQ_EDC_CONVERGED	(1 << 5)
 #define CS4223_PP_HOST_SDS_DSP_MSEQ_STATUS		0x1A37
+#define CS4223_PP_HOST_SDS_DSP_MSEQ_DUPLEX_LOS_S	(1 << 0)
+#define CS4223_PP_HOST_SDS_DSP_MSEQ_LOCAL_LOS_S		(1 << 1)
+#define CS4223_PP_HOST_SDS_DSP_MSEQ_DUPLEX_LOCKD_S	(1 << 2)
+#define CS4223_PP_HOST_SDS_DSP_MSEQ_LOCAL_LOCD_S	(1 << 3)
+#define CS4223_PP_HOST_SDS_DSP_MSEQ_EXTERNAL_LOS_S	(1 << 4)
 #define CS4223_PP_HOST_SDS_DSP_MSEQ_EDC_CONVERGED	(1 << 5)
 
 	result.u64 = 0;
@@ -1579,16 +1756,47 @@ __cvmx_get_cortina_phy_link_state(cvmx_phy_info_t *phy_info)
 
 	phy_addr &= 0xff;
 
+	/* Figure out which Cortina/Inphi PHY we're working with */
 	value = cvmx_mdio_45_read(bus, phy_addr, 0, CS4XXX_GLOBAL_CHIPID_LSB);
 	id = value;
 
 	value = cvmx_mdio_45_read(bus, phy_addr, 0, CS4XXX_GLOBAL_CHIPID_MSB);
 	id |= value << 16;
 
-	is_cs4223 = ((id & 0x0FFFFFFF) == 0x000303e5);
+	/* Are we a CS4223/CS4343 PHY? */
+	if ((id & 0x0FFFFFFF) == 0x000303e5) {
+		/* For the CS4223 and CS4343 Cortina PHYs the link information
+		 * is contained in one of the slices.  We use sub-addresses in
+		 * order to calculate the appropriate register offset.
+		 */
+		int slice_off;
+		int xiface;
+		cvmx_helper_interface_mode_t mode;
 
-	if (is_cs4223) {
-		int slice_off = phy_info->phy_sub_addr * 0x1000;
+		/* For XLAUI/40G KR mode we need to check the link of all four
+		 * slices.  If any one of them is down then the entire link is
+		 * down.
+		 */
+		xiface = cvmx_helper_get_interface_num(phy_info->ipd_port);
+		mode = cvmx_helper_interface_get_mode(xiface);
+		if ((mode == CVMX_HELPER_INTERFACE_MODE_XLAUI) ||
+		    (mode == CVMX_HELPER_INTERFACE_MODE_40G_KR4)) {
+			result.s.link_up = 1;
+			for (slice_off = 0; slice_off < 0x4000;
+			     slice_off += 0x1000) {
+				value = cvmx_mdio_45_read(bus, phy_addr, 0,
+							  CS4223_PP_LINE_SDS_DSP_MSEQ_STATUS + slice_off);
+				if (!(value & CS4223_PP_LINE_SDS_DSP_MSEQ_EDC_CONVERGED))
+					result.s.link_up = 0;
+				value = cvmx_mdio_45_read(bus, phy_addr, 0,
+							  CS4223_PP_HOST_SDS_DSP_MSEQ_STATUS + slice_off);
+				if (!(value & CS4223_PP_HOST_SDS_DSP_MSEQ_EDC_CONVERGED))
+					result.s.link_up = 0;
+			}
+			return result;
+		}
+
+		slice_off = phy_info->phy_sub_addr * 0x1000;
 		/* For now we only support 40Gbps for this device. */
 		value = cvmx_mdio_45_read(bus, phy_addr, 0,
 					  CS4223_PP_LINE_SDS_DSP_MSEQ_STATUS + slice_off);
@@ -1601,7 +1809,9 @@ __cvmx_get_cortina_phy_link_state(cvmx_phy_info_t *phy_info)
 		return result;
 	}
 
-	/* Right now to determine the speed we look at the reference clock.
+	/* If we're here we are dealing with a Cortina CS4318 type PHY.
+	 *
+	 * Right now to determine the speed we look at the reference clock.
 	 * There's probably a better way but this should work.  For SGMII
 	 * we use a 100MHz reference clock, for XAUI/RXAUI we use a 156.25MHz
 	 * reference clock.
@@ -1656,6 +1866,91 @@ __get_generic_8023_c45_phy_link_state(cvmx_phy_info_t *phy_info)
 	return result;
 }
 
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+/**
+ * @INTERNAL
+ * Get link state of generic C45 compliant PHYs
+ */
+static cvmx_helper_link_info_t
+__get_vitesse_vsc8490_phy_link_state(cvmx_phy_info_t *phy_info)
+{
+	cvmx_helper_link_info_t result;
+	int phy_status;
+	uint32_t phy_addr = phy_info->phy_addr;
+	int xiface;
+	cvmx_helper_interface_mode_t mode;
+
+	xiface = cvmx_helper_get_interface_num(phy_info->ipd_port);
+	mode = cvmx_helper_interface_get_mode(xiface);
+
+	/* For 10G just use the generic 10G support */
+	if (mode == CVMX_HELPER_INTERFACE_MODE_XAUI ||
+	    mode == CVMX_HELPER_INTERFACE_MODE_RXAUI)
+		return __get_generic_8023_c45_phy_link_state(phy_info);
+
+	phy_status = cvmx_mdio_45_read(phy_addr >> 8, phy_addr & 0xff,
+				       3, 0xe10d);
+
+	result.u64 = 0;
+	if ((phy_status & 0x111) != 0x111)
+		return result;
+
+	result.s.speed = 1000;
+	result.s.full_duplex = 1;
+	result.s.link_up = 1;
+
+	return result;
+}
+
+/**
+ * @INTERNAL
+ * Get link state of Aquantia PHY
+ */
+static cvmx_helper_link_info_t
+__get_aquantia_phy_link_state(cvmx_phy_info_t *phy_info)
+{
+	cvmx_helper_link_info_t result;
+	uint16_t val;
+	uint32_t phy_addr = phy_info->phy_addr;
+	int bus = phy_info->mdio_unit;
+	uint8_t con_state;
+	static const uint16_t speeds[8] =
+		{ 10, 100, 1000, 10000, 2500, 5000, 0, 0 };
+
+	result.u64 = 0;
+
+	/* Read PMA Receive Vendor State 1, bit 0 indicates that the Rx link
+	 * is good
+	 */
+	val = cvmx_mdio_45_read(bus, phy_addr, 0x1, 0xe800);
+	result.s.link_up = !!(val & 1);
+
+	if (!result.s.link_up)
+		return result;
+
+	/* See if we're in autonegotiation training mode */
+
+	/* Read the Autonegation Reserved Vendor Status 1 register */
+	val = cvmx_mdio_45_read(bus, phy_addr, 7, 0xc810);
+	/* Get the connection state, State 4 = connected */
+	con_state = (val >> 9) & 0x1f;
+	if (con_state == 2 || con_state == 3 || con_state == 0xa) {
+		/* We're in autonegotiation mode so pretend the link is down */
+		result.s.link_up = 0;
+		return result;
+	}
+
+	result.s.full_duplex = 1;
+	if (con_state == 4) {
+		val = cvmx_mdio_45_read(bus, phy_addr, 7, 0xc800);
+		result.s.speed = speeds[(val >> 1) & 7];
+	} else {
+		result.s.speed = 1000;
+	}
+	return result;
+}
+#endif
+
 /**
  * @INTERNAL
  * Get link state of marvell PHY
@@ -1682,9 +1977,8 @@ __get_marvell_phy_link_state(cvmx_phy_info_t *phy_info)
 			phy_status |= 1 << 11;
 	}
 
-	/* Only return a link if the PHY has finished auto negotiation
-	   and set the resolved bit (bit 11) */
-	if (phy_status & (1 << 11)) {
+	/* Link is up = Speed/Duplex Resolved + RT-Link Up + G-Link Up. */
+	if ((phy_status & 0x0c08) == 0x0c08) {
 		result.s.link_up = 1;
 		result.s.full_duplex = ((phy_status >> 13) & 1);
 		switch ((phy_status >> 14) & 3) {
@@ -2084,9 +2378,9 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get_from_dt(int ipd_port)
 			case CVMX_HELPER_INTERFACE_MODE_RXAUI:
 			case CVMX_HELPER_INTERFACE_MODE_XAUI:
 			case CVMX_HELPER_INTERFACE_MODE_10G_KR:
+			case CVMX_HELPER_INTERFACE_MODE_XFI:
 				result.s.speed = 10000;
 				break;
-			case CVMX_HELPER_INTERFACE_MODE_XFI:
 			case CVMX_HELPER_INTERFACE_MODE_XLAUI:
 			case CVMX_HELPER_INTERFACE_MODE_40G_KR4:
 				result.s.speed = 40000;
@@ -2094,7 +2388,6 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get_from_dt(int ipd_port)
 			default:
 				break;
 			}
-
 			return result;
 		}
 		phy_info = cvmx_helper_get_port_phy_info(xiface, index);
@@ -2123,7 +2416,7 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get_from_dt(int ipd_port)
 	}
 
 	if (phy_info->phy_addr == -1) {
-		if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		if (octeon_has_feature(OCTEON_FEATURE_BGX)) {
 			if (__cvmx_helper_78xx_parse_phy(phy_info, ipd_port)) {
 				/*cvmx_dprintf("Error parsing PHY info for 78xx for ipd port %d\n",
 					       ipd_port); */
@@ -2317,18 +2610,6 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 		break;
 	case CVMX_BOARD_TYPE_NIC68_4:
 		is_cortina_phy = 1;
-		break;
-	case CVMX_BOARD_TYPE_CUST_DSR1000N:
-		if (ipd_port == 0 || ipd_port == 1) {
-			/* Ports 0 and 1 connect to a switch (BCM53115). */
-			result.s.link_up = 1;
-			result.s.full_duplex = 1;
-			result.s.speed = 1000;
-			return result;
-		} else {
-			/* Port 2 uses a Broadcom PHY (B5081). */
-			is_broadcom_phy = 1;
-		}
 		break;
 	}
 
@@ -2664,8 +2945,7 @@ int __cvmx_helper_board_hardware_enable(int interface)
 				}
 			}
 		}
-	} else if (cvmx_sysinfo_get()->board_type ==
-			CVMX_BOARD_TYPE_UBNT_E100) {
+	} else if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_UBNT_E100) {
 		cvmx_write_csr(CVMX_ASXX_RX_CLK_SETX(0, interface), 0);
 		cvmx_write_csr(CVMX_ASXX_TX_CLK_SETX(0, interface), 0x10);
 		cvmx_write_csr(CVMX_ASXX_RX_CLK_SETX(1, interface), 0);
@@ -2676,14 +2956,62 @@ int __cvmx_helper_board_hardware_enable(int interface)
 	return 0;
 }
 
+
 /**
- * Get the clock type used for the USB block based on board type.
+ * @INTERNAL
+ * Gets the clock type used for the USB block based on board type.
  * Used by the USB code for auto configuration of clock type.
  *
- * Return USB clock type enumeration
+ * @return USB clock type enumeration
  */
 cvmx_helper_board_usb_clock_types_t __cvmx_helper_board_usb_get_clock_type(void)
 {
+#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
+	const void *fdt_addr = CASTPTR(const void *, cvmx_sysinfo_get()->fdt_addr);
+	int nodeoffset;
+	const void *nodep;
+	int len;
+	uint32_t speed = 0;
+	const char *type = NULL;
+
+	if (fdt_addr) {
+		nodeoffset = fdt_path_offset(fdt_addr, "/soc/uctl");
+		if (nodeoffset < 0)
+			nodeoffset = fdt_path_offset(fdt_addr, "/soc/usbn");
+
+		if (nodeoffset >= 0) {
+			nodep = fdt_getprop(fdt_addr, nodeoffset, "refclk-type", &len);
+			if (nodep != NULL && len > 0)
+				type = (const char *)nodep;
+			else
+				type = "unknown";
+			nodep = fdt_getprop(fdt_addr, nodeoffset, "refclk-frequency", &len);
+			if (nodep != NULL && len == sizeof(uint32_t))
+				speed = fdt32_to_cpu(*(int *)nodep);
+			else
+				speed = 0;
+			if (!strcmp(type, "crystal")) {
+				if (speed == 0 || speed == 12000000)
+					return USB_CLOCK_TYPE_CRYSTAL_12;
+				else
+					printf("Warning: invalid crystal speed for USB clock type in FDT\n");
+			} else if (!strcmp(type, "external")) {
+				switch (speed) {
+				case 12000000:
+					return USB_CLOCK_TYPE_REF_12;
+				case 24000000:
+					return USB_CLOCK_TYPE_REF_24;
+				case 0:
+				case 48000000:
+					return USB_CLOCK_TYPE_REF_48;
+				default:
+					printf("Warning: invalid USB clock speed of %u hz in FDT\n", (unsigned int)speed);
+				}
+			} else
+				printf("Warning: invalid USB reference clock type \"%s\" in FDT\n", type ? type : "NULL");
+		}
+	}
+#endif
 	switch (cvmx_sysinfo_get()->board_type) {
 	case CVMX_BOARD_TYPE_BBGW_REF:
 	case CVMX_BOARD_TYPE_LANAI2_A:
@@ -2691,7 +3019,6 @@ cvmx_helper_board_usb_clock_types_t __cvmx_helper_board_usb_get_clock_type(void)
 	case CVMX_BOARD_TYPE_LANAI2_G:
 	case CVMX_BOARD_TYPE_NIC10E_66:
 	case CVMX_BOARD_TYPE_UBNT_E100:
-	case CVMX_BOARD_TYPE_CUST_DSR1000N:
 		return USB_CLOCK_TYPE_CRYSTAL_12;
 	case CVMX_BOARD_TYPE_NIC10E:
 		return USB_CLOCK_TYPE_REF_12;

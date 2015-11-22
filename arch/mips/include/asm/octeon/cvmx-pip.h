@@ -42,7 +42,7 @@
  *
  * Interface to the hardware Packet Input Processing unit.
  *
- * <hr>$Revision: 106617 $<hr>
+ * <hr>$Revision: 115965 $<hr>
  */
 
 #ifndef __CVMX_PIP_H__
@@ -165,49 +165,49 @@ typedef union {
  * Status statistics for a port
  */
 typedef struct {
-	uint32_t dropped_octets;	/**< Inbound octets marked to be dropped by the IPD */
-	uint32_t dropped_packets;
+	uint64_t dropped_octets;	/**< Inbound octets marked to be dropped by the IPD */
+	uint64_t dropped_packets;
 					/**< Inbound packets marked to be dropped by the IPD */
-	uint32_t pci_raw_packets;
+	uint64_t pci_raw_packets;
 					/**< RAW PCI Packets received by PIP per port */
-	uint32_t octets;		/**< Number of octets processed by PIP */
-	uint32_t packets;		/**< Number of packets processed by PIP */
-	uint32_t multicast_packets;
+	uint64_t octets;		/**< Number of octets processed by PIP */
+	uint64_t packets;		/**< Number of packets processed by PIP */
+	uint64_t multicast_packets;
 					/**< Number of indentified L2 multicast packets.
 					Does not include broadcast packets.
 					Only includes packets whose parse mode is
 					SKIP_TO_L2 */
-	uint32_t broadcast_packets;
+	uint64_t broadcast_packets;
 					/**< Number of indentified L2 broadcast packets.
 					Does not include multicast packets.
 					Only includes packets whose parse mode is
 					SKIP_TO_L2 */
-	uint32_t len_64_packets;	/**< Number of 64B packets */
-	uint32_t len_65_127_packets;
+	uint64_t len_64_packets;	/**< Number of 64B packets */
+	uint64_t len_65_127_packets;
 					/**< Number of 65-127B packets */
-	uint32_t len_128_255_packets;
+	uint64_t len_128_255_packets;
 					/**< Number of 128-255B packets */
-	uint32_t len_256_511_packets;
+	uint64_t len_256_511_packets;
 					/**< Number of 256-511B packets */
-	uint32_t len_512_1023_packets;
+	uint64_t len_512_1023_packets;
 					/**< Number of 512-1023B packets */
-	uint32_t len_1024_1518_packets;
+	uint64_t len_1024_1518_packets;
 					/**< Number of 1024-1518B packets */
-	uint32_t len_1519_max_packets;
+	uint64_t len_1519_max_packets;
 					/**< Number of 1519-max packets */
-	uint32_t fcs_align_err_packets;
+	uint64_t fcs_align_err_packets;
 					/**< Number of packets with FCS or Align opcode errors */
-	uint32_t runt_packets;		/**< Number of packets with length < min */
-	uint32_t runt_crc_packets;
+	uint64_t runt_packets;		/**< Number of packets with length < min */
+	uint64_t runt_crc_packets;
 					/**< Number of packets with length < min and FCS error */
-	uint32_t oversize_packets;
+	uint64_t oversize_packets;
 					/**< Number of packets with length > max */
-	uint32_t oversize_crc_packets;
+	uint64_t oversize_crc_packets;
 					/**< Number of packets with length > max and FCS error */
-	uint32_t inb_packets;		/**< Number of packets without GMX/SPX/PCI errors received by PIP */
+	uint64_t inb_packets;		/**< Number of packets without GMX/SPX/PCI errors received by PIP */
 	uint64_t inb_octets;		/**< Total number of octets from all packets received by PIP, including CRC */
-	uint16_t inb_errors;		/**< Number of packets with GMX/SPX/PCI errors received by PIP */
-	uint32_t mcast_l2_red_packets;
+	uint64_t inb_errors;		/**< Number of packets with GMX/SPX/PCI errors received by PIP */
+	uint64_t mcast_l2_red_packets;
 					/**< Number of packets with L2 Multicast DMAC
 					that were dropped due to RED.
 					The HW will consider a packet to be an L2
@@ -216,14 +216,14 @@ typedef struct {
 					packet is not an L2 broadcast packet.
 					Only applies when the parse mode for the packets
 					is SKIP-TO-L2 */
-	uint32_t bcast_l2_red_packets;
+	uint64_t bcast_l2_red_packets;
 					/**< Number of packets with L2 Broadcast DMAC
 					that were dropped due to RED.
 					The HW will consider a packet to be an L2
 					broadcast packet when the 48-bit DMAC is all 1's.
 					Only applies when the parse mode for the packets
 					is SKIP-TO-L2 */
-	uint32_t mcast_l3_red_packets;
+	uint64_t mcast_l3_red_packets;
 					/**< Number of packets with L3 Multicast Dest Address
 					that were dropped due to RED.
 					The HW considers an IPv4 packet to be multicast
@@ -235,7 +235,7 @@ typedef struct {
 					Only applies when the parse mode for the packets
 					is SKIP-TO-L2 and the packet is IP or the parse
 					mode for the packet is SKIP-TO-IP */
-	uint32_t bcast_l3_red_packets;
+	uint64_t bcast_l3_red_packets;
 					/**< Number of packets with L3 Broadcast Dest Address
 					that were dropped due to RED.
 					The HW considers an IPv4 packet to be broadcast

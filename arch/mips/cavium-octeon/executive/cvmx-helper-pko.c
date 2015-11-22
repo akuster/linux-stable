@@ -42,7 +42,7 @@
  *
  * Helper Functions for the PKO
  *
- * $Id: cvmx-helper-pko.c 106502 2014-10-22 16:28:44Z cchavva $
+ * $Id: cvmx-helper-pko.c 115744 2015-04-04 04:36:36Z awilliams $
  */
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
@@ -62,7 +62,7 @@
 #include "cvmx-global-resources.h"
 #endif
 
-//XXX- these config data structures will go away soon!
+/* TODO: XXX- these config data structures will go away soon! */
 static CVMX_SHARED int64_t pko_fpa_config_pool = -1;
 static CVMX_SHARED uint64_t pko_fpa_config_size = 1024;
 static CVMX_SHARED uint64_t pko_fpa_config_count = 0;
@@ -85,7 +85,7 @@ void cvmx_pko_set_cmd_que_pool_config(int64_t pool, uint64_t buffer_size,
 	pko_fpa_config_pool = pool;
 	pko_fpa_config_size = buffer_size;
 	pko_fpa_config_count = buffer_count;
-	
+
 }
 EXPORT_SYMBOL(cvmx_pko_set_cmd_que_pool_config);
 
@@ -178,10 +178,10 @@ int cvmx_helper_pko_init(void)
 	if (rc < 0)
 		return rc;
 #else
-	//#	error "Pool number in kernel not implemented"
+	/* #	error "Pool number in kernel not implemented" */
 #endif
 
-	__cvmx_helper_init_port_config_data();
+	__cvmx_helper_init_port_config_data(0);
 
 	cvmx_pko_hw_init(
 		cvmx_fpa_get_pko_pool(),
@@ -247,11 +247,12 @@ int __cvmx_helper_interface_setup_pko(int interface)
 		ipd_port++;
 	}
 	return 0;
-//NOTE:
-// Now this function is called for all chips including 68xx,
-// but on the 68xx it does not enable multiple pko_iports per
-// eport, while before it was doing 3 pko_iport per eport
-// buf the reason for that is not clear.
+	/* NOTE:
+	 * Now this function is called for all chips including 68xx,
+	 * but on the 68xx it does not enable multiple pko_iports per
+	 * eport, while before it was doing 3 pko_iport per eport
+	 * buf the reason for that is not clear.
+	 */
 }
 
 /**

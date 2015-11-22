@@ -416,7 +416,7 @@ int cvmx_allocate_global_resource_range(struct global_resource_tag tag, uint64_t
 	if (addr == 0) {
 		char tagname[256];
 		__cvmx_get_tagname(&tag, tagname);
-		cvmx_printf("ERROR: %s: cannot find resource %s\n", 
+		cvmx_printf("ERROR: %s: cannot find resource %s\n",
 			__func__, tagname);
 		return -1;
 	}
@@ -602,11 +602,10 @@ void cvmx_global_resources_show(void)
 		rtag.lo = CVMX_RESOURCE_TAG_GET_FIELD(p, lo);
 		rtag.hi = CVMX_RESOURCE_TAG_GET_FIELD(p, hi);
 		__cvmx_get_tagname(&rtag, tagname);
-		if (dbg)
-			cvmx_dprintf("Global Resource tag name: %s Resource Address: %llx\n",
-				     tagname, CAST_ULL(phys_addr));
+		cvmx_dprintf("Global Resource tag name: %s Resource Address: %llx\n",
+			     tagname, CAST_ULL(phys_addr));
 	}
-
+	cvmx_dprintf("<End of Global Resources>\n");
 	__cvmx_global_resource_unlock();
 
 }

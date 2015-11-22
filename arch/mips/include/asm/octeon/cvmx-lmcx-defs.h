@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -53,404 +53,477 @@
 #define __CVMX_LMCX_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_BIST_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_BANK_CONFLICT1(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_BANK_CONFLICT1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000360ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_BANK_CONFLICT1(offset) (CVMX_ADD_IO_SEG(0x0001180088000360ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_BANK_CONFLICT2(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_BANK_CONFLICT2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000368ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_BANK_CONFLICT2(offset) (CVMX_ADD_IO_SEG(0x0001180088000368ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_BIST_CTL(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x0001180088000100ull) + ((block_id) & 0) * 0x60000000ull;
-			break;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 3))
-				return CVMX_ADD_IO_SEG(0x0001180088000100ull) + ((block_id) & 3) * 0x1000000ull;
-			break;
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800880000F0ull) + ((block_id) & 1) * 0x60000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800880000F0ull) + ((offset) & 1) * 0x60000000ull;
 			break;
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
+			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x00011800880000F0ull);
 			break;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180088000100ull) + ((offset) & 0) * 0x60000000ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180088000100ull) + ((offset) & 1) * 0x1000000ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 3))
+				return CVMX_ADD_IO_SEG(0x0001180088000100ull) + ((offset) & 3) * 0x1000000ull;
+			break;
 	}
-	cvmx_warn("CVMX_LMCX_BIST_CTL (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000100ull) + ((block_id) & 3) * 0x1000000ull;
+	cvmx_warn("CVMX_LMCX_BIST_CTL (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000100ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-static inline uint64_t CVMX_LMCX_BIST_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_BIST_CTL(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000100ull) + (block_id) * 0x60000000ull;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000100ull) + (block_id) * 0x1000000ull;
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800880000F0ull) + (block_id) * 0x60000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800880000F0ull) + (offset) * 0x60000000ull;
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00011800880000F0ull);
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180088000100ull) + (offset) * 0x60000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180088000100ull) + (offset) * 0x1000000ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180088000100ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180088000100ull) + (block_id) * 0x1000000ull;
+	return CVMX_ADD_IO_SEG(0x0001180088000100ull) + (offset) * 0x1000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_BIST_RESULT(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_BIST_RESULT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LMCX_BIST_RESULT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880000F8ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_BIST_RESULT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880000F8ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_BIST_RESULT(block_id) (CVMX_ADD_IO_SEG(0x00011800880000F8ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_BIST_RESULT(offset) (CVMX_ADD_IO_SEG(0x00011800880000F8ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CHAR_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CHAR_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_CHAR_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000220ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_CHAR_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000220ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_CHAR_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000220ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_CHAR_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000220ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CHAR_DQ_ERR_COUNT(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CHAR_DQ_ERR_COUNT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_CHAR_DQ_ERR_COUNT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000040ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_CHAR_DQ_ERR_COUNT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000040ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_CHAR_DQ_ERR_COUNT(block_id) (CVMX_ADD_IO_SEG(0x0001180088000040ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_CHAR_DQ_ERR_COUNT(offset) (CVMX_ADD_IO_SEG(0x0001180088000040ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CHAR_MASK0(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CHAR_MASK0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_CHAR_MASK0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000228ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_CHAR_MASK0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000228ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_CHAR_MASK0(block_id) (CVMX_ADD_IO_SEG(0x0001180088000228ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_CHAR_MASK0(offset) (CVMX_ADD_IO_SEG(0x0001180088000228ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CHAR_MASK1(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CHAR_MASK1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_CHAR_MASK1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000230ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_CHAR_MASK1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000230ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_CHAR_MASK1(block_id) (CVMX_ADD_IO_SEG(0x0001180088000230ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_CHAR_MASK1(offset) (CVMX_ADD_IO_SEG(0x0001180088000230ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CHAR_MASK2(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CHAR_MASK2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_CHAR_MASK2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000238ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_CHAR_MASK2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000238ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_CHAR_MASK2(block_id) (CVMX_ADD_IO_SEG(0x0001180088000238ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_CHAR_MASK2(offset) (CVMX_ADD_IO_SEG(0x0001180088000238ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CHAR_MASK3(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CHAR_MASK3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_CHAR_MASK3(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000240ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_CHAR_MASK3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000240ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_CHAR_MASK3(block_id) (CVMX_ADD_IO_SEG(0x0001180088000240ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_CHAR_MASK3(offset) (CVMX_ADD_IO_SEG(0x0001180088000240ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CHAR_MASK4(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CHAR_MASK4(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_CHAR_MASK4(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000318ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_CHAR_MASK4(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000318ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_CHAR_MASK4(block_id) (CVMX_ADD_IO_SEG(0x0001180088000318ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_CHAR_MASK4(offset) (CVMX_ADD_IO_SEG(0x0001180088000318ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_COMP_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_COMP_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_COMP_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000028ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_COMP_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000028ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_COMP_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000028ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_COMP_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000028ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_COMP_CTL2(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_COMP_CTL2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_COMP_CTL2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001B8ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_COMP_CTL2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001B8ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_COMP_CTL2(block_id) (CVMX_ADD_IO_SEG(0x00011800880001B8ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_COMP_CTL2(offset) (CVMX_ADD_IO_SEG(0x00011800880001B8ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CONFIG(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CONFIG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_CONFIG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000188ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_CONFIG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000188ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_CONFIG(block_id) (CVMX_ADD_IO_SEG(0x0001180088000188ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_CONFIG(offset) (CVMX_ADD_IO_SEG(0x0001180088000188ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CONTROL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CONTROL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_CONTROL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000190ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_CONTROL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000190ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_CONTROL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000190ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_CONTROL(offset) (CVMX_ADD_IO_SEG(0x0001180088000190ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000010ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000010ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000010ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000010ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_CTL1(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_CTL1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_CTL1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000090ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_CTL1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000090ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_CTL1(block_id) (CVMX_ADD_IO_SEG(0x0001180088000090ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_CTL1(offset) (CVMX_ADD_IO_SEG(0x0001180088000090ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DCLK_CNT(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DBTRAIN_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_DCLK_CNT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001E0ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_DBTRAIN_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880003F8ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_DCLK_CNT(block_id) (CVMX_ADD_IO_SEG(0x00011800880001E0ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_DBTRAIN_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800880003F8ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DCLK_CNT_HI(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DCLK_CNT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_DCLK_CNT_HI(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000070ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_DCLK_CNT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001E0ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_DCLK_CNT_HI(block_id) (CVMX_ADD_IO_SEG(0x0001180088000070ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_DCLK_CNT(offset) (CVMX_ADD_IO_SEG(0x00011800880001E0ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DCLK_CNT_LO(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DCLK_CNT_HI(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_DCLK_CNT_LO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000068ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_DCLK_CNT_HI(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000070ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_DCLK_CNT_LO(block_id) (CVMX_ADD_IO_SEG(0x0001180088000068ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_DCLK_CNT_HI(offset) (CVMX_ADD_IO_SEG(0x0001180088000070ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DCLK_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DCLK_CNT_LO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LMCX_DCLK_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880000B8ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_DCLK_CNT_LO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000068ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_DCLK_CTL(block_id) (CVMX_ADD_IO_SEG(0x00011800880000B8ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_DCLK_CNT_LO(offset) (CVMX_ADD_IO_SEG(0x0001180088000068ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DDR2_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DCLK_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_DDR2_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000018ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_DCLK_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880000B8ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_DDR2_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000018ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_DCLK_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800880000B8ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DDR4_DIMM_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DDR2_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_DDR4_DIMM_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880003F0ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_DDR2_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000018ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_DDR4_DIMM_CTL(block_id) (CVMX_ADD_IO_SEG(0x00011800880003F0ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_DDR2_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000018ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DDR_PLL_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DDR4_DIMM_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_DDR_PLL_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000258ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_DDR4_DIMM_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880003F0ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_DDR_PLL_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000258ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_DDR4_DIMM_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800880003F0ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DELAY_CFG(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DDR_PLL_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_DELAY_CFG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000088ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_DDR_PLL_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000258ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_DELAY_CFG(block_id) (CVMX_ADD_IO_SEG(0x0001180088000088ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_DDR_PLL_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000258ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_DELAY_CFG(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_DELAY_CFG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000088ull) + ((offset) & 1) * 0x60000000ull;
+}
+#else
+#define CVMX_LMCX_DELAY_CFG(offset) (CVMX_ADD_IO_SEG(0x0001180088000088ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_LMCX_DIMMX_DDR4_PARAMS0(unsigned long offset, unsigned long block_id)
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 1)) && ((block_id == 0)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 3))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 1))))))
 		cvmx_warn("CVMX_LMCX_DIMMX_DDR4_PARAMS0(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800880000D0ull) + (((offset) & 1) + ((block_id) & 3) * 0x200000ull) * 8;
 }
@@ -462,7 +535,9 @@ static inline uint64_t CVMX_LMCX_DIMMX_DDR4_PARAMS1(unsigned long offset, unsign
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 1)) && ((block_id == 0)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 3))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 1))))))
 		cvmx_warn("CVMX_LMCX_DIMMX_DDR4_PARAMS1(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180088000140ull) + (((offset) & 1) + ((block_id) & 3) * 0x200000ull) * 8;
 }
@@ -478,8 +553,10 @@ static inline uint64_t CVMX_LMCX_DIMMX_PARAMS(unsigned long offset, unsigned lon
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && (((offset <= 1)) && ((block_id == 0)))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 1)) && ((block_id == 0)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 1)))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && (((offset <= 1)) && ((block_id == 0))))))
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && (((offset <= 1)) && ((block_id == 0)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 1))))))
 		cvmx_warn("CVMX_LMCX_DIMMX_PARAMS(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180088000270ull) + (((offset) & 1) + ((block_id) & 3) * 0x200000ull) * 8;
 }
@@ -487,133 +564,153 @@ static inline uint64_t CVMX_LMCX_DIMMX_PARAMS(unsigned long offset, unsigned lon
 #define CVMX_LMCX_DIMMX_PARAMS(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180088000270ull) + (((offset) & 1) + ((block_id) & 3) * 0x200000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DIMM_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DIMM_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_DIMM_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000310ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_DIMM_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000310ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_DIMM_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000310ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_DIMM_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000310ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DLL_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DLL_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LMCX_DLL_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880000C0ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_DLL_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880000C0ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_DLL_CTL(block_id) (CVMX_ADD_IO_SEG(0x00011800880000C0ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_DLL_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800880000C0ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DLL_CTL2(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DLL_CTL2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_DLL_CTL2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001C8ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_DLL_CTL2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001C8ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_DLL_CTL2(block_id) (CVMX_ADD_IO_SEG(0x00011800880001C8ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_DLL_CTL2(offset) (CVMX_ADD_IO_SEG(0x00011800880001C8ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DLL_CTL3(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DLL_CTL3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_DLL_CTL3(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000218ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_DLL_CTL3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000218ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_DLL_CTL3(block_id) (CVMX_ADD_IO_SEG(0x0001180088000218ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_DLL_CTL3(offset) (CVMX_ADD_IO_SEG(0x0001180088000218ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_DUAL_MEMCFG(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DUAL_MEMCFG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
-		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x0001180088000098ull) + ((block_id) & 1) * 0x60000000ull;
-			break;
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x0001180088000098ull) + ((block_id) & 0) * 0x60000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180088000098ull) + ((offset) & 0) * 0x60000000ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180088000098ull) + ((offset) & 1) * 0x1000000ull;
 			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 3))
-				return CVMX_ADD_IO_SEG(0x0001180088000098ull) + ((block_id) & 3) * 0x1000000ull;
+			if ((offset <= 3))
+				return CVMX_ADD_IO_SEG(0x0001180088000098ull) + ((offset) & 3) * 0x1000000ull;
+			break;
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180088000098ull) + ((offset) & 1) * 0x60000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_LMCX_DUAL_MEMCFG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000098ull) + ((block_id) & 0) * 0x60000000ull;
+	cvmx_warn("CVMX_LMCX_DUAL_MEMCFG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000098ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-static inline uint64_t CVMX_LMCX_DUAL_MEMCFG(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_DUAL_MEMCFG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
-		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000098ull) + (block_id) * 0x60000000ull;
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000098ull) + (block_id) * 0x60000000ull;
+			return CVMX_ADD_IO_SEG(0x0001180088000098ull) + (offset) * 0x60000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180088000098ull) + (offset) * 0x1000000ull;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000098ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x0001180088000098ull) + (offset) * 0x1000000ull;
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180088000098ull) + (offset) * 0x60000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180088000098ull) + (block_id) * 0x60000000ull;
+	return CVMX_ADD_IO_SEG(0x0001180088000098ull) + (offset) * 0x1000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_ECC_PARITY_TEST(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_ECC_PARITY_TEST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_ECC_PARITY_TEST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000108ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_ECC_PARITY_TEST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000108ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_ECC_PARITY_TEST(block_id) (CVMX_ADD_IO_SEG(0x0001180088000108ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_ECC_PARITY_TEST(offset) (CVMX_ADD_IO_SEG(0x0001180088000108ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_ECC_SYND(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_ECC_SYND(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180088000038ull) + ((offset) & 1) * 0x60000000ull;
+			break;
 		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
@@ -625,26 +722,29 @@ static inline uint64_t CVMX_LMCX_ECC_SYND(unsigned long block_id)
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x0001180088000038ull) + ((block_id) & 0) * 0x60000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180088000038ull) + ((offset) & 0) * 0x60000000ull;
 			break;
-		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x0001180088000038ull) + ((block_id) & 1) * 0x60000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180088000038ull) + ((offset) & 1) * 0x1000000ull;
 			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 3))
-				return CVMX_ADD_IO_SEG(0x0001180088000038ull) + ((block_id) & 3) * 0x1000000ull;
+			if ((offset <= 3))
+				return CVMX_ADD_IO_SEG(0x0001180088000038ull) + ((offset) & 3) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_LMCX_ECC_SYND (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000038ull) + ((block_id) & 0) * 0x60000000ull;
+	cvmx_warn("CVMX_LMCX_ECC_SYND (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000038ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-static inline uint64_t CVMX_LMCX_ECC_SYND(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_ECC_SYND(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180088000038ull) + (offset) * 0x60000000ull;
 		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
@@ -656,32 +756,52 @@ static inline uint64_t CVMX_LMCX_ECC_SYND(unsigned long block_id)
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000038ull) + (block_id) * 0x60000000ull;
-		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000038ull) + (block_id) * 0x60000000ull;
+			return CVMX_ADD_IO_SEG(0x0001180088000038ull) + (offset) * 0x60000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180088000038ull) + (offset) * 0x1000000ull;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000038ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x0001180088000038ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180088000038ull) + (block_id) * 0x60000000ull;
+	return CVMX_ADD_IO_SEG(0x0001180088000038ull) + (offset) * 0x1000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_EXT_CONFIG(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_EXT_CONFIG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_EXT_CONFIG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000030ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_EXT_CONFIG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000030ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_EXT_CONFIG(block_id) (CVMX_ADD_IO_SEG(0x0001180088000030ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_EXT_CONFIG(offset) (CVMX_ADD_IO_SEG(0x0001180088000030ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_FADR(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_EXT_CONFIG2(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_EXT_CONFIG2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000090ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_EXT_CONFIG2(offset) (CVMX_ADD_IO_SEG(0x0001180088000090ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_FADR(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180088000020ull) + ((offset) & 1) * 0x60000000ull;
+			break;
 		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
@@ -693,26 +813,29 @@ static inline uint64_t CVMX_LMCX_FADR(unsigned long block_id)
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x0001180088000020ull) + ((block_id) & 0) * 0x60000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180088000020ull) + ((offset) & 0) * 0x60000000ull;
 			break;
-		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x0001180088000020ull) + ((block_id) & 1) * 0x60000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x0001180088000020ull) + ((offset) & 1) * 0x1000000ull;
 			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 3))
-				return CVMX_ADD_IO_SEG(0x0001180088000020ull) + ((block_id) & 3) * 0x1000000ull;
+			if ((offset <= 3))
+				return CVMX_ADD_IO_SEG(0x0001180088000020ull) + ((offset) & 3) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_LMCX_FADR (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000020ull) + ((block_id) & 0) * 0x60000000ull;
+	cvmx_warn("CVMX_LMCX_FADR (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000020ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-static inline uint64_t CVMX_LMCX_FADR(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_FADR(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180088000020ull) + (offset) * 0x60000000ull;
 		case OCTEON_CN30XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN50XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN38XX & OCTEON_FAMILY_MASK:
@@ -724,106 +847,154 @@ static inline uint64_t CVMX_LMCX_FADR(unsigned long block_id)
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000020ull) + (block_id) * 0x60000000ull;
-		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000020ull) + (block_id) * 0x60000000ull;
+			return CVMX_ADD_IO_SEG(0x0001180088000020ull) + (offset) * 0x60000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180088000020ull) + (offset) * 0x1000000ull;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180088000020ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x0001180088000020ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180088000020ull) + (block_id) * 0x60000000ull;
+	return CVMX_ADD_IO_SEG(0x0001180088000020ull) + (offset) * 0x1000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_IFB_CNT(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_GENERAL_PURPOSE0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_IFB_CNT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001D0ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_GENERAL_PURPOSE0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000340ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_IFB_CNT(block_id) (CVMX_ADD_IO_SEG(0x00011800880001D0ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_GENERAL_PURPOSE0(offset) (CVMX_ADD_IO_SEG(0x0001180088000340ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_IFB_CNT_HI(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_GENERAL_PURPOSE1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_IFB_CNT_HI(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000050ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_GENERAL_PURPOSE1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000348ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_IFB_CNT_HI(block_id) (CVMX_ADD_IO_SEG(0x0001180088000050ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_GENERAL_PURPOSE1(offset) (CVMX_ADD_IO_SEG(0x0001180088000348ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_IFB_CNT_LO(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_GENERAL_PURPOSE2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_IFB_CNT_LO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000048ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_GENERAL_PURPOSE2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000350ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_IFB_CNT_LO(block_id) (CVMX_ADD_IO_SEG(0x0001180088000048ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_GENERAL_PURPOSE2(offset) (CVMX_ADD_IO_SEG(0x0001180088000350ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_INT(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_IFB_CNT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_INT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001F0ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_IFB_CNT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001D0ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_INT(block_id) (CVMX_ADD_IO_SEG(0x00011800880001F0ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_IFB_CNT(offset) (CVMX_ADD_IO_SEG(0x00011800880001D0ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_INT_EN(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_IFB_CNT_HI(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_INT_EN(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001E8ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_IFB_CNT_HI(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000050ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_INT_EN(block_id) (CVMX_ADD_IO_SEG(0x00011800880001E8ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_IFB_CNT_HI(offset) (CVMX_ADD_IO_SEG(0x0001180088000050ull) + ((offset) & 1) * 0x60000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_IFB_CNT_LO(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_IFB_CNT_LO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000048ull) + ((offset) & 1) * 0x60000000ull;
+}
+#else
+#define CVMX_LMCX_IFB_CNT_LO(offset) (CVMX_ADD_IO_SEG(0x0001180088000048ull) + ((offset) & 1) * 0x60000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_INT(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_INT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001F0ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_INT(offset) (CVMX_ADD_IO_SEG(0x00011800880001F0ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_INT_EN(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_INT_EN(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001E8ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_INT_EN(offset) (CVMX_ADD_IO_SEG(0x00011800880001E8ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_LMCX_LANEX_CRC_SWIZ(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 8)) && ((block_id <= 3))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 8)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 8)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 8)) && ((block_id <= 1))))))
 		cvmx_warn("CVMX_LMCX_LANEX_CRC_SWIZ(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180088000380ull) + (((offset) & 15) + ((block_id) & 3) * 0x200000ull) * 8;
 }
@@ -831,153 +1002,178 @@ static inline uint64_t CVMX_LMCX_LANEX_CRC_SWIZ(unsigned long offset, unsigned l
 #define CVMX_LMCX_LANEX_CRC_SWIZ(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180088000380ull) + (((offset) & 15) + ((block_id) & 3) * 0x200000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_MEM_CFG0(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_MEM_CFG0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_MEM_CFG0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000000ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_MEM_CFG0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000000ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_MEM_CFG0(block_id) (CVMX_ADD_IO_SEG(0x0001180088000000ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_MEM_CFG0(offset) (CVMX_ADD_IO_SEG(0x0001180088000000ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_MEM_CFG1(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_MEM_CFG1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_MEM_CFG1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000008ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_MEM_CFG1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000008ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_MEM_CFG1(block_id) (CVMX_ADD_IO_SEG(0x0001180088000008ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_MEM_CFG1(offset) (CVMX_ADD_IO_SEG(0x0001180088000008ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_MODEREG_PARAMS0(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_MODEREG_PARAMS0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_MODEREG_PARAMS0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001A8ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_MODEREG_PARAMS0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001A8ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_MODEREG_PARAMS0(block_id) (CVMX_ADD_IO_SEG(0x00011800880001A8ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_MODEREG_PARAMS0(offset) (CVMX_ADD_IO_SEG(0x00011800880001A8ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_MODEREG_PARAMS1(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_MODEREG_PARAMS1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_MODEREG_PARAMS1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000260ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_MODEREG_PARAMS1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000260ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_MODEREG_PARAMS1(block_id) (CVMX_ADD_IO_SEG(0x0001180088000260ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_MODEREG_PARAMS1(offset) (CVMX_ADD_IO_SEG(0x0001180088000260ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_MODEREG_PARAMS2(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_MODEREG_PARAMS2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_MODEREG_PARAMS2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000050ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_MODEREG_PARAMS2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000050ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_MODEREG_PARAMS2(block_id) (CVMX_ADD_IO_SEG(0x0001180088000050ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_MODEREG_PARAMS2(offset) (CVMX_ADD_IO_SEG(0x0001180088000050ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_MODEREG_PARAMS3(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_MODEREG_PARAMS3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_MODEREG_PARAMS3(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000058ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_MODEREG_PARAMS3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000058ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_MODEREG_PARAMS3(block_id) (CVMX_ADD_IO_SEG(0x0001180088000058ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_MODEREG_PARAMS3(offset) (CVMX_ADD_IO_SEG(0x0001180088000058ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_MPR_DATA0(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_MPR_DATA0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_MPR_DATA0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000070ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_MPR_DATA0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000070ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_MPR_DATA0(block_id) (CVMX_ADD_IO_SEG(0x0001180088000070ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_MPR_DATA0(offset) (CVMX_ADD_IO_SEG(0x0001180088000070ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_MPR_DATA1(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_MPR_DATA1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_MPR_DATA1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000078ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_MPR_DATA1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000078ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_MPR_DATA1(block_id) (CVMX_ADD_IO_SEG(0x0001180088000078ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_MPR_DATA1(offset) (CVMX_ADD_IO_SEG(0x0001180088000078ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_MPR_DATA2(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_MPR_DATA2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_MPR_DATA2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000080ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_MPR_DATA2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000080ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_MPR_DATA2(block_id) (CVMX_ADD_IO_SEG(0x0001180088000080ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_MPR_DATA2(offset) (CVMX_ADD_IO_SEG(0x0001180088000080ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_MR_MPR_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_MR_MPR_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_MR_MPR_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000068ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_MR_MPR_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000068ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_MR_MPR_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000068ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_MR_MPR_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000068ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_NXM(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_NS_CTL(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_NS_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000178ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_NS_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000178ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_NXM(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
-		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + ((block_id) & 1) * 0x60000000ull;
-			break;
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
@@ -985,24 +1181,31 @@ static inline uint64_t CVMX_LMCX_NXM(unsigned long block_id)
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + ((block_id) & 0) * 0x60000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + ((offset) & 0) * 0x60000000ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + ((offset) & 1) * 0x1000000ull;
 			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 3))
-				return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + ((block_id) & 3) * 0x1000000ull;
+			if ((offset <= 3))
+				return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + ((offset) & 3) * 0x1000000ull;
+			break;
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + ((offset) & 1) * 0x60000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_LMCX_NXM (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + ((block_id) & 0) * 0x60000000ull;
+	cvmx_warn("CVMX_LMCX_NXM (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-static inline uint64_t CVMX_LMCX_NXM(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_NXM(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
-		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + (block_id) * 0x60000000ull;
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
@@ -1010,158 +1213,194 @@ static inline uint64_t CVMX_LMCX_NXM(unsigned long block_id)
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN58XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + (block_id) * 0x60000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + (offset) * 0x60000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + (offset) * 0x1000000ull;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + (offset) * 0x1000000ull;
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + (offset) * 0x60000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + (block_id) * 0x60000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + (offset) * 0x1000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_NXM_FADR(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_NXM_FADR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_NXM_FADR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000028ull) + ((block_id) & 3) * 0x1000000ull;
-}
-#else
-#define CVMX_LMCX_NXM_FADR(block_id) (CVMX_ADD_IO_SEG(0x0001180088000028ull) + ((block_id) & 3) * 0x1000000ull)
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_OPS_CNT(unsigned long block_id)
-{
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_OPS_CNT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001D8ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_NXM_FADR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000028ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_OPS_CNT(block_id) (CVMX_ADD_IO_SEG(0x00011800880001D8ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_NXM_FADR(offset) (CVMX_ADD_IO_SEG(0x0001180088000028ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_OPS_CNT_HI(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_OPS_CNT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_OPS_CNT_HI(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000060ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_OPS_CNT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001D8ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_OPS_CNT_HI(block_id) (CVMX_ADD_IO_SEG(0x0001180088000060ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_OPS_CNT(offset) (CVMX_ADD_IO_SEG(0x00011800880001D8ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_OPS_CNT_LO(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_OPS_CNT_HI(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_OPS_CNT_LO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000058ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_OPS_CNT_HI(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000060ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_OPS_CNT_LO(block_id) (CVMX_ADD_IO_SEG(0x0001180088000058ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_OPS_CNT_HI(offset) (CVMX_ADD_IO_SEG(0x0001180088000060ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_PHY_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_OPS_CNT_LO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_PHY_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000210ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_OPS_CNT_LO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000058ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_PHY_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000210ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_OPS_CNT_LO(offset) (CVMX_ADD_IO_SEG(0x0001180088000058ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_PLL_BWCTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_PHY_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_PLL_BWCTL(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_PHY_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000210ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_PHY_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000210ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_PHY_CTL2(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_PHY_CTL2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000250ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_PHY_CTL2(offset) (CVMX_ADD_IO_SEG(0x0001180088000250ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_PLL_BWCTL(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_PLL_BWCTL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180088000040ull);
 }
 #else
-#define CVMX_LMCX_PLL_BWCTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000040ull))
+#define CVMX_LMCX_PLL_BWCTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000040ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_PLL_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_PLL_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_PLL_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880000A8ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_PLL_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880000A8ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_PLL_CTL(block_id) (CVMX_ADD_IO_SEG(0x00011800880000A8ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_PLL_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800880000A8ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_PLL_STATUS(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_PLL_STATUS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_PLL_STATUS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880000B0ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_PLL_STATUS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880000B0ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_PLL_STATUS(block_id) (CVMX_ADD_IO_SEG(0x00011800880000B0ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_PLL_STATUS(offset) (CVMX_ADD_IO_SEG(0x00011800880000B0ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_READ_LEVEL_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_PPR_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LMCX_READ_LEVEL_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000140ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_PPR_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880003E0ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_READ_LEVEL_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000140ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_PPR_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800880003E0ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_READ_LEVEL_DBG(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_READ_LEVEL_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LMCX_READ_LEVEL_DBG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000148ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_READ_LEVEL_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000140ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_READ_LEVEL_DBG(block_id) (CVMX_ADD_IO_SEG(0x0001180088000148ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_READ_LEVEL_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000140ull) + ((offset) & 1) * 0x60000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_READ_LEVEL_DBG(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_READ_LEVEL_DBG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000148ull) + ((offset) & 1) * 0x60000000ull;
+}
+#else
+#define CVMX_LMCX_READ_LEVEL_DBG(offset) (CVMX_ADD_IO_SEG(0x0001180088000148ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_LMCX_READ_LEVEL_RANKX(unsigned long offset, unsigned long block_id)
@@ -1176,55 +1415,100 @@ static inline uint64_t CVMX_LMCX_READ_LEVEL_RANKX(unsigned long offset, unsigned
 #define CVMX_LMCX_READ_LEVEL_RANKX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180088000100ull) + (((offset) & 3) + ((block_id) & 1) * 0xC000000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_RESET_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_REF_STATUS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_RESET_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000180ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_REF_STATUS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880000A0ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_RESET_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000180ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_REF_STATUS(offset) (CVMX_ADD_IO_SEG(0x00011800880000A0ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_RLEVEL_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_RESET_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_RLEVEL_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880002A0ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_RESET_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000180ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_RLEVEL_CTL(block_id) (CVMX_ADD_IO_SEG(0x00011800880002A0ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_RESET_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000180ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_RLEVEL_DBG(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_RETRY_CONFIG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_RLEVEL_DBG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880002A8ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_RETRY_CONFIG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000110ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_RLEVEL_DBG(block_id) (CVMX_ADD_IO_SEG(0x00011800880002A8ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_RETRY_CONFIG(offset) (CVMX_ADD_IO_SEG(0x0001180088000110ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_RETRY_STATUS(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_RETRY_STATUS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000118ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_RETRY_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180088000118ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_RLEVEL_CTL(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_RLEVEL_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880002A0ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_RLEVEL_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800880002A0ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_RLEVEL_DBG(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_RLEVEL_DBG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880002A8ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_RLEVEL_DBG(offset) (CVMX_ADD_IO_SEG(0x00011800880002A8ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_LMCX_RLEVEL_RANKX(unsigned long offset, unsigned long block_id)
@@ -1235,8 +1519,10 @@ static inline uint64_t CVMX_LMCX_RLEVEL_RANKX(unsigned long offset, unsigned lon
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && (((offset <= 3)) && ((block_id == 0)))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && (((offset <= 3)) && ((block_id <= 3)))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 3)) && ((block_id == 0)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 1)))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 3)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && (((offset <= 3)) && ((block_id == 0))))))
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && (((offset <= 3)) && ((block_id == 0)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 1))))))
 		cvmx_warn("CVMX_LMCX_RLEVEL_RANKX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180088000280ull) + (((offset) & 3) + ((block_id) & 3) * 0x200000ull) * 8;
 }
@@ -1244,275 +1530,340 @@ static inline uint64_t CVMX_LMCX_RLEVEL_RANKX(unsigned long offset, unsigned lon
 #define CVMX_LMCX_RLEVEL_RANKX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180088000280ull) + (((offset) & 3) + ((block_id) & 3) * 0x200000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_RODT_COMP_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_RODT_COMP_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_RODT_COMP_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880000A0ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_RODT_COMP_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880000A0ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_RODT_COMP_CTL(block_id) (CVMX_ADD_IO_SEG(0x00011800880000A0ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_RODT_COMP_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800880000A0ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_RODT_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_RODT_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_RODT_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000078ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_RODT_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000078ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_RODT_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000078ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_RODT_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000078ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_RODT_MASK(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_RODT_MASK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_RODT_MASK(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000268ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_RODT_MASK(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000268ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_RODT_MASK(block_id) (CVMX_ADD_IO_SEG(0x0001180088000268ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_RODT_MASK(offset) (CVMX_ADD_IO_SEG(0x0001180088000268ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_SCRAMBLED_FADR(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_SCRAMBLED_FADR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_SCRAMBLED_FADR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000330ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_SCRAMBLED_FADR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000330ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_SCRAMBLED_FADR(block_id) (CVMX_ADD_IO_SEG(0x0001180088000330ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_SCRAMBLED_FADR(offset) (CVMX_ADD_IO_SEG(0x0001180088000330ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_SCRAMBLE_CFG0(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_SCRAMBLE_CFG0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_SCRAMBLE_CFG0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000320ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_SCRAMBLE_CFG0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000320ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_SCRAMBLE_CFG0(block_id) (CVMX_ADD_IO_SEG(0x0001180088000320ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_SCRAMBLE_CFG0(offset) (CVMX_ADD_IO_SEG(0x0001180088000320ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_SCRAMBLE_CFG1(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_SCRAMBLE_CFG1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_SCRAMBLE_CFG1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000328ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_SCRAMBLE_CFG1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000328ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_SCRAMBLE_CFG1(block_id) (CVMX_ADD_IO_SEG(0x0001180088000328ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_SCRAMBLE_CFG1(offset) (CVMX_ADD_IO_SEG(0x0001180088000328ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_SEQ_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_SCRAMBLE_CFG2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_SEQ_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000048ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_SCRAMBLE_CFG2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000338ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_SEQ_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000048ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_SCRAMBLE_CFG2(offset) (CVMX_ADD_IO_SEG(0x0001180088000338ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_SLOT_CTL0(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_SEQ_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_SLOT_CTL0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001F8ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_SEQ_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000048ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_SLOT_CTL0(block_id) (CVMX_ADD_IO_SEG(0x00011800880001F8ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_SEQ_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000048ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_SLOT_CTL1(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_SLOT_CTL0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_SLOT_CTL1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000200ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_SLOT_CTL0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001F8ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_SLOT_CTL1(block_id) (CVMX_ADD_IO_SEG(0x0001180088000200ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_SLOT_CTL0(offset) (CVMX_ADD_IO_SEG(0x00011800880001F8ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_SLOT_CTL2(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_SLOT_CTL1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_SLOT_CTL2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000208ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_SLOT_CTL1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000200ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_SLOT_CTL2(block_id) (CVMX_ADD_IO_SEG(0x0001180088000208ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_SLOT_CTL1(offset) (CVMX_ADD_IO_SEG(0x0001180088000200ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_TIMING_PARAMS0(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_SLOT_CTL2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_TIMING_PARAMS0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000198ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_SLOT_CTL2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000208ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_TIMING_PARAMS0(block_id) (CVMX_ADD_IO_SEG(0x0001180088000198ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_SLOT_CTL2(offset) (CVMX_ADD_IO_SEG(0x0001180088000208ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_TIMING_PARAMS1(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_SLOT_CTL3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_TIMING_PARAMS1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001A0ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_SLOT_CTL3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000248ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_TIMING_PARAMS1(block_id) (CVMX_ADD_IO_SEG(0x00011800880001A0ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_SLOT_CTL3(offset) (CVMX_ADD_IO_SEG(0x0001180088000248ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_TIMING_PARAMS2(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_TIMING_PARAMS0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_LMCX_TIMING_PARAMS2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000060ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_TIMING_PARAMS0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000198ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_TIMING_PARAMS2(block_id) (CVMX_ADD_IO_SEG(0x0001180088000060ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_TIMING_PARAMS0(offset) (CVMX_ADD_IO_SEG(0x0001180088000198ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_TRO_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_TIMING_PARAMS1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_TRO_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000248ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_TIMING_PARAMS1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001A0ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_TRO_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000248ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_TIMING_PARAMS1(offset) (CVMX_ADD_IO_SEG(0x00011800880001A0ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_TRO_STAT(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_TIMING_PARAMS2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_TRO_STAT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000250ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_TIMING_PARAMS2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000060ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_TRO_STAT(block_id) (CVMX_ADD_IO_SEG(0x0001180088000250ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_TIMING_PARAMS2(offset) (CVMX_ADD_IO_SEG(0x0001180088000060ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_WLEVEL_CTL(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_TRO_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_WLEVEL_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000300ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_TRO_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000248ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_WLEVEL_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000300ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_TRO_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000248ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_WLEVEL_DBG(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_TRO_STAT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_WLEVEL_DBG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000308ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_TRO_STAT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000250ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_WLEVEL_DBG(block_id) (CVMX_ADD_IO_SEG(0x0001180088000308ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_TRO_STAT(offset) (CVMX_ADD_IO_SEG(0x0001180088000250ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_WLEVEL_CTL(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_WLEVEL_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000300ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_WLEVEL_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180088000300ull) + ((offset) & 3) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_LMCX_WLEVEL_DBG(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_WLEVEL_DBG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000308ull) + ((offset) & 3) * 0x1000000ull;
+}
+#else
+#define CVMX_LMCX_WLEVEL_DBG(offset) (CVMX_ADD_IO_SEG(0x0001180088000308ull) + ((offset) & 3) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_LMCX_WLEVEL_RANKX(unsigned long offset, unsigned long block_id)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if (((offset <= 3)) && ((block_id == 0)))
+				return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + (((offset) & 3) + ((block_id) & 0) * 0x200000ull) * 8;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if (((offset <= 3)) && ((block_id <= 1)))
+				return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + (((offset) & 3) + ((block_id) & 1) * 0x200000ull) * 8;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if (((offset <= 3)) && ((block_id <= 3)))
+				return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + (((offset) & 3) + ((block_id) & 3) * 0x200000ull) * 8;
+			break;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 			if (((offset <= 3)) && ((block_id == 0)))
@@ -1527,22 +1878,21 @@ static inline uint64_t CVMX_LMCX_WLEVEL_RANKX(unsigned long offset, unsigned lon
 			if (((offset <= 3)) && ((block_id <= 3)))
 				return CVMX_ADD_IO_SEG(0x00011800880002B0ull) + (((offset) & 3) + ((block_id) & 3) * 0x200000ull) * 8;
 			break;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			if (((offset <= 3)) && ((block_id == 0)))
-				return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + (((offset) & 3) + ((block_id) & 0) * 0x200000ull) * 8;
-			break;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if (((offset <= 3)) && ((block_id <= 3)))
-				return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + (((offset) & 3) + ((block_id) & 3) * 0x200000ull) * 8;
-			break;
 	}
 	cvmx_warn("CVMX_LMCX_WLEVEL_RANKX (%lu, %lu) not supported on this chip\n", offset, block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880002B0ull) + (((offset) & 3) + ((block_id) & 0) * 0x200000ull) * 8;
+	return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + (((offset) & 3) + ((block_id) & 1) * 0x200000ull) * 8;
 }
 #else
 static inline uint64_t CVMX_LMCX_WLEVEL_RANKX(unsigned long offset, unsigned long block_id)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + ((offset) + (block_id) * 0x200000ull) * 8;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + ((offset) + (block_id) * 0x200000ull) * 8;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + ((offset) + (block_id) * 0x200000ull) * 8;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00011800880002B0ull) + ((offset) + (block_id) * 0x0ull) * 8;
@@ -1551,62 +1901,106 @@ static inline uint64_t CVMX_LMCX_WLEVEL_RANKX(unsigned long offset, unsigned lon
 			return CVMX_ADD_IO_SEG(0x00011800880002B0ull) + ((offset) + (block_id) * 0x200000ull) * 8;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00011800880002B0ull) + ((offset) + (block_id) * 0x200000ull) * 8;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + ((offset) + (block_id) * 0x200000ull) * 8;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + ((offset) + (block_id) * 0x200000ull) * 8;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800880002B0ull) + ((offset) + (block_id) * 0x200000ull) * 8;
+	return CVMX_ADD_IO_SEG(0x00011800880002C0ull) + ((offset) + (block_id) * 0x200000ull) * 8;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_WODT_CTL0(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_WODT_CTL0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_WODT_CTL0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000030ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN38XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN50XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN58XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_LMCX_WODT_CTL0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000030ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_WODT_CTL0(block_id) (CVMX_ADD_IO_SEG(0x0001180088000030ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_WODT_CTL0(offset) (CVMX_ADD_IO_SEG(0x0001180088000030ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_WODT_CTL1(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_WODT_CTL1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LMCX_WODT_CTL1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180088000080ull) + ((block_id) & 1) * 0x60000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN30XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN31XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN52XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN56XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_WODT_CTL1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180088000080ull) + ((offset) & 1) * 0x60000000ull;
 }
 #else
-#define CVMX_LMCX_WODT_CTL1(block_id) (CVMX_ADD_IO_SEG(0x0001180088000080ull) + ((block_id) & 1) * 0x60000000ull)
+#define CVMX_LMCX_WODT_CTL1(offset) (CVMX_ADD_IO_SEG(0x0001180088000080ull) + ((offset) & 1) * 0x60000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LMCX_WODT_MASK(unsigned long block_id)
+static inline uint64_t CVMX_LMCX_WODT_MASK(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_LMCX_WODT_MASK(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800880001B0ull) + ((block_id) & 3) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LMCX_WODT_MASK(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800880001B0ull) + ((offset) & 3) * 0x1000000ull;
 }
 #else
-#define CVMX_LMCX_WODT_MASK(block_id) (CVMX_ADD_IO_SEG(0x00011800880001B0ull) + ((block_id) & 3) * 0x1000000ull)
+#define CVMX_LMCX_WODT_MASK(offset) (CVMX_ADD_IO_SEG(0x00011800880001B0ull) + ((offset) & 3) * 0x1000000ull)
 #endif
+
+/**
+ * cvmx_lmc#_bank_conflict1
+ *
+ * Added in pass 2.0.
+ *
+ */
+union cvmx_lmcx_bank_conflict1 {
+	uint64_t u64;
+	struct cvmx_lmcx_bank_conflict1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t cnt                          : 64; /**< Bank conflict counter. A 64-bit counter that increments at every dclk
+                                                         cycles when LMC could not issue R/W operations to the DRAM due to
+                                                         bank conflict. This increments when all 8 In-Flight buffers are not
+                                                         utilized. */
+#else
+	uint64_t cnt                          : 64;
+#endif
+	} s;
+	struct cvmx_lmcx_bank_conflict1_s     cn78xxp2;
+	struct cvmx_lmcx_bank_conflict1_s     cnf75xx;
+};
+typedef union cvmx_lmcx_bank_conflict1 cvmx_lmcx_bank_conflict1_t;
+
+/**
+ * cvmx_lmc#_bank_conflict2
+ *
+ * Added in pass 2.0.
+ *
+ */
+union cvmx_lmcx_bank_conflict2 {
+	uint64_t u64;
+	struct cvmx_lmcx_bank_conflict2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t cnt                          : 64; /**< Bank conflict counter. A 64-bit counter that increments at every dclk
+                                                         cycles when LMC could not issue R/W operations to the DRAM due to
+                                                         bank conflict. This increments only when there are less than 4 In-Flight
+                                                         buffers occupied. */
+#else
+	uint64_t cnt                          : 64;
+#endif
+	} s;
+	struct cvmx_lmcx_bank_conflict2_s     cn78xxp2;
+	struct cvmx_lmcx_bank_conflict2_s     cnf75xx;
+};
+typedef union cvmx_lmcx_bank_conflict2 cvmx_lmcx_bank_conflict2_t;
 
 /**
  * cvmx_lmc#_bist_ctl
@@ -1618,17 +2012,21 @@ union cvmx_lmcx_bist_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_bist_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_4_63                : 60;
+	uint64_t reserved_5_63                : 59;
+	uint64_t macram_bist_status           : 1;  /**< Maximum Activate Counts RAM BIST status.
+                                                         1 means fail. */
 	uint64_t dlcram_bist_status           : 1;  /**< DLC RAM BIST status; 1 means fail. */
-	uint64_t dlcram_bist_done             : 1;  /**< DLC RAM BIST complete indication; 1 means complete. */
-	uint64_t start_bist                   : 1;  /**< Start BIST on DLC memory. */
+	uint64_t dlcram_bist_done             : 1;  /**< DLC and MAC RAM BIST complete indication;
+                                                         1 means both RAMs have completed. */
+	uint64_t start_bist                   : 1;  /**< Start BIST on DLC and MAC memory. */
 	uint64_t reserved_0_0                 : 1;
 #else
 	uint64_t reserved_0_0                 : 1;
 	uint64_t start_bist                   : 1;
 	uint64_t dlcram_bist_done             : 1;
 	uint64_t dlcram_bist_status           : 1;
-	uint64_t reserved_4_63                : 60;
+	uint64_t macram_bist_status           : 1;
+	uint64_t reserved_5_63                : 59;
 #endif
 	} s;
 	struct cvmx_lmcx_bist_ctl_cn50xx {
@@ -1660,7 +2058,28 @@ union cvmx_lmcx_bist_ctl {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_bist_ctl_cn70xx      cn70xxp1;
-	struct cvmx_lmcx_bist_ctl_cn70xx      cn78xx;
+	struct cvmx_lmcx_bist_ctl_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_5_63                : 59;
+	uint64_t macram_bist_status           : 1;  /**< Maximum Activate Counts RAM BIST status.
+                                                         1 means fail. */
+	uint64_t dlcram_bist_status           : 1;  /**< DLC RAM BIST status; 1 means fail. */
+	uint64_t dlcram_bist_done             : 1;  /**< DLC and MAC RAM BIST complete indication;
+                                                         1 means both RAMs have completed. */
+	uint64_t start_bist                   : 1;  /**< Start BIST on DLC and MAC memory. */
+	uint64_t clear_bist                   : 1;  /**< Start clear BIST on DLC and MAC memory. */
+#else
+	uint64_t clear_bist                   : 1;
+	uint64_t start_bist                   : 1;
+	uint64_t dlcram_bist_done             : 1;
+	uint64_t dlcram_bist_status           : 1;
+	uint64_t macram_bist_status           : 1;
+	uint64_t reserved_5_63                : 59;
+#endif
+	} cn73xx;
+	struct cvmx_lmcx_bist_ctl_cn73xx      cn78xx;
+	struct cvmx_lmcx_bist_ctl_cn73xx      cn78xxp2;
+	struct cvmx_lmcx_bist_ctl_cn73xx      cnf75xx;
 };
 typedef union cvmx_lmcx_bist_ctl cvmx_lmcx_bist_ctl_t;
 
@@ -1728,7 +2147,9 @@ union cvmx_lmcx_char_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_char_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_53_63               : 11;
+	uint64_t reserved_54_63               : 10;
+	uint64_t dq_char_byte_check           : 1;  /**< When set, LMC perform loopback pattern check on a byte. The selection of the byte is
+                                                         controlled by the LMC()_CHAR_CTL[CSR DQ_CHAR_BYTE_SEL]. */
 	uint64_t dq_char_check_lock           : 1;  /**< Indicates if a lock has been achieved. Is set to 1 only if a lock is achieved during the
                                                          LFSR priming period after DQ_CHAR_CHECK_ENABLE is set to 1, and is forced back to 0 when
                                                          DQ_CHAR_CHECK_ENABLE is set to 0. */
@@ -1736,14 +2157,12 @@ union cvmx_lmcx_char_ctl {
                                                          LMC()_CHAR_DQ_ERR_COUNT. */
 	uint64_t dq_char_bit_sel              : 3;  /**< Select a bit within the byte for DQ characterization pattern check. */
 	uint64_t dq_char_byte_sel             : 4;  /**< Select a byte of data for DQ characterization pattern check. */
-	uint64_t dr                           : 1;  /**< Pattern at Data Rate (not Clock Rate) */
-	uint64_t skew_on                      : 1;  /**< Skew adjacent bits */
-	uint64_t en                           : 1;  /**< Enable characterization */
-	uint64_t sel                          : 1;  /**< Pattern select
-                                                         0 = PRBS
-                                                         1 = Programmable pattern */
-	uint64_t prog                         : 8;  /**< Programmable pattern */
-	uint64_t prbs                         : 32; /**< PRBS Polynomial */
+	uint64_t dr                           : 1;  /**< Pattern at data rate (not clock rate). */
+	uint64_t skew_on                      : 1;  /**< Skew adjacent bits. */
+	uint64_t en                           : 1;  /**< Enable characterization. */
+	uint64_t sel                          : 1;  /**< Pattern select: 0 = PRBS, 1 = programmable pattern. */
+	uint64_t prog                         : 8;  /**< Programmable pattern. */
+	uint64_t prbs                         : 32; /**< PRBS polynomial. */
 #else
 	uint64_t prbs                         : 32;
 	uint64_t prog                         : 8;
@@ -1755,7 +2174,8 @@ union cvmx_lmcx_char_ctl {
 	uint64_t dq_char_bit_sel              : 3;
 	uint64_t dq_char_check_enable         : 1;
 	uint64_t dq_char_check_lock           : 1;
-	uint64_t reserved_53_63               : 11;
+	uint64_t dq_char_byte_check           : 1;
+	uint64_t reserved_54_63               : 10;
 #endif
 	} s;
 	struct cvmx_lmcx_char_ctl_cn61xx {
@@ -1800,10 +2220,42 @@ union cvmx_lmcx_char_ctl {
 	struct cvmx_lmcx_char_ctl_cn61xx      cn66xx;
 	struct cvmx_lmcx_char_ctl_cn61xx      cn68xx;
 	struct cvmx_lmcx_char_ctl_cn63xx      cn68xxp1;
-	struct cvmx_lmcx_char_ctl_s           cn70xx;
-	struct cvmx_lmcx_char_ctl_s           cn70xxp1;
+	struct cvmx_lmcx_char_ctl_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_53_63               : 11;
+	uint64_t dq_char_check_lock           : 1;  /**< Indicates if a lock has been achieved. Is set to 1 only if a lock is achieved during the
+                                                         LFSR priming period after DQ_CHAR_CHECK_ENABLE is set to 1, and is forced back to 0 when
+                                                         DQ_CHAR_CHECK_ENABLE is set to 0. */
+	uint64_t dq_char_check_enable         : 1;  /**< Enable DQ pattern check. The transition from disabled to enabled clears
+                                                         LMC(0..0)_CHAR_DQ_ERR_COUNT. */
+	uint64_t dq_char_bit_sel              : 3;  /**< Select a bit within the byte for DQ characterization pattern check. */
+	uint64_t dq_char_byte_sel             : 4;  /**< Select a byte of data for DQ characterization pattern check. */
+	uint64_t dr                           : 1;  /**< Pattern at data rate (not clock rate). */
+	uint64_t skew_on                      : 1;  /**< Skew adjacent bits. */
+	uint64_t en                           : 1;  /**< Enable characterization. */
+	uint64_t sel                          : 1;  /**< Pattern select: 0 = PRBS, 1 = programmable pattern. */
+	uint64_t prog                         : 8;  /**< Programmable pattern. */
+	uint64_t prbs                         : 32; /**< PRBS polynomial. */
+#else
+	uint64_t prbs                         : 32;
+	uint64_t prog                         : 8;
+	uint64_t sel                          : 1;
+	uint64_t en                           : 1;
+	uint64_t skew_on                      : 1;
+	uint64_t dr                           : 1;
+	uint64_t dq_char_byte_sel             : 4;
+	uint64_t dq_char_bit_sel              : 3;
+	uint64_t dq_char_check_enable         : 1;
+	uint64_t dq_char_check_lock           : 1;
+	uint64_t reserved_53_63               : 11;
+#endif
+	} cn70xx;
+	struct cvmx_lmcx_char_ctl_cn70xx      cn70xxp1;
+	struct cvmx_lmcx_char_ctl_s           cn73xx;
 	struct cvmx_lmcx_char_ctl_s           cn78xx;
+	struct cvmx_lmcx_char_ctl_s           cn78xxp2;
 	struct cvmx_lmcx_char_ctl_cn61xx      cnf71xx;
+	struct cvmx_lmcx_char_ctl_s           cnf75xx;
 };
 typedef union cvmx_lmcx_char_ctl cvmx_lmcx_char_ctl_t;
 
@@ -1826,7 +2278,10 @@ union cvmx_lmcx_char_dq_err_count {
 	} s;
 	struct cvmx_lmcx_char_dq_err_count_s  cn70xx;
 	struct cvmx_lmcx_char_dq_err_count_s  cn70xxp1;
+	struct cvmx_lmcx_char_dq_err_count_s  cn73xx;
 	struct cvmx_lmcx_char_dq_err_count_s  cn78xx;
+	struct cvmx_lmcx_char_dq_err_count_s  cn78xxp2;
+	struct cvmx_lmcx_char_dq_err_count_s  cnf75xx;
 };
 typedef union cvmx_lmcx_char_dq_err_count cvmx_lmcx_char_dq_err_count_t;
 
@@ -1840,7 +2295,7 @@ union cvmx_lmcx_char_mask0 {
 	uint64_t u64;
 	struct cvmx_lmcx_char_mask0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t mask                         : 64; /**< Mask for DQ0[63:0] */
+	uint64_t mask                         : 64; /**< Mask for DQ0<63:0>. */
 #else
 	uint64_t mask                         : 64;
 #endif
@@ -1853,8 +2308,11 @@ union cvmx_lmcx_char_mask0 {
 	struct cvmx_lmcx_char_mask0_s         cn68xxp1;
 	struct cvmx_lmcx_char_mask0_s         cn70xx;
 	struct cvmx_lmcx_char_mask0_s         cn70xxp1;
+	struct cvmx_lmcx_char_mask0_s         cn73xx;
 	struct cvmx_lmcx_char_mask0_s         cn78xx;
+	struct cvmx_lmcx_char_mask0_s         cn78xxp2;
 	struct cvmx_lmcx_char_mask0_s         cnf71xx;
+	struct cvmx_lmcx_char_mask0_s         cnf75xx;
 };
 typedef union cvmx_lmcx_char_mask0 cvmx_lmcx_char_mask0_t;
 
@@ -1869,7 +2327,7 @@ union cvmx_lmcx_char_mask1 {
 	struct cvmx_lmcx_char_mask1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
-	uint64_t mask                         : 8;  /**< Mask for DQ0[71:64] */
+	uint64_t mask                         : 8;  /**< Mask for DQ0<71:64>. */
 #else
 	uint64_t mask                         : 8;
 	uint64_t reserved_8_63                : 56;
@@ -1883,8 +2341,11 @@ union cvmx_lmcx_char_mask1 {
 	struct cvmx_lmcx_char_mask1_s         cn68xxp1;
 	struct cvmx_lmcx_char_mask1_s         cn70xx;
 	struct cvmx_lmcx_char_mask1_s         cn70xxp1;
+	struct cvmx_lmcx_char_mask1_s         cn73xx;
 	struct cvmx_lmcx_char_mask1_s         cn78xx;
+	struct cvmx_lmcx_char_mask1_s         cn78xxp2;
 	struct cvmx_lmcx_char_mask1_s         cnf71xx;
+	struct cvmx_lmcx_char_mask1_s         cnf75xx;
 };
 typedef union cvmx_lmcx_char_mask1 cvmx_lmcx_char_mask1_t;
 
@@ -1898,7 +2359,7 @@ union cvmx_lmcx_char_mask2 {
 	uint64_t u64;
 	struct cvmx_lmcx_char_mask2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t mask                         : 64; /**< Mask for DQ1[63:0] */
+	uint64_t mask                         : 64; /**< Mask for DQ1<63:0>. */
 #else
 	uint64_t mask                         : 64;
 #endif
@@ -1911,8 +2372,11 @@ union cvmx_lmcx_char_mask2 {
 	struct cvmx_lmcx_char_mask2_s         cn68xxp1;
 	struct cvmx_lmcx_char_mask2_s         cn70xx;
 	struct cvmx_lmcx_char_mask2_s         cn70xxp1;
+	struct cvmx_lmcx_char_mask2_s         cn73xx;
 	struct cvmx_lmcx_char_mask2_s         cn78xx;
+	struct cvmx_lmcx_char_mask2_s         cn78xxp2;
 	struct cvmx_lmcx_char_mask2_s         cnf71xx;
+	struct cvmx_lmcx_char_mask2_s         cnf75xx;
 };
 typedef union cvmx_lmcx_char_mask2 cvmx_lmcx_char_mask2_t;
 
@@ -1927,7 +2391,7 @@ union cvmx_lmcx_char_mask3 {
 	struct cvmx_lmcx_char_mask3_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
-	uint64_t mask                         : 8;  /**< Mask for DQ1[71:64] */
+	uint64_t mask                         : 8;  /**< Mask for DQ1<71:64>. */
 #else
 	uint64_t mask                         : 8;
 	uint64_t reserved_8_63                : 56;
@@ -1941,8 +2405,11 @@ union cvmx_lmcx_char_mask3 {
 	struct cvmx_lmcx_char_mask3_s         cn68xxp1;
 	struct cvmx_lmcx_char_mask3_s         cn70xx;
 	struct cvmx_lmcx_char_mask3_s         cn70xxp1;
+	struct cvmx_lmcx_char_mask3_s         cn73xx;
 	struct cvmx_lmcx_char_mask3_s         cn78xx;
+	struct cvmx_lmcx_char_mask3_s         cn78xxp2;
 	struct cvmx_lmcx_char_mask3_s         cnf71xx;
+	struct cvmx_lmcx_char_mask3_s         cnf75xx;
 };
 typedef union cvmx_lmcx_char_mask3 cvmx_lmcx_char_mask3_t;
 
@@ -1971,17 +2438,17 @@ union cvmx_lmcx_char_mask4 {
 	uint64_t par_mask                     : 1;  /**< Mask for PAR. */
 	uint64_t act_n_mask                   : 1;  /**< Mask for ACT_N. */
 	uint64_t a17_mask                     : 1;  /**< Mask for A17. */
-	uint64_t reset_n_mask                 : 1;  /**< Mask for RESET_L */
-	uint64_t a_mask                       : 16; /**< Mask for A[15:0] */
-	uint64_t ba_mask                      : 3;  /**< Mask for BA[2:0] */
-	uint64_t we_n_mask                    : 1;  /**< Mask for WE_N */
-	uint64_t cas_n_mask                   : 1;  /**< Mask for CAS_N */
-	uint64_t ras_n_mask                   : 1;  /**< Mask for RAS_N */
-	uint64_t odt1_mask                    : 2;  /**< Mask for ODT1 */
-	uint64_t odt0_mask                    : 2;  /**< Mask for ODT0 */
-	uint64_t cs1_n_mask                   : 2;  /**< Mask for CS1_N */
-	uint64_t cs0_n_mask                   : 2;  /**< Mask for CS0_N */
-	uint64_t cke_mask                     : 2;  /**< Mask for CKE* */
+	uint64_t reset_n_mask                 : 1;  /**< Mask for RESET_L. */
+	uint64_t a_mask                       : 16; /**< Mask for A<15:0>. */
+	uint64_t ba_mask                      : 3;  /**< Mask for BA<2:0>. */
+	uint64_t we_n_mask                    : 1;  /**< Mask for WE_N. */
+	uint64_t cas_n_mask                   : 1;  /**< Mask for CAS_N. */
+	uint64_t ras_n_mask                   : 1;  /**< Mask for RAS_N. */
+	uint64_t odt1_mask                    : 2;  /**< Mask for ODT1. */
+	uint64_t odt0_mask                    : 2;  /**< Mask for ODT0. */
+	uint64_t cs1_n_mask                   : 2;  /**< Mask for CS1_N. */
+	uint64_t cs0_n_mask                   : 2;  /**< Mask for CS0_N. */
+	uint64_t cke_mask                     : 2;  /**< Mask for CKE*. */
 #else
 	uint64_t cke_mask                     : 2;
 	uint64_t cs0_n_mask                   : 2;
@@ -2075,8 +2542,11 @@ union cvmx_lmcx_char_mask4 {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_char_mask4_cn70xx    cn70xxp1;
+	struct cvmx_lmcx_char_mask4_s         cn73xx;
 	struct cvmx_lmcx_char_mask4_s         cn78xx;
+	struct cvmx_lmcx_char_mask4_s         cn78xxp2;
 	struct cvmx_lmcx_char_mask4_cn61xx    cnf71xx;
+	struct cvmx_lmcx_char_mask4_s         cnf75xx;
 };
 typedef union cvmx_lmcx_char_mask4 cvmx_lmcx_char_mask4_t;
 
@@ -2197,33 +2667,54 @@ union cvmx_lmcx_comp_ctl2 {
 	uint64_t ptune_offset                 : 4;  /**< Ptune offset value. This is a signed value where the MSB is a sign bit, with zero
                                                          indicating addition and one indicating subtraction. */
 	uint64_t reserved_12_35               : 24;
-	uint64_t cmd_ctl                      : 4;  /**< Drive strength control for CMD/A/RESET_L drivers
-                                                         0001 = 24 ohm
-                                                         0010 = 26.67 ohm
-                                                         0011 = 30 ohm
-                                                         0100 = 34.3 ohm
-                                                         0101 = 40 ohm
-                                                         0110 = 48 ohm
-                                                         0111 = 60 ohm
-                                                         0000,1000-1111 = Reserved */
-	uint64_t ck_ctl                       : 4;  /**< Drive strength control for CK/CS*_L/ODT/CKE* drivers
-                                                         0001 = 24 ohm
-                                                         0010 = 26.67 ohm
-                                                         0011 = 30 ohm
-                                                         0100 = 34.3 ohm
-                                                         0101 = 40 ohm
-                                                         0110 = 48 ohm
-                                                         0111 = 60 ohm
-                                                         0000,1000-1111 = Reserved */
-	uint64_t dqx_ctl                      : 4;  /**< Drive strength control for DQ/DQS drivers
-                                                         0001 = 24 ohm
-                                                         0010 = 26.67 ohm
-                                                         0011 = 30 ohm
-                                                         0100 = 34.3 ohm
-                                                         0101 = 40 ohm
-                                                         0110 = 48 ohm
-                                                         0111 = 60 ohm
-                                                         0000,1000-1111 = Reserved */
+	uint64_t cmd_ctl                      : 4;  /**< Drive strength control for CMD/A/RESET_L drivers.
+                                                         In DDR3 mode:
+                                                           0x1 = 24 ohm.
+                                                           0x2 = 26.67 ohm.
+                                                           0x3 = 30 ohm.
+                                                           0x4 = 34.3 ohm.
+                                                           0x5 = 40 ohm.
+                                                           0x6 = 48 ohm.
+                                                           0x7 = 60 ohm.
+                                                           _ else = Reserved.
+                                                         In DDR4 mode:
+                                                           0x0 = Reserved.
+                                                           0x1 = Reserved.
+                                                           0x2 = 26 ohm.
+                                                           0x3 = 30 ohm.
+                                                           0x4 = 34 ohm.
+                                                           0x5 = 40 ohm.
+                                                           0x6 = 48 ohm.
+                                                           _ else = Reserved. */
+	uint64_t ck_ctl                       : 4;  /**< "Drive strength control for DDR_CK_*_P/DDR_DIMM*_CS*_L/DDR_DIMM*_ODT_* /DDR#_DIMM*_CKE*
+                                                         drivers.
+                                                         In DDR3 mode:
+                                                           0x1 = 24 ohm.
+                                                           0x2 = 26.67 ohm.
+                                                           0x3 = 30 ohm.
+                                                           0x4 = 34.3 ohm.
+                                                           0x5 = 40 ohm.
+                                                           0x6 = 48 ohm.
+                                                           0x7 = 60 ohm.
+                                                           _ else = Reserved.
+                                                         In DDR4 mode:
+                                                           0x0 = Reserved.
+                                                           0x1 = Reserved.
+                                                           0x2 = 26 ohm.
+                                                           0x3 = 30 ohm.
+                                                           0x4 = 34 ohm.
+                                                           0x5 = 40 ohm.
+                                                           0x6 = 48 ohm.
+                                                           _ else = Reserved." */
+	uint64_t dqx_ctl                      : 4;  /**< Drive strength control for DDR_DQ* /DDR_DQS_*_P/N drivers.
+                                                         0x1 = 24 ohm.
+                                                         0x2 = 26.67 ohm.
+                                                         0x3 = 30 ohm.
+                                                         0x4 = 34.3 ohm.
+                                                         0x5 = 40 ohm.
+                                                         0x6 = 48 ohm.
+                                                         0x7 = 60 ohm.
+                                                         _ else = Reserved. */
 #else
 	uint64_t dqx_ctl                      : 4;
 	uint64_t ck_ctl                       : 4;
@@ -2355,7 +2846,7 @@ union cvmx_lmcx_comp_ctl2 {
                                                            0x0 = Reserved.
                                                            0x1 = Reserved.
                                                            0x2 = 26 ohm.
-                                                         0x3 = 30 ohm.
+                                                           0x3 = 30 ohm.
                                                            0x4 = 34 ohm.
                                                            0x5 = 40 ohm.
                                                            0x6 = 48 ohm.
@@ -2374,7 +2865,7 @@ union cvmx_lmcx_comp_ctl2 {
                                                            0x0 = Reserved.
                                                            0x1 = Reserved.
                                                            0x2 = 26 ohm.
-                                                         0x3 = 30 ohm.
+                                                           0x3 = 30 ohm.
                                                            0x4 = 34 ohm.
                                                            0x5 = 40 ohm.
                                                            0x6 = 48 ohm.
@@ -2394,7 +2885,7 @@ union cvmx_lmcx_comp_ctl2 {
                                                            0x0 = Reserved.
                                                            0x1 = Reserved.
                                                            0x2 = 26 ohm.
-                                                         0x3 = 30 ohm.
+                                                           0x3 = 30 ohm.
                                                            0x4 = 34 ohm.
                                                            0x5 = 40 ohm.
                                                            0x6 = 48 ohm.
@@ -2427,8 +2918,11 @@ union cvmx_lmcx_comp_ctl2 {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_comp_ctl2_cn70xx     cn70xxp1;
+	struct cvmx_lmcx_comp_ctl2_cn70xx     cn73xx;
 	struct cvmx_lmcx_comp_ctl2_cn70xx     cn78xx;
+	struct cvmx_lmcx_comp_ctl2_cn70xx     cn78xxp2;
 	struct cvmx_lmcx_comp_ctl2_cn61xx     cnf71xx;
+	struct cvmx_lmcx_comp_ctl2_cn70xx     cnf75xx;
 };
 typedef union cvmx_lmcx_comp_ctl2 cvmx_lmcx_comp_ctl2_t;
 
@@ -2450,177 +2944,156 @@ union cvmx_lmcx_config {
 	uint64_t u64;
 	struct cvmx_lmcx_config_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_63_63               : 1;
-	uint64_t bg2_enable                   : 1;  /**< BG2 pin is active for DDR4 mode. Only has an effect when LMC()_CONFIG[MODEDDR4] = 1.
-                                                         Typically only cleared for DDR4 *16 devices, where there is no BG2 pin on the device. */
+	uint64_t lrdimm_ena                   : 1;  /**< Load Reduced DIMM Enable. When set allows the use of JEDEC DDR4 LRDIMMs. */
+	uint64_t bg2_enable                   : 1;  /**< BG1 enable bit. Only has an effect when LMC()_CONFIG[MODEDDR4] = 1.
+                                                         Set to 1 when using DDR4 x4 or x8 parts.
+                                                         Clear to 0 when using DDR4 x16 parts. */
 	uint64_t mode_x4dev                   : 1;  /**< DDR *4 device mode. */
-	uint64_t mode32b                      : 1;  /**< 32b Datapath Mode                                          NS
-                                                         Set to 1 if we use only 32 DQ pins
-                                                         0 for 64b DQ mode. */
-	uint64_t scrz                         : 1;  /**< Hide LMC*_SCRAMBLE_CFG0 and LMC*_SCRAMBLE_CFG1 when set */
-	uint64_t early_unload_d1_r1           : 1;  /**< When set, unload the PHY silo one cycle early for Rank 3
-                                                         reads
-                                                         The recommended EARLY_UNLOAD_D1_R1 value can be calculated
-                                                         after the final LMC*_RLEVEL_RANK3[BYTE*] values are
-                                                         selected (as part of read-leveling initialization).
-                                                         Then, determine the largest read-leveling setting
-                                                         for rank 3 (i.e. calculate maxset=MAX(LMC*_RLEVEL_RANK3[BYTEi])
-                                                         across all i), then set EARLY_UNLOAD_D1_R1
-                                                         when the low two bits of this largest setting is not
-                                                         3 (i.e. EARLY_UNLOAD_D1_R1 = (maxset<1:0>!=3)). */
-	uint64_t early_unload_d1_r0           : 1;  /**< When set, unload the PHY silo one cycle early for Rank 2
-                                                         reads
-                                                         The recommended EARLY_UNLOAD_D1_RO value can be calculated
-                                                         after the final LMC*_RLEVEL_RANK2[BYTE*] values are
-                                                         selected (as part of read-leveling initialization).
-                                                         Then, determine the largest read-leveling setting
-                                                         for rank 2 (i.e. calculate maxset=MAX(LMC*_RLEVEL_RANK2[BYTEi])
-                                                         across all i), then set EARLY_UNLOAD_D1_RO
-                                                         when the low two bits of this largest setting is not
-                                                         3 (i.e. EARLY_UNLOAD_D1_RO = (maxset<1:0>!=3)). */
-	uint64_t early_unload_d0_r1           : 1;  /**< When set, unload the PHY silo one cycle early for Rank 1
-                                                         reads
-                                                         The recommended EARLY_UNLOAD_D0_R1 value can be calculated
-                                                         after the final LMC*_RLEVEL_RANK1[BYTE*] values are
-                                                         selected (as part of read-leveling initialization).
-                                                         Then, determine the largest read-leveling setting
-                                                         for rank 1 (i.e. calculate maxset=MAX(LMC*_RLEVEL_RANK1[BYTEi])
-                                                         across all i), then set EARLY_UNLOAD_D0_R1
-                                                         when the low two bits of this largest setting is not
-                                                         3 (i.e. EARLY_UNLOAD_D0_R1 = (maxset<1:0>!=3)). */
-	uint64_t early_unload_d0_r0           : 1;  /**< When set, unload the PHY silo one cycle early for Rank 0
-                                                         reads.
-                                                         The recommended EARLY_UNLOAD_D0_R0 value can be calculated
-                                                         after the final LMC*_RLEVEL_RANK0[BYTE*] values are
-                                                         selected (as part of read-leveling initialization).
-                                                         Then, determine the largest read-leveling setting
-                                                         for rank 0 (i.e. calculate maxset=MAX(LMC*_RLEVEL_RANK0[BYTEi])
-                                                         across all i), then set EARLY_UNLOAD_D0_R0
-                                                         when the low two bits of this largest setting is not
-                                                         3 (i.e. EARLY_UNLOAD_D0_R0 = (maxset<1:0>!=3)). */
-	uint64_t init_status                  : 4;  /**< Indicates status of initialization
-                                                         INIT_STATUS[n] = 1 implies rank n has been initialized
-                                                         SW must set necessary INIT_STATUS bits with the
-                                                         same LMC*_CONFIG write that initiates
-                                                         power-up/init and self-refresh exit sequences
-                                                         (if the required INIT_STATUS bits are not already
-                                                         set before LMC initiates the sequence).
-                                                         INIT_STATUS determines the chip-selects that assert
-                                                         during refresh, ZQCS, and precharge power-down and
-                                                         self-refresh entry/exit SEQUENCE's. */
-	uint64_t mirrmask                     : 4;  /**< Mask determining which ranks are address-mirrored.
-                                                         MIRRMASK<n> = 1 means Rank n addresses are mirrored
-                                                         for 0 <= n <= 3
-                                                         A mirrored read/write has these differences:
-                                                          - DDR_BA<1> is swapped with DDR_BA<0>
-                                                          - DDR_A<8> is swapped with DDR_A<7>
-                                                          - DDR_A<6> is swapped with DDR_A<5>
-                                                          - DDR_A<4> is swapped with DDR_A<3>
-                                                         When RANK_ENA=0, MIRRMASK<1> and MIRRMASK<3> MBZ */
-	uint64_t rankmask                     : 4;  /**< Mask to select rank to be leveled/initialized.
-                                                         To write-level/read-level/initialize rank i, set RANKMASK<i>
-                                                                         RANK_ENA=1               RANK_ENA=0
-                                                           RANKMASK<0> = DIMM0_CS0                DIMM0_CS0
-                                                           RANKMASK<1> = DIMM0_CS1                  MBZ
-                                                           RANKMASK<2> = DIMM1_CS0                DIMM1_CS0
-                                                           RANKMASK<3> = DIMM1_CS1                  MBZ
-                                                         For read/write leveling, each rank has to be leveled separately,
-                                                         so RANKMASK should only have one bit set.
-                                                         RANKMASK is not used during self-refresh entry/exit and
-                                                         precharge power-down entry/exit instruction sequences.
-                                                         When RANK_ENA=0, RANKMASK<1> and RANKMASK<3> MBZ */
-	uint64_t rank_ena                     : 1;  /**< RANK ena (for use with dual-rank DIMMs)
-                                                         For dual-rank DIMMs, the rank_ena bit will enable
-                                                         the drive of the CS*_L[1:0] and ODT_<1:0> pins differently based on the
-                                                         (pbank_lsb-1) address bit.
-                                                         Write 0 for SINGLE ranked DIMM's. */
-	uint64_t sref_with_dll                : 1;  /**< Self-refresh entry/exit write MR1 and MR2
-                                                         When set, self-refresh entry and exit instruction sequences
-                                                         write MR1 and MR2 (in all ranks). (The writes occur before
-                                                         self-refresh entry, and after self-refresh exit.)
-                                                         When clear, self-refresh entry and exit instruction sequences
-                                                         do not write any registers in the DDR3 parts. */
-	uint64_t early_dqx                    : 1;  /**< Send DQx signals one CK cycle earlier for the case when
-                                                         the shortest DQx lines have a larger delay than the CK line */
+	uint64_t mode32b                      : 1;  /**< 32-bit datapath mode. When set, only 32 DQ pins are used. */
+	uint64_t scrz                         : 1;  /**< Hide LMC()_SCRAMBLE_CFG0 and LMC()_SCRAMBLE_CFG1 when set. */
+	uint64_t early_unload_d1_r1           : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle early for Rank 3 reads.
+                                                         The recommended EARLY_UNLOAD_D1_R1 value can be calculated after the final
+                                                         LMC()_RLEVEL_RANK3[BYTE*] values are selected (as part of read-leveling initialization).
+                                                         Then, determine the largest read-leveling setting for rank 3 (i.e. calculate
+                                                         maxset=MAX(LMC()_RLEVEL_RANK3[BYTEi]) across all i), then set EARLY_UNLOAD_D1_R1 when the
+                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D1_R1 = (maxset<1:0>
+                                                         !=3)). */
+	uint64_t early_unload_d1_r0           : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle early for Rank 2 reads.
+                                                         The recommended EARLY_UNLOAD_D1_RO value can be calculated after the final
+                                                         LMC()_RLEVEL_RANK2[BYTE*] values are selected (as part of read-leveling initialization).
+                                                         Then, determine the largest read-leveling setting for rank 2 (i.e. calculate
+                                                         maxset=MAX(LMC()_RLEVEL_RANK2[BYTEi]) across all i), then set EARLY_UNLOAD_D1_RO when the
+                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D1_RO = (maxset<1:0>
+                                                         !=3)). */
+	uint64_t early_unload_d0_r1           : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle early for Rank 1 reads.
+                                                         The recommended EARLY_UNLOAD_D0_R1 value can be calculated after the final
+                                                         LMC()_RLEVEL_RANK1[BYTE*] values are selected (as part of read-leveling initialization).
+                                                         Then, determine the largest read-leveling setting for rank 1 (i.e. calculate
+                                                         maxset=MAX(LMC()_RLEVEL_RANK1[BYTEi]) across all i), then set EARLY_UNLOAD_D0_R1 when the
+                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D0_R1 = (maxset<1:0>
+                                                         !=3)). */
+	uint64_t early_unload_d0_r0           : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle early for Rank 0 reads.
+                                                         The recommended EARLY_UNLOAD_D0_R0 value can be calculated after the final
+                                                         LMC()_RLEVEL_RANK0[BYTE*] values are selected (as part of read-leveling initialization).
+                                                         Then, determine the largest read-leveling setting for rank 0 (i.e. calculate
+                                                         maxset=MAX(LMC()_RLEVEL_RANK0[BYTEi]) across all i), then set EARLY_UNLOAD_D0_R0 when the
+                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D0_R0 = (maxset<1:0>
+                                                         !=3)). */
+	uint64_t init_status                  : 4;  /**< Indicates status of initialization. INIT_STATUS[n] = 1 implies rank n has been
+                                                         initialized.
+                                                         Software must set necessary RANKMASK bits before executing the initialization sequence
+                                                         using LMC()_SEQ_CTL. If the rank has been selected for init with the RANKMASK bits,
+                                                         the INIT_STATUS bits will be set after successful initialization and after self-refresh
+                                                         exit. INIT_STATUS determines the chip-selects that assert during refresh, ZQCS, precharge
+                                                         power-down entry/exit, and self-refresh entry SEQ_SELs. */
+	uint64_t mirrmask                     : 4;  /**< "Mask determining which ranks are address-mirrored.
+                                                         MIRRMASK<n> = 1 means Rank n addresses are mirrored for
+                                                         0 <= n <= 3.
+                                                         In DDR3, a mirrored read/write operation has the following differences:
+                                                         * DDR#_BA<1> is swapped with DDR#_BA<0>.
+                                                         * DDR#_A<8> is swapped with DDR#_A<7>.
+                                                         * DDR#_A<6> is swapped with DDR#_A<5>.
+                                                         * DDR#_A<4> is swapped with DDR#_A<3>.
+                                                         When RANK_ENA = 0, MIRRMASK<1> MBZ.
+                                                         In DDR4, a mirrored read/write operation has the following differences:
+                                                         * DDR#_BG<1> is swapped with DDR#_BG<0>.
+                                                         * DDR#_BA<1> is swapped with DDR#_BA<0>.
+                                                         * DDR#_A<13> is swapped with DDR#_A<11>.
+                                                         * DDR#_A<8> is swapped with DDR#_A<7>.
+                                                         * DDR#_A<6> is swapped with DDR#_A<5>.
+                                                         * DDR#_A<4> is swapped with DDR#_A<3>.
+                                                         For CN70XX, MIRRMASK<3:2> MBZ.
+                                                         * When RANK_ENA = 0, MIRRMASK<1> MBZ." */
+	uint64_t rankmask                     : 4;  /**< Mask to select rank to be leveled/initialized. To write-level/read-level/initialize rank
+                                                         i, set RANKMASK<i>:
+                                                         <pre>
+                                                                       RANK_ENA = 1   RANK_ENA = 0
+                                                         RANKMASK<0> = DIMM0_CS0      DIMM0_CS0
+                                                         RANKMASK<1> = DIMM0_CS1      MBZ
+                                                         RANKMASK<2> = DIMM1_CS0      DIMM1_CS0
+                                                         RANKMASK<3> = DIMM1_CS1      MBZ
+                                                         </pre>
+                                                         For read/write leveling, each rank has to be leveled separately, so RANKMASK should only
+                                                         have one bit set. RANKMASK is not used during self-refresh entry/exit and precharge power-
+                                                         down entry/exit instruction sequences. When RANK_ENA = 0, RANKMASK<1> and RANKMASK<3> MBZ. */
+	uint64_t rank_ena                     : 1;  /**< "RANK enable (for use with dual-rank DIMMs).
+                                                         * For dual-rank DIMMs, the RANK_ENA bit will enable the drive of the DDR#_DIMM*_CS*_L and
+                                                         ODT_<1:0> pins differently based on the (PBANK_LSB - 1) address bit.
+                                                         * Write 0 for SINGLE ranked DIMMs." */
+	uint64_t sref_with_dll                : 1;  /**< Self-refresh entry/exit write mode registers. When set, self-refresh entry sequence writes
+                                                         MR2 and MR1 (in this order, in all ranks), and self-refresh exit sequence writes MR1, MR0,
+                                                         MR2, and MR3 (in this order, for all ranks). The write operations occur before self-
+                                                         refresh entry, and after self-refresh exit. When clear, self-refresh entry and exit
+                                                         instruction sequences do not write any mode registers in the DDR3/4 parts. */
+	uint64_t early_dqx                    : 1;  /**< Set this bit to send DQx signals one CK cycle earlier for the case when the shortest DQx
+                                                         lines have a larger delay than the CK line. */
 	uint64_t reserved_18_39               : 22;
-	uint64_t reset                        : 1;  /**< Reset oneshot pulse for refresh counter,
-                                                         and LMC*_OPS_CNT, LMC*_IFB_CNT, and LMC*_DCLK_CNT
-                                                         CSR's. SW should write this to a one, then re-write
-                                                         it to a zero to cause the reset. */
-	uint64_t ecc_adr                      : 1;  /**< Include memory reference address in the ECC calculation
-                                                         0=disabled, 1=enabled */
-	uint64_t forcewrite                   : 4;  /**< Force the oldest outstanding write to complete after
-                                                         having waited for 2^FORCEWRITE CK cycles.  0=disabled. */
-	uint64_t idlepower                    : 3;  /**< Enter precharge power-down mode after the memory
-                                                         controller has been idle for 2^(2+IDLEPOWER) CK cycles.
-                                                         0=disabled.
+	uint64_t reset                        : 1;  /**< Reset one-shot pulse for LMC()_OPS_CNT, LMC()_IFB_CNT, and LMC()_DCLK_CNT
+                                                         CSRs.
+                                                         To cause the reset, software writes this to a 1, then rewrites it to a 0. */
+	uint64_t ecc_adr                      : 1;  /**< Include memory reference address in the ECC calculation.
+                                                         0 = disabled, 1 = enabled. */
+	uint64_t forcewrite                   : 4;  /**< Force the oldest outstanding write to complete after having waited for 2^FORCEWRITE CK
+                                                         cycles. 0 = disabled. */
+	uint64_t idlepower                    : 3;  /**< Enter precharge power-down mode after the memory controller has been idle for
+                                                         2^(2+IDLEPOWER) CK cycles. 0 = disabled.
                                                          This field should only be programmed after initialization.
-                                                         LMC*_MODEREG_PARAMS0[PPD] determines whether the DRAM DLL
-                                                         is disabled during the precharge power-down. */
-	uint64_t pbank_lsb                    : 4;  /**< DIMM address bit select
-                                                         Reverting to the explanation for ROW_LSB,
-                                                         PBank_LSB would be Row_LSB bit + \#rowbits + \#rankbits
-                                                         In the 512MB DIMM Example, assuming no rank bits:
-                                                         pbank_lsb=mem_addr[15+13] for 64b mode
-                                                                  =mem_addr[14+13] for 32b mode
-                                                         Decoding for pbank_lsb
-                                                              - 0000:DIMM = mem_adr[28]    / rank = mem_adr[27] (if RANK_ENA)
-                                                              - 0001:DIMM = mem_adr[29]    / rank = mem_adr[28]      "
-                                                              - 0010:DIMM = mem_adr[30]    / rank = mem_adr[29]      "
-                                                              - 0011:DIMM = mem_adr[31]    / rank = mem_adr[30]      "
-                                                              - 0100:DIMM = mem_adr[32]    / rank = mem_adr[31]      "
-                                                              - 0101:DIMM = mem_adr[33]    / rank = mem_adr[32]      "
-                                                              - 0110:DIMM = mem_adr[34]    / rank = mem_adr[33]      "
-                                                              - 0111:DIMM = 0              / rank = mem_adr[34]      "
-                                                              - 1000-1111: RESERVED
-                                                         For example, for a DIMM made of Samsung's k4b1g0846c-f7 1Gb (16M x 8 bit x 8 bank)
-                                                         DDR3 parts, the column address width = 10, so with
-                                                         10b of col, 3b of bus, 3b of bank, row_lsb = 16. So, row = mem_adr[29:16]
-                                                         With rank_ena = 0, pbank_lsb = 2
-                                                         With rank_ena = 1, pbank_lsb = 3 */
-	uint64_t row_lsb                      : 3;  /**< Row Address bit select
-                                                         Encoding used to determine which memory address
-                                                         bit position represents the low order DDR ROW address.
-                                                         The processor's memory address[34:7] needs to be
-                                                         translated to DRAM addresses (bnk,row,col,rank and DIMM)
-                                                         and that is a function of the following:
-                                                         1. Datapath Width (64 or 32)
-                                                         2. \# Banks (8)
-                                                         3. \# Column Bits of the memory part - spec'd indirectly
-                                                         by this register.
-                                                         4. \# Row Bits of the memory part - spec'd indirectly
-                                                         5. \# Ranks in a DIMM - spec'd by RANK_ENA
-                                                         6. \# DIMM's in the system by the register below (PBANK_LSB).
-                                                         Col Address starts from mem_addr[2] for 32b (4Bytes)
-                                                         dq width or from mem_addr[3] for 64b (8Bytes) dq width
-                                                         \# col + \# bank = 12. Hence row_lsb is mem_adr[15] for
-                                                         64bmode or mem_adr[14] for 32b mode. Hence row_lsb
-                                                         parameter should be set to 001 (64b) or 000 (32b).
-                                                         Decoding for row_lsb
-                                                              - 000: row_lsb = mem_adr[14]
-                                                              - 001: row_lsb = mem_adr[15]
-                                                              - 010: row_lsb = mem_adr[16]
-                                                              - 011: row_lsb = mem_adr[17]
-                                                              - 100: row_lsb = mem_adr[18]
-                                                              - 101: row_lsb = mem_adr[19]
-                                                              - 110: row_lsb = mem_adr[20]
-                                                              - 111: RESERVED
-                                                         For example, for a DIMM made of Samsung's k4b1g0846c-f7 1Gb (16M x 8 bit x 8 bank)
-                                                         DDR3 parts, the column address width = 10, so with
-                                                         10b of col, 3b of bus, 3b of bank, row_lsb = 16. So, row = mem_adr[29:16] */
-	uint64_t ecc_ena                      : 1;  /**< ECC Enable: When set will enable the 8b ECC
-                                                         check/correct logic. Should be 1 when used with DIMMs
-                                                         with ECC. 0, otherwise.
-                                                         When this mode is turned on, DQ[71:64]
-                                                         on writes, will contain the ECC code generated for
-                                                         the 64 bits of data which will
-                                                         written in the memory and then later on reads, used
-                                                         to check for Single bit error (which will be auto-
-                                                         corrected) and Double Bit error (which will be
-                                                         reported). When not turned on, DQ[71:64]
-                                                         are driven to 0.  Please refer to SEC_ERR, DED_ERR,
-                                                         LMC*_FADR, LMC*_SCRAMBLED_FADR and LMC*_ECC_SYND registers
-                                                         for diagnostics information when there is an error. */
+                                                         LMC()_MODEREG_PARAMS0[PPD] determines whether the DRAM DLL is disabled during the
+                                                         precharge power-down. */
+	uint64_t pbank_lsb                    : 4;  /**< DIMM address bit select. Reverting to the explanation for ROW_LSB, PBANK_LSB would be:
+                                                         ROW_LSB bit + num_rowbits + num_rankbits
+                                                         Decoding for PBANK_LSB:
+                                                         0x0: DIMM = mem_adr<28>; if RANK_ENA=1, rank = mem_adr<27>.
+                                                         0x1: DIMM = mem_adr<29>; if RANK_ENA=1, rank = mem_adr<28>.
+                                                         0x2: DIMM = mem_adr<30>; if RANK_ENA=1, rank = mem_adr<29>.
+                                                         0x3: DIMM = mem_adr<31>; if RANK_ENA=1, rank = mem_adr<30>.
+                                                         0x4: DIMM = mem_adr<32>; if RANK_ENA=1, rank = mem_adr<31>.
+                                                         0x5: DIMM = mem_adr<33>; if RANK_ENA=1, rank = mem_adr<32>.
+                                                         0x6: DIMM = mem_adr<34>; if RANK_ENA=1, rank = mem_adr<33>.
+                                                         0x7: DIMM = mem_adr<35>; if RANK_ENA=1, rank = mem_adr<34>.
+                                                         0x8: DIMM = mem_adr<36>; if RANK_ENA=1, rank = mem_adr<35>.
+                                                         0x9: DIMM = mem_adr<37>; if RANK_ENA=1, rank = mem_adr<36>.
+                                                         0xA: DIMM = 0;           if RANK_ENA=1, rank = mem_adr<37>.
+                                                         0xB-0xF: Reserved.
+                                                         For example, for a DIMM made of Samsung's K4B1G0846C-F7 1Gb (16M * 8 bit * 8 bank)
+                                                         parts, the column address width = 10, so with 10b of col, 3b of bus, 3b of bank, ROW_LSB =
+                                                         16. So, row = mem_adr<29:16>.
+                                                         With RANK_ENA = 0, PBANK_LSB = 2.
+                                                         With RANK_ENA = 1, PBANK_LSB = 3.
+                                                         When interfacing with 8H 3DS, set this 0xA regardless of RANK_ENA value. */
+	uint64_t row_lsb                      : 3;  /**< "Row address bit select.
+                                                         0x0 = Address bit 14 is LSB.
+                                                         0x1 = Address bit 15 is LSB.
+                                                         0x2 = Address bit 16 is LSB.
+                                                         0x3 = Address bit 17 is LSB.
+                                                         0x4 = Address bit 18 is LSB.
+                                                         0x5 = Address bit 19 is LSB.
+                                                         0x6 = Address bit 20 is LSB.
+                                                         0x6 = Reserved.
+                                                         Encoding used to determine which memory address bit position represents the low order DDR
+                                                         ROW address. The processor's memory address<34:7> needs to be translated to DRAM addresses
+                                                         (bnk,row,col,rank and DIMM) and that is a function of the following:
+                                                         * Datapath width (64).
+                                                         * Number of banks (8).
+                                                         * Number of column bits of the memory part--specified indirectly by this register.
+                                                         * Number of row bits of the memory part--specified indirectly by PBANK_LSB.
+                                                         * Number of ranks in a DIMM--specified by RANK_ENA.
+                                                         * Number of DIMMs in the system by the register below (PBANK_LSB).
+                                                         Col address starts from mem_addr[3] for 64b (8Bytes) DQ width. ROW_LSB is mem_adr[15] for
+                                                         64b mode. Therefore, the ROW_LSB parameter should be set to 001 (64b).
+                                                         For example, for a DIMM made of Samsung's K4B1G0846C-F7 1GB (16M * 8 bit * 8 bank)
+                                                         parts, the column address width = 10, so with 10b of col, 3b of bus, 3b of bank, ROW_LSB =
+                                                         16. So, row = mem_adr<29:16>.
+                                                         Refer to Cache-block Read Transaction Example, Cache-block Read Transaction Example." */
+	uint64_t ecc_ena                      : 1;  /**< ECC enable. When set, enables the 8b ECC check/correct logic. Should be 1 when used with
+                                                         DIMMs with ECC; 0, otherwise.
+                                                         * When this mode is turned on, DQ<71:64> on write operations contains the ECC code
+                                                         generated for the 64 bits of data which will be written in the memory. Later on read
+                                                         operations, will be used to check for single-bit error (which will be auto-corrected) and
+                                                         double-bit error (which will be reported).
+                                                         * When not turned on, DQ<71:64> are driven to 0. Please refer to SEC_ERR, DED_ERR,
+                                                         LMC()_FADR, and LMC()_ECC_SYND registers for diagnostics information when there is
+                                                         an error. */
 	uint64_t init_start                   : 1;  /**< A 0->1 transition starts the DDR memory sequence that is
                                                          selected by LMC*_CONFIG[SEQUENCE].  This register is a
                                                          oneshot and clears itself each time it is set. */
@@ -2648,7 +3121,7 @@ union cvmx_lmcx_config {
 	uint64_t mode32b                      : 1;
 	uint64_t mode_x4dev                   : 1;
 	uint64_t bg2_enable                   : 1;
-	uint64_t reserved_63_63               : 1;
+	uint64_t lrdimm_ena                   : 1;
 #endif
 	} s;
 	struct cvmx_lmcx_config_cn61xx {
@@ -3788,8 +4261,209 @@ union cvmx_lmcx_config {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_config_cn70xx        cn70xxp1;
-	struct cvmx_lmcx_config_cn70xx        cn78xx;
+	struct cvmx_lmcx_config_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t lrdimm_ena                   : 1;  /**< Load Reduced DIMM Enable. When set allows the use of JEDEC DDR4 LRDIMMs. */
+	uint64_t bg2_enable                   : 1;  /**< BG1 enable bit. Only has an effect when LMC()_CONFIG[MODEDDR4] = 1.
+                                                         Set to 1 when using DDR4 x4 or x8 parts.
+                                                         Clear to 0 when using DDR4 x16 parts. */
+	uint64_t mode_x4dev                   : 1;  /**< DDR *4 device mode. */
+	uint64_t mode32b                      : 1;  /**< 32-bit datapath mode. When set, only 32 DQ pins are used. */
+	uint64_t scrz                         : 1;  /**< Hide LMC()_SCRAMBLE_CFG0 and LMC()_SCRAMBLE_CFG1 when set. */
+	uint64_t early_unload_d1_r1           : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle early for Rank 3 reads.
+                                                         The recommended EARLY_UNLOAD_D1_R1 value can be calculated after the final
+                                                         LMC()_RLEVEL_RANK3[BYTE*] values are selected (as part of read-leveling initialization).
+                                                         Then, determine the largest read-leveling setting for rank 3 (i.e. calculate
+                                                         maxset=MAX(LMC()_RLEVEL_RANK3[BYTEi]) across all i), then set EARLY_UNLOAD_D1_R1 when the
+                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D1_R1 = (maxset<1:0>
+                                                         !=3)). */
+	uint64_t early_unload_d1_r0           : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle early for Rank 2 reads.
+                                                         The recommended EARLY_UNLOAD_D1_RO value can be calculated after the final
+                                                         LMC()_RLEVEL_RANK2[BYTE*] values are selected (as part of read-leveling initialization).
+                                                         Then, determine the largest read-leveling setting for rank 2 (i.e. calculate
+                                                         maxset=MAX(LMC()_RLEVEL_RANK2[BYTEi]) across all i), then set EARLY_UNLOAD_D1_RO when the
+                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D1_RO = (maxset<1:0>
+                                                         !=3)). */
+	uint64_t early_unload_d0_r1           : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle early for Rank 1 reads.
+                                                         The recommended EARLY_UNLOAD_D0_R1 value can be calculated after the final
+                                                         LMC()_RLEVEL_RANK1[BYTE*] values are selected (as part of read-leveling initialization).
+                                                         Then, determine the largest read-leveling setting for rank 1 (i.e. calculate
+                                                         maxset=MAX(LMC()_RLEVEL_RANK1[BYTEi]) across all i), then set EARLY_UNLOAD_D0_R1 when the
+                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D0_R1 = (maxset<1:0>
+                                                         !=3)). */
+	uint64_t early_unload_d0_r0           : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle early for Rank 0 reads.
+                                                         The recommended EARLY_UNLOAD_D0_R0 value can be calculated after the final
+                                                         LMC()_RLEVEL_RANK0[BYTE*] values are selected (as part of read-leveling initialization).
+                                                         Then, determine the largest read-leveling setting for rank 0 (i.e. calculate
+                                                         maxset=MAX(LMC()_RLEVEL_RANK0[BYTEi]) across all i), then set EARLY_UNLOAD_D0_R0 when the
+                                                         low two bits of this largest setting is not 3 (i.e. EARLY_UNLOAD_D0_R0 = (maxset<1:0>
+                                                         !=3)). */
+	uint64_t init_status                  : 4;  /**< Indicates status of initialization. INIT_STATUS[n] = 1 implies rank n has been
+                                                         initialized.
+                                                         Software must set necessary RANKMASK bits before executing the initialization sequence
+                                                         using LMC()_SEQ_CTL. If the rank has been selected for init with the RANKMASK bits,
+                                                         the INIT_STATUS bits will be set after successful initialization and after self-refresh
+                                                         exit. INIT_STATUS determines the chip-selects that assert during refresh, ZQCS, precharge
+                                                         power-down entry/exit, and self-refresh entry SEQ_SELs. */
+	uint64_t mirrmask                     : 4;  /**< "Mask determining which ranks are address-mirrored.
+                                                         MIRRMASK<n> = 1 means Rank n addresses are mirrored for
+                                                         0 <= n <= 3.
+                                                         In DDR3, a mirrored read/write operation has the following differences:
+                                                         * DDR#_BA<1> is swapped with DDR#_BA<0>.
+                                                         * DDR#_A<8> is swapped with DDR#_A<7>.
+                                                         * DDR#_A<6> is swapped with DDR#_A<5>.
+                                                         * DDR#_A<4> is swapped with DDR#_A<3>.
+                                                         When RANK_ENA = 0, MIRRMASK<1> MBZ.
+                                                         In DDR4, a mirrored read/write operation has the following differences:
+                                                         * DDR#_BG<1> is swapped with DDR#_BG<0>.
+                                                         * DDR#_BA<1> is swapped with DDR#_BA<0>.
+                                                         * DDR#_A<13> is swapped with DDR#_A<11>.
+                                                         * DDR#_A<8> is swapped with DDR#_A<7>.
+                                                         * DDR#_A<6> is swapped with DDR#_A<5>.
+                                                         * DDR#_A<4> is swapped with DDR#_A<3>.
+                                                         For CN70XX, MIRRMASK<3:2> MBZ.
+                                                         * When RANK_ENA = 0, MIRRMASK<1> MBZ." */
+	uint64_t rankmask                     : 4;  /**< Mask to select rank to be leveled/initialized. To write-level/read-level/initialize rank
+                                                         i, set RANKMASK<i>:
+                                                         <pre>
+                                                                       RANK_ENA = 1   RANK_ENA = 0
+                                                         RANKMASK<0> = DIMM0_CS0      DIMM0_CS0
+                                                         RANKMASK<1> = DIMM0_CS1      MBZ
+                                                         RANKMASK<2> = DIMM1_CS0      DIMM1_CS0
+                                                         RANKMASK<3> = DIMM1_CS1      MBZ
+                                                         </pre>
+                                                         For read/write leveling, each rank has to be leveled separately, so RANKMASK should only
+                                                         have one bit set. RANKMASK is not used during self-refresh entry/exit and precharge power-
+                                                         down entry/exit instruction sequences. When RANK_ENA = 0, RANKMASK<1> and RANKMASK<3> MBZ. */
+	uint64_t rank_ena                     : 1;  /**< "RANK enable (for use with dual-rank DIMMs).
+                                                         * For dual-rank DIMMs, the RANK_ENA bit will enable the drive of the DDR#_DIMM*_CS*_L and
+                                                         ODT_<1:0> pins differently based on the (PBANK_LSB - 1) address bit.
+                                                         * Write 0 for SINGLE ranked DIMMs." */
+	uint64_t sref_with_dll                : 1;  /**< Self-refresh entry/exit write mode registers. When set, self-refresh entry sequence writes
+                                                         MR2 and MR1 (in this order, in all ranks), and self-refresh exit sequence writes MR1, MR0,
+                                                         MR2, and MR3 (in this order, for all ranks). The write operations occur before self-
+                                                         refresh entry, and after self-refresh exit. When clear, self-refresh entry and exit
+                                                         instruction sequences do not write any mode registers in the DDR3/4 parts. */
+	uint64_t early_dqx                    : 1;  /**< Set this bit to send DQx signals one CK cycle earlier for the case when the shortest DQx
+                                                         lines have a larger delay than the CK line. */
+	uint64_t ref_zqcs_int                 : 22; /**< Refresh interval is represented in number of 512 CK cycle increments. To get more precise
+                                                         control of the refresh interval, the CSR LMC()_EXT_CONFIG[REF_INT_LSBS] can be set to a
+                                                         non-zero value.
+                                                         ZQCS interval is represented in a number of refresh intervals. A refresh sequence is
+                                                         triggered when bits <24:18> are equal to 0x0, and a ZQCS sequence is triggered when
+                                                         <39:18>
+                                                         are equal to 0x0.
+                                                         The ZQCS timer only decrements when the refresh timer is 0.
+                                                         Program <24:18> to RND-DN(TREFI/clkPeriod/512).
+                                                         A value of 0 in bits <24:18> will effectively turn off refresh.
+                                                         Program <36:25> to (RND-DN(ZQCS_Period / Refresh_Period) - 1), where Refresh_Period is the
+                                                         effective period programmed in bits <24:18>. Note that this value should always be greater
+                                                         than 32, to account for resistor calibration delays.
+                                                         000_00000000_0000000: Reserved
+                                                         Max Refresh interval = 127 * 512= 65024 CK cycles.
+                                                         Max ZQCS interval = 32768 * 127 * 512 = 2130706432 CK cycles.
+                                                         If refresh interval is programmed to ~8us, max ZQCS interval is ~262ms, or ~4 ZQCS
+                                                         operations per second.
+                                                         LMC()_CONFIG[INIT_STATUS] determines which ranks receive the REF / ZQCS. LMC does not
+                                                         send any refreshes / ZQCS's when LMC()_CONFIG[INIT_STATUS]=0. */
+	uint64_t reset                        : 1;  /**< Reset one-shot pulse for LMC()_OPS_CNT, LMC()_IFB_CNT, and LMC()_DCLK_CNT
+                                                         CSRs.
+                                                         To cause the reset, software writes this to a 1, then rewrites it to a 0. */
+	uint64_t ecc_adr                      : 1;  /**< Include memory reference address in the ECC calculation.
+                                                         0 = disabled, 1 = enabled. */
+	uint64_t forcewrite                   : 4;  /**< Force the oldest outstanding write to complete after having waited for 2^FORCEWRITE CK
+                                                         cycles. 0 = disabled. */
+	uint64_t idlepower                    : 3;  /**< Enter precharge power-down mode after the memory controller has been idle for
+                                                         2^(2+IDLEPOWER) CK cycles. 0 = disabled.
+                                                         This field should only be programmed after initialization.
+                                                         LMC()_MODEREG_PARAMS0[PPD] determines whether the DRAM DLL is disabled during the
+                                                         precharge power-down. */
+	uint64_t pbank_lsb                    : 4;  /**< DIMM address bit select. Reverting to the explanation for ROW_LSB, PBANK_LSB would be:
+                                                         ROW_LSB bit + num_rowbits + num_rankbits
+                                                         Decoding for PBANK_LSB:
+                                                         0x0: DIMM = mem_adr<28>; if RANK_ENA=1, rank = mem_adr<27>.
+                                                         0x1: DIMM = mem_adr<29>; if RANK_ENA=1, rank = mem_adr<28>.
+                                                         0x2: DIMM = mem_adr<30>; if RANK_ENA=1, rank = mem_adr<29>.
+                                                         0x3: DIMM = mem_adr<31>; if RANK_ENA=1, rank = mem_adr<30>.
+                                                         0x4: DIMM = mem_adr<32>; if RANK_ENA=1, rank = mem_adr<31>.
+                                                         0x5: DIMM = mem_adr<33>; if RANK_ENA=1, rank = mem_adr<32>.
+                                                         0x6: DIMM = mem_adr<34>; if RANK_ENA=1, rank = mem_adr<33>.
+                                                         0x7: DIMM = mem_adr<35>; if RANK_ENA=1, rank = mem_adr<34>.
+                                                         0x8: DIMM = mem_adr<36>; if RANK_ENA=1, rank = mem_adr<35>.
+                                                         0x9: DIMM = mem_adr<37>; if RANK_ENA=1, rank = mem_adr<36>.
+                                                         0xA: DIMM = 0;           if RANK_ENA=1, rank = mem_adr<37>.
+                                                         0xB-0xF: Reserved.
+                                                         For example, for a DIMM made of Samsung's K4B1G0846C-F7 1Gb (16M * 8 bit * 8 bank)
+                                                         parts, the column address width = 10, so with 10b of col, 3b of bus, 3b of bank, ROW_LSB =
+                                                         16. So, row = mem_adr<29:16>.
+                                                         With RANK_ENA = 0, PBANK_LSB = 2.
+                                                         With RANK_ENA = 1, PBANK_LSB = 3.
+                                                         When interfacing with 8H 3DS, set this 0xA regardless of RANK_ENA value. */
+	uint64_t row_lsb                      : 3;  /**< "Row address bit select.
+                                                         0x0 = Address bit 14 is LSB.
+                                                         0x1 = Address bit 15 is LSB.
+                                                         0x2 = Address bit 16 is LSB.
+                                                         0x3 = Address bit 17 is LSB.
+                                                         0x4 = Address bit 18 is LSB.
+                                                         0x5 = Address bit 19 is LSB.
+                                                         0x6 = Address bit 20 is LSB.
+                                                         0x6 = Reserved.
+                                                         Encoding used to determine which memory address bit position represents the low order DDR
+                                                         ROW address. The processor's memory address<34:7> needs to be translated to DRAM addresses
+                                                         (bnk,row,col,rank and DIMM) and that is a function of the following:
+                                                         * Datapath width (64).
+                                                         * Number of banks (8).
+                                                         * Number of column bits of the memory part--specified indirectly by this register.
+                                                         * Number of row bits of the memory part--specified indirectly by PBANK_LSB.
+                                                         * Number of ranks in a DIMM--specified by RANK_ENA.
+                                                         * Number of DIMMs in the system by the register below (PBANK_LSB).
+                                                         Col address starts from mem_addr[3] for 64b (8Bytes) DQ width. ROW_LSB is mem_adr[15] for
+                                                         64b mode. Therefore, the ROW_LSB parameter should be set to 001 (64b).
+                                                         For example, for a DIMM made of Samsung's K4B1G0846C-F7 1GB (16M * 8 bit * 8 bank)
+                                                         parts, the column address width = 10, so with 10b of col, 3b of bus, 3b of bank, ROW_LSB =
+                                                         16. So, row = mem_adr<29:16>.
+                                                         Refer to Cache-block Read Transaction Example, Cache-block Read Transaction Example." */
+	uint64_t ecc_ena                      : 1;  /**< ECC enable. When set, enables the 8b ECC check/correct logic. Should be 1 when used with
+                                                         DIMMs with ECC; 0, otherwise.
+                                                         * When this mode is turned on, DQ<71:64> on write operations contains the ECC code
+                                                         generated for the 64 bits of data which will be written in the memory. Later on read
+                                                         operations, will be used to check for single-bit error (which will be auto-corrected) and
+                                                         double-bit error (which will be reported).
+                                                         * When not turned on, DQ<71:64> are driven to 0. Please refer to SEC_ERR, DED_ERR,
+                                                         LMC()_FADR, and LMC()_ECC_SYND registers for diagnostics information when there is
+                                                         an error. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t ecc_ena                      : 1;
+	uint64_t row_lsb                      : 3;
+	uint64_t pbank_lsb                    : 4;
+	uint64_t idlepower                    : 3;
+	uint64_t forcewrite                   : 4;
+	uint64_t ecc_adr                      : 1;
+	uint64_t reset                        : 1;
+	uint64_t ref_zqcs_int                 : 22;
+	uint64_t early_dqx                    : 1;
+	uint64_t sref_with_dll                : 1;
+	uint64_t rank_ena                     : 1;
+	uint64_t rankmask                     : 4;
+	uint64_t mirrmask                     : 4;
+	uint64_t init_status                  : 4;
+	uint64_t early_unload_d0_r0           : 1;
+	uint64_t early_unload_d0_r1           : 1;
+	uint64_t early_unload_d1_r0           : 1;
+	uint64_t early_unload_d1_r1           : 1;
+	uint64_t scrz                         : 1;
+	uint64_t mode32b                      : 1;
+	uint64_t mode_x4dev                   : 1;
+	uint64_t bg2_enable                   : 1;
+	uint64_t lrdimm_ena                   : 1;
+#endif
+	} cn73xx;
+	struct cvmx_lmcx_config_cn73xx        cn78xx;
+	struct cvmx_lmcx_config_cn73xx        cn78xxp2;
 	struct cvmx_lmcx_config_cn61xx        cnf71xx;
+	struct cvmx_lmcx_config_cn73xx        cnf75xx;
 };
 typedef union cvmx_lmcx_config cvmx_lmcx_config_t;
 
@@ -3803,7 +4477,7 @@ union cvmx_lmcx_control {
 	uint64_t u64;
 	struct cvmx_lmcx_control_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t scramble_ena                 : 1;  /**< When set, will enable the scramble/descramble logic */
+	uint64_t scramble_ena                 : 1;  /**< When set, will enable the scramble/descramble logic. */
 	uint64_t thrcnt                       : 12; /**< Fine count. */
 	uint64_t persub                       : 8;  /**< Offset for DFA rate-matching. */
 	uint64_t thrmax                       : 4;  /**< Fine rate matching max bucket size. In conjunction with the coarse rate matching logic,
@@ -3818,67 +4492,50 @@ union cvmx_lmcx_control {
                                                          1 when a DFA read is slotted and by 2 when a LMC read/write is slotted, and rolls over
                                                          when CRM_MAX is reached.
                                                          0x0 = Reserved. */
-	uint64_t rodt_bprch                   : 1;  /**< When set, the turn-off time for the ODT pin during a
-                                                         RD cmd is delayed an additional CK cycle. */
-	uint64_t wodt_bprch                   : 1;  /**< When set, the turn-off time for the ODT pin during a
-                                                         WR cmd is delayed an additional CK cycle. */
-	uint64_t bprch                        : 2;  /**< Back Porch Enable: When set, the turn-on time for
-                                                         the default DDR_DQ/DQS drivers is delayed an additional BPRCH
-                                                         CK cycles.
-                                                         00 = 0 CKs
-                                                         01 = 1 CKs
-                                                         10 = 2 CKs
-                                                         11 = 3 CKs */
-	uint64_t ext_zqcs_dis                 : 1;  /**< Disable (external) auto-zqcs calibration
-                                                         When clear, LMC runs external ZQ calibration
-                                                         every LMC*_CONFIG[REF_ZQCS_INT] CK cycles. */
-	uint64_t int_zqcs_dis                 : 1;  /**< Disable (internal) auto-zqcs calibration
-                                                         When clear, LMC runs internal ZQ calibration
-                                                         every LMC*_CONFIG[REF_ZQCS_INT] CK cycles. */
-	uint64_t auto_dclkdis                 : 1;  /**< When 1, LMC will automatically shut off its internal
-                                                         clock to conserve power when there is no traffic. Note
-                                                         that this has no effect on the DDR3 PHY and pads clocks. */
-	uint64_t xor_bank                     : 1;  /**< If (XOR_BANK == 1), then
-                                                          bank[2:0]=address[9:7] ^ address[14:12]
-                                                         else
-                                                          bank[2:0]=address[9:7] */
-	uint64_t max_write_batch              : 4;  /**< Maximum number of consecutive writes to service before
-                                                         forcing reads to interrupt. */
-	uint64_t nxm_write_en                 : 1;  /**< NXM Write mode
-                                                         When clear, LMC discards writes to addresses that don't
-                                                         exist in the DRAM (as defined by LMC*_NXM configuration).
-                                                         When set, LMC completes writes to addresses that don't
-                                                         exist in the DRAM at an aliased address. */
-	uint64_t elev_prio_dis                : 1;  /**< Disable elevate priority logic.
-                                                         When set, writes are sent in
-                                                         regardless of priority information from L2C. */
-	uint64_t inorder_wr                   : 1;  /**< Send writes in order(regardless of priority) */
-	uint64_t inorder_rd                   : 1;  /**< Send reads in order (regardless of priority) */
-	uint64_t throttle_wr                  : 1;  /**< When set, use at most one IFB for writes */
-	uint64_t throttle_rd                  : 1;  /**< When set, use at most one IFB for reads */
-	uint64_t fprch2                       : 2;  /**< Front Porch Enable: When set, the turn-off
-                                                         time for the default DDR_DQ/DQS drivers is FPRCH2 CKs earlier.
-                                                         00 = 0 CKs
-                                                         01 = 1 CKs
-                                                         10 = 2 CKs
-                                                         11 = RESERVED */
-	uint64_t pocas                        : 1;  /**< Enable the Posted CAS feature of DDR3.
-                                                         This bit must be set whenever LMC*_MODEREG_PARAMS0[AL]!=0,
-                                                         and clear otherwise. */
-	uint64_t ddr2t                        : 1;  /**< Turn on the DDR 2T mode. 2 CK cycle window for CMD and
-                                                         address. This mode helps relieve setup time pressure
-                                                         on the Address and command bus which nominally have
-                                                         a very large fanout. Please refer to Micron's tech
-                                                         note tn_47_01 titled "DDR2-533 Memory Design Guide
-                                                         for Two Dimm Unbuffered Systems" for physical details. */
-	uint64_t bwcnt                        : 1;  /**< Bus utilization counter Clear.
-                                                         Clears the LMC*_OPS_CNT, LMC*_IFB_CNT, and
-                                                         LMC*_DCLK_CNT registers. SW should first write this
-                                                         field to a one, then write this field to a zero to
-                                                         clear the CSR's. */
-	uint64_t rdimm_ena                    : 1;  /**< Registered DIMM Enable - When set allows the use
-                                                         of JEDEC Registered DIMMs which require address and
-                                                         control bits to be registered in the controller. */
+	uint64_t rodt_bprch                   : 1;  /**< When set, the turn-off time for the ODT pin during a RD command is delayed an additional CK cycle. */
+	uint64_t wodt_bprch                   : 1;  /**< When set, the turn-off time for the ODT pin during a WR command is delayed an additional CK cycle. */
+	uint64_t bprch                        : 2;  /**< "Back porch enable. When set, the turn-on time for the default DDR#_DQ* /DDR#_DQS_*_P/N
+                                                         drivers is delayed an additional BPRCH CK cycles.
+                                                         0x0 = 0 CK cycles.
+                                                         0x1 = 1 CK cycles.
+                                                         0x2 = 2 CK cycles.
+                                                         0x3 = 3 CK cycles." */
+	uint64_t ext_zqcs_dis                 : 1;  /**< Disable (external) auto-ZQCS calibration. When clear, LMC runs external ZQ calibration
+                                                         every LMC()_CONFIG [REF_ZQCS_INT] CK cycles. */
+	uint64_t int_zqcs_dis                 : 1;  /**< Disable (internal) auto-ZQCS calibration. When clear, LMC runs internal ZQ calibration
+                                                         every LMC()_CONFIG [REF_ZQCS_INT] CK cycles. */
+	uint64_t auto_dclkdis                 : 1;  /**< When 1, LMC automatically shuts off its internal clock to conserve power when there is no
+                                                         traffic. Note that this has no effect on the DDR3/DDR4 PHY and pads clocks. */
+	uint64_t xor_bank                     : 1;  /**< Enable signal to XOR the bank bits. See LMC()_EXT_CONFIG2 on how LMC selects the L2C-LMC
+                                                         address bits. */
+	uint64_t max_write_batch              : 4;  /**< Maximum number of consecutive write operations to service before forcing read operations
+                                                         to interrupt. */
+	uint64_t nxm_write_en                 : 1;  /**< NXM write mode. When clear, LMC discards write operations to addresses that don't exist in
+                                                         the DRAM (as defined by LMC()_NXM configuration). When set, LMC completes write
+                                                         operations to addresses that don't exist in the DRAM at an aliased address. */
+	uint64_t elev_prio_dis                : 1;  /**< Disable elevate priority logic. When set, write operations are sent in regardless of
+                                                         priority information from L2C. */
+	uint64_t inorder_wr                   : 1;  /**< Send write operations in order (regardless of priority). */
+	uint64_t inorder_rd                   : 1;  /**< Send read operations in order (regardless of priority). */
+	uint64_t throttle_wr                  : 1;  /**< When set, use at most one IFB for write operations. */
+	uint64_t throttle_rd                  : 1;  /**< When set, use at most one IFB for read operations. */
+	uint64_t fprch2                       : 2;  /**< "Front porch enable. When set, the turn-off time for the default DDR#_DQ* /DDR#_DQS_*_P/N
+                                                         drivers is FPRCH2 CKs earlier.
+                                                         0x0 = 0 CK cycles.
+                                                         0x1 = 1 CK cycles.
+                                                         0x2 = 2 CK cycles.
+                                                         0x3 = Reserved." */
+	uint64_t pocas                        : 1;  /**< Reserved; must be zero. INTERNAL: Enable the posted CAS feature of DDR3. This bit must be
+                                                         set whenever LMC()_MODEREG_PARAMS0[AL]!=0. */
+	uint64_t ddr2t                        : 1;  /**< Turn on the DDR 2T mode. 2 CK-cycle window for CMD and address. This mode helps relieve
+                                                         setup time pressure on the address and command bus which nominally have a very large
+                                                         fanout. Please refer to Micron's tech note tn_47_01 titled DDR2-533 Memory Design Guide
+                                                         for Two Dimm Unbuffered Systems for physical details. */
+	uint64_t bwcnt                        : 1;  /**< Bus utilization counter clear. Clears the LMC()_OPS_CNT, LMC()_IFB_CNT, and
+                                                         LMC()_DCLK_CNT registers. To clear the CSRs, software should first write this field to
+                                                         a one, then write this field to a zero. */
+	uint64_t rdimm_ena                    : 1;  /**< Registered DIMM Enable. When set allows the use of JEDEC Registered DIMMs which require
+                                                         address and control bits to be registered in the controller. */
 #else
 	uint64_t rdimm_ena                    : 1;
 	uint64_t bwcnt                        : 1;
@@ -4200,8 +4857,11 @@ union cvmx_lmcx_control {
 	struct cvmx_lmcx_control_cn68xx       cn68xxp1;
 	struct cvmx_lmcx_control_s            cn70xx;
 	struct cvmx_lmcx_control_s            cn70xxp1;
+	struct cvmx_lmcx_control_s            cn73xx;
 	struct cvmx_lmcx_control_s            cn78xx;
+	struct cvmx_lmcx_control_s            cn78xxp2;
 	struct cvmx_lmcx_control_cn66xx       cnf71xx;
+	struct cvmx_lmcx_control_s            cnf75xx;
 };
 typedef union cvmx_lmcx_control cvmx_lmcx_control_t;
 
@@ -5053,6 +5713,156 @@ union cvmx_lmcx_ctl1 {
 typedef union cvmx_lmcx_ctl1 cvmx_lmcx_ctl1_t;
 
 /**
+ * cvmx_lmc#_dbtrain_ctl
+ *
+ * This register contains control bits that are used during the Data Buffer
+ * training sequence in DDR4 LRDIMM mode. When one of the data buffer training
+ * sequence is initiated, it uses the contents of this register to control
+ * its operation.
+ */
+union cvmx_lmcx_dbtrain_ctl {
+	uint64_t u64;
+	struct cvmx_lmcx_dbtrain_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_62_63               : 2;
+	uint64_t cmd_count_ext                : 2;  /**< Extension bits to the field DBTRAIN_CTL[READ_CMD_COUNT]. This enables the data
+                                                         buffer training sequence to send up to 128 read commmands. */
+	uint64_t db_output_impedance          : 3;  /**< Host Interface DQ/DQS Output Driver Impedance control.
+                                                         This is the default value used during Host Interface Write Leveling in LRDIMM
+                                                         environment, i.e., CONFIG[LRDIMM_ENA] = 1, SEQ_CTL[SEQ_SEL] = 0x6.
+                                                         0x0 = RZQ/6 (40 ohm).
+                                                         0x1 = RZQ/7 (34 ohm).
+                                                         0x2 = RZQ/5 (48 ohm).
+                                                         0x3-0x7 = Reserved. */
+	uint64_t db_sel                       : 1;  /**< Used when running Host Interface Write Leveling.
+                                                         0 = selects DIMM0's Data Buffer.
+                                                         1 = selects DIMM1's Data Buffer. */
+	uint64_t tccd_sel                     : 1;  /**< When set, the sequence uses MODEREG_PARAMS3[TCCD_L] to space out
+                                                         back-to-back read commands. Otherwise it will space out back-to-back
+                                                         reads with a default value of 4 cycles.
+                                                         While in DRAM MPR mode, reads from Page 0 may use tCCD_S or tCCD_L.
+                                                         Reads from Pages 1, 2 or 3 however must use tCCD_L, thereby requring
+                                                         this bit to be set. */
+	uint64_t rw_train                     : 1;  /**< When set, the DBTRAIN sequence will perform a Write to the DRAM
+                                                         memory array using burst patern that are set in the CSRs
+                                                         LMC()_GENERAL_PURPOSE0[DATA]<61:0>, LMC()_GENERAL_PURPOSE1[DATA]<61:0> and
+                                                         LMC()_GENERAL_PURPOSE2[DATA]<15:0>.
+                                                         This burst pattern gets shifted by one byte at every cycle.
+                                                         The sequence will then do the reads to the same location and compare
+                                                         the data coming back with this pattern.
+                                                         The bit-wise comparison result gets stored in
+                                                         LMC()_MPR_DATA0[MPR_DATA]<63:0> and LMC()_MPR_DATA1[MPR_DATA]<7:0>. */
+	uint64_t read_dq_count                : 7;  /**< The amount of cycles until a pulse is issued to sample the DQ into the
+                                                         MPR register. This bits control the timing of when to sample the data
+                                                         buffer training result. */
+	uint64_t read_cmd_count               : 5;  /**< The amount of Read Commands to be sent during the data buffer training.
+                                                         This can be set to zero in which case the sequence does not send any
+                                                         Read commands to accommodate for the DWL training mode. */
+	uint64_t write_ena                    : 1;  /**< Enables the write operation. This is mainly used to accomplish the MWD
+                                                         training sequence of the data buffer.
+                                                         LMC()_DBTRAIN_CTL[ACTIVATE] must be set to 1 for this to take effect. */
+	uint64_t activate                     : 1;  /**< Enables the activate command during the data buffer training sequence. */
+	uint64_t prank                        : 2;  /**< Physical Rank bits for Read/Write/Activate operation during the data buffer
+                                                         training. */
+	uint64_t lrank                        : 3;  /**< Logical Rank bits for Read/Write/Activate operation during the data buffer
+                                                         training. */
+	uint64_t row_a                        : 18; /**< The row address for the Activate command during dbtrain. */
+	uint64_t bg                           : 2;  /**< The Bank Group that the commands are directed to while in data buffer
+                                                         training sequence. */
+	uint64_t ba                           : 2;  /**< The bank address for the commands while in data buffer training sequence. */
+	uint64_t column_a                     : 13; /**< Column address for the Read/Write operation during the data buffer
+                                                         training. */
+#else
+	uint64_t column_a                     : 13;
+	uint64_t ba                           : 2;
+	uint64_t bg                           : 2;
+	uint64_t row_a                        : 18;
+	uint64_t lrank                        : 3;
+	uint64_t prank                        : 2;
+	uint64_t activate                     : 1;
+	uint64_t write_ena                    : 1;
+	uint64_t read_cmd_count               : 5;
+	uint64_t read_dq_count                : 7;
+	uint64_t rw_train                     : 1;
+	uint64_t tccd_sel                     : 1;
+	uint64_t db_sel                       : 1;
+	uint64_t db_output_impedance          : 3;
+	uint64_t cmd_count_ext                : 2;
+	uint64_t reserved_62_63               : 2;
+#endif
+	} s;
+	struct cvmx_lmcx_dbtrain_ctl_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_60_63               : 4;
+	uint64_t db_output_impedance          : 3;  /**< Host Interface DQ/DQS Output Driver Impedance control.
+                                                         This is the default value used during Host Interface Write Leveling in LRDIMM
+                                                         environment, i.e., LMC()_CONFIG[LRDIMM_ENA] = 1, LMC()_SEQ_CTL[SEQ_SEL] = 0x6.
+                                                         0x0 = RZQ/6 (40 ohm).
+                                                         0x1 = RZQ/7 (34 ohm).
+                                                         0x2 = RZQ/5 (48 ohm).
+                                                         0x3-0x7 = Reserved. */
+	uint64_t db_sel                       : 1;  /**< Used when running Host Interface Write Leveling.
+                                                         0 = selects DIMM0's Data Buffer.
+                                                         1 = selects DIMM1's Data Buffer. */
+	uint64_t tccd_sel                     : 1;  /**< When set, the sequence uses MODEREG_PARAMS3[TCCD_L] to space out
+                                                         back-to-back read commands. Otherwise it will space out back-to-back
+                                                         reads with a default value of 4 cycles.
+                                                         While in DRAM MPR mode, reads from Page 0 may use tCCD_S or tCCD_L.
+                                                         Reads from Pages 1, 2 or 3 however must use tCCD_L, thereby requring
+                                                         this bit to be set. */
+	uint64_t rw_train                     : 1;  /**< When set, the DBTRAIN sequence will perform a Write to the DRAM
+                                                         memory array using burst patern that are set in the CSRs
+                                                         LMC()_GENERAL_PURPOSE0[DATA]<61:0>, LMC()_GENERAL_PURPOSE1[DATA]<61:0> and
+                                                         LMC()_GENERAL_PURPOSE2[DATA]<15:0>.
+                                                         This burst pattern gets shifted by one byte at every cycle.
+                                                         The sequence will then do the reads to the same location and compare
+                                                         the data coming back with this pattern.
+                                                         The bit-wise comparison result gets stored in
+                                                         LMC()_MPR_DATA0[MPR_DATA]<63:0> and LMC()_MPR_DATA1[MPR_DATA]<7:0>. */
+	uint64_t read_dq_count                : 7;  /**< The amount of cycles until a pulse is issued to sample the DQ into the
+                                                         MPR register. This bits control the timing of when to sample the data
+                                                         buffer training result. */
+	uint64_t read_cmd_count               : 5;  /**< The amount of Read Commands to be sent during the data buffer training.
+                                                         This can be set to zero in which case the sequence does not send any
+                                                         Read commands to accommodate for the DWL training mode. */
+	uint64_t write_ena                    : 1;  /**< Enables the write operation. This is mainly used to accomplish the MWD
+                                                         training sequence of the data buffer.
+                                                         LMC()_DBTRAIN_CTL[ACTIVATE] must be set to 1 for this to take effect. */
+	uint64_t activate                     : 1;  /**< Enables the activate command during the data buffer training sequence. */
+	uint64_t prank                        : 2;  /**< Physical Rank bits for Read/Write/Activate operation during the data buffer
+                                                         training. */
+	uint64_t lrank                        : 3;  /**< Logical Rank bits for Read/Write/Activate operation during the data buffer
+                                                         training. */
+	uint64_t row_a                        : 18; /**< The row address for the Activate command during dbtrain. */
+	uint64_t bg                           : 2;  /**< The Bank Group that the commands are directed to while in data buffer
+                                                         training sequence. */
+	uint64_t ba                           : 2;  /**< The bank address for the commands while in data buffer training sequence. */
+	uint64_t column_a                     : 13; /**< Column address for the Read/Write operation during the data buffer
+                                                         training. */
+#else
+	uint64_t column_a                     : 13;
+	uint64_t ba                           : 2;
+	uint64_t bg                           : 2;
+	uint64_t row_a                        : 18;
+	uint64_t lrank                        : 3;
+	uint64_t prank                        : 2;
+	uint64_t activate                     : 1;
+	uint64_t write_ena                    : 1;
+	uint64_t read_cmd_count               : 5;
+	uint64_t read_dq_count                : 7;
+	uint64_t rw_train                     : 1;
+	uint64_t tccd_sel                     : 1;
+	uint64_t db_sel                       : 1;
+	uint64_t db_output_impedance          : 3;
+	uint64_t reserved_60_63               : 4;
+#endif
+	} cn73xx;
+	struct cvmx_lmcx_dbtrain_ctl_s        cn78xxp2;
+	struct cvmx_lmcx_dbtrain_ctl_s        cnf75xx;
+};
+typedef union cvmx_lmcx_dbtrain_ctl cvmx_lmcx_dbtrain_ctl_t;
+
+/**
  * cvmx_lmc#_dclk_cnt
  *
  * LMC_DCLK_CNT  = Performance Counters
@@ -5062,8 +5872,7 @@ union cvmx_lmcx_dclk_cnt {
 	uint64_t u64;
 	struct cvmx_lmcx_dclk_cnt_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t dclkcnt                      : 64; /**< Performance Counter
-                                                         64-bit counter that increments every CK cycle */
+	uint64_t dclkcnt                      : 64; /**< Performance counter. A 64-bit counter that increments every CK cycle. */
 #else
 	uint64_t dclkcnt                      : 64;
 #endif
@@ -5076,8 +5885,11 @@ union cvmx_lmcx_dclk_cnt {
 	struct cvmx_lmcx_dclk_cnt_s           cn68xxp1;
 	struct cvmx_lmcx_dclk_cnt_s           cn70xx;
 	struct cvmx_lmcx_dclk_cnt_s           cn70xxp1;
+	struct cvmx_lmcx_dclk_cnt_s           cn73xx;
 	struct cvmx_lmcx_dclk_cnt_s           cn78xx;
+	struct cvmx_lmcx_dclk_cnt_s           cn78xxp2;
 	struct cvmx_lmcx_dclk_cnt_s           cnf71xx;
+	struct cvmx_lmcx_dclk_cnt_s           cnf75xx;
 };
 typedef union cvmx_lmcx_dclk_cnt cvmx_lmcx_dclk_cnt_t;
 
@@ -5431,13 +6243,49 @@ typedef union cvmx_lmcx_ddr2_ctl cvmx_lmcx_ddr2_ctl_t;
 /**
  * cvmx_lmc#_ddr4_dimm_ctl
  *
- * This register is used only when LMC(0..3)_CONTROL[RDIMM_ENA] = 1. During an RCW initialization
- * sequence, this register controls LMC's write operations to the extended DDR4 control words in
- * the JEDEC standard registering clock driver on an RDIMM.
+ * Bits 0-21 of this register is used only when LMC()_CONTROL[RDIMM_ENA] = 1.
+ *
+ * Bits 22-27 is used only when LMC()_CONFIG[LRDIMM_ENA] = 1 AND
+ * LMC()_MR_MPR_CTL[MR_WR_PBA_ENABLE] = 1.
+ *
+ * During an RCW initialization sequence, bits 0-21 controls LMC's write
+ * operations to the extended DDR4 control words in the JEDEC standard
+ * registering clock driver on an RDIMM.
+ *
+ * During PBA mode of an MRW sequence, bits 22-27 controls the Buffer Configuration
+ * Control Word F0BC1x settings during the BCW write.
  */
 union cvmx_lmcx_ddr4_dimm_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_ddr4_dimm_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_28_63               : 36;
+	uint64_t rank_timing_enable           : 1;  /**< Package Rank Timing Alignment Enable bit for the DDR4 LRDIMM Buffer Configuration Control
+                                                         Word F0BC1x DA[7]. Used during PBA BCW Write through the MRW sequence. */
+	uint64_t bodt_trans_mode              : 1;  /**< BODT input handling in Transparent Mode for the DDR4 LRDIMM Buffer Conifguration Control
+                                                         Word F0BC1x. Used during PBA BCW Write through the MRW sequence. */
+	uint64_t trans_mode_ena               : 1;  /**< Transparent Mode Enable bit for DDR4 LRDIMM Buffer Configuration Control Word
+                                                         F0BC1x DA[5]. Used during PBA BCW Write through the MRW sequence. */
+	uint64_t read_preamble_mode           : 1;  /**< Read Preamble Training Mode Enable bit for DDR4 LRDIMM Buffer Configuration Control Word
+                                                         F0BC1x DA[4]. Used during PBA BCW Write through the MRW sequence. */
+	uint64_t buff_config_da3              : 1;  /**< Reserved setting value in F0BC1x DA3. Used during PBA BCW Write through the MRW sequence. */
+	uint64_t mpr_over_ena                 : 1;  /**< MPR Override Mode Enable bit for the DDR4 LRDIMM Buffer Configuration Control Word
+                                                         F0BC1x DA[1]. Used during PBA BCW Write through the MRW sequence. */
+	uint64_t ddr4_dimm1_wmask             : 11; /**< DIMM1 write mask. If (DIMM1_WMASK[n] = 1), write DIMM1.RCn. */
+	uint64_t ddr4_dimm0_wmask             : 11; /**< DIMM0 write mask. If (DIMM0_WMASK[n] = 1), write DIMM0.RCn. */
+#else
+	uint64_t ddr4_dimm0_wmask             : 11;
+	uint64_t ddr4_dimm1_wmask             : 11;
+	uint64_t mpr_over_ena                 : 1;
+	uint64_t buff_config_da3              : 1;
+	uint64_t read_preamble_mode           : 1;
+	uint64_t trans_mode_ena               : 1;
+	uint64_t bodt_trans_mode              : 1;
+	uint64_t rank_timing_enable           : 1;
+	uint64_t reserved_28_63               : 36;
+#endif
+	} s;
+	struct cvmx_lmcx_ddr4_dimm_ctl_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_22_63               : 42;
 	uint64_t ddr4_dimm1_wmask             : 11; /**< DIMM1 write mask. If (DIMM1_WMASK[n] = 1), write DIMM1.RCn. */
@@ -5447,10 +6295,12 @@ union cvmx_lmcx_ddr4_dimm_ctl {
 	uint64_t ddr4_dimm1_wmask             : 11;
 	uint64_t reserved_22_63               : 42;
 #endif
-	} s;
-	struct cvmx_lmcx_ddr4_dimm_ctl_s      cn70xx;
-	struct cvmx_lmcx_ddr4_dimm_ctl_s      cn70xxp1;
+	} cn70xx;
+	struct cvmx_lmcx_ddr4_dimm_ctl_cn70xx cn70xxp1;
+	struct cvmx_lmcx_ddr4_dimm_ctl_s      cn73xx;
 	struct cvmx_lmcx_ddr4_dimm_ctl_s      cn78xx;
+	struct cvmx_lmcx_ddr4_dimm_ctl_s      cn78xxp2;
+	struct cvmx_lmcx_ddr4_dimm_ctl_s      cnf75xx;
 };
 typedef union cvmx_lmcx_ddr4_dimm_ctl cvmx_lmcx_ddr4_dimm_ctl_t;
 
@@ -5482,7 +6332,8 @@ union cvmx_lmcx_ddr_pll_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_ddr_pll_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_44_63               : 20;
+	uint64_t reserved_45_63               : 19;
+	uint64_t dclk_alt_refclk_sel          : 1;  /**< Select alternate reference clock for DCLK PLL. */
 	uint64_t bwadj                        : 12; /**< Bandwidth control for DCLK PLLs. */
 	uint64_t dclk_invert                  : 1;  /**< Invert dclk that feeds LMC/DDR at the south side of the chip. */
 	uint64_t phy_dcok                     : 1;  /**< Set to power up PHY logic after setting LMC()_DDR_PLL_CTL[DDR4_MODE]. */
@@ -5494,10 +6345,8 @@ union cvmx_lmcx_ddr_pll_ctl {
 	uint64_t cps                          : 3;  /**< PLL charge-pump current */
 	uint64_t reserved_8_10                : 3;
 	uint64_t reset_n                      : 1;  /**< PLL reset */
-	uint64_t clkf                         : 7;  /**< Multiply reference by CLKF
-                                                         32 <= CLKF <= 64
-                                                         LMC+DFM PLL frequency = 50 * CLKF
-                                                         min = 1.6 GHz, max = 3.2 GHz */
+	uint64_t clkf                         : 7;  /**< Multiply reference by CLKF. 32 <= CLKF <= 64. LMC PLL frequency = 50 * CLKF. min = 1.6
+                                                         GHz, max = 3.2 GHz. */
 #else
 	uint64_t clkf                         : 7;
 	uint64_t reset_n                      : 1;
@@ -5511,7 +6360,8 @@ union cvmx_lmcx_ddr_pll_ctl {
 	uint64_t phy_dcok                     : 1;
 	uint64_t dclk_invert                  : 1;
 	uint64_t bwadj                        : 12;
-	uint64_t reserved_44_63               : 20;
+	uint64_t dclk_alt_refclk_sel          : 1;
+	uint64_t reserved_45_63               : 19;
 #endif
 	} s;
 	struct cvmx_lmcx_ddr_pll_ctl_cn61xx {
@@ -5630,9 +6480,10 @@ union cvmx_lmcx_ddr_pll_ctl {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_ddr_pll_ctl_cn70xx   cn70xxp1;
-	struct cvmx_lmcx_ddr_pll_ctl_cn78xx {
+	struct cvmx_lmcx_ddr_pll_ctl_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_44_63               : 20;
+	uint64_t reserved_45_63               : 19;
+	uint64_t dclk_alt_refclk_sel          : 1;  /**< Select alternate reference clock for DCLK PLL. */
 	uint64_t bwadj                        : 12; /**< Bandwidth control for DCLK PLLs. */
 	uint64_t dclk_invert                  : 1;  /**< Invert dclk that feeds LMC/DDR at the south side of the chip. */
 	uint64_t phy_dcok                     : 1;  /**< Set to power up PHY logic after setting LMC()_DDR_PLL_CTL[DDR4_MODE]. */
@@ -5650,18 +6501,23 @@ union cvmx_lmcx_ddr_pll_ctl {
                                                          jtg_test_mode) by about 160 microseconds to ensure that lock is achieved. */
 	uint64_t ddr_div_reset                : 1;  /**< DDR postscalar divider reset. */
 	uint64_t ddr_ps_en                    : 4;  /**< DDR postscalar divide ratio. Determines the LMC CK speed.
-                                                         0x0 = Divide LMC PLL by 1.
-                                                         0x1 = Divide LMC PLL by 2.
-                                                         0x2 = Divide LMC PLL by 3.
-                                                         0x3 = Divide LMC PLL by 4.
-                                                         0x4 = Divide LMC PLL by 5.
-                                                         0x5 = Divide LMC PLL by 6.
-                                                         0x6 = Divide LMC PLL by 7.
-                                                         0x7 = Divide LMC PLL by 8.
-                                                         0x8 = Divide LMC PLL by 10.
-                                                         0x9 = Divide LMC PLL by 12.
-                                                         0xA-0xF = Reserved.
-                                                         DDR_PS_EN is not used when DDR_DIV_RESET = 1 */
+                                                         0x0 = divide LMC PLL by 1.
+                                                         0x1 = divide LMC PLL by 2.
+                                                         0x2 = divide LMC PLL by 3.
+                                                         0x3 = divide LMC PLL by 4.
+                                                         0x4 = divide LMC PLL by 5.
+                                                         0x5 = divide LMC PLL by 6.
+                                                         0x6 = divide LMC PLL by 7.
+                                                         0x7 = divide LMC PLL by 8.
+                                                         0x8 = divide LMC PLL by 10.
+                                                         0x9 = divide LMC PLL by 12.
+                                                         0xA = Reserved.
+                                                         0xB = Reserved.
+                                                         0xC = Reserved.
+                                                         0xD = Reserved.
+                                                         0xE = Reserved.
+                                                         0xF = Reserved.
+                                                         DDR_PS_EN is not used when DDR_DIV_RESET = 1. */
 	uint64_t reserved_9_17                : 9;
 	uint64_t clkf_ext                     : 1;  /**< A 1-bit extension to the CLKF register to support for DDR4-2666. */
 	uint64_t reset_n                      : 1;  /**< PLL reset */
@@ -5683,10 +6539,14 @@ union cvmx_lmcx_ddr_pll_ctl {
 	uint64_t phy_dcok                     : 1;
 	uint64_t dclk_invert                  : 1;
 	uint64_t bwadj                        : 12;
-	uint64_t reserved_44_63               : 20;
+	uint64_t dclk_alt_refclk_sel          : 1;
+	uint64_t reserved_45_63               : 19;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_lmcx_ddr_pll_ctl_cn73xx   cn78xx;
+	struct cvmx_lmcx_ddr_pll_ctl_cn73xx   cn78xxp2;
 	struct cvmx_lmcx_ddr_pll_ctl_cn61xx   cnf71xx;
+	struct cvmx_lmcx_ddr_pll_ctl_cn73xx   cnf75xx;
 };
 typedef union cvmx_lmcx_ddr_pll_ctl cvmx_lmcx_ddr_pll_ctl_t;
 
@@ -5791,7 +6651,10 @@ union cvmx_lmcx_dimmx_ddr4_params0 {
 	} s;
 	struct cvmx_lmcx_dimmx_ddr4_params0_s cn70xx;
 	struct cvmx_lmcx_dimmx_ddr4_params0_s cn70xxp1;
+	struct cvmx_lmcx_dimmx_ddr4_params0_s cn73xx;
 	struct cvmx_lmcx_dimmx_ddr4_params0_s cn78xx;
+	struct cvmx_lmcx_dimmx_ddr4_params0_s cn78xxp2;
+	struct cvmx_lmcx_dimmx_ddr4_params0_s cnf75xx;
 };
 typedef union cvmx_lmcx_dimmx_ddr4_params0 cvmx_lmcx_dimmx_ddr4_params0_t;
 
@@ -5818,7 +6681,10 @@ union cvmx_lmcx_dimmx_ddr4_params1 {
 	} s;
 	struct cvmx_lmcx_dimmx_ddr4_params1_s cn70xx;
 	struct cvmx_lmcx_dimmx_ddr4_params1_s cn70xxp1;
+	struct cvmx_lmcx_dimmx_ddr4_params1_s cn73xx;
 	struct cvmx_lmcx_dimmx_ddr4_params1_s cn78xx;
+	struct cvmx_lmcx_dimmx_ddr4_params1_s cn78xxp2;
+	struct cvmx_lmcx_dimmx_ddr4_params1_s cnf75xx;
 };
 typedef union cvmx_lmcx_dimmx_ddr4_params1 cvmx_lmcx_dimmx_ddr4_params1_t;
 
@@ -5829,29 +6695,30 @@ typedef union cvmx_lmcx_dimmx_ddr4_params1 cvmx_lmcx_dimmx_ddr4_params1_t;
  * (registered) DIMM. The control words allow optimization of the device properties for different
  * raw card designs. Note that LMC only uses this CSR when LMC()_CONTROL[RDIMM_ENA]=1. During
  * a power-up/init sequence, LMC writes these fields into the control words in the JEDEC standard
- * SSTE32882 registering clock driver on an RDIMM when corresponding
+ * DDR3 SSTE32882 registering clock driver or DDR4 Register DDR4RCD01 on an RDIMM when
+ * corresponding
  * LMC()_DIMM_CTL[DIMM*_WMASK] bits are set.
  */
 union cvmx_lmcx_dimmx_params {
 	uint64_t u64;
 	struct cvmx_lmcx_dimmx_params_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t rc15                         : 4;  /**< RC15, Reserved */
-	uint64_t rc14                         : 4;  /**< RC14, Reserved */
-	uint64_t rc13                         : 4;  /**< RC13, Reserved */
-	uint64_t rc12                         : 4;  /**< RC12, Reserved */
-	uint64_t rc11                         : 4;  /**< RC11, Encoding for RDIMM Operating VDD */
-	uint64_t rc10                         : 4;  /**< RC10, Encoding for RDIMM Operating Speed */
-	uint64_t rc9                          : 4;  /**< RC9 , Power Savings Settings Control Word */
-	uint64_t rc8                          : 4;  /**< RC8 , Additional IBT Settings Control Word */
-	uint64_t rc7                          : 4;  /**< RC7 , Reserved */
-	uint64_t rc6                          : 4;  /**< RC6 , Reserved */
-	uint64_t rc5                          : 4;  /**< RC5 , CK Driver Characterstics Control Word */
-	uint64_t rc4                          : 4;  /**< RC4 , Control Signals Driver Characteristics Control Word */
-	uint64_t rc3                          : 4;  /**< RC3 , CA Signals Driver Characterstics Control Word */
-	uint64_t rc2                          : 4;  /**< RC2 , Timing Control Word */
-	uint64_t rc1                          : 4;  /**< RC1 , Clock Driver Enable Control Word */
-	uint64_t rc0                          : 4;  /**< RC0 , Global Features Control Word */
+	uint64_t rc15                         : 4;  /**< RC15, Reserved. */
+	uint64_t rc14                         : 4;  /**< RC14, Reserved. */
+	uint64_t rc13                         : 4;  /**< RC13, Reserved. */
+	uint64_t rc12                         : 4;  /**< RC12, Reserved. */
+	uint64_t rc11                         : 4;  /**< RC11, Encoding for RDIMM operating VDD. */
+	uint64_t rc10                         : 4;  /**< RC10, Encoding for RDIMM operating speed. */
+	uint64_t rc9                          : 4;  /**< RC9, Power savings settings control word. */
+	uint64_t rc8                          : 4;  /**< RC8, Additional IBT settings control word. */
+	uint64_t rc7                          : 4;  /**< RC7, Reserved. */
+	uint64_t rc6                          : 4;  /**< RC6, Reserved. */
+	uint64_t rc5                          : 4;  /**< RC5, CK driver characteristics control word. */
+	uint64_t rc4                          : 4;  /**< RC4, Control signals driver characteristics control word. */
+	uint64_t rc3                          : 4;  /**< RC3, CA signals driver characteristics control word. */
+	uint64_t rc2                          : 4;  /**< RC2, Timing control word. */
+	uint64_t rc1                          : 4;  /**< RC1, Clock driver enable control word. */
+	uint64_t rc0                          : 4;  /**< RC0, Global features control word. */
 #else
 	uint64_t rc0                          : 4;
 	uint64_t rc1                          : 4;
@@ -5879,8 +6746,11 @@ union cvmx_lmcx_dimmx_params {
 	struct cvmx_lmcx_dimmx_params_s       cn68xxp1;
 	struct cvmx_lmcx_dimmx_params_s       cn70xx;
 	struct cvmx_lmcx_dimmx_params_s       cn70xxp1;
+	struct cvmx_lmcx_dimmx_params_s       cn73xx;
 	struct cvmx_lmcx_dimmx_params_s       cn78xx;
+	struct cvmx_lmcx_dimmx_params_s       cn78xxp2;
 	struct cvmx_lmcx_dimmx_params_s       cnf71xx;
+	struct cvmx_lmcx_dimmx_params_s       cnf75xx;
 };
 typedef union cvmx_lmcx_dimmx_params cvmx_lmcx_dimmx_params_t;
 
@@ -5889,37 +6759,27 @@ typedef union cvmx_lmcx_dimmx_params cvmx_lmcx_dimmx_params_t;
  *
  * Note that this CSR is only used when LMC()_CONTROL[RDIMM_ENA] = 1. During a power-up/init
  * sequence, this CSR controls LMC's write operations to the control words in the JEDEC standard
- * SSTE32882 registering clock driver on an RDIMM.
+ * DDR3 SSTE32882 registering clock driver or DDR4 Register DDR4RCD01 on an RDIMM.
  */
 union cvmx_lmcx_dimm_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_dimm_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_46_63               : 18;
-	uint64_t parity                       : 1;  /**< Parity
-                                                         The PAR_IN input of a registered DIMM should be
-                                                         tied off. LMC adjusts the value of the DDR_WE_L (DWE#)
-                                                         pin during DDR3 register part control word writes to
-                                                         ensure the parity is observed correctly by the receiving
-                                                         SSTE32882 register part.
-                                                         When PAR_IN is grounded, PARITY should be cleared to 0. */
-	uint64_t tcws                         : 13; /**< LMC waits for this time period before and after a RDIMM
-                                                         Control Word Access during a power-up/init SEQUENCE.
-                                                         TCWS is in multiples of 8 CK cycles.
-                                                         Set TCWS (CSR field) = RNDUP[tcws(ns)/(8*tCYC(ns))],
-                                                         where tCWS is the desired time (ns), and tCYC(ns)
-                                                         is the DDR clock frequency (not data rate).
-                                                         TYP=0x4e0 (equivalent to 15us) when changing
-                                                         clock timing (RC2.DBA1, RC6.DA4, RC10.DA3, RC10.DA4,
-                                                         RC11.DA3, and RC11.DA4)
-                                                         TYP=0x8, otherwise
+	uint64_t parity                       : 1;  /**< "Parity. The Par_In input of a registered DIMM should be tied off. LMC adjusts the value
+                                                         of the DDR_WE_L (DWE#) pin during DDR3 register part control word writes to ensure the
+                                                         parity is observed correctly by the receiving DDR3 SSTE32882 or DDR4 DDR4RCD01 register
+                                                         part. When Par_In is grounded, PARITY should be cleared to 0." */
+	uint64_t tcws                         : 13; /**< LMC waits for this time period before and after a RDIMM control word access during a
+                                                         power-up/init SEQUENCE. TCWS is in multiples of 8 CK cycles.
+                                                         Set TCWS (CSR field) = RNDUP[TCWS(ns)/(8 * TCYC(ns))], where TCWS is the desired time
+                                                         (ns), and TCYC(ns) is the DDR clock frequency (not data rate).
+                                                         TYP = 0x4E0 (equivalent to 15 us) when changing clock timing (RC2.DBA1, RC6.DA4, RC10.DA3,
+                                                         RC10.DA4, RC11.DA3, and RC11.DA4)
+                                                         TYP = 0x8, otherwise
                                                          0x0 = Reserved */
-	uint64_t dimm1_wmask                  : 16; /**< DIMM1 Write Mask
-                                                         if (DIMM1_WMASK[n] = 1)
-                                                             Write DIMM1.RCn */
-	uint64_t dimm0_wmask                  : 16; /**< DIMM0 Write Mask
-                                                         if (DIMM0_WMASK[n] = 1)
-                                                             Write DIMM0.RCn */
+	uint64_t dimm1_wmask                  : 16; /**< DIMM1 write mask. If (DIMM1_WMASK[n] = 1), write DIMM1.RCn. */
+	uint64_t dimm0_wmask                  : 16; /**< DIMM0 write mask. If (DIMM0_WMASK[n] = 1), write DIMM0.RCn. */
 #else
 	uint64_t dimm0_wmask                  : 16;
 	uint64_t dimm1_wmask                  : 16;
@@ -5936,8 +6796,11 @@ union cvmx_lmcx_dimm_ctl {
 	struct cvmx_lmcx_dimm_ctl_s           cn68xxp1;
 	struct cvmx_lmcx_dimm_ctl_s           cn70xx;
 	struct cvmx_lmcx_dimm_ctl_s           cn70xxp1;
+	struct cvmx_lmcx_dimm_ctl_s           cn73xx;
 	struct cvmx_lmcx_dimm_ctl_s           cn78xx;
+	struct cvmx_lmcx_dimm_ctl_s           cn78xxp2;
 	struct cvmx_lmcx_dimm_ctl_s           cnf71xx;
+	struct cvmx_lmcx_dimm_ctl_s           cnf75xx;
 };
 typedef union cvmx_lmcx_dimm_ctl cvmx_lmcx_dimm_ctl_t;
 
@@ -6095,8 +6958,11 @@ union cvmx_lmcx_dll_ctl2 {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_dll_ctl2_cn70xx      cn70xxp1;
+	struct cvmx_lmcx_dll_ctl2_cn70xx      cn73xx;
 	struct cvmx_lmcx_dll_ctl2_cn70xx      cn78xx;
+	struct cvmx_lmcx_dll_ctl2_cn70xx      cn78xxp2;
 	struct cvmx_lmcx_dll_ctl2_cn61xx      cnf71xx;
+	struct cvmx_lmcx_dll_ctl2_cn70xx      cnf75xx;
 };
 typedef union cvmx_lmcx_dll_ctl2 cvmx_lmcx_dll_ctl2_t;
 
@@ -6110,9 +6976,29 @@ union cvmx_lmcx_dll_ctl3 {
 	uint64_t u64;
 	struct cvmx_lmcx_dll_ctl3_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_0_63                : 64;
+	uint64_t reserved_50_63               : 14;
+	uint64_t wr_deskew_ena                : 1;  /**< When set, it enables the write bit deskew feature. */
+	uint64_t wr_deskew_ld                 : 1;  /**< When set, the bit deskew settings in DLL_CTL3[OFFSET] gets loaded to
+                                                         the designated byte DLL_CTL3[BYTE_SEL] and bit DLL_CTL3[BIT_SELECT]
+                                                         for write bit deskew. This is a oneshot and clears itself each time
+                                                         it is set. */
+	uint64_t bit_select                   : 4;  /**< 0x0-0x7 = Selects bit 0 - bit 8 for write deskew setting assignment.
+                                                         0x8 = Selects dbi for write deskew setting assignment.
+                                                         0x9 = No-Op
+                                                         0xA = Reuse deskew setting on.
+                                                         0xB = Reuse deskew setting off.
+                                                         0xC = Vref bypass setting load.
+                                                         0xD = Vref bypass on.
+                                                         0xE = Vref bypass off.
+                                                         0xF = Bit select reset. Clear write deskew settings to default value 0x40 in each DQ bit.
+                                                         Also sets Vref bypass to off and deskew reuse setting to off. */
+	uint64_t reserved_0_43                : 44;
 #else
-	uint64_t reserved_0_63                : 64;
+	uint64_t reserved_0_43                : 44;
+	uint64_t bit_select                   : 4;
+	uint64_t wr_deskew_ld                 : 1;
+	uint64_t wr_deskew_ena                : 1;
+	uint64_t reserved_50_63               : 14;
 #endif
 	} s;
 	struct cvmx_lmcx_dll_ctl3_cn61xx {
@@ -6296,8 +7182,79 @@ union cvmx_lmcx_dll_ctl3 {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_dll_ctl3_cn70xx      cn70xxp1;
-	struct cvmx_lmcx_dll_ctl3_cn70xx      cn78xx;
+	struct cvmx_lmcx_dll_ctl3_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_50_63               : 14;
+	uint64_t wr_deskew_ena                : 1;  /**< When set, it enables the write bit deskew feature. */
+	uint64_t wr_deskew_ld                 : 1;  /**< When set, the bit deskew settings in DLL_CTL3[OFFSET] gets loaded to
+                                                         the designated byte DLL_CTL3[BYTE_SEL] and bit DLL_CTL3[BIT_SELECT]
+                                                         for write bit deskew. This is a oneshot and clears itself each time
+                                                         it is set. */
+	uint64_t bit_select                   : 4;  /**< 0x0-0x7 = Selects bit 0 - bit 8 for write deskew setting assignment.
+                                                         0x8 = Selects dbi for write deskew setting assignment.
+                                                         0x9 = No-Op
+                                                         0xA = Reuse deskew setting on.
+                                                         0xB = Reuse deskew setting off.
+                                                         0xC = Vref bypass setting load.
+                                                         0xD = Vref bypass on.
+                                                         0xE = Vref bypass off.
+                                                         0xF = Bit select reset. Clear write deskew settings to default value 0x40 in each DQ bit.
+                                                         Also sets Vref bypass to off and deskew reuse setting to off. */
+	uint64_t dclk90_fwd                   : 1;  /**< When set to one, clock-delay information is forwarded to the neighboring LMC. See LMC CK
+                                                         Locak Initialization step for the LMC bring-up sequence.
+                                                         INTERNAL: Generate a one cycle pulse to forward setting. This is a oneshot and clears
+                                                         itself each time it is set. */
+	uint64_t ddr_90_dly_byp               : 1;  /**< Reserved; must be zero. INTERNAL: Bypass DDR90_DLY in clock tree. */
+	uint64_t dclk90_recal_dis             : 1;  /**< Disable periodic recalibration of DDR90 delay line in. */
+	uint64_t dclk90_byp_sel               : 1;  /**< Bypass setting select for DDR90 delay line. */
+	uint64_t dclk90_byp_setting           : 9;  /**< Bypass setting for DDR90 delay line. */
+	uint64_t dll_fast                     : 1;  /**< Reserved; must be zero. INTERNAL: DLL lock, 0=DLL locked. */
+	uint64_t dll90_setting                : 9;  /**< Reserved; must be zero. INTERNAL: Encoded DLL settings. Works in conjunction with
+                                                         DLL90_BYTE_SEL. */
+	uint64_t fine_tune_mode               : 1;  /**< DLL fine tune mode. 0 = disabled; 1 = enable. When enabled, calibrate internal PHY DLL
+                                                         every LMC()_CONFIG[REF_ZQCS_INT] CK cycles. */
+	uint64_t dll_mode                     : 1;  /**< Reserved; must be zero. INTERNAL: DLL mode. */
+	uint64_t dll90_byte_sel               : 4;  /**< Observe DLL settings for selected byte.
+                                                         0x0 = byte 0.
+                                                         0x1 = byte 1.
+                                                         - ...
+                                                         0x8: byte 8.
+                                                         0x9-0xF: reserved. */
+	uint64_t offset_ena                   : 1;  /**< Reserved; must be zero. INTERNAL: Offset enable. 1=enable. */
+	uint64_t load_offset                  : 1;  /**< Reserved; must be zero. INTERNAL: Load offset. 0=disable, 1=generate a one cycle pulse to
+                                                         the PHY. This field is a oneshot and clears itself each time it is set. */
+	uint64_t mode_sel                     : 2;  /**< Reserved; must be zero. INTERNAL: Mode select. 0x0 = reset, 0x1 = write, 0x2 = read, 0x3 =
+                                                         write and read. */
+	uint64_t byte_sel                     : 4;  /**< Reserved; must be zero. INTERNAL: Byte select. 0x0 = no byte, 0x1 = byte 0, ..., 0x9 =
+                                                         byte 8, 0xA = all bytes, 0xB-0xF = Reserved. */
+	uint64_t offset                       : 7;  /**< Reserved; must be zero. INTERNAL: Write/read offset setting. <5:0>: offset (not
+                                                         two's-complement), <5>: 0 = increment, 1 = decrement. */
+#else
+	uint64_t offset                       : 7;
+	uint64_t byte_sel                     : 4;
+	uint64_t mode_sel                     : 2;
+	uint64_t load_offset                  : 1;
+	uint64_t offset_ena                   : 1;
+	uint64_t dll90_byte_sel               : 4;
+	uint64_t dll_mode                     : 1;
+	uint64_t fine_tune_mode               : 1;
+	uint64_t dll90_setting                : 9;
+	uint64_t dll_fast                     : 1;
+	uint64_t dclk90_byp_setting           : 9;
+	uint64_t dclk90_byp_sel               : 1;
+	uint64_t dclk90_recal_dis             : 1;
+	uint64_t ddr_90_dly_byp               : 1;
+	uint64_t dclk90_fwd                   : 1;
+	uint64_t bit_select                   : 4;
+	uint64_t wr_deskew_ld                 : 1;
+	uint64_t wr_deskew_ena                : 1;
+	uint64_t reserved_50_63               : 14;
+#endif
+	} cn73xx;
+	struct cvmx_lmcx_dll_ctl3_cn73xx      cn78xx;
+	struct cvmx_lmcx_dll_ctl3_cn73xx      cn78xxp2;
 	struct cvmx_lmcx_dll_ctl3_cn61xx      cnf71xx;
+	struct cvmx_lmcx_dll_ctl3_cn73xx      cnf75xx;
 };
 typedef union cvmx_lmcx_dll_ctl3 cvmx_lmcx_dll_ctl3_t;
 
@@ -6323,16 +7280,15 @@ union cvmx_lmcx_dual_memcfg {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_20_63               : 44;
 	uint64_t bank8                        : 1;  /**< See LMC_DDR2_CTL[BANK8] */
-	uint64_t row_lsb                      : 3;  /**< See LMC*_CONFIG[ROW_LSB] */
+	uint64_t row_lsb                      : 3;  /**< Encoding used to determine which memory address bit position represents the low order DDR
+                                                         ROW address. Refer to
+                                                         LMC()_CONFIG[ROW_LSB].
+                                                         Refer to Cache-block Read Transaction Example. */
 	uint64_t reserved_8_15                : 8;
-	uint64_t cs_mask                      : 8;  /**< Chip select mask.
-                                                         This mask corresponds to the 8 chip selects for a memory
-                                                         configuration.  Each reference address will assert one of
-                                                         the chip selects.  If that chip select has its
-                                                         corresponding CS_MASK bit set, then the "config1"
-                                                         parameters are used, otherwise the "config0" parameters
-                                                         are used.  See additional notes below.
-                                                         [7:4] *UNUSED IN 6xxx* */
+	uint64_t cs_mask                      : 8;  /**< Chip-select mask. This mask corresponds to the four chip-select signals for a memory
+                                                         configuration. Each reference address asserts one of the chip-select signals. If that
+                                                         chip-select signal has its corresponding CS_MASK bit set, then the config1 parameters are
+                                                         used, otherwise the config0 parameters are used. */
 #else
 	uint64_t cs_mask                      : 8;
 	uint64_t reserved_8_15                : 8;
@@ -6393,8 +7349,11 @@ union cvmx_lmcx_dual_memcfg {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_dual_memcfg_cn70xx   cn70xxp1;
+	struct cvmx_lmcx_dual_memcfg_cn70xx   cn73xx;
 	struct cvmx_lmcx_dual_memcfg_cn70xx   cn78xx;
+	struct cvmx_lmcx_dual_memcfg_cn70xx   cn78xxp2;
 	struct cvmx_lmcx_dual_memcfg_cn61xx   cnf71xx;
+	struct cvmx_lmcx_dual_memcfg_cn70xx   cnf75xx;
 };
 typedef union cvmx_lmcx_dual_memcfg cvmx_lmcx_dual_memcfg_t;
 
@@ -6430,7 +7389,10 @@ union cvmx_lmcx_ecc_parity_test {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
+	struct cvmx_lmcx_ecc_parity_test_s    cn73xx;
 	struct cvmx_lmcx_ecc_parity_test_s    cn78xx;
+	struct cvmx_lmcx_ecc_parity_test_s    cn78xxp2;
+	struct cvmx_lmcx_ecc_parity_test_s    cnf75xx;
 };
 typedef union cvmx_lmcx_ecc_parity_test cvmx_lmcx_ecc_parity_test_t;
 
@@ -6445,26 +7407,14 @@ union cvmx_lmcx_ecc_synd {
 	struct cvmx_lmcx_ecc_synd_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t mrdsyn3                      : 8;  /**< MRD ECC Syndrome Quad3
-                                                         MRDSYN3 corresponds to DQ[63:0]_c1_p1
-                                                         In 32b mode, ecc is calculated on 4 cycle worth of data
-                                                         MRDSYN3 corresponds to [DQ[31:0]_c3_p1, DQ[31:0]_c3_p0]
-                                                           where _cC_pP denotes cycle C and phase P */
-	uint64_t mrdsyn2                      : 8;  /**< MRD ECC Syndrome Quad2
-                                                         MRDSYN2 corresponds to DQ[63:0]_c1_p0
-                                                         In 32b mode, ecc is calculated on 4 cycle worth of data
-                                                         MRDSYN2 corresponds to [DQ[31:0]_c2_p1, DQ[31:0]_c2_p0]
-                                                           where _cC_pP denotes cycle C and phase P */
-	uint64_t mrdsyn1                      : 8;  /**< MRD ECC Syndrome Quad1
-                                                         MRDSYN1 corresponds to DQ[63:0]_c0_p1
-                                                         In 32b mode, ecc is calculated on 4 cycle worth of data
-                                                         MRDSYN1 corresponds to [DQ[31:0]_c1_p1, DQ[31:0]_c1_p0]
-                                                           where _cC_pP denotes cycle C and phase P */
-	uint64_t mrdsyn0                      : 8;  /**< MRD ECC Syndrome Quad0
-                                                         MRDSYN0 corresponds to DQ[63:0]_c0_p0
-                                                         In 32b mode, ecc is calculated on 4 cycle worth of data
-                                                         MRDSYN0 corresponds to [DQ[31:0]_c0_p1, DQ[31:0]_c0_p0]
-                                                           where _cC_pP denotes cycle C and phase P */
+	uint64_t mrdsyn3                      : 8;  /**< MRD ECC syndrome quad 3. MRDSYN3 corresponds to DQ[63:0]_c1_p1, or in 32-bit mode
+                                                         DQ[31:0]_c3_p1/0, where _cC_pP denotes cycle C and phase P. */
+	uint64_t mrdsyn2                      : 8;  /**< MRD ECC syndrome quad 2. MRDSYN2 corresponds to DQ[63:0]_c1_p0, or in 32-bit mode
+                                                         DQ[31:0]_c2_p1/0, where _cC_pP denotes cycle C and phase P. */
+	uint64_t mrdsyn1                      : 8;  /**< MRD ECC syndrome quad 1. MRDSYN1 corresponds to DQ[63:0]_c0_p1, or in 32-bit mode
+                                                         DQ[31:0]_c1_p1/0, where _cC_pP denotes cycle C and phase P. */
+	uint64_t mrdsyn0                      : 8;  /**< MRD ECC syndrome quad 0. MRDSYN0 corresponds to DQ[63:0]_c0_p0, or in 32-bit mode
+                                                         DQ[31:0]_c0_p1/0, where _cC_pP denotes cycle C and phase P. */
 #else
 	uint64_t mrdsyn0                      : 8;
 	uint64_t mrdsyn1                      : 8;
@@ -6492,8 +7442,11 @@ union cvmx_lmcx_ecc_synd {
 	struct cvmx_lmcx_ecc_synd_s           cn68xxp1;
 	struct cvmx_lmcx_ecc_synd_s           cn70xx;
 	struct cvmx_lmcx_ecc_synd_s           cn70xxp1;
+	struct cvmx_lmcx_ecc_synd_s           cn73xx;
 	struct cvmx_lmcx_ecc_synd_s           cn78xx;
+	struct cvmx_lmcx_ecc_synd_s           cn78xxp2;
 	struct cvmx_lmcx_ecc_synd_s           cnf71xx;
+	struct cvmx_lmcx_ecc_synd_s           cnf75xx;
 };
 typedef union cvmx_lmcx_ecc_synd cvmx_lmcx_ecc_synd_t;
 
@@ -6507,7 +7460,56 @@ union cvmx_lmcx_ext_config {
 	uint64_t u64;
 	struct cvmx_lmcx_ext_config_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_49_63               : 15;
+	uint64_t reserved_60_63               : 4;
+	uint64_t ref_block                    : 1;  /**< When set, LMC is blocked to initiate any refresh sequence. LMC then will only
+                                                         allow refresh sequence to start when LMC()_REF_STATUS[REF_COUNT] has
+                                                         reached the maximum value of 0x7. */
+	uint64_t mrs_side                     : 1;  /**< Only applies when EXT_CONFIG[MRS_ONE_SIDE] is set.
+                                                         0 = MRS command is sent to the A side of an RDIMM/LRDIMM.
+                                                         1 = MRS command is sent to the B side of an RDIMM/LRDIMM. */
+	uint64_t mrs_one_side                 : 1;  /**< Only applies to DDR4 RDIMM/LRDIMM.
+                                                         When set, MRS commands are directed to either the A or B
+                                                         side of the RCD.
+                                                         PDA operation is NOT allowed when this bit is set. In
+                                                         other words, MR_MPR_CTL[MR_WR_PDA_ENABLE]
+                                                         must be cleared before running MRW sequence with this
+                                                         bit turned on. */
+	uint64_t mrs_bside_invert_disable     : 1;  /**< When set, the command decoder cancels the auto inversion of
+                                                         A3-A9, A11, A13, A17, BA0, BA1 and BG0 during MRS/MRS_PDA
+                                                         command to the B side of the RDIMM/LRDIMM.
+                                                         When set, make sure that the RCD's control word
+                                                         RC00 DA[0] = 1 so that the output inversion is disabled in
+                                                         the DDR4 RCD. */
+	uint64_t dimm_sel_invert_off          : 1;  /**< During coalesce_address_mode, the default logic would be to invert
+                                                         the pbank bit whenever NXM[MEM_MSB_D1_R0] > NXM[MEM_MSB_D0_R0].
+                                                         When this bit is set to 1, it disables this default behaviour.
+                                                         This configuration has lower priority compared to
+                                                         DIMM_SEL_FORCE_INVERT. */
+	uint64_t dimm_sel_force_invert        : 1;  /**< When set to 1, this bit forces the pbank bit to be inverted
+                                                         when in coalesce_address_mode. That is, pbank value of 0 selects
+                                                         DIMM1 instead of DIMM0.
+                                                         Intended to be use for the case of DIMM1 having bigger rank/s
+                                                         than DIMM0. This bit has priority over DIMM_SEL_INVERT_OFF. */
+	uint64_t coalesce_address_mode        : 1;  /**< When set to 1, LMC coalesces the L2C+LMC internal address mapping
+                                                         to create a uniform memory space that are free from holes in
+                                                         between ranks. When different size DIMMs are used, the DIMM with
+                                                         the smaller size is mapped to the lower address space. */
+	uint64_t dimm1_cid                    : 2;  /**< DIMM1 configuration bits that represent the number of Chip
+                                                         ID of the DRAM. This value is use for decoding address
+                                                         as well as routing Chip IDs to the appropriate output
+                                                         pins.
+                                                         0x0 = 0 Chip ID  (Mono-Die stack).
+                                                         0x1 = 1 Chip ID  (2H 3DS).
+                                                         0x2 = 2 Chip IDs (4H 3DS).
+                                                         0x3 = 3 Chip IDs (8H 3DS). */
+	uint64_t dimm0_cid                    : 2;  /**< DIMM0 configuration bits that represent the number of Chip
+                                                         ID of the DRAM. This value is use for decoding address
+                                                         as well as routing Chip IDs to the appropriate output
+                                                         pins.
+                                                         0x0 = 0 Chip ID  (Mono-Die stack).
+                                                         0x1 = 1 Chip ID  (2H 3DS).
+                                                         0x2 = 2 Chip IDs (4H 3DS).
+                                                         0x3 = 3 Chip IDs (8H 3DS). */
 	uint64_t rcd_parity_check             : 1;  /**< Enables the one cycle delay of the CA parity output. This MUST be set to 1 when using DDR4
                                                          RDIMM AND parity checking in RCD is enabled (RC0E DA0 = 1). Set this to 0 otherwise.
                                                          To enable the parity checking in RCD, set this bit first BEFORE issuing the RCW write RC0E
@@ -6521,7 +7523,11 @@ union cvmx_lmcx_ext_config {
 	uint64_t par_addr_mask                : 3;  /**< Mask applied to parity for address bits 14, 13, and 12. Clear to exclude these address
                                                          bits from the parity calculation, necessary if the DRAM device does not have these pins. */
 	uint64_t reserved_38_39               : 2;
-	uint64_t mrs_cmd_override             : 1;  /**< Set to override behavior of MRS and RCS DRAM operations. */
+	uint64_t mrs_cmd_override             : 1;  /**< Set to override the behavior of MRS and RCW operations.
+                                                         If this bit is set, the override behavior is governed by the control field
+                                                         MRS_CMD_SELECT. See LMC()_EXT_CONFIG[MRS_CMD_SELECT] for detail.
+                                                         If this bit is cleared, select operation where signals other than CS are active before
+                                                         and after the CS_N active cycle (except for the case when interfacing with DDR3 RDIMM). */
 	uint64_t mrs_cmd_select               : 1;  /**< When MRS_CMD_OVERRIDE is set, use this bit to select which style of operation for MRS and
                                                          RCW commands.
                                                          If this bit is clear, select operation where signals other than CS are active before and
@@ -6555,13 +7561,16 @@ union cvmx_lmcx_ext_config {
                                                          1 to this bit, slot-control registers will update with changes made to other timing-
                                                          control registers. This is a one-shot operation; it automatically returns to 0 after a
                                                          write to 1. */
-	uint64_t ref_int_lsbs                 : 9;  /**< Refresh-interval value least-significant bits. The default is 0x0; but it can be set to a
-                                                         non-zero value to get a more precise refresh interval. */
+	uint64_t ref_int_lsbs                 : 9;  /**< Refresh-interval value least-significant bits. The default is 0x0.
+                                                         Refresh interval is represented in number of 512 CK cycle increments and is controlled by
+                                                         the CSR LMC()_CONFIG[REF_ZQCS_INT]. More precise refresh interval however (in number of
+                                                         1 CK cycle) can be achieved by setting this field to a non-zero value. */
 	uint64_t drive_ena_bprch              : 1;  /**< Drive DQx for one cycle longer than normal during write operations. */
 	uint64_t drive_ena_fprch              : 1;  /**< Drive DQX starting one cycle earlier than normal during write operations. */
 	uint64_t dlcram_flip_synd             : 2;  /**< Reserved. INTERNAL: DLC RAM flip syndrome control bits. */
 	uint64_t dlcram_cor_dis               : 1;  /**< Reserved. INTERNAL: DLC RAM correction disable control. */
-	uint64_t dlc_nxm_rd                   : 1;  /**< When set, enable NXM events for HFA read operations. INTERNAL: Default is disabled, but
+	uint64_t dlc_nxm_rd                   : 1;  /**< Reserved. INTERNAL:
+                                                         When set, enable NXM events for HFA read operations. INTERNAL: Default is disabled, but
                                                          could be useful for debug of DLC/DFA accesses. */
 	uint64_t l2c_nxm_rd                   : 1;  /**< When set, enable NXM events for L2C read operations. INTERNAL: Default is disabled as L2C
                                                          NXM read operations are possible and expected during normal operation. */
@@ -6598,7 +7607,16 @@ union cvmx_lmcx_ext_config {
 	uint64_t error_alert_n_sample         : 1;
 	uint64_t reserved_46_47               : 2;
 	uint64_t rcd_parity_check             : 1;
-	uint64_t reserved_49_63               : 15;
+	uint64_t dimm0_cid                    : 2;
+	uint64_t dimm1_cid                    : 2;
+	uint64_t coalesce_address_mode        : 1;
+	uint64_t dimm_sel_force_invert        : 1;
+	uint64_t dimm_sel_invert_off          : 1;
+	uint64_t mrs_bside_invert_disable     : 1;
+	uint64_t mrs_one_side                 : 1;
+	uint64_t mrs_side                     : 1;
+	uint64_t ref_block                    : 1;
+	uint64_t reserved_60_63               : 4;
 #endif
 	} s;
 	struct cvmx_lmcx_ext_config_cn70xx {
@@ -6640,9 +7658,140 @@ union cvmx_lmcx_ext_config {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_ext_config_cn70xx    cn70xxp1;
+	struct cvmx_lmcx_ext_config_s         cn73xx;
 	struct cvmx_lmcx_ext_config_s         cn78xx;
+	struct cvmx_lmcx_ext_config_s         cn78xxp2;
+	struct cvmx_lmcx_ext_config_s         cnf75xx;
 };
 typedef union cvmx_lmcx_ext_config cvmx_lmcx_ext_config_t;
+
+/**
+ * cvmx_lmc#_ext_config2
+ *
+ * This register has additional configuration and control bits for the LMC.
+ *
+ */
+union cvmx_lmcx_ext_config2 {
+	uint64_t u64;
+	struct cvmx_lmcx_ext_config2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_21_63               : 43;
+	uint64_t delay_unload_r3              : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle later for Rank 0 reads.
+                                                         Setting this field has priority over LMC()_CONFIG[EARLY_UNLOAD_D1_R1]. */
+	uint64_t delay_unload_r2              : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle later for Rank 0 reads.
+                                                         Setting this field has priority over LMC()_CONFIG[EARLY_UNLOAD_D1_R0]. */
+	uint64_t delay_unload_r1              : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle later for Rank 0 reads.
+                                                         Setting this field has priority over LMC()_CONFIG[EARLY_UNLOAD_D0_R1]. */
+	uint64_t delay_unload_r0              : 1;  /**< Reserved, MBZ.  INTERNAL:  When set, unload the PHY silo one cycle later for Rank 0 reads.
+                                                         Setting this field has priority over LMC()_CONFIG[EARLY_UNLOAD_D0_R0]. */
+	uint64_t early_dqx2                   : 1;  /**< Similar to LMC()_CONFIG[EARLY_DQX]. This field provides an additional setting to send DQx
+                                                         signals one more CK cycle earlier on top of LMC()_CONFIG[EARLY_DQX]. */
+	uint64_t xor_bank_sel                 : 4;  /**< When LMC()_CONTROL[XOR_BANK] is set to 1, this field selects which
+                                                          L2C-LMC address bits are used to XOR the bank bits with.
+                                                          The address selection is as follows:
+                                                         - 0:  bank<3:0> = address<10:7> ^ address<15:12>
+                                                         - 1:  bank<3:0> = address<10:7> ^ address<14:11>
+                                                         - 2:  bank<3:0> = address<10:7> ^ address<16:13>
+                                                         - 3:  bank<3:0> = address<10:7> ^ address<17:14>
+                                                         - 4:  bank<3:0> = address<10:7> ^ address<18:15>
+                                                         - 5:  bank<3:0> = address<10:7> ^ address<19:16>
+                                                         - 6:  bank<3:0> = address<10:7> ^ address<23:20>
+                                                         - 7:  bank<3:0> = address<10:7> ^ address<24:21>
+                                                         - 8:  bank<3:0> = address<10:7> ^ address<27:24>
+                                                         - 9:  bank<3:0> = address<10:7> ^ address<28:25>
+                                                          - 10: bank<3:0> = address<10:7> ^ address<31:28>
+                                                          - 11: bank<3:0> = address<10:7> ^ address<32:29>
+                                                          - 12: bank<3:0> = address<10:7> ^ address<33:30>
+                                                          - 13: bank<3:0> = address<10:7> ^ address<36:33>
+                                                          - 14: bank<3:0> = address<10:7> ^ address<37:34>
+                                                          - 15: Reserved. */
+	uint64_t reserved_10_11               : 2;
+	uint64_t row_col_switch               : 1;  /**< When set, the memory address bit position that represents bit 4 of the COLUMN
+                                                         address (bit 5 in 32-bit mode) becomes the low order DDR ROW address bit.
+                                                         The upper DDR COLUMN address portion is selected using LMC()_CONFIG[ROW_LSB]
+                                                         (and LMC()_DUAL_MEMCFG[ROW_LSB] for dual-memory configuration).
+                                                         It is recommended to set this bit to 1 when TRR_ON is set. */
+	uint64_t trr_on                       : 1;  /**< When set, this enables row activates counts of the
+                                                         DRAM used in Target Row Refresh mode. This bit can
+                                                         be safely set after the LMC()_EXT_CONFIG2[MACRAM_SCRUB_DONE]
+                                                         has a value of 1. */
+	uint64_t mac                          : 3;  /**< Sets the maximum number of activates allowed within a tMAW interval.
+                                                         0x0 = 100K.
+                                                         0x1 = 400K/2.
+                                                         0x2 = 500K/2.
+                                                         0x3 = 600K/2.
+                                                         0x4 = 700K/2.
+                                                         0x5 = 800K/2.
+                                                         0x6 = 900K/2.
+                                                         0x7 = 1000K/2. */
+	uint64_t macram_scrub_done            : 1;  /**< Maximum Activate Count memory scrub complete indication;
+                                                         1 means the memory has been scrubbed to all zero. */
+	uint64_t macram_scrub                 : 1;  /**< When set, the Maximum Activate Count memory will be scrubbed to all zero values. This
+                                                         should be done before enabling TRR mode by setting LMC()_EXT_CONFIG2[TRR_ON].
+                                                         This is a one-shot operation; it automatically returns to 0 after a write to 1. */
+	uint64_t macram_flip_synd             : 2;  /**< Reserved. INTERNAL: MAC RAM flip syndrome control bits. */
+	uint64_t macram_cor_dis               : 1;  /**< Reserved. INTERNAL: MAC RAM correction disable control. */
+#else
+	uint64_t macram_cor_dis               : 1;
+	uint64_t macram_flip_synd             : 2;
+	uint64_t macram_scrub                 : 1;
+	uint64_t macram_scrub_done            : 1;
+	uint64_t mac                          : 3;
+	uint64_t trr_on                       : 1;
+	uint64_t row_col_switch               : 1;
+	uint64_t reserved_10_11               : 2;
+	uint64_t xor_bank_sel                 : 4;
+	uint64_t early_dqx2                   : 1;
+	uint64_t delay_unload_r0              : 1;
+	uint64_t delay_unload_r1              : 1;
+	uint64_t delay_unload_r2              : 1;
+	uint64_t delay_unload_r3              : 1;
+	uint64_t reserved_21_63               : 43;
+#endif
+	} s;
+	struct cvmx_lmcx_ext_config2_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_10_63               : 54;
+	uint64_t row_col_switch               : 1;  /**< When set, the memory address bit position that represents bit 4 of the COLUMN
+                                                         address (bit 5 in 32-bit mode) becomes the low order DDR ROW address bit.
+                                                         The upper DDR COLUMN address portion is selected using LMC()_CONFIG[ROW_LSB]
+                                                         (and LMC()_DUAL_MEMCFG[ROW_LSB] for dual-memory configuration).
+                                                         It is recommended to set this bit to 1 when TRR_ON is set. */
+	uint64_t trr_on                       : 1;  /**< When set, this enables row activates counts of the
+                                                         DRAM used in Target Row Refresh mode. This bit can
+                                                         be safely set after the LMC()_EXT_CONFIG2[MACRAM_SCRUB_DONE]
+                                                         has a value of 1. */
+	uint64_t mac                          : 3;  /**< Sets the maximum number of activates allowed within a tMAW interval.
+                                                         0x0 = 100K.
+                                                         0x1 = 400K/2.
+                                                         0x2 = 500K/2.
+                                                         0x3 = 600K/2.
+                                                         0x4 = 700K/2.
+                                                         0x5 = 800K/2.
+                                                         0x6 = 900K/2.
+                                                         0x7 = 1000K/2. */
+	uint64_t macram_scrub_done            : 1;  /**< Maximum Activate Count memory scrub complete indication;
+                                                         1 means the memory has been scrubbed to all zero. */
+	uint64_t macram_scrub                 : 1;  /**< When set, the Maximum Activate Count memory will be scrubbed to all zero values. This
+                                                         should be done before enabling TRR mode by setting LMC()_EXT_CONFIG2[TRR_ON].
+                                                         This is a one-shot operation; it automatically returns to 0 after a write to 1. */
+	uint64_t macram_flip_synd             : 2;  /**< Reserved. INTERNAL: MAC RAM flip syndrome control bits. */
+	uint64_t macram_cor_dis               : 1;  /**< Reserved. INTERNAL: MAC RAM correction disable control. */
+#else
+	uint64_t macram_cor_dis               : 1;
+	uint64_t macram_flip_synd             : 2;
+	uint64_t macram_scrub                 : 1;
+	uint64_t macram_scrub_done            : 1;
+	uint64_t mac                          : 3;
+	uint64_t trr_on                       : 1;
+	uint64_t row_col_switch               : 1;
+	uint64_t reserved_10_63               : 54;
+#endif
+	} cn73xx;
+	struct cvmx_lmcx_ext_config2_s        cn78xxp2;
+	struct cvmx_lmcx_ext_config2_s        cnf75xx;
+};
+typedef union cvmx_lmcx_ext_config2 cvmx_lmcx_ext_config2_t;
 
 /**
  * cvmx_lmc#_fadr
@@ -6664,13 +7813,19 @@ union cvmx_lmcx_fadr {
 	uint64_t u64;
 	struct cvmx_lmcx_fadr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_40_63               : 24;
+	uint64_t reserved_43_63               : 21;
+	uint64_t fcid                         : 3;  /**< Failing CID number. This field is only valid when interfacing with 3DS DRAMs (i.e., when
+                                                         either
+                                                         LMC()_EXT_CONFIG[DIMM0_CID] or LMC()_EXT_CONFIG[DIMM1_CID] is non-zero). Returns a value
+                                                         of zero
+                                                         otherwise. */
 	uint64_t fill_order                   : 2;  /**< Fill order for failing transaction. */
 	uint64_t reserved_0_37                : 38;
 #else
 	uint64_t reserved_0_37                : 38;
 	uint64_t fill_order                   : 2;
-	uint64_t reserved_40_63               : 24;
+	uint64_t fcid                         : 3;
+	uint64_t reserved_43_63               : 21;
 #endif
 	} s;
 	struct cvmx_lmcx_fadr_cn30xx {
@@ -6752,10 +7907,104 @@ union cvmx_lmcx_fadr {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_fadr_cn70xx          cn70xxp1;
-	struct cvmx_lmcx_fadr_cn70xx          cn78xx;
+	struct cvmx_lmcx_fadr_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_43_63               : 21;
+	uint64_t fcid                         : 3;  /**< Failing CID number. This field is only valid when interfacing with 3DS DRAMs (i.e., when
+                                                         either
+                                                         LMC()_EXT_CONFIG[DIMM0_CID] or LMC()_EXT_CONFIG[DIMM1_CID] is non-zero). Returns a value
+                                                         of zero
+                                                         otherwise. */
+	uint64_t fill_order                   : 2;  /**< Fill order for failing transaction. */
+	uint64_t fdimm                        : 1;  /**< Failing DIMM number. */
+	uint64_t fbunk                        : 1;  /**< Failing rank number. */
+	uint64_t fbank                        : 4;  /**< Failing bank number. Bits <3:0>. */
+	uint64_t frow                         : 18; /**< Failing row address. Bits <17:0>. */
+	uint64_t fcol                         : 14; /**< Failing column address <13:0>. Technically, represents the address of the 64b data that
+                                                         had an ECC error, i.e., FCOL[0] is always 0. Can be used in conjunction with
+                                                         LMC()_INT[DED_ERR] to isolate the 64b chunk of data in error. */
+#else
+	uint64_t fcol                         : 14;
+	uint64_t frow                         : 18;
+	uint64_t fbank                        : 4;
+	uint64_t fbunk                        : 1;
+	uint64_t fdimm                        : 1;
+	uint64_t fill_order                   : 2;
+	uint64_t fcid                         : 3;
+	uint64_t reserved_43_63               : 21;
+#endif
+	} cn73xx;
+	struct cvmx_lmcx_fadr_cn73xx          cn78xx;
+	struct cvmx_lmcx_fadr_cn73xx          cn78xxp2;
 	struct cvmx_lmcx_fadr_cn61xx          cnf71xx;
+	struct cvmx_lmcx_fadr_cn73xx          cnf75xx;
 };
 typedef union cvmx_lmcx_fadr cvmx_lmcx_fadr_t;
+
+/**
+ * cvmx_lmc#_general_purpose0
+ *
+ * Added in pass 2.0.
+ *
+ */
+union cvmx_lmcx_general_purpose0 {
+	uint64_t u64;
+	struct cvmx_lmcx_general_purpose0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t data                         : 64; /**< General purpose data register.  See LMC()_PPR_CTL and LMC()_DBTRAIN_CTL[RW_TRAIN]. */
+#else
+	uint64_t data                         : 64;
+#endif
+	} s;
+	struct cvmx_lmcx_general_purpose0_s   cn73xx;
+	struct cvmx_lmcx_general_purpose0_s   cn78xxp2;
+	struct cvmx_lmcx_general_purpose0_s   cnf75xx;
+};
+typedef union cvmx_lmcx_general_purpose0 cvmx_lmcx_general_purpose0_t;
+
+/**
+ * cvmx_lmc#_general_purpose1
+ *
+ * Added in pass 2.0.
+ *
+ */
+union cvmx_lmcx_general_purpose1 {
+	uint64_t u64;
+	struct cvmx_lmcx_general_purpose1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t data                         : 64; /**< General purpose data register.  See LMC()_PPR_CTL and LMC()_DBTRAIN_CTL[RW_TRAIN]. */
+#else
+	uint64_t data                         : 64;
+#endif
+	} s;
+	struct cvmx_lmcx_general_purpose1_s   cn73xx;
+	struct cvmx_lmcx_general_purpose1_s   cn78xxp2;
+	struct cvmx_lmcx_general_purpose1_s   cnf75xx;
+};
+typedef union cvmx_lmcx_general_purpose1 cvmx_lmcx_general_purpose1_t;
+
+/**
+ * cvmx_lmc#_general_purpose2
+ *
+ * Added in pass 2.0.
+ *
+ */
+union cvmx_lmcx_general_purpose2 {
+	uint64_t u64;
+	struct cvmx_lmcx_general_purpose2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t data                         : 16; /**< General purpose data register.  See LMC()_PPR_CTL and LMC()_DBTRAIN_CTL[RW_TRAIN]. */
+#else
+	uint64_t data                         : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} s;
+	struct cvmx_lmcx_general_purpose2_s   cn73xx;
+	struct cvmx_lmcx_general_purpose2_s   cn78xxp2;
+	struct cvmx_lmcx_general_purpose2_s   cnf75xx;
+};
+typedef union cvmx_lmcx_general_purpose2 cvmx_lmcx_general_purpose2_t;
 
 /**
  * cvmx_lmc#_ifb_cnt
@@ -6767,9 +8016,8 @@ union cvmx_lmcx_ifb_cnt {
 	uint64_t u64;
 	struct cvmx_lmcx_ifb_cnt_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ifbcnt                       : 64; /**< Performance Counter
-                                                         64-bit counter that increments every
-                                                         CK cycle there is something in the in-flight buffer. */
+	uint64_t ifbcnt                       : 64; /**< Performance counter. 64-bit counter that increments every CK cycle that there is something
+                                                         in the in-flight buffer. */
 #else
 	uint64_t ifbcnt                       : 64;
 #endif
@@ -6782,8 +8030,11 @@ union cvmx_lmcx_ifb_cnt {
 	struct cvmx_lmcx_ifb_cnt_s            cn68xxp1;
 	struct cvmx_lmcx_ifb_cnt_s            cn70xx;
 	struct cvmx_lmcx_ifb_cnt_s            cn70xxp1;
+	struct cvmx_lmcx_ifb_cnt_s            cn73xx;
 	struct cvmx_lmcx_ifb_cnt_s            cn78xx;
+	struct cvmx_lmcx_ifb_cnt_s            cn78xxp2;
 	struct cvmx_lmcx_ifb_cnt_s            cnf71xx;
+	struct cvmx_lmcx_ifb_cnt_s            cnf75xx;
 };
 typedef union cvmx_lmcx_ifb_cnt cvmx_lmcx_ifb_cnt_t;
 
@@ -6856,43 +8107,43 @@ typedef union cvmx_lmcx_ifb_cnt_lo cvmx_lmcx_ifb_cnt_lo_t;
 /**
  * cvmx_lmc#_int
  *
- * LMC_INT = LMC Interrupt Register
+ * This register contains the different interrupt-summary bits of the LMC.
  *
  */
 union cvmx_lmcx_int {
 	uint64_t u64;
 	struct cvmx_lmcx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_12_63               : 52;
+	uint64_t reserved_14_63               : 50;
+	uint64_t macram_ded_err               : 1;  /**< MAC RAM ECC double error detect (DED). */
+	uint64_t macram_sec_err               : 1;  /**< MAC RAM ECC single error correct (SEC). */
 	uint64_t ddr_err                      : 1;  /**< DDR RAM error alert interrupt. */
 	uint64_t dlcram_ded_err               : 1;  /**< DLC RAM ECC double error detect (DED). */
 	uint64_t dlcram_sec_err               : 1;  /**< DLC RAM ECC single error correct (SEC). */
-	uint64_t ded_err                      : 4;  /**< Double Error detected (DED) of Rd Data
-                                                         [0] corresponds to DQ[63:0]_c0_p0
-                                                         [1] corresponds to DQ[63:0]_c0_p1
-                                                         [2] corresponds to DQ[63:0]_c1_p0
-                                                         [3] corresponds to DQ[63:0]_c1_p1
-                                                         In 32b mode, ecc is calculated on 4 cycle worth of data
-                                                         [0] corresponds to [DQ[31:0]_c0_p1, DQ[31:0]_c0_p0]
-                                                         [1] corresponds to [DQ[31:0]_c1_p1, DQ[31:0]_c1_p0]
-                                                         [2] corresponds to [DQ[31:0]_c2_p1, DQ[31:0]_c2_p0]
-                                                         [3] corresponds to [DQ[31:0]_c3_p1, DQ[31:0]_c3_p0]
-                                                          where _cC_pP denotes cycle C and phase P
-                                                          Write of 1 will clear the corresponding error bit */
-	uint64_t sec_err                      : 4;  /**< Single Error (corrected) of Rd Data
-                                                         [0] corresponds to DQ[63:0]_c0_p0
-                                                         [1] corresponds to DQ[63:0]_c0_p1
-                                                         [2] corresponds to DQ[63:0]_c1_p0
-                                                         [3] corresponds to DQ[63:0]_c1_p1
-                                                         In 32b mode, ecc is calculated on 4 cycle worth of data
-                                                         [0] corresponds to [DQ[31:0]_c0_p1, DQ[31:0]_c0_p0]
-                                                         [1] corresponds to [DQ[31:0]_c1_p1, DQ[31:0]_c1_p0]
-                                                         [2] corresponds to [DQ[31:0]_c2_p1, DQ[31:0]_c2_p0]
-                                                         [3] corresponds to [DQ[31:0]_c3_p1, DQ[31:0]_c3_p0]
-                                                          where _cC_pP denotes cycle C and phase P
-                                                          Write of 1 will clear the corresponding error bit */
-	uint64_t nxm_wr_err                   : 1;  /**< Write to non-existent memory
-                                                         Write of 1 will clear the corresponding error bit */
+	uint64_t ded_err                      : 4;  /**< Double error detected (DED) of Rd Data.
+                                                         In 64b mode:
+                                                         _ <5> corresponds to DQ[63:0]_c0_p0
+                                                         _ <6> corresponds to DQ[63:0]_c0_p1
+                                                         _ <7> corresponds to DQ[63:0]_c1_p0
+                                                         _ <8> corresponds to DQ[63:0]_c1_p1
+                                                         _ where _cC_pP denotes cycle C and phase P.
+                                                         In 32b mode, each bit corresponds to 2 phases:
+                                                         _ <5> corresponds to DQ[31:0]_c0_p1/0
+                                                         _ <6> corresponds to DQ[31:0]_c1_p1/0
+                                                         _ <7> corresponds to DQ[31:0]_c2_p1/0
+                                                         _ <8> corresponds to DQ[31:0]_c3_p1/0 */
+	uint64_t sec_err                      : 4;  /**< Single error (corrected) of Rd Data.
+                                                         _ <1> corresponds to DQ[63:0]_c0_p0
+                                                         _ <2> corresponds to DQ[63:0]_c0_p1
+                                                         _ <3> corresponds to DQ[63:0]_c1_p0
+                                                         _ <4> corresponds to DQ[63:0]_c1_p1
+                                                         _ where _cC_pP denotes cycle C and phase P.
+                                                         In 32b mode, each bit corresponds to 2 phases:
+                                                         <5> corresponds to DQ[31:0]_c0_p1/0
+                                                         <6> corresponds to DQ[31:0]_c1_p1/0
+                                                         <7> corresponds to DQ[31:0]_c2_p1/0
+                                                         <8> corresponds to DQ[31:0]_c3_p1/0 */
+	uint64_t nxm_wr_err                   : 1;  /**< Write to nonexistent memory. */
 #else
 	uint64_t nxm_wr_err                   : 1;
 	uint64_t sec_err                      : 4;
@@ -6900,7 +8151,9 @@ union cvmx_lmcx_int {
 	uint64_t dlcram_sec_err               : 1;
 	uint64_t dlcram_ded_err               : 1;
 	uint64_t ddr_err                      : 1;
-	uint64_t reserved_12_63               : 52;
+	uint64_t macram_sec_err               : 1;
+	uint64_t macram_ded_err               : 1;
+	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
 	struct cvmx_lmcx_int_cn61xx {
@@ -6944,17 +8197,48 @@ union cvmx_lmcx_int {
 	struct cvmx_lmcx_int_cn61xx           cn66xx;
 	struct cvmx_lmcx_int_cn61xx           cn68xx;
 	struct cvmx_lmcx_int_cn61xx           cn68xxp1;
-	struct cvmx_lmcx_int_s                cn70xx;
-	struct cvmx_lmcx_int_s                cn70xxp1;
+	struct cvmx_lmcx_int_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_12_63               : 52;
+	uint64_t ddr_err                      : 1;  /**< Reserved. */
+	uint64_t dlcram_ded_err               : 1;  /**< Reserved. */
+	uint64_t dlcram_sec_err               : 1;  /**< Reserved. */
+	uint64_t ded_err                      : 4;  /**< Double error detected (DED) of Rd Data.
+                                                         In 32b mode, each bit corresponds to 2 phases:
+                                                         <5> corresponds to DQ[31:0]_c0_p1/0
+                                                         <6> corresponds to DQ[31:0]_c1_p1/0
+                                                         <7> corresponds to DQ[31:0]_c2_p1/0
+                                                         <8> corresponds to DQ[31:0]_c3_p1/0 */
+	uint64_t sec_err                      : 4;  /**< Single error (corrected) of Rd Data.
+                                                         In 32b mode, each bit corresponds to 2 phases:
+                                                         <1> corresponds to DQ[31:0]_c0_p1/0
+                                                         <2> corresponds to DQ[31:0]_c1_p1/0
+                                                         <3> corresponds to DQ[31:0]_c2_p1/0
+                                                         <4> corresponds to DQ[31:0]_c3_p1/0 */
+	uint64_t nxm_wr_err                   : 1;  /**< Write to nonexistent memory. */
+#else
+	uint64_t nxm_wr_err                   : 1;
+	uint64_t sec_err                      : 4;
+	uint64_t ded_err                      : 4;
+	uint64_t dlcram_sec_err               : 1;
+	uint64_t dlcram_ded_err               : 1;
+	uint64_t ddr_err                      : 1;
+	uint64_t reserved_12_63               : 52;
+#endif
+	} cn70xx;
+	struct cvmx_lmcx_int_cn70xx           cn70xxp1;
+	struct cvmx_lmcx_int_s                cn73xx;
 	struct cvmx_lmcx_int_s                cn78xx;
+	struct cvmx_lmcx_int_s                cn78xxp2;
 	struct cvmx_lmcx_int_cn61xx           cnf71xx;
+	struct cvmx_lmcx_int_s                cnf75xx;
 };
 typedef union cvmx_lmcx_int cvmx_lmcx_int_t;
 
 /**
  * cvmx_lmc#_int_en
  *
- * LMC_INT_EN = LMC Interrupt Enable Register
+ * Unused CSR in O75.
  *
  */
 union cvmx_lmcx_int_en {
@@ -6965,17 +8249,12 @@ union cvmx_lmcx_int_en {
 	uint64_t ddr_error_alert_ena          : 1;  /**< DDR4 error alert interrupt enable bit. */
 	uint64_t dlcram_ded_ena               : 1;  /**< DLC RAM ECC double error detect (DED) interrupt enable bit. */
 	uint64_t dlcram_sec_ena               : 1;  /**< DLC RAM ECC single error correct (SEC) interrupt enable bit. */
-	uint64_t intr_ded_ena                 : 1;  /**< ECC Double Error Detect(DED) Interrupt Enable bit
-                                                         When set, the memory controller raises a processor
-                                                         interrupt on detecting an uncorrectable Dbl Bit ECC
-                                                         error. */
-	uint64_t intr_sec_ena                 : 1;  /**< ECC Single Error Correct(SEC) Interrupt Enable bit
-                                                         When set, the memory controller raises a processor
-                                                         interrupt on detecting a correctable Single Bit ECC
-                                                         error. */
-	uint64_t intr_nxm_wr_ena              : 1;  /**< Non Write Error Interrupt Enable bit
-                                                         When set, the memory controller raises a processor
-                                                         interrupt on detecting an non-existent memory write */
+	uint64_t intr_ded_ena                 : 1;  /**< ECC double error detect (DED) interrupt enable bit. When set, the memory controller raises
+                                                         a processor interrupt on detecting an uncorrectable double-bit ECC error. */
+	uint64_t intr_sec_ena                 : 1;  /**< ECC single error correct (SEC) interrupt enable bit. When set, the memory controller
+                                                         raises a processor interrupt on detecting a correctable single-bit ECC error. */
+	uint64_t intr_nxm_wr_ena              : 1;  /**< Nonwrite error interrupt enable bit. When set, the memory controller raises a processor
+                                                         interrupt on detecting an nonexistent memory write. */
 #else
 	uint64_t intr_nxm_wr_ena              : 1;
 	uint64_t intr_sec_ena                 : 1;
@@ -7014,8 +8293,11 @@ union cvmx_lmcx_int_en {
 	struct cvmx_lmcx_int_en_cn61xx        cn68xxp1;
 	struct cvmx_lmcx_int_en_s             cn70xx;
 	struct cvmx_lmcx_int_en_s             cn70xxp1;
+	struct cvmx_lmcx_int_en_s             cn73xx;
 	struct cvmx_lmcx_int_en_s             cn78xx;
+	struct cvmx_lmcx_int_en_s             cn78xxp2;
 	struct cvmx_lmcx_int_en_cn61xx        cnf71xx;
+	struct cvmx_lmcx_int_en_s             cnf75xx;
 };
 typedef union cvmx_lmcx_int_en cvmx_lmcx_int_en_t;
 
@@ -7068,7 +8350,10 @@ union cvmx_lmcx_lanex_crc_swiz {
 	uint64_t reserved_56_63               : 8;
 #endif
 	} s;
+	struct cvmx_lmcx_lanex_crc_swiz_s     cn73xx;
 	struct cvmx_lmcx_lanex_crc_swiz_s     cn78xx;
+	struct cvmx_lmcx_lanex_crc_swiz_s     cn78xxp2;
+	struct cvmx_lmcx_lanex_crc_swiz_s     cnf75xx;
 };
 typedef union cvmx_lmcx_lanex_crc_swiz cvmx_lmcx_lanex_crc_swiz_t;
 
@@ -7467,12 +8752,214 @@ typedef union cvmx_lmcx_mem_cfg1 cvmx_lmcx_mem_cfg1_t;
 /**
  * cvmx_lmc#_modereg_params0
  *
- * These parameters are written into the DDR3 MR0, MR1, MR2 and MR3 registers.
+ * These parameters are written into the DDR3/DDR4 MR0, MR1, MR2 and MR3 registers.
  *
  */
 union cvmx_lmcx_modereg_params0 {
 	uint64_t u64;
 	struct cvmx_lmcx_modereg_params0_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_28_63               : 36;
+	uint64_t wrp_ext                      : 1;  /**< A 1 bit extension to the WRP register. */
+	uint64_t cl_ext                       : 1;  /**< Reserved; must be zero.
+                                                         INTERNAL: The extended bit for the proposed CAS Latency spec change. The new
+                                                         CAS Latency in DDR4 DRAM is defined in MR0(A12,A6,A5,A4,A2). This bit sets
+                                                         the A12 bit.
+                                                         See LMC()_MODEREG_PARAMS0[CL]. */
+	uint64_t al_ext                       : 1;  /**< Reserved; must be zero.
+                                                          INTERNAL: The extended bit for the new Additive latency settings for DDR4 3DS.
+                                                          Together with LMC()_MODEREG_PARAMS0[AL], this covers additive latency settings
+                                                          of up to CL-6.
+                                                         - 0: CL - (LMC()_MODEREG_PARAMS0[AL])
+                                                         - 1: CL - (LMC()_MODEREG_PARAMS0[AL] + 4)
+                                                          See LMC()_MODEREG_PARAMS0[AL]. */
+	uint64_t ppd                          : 1;  /**< DLL control for precharge powerdown.
+                                                         0 = Slow exit (DLL off).
+                                                         1 = Fast exit (DLL on).
+                                                         LMC writes this value to MR0[PPD] in the selected DDR3/DDR4 parts during power-up/init
+                                                         and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK]. This value must
+                                                         equal
+                                                         the MR0[PPD] value in all the DDR3/DDR4 parts attached to all ranks during normal
+                                                         operation. */
+	uint64_t wrp                          : 3;  /**< Write recovery for auto precharge. Should be programmed to be equal to or greater than
+                                                         RNDUP[TWR(ns) / Tcyc(ns)].
+                                                         DDR3:
+                                                         0x0 = 16.
+                                                         0x1 = 5.
+                                                         0x2 = 6.
+                                                         0x3 = 7.
+                                                         0x4 = 8.
+                                                         0x5 = 10.
+                                                         0x6 = 12.
+                                                         0x7 = 14.
+                                                         DDR4:
+                                                         0x0 = 10.
+                                                         0x1 = 12.
+                                                         0x2 = 14.
+                                                         0x3 = 16.
+                                                         0x4 = 18.
+                                                         0x5 = 20.
+                                                         0x6 = 24.
+                                                         0x7 = 22.
+                                                         0x8-0xf = Reserved. (Note that LMC()_MODEREG_PARAMS0[WRP_EXT] = 1).
+                                                         LMC writes this value to MR0[WR] in the selected DDR3/DDR4 parts during power-up/init and,
+                                                         if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK]. This value must
+                                                         equal
+                                                         the MR0[WR] value in all the DDR3/DDR4 parts attached to all ranks during normal
+                                                         operation. */
+	uint64_t dllr                         : 1;  /**< DLL reset. LMC writes this value to MR0[DLL] in the selected DDR3/DDR4 parts during power-
+                                                         up/init and, if LMC()_CONFIG [SREF_WITH_DLL] is set, self-refresh exit instruction
+                                                         sequences. See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK].
+                                                         The MR0[DLL] value must be 0 in all the DDR3/DDR4 parts attached to all ranks during
+                                                         normal operation. */
+	uint64_t tm                           : 1;  /**< Test mode. LMC writes this value to MR0[TM] in the selected DDR3/DDR4 parts during power-
+                                                         up/init and, if LMC()_CONFIG [SREF_WITH_DLL] is set, self-refresh exit instruction
+                                                         sequences. See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK].
+                                                         The MR0[TM] value must be 0 in all the DDR3/DDR4 parts attached to all ranks during normal
+                                                         operation. */
+	uint64_t rbt                          : 1;  /**< Read burst. Type 1 = interleaved (fixed). LMC writes this value to MR0[RBT] in the
+                                                         selected DDR3/DDR4 parts during power-up/init and, if LMC()_CONFIG[SREF_WITH_DLL] is set,
+                                                         self-refresh exit instruction sequences. See LMC()_CONFIG[SEQ_SEL,INIT_START,
+                                                         RANKMASK]. The MR0[RBT] value must be 1 in all the DDR3/DDR4 parts attached to all ranks
+                                                         during normal operation. */
+	uint64_t cl                           : 4;  /**< CAS latency.
+                                                         In DDR3 mode:
+                                                         0x2 = 5. 0x1 = 12.
+                                                         0x4 = 6. 0x3 = 13.
+                                                         0x6 = 7. 0x5 = 14.
+                                                         0x8 = 8. 0x7 = 15.
+                                                         0xA = 9. 0x9 = 16.
+                                                         0xC = 10.
+                                                         0xE = 11.
+                                                         0x0, 0xB, 0xD, 0xF = Reserved.
+                                                         In DDR4 mode:
+                                                         0x0 =  9. 0x1 = 10.
+                                                         0x2 = 11. 0x3 = 12.
+                                                         0x4 = 13. 0x5 = 14.
+                                                         0x6 = 15. 0x7 = 16.
+                                                         0x8 = 18. 0x9 = 20.
+                                                         0xA = 22. 0xB = 24.
+                                                         0xD = 17, 0xE = 19.
+                                                         0xF = 21, 0xC = Reserved.
+                                                         LMC writes this value to MR0[CAS Latency / CL] in the selected DDR3 parts during power-
+                                                         up/init and, if LMC()_CONFIG [SREF_WITH_DLL] is set, self-refresh exit instruction
+                                                         sequences. See LMC()_CONFIG[SEQ_SEL,INIT_START,RANKMASK]. This value must equal the
+                                                         MR0[CAS Latency / CL] value in all the DDR3/4 parts attached to all ranks during normal
+                                                         operation.
+                                                         tCL must be programmed to greater than or equal to tCWL for proper LMC operation. */
+	uint64_t bl                           : 2;  /**< Burst length.
+                                                         0x0 = 8 (fixed).
+                                                         0x1 = 4 or 8 (on-the-fly).
+                                                         LMC writes this value to MR0[BL] in the selected DDR3 parts during power-up/init and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK]. The MR0[BL] value
+                                                         must be 1 in all the DDR3/4 parts attached to all ranks during normal operation. */
+	uint64_t qoff                         : 1;  /**< Qoff enable. 0: enable; 1: disable.
+                                                         LMC writes this value to MR1[Qoff] in the DDR3 parts in the selected ranks during power-
+                                                         up/init, write-leveling, and if LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry
+                                                         and exit instruction sequences. See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and
+                                                         LMC()_CONFIG[RANKMASK,INIT_STATUS] and LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT]. The
+                                                         MR1[Qoff] value must be 0 in all the DDR3 parts attached to all ranks during normal
+                                                         operation. */
+	uint64_t tdqs                         : 1;  /**< TDQS enable. 0: disable. LMC writes this value to MR1[TDQS] in the DDR3 parts in the
+                                                         selected ranks during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_CONFIG[SEQ_SEL, INIT_START,RANKMASK,INIT_STATUS] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t wlev                         : 1;  /**< Write leveling enable. 0: disable. LMC writes MR1[Level]=0 in the DDR3 parts in the
+                                                         selected ranks during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit sequences. (Write-
+                                                         leveling can only be initiated via the write-leveling instruction sequence.) See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK,INIT_STATUS] and
+                                                         LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT]. */
+	uint64_t al                           : 2;  /**< Reserved; must be zero.
+                                                         INTERNAL: Additive latency:
+                                                         0x0: 0.
+                                                         0x1: CL-1.
+                                                         0x2: CL - 2.
+                                                         0x3: Reserved.
+                                                         LMC writes this value to MR1[AL] in the selected DDR3 parts during power-up/init, write-
+                                                         leveling, and, if LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit
+                                                         instruction sequences. See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and
+                                                         LMC()_CONFIG[RANKMASK]
+                                                         and LMC()_RESET_CTL [DDR3PWARM,DDR3PSOFT]. This value must equal the MR1[AL] value in
+                                                         all
+                                                         the DDR3 parts attached to all ranks during normal operation. See also
+                                                         LMC()_CONTROL[POCAS]. */
+	uint64_t dll                          : 1;  /**< DLL Enable. 0: enable; 1: disable. LMC writes this value to MR1[DLL] in the selected DDR3
+                                                         parts during power-up/init, write-leveling, and, if LMC()_CONFIG[SREF_WITH_DLL] is
+                                                         set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START]
+                                                         and LMC()_CONFIG[RANKMASK] and LMC()_RESET_CTL [DDR3PWARM,DDR3PSOFT]. This value
+                                                         must equal the MR1[DLL] value in all the DDR3 parts attached to all ranks during normal
+                                                         operation. In DLL-off mode, CL/CWL must be programmed equal to 6/6, respectively, as per
+                                                         the JEDEC DDR3 specifications. */
+	uint64_t mpr                          : 1;  /**< MPR. LMC writes this value to MR3[MPR] in the selected DDR3 parts during power-up/init,
+                                                         read-leveling, and, if LMC()_CONFIG [SREF_WITH_DLL] is set, self-refresh exit
+                                                         instruction sequences. (LMC also writes MR3[MPR] = 1 at the beginning of the read-leveling
+                                                         instruction sequence. Read-leveling should only be initiated via the read-leveling
+                                                         instruction sequence.) See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and
+                                                         LMC()_CONFIG[RANKMASK].
+                                                         The MR3[MPR] value must be 0 in all the DDR3 parts attached to all ranks during normal
+                                                         operation. */
+	uint64_t mprloc                       : 2;  /**< MPR location. LMC writes this value to MR3[MPRLoc] in the selected DDR3 parts during
+                                                         power-up/init, read-leveling, and, if LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh
+                                                         exit instruction sequences. (LMC also writes MR3[MPRLoc] = 0 at the beginning of the read-
+                                                         leveling instruction sequence.) See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and
+                                                         LMC()_CONFIG[RANKMASK]. The MR3[MPRLoc] value must be 0 in all the DDR3 parts attached
+                                                         to all ranks during normal operation. */
+	uint64_t cwl                          : 3;  /**< CAS write latency.
+                                                         In DDR3 mode:
+                                                         0x0 = 5.
+                                                         0x1 = 6.
+                                                         0x2 = 7.
+                                                         0x3 = 8.
+                                                         0x4 = 9.
+                                                         0x5 = 10.
+                                                         0x6 = 11.
+                                                         0x7 = 12.
+                                                         In DDR4 mode:
+                                                         0x0 = 9.
+                                                         0x1 = 10.
+                                                         0x2 = 11.
+                                                         0x3 = 12.
+                                                         0x4 = 13.
+                                                         0x5 = 16.
+                                                         0x6 = 18.
+                                                         0x7 = Reserved.
+                                                         LMC writes this value to MR2[CWL] in the selected DDR3 parts during power-up/init, write-
+                                                         leveling, and, if LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit
+                                                         instruction sequences. See LMC()_CONFIG[SEQ_SEL, INIT_START,RANKMASK] and
+                                                         LMC()_RESET_CTL [DDR3PWARM, DDR3PSOFT]. This value must equal the MR2[CWL] value in
+                                                         all the DDR3 parts attached to all ranks during normal operation.
+                                                         tCWL must be programmed to less than or equal to tCL for proper LMC operation. */
+#else
+	uint64_t cwl                          : 3;
+	uint64_t mprloc                       : 2;
+	uint64_t mpr                          : 1;
+	uint64_t dll                          : 1;
+	uint64_t al                           : 2;
+	uint64_t wlev                         : 1;
+	uint64_t tdqs                         : 1;
+	uint64_t qoff                         : 1;
+	uint64_t bl                           : 2;
+	uint64_t cl                           : 4;
+	uint64_t rbt                          : 1;
+	uint64_t tm                           : 1;
+	uint64_t dllr                         : 1;
+	uint64_t wrp                          : 3;
+	uint64_t ppd                          : 1;
+	uint64_t al_ext                       : 1;
+	uint64_t cl_ext                       : 1;
+	uint64_t wrp_ext                      : 1;
+	uint64_t reserved_28_63               : 36;
+#endif
+	} s;
+	struct cvmx_lmcx_modereg_params0_cn61xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_25_63               : 39;
 	uint64_t ppd                          : 1;  /**< DLL Control for precharge powerdown
@@ -7655,17 +9142,19 @@ union cvmx_lmcx_modereg_params0 {
 	uint64_t ppd                          : 1;
 	uint64_t reserved_25_63               : 39;
 #endif
-	} s;
-	struct cvmx_lmcx_modereg_params0_s    cn61xx;
-	struct cvmx_lmcx_modereg_params0_s    cn63xx;
-	struct cvmx_lmcx_modereg_params0_s    cn63xxp1;
-	struct cvmx_lmcx_modereg_params0_s    cn66xx;
-	struct cvmx_lmcx_modereg_params0_s    cn68xx;
-	struct cvmx_lmcx_modereg_params0_s    cn68xxp1;
-	struct cvmx_lmcx_modereg_params0_s    cn70xx;
-	struct cvmx_lmcx_modereg_params0_s    cn70xxp1;
+	} cn61xx;
+	struct cvmx_lmcx_modereg_params0_cn61xx cn63xx;
+	struct cvmx_lmcx_modereg_params0_cn61xx cn63xxp1;
+	struct cvmx_lmcx_modereg_params0_cn61xx cn66xx;
+	struct cvmx_lmcx_modereg_params0_cn61xx cn68xx;
+	struct cvmx_lmcx_modereg_params0_cn61xx cn68xxp1;
+	struct cvmx_lmcx_modereg_params0_cn61xx cn70xx;
+	struct cvmx_lmcx_modereg_params0_cn61xx cn70xxp1;
+	struct cvmx_lmcx_modereg_params0_s    cn73xx;
 	struct cvmx_lmcx_modereg_params0_s    cn78xx;
-	struct cvmx_lmcx_modereg_params0_s    cnf71xx;
+	struct cvmx_lmcx_modereg_params0_s    cn78xxp2;
+	struct cvmx_lmcx_modereg_params0_cn61xx cnf71xx;
+	struct cvmx_lmcx_modereg_params0_s    cnf75xx;
 };
 typedef union cvmx_lmcx_modereg_params0 cvmx_lmcx_modereg_params0_t;
 
@@ -7678,6 +9167,185 @@ typedef union cvmx_lmcx_modereg_params0 cvmx_lmcx_modereg_params0_t;
 union cvmx_lmcx_modereg_params1 {
 	uint64_t u64;
 	struct cvmx_lmcx_modereg_params1_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_55_63               : 9;
+	uint64_t rtt_wr_11_ext                : 1;  /**< RTT_WR rank 3 extension bit for DDR4. */
+	uint64_t rtt_wr_10_ext                : 1;  /**< RTT_WR rank 2 extension bit for DDR4. */
+	uint64_t rtt_wr_01_ext                : 1;  /**< RTT_WR rank 1 extension bit for DDR4. */
+	uint64_t rtt_wr_00_ext                : 1;  /**< RTT_WR rank 0 extension bit for DDR4. */
+	uint64_t db_output_impedance          : 3;  /**< Host Interface DQ/DQS Output Driver Impedance control for DIMM0's Data Buffer.
+                                                         This is the default value used during Host Interface Write Leveling in LRDIMM
+                                                         environment, i.e., LMC()_CONFIG[LRDIMM_ENA] = 1, LMC()_SEQ_CTL[SEQ_SEL] = 0x6.
+                                                         0x0 = RZQ/6 (40 ohm).
+                                                         0x1 = RZQ/7 (34 ohm).
+                                                         0x2 = RZQ/5 (48 ohm).
+                                                         0x3-0x7 = Reserved. */
+	uint64_t rtt_nom_11                   : 3;  /**< RTT_NOM rank 3. LMC writes this value to MR1[RTT_NOM] in the rank 3 (i.e. DIMM1_CS1) DDR3
+                                                         parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. Per JEDEC DDR3 specifications, if RTT_NOM is
+                                                         used during write operations, only values MR1[RTT_NOM] = 1 (RZQ/4), 2 (RZQ/2), or 3
+                                                         (RZQ/6) are allowed. Otherwise, values MR1[RTT_NOM] = 4 (RZQ/12) and 5 (RZQ/8) are also
+                                                         allowed. */
+	uint64_t dic_11                       : 2;  /**< Output driver impedance control rank 3. LMC writes this value to MR1[D.I.C.] in the rank 3
+                                                         (i.e. DIMM1_CS1) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT]. */
+	uint64_t rtt_wr_11                    : 2;  /**< RTT_WR rank 3. LMC writes this value to MR2[Rtt_WR] in the rank 3 (i.e. DIMM1_CS1) DDR3
+                                                         parts when selected during power-up/init, write-leveling, and, if LMC()_CONFIG
+                                                         [SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL [DDR3PWARM,DDR3PSOFT]. */
+	uint64_t srt_11                       : 1;  /**< Self-refresh temperature range rank 3. LMC writes this value to MR2[SRT] in the rank 3
+                                                         (i.e. DIMM1_CS1) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START], LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t asr_11                       : 1;  /**< Auto self-refresh rank 3. LMC writes this value to MR2[ASR] in the rank 3 (i.e. DIMM1_CS1)
+                                                         DDR3 parts when selected during power-up/init, write-leveling, and, if LMC()_CONFIG
+                                                         [SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START], LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t pasr_11                      : 3;  /**< Partial array self-refresh rank 3. LMC writes this value to MR2[PASR] in the rank 3 (i.e.
+                                                         DIMM1_CS1) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t rtt_nom_10                   : 3;  /**< RTT_NOM rank 2. LMC writes this value to MR1[Rtt_Nom] in the rank 2 (i.e. DIMM1_CS0) DDR3
+                                                         parts when selected during power-up/init, write-leveling, and, if LMC()_CONFIG
+                                                         [SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL [DDR3PWARM, DDR3PSOFT]. Per JEDEC DDR3 specifications, if RTT_NOM
+                                                         is used during write operations, only values MR1[RTT_NOM] = 1 (RZQ/4), 2 (RZQ/2), or
+                                                         3 (RZQ/6) are allowed. Otherwise, values MR1[RTT_NOM] = 4 (RZQ/12) and 5 (RZQ/8) are
+                                                         also allowed. */
+	uint64_t dic_10                       : 2;  /**< Output driver impedance control rank 2. LMC writes this value to MR1[D.I.C.] in the rank 2
+                                                         (i.e. DIMM1_CS0) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t rtt_wr_10                    : 2;  /**< RTT_WR rank 2. LMC writes this value to MR2[Rtt_WR] in the rank 2 (i.e. DIMM1_CS0) DDR3
+                                                         parts when selected during power-up/init, write-leveling, and, if LMC()_CONFIG
+                                                         [SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT]. */
+	uint64_t srt_10                       : 1;  /**< Self-refresh temperature range rank 2. LMC writes this value to MR2[SRT] in the rank 2
+                                                         (i.e. DIMM1_CS0) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t asr_10                       : 1;  /**< Auto self-refresh rank 2. LMC writes this value to MR2[ASR] in the rank 2 (i.e. DIMM1_CS0)
+                                                         DDR3 parts when selected during power-up/init, write-leveling, and, if LMC()_CONFIG
+                                                         [SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT]. */
+	uint64_t pasr_10                      : 3;  /**< Partial array self-refresh rank 2. LMC writes this value to MR2[PASR] in the rank 2 (i.e.
+                                                         DIMM1_CS0) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t rtt_nom_01                   : 3;  /**< RTT_NOM rank 1. LMC writes this value to MR1[RTT_NOM] in the rank 1 (i.e. DIMM0_CS1) DDR3
+                                                         parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. Per JEDEC DDR3 specifications, if RTT_NOM is
+                                                         used during write operations, only values MR1[RTT_NOM] = 1 (RZQ/4), 2 (RZQ/2), or 3
+                                                         (RZQ/6) are allowed. Otherwise, values MR1[RTT_NOM] = 4 (RZQ/12) and 5 (RZQ/8) are also
+                                                         allowed. */
+	uint64_t dic_01                       : 2;  /**< Output driver impedance control rank 1. LMC writes this value to MR1[D.I.C.] in the rank 1
+                                                         (i.e. DIMM0_CS1) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t rtt_wr_01                    : 2;  /**< RTT_WR rank 1. LMC writes this value to MR2[RTT_WR] in the rank 1 (i.e. DIMM0_CS1) DDR3
+                                                         parts when selected during power-up/init, write-leveling, and, if LMC()_CONFIG
+                                                         [SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT]. */
+	uint64_t srt_01                       : 1;  /**< Self-refresh temperature range rank 1. LMC writes this value to MR2[SRT] in the rank 1
+                                                         (i.e. DIMM0_CS1) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t asr_01                       : 1;  /**< Auto self-refresh rank 1. LMC writes this value to MR2[ASR] in the rank 1 (i.e. DIMM0_CS1)
+                                                         DDR3 parts when selected during power-up/init, write-leveling, and, if LMC()_CONFIG
+                                                         [SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT]. */
+	uint64_t pasr_01                      : 3;  /**< Partial array self-refresh rank 1. LMC writes this value to MR2[PASR] in the rank 1 (i.e.
+                                                         DIMM0_CS1) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t rtt_nom_00                   : 3;  /**< RTT_NOM rank 0. LMC writes this value to MR1[RTT_NOM] in the rank 0 (i.e. DIMM0_CS0) DDR3
+                                                         parts when selected during power-up/init, write-leveling, and, if LMC()_CONFIG
+                                                         [SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT]. Per JEDEC DDR3 specifications, if RTT_NOM is
+                                                         used during write operations, only values MR1[RTT_NOM] = 1 (RZQ/4), 2 (RZQ/2),
+                                                         or 3 (RZQ/6) are allowed. Otherwise, values MR1[RTT_NOM] = 4 (RZQ/12) and 5 (RZQ/8)
+                                                         are also allowed. */
+	uint64_t dic_00                       : 2;  /**< Output driver impedance control rank 0. LMC writes this value to MR1[D.I.C.] in the rank 0
+                                                         (i.e. DIMM0_CS0) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t rtt_wr_00                    : 2;  /**< RTT_WR rank 0. LMC writes this value to MR2[RTT_WR] in the rank 0 (i.e. DIMM0_CS0) DDR3
+                                                         parts when selected during power-up/init, write-leveling, and, if LMC()_CONFIG
+                                                         [SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM, DDR3PSOFT]. */
+	uint64_t srt_00                       : 1;  /**< Self-refresh temperature range rank 0. LMC writes this value to MR2[SRT] in the rank 0
+                                                         (i.e. DIMM0_CS0) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+	uint64_t asr_00                       : 1;  /**< Auto self-refresh rank 0. LMC writes this value to MR2[ASR] in the rank 0 (i.e. DIMM0_CS0)
+                                                         DDR3 parts when selected during power-up/init, write-leveling, and, if LMC()_CONFIG
+                                                         [SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences. See
+                                                         LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL [DDR3PWARM,DDR3PSOFT]. */
+	uint64_t pasr_00                      : 3;  /**< Partial array self-refresh rank 0. LMC writes this value to MR2[PASR] in the rank 0 (i.e.
+                                                         DIMM0_CS0) DDR3 parts when selected during power-up/init, write-leveling, and, if
+                                                         LMC()_CONFIG[SREF_WITH_DLL] is set, self-refresh entry and exit instruction sequences.
+                                                         See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] and LMC()_CONFIG[RANKMASK] and
+                                                         LMC()_RESET_CTL[DDR3PWARM,DDR3PSOFT]. */
+#else
+	uint64_t pasr_00                      : 3;
+	uint64_t asr_00                       : 1;
+	uint64_t srt_00                       : 1;
+	uint64_t rtt_wr_00                    : 2;
+	uint64_t dic_00                       : 2;
+	uint64_t rtt_nom_00                   : 3;
+	uint64_t pasr_01                      : 3;
+	uint64_t asr_01                       : 1;
+	uint64_t srt_01                       : 1;
+	uint64_t rtt_wr_01                    : 2;
+	uint64_t dic_01                       : 2;
+	uint64_t rtt_nom_01                   : 3;
+	uint64_t pasr_10                      : 3;
+	uint64_t asr_10                       : 1;
+	uint64_t srt_10                       : 1;
+	uint64_t rtt_wr_10                    : 2;
+	uint64_t dic_10                       : 2;
+	uint64_t rtt_nom_10                   : 3;
+	uint64_t pasr_11                      : 3;
+	uint64_t asr_11                       : 1;
+	uint64_t srt_11                       : 1;
+	uint64_t rtt_wr_11                    : 2;
+	uint64_t dic_11                       : 2;
+	uint64_t rtt_nom_11                   : 3;
+	uint64_t db_output_impedance          : 3;
+	uint64_t rtt_wr_00_ext                : 1;
+	uint64_t rtt_wr_01_ext                : 1;
+	uint64_t rtt_wr_10_ext                : 1;
+	uint64_t rtt_wr_11_ext                : 1;
+	uint64_t reserved_55_63               : 9;
+#endif
+	} s;
+	struct cvmx_lmcx_modereg_params1_cn61xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_48_63               : 16;
 	uint64_t rtt_nom_11                   : 3;  /**< RTT_NOM Rank 3
@@ -7863,17 +9531,19 @@ union cvmx_lmcx_modereg_params1 {
 	uint64_t rtt_nom_11                   : 3;
 	uint64_t reserved_48_63               : 16;
 #endif
-	} s;
-	struct cvmx_lmcx_modereg_params1_s    cn61xx;
-	struct cvmx_lmcx_modereg_params1_s    cn63xx;
-	struct cvmx_lmcx_modereg_params1_s    cn63xxp1;
-	struct cvmx_lmcx_modereg_params1_s    cn66xx;
-	struct cvmx_lmcx_modereg_params1_s    cn68xx;
-	struct cvmx_lmcx_modereg_params1_s    cn68xxp1;
-	struct cvmx_lmcx_modereg_params1_s    cn70xx;
-	struct cvmx_lmcx_modereg_params1_s    cn70xxp1;
+	} cn61xx;
+	struct cvmx_lmcx_modereg_params1_cn61xx cn63xx;
+	struct cvmx_lmcx_modereg_params1_cn61xx cn63xxp1;
+	struct cvmx_lmcx_modereg_params1_cn61xx cn66xx;
+	struct cvmx_lmcx_modereg_params1_cn61xx cn68xx;
+	struct cvmx_lmcx_modereg_params1_cn61xx cn68xxp1;
+	struct cvmx_lmcx_modereg_params1_cn61xx cn70xx;
+	struct cvmx_lmcx_modereg_params1_cn61xx cn70xxp1;
+	struct cvmx_lmcx_modereg_params1_s    cn73xx;
 	struct cvmx_lmcx_modereg_params1_s    cn78xx;
-	struct cvmx_lmcx_modereg_params1_s    cnf71xx;
+	struct cvmx_lmcx_modereg_params1_s    cn78xxp2;
+	struct cvmx_lmcx_modereg_params1_cn61xx cnf71xx;
+	struct cvmx_lmcx_modereg_params1_s    cnf75xx;
 };
 typedef union cvmx_lmcx_modereg_params1 cvmx_lmcx_modereg_params1_t;
 
@@ -7950,7 +9620,10 @@ union cvmx_lmcx_modereg_params2 {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} cn70xxp1;
+	struct cvmx_lmcx_modereg_params2_s    cn73xx;
 	struct cvmx_lmcx_modereg_params2_s    cn78xx;
+	struct cvmx_lmcx_modereg_params2_s    cn78xxp2;
+	struct cvmx_lmcx_modereg_params2_s    cnf75xx;
 };
 typedef union cvmx_lmcx_modereg_params2 cvmx_lmcx_modereg_params2_t;
 
@@ -7964,7 +9637,11 @@ union cvmx_lmcx_modereg_params3 {
 	uint64_t u64;
 	struct cvmx_lmcx_modereg_params3_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_33_63               : 31;
+	uint64_t reserved_39_63               : 25;
+	uint64_t xrank_add_tccd_l             : 3;  /**< Add additional cycles on top of the 4 cycles applied to tCCD_L
+                                                         when crossing logical rank (to the same bank group) of a 3DS DRAM. */
+	uint64_t xrank_add_tccd_s             : 3;  /**< Add additional cycles on top of the 4 cycles applied to tCCD_S
+                                                         when crossing logical rank (to a different bank group) of a 3DS DRAM. */
 	uint64_t mpr_fmt                      : 2;  /**< MPR format. */
 	uint64_t wr_cmd_lat                   : 2;  /**< Write command latency when CRC and DM are both enabled. */
 	uint64_t fgrm                         : 3;  /**< Fine granularity refresh mode. */
@@ -8016,12 +9693,70 @@ union cvmx_lmcx_modereg_params3 {
 	uint64_t fgrm                         : 3;
 	uint64_t wr_cmd_lat                   : 2;
 	uint64_t mpr_fmt                      : 2;
-	uint64_t reserved_33_63               : 31;
+	uint64_t xrank_add_tccd_s             : 3;
+	uint64_t xrank_add_tccd_l             : 3;
+	uint64_t reserved_39_63               : 25;
 #endif
 	} s;
-	struct cvmx_lmcx_modereg_params3_s    cn70xx;
-	struct cvmx_lmcx_modereg_params3_s    cn70xxp1;
+	struct cvmx_lmcx_modereg_params3_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_33_63               : 31;
+	uint64_t mpr_fmt                      : 2;  /**< MPR format. */
+	uint64_t wr_cmd_lat                   : 2;  /**< Write command latency when CRC and DM are both enabled. */
+	uint64_t fgrm                         : 3;  /**< Fine granularity refresh mode. */
+	uint64_t temp_sense                   : 1;  /**< Temperature sensor readout enable. */
+	uint64_t pda                          : 1;  /**< Per DRAM addressability. */
+	uint64_t gd                           : 1;  /**< Gear-down mode. */
+	uint64_t crc                          : 1;  /**< CRC mode. */
+	uint64_t lpasr                        : 2;  /**< LP auto self refresh. */
+	uint64_t tccd_l                       : 3;  /**< TCCD_L timing parameter:
+                                                         0x0 = 4. 0x3 = 7.
+                                                         0x1 = 5. 0x4 = 8.
+                                                         0x2 = 6. 0x5-0x7 = reserved. */
+	uint64_t rd_dbi                       : 1;  /**< Read DBI, must be 0. */
+	uint64_t wr_dbi                       : 1;  /**< Write DBI, must be 0. */
+	uint64_t dm                           : 1;  /**< Data mask enable. */
+	uint64_t ca_par_pers                  : 1;  /**< Command/address persistent parity error mode. */
+	uint64_t odt_pd                       : 1;  /**< ODT in PD mode. */
+	uint64_t par_lat_mode                 : 3;  /**< Parity latency mode. */
+	uint64_t wr_preamble                  : 1;  /**< Write preamble, 0 = one nCK, 1 = two nCK. */
+	uint64_t rd_preamble                  : 1;  /**< Write preamble, 0 = one nCK, 1 = two nCK. */
+	uint64_t sre_abort                    : 1;  /**< Self refresh abort. */
+	uint64_t cal                          : 3;  /**< CS-to-CMD/ADDR latency mode (cycles). */
+	uint64_t vref_mon                     : 1;  /**< Internal VREF monitor: 0 = disable, 1 = enable. */
+	uint64_t tc_ref                       : 1;  /**< Temperature controlled refresh range: 0 = normal, 1 = extended. */
+	uint64_t max_pd                       : 1;  /**< Maximum power-down mode: 0 = disable, 1 = enable. */
+#else
+	uint64_t max_pd                       : 1;
+	uint64_t tc_ref                       : 1;
+	uint64_t vref_mon                     : 1;
+	uint64_t cal                          : 3;
+	uint64_t sre_abort                    : 1;
+	uint64_t rd_preamble                  : 1;
+	uint64_t wr_preamble                  : 1;
+	uint64_t par_lat_mode                 : 3;
+	uint64_t odt_pd                       : 1;
+	uint64_t ca_par_pers                  : 1;
+	uint64_t dm                           : 1;
+	uint64_t wr_dbi                       : 1;
+	uint64_t rd_dbi                       : 1;
+	uint64_t tccd_l                       : 3;
+	uint64_t lpasr                        : 2;
+	uint64_t crc                          : 1;
+	uint64_t gd                           : 1;
+	uint64_t pda                          : 1;
+	uint64_t temp_sense                   : 1;
+	uint64_t fgrm                         : 3;
+	uint64_t wr_cmd_lat                   : 2;
+	uint64_t mpr_fmt                      : 2;
+	uint64_t reserved_33_63               : 31;
+#endif
+	} cn70xx;
+	struct cvmx_lmcx_modereg_params3_cn70xx cn70xxp1;
+	struct cvmx_lmcx_modereg_params3_s    cn73xx;
 	struct cvmx_lmcx_modereg_params3_s    cn78xx;
+	struct cvmx_lmcx_modereg_params3_s    cn78xxp2;
+	struct cvmx_lmcx_modereg_params3_s    cnf75xx;
 };
 typedef union cvmx_lmcx_modereg_params3 cvmx_lmcx_modereg_params3_t;
 
@@ -8036,14 +9771,25 @@ union cvmx_lmcx_mpr_data0 {
 	struct cvmx_lmcx_mpr_data0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t mpr_data                     : 64; /**< MPR data bits<63:0>. Bits<7:0> represent the MPR data for the lowest-order *4 device (*4
-                                                         device 0); bits<15:8> represent *4 device 1; ..., bits<63:56> are for *4 device 7. */
+                                                         device 0); bits<15:8> represent *4 device 1; ..., bits<63:56> are for *4 device 7.
+                                                         This field is also used to store the results after running the Data Buffer Training
+                                                         sequence
+                                                         (LMC()_SEQ_CTL[SEQ_SEL] = 0xe).
+                                                         The format of the stored results is controlled by the CSR LMC()_DBTRAIN_CTL[RW_TRAIN].
+                                                         When LMC()_DBTRAIN_CTL[RW_TRAIN] = 1, this field stores the R/W comparison output
+                                                         from all DQ63 - DQ0.
+                                                         When LMC()_DBTRAIN_CTL[RW_TRAIN] = 0, this field stores the positive edge read data
+                                                         on a particular cycle coming from DQ63 - DQ0. */
 #else
 	uint64_t mpr_data                     : 64;
 #endif
 	} s;
 	struct cvmx_lmcx_mpr_data0_s          cn70xx;
 	struct cvmx_lmcx_mpr_data0_s          cn70xxp1;
+	struct cvmx_lmcx_mpr_data0_s          cn73xx;
 	struct cvmx_lmcx_mpr_data0_s          cn78xx;
+	struct cvmx_lmcx_mpr_data0_s          cn78xxp2;
+	struct cvmx_lmcx_mpr_data0_s          cnf75xx;
 };
 typedef union cvmx_lmcx_mpr_data0 cvmx_lmcx_mpr_data0_t;
 
@@ -8058,14 +9804,26 @@ union cvmx_lmcx_mpr_data1 {
 	struct cvmx_lmcx_mpr_data1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t mpr_data                     : 64; /**< MPR data bits<127:64>. Bits<7:0> represent the MPR data for *4 device 8; bits<15:8>
-                                                         represent *4 device 9; ...; bits<63:56> are for *4 device 15. */
+                                                         represent *4 device 9; ...; bits<63:56> are for *4 device 15.
+                                                         This field is also used to store the results after running the Data Buffer Training
+                                                         sequence
+                                                         (LMC()_SEQ_CTL[SEQ_SEL] = 0xe).
+                                                         The format of the stored results is controlled by the CSR LMC()_DBTRAIN_CTL[RW_TRAIN].
+                                                         When LMC()_DBTRAIN_CTL[RW_TRAIN] = 1, this field stores the R/W comparison output
+                                                         from the ECC byte (DQ71 - DQ64).
+                                                         When LMC()_DBTRAIN_CTL[RW_TRAIN] = 0, MPR_DATA<7:0> stores the positive edge read data
+                                                         on a particular cycle coming from the ECC byte (DQ71 - DQ64), while
+                                                         MPR_DATA<64:8> stores the negative edge read data coming from DQ55 - DQ0. */
 #else
 	uint64_t mpr_data                     : 64;
 #endif
 	} s;
 	struct cvmx_lmcx_mpr_data1_s          cn70xx;
 	struct cvmx_lmcx_mpr_data1_s          cn70xxp1;
+	struct cvmx_lmcx_mpr_data1_s          cn73xx;
 	struct cvmx_lmcx_mpr_data1_s          cn78xx;
+	struct cvmx_lmcx_mpr_data1_s          cn78xxp2;
+	struct cvmx_lmcx_mpr_data1_s          cnf75xx;
 };
 typedef union cvmx_lmcx_mpr_data1 cvmx_lmcx_mpr_data1_t;
 
@@ -8081,7 +9839,14 @@ union cvmx_lmcx_mpr_data2 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
 	uint64_t mpr_data                     : 16; /**< MPR data bits<143:128>. Bits<7:0> represent the MPR data for *4 device 16; bits<15:8>
-                                                         represent *4 device 17. */
+                                                         represent *4 device 17.
+                                                         This field is also used to store the results after running the Data Buffer Training
+                                                         sequence
+                                                         (LMC()_SEQ_CTL[SEQ_SEL] = 0xe).
+                                                         The format of the stored results is controlled by the CSR LMC()_DBTRAIN_CTL[RW_TRAIN].
+                                                         When LMC()_DBTRAIN_CTL[RW_TRAIN] = 1, this field is not used.
+                                                         When LMC()_DBTRAIN_CTL[RW_TRAIN] = 0, MPR_DATA<15:0> stores the negative edge read data
+                                                         on a particular cycle coming from DQ71 - DQ56. */
 #else
 	uint64_t mpr_data                     : 16;
 	uint64_t reserved_16_63               : 48;
@@ -8089,23 +9854,38 @@ union cvmx_lmcx_mpr_data2 {
 	} s;
 	struct cvmx_lmcx_mpr_data2_s          cn70xx;
 	struct cvmx_lmcx_mpr_data2_s          cn70xxp1;
+	struct cvmx_lmcx_mpr_data2_s          cn73xx;
 	struct cvmx_lmcx_mpr_data2_s          cn78xx;
+	struct cvmx_lmcx_mpr_data2_s          cn78xxp2;
+	struct cvmx_lmcx_mpr_data2_s          cnf75xx;
 };
 typedef union cvmx_lmcx_mpr_data2 cvmx_lmcx_mpr_data2_t;
 
 /**
  * cvmx_lmc#_mr_mpr_ctl
  *
- * This register sets timing parameters for DDR4.
+ * This register provides the control functions when programming the MPR of DDR4 DRAMs.
  *
  */
 union cvmx_lmcx_mr_mpr_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_mr_mpr_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_57_63               : 7;
+	uint64_t reserved_61_63               : 3;
+	uint64_t mr_wr_secure_key_ena         : 1;  /**< When set, this enables the issuing of security key with the
+                                                         unique address field A[17:0] set by LMC()_MR_MPR_CTL[MR_WR_ADDR]
+                                                         during the MRW sequence.
+                                                         Set this to 1 when executing DRAM Post Package Repair manually
+                                                         by using MRW operation. */
+	uint64_t pba_func_space               : 3;  /**< Set the Function Space Selector during PBA mode of the MRW
+                                                         sequence. */
 	uint64_t mr_wr_bg1                    : 1;  /**< BG1 part of the address select for MRS in DDR4 mode. */
-	uint64_t reserved_53_55               : 3;
+	uint64_t mpr_sample_dq_enable         : 1;  /**< Reserved. INTERNAL: No longer used due to logic change from
+                                                         initial design. */
+	uint64_t pda_early_dqx                : 1;  /**< When set, it enables lmc_dqx early for PDA/PBA operation. */
+	uint64_t mr_wr_pba_enable             : 1;  /**< Per Buffer Addressability write enable. When set, MRW operations use PBA, enabled by
+                                                         MR_WR_PDA_MASK per buffer.
+                                                         Only available for DDR4 LRDIMM. */
 	uint64_t mr_wr_use_default_value      : 1;  /**< When set, write the value to the MR that is computed from the value set in various CSR
                                                          fields that would be used during initialization, rather that using the value in the
                                                          LMC()_MR_MPR_CTL[MR_WR_ADDR]. Useful to rewrite the same value or to change single
@@ -8144,9 +9924,13 @@ union cvmx_lmcx_mr_mpr_ctl {
 	uint64_t mpr_byte_select              : 4;
 	uint64_t mpr_whole_byte_enable        : 1;
 	uint64_t mr_wr_use_default_value      : 1;
-	uint64_t reserved_53_55               : 3;
+	uint64_t mr_wr_pba_enable             : 1;
+	uint64_t pda_early_dqx                : 1;
+	uint64_t mpr_sample_dq_enable         : 1;
 	uint64_t mr_wr_bg1                    : 1;
-	uint64_t reserved_57_63               : 7;
+	uint64_t pba_func_space               : 3;
+	uint64_t mr_wr_secure_key_ena         : 1;
+	uint64_t reserved_61_63               : 3;
 #endif
 	} s;
 	struct cvmx_lmcx_mr_mpr_ctl_cn70xx {
@@ -8191,9 +9975,43 @@ union cvmx_lmcx_mr_mpr_ctl {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_mr_mpr_ctl_cn70xx    cn70xxp1;
+	struct cvmx_lmcx_mr_mpr_ctl_s         cn73xx;
 	struct cvmx_lmcx_mr_mpr_ctl_s         cn78xx;
+	struct cvmx_lmcx_mr_mpr_ctl_s         cn78xxp2;
+	struct cvmx_lmcx_mr_mpr_ctl_s         cnf75xx;
 };
 typedef union cvmx_lmcx_mr_mpr_ctl cvmx_lmcx_mr_mpr_ctl_t;
+
+/**
+ * cvmx_lmc#_ns_ctl
+ *
+ * This register contains control parameters for handling non-secure accesses.
+ *
+ */
+union cvmx_lmcx_ns_ctl {
+	uint64_t u64;
+	struct cvmx_lmcx_ns_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_26_63               : 38;
+	uint64_t ns_scramble_dis              : 1;  /**< When set, this field disables data scrambling on non-secure accesses only.
+                                                         When data scrambling is enabled by setting CONTROL[SCRAMBLE_ENA] to 1, this
+                                                         field needs to be cleared to 0 in order to enable data scrambling on
+                                                         non-secure mode. */
+	uint64_t reserved_18_24               : 7;
+	uint64_t adr_offset                   : 18; /**< Sets the offset to the upper 18 bits of L2C-LMC address when a non-secure mode
+                                                         transaction occurs. */
+#else
+	uint64_t adr_offset                   : 18;
+	uint64_t reserved_18_24               : 7;
+	uint64_t ns_scramble_dis              : 1;
+	uint64_t reserved_26_63               : 38;
+#endif
+	} s;
+	struct cvmx_lmcx_ns_ctl_s             cn73xx;
+	struct cvmx_lmcx_ns_ctl_s             cn78xxp2;
+	struct cvmx_lmcx_ns_ctl_s             cnf75xx;
+};
+typedef union cvmx_lmcx_ns_ctl cvmx_lmcx_ns_ctl_t;
 
 /**
  * cvmx_lmc#_nxm
@@ -8233,19 +10051,25 @@ union cvmx_lmcx_nxm {
                                                          *UNUSED IN 6xxx* */
 	uint64_t mem_msb_d2_r0                : 4;  /**< Max Row MSB for DIMM2, RANK0
                                                          *UNUSED IN 6xxx* */
-	uint64_t mem_msb_d1_r1                : 4;  /**< Max Row MSB for DIMM1, RANK1/DIMM1 in Single Ranked */
-	uint64_t mem_msb_d1_r0                : 4;  /**< Max Row MSB for DIMM1, RANK0 */
-	uint64_t mem_msb_d0_r1                : 4;  /**< Max Row MSB for DIMM0, RANK1/DIMM0 in Single Ranked */
-	uint64_t mem_msb_d0_r0                : 4;  /**< Max Row MSB for DIMM0, RANK0 */
-	uint64_t cs_mask                      : 8;  /**< Chip select mask.
-                                                         CS_MASK[3:0] corresponds to the 4 chip selects for a memory
-                                                         configuration.  If the memory configuration does not populate
-                                                         a rank of memory for a chip select, the corresponding bit in
-                                                         the CS_MASK field must be set, and for 6xxx devices bits
-                                                         CS_MASK[7:4] must always all be set.  LMC will alias a NXM
-                                                         read reference to use the lowest, legal chip select and
-                                                         return 0s for data.  LMC normally discards NXM writes, but
-                                                         will also alias them when LMC*_CONTROL[NXM_WRITE_EN]=1. */
+	uint64_t mem_msb_d1_r1                : 4;  /**< Maximum row MSB for DIMM1, RANK1/DIMM1 in single ranked.
+                                                         If DIMM1 is dual-sided, this should be set to
+                                                         NXM[MEM_MSB_D1_R0]. If CONFIG[RANK_ENA] is cleared, this field is ignored. */
+	uint64_t mem_msb_d1_r0                : 4;  /**< Maximum row MSB for DIMM1, RANK0.
+                                                         if DIMM1 contains 3DS DRAMs, this would point to
+                                                         the logical rank's most significant bit. */
+	uint64_t mem_msb_d0_r1                : 4;  /**< Maximum row MSB for DIMM0, RANK1/DIMM0 in single ranked.
+                                                         If DIMM0 is dual-sided, this should be set to
+                                                         NXM[MEM_MSB_D0_R0]. If CONFIG[RANK_ENA] is cleared, this field is ignored. */
+	uint64_t mem_msb_d0_r0                : 4;  /**< Maximum row MSB for DIMM0, RANK0.
+                                                         If DIMM0 contains 3DS DRAMs, this would point to
+                                                         the logical rank's most significant bit. */
+	uint64_t cs_mask                      : 8;  /**< Chip select mask. This mask corresponds to the four chip selects for a memory
+                                                         configuration. If LMC()_CONFIG[RANK_ENA]=0 then this mask must be set in pairs because
+                                                         each reference address will assert a pair of chip selects. If the chip select(s) have a
+                                                         corresponding CS_MASK bit set, then the reference is to nonexistent memory (NXM). LMC will
+                                                         alias a NXM read reference to use the lowest, legal chip select(s) and return zeros. LMC
+                                                         normally discards NXM write operations, but will also alias them when LMC()_CONTROL
+                                                         [NXM_WRITE_EN]=1. */
 #else
 	uint64_t cs_mask                      : 8;
 	uint64_t mem_msb_d0_r0                : 4;
@@ -8310,8 +10134,11 @@ union cvmx_lmcx_nxm {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_nxm_cn70xx           cn70xxp1;
+	struct cvmx_lmcx_nxm_cn70xx           cn73xx;
 	struct cvmx_lmcx_nxm_cn70xx           cn78xx;
+	struct cvmx_lmcx_nxm_cn70xx           cn78xxp2;
 	struct cvmx_lmcx_nxm_s                cnf71xx;
+	struct cvmx_lmcx_nxm_cn70xx           cnf75xx;
 };
 typedef union cvmx_lmcx_nxm cvmx_lmcx_nxm_t;
 
@@ -8328,6 +10155,26 @@ union cvmx_lmcx_nxm_fadr {
 	uint64_t u64;
 	struct cvmx_lmcx_nxm_fadr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_40_63               : 24;
+	uint64_t nxm_faddr_ext                : 1;  /**< Extended bit for the Failing L2C-LMC address (bit 37). */
+	uint64_t nxm_src                      : 1;  /**< Indicates the source of the operation that caused a NXM error:
+                                                         0 = L2C.
+                                                         1 = Reserved. INTERNAL: HFA. */
+	uint64_t nxm_type                     : 1;  /**< Indicates the type of operation that caused NXM error:
+                                                         0 = Read, 1 = Write */
+	uint64_t nxm_faddr                    : 37; /**< Failing L2C-LMC address. Bits<4:0> are
+                                                         always 0s for an L2C access. Bits<5:4> represent the fill order for an L2C read operation,
+                                                         and the start point within a cache line for a write operation. */
+#else
+	uint64_t nxm_faddr                    : 37;
+	uint64_t nxm_type                     : 1;
+	uint64_t nxm_src                      : 1;
+	uint64_t nxm_faddr_ext                : 1;
+	uint64_t reserved_40_63               : 24;
+#endif
+	} s;
+	struct cvmx_lmcx_nxm_fadr_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_39_63               : 25;
 	uint64_t nxm_src                      : 1;  /**< Indicates the source of the operation that caused a NXM error:
                                                          0 = L2C, 1 = HFA */
@@ -8342,10 +10189,12 @@ union cvmx_lmcx_nxm_fadr {
 	uint64_t nxm_src                      : 1;
 	uint64_t reserved_39_63               : 25;
 #endif
-	} s;
-	struct cvmx_lmcx_nxm_fadr_s           cn70xx;
-	struct cvmx_lmcx_nxm_fadr_s           cn70xxp1;
+	} cn70xx;
+	struct cvmx_lmcx_nxm_fadr_cn70xx      cn70xxp1;
+	struct cvmx_lmcx_nxm_fadr_s           cn73xx;
 	struct cvmx_lmcx_nxm_fadr_s           cn78xx;
+	struct cvmx_lmcx_nxm_fadr_s           cn78xxp2;
+	struct cvmx_lmcx_nxm_fadr_s           cnf75xx;
 };
 typedef union cvmx_lmcx_nxm_fadr cvmx_lmcx_nxm_fadr_t;
 
@@ -8359,10 +10208,9 @@ union cvmx_lmcx_ops_cnt {
 	uint64_t u64;
 	struct cvmx_lmcx_ops_cnt_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t opscnt                       : 64; /**< Performance Counter
-                                                         64-bit counter that increments when the DDR3 data bus
-                                                         is being used
-                                                         DRAM bus utilization = LMC*_OPS_CNT/LMC*_DCLK_CNT */
+	uint64_t opscnt                       : 64; /**< Performance counter. A 64-bit counter that increments when the DDR3 data bus is being
+                                                         used.
+                                                         DDR bus utilization = OPSCNT / LMC()_DCLK_CNT. */
 #else
 	uint64_t opscnt                       : 64;
 #endif
@@ -8375,8 +10223,11 @@ union cvmx_lmcx_ops_cnt {
 	struct cvmx_lmcx_ops_cnt_s            cn68xxp1;
 	struct cvmx_lmcx_ops_cnt_s            cn70xx;
 	struct cvmx_lmcx_ops_cnt_s            cn70xxp1;
+	struct cvmx_lmcx_ops_cnt_s            cn73xx;
 	struct cvmx_lmcx_ops_cnt_s            cn78xx;
+	struct cvmx_lmcx_ops_cnt_s            cn78xxp2;
 	struct cvmx_lmcx_ops_cnt_s            cnf71xx;
+	struct cvmx_lmcx_ops_cnt_s            cnf75xx;
 };
 typedef union cvmx_lmcx_ops_cnt cvmx_lmcx_ops_cnt_t;
 
@@ -8456,7 +10307,46 @@ union cvmx_lmcx_phy_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_phy_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_51_63               : 13;
+	uint64_t reserved_61_63               : 3;
+	uint64_t dsk_dbg_load_dis             : 1;  /**< Reserved. INTERNAL: When set, LMC prevents PHY from loading the deskew shift
+                                                         registers with its internal settings. When Read Deskew sequence is kicked off
+                                                         by setting DSK_DBG_RD_START = 1 and DSK_DBG_WR_MODE = 0, this field determines
+                                                         whether or not to load the shift register with PHY's internal settings before
+                                                         the shifting process. */
+	uint64_t dsk_dbg_overwrt_ena          : 1;  /**< Reserved. INTERNAL:  When set high, PHY selects all of the preloaded data
+                                                         when configuring the read deskew settings. */
+	uint64_t dsk_dbg_wr_mode              : 1;  /**< Reserved. INTERNAL: When set high along with DSK_DBG_RD_START, LMC kicks off Deskew
+                                                         Overwrite sequence to shift out a 10-bits setting for a single DQ.
+                                                         Note that there are a total of 9 bytes and the chain structure are split into two
+                                                         halves such that the top chain covers Byte 7,6,5,4 and bottom chain cover Byte
+                                                         ECC,3,2,1,0.
+                                                         Each byte has 10 DQs (DQ7,DQ6,DQ5,DQ4,DBI,DAC,DQ3,DQ2,DQ1,DQ0) and that each
+                                                         DQ has 10-bits deskew setting. */
+	uint64_t data_rate_loopback           : 1;  /**< Reserved. INTERNAL: DQ data rate loopback, working in conjunction with LOOPBACK assertion.
+                                                         When asserted, incoming PRBS at even DQ can be set at data rate, and the data is loop
+                                                         backed out through odd DQ at the same rate.
+                                                         When de-asserted, LOOPBACK assertion is working along with LOOPBACK_POS to check on even
+                                                         DQ against each DQS edge seperately. This is done at the clock rate. */
+	uint64_t dq_shallow_loopback          : 1;  /**< Reserved. INTERNAL: DQ shallow loopback, working in conjunction with LOOPBACK assertion.
+                                                         When asserted, even DQ inputs can be loop-backed out through its adjacent odd DQ outputs
+                                                         without being flop'd by DQS. */
+	uint64_t dm_disable                   : 1;  /**< Write to 1 to disable the DRAM Data Mask feature by having LMC driving a constant value on
+                                                         the
+                                                         DDRX_DQS<17:9>_P pins of the chip during write operations. LMC drives a constant 0 in DDR3
+                                                         and drives a constant 1 in DDR4.
+                                                         Note that setting this field high is NOT allowed when LMC has the Write DBI feature turned
+                                                         on
+                                                         (MODEREG_PARAMS3[WR_DBI]=1). */
+	uint64_t c1_sel                       : 2;  /**< 0x0 = C1 is not routed to any output pin.
+                                                         0x1 = C1 is routed to CS3.
+                                                         0x2 = C1 is routed to A17 address pin.
+                                                         0x3 = C1 is not routed to any output pin.
+                                                         Set to 0x0 if not interfacing with 3DS DRAM. */
+	uint64_t c0_sel                       : 2;  /**< 0x0 = C0 is not routed to any output pin.
+                                                         0x1 = C0 is routed to CS2.
+                                                         0x2 = C0 is routed to TEN output pin.
+                                                         0x3 = C0 is not routed to any output pin.
+                                                         Set to 0x0 if not interfacing with 3DS DRAM. */
 	uint64_t phy_reset                    : 1;  /**< Reserved. INTERNAL: Write to 1 to reset the PHY, one-shot operation, will automatically
                                                          clear to value of 0. */
 	uint64_t dsk_dbg_rd_complete          : 1;  /**< Reserved. INTERNAL: Indicates completion of a read operation, will clear to 0 when a read
@@ -8473,16 +10363,26 @@ union cvmx_lmcx_phy_ctl {
 	uint64_t dsk_dbg_offset               : 2;  /**< Reserved. INTERNAL: Offset to change delay of deskew debug data return time to LMC from
                                                          DDR PHY. */
 	uint64_t dsk_dbg_num_bits_sel         : 1;  /**< Reserved. INTERNAL: Deskew debug, select number of bits per byte lane.
-                                                         0 = 8 bits per byte lane, no DBI.
-                                                         1 = 9 bits per byte lane, including DBI. */
+                                                         0 = 8 bits per byte lane, no DBI, no DAC debug. CN70XX has to be set to this value.
+                                                         1 = 10 bits per byte lane, including DBI and DAC. CNXXXX has to be set to this value. */
 	uint64_t dsk_dbg_byte_sel             : 4;  /**< Reserved. INTERNAL: Deskew debug byte select for read operation. Values 0-3 correspond to
                                                          byte lanes 0-3, 4 is for ECC, 5-8 are byte lanes 4-7. */
-	uint64_t dsk_dbg_bit_sel              : 4;  /**< Reserved. INTERNAL: Deskew debug bit select for dsk read operation. */
+	uint64_t dsk_dbg_bit_sel              : 4;  /**< Reserved. INTERNAL: Deskew debug bit select for dsk read operation.
+                                                         0x0 = DQ0.
+                                                         0x1 = DQ1.
+                                                         0x2 = DQ2.
+                                                         0x3 = DQ3.
+                                                         0x4 = DAC.
+                                                         0x5 = DBI.
+                                                         0x6 = DQ4.
+                                                         0x7 = DQ5.
+                                                         0x8 = DQ6.
+                                                         0x9 = DQ7. */
 	uint64_t dbi_mode_ena                 : 1;  /**< Enable DBI mode for PHY. */
 	uint64_t ddr_error_n_ena              : 1;  /**< Enable error_alert_n signal for PHY. */
 	uint64_t ref_pin_on                   : 1;  /**< Reserved. INTERNAL: Voltage reference pin enabled. */
 	uint64_t dac_on                       : 1;  /**< Reserved. INTERNAL: PHY DAC on. */
-	uint64_t int_pad_loopback_ena         : 1;  /**< Reserved. INTERNAL: DDR pad loopback enable.  Also must set LMCX_PHY_CTL[PHY_DSK_BYP]
+	uint64_t int_pad_loopback_ena         : 1;  /**< Reserved. INTERNAL: DDR pad loopback enable.  Also must set LMC()_PHY_CTL[PHY_DSK_BYP]
                                                          when loopback is enabled. */
 	uint64_t int_phy_loopback_ena         : 1;  /**< Reserved. INTERNAL: PHY loopback enable. */
 	uint64_t phy_dsk_reset                : 1;  /**< PHY deskew reset. When set, the deskew reset signal goes active if the Vrefint/deskew
@@ -8490,23 +10390,21 @@ union cvmx_lmcx_phy_ctl {
 	uint64_t phy_dsk_byp                  : 1;  /**< PHY deskew bypass. */
 	uint64_t phy_pwr_save_disable         : 1;  /**< DDR PHY power save disable. */
 	uint64_t ten                          : 1;  /**< DDR PHY test enable pin. */
-	uint64_t rx_always_on                 : 1;  /**< Disable dynamic DDR3 IO Rx power gating */
-	uint64_t lv_mode                      : 1;  /**< Low Voltage Mode (1.35V) */
-	uint64_t ck_tune1                     : 1;  /**< Clock Tune */
-	uint64_t ck_dlyout1                   : 4;  /**< Clock delay out setting */
-	uint64_t ck_tune0                     : 1;  /**< Clock Tune */
-	uint64_t ck_dlyout0                   : 4;  /**< Clock delay out setting */
-	uint64_t loopback                     : 1;  /**< Loopback enable */
-	uint64_t loopback_pos                 : 1;  /**< Loopback pos mode */
-	uint64_t ts_stagger                   : 1;  /**< TS Staggermode
-                                                         This mode configures output drivers with 2-stage drive
-                                                         strength to avoid undershoot issues on the bus when strong
-                                                         drivers are suddenly turned on. When this mode is asserted,
-                                                         Octeon will configure output drivers to be weak drivers
-                                                         (60 ohm output impedance) at the first CK cycle, and
-                                                         change drivers to the designated drive strengths specified
-                                                         in $LMC(0)_COMP_CTL2 [CMD_CTL/CK_CTL/DQX_CTL] starting
-                                                         at the following cycle */
+	uint64_t rx_always_on                 : 1;  /**< Reserved; must be zero. INTERNAL: Set to force read_enable to PHY active all the time.
+                                                         This bit MUST not be set when LMC initialization is in progress. Internal VREF and
+                                                         Deskew training requires normal operation on the dqx/s read_enable signals. */
+	uint64_t lv_mode                      : 1;  /**< Reserved; must be zero. INTERNAL: Low Voltage Mode (1.35V.) */
+	uint64_t ck_tune1                     : 1;  /**< Reserved; must be zero. INTERNAL: Clock tune. */
+	uint64_t ck_dlyout1                   : 4;  /**< Reserved; must be zero. INTERNAL: Clock delay out. */
+	uint64_t ck_tune0                     : 1;  /**< Reserved; must be zero. INTERNAL: Clock tune. */
+	uint64_t ck_dlyout0                   : 4;  /**< Reserved; must be zero. INTERNAL: Clock delay out. */
+	uint64_t loopback                     : 1;  /**< Reserved; must be zero. INTERNAL: Loopback enable. */
+	uint64_t loopback_pos                 : 1;  /**< Reserved; must be zero. INTERNAL: Loopback pos mode. */
+	uint64_t ts_stagger                   : 1;  /**< TS stagger mode. This mode configures output drivers with two-stage drive strength to
+                                                         avoid undershoot issues on the bus when strong drivers are suddenly turned on. When this
+                                                         mode is asserted, CNXXXX will configure output drivers to be weak drivers (60ohm output
+                                                         impedance) at the first CK cycle, and change drivers to the designated drive strengths
+                                                         specified in LMC()_COMP_CTL2[CMD_CTL/CK_CTL/DQX_CTL] starting at the following cycle. */
 #else
 	uint64_t ts_stagger                   : 1;
 	uint64_t loopback_pos                 : 1;
@@ -8536,7 +10434,15 @@ union cvmx_lmcx_phy_ctl {
 	uint64_t dsk_dbg_rd_data              : 10;
 	uint64_t dsk_dbg_rd_complete          : 1;
 	uint64_t phy_reset                    : 1;
-	uint64_t reserved_51_63               : 13;
+	uint64_t c0_sel                       : 2;
+	uint64_t c1_sel                       : 2;
+	uint64_t dm_disable                   : 1;
+	uint64_t dq_shallow_loopback          : 1;
+	uint64_t data_rate_loopback           : 1;
+	uint64_t dsk_dbg_wr_mode              : 1;
+	uint64_t dsk_dbg_overwrt_ena          : 1;
+	uint64_t dsk_dbg_load_dis             : 1;
+	uint64_t reserved_61_63               : 3;
 #endif
 	} s;
 	struct cvmx_lmcx_phy_ctl_cn61xx {
@@ -8607,12 +10513,265 @@ union cvmx_lmcx_phy_ctl {
 	struct cvmx_lmcx_phy_ctl_cn61xx       cn66xx;
 	struct cvmx_lmcx_phy_ctl_cn61xx       cn68xx;
 	struct cvmx_lmcx_phy_ctl_cn61xx       cn68xxp1;
-	struct cvmx_lmcx_phy_ctl_s            cn70xx;
-	struct cvmx_lmcx_phy_ctl_s            cn70xxp1;
+	struct cvmx_lmcx_phy_ctl_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_51_63               : 13;
+	uint64_t phy_reset                    : 1;  /**< Reserved. INTERNAL: Write to 1 to reset the PHY, one-shot operation, will automatically
+                                                         clear to value of 0. */
+	uint64_t dsk_dbg_rd_complete          : 1;  /**< Reserved. INTERNAL: Indicates completion of a read operation, will clear to 0 when a read
+                                                         operation is started, then set to 1 when operation is complete. */
+	uint64_t dsk_dbg_rd_data              : 10; /**< Reserved. INTERNAL: Data from a deskew read operation. Only valid when the
+                                                         LMCX_PHY_CTL[DSK_DBG_RD_COMPLETE] bit is set. */
+	uint64_t dsk_dbg_rd_start             : 1;  /**< Reserved. INTERNAL: Write 1 to start deskew data read operation, will automatically clear
+                                                         to 0. Write to 1 will also clear the complete bit. */
+	uint64_t dsk_dbg_clk_scaler           : 2;  /**< Reserved. INTERNAL: Adjust clock toggle rate for reading deskew debug information:
+                                                         0 = Deskew read clock toggles every 1 DCLK
+                                                         1 = Deskew read clock toggles every 2 DCLKs
+                                                         2 = Deskew read clock toggles every 3 DCLKs
+                                                         3 = Deskew read clock toggles every 4 DCLKs */
+	uint64_t dsk_dbg_offset               : 2;  /**< Reserved. INTERNAL: Offset to change delay of deskew debug data return time to LMC from
+                                                         DDR PHY. */
+	uint64_t dsk_dbg_num_bits_sel         : 1;  /**< Reserved. INTERNAL: Deskew debug, select number of bits per byte lane.
+                                                         0 = 8 bits per byte lane, no DBI
+                                                         1 = 9 bits per byte lane, including DBI */
+	uint64_t dsk_dbg_byte_sel             : 4;  /**< Reserved. INTERNAL: Deskew debug byte select for read operation. Values 0-3 correspond to
+                                                         byte lanes 0-3, 4 is for ECC, 5-8 are byte lanes 4-7. */
+	uint64_t dsk_dbg_bit_sel              : 4;  /**< Reserved. INTERNAL: Deskew debug bit select for dsk read operation. */
+	uint64_t dbi_mode_ena                 : 1;  /**< Enable DBI mode for PHY, must be 0.  DBI mode not supported
+                                                         in CN70XX. */
+	uint64_t ddr_error_n_ena              : 1;  /**< Reserved. */
+	uint64_t ref_pin_on                   : 1;  /**< Reserved. INTERNAL: Voltage reference pin enabled. */
+	uint64_t dac_on                       : 1;  /**< Reserved. INTERNAL: PHY DAC on. */
+	uint64_t int_pad_loopback_ena         : 1;  /**< Reserved. INTERNAL: DDR pad loopback enable.  Also must set LMCX_PHY_CTL[PHY_DSK_BYP]
+                                                         when loopback is enabled. */
+	uint64_t int_phy_loopback_ena         : 1;  /**< Reserved. INTERNAL: PHY loopback enable. */
+	uint64_t phy_dsk_reset                : 1;  /**< PHY deskew reset. When set, the deskew reset signal goes active if the Vrefint/deskew
+                                                         training sequence is in the idle state. */
+	uint64_t phy_dsk_byp                  : 1;  /**< PHY deskew bypass. */
+	uint64_t phy_pwr_save_disable         : 1;  /**< DDR PHY power save disable. */
+	uint64_t ten                          : 1;  /**< DDR PHY test enable pin. */
+	uint64_t rx_always_on                 : 1;  /**< Reserved; must be zero. INTERNAL: Set to force read_enable to PHY active all the time. */
+	uint64_t lv_mode                      : 1;  /**< Reserved; must be zero. INTERNAL: Low Voltage Mode (1.35V.) */
+	uint64_t ck_tune1                     : 1;  /**< Reserved; must be zero. INTERNAL: Clock tune. */
+	uint64_t ck_dlyout1                   : 4;  /**< Reserved; must be zero. INTERNAL: Clock delay out. */
+	uint64_t ck_tune0                     : 1;  /**< Reserved; must be zero. INTERNAL: Clock tune. */
+	uint64_t ck_dlyout0                   : 4;  /**< Reserved; must be zero. INTERNAL: Clock delay out. */
+	uint64_t loopback                     : 1;  /**< Reserved; must be zero. INTERNAL: Loopback enable. */
+	uint64_t loopback_pos                 : 1;  /**< Reserved; must be zero. INTERNAL: Loopback pos mode. */
+	uint64_t ts_stagger                   : 1;  /**< TS stagger mode. This mode configures output drivers with two-stage drive strength to
+                                                         avoid undershoot issues on the bus when strong drivers are suddenly turned on. When this
+                                                         mode is asserted, CN78XX will configure output drivers to be weak drivers (60ohm output
+                                                         impedance) at the first CK cycle, and change drivers to the designated drive strengths
+                                                         specified in LMC(0..0)_COMP_CTL2[CMD_CTL/CK_CTL/DQX_CTL] starting at the following cycle. */
+#else
+	uint64_t ts_stagger                   : 1;
+	uint64_t loopback_pos                 : 1;
+	uint64_t loopback                     : 1;
+	uint64_t ck_dlyout0                   : 4;
+	uint64_t ck_tune0                     : 1;
+	uint64_t ck_dlyout1                   : 4;
+	uint64_t ck_tune1                     : 1;
+	uint64_t lv_mode                      : 1;
+	uint64_t rx_always_on                 : 1;
+	uint64_t ten                          : 1;
+	uint64_t phy_pwr_save_disable         : 1;
+	uint64_t phy_dsk_byp                  : 1;
+	uint64_t phy_dsk_reset                : 1;
+	uint64_t int_phy_loopback_ena         : 1;
+	uint64_t int_pad_loopback_ena         : 1;
+	uint64_t dac_on                       : 1;
+	uint64_t ref_pin_on                   : 1;
+	uint64_t ddr_error_n_ena              : 1;
+	uint64_t dbi_mode_ena                 : 1;
+	uint64_t dsk_dbg_bit_sel              : 4;
+	uint64_t dsk_dbg_byte_sel             : 4;
+	uint64_t dsk_dbg_num_bits_sel         : 1;
+	uint64_t dsk_dbg_offset               : 2;
+	uint64_t dsk_dbg_clk_scaler           : 2;
+	uint64_t dsk_dbg_rd_start             : 1;
+	uint64_t dsk_dbg_rd_data              : 10;
+	uint64_t dsk_dbg_rd_complete          : 1;
+	uint64_t phy_reset                    : 1;
+	uint64_t reserved_51_63               : 13;
+#endif
+	} cn70xx;
+	struct cvmx_lmcx_phy_ctl_cn70xx       cn70xxp1;
+	struct cvmx_lmcx_phy_ctl_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_58_63               : 6;
+	uint64_t data_rate_loopback           : 1;  /**< Reserved. INTERNAL: DQ data rate loopback, working in conjunction with LOOPBACK assertion.
+                                                         When asserted, incoming PRBS at even DQ can be set at data rate, and the data is loop
+                                                         backed out through odd DQ at the same rate.
+                                                         When de-asserted, LOOPBACK assertion is working along with LOOPBACK_POS to check on even
+                                                         DQ against each DQS edge seperately. This is done at the clock rate. */
+	uint64_t dq_shallow_loopback          : 1;  /**< Reserved. INTERNAL: DQ shallow loopback, working in conjunction with LOOPBACK assertion.
+                                                         When asserted, even DQ inputs can be loop-backed out through its adjacent odd DQ outputs
+                                                         without being flop'd by DQS. */
+	uint64_t dm_disable                   : 1;  /**< Write to 1 to disable the DRAM Data Mask feature by having LMC driving a constant value on
+                                                         the
+                                                         DDRX_DQS<17:9>_P pins of the chip during write operations. LMC drives a constant 0 in DDR3
+                                                         and drives a constant 1 in DDR4.
+                                                         Note that setting this field high is NOT allowed when LMC has the Write DBI feature turned
+                                                         on
+                                                         (MODEREG_PARAMS3[WR_DBI]=1). */
+	uint64_t c1_sel                       : 2;  /**< 0x0 = C1 is not routed to any output pin.
+                                                         0x1 = C1 is routed to CS3.
+                                                         0x2 = C1 is routed to A17 address pin.
+                                                         0x3 = C1 is not routed to any output pin.
+                                                         Set to 0x0 if not interfacing with 3DS DRAM. */
+	uint64_t c0_sel                       : 2;  /**< 0x0 = C0 is not routed to any output pin.
+                                                         0x1 = C0 is routed to CS2.
+                                                         0x2 = C0 is routed to TEN output pin.
+                                                         0x3 = C0 is not routed to any output pin.
+                                                         Set to 0x0 if not interfacing with 3DS DRAM. */
+	uint64_t phy_reset                    : 1;  /**< Reserved. INTERNAL: Write to 1 to reset the PHY, one-shot operation, will automatically
+                                                         clear to value of 0. */
+	uint64_t dsk_dbg_rd_complete          : 1;  /**< Reserved. INTERNAL: Indicates completion of a read operation, will clear to 0 when a read
+                                                         operation is started, then set to 1 when operation is complete. */
+	uint64_t dsk_dbg_rd_data              : 10; /**< Reserved. INTERNAL: Data from a deskew read operation. Only valid when the
+                                                         LMC()_PHY_CTL[DSK_DBG_RD_COMPLETE] bit is set. */
+	uint64_t dsk_dbg_rd_start             : 1;  /**< Reserved. INTERNAL: Write 1 to start deskew data read operation, will automatically clear
+                                                         to 0. Write to 1 will also clear the complete bit. */
+	uint64_t dsk_dbg_clk_scaler           : 2;  /**< Reserved. INTERNAL: Adjust clock toggle rate for reading deskew debug information:
+                                                         0x0 = Deskew read clock toggles every 4 DCLKs.
+                                                         0x1 = Deskew read clock toggles every 8 DCLKs.
+                                                         0x2 = Deskew read clock toggles every 12 DCLKs.
+                                                         0x3 = Deskew read clock toggles every 16 DCLKs. */
+	uint64_t dsk_dbg_offset               : 2;  /**< Reserved. INTERNAL: Offset to change delay of deskew debug data return time to LMC from
+                                                         DDR PHY. */
+	uint64_t dsk_dbg_num_bits_sel         : 1;  /**< Reserved. INTERNAL: Deskew debug, select number of bits per byte lane.
+                                                         0 = 8 bits per byte lane, no DBI, no DAC debug. CN70XX has to be set to this value.
+                                                         1 = 10 bits per byte lane, including DBI and DAC. CNXXXX has to be set to this value. */
+	uint64_t dsk_dbg_byte_sel             : 4;  /**< Reserved. INTERNAL: Deskew debug byte select for read operation. Values 0-3 correspond to
+                                                         byte lanes 0-3, 4 is for ECC, 5-8 are byte lanes 4-7. */
+	uint64_t dsk_dbg_bit_sel              : 4;  /**< Reserved. INTERNAL: Deskew debug bit select for dsk read operation.
+                                                         0x0 = DQ0.
+                                                         0x1 = DQ1.
+                                                         0x2 = DQ2.
+                                                         0x3 = DQ3.
+                                                         0x4 = DAC.
+                                                         0x5 = DBI.
+                                                         0x6 = DQ4.
+                                                         0x7 = DQ5.
+                                                         0x8 = DQ6.
+                                                         0x9 = DQ7. */
+	uint64_t dbi_mode_ena                 : 1;  /**< Enable DBI mode for PHY. */
+	uint64_t ddr_error_n_ena              : 1;  /**< Enable error_alert_n signal for PHY. */
+	uint64_t ref_pin_on                   : 1;  /**< Reserved. INTERNAL: Voltage reference pin enabled. */
+	uint64_t dac_on                       : 1;  /**< Reserved. INTERNAL: PHY DAC on. */
+	uint64_t int_pad_loopback_ena         : 1;  /**< Reserved. INTERNAL: DDR pad loopback enable.  Also must set LMC()_PHY_CTL[PHY_DSK_BYP]
+                                                         when loopback is enabled. */
+	uint64_t int_phy_loopback_ena         : 1;  /**< Reserved. INTERNAL: PHY loopback enable. */
+	uint64_t phy_dsk_reset                : 1;  /**< PHY deskew reset. When set, the deskew reset signal goes active if the Vrefint/deskew
+                                                         training sequence is in the idle state. */
+	uint64_t phy_dsk_byp                  : 1;  /**< PHY deskew bypass. */
+	uint64_t phy_pwr_save_disable         : 1;  /**< DDR PHY power save disable. */
+	uint64_t ten                          : 1;  /**< DDR PHY test enable pin. */
+	uint64_t rx_always_on                 : 1;  /**< Reserved; must be zero. INTERNAL: Set to force read_enable to PHY active all the time.
+                                                         This bit MUST not be set when LMC initialization is in progress. Internal VREF and
+                                                         Deskew training requires normal operation on the dqx/s read_enable signals. */
+	uint64_t lv_mode                      : 1;  /**< Reserved; must be zero. INTERNAL: Low Voltage Mode (1.35V.) */
+	uint64_t ck_tune1                     : 1;  /**< Reserved; must be zero. INTERNAL: Clock tune. */
+	uint64_t ck_dlyout1                   : 4;  /**< Reserved; must be zero. INTERNAL: Clock delay out. */
+	uint64_t ck_tune0                     : 1;  /**< Reserved; must be zero. INTERNAL: Clock tune. */
+	uint64_t ck_dlyout0                   : 4;  /**< Reserved; must be zero. INTERNAL: Clock delay out. */
+	uint64_t loopback                     : 1;  /**< Reserved; must be zero. INTERNAL: Loopback enable. */
+	uint64_t loopback_pos                 : 1;  /**< Reserved; must be zero. INTERNAL: Loopback pos mode. */
+	uint64_t ts_stagger                   : 1;  /**< TS stagger mode. This mode configures output drivers with two-stage drive strength to
+                                                         avoid undershoot issues on the bus when strong drivers are suddenly turned on. When this
+                                                         mode is asserted, CNXXXX will configure output drivers to be weak drivers (60ohm output
+                                                         impedance) at the first CK cycle, and change drivers to the designated drive strengths
+                                                         specified in LMC()_COMP_CTL2[CMD_CTL/CK_CTL/DQX_CTL] starting at the following cycle. */
+#else
+	uint64_t ts_stagger                   : 1;
+	uint64_t loopback_pos                 : 1;
+	uint64_t loopback                     : 1;
+	uint64_t ck_dlyout0                   : 4;
+	uint64_t ck_tune0                     : 1;
+	uint64_t ck_dlyout1                   : 4;
+	uint64_t ck_tune1                     : 1;
+	uint64_t lv_mode                      : 1;
+	uint64_t rx_always_on                 : 1;
+	uint64_t ten                          : 1;
+	uint64_t phy_pwr_save_disable         : 1;
+	uint64_t phy_dsk_byp                  : 1;
+	uint64_t phy_dsk_reset                : 1;
+	uint64_t int_phy_loopback_ena         : 1;
+	uint64_t int_pad_loopback_ena         : 1;
+	uint64_t dac_on                       : 1;
+	uint64_t ref_pin_on                   : 1;
+	uint64_t ddr_error_n_ena              : 1;
+	uint64_t dbi_mode_ena                 : 1;
+	uint64_t dsk_dbg_bit_sel              : 4;
+	uint64_t dsk_dbg_byte_sel             : 4;
+	uint64_t dsk_dbg_num_bits_sel         : 1;
+	uint64_t dsk_dbg_offset               : 2;
+	uint64_t dsk_dbg_clk_scaler           : 2;
+	uint64_t dsk_dbg_rd_start             : 1;
+	uint64_t dsk_dbg_rd_data              : 10;
+	uint64_t dsk_dbg_rd_complete          : 1;
+	uint64_t phy_reset                    : 1;
+	uint64_t c0_sel                       : 2;
+	uint64_t c1_sel                       : 2;
+	uint64_t dm_disable                   : 1;
+	uint64_t dq_shallow_loopback          : 1;
+	uint64_t data_rate_loopback           : 1;
+	uint64_t reserved_58_63               : 6;
+#endif
+	} cn73xx;
 	struct cvmx_lmcx_phy_ctl_s            cn78xx;
+	struct cvmx_lmcx_phy_ctl_s            cn78xxp2;
 	struct cvmx_lmcx_phy_ctl_cn61xx       cnf71xx;
+	struct cvmx_lmcx_phy_ctl_s            cnf75xx;
 };
 typedef union cvmx_lmcx_phy_ctl cvmx_lmcx_phy_ctl_t;
+
+/**
+ * cvmx_lmc#_phy_ctl2
+ *
+ * Added in pass 2.0.
+ *
+ */
+union cvmx_lmcx_phy_ctl2 {
+	uint64_t u64;
+	struct cvmx_lmcx_phy_ctl2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_27_63               : 37;
+	uint64_t dqs8_dsk_adj                 : 3;  /**< Provides adjustable deskew settings for DQS signal of the ECC byte.
+                                                         The default value should be 0x4. */
+	uint64_t dqs7_dsk_adj                 : 3;  /**< Provides adjustable deskew settings for DQS signal of Byte 7.
+                                                         The default value should be 0x4. */
+	uint64_t dqs6_dsk_adj                 : 3;  /**< Provides adjustable deskew settings for DQS signal of Byte 6.
+                                                         The default value should be 0x4. */
+	uint64_t dqs5_dsk_adj                 : 3;  /**< Provides adjustable deskew settings for DQS signal of Byte 5.
+                                                         The default value should be 0x4. */
+	uint64_t dqs4_dsk_adj                 : 3;  /**< Provides adjustable deskew settings for DQS signal of Byte 4.
+                                                         The default value should be 0x4. */
+	uint64_t dqs3_dsk_adj                 : 3;  /**< Provides adjustable deskew settings for DQS signal of Byte 3.
+                                                         The default value should be 0x4. */
+	uint64_t dqs2_dsk_adj                 : 3;  /**< Provides adjustable deskew settings for DQS signal of Byte2.
+                                                         The default value should be 0x4. */
+	uint64_t dqs1_dsk_adj                 : 3;  /**< Provides adjustable deskew settings for DQS signal of Byte 1.
+                                                         The default value should be 0x4. */
+	uint64_t dqs0_dsk_adj                 : 3;  /**< Provides adjustable deskew settings for DQS signal of Byte 0.
+                                                         The default value should be 0x4. */
+#else
+	uint64_t dqs0_dsk_adj                 : 3;
+	uint64_t dqs1_dsk_adj                 : 3;
+	uint64_t dqs2_dsk_adj                 : 3;
+	uint64_t dqs3_dsk_adj                 : 3;
+	uint64_t dqs4_dsk_adj                 : 3;
+	uint64_t dqs5_dsk_adj                 : 3;
+	uint64_t dqs6_dsk_adj                 : 3;
+	uint64_t dqs7_dsk_adj                 : 3;
+	uint64_t dqs8_dsk_adj                 : 3;
+	uint64_t reserved_27_63               : 37;
+#endif
+	} s;
+	struct cvmx_lmcx_phy_ctl2_s           cn78xxp2;
+	struct cvmx_lmcx_phy_ctl2_s           cnf75xx;
+};
+typedef union cvmx_lmcx_phy_ctl2 cvmx_lmcx_phy_ctl2_t;
 
 /**
  * cvmx_lmc#_pll_bwctl
@@ -8826,6 +10985,66 @@ union cvmx_lmcx_pll_status {
 typedef union cvmx_lmcx_pll_status cvmx_lmcx_pll_status_t;
 
 /**
+ * cvmx_lmc#_ppr_ctl
+ *
+ * This register contains programmable timing and control parameters used
+ * when running the post package repair sequence. The timing fields
+ * PPR_CTL[TPGMPST], PPR_CTL[TPGM_EXIT] and PPR_CTL[TPGM] need to be set as
+ * to satisfy the minimum values mentioned in the JEDEC DDR4 spec before
+ * running the PPR sequence. See LMC()_SEQ_CTL[SEQ_SEL,INIT_START] to run
+ * the PPR sequence.
+ *
+ * Running Hard PPR may require LMC to issue Security Key as four consecutive
+ * MR0 commands, each with a unique address field A[17:0]. Set the Security
+ * Key in the general purpose CSRs as follows:
+ *
+ * _ Security Key 0 = LMC()_GENERAL_PURPOSE0[DATA]<17:0>.
+ * _ Security Key 1 = LMC()_GENERAL_PURPOSE0[DATA]<35:18>.
+ * _ Security Key 2 = LMC()_GENERAL_PURPOSE1[DATA]<17:0>.
+ * _ Security Key 3 = LMC()_GENERAL_PURPOSE1[DATA]<35:18>.
+ */
+union cvmx_lmcx_ppr_ctl {
+	uint64_t u64;
+	struct cvmx_lmcx_ppr_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_24_63               : 40;
+	uint64_t skip_issue_security          : 1;  /**< Personality bit for the PPR sequence. When set, this field forces the sequence to skip
+                                                         issuing four consecutive MR0 commands that suppliy the Security Key. */
+	uint64_t sppr                         : 1;  /**< Personality bit for the PPR sequence. When set, this field forces the sequence to run
+                                                         the Soft PPR mode. */
+	uint64_t tpgm                         : 10; /**< Indicates the programming time (tPGM) constraint used when running PPR sequence.
+                                                         For hard PPR (PPR_CTL[SPPR] = 0), set this field as follows:
+                                                         RNDUP[TPGM(ns) / (1048576 * TCYC(ns))].
+                                                         For soft PPR (PPR_CTL[SPPR] = 1), set this field as follows:
+                                                         RNDUP[TPGM(ns) / TCYC(ns))].
+                                                         TPGM is from the JEDEC DDR4 spec, and TCYC(ns) is the DDR clock frequency (not data
+                                                         rate). */
+	uint64_t tpgm_exit                    : 5;  /**< Indicates PPR Exit time (tPGM_Exit) contrainst used when running PPR sequence.
+                                                         Set this field as follows:
+                                                         _ RNDUP[TPGM_EXIT(ns) / TCYC(ns)]
+                                                         where TPGM_EXIT is from the JEDEC DDR4 spec, and TCYC(ns) is the DDR clock frequency (not
+                                                         data rate). */
+	uint64_t tpgmpst                      : 7;  /**< Indicates New Address Setting time (tPGMPST) constraint used when running PPR sequence.
+                                                         Set this field as follows:
+                                                         _ RNDUP[TPGMPST(ns) / (1024 * TCYC(ns))]
+                                                         where TPGMPST is from the JEDEC DDR4 spec, and TCYC(ns) is the DDR clock frequency (not
+                                                         data rate). */
+#else
+	uint64_t tpgmpst                      : 7;
+	uint64_t tpgm_exit                    : 5;
+	uint64_t tpgm                         : 10;
+	uint64_t sppr                         : 1;
+	uint64_t skip_issue_security          : 1;
+	uint64_t reserved_24_63               : 40;
+#endif
+	} s;
+	struct cvmx_lmcx_ppr_ctl_s            cn73xx;
+	struct cvmx_lmcx_ppr_ctl_s            cn78xxp2;
+	struct cvmx_lmcx_ppr_ctl_s            cnf75xx;
+};
+typedef union cvmx_lmcx_ppr_ctl cvmx_lmcx_ppr_ctl_t;
+
+/**
  * cvmx_lmc#_read_level_ctl
  *
  * Notes:
@@ -8955,6 +11174,32 @@ union cvmx_lmcx_read_level_rankx {
 typedef union cvmx_lmcx_read_level_rankx cvmx_lmcx_read_level_rankx_t;
 
 /**
+ * cvmx_lmc#_ref_status
+ *
+ * This register contains the status of the refresh pending counter.
+ *
+ */
+union cvmx_lmcx_ref_status {
+	uint64_t u64;
+	struct cvmx_lmcx_ref_status_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_4_63                : 60;
+	uint64_t ref_pend_max_clr             : 1;  /**< Indicates that the number of pending refreshes has reached 7. Requiring
+                                                         software to clear the flag by setting this field to 1. */
+	uint64_t ref_count                    : 3;  /**< Reads back the number of pending refreshes that LMC has yet to execute. */
+#else
+	uint64_t ref_count                    : 3;
+	uint64_t ref_pend_max_clr             : 1;
+	uint64_t reserved_4_63                : 60;
+#endif
+	} s;
+	struct cvmx_lmcx_ref_status_s         cn73xx;
+	struct cvmx_lmcx_ref_status_s         cn78xxp2;
+	struct cvmx_lmcx_ref_status_s         cnf75xx;
+};
+typedef union cvmx_lmcx_ref_status cvmx_lmcx_ref_status_t;
+
+/**
  * cvmx_lmc#_reset_ctl
  *
  * Specify the RSL base addresses for the block.
@@ -8965,15 +11210,46 @@ union cvmx_lmcx_reset_ctl {
 	struct cvmx_lmcx_reset_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t ddr3psv                      : 1;  /**< Memory Reset
-                                                         1 = DDR contents preserved */
-	uint64_t ddr3psoft                    : 1;  /**< Memory Reset
-                                                         1 = Enable Preserve mode during soft reset */
-	uint64_t ddr3pwarm                    : 1;  /**< Memory Reset
-                                                         1 = Enable Preserve mode during warm reset */
-	uint64_t ddr3rst                      : 1;  /**< Memory Reset
-                                                         0 = Reset asserted
-                                                         1 = Reset de-asserted */
+	uint64_t ddr3psv                      : 1;  /**< Memory reset. 1 = DDR contents preserved.
+                                                         May be useful for system software to determine when the DDR3/DDR4 contents have been
+                                                         preserved.
+                                                         Cleared by hardware during a cold reset. Never cleared by hardware during a warm/soft
+                                                         reset. Set by hardware during a warm/soft reset if the hardware automatically put the
+                                                         DDR3/DDR4
+                                                         DRAM into self-refresh during the reset sequence.
+                                                         Can also be written by software (to any value). */
+	uint64_t ddr3psoft                    : 1;  /**< Memory reset. 1 = Enable preserve mode during soft reset.
+                                                         Enables preserve mode during a soft reset. When set, the DDR3/DDR4 controller hardware
+                                                         automatically puts the attached DDR3/DDR4 DRAM parts into self-refresh at the beginning of
+                                                         a
+                                                         soft reset sequence (see LMC()_SEQ_CTL[SEQ_SEL]), provided that the DDR3/DDR4 controller
+                                                         is up. When clear, the DDR3/DDR4 controller hardware does not put the attached DDR3/DDR4
+                                                         DRAM
+                                                         parts into self-refresh during a soft reset sequence.
+                                                         DDR3PSOFT is cleared on a cold reset. Warm and soft chip resets do not affect the
+                                                         DDR3PSOFT value. Outside of cold reset, only software CSR write operations change the
+                                                         DDR3PSOFT value. */
+	uint64_t ddr3pwarm                    : 1;  /**< Memory reset. 1 = Enable preserve mode during warm reset.
+                                                         Enables preserve mode during a warm reset. When set, the DDR3/DDR4 controller hardware
+                                                         automatically puts the attached DDR3/DDR4 DRAM parts into self-refresh at the beginning of
+                                                         a
+                                                         warm reset sequence (see LMC()_SEQ_CTL[SEQ_SEL]), provided that the DDR3/DDR4 controller
+                                                         is up. When clear, the DDR3/DDR4 controller hardware does not put the attached DDR3/DDR4
+                                                         DRAM
+                                                         parts into self-refresh during a warm reset sequence.
+                                                         DDR3PWARM is cleared on a cold reset. Warm and soft chip resets do not affect the
+                                                         DDR3PWARM value. Outside of cold reset, only software CSR write operations change the
+                                                         DDR3PWARM value.
+                                                         Note that if a warm reset follows a soft reset, DDR3PWARM has no effect, as the DDR3/DDR4
+                                                         controller is no longer up after any cold/warm/soft reset sequence. */
+	uint64_t ddr3rst                      : 1;  /**< "Memory reset. 0 = Reset asserted; 1 = Reset deasserted.
+                                                         DDR3/DDR4 DRAM parts have a RESET# pin. The DDR3RST CSR field controls the assertion of
+                                                         the new CNXXXX pin that attaches to RESET#.
+                                                         When DDR3RST is set, CNXXXX deasserts RESET#.
+                                                         When DDR3RST is clear, CNXXXX asserts RESET#.
+                                                         DDR3RST is cleared on a cold reset. Warm and soft chip resets do not affect the DDR3RST
+                                                         value.
+                                                         Outside of cold reset, only software CSR write operations change the DDR3RST value." */
 #else
 	uint64_t ddr3rst                      : 1;
 	uint64_t ddr3pwarm                    : 1;
@@ -8990,10 +11266,113 @@ union cvmx_lmcx_reset_ctl {
 	struct cvmx_lmcx_reset_ctl_s          cn68xxp1;
 	struct cvmx_lmcx_reset_ctl_s          cn70xx;
 	struct cvmx_lmcx_reset_ctl_s          cn70xxp1;
+	struct cvmx_lmcx_reset_ctl_s          cn73xx;
 	struct cvmx_lmcx_reset_ctl_s          cn78xx;
+	struct cvmx_lmcx_reset_ctl_s          cn78xxp2;
 	struct cvmx_lmcx_reset_ctl_s          cnf71xx;
+	struct cvmx_lmcx_reset_ctl_s          cnf75xx;
 };
 typedef union cvmx_lmcx_reset_ctl cvmx_lmcx_reset_ctl_t;
+
+/**
+ * cvmx_lmc#_retry_config
+ *
+ * This register configures automatic retry operation.
+ *
+ */
+union cvmx_lmcx_retry_config {
+	uint64_t u64;
+	struct cvmx_lmcx_retry_config_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_56_63               : 8;
+	uint64_t max_errors                   : 24; /**< Maximum number of errors before errors are ignored. */
+	uint64_t reserved_13_31               : 19;
+	uint64_t error_continue               : 1;  /**< If LMC()_RETRY_CONFIG[AUTO_ERROR_CONTINUE] is cleared, LMC will wait
+                                                         for a 1 to be written to LMC()_RETRY_CONFIG[ERROR_CONTINUE] before
+                                                         continuing operations after an error. */
+	uint64_t reserved_9_11                : 3;
+	uint64_t auto_error_continue          : 1;  /**< When set, LMC will automatically proceed with error handling and normal
+                                                         operation after an error occurs.  If clear, LMC will cease all operations
+                                                         except for refresh as soon as possible, and will not continue with error
+                                                         handling or normal operation until LMC()_RETRY_CONFIG[ERROR_CONTINUE]
+                                                         is written with a 1. */
+	uint64_t reserved_5_7                 : 3;
+	uint64_t pulse_count_auto_clr         : 1;  /**< When set, LMC()_RETRY_STATUS[ERROR_PULSE_COUNT_VALID] will clear
+                                                         whenever the error interrupt is cleared. */
+	uint64_t reserved_1_3                 : 3;
+	uint64_t retry_enable                 : 1;  /**< Enable retry on errors. */
+#else
+	uint64_t retry_enable                 : 1;
+	uint64_t reserved_1_3                 : 3;
+	uint64_t pulse_count_auto_clr         : 1;
+	uint64_t reserved_5_7                 : 3;
+	uint64_t auto_error_continue          : 1;
+	uint64_t reserved_9_11                : 3;
+	uint64_t error_continue               : 1;
+	uint64_t reserved_13_31               : 19;
+	uint64_t max_errors                   : 24;
+	uint64_t reserved_56_63               : 8;
+#endif
+	} s;
+	struct cvmx_lmcx_retry_config_s       cn73xx;
+	struct cvmx_lmcx_retry_config_s       cn78xxp2;
+	struct cvmx_lmcx_retry_config_s       cnf75xx;
+};
+typedef union cvmx_lmcx_retry_config cvmx_lmcx_retry_config_t;
+
+/**
+ * cvmx_lmc#_retry_status
+ *
+ * This register provides status on automatic retry operation.
+ *
+ */
+union cvmx_lmcx_retry_status {
+	uint64_t u64;
+	struct cvmx_lmcx_retry_status_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t clear_error_count            : 1;  /**< Clear the error count, one shot operation. */
+	uint64_t clear_error_pulse_count      : 1;  /**< Clear the error count, one shot operation. */
+	uint64_t reserved_57_61               : 5;
+	uint64_t error_pulse_count_valid      : 1;  /**< When set and the count is valid, indicates that the counter has saturated,
+                                                         which effectively indicates that a command error has occured and not a CRC
+                                                         error. */
+	uint64_t error_pulse_count_sat        : 1;  /**< When set and the count is valid, indicates that the counter has saturated,
+                                                         which effectively indicates that a command error has occured and not a CRC
+                                                         error. */
+	uint64_t reserved_52_54               : 3;
+	uint64_t error_pulse_count            : 4;  /**< Count of cycles in last error pulse since clear.  This count will be cleared
+                                                         either by clearing the interrupt or writing a 1 to the pulse count clear bit. */
+	uint64_t reserved_45_47               : 3;
+	uint64_t error_sequence               : 5;  /**< Sequence number for sequence that was running when error occurred. */
+	uint64_t reserved_33_39               : 7;
+	uint64_t error_type                   : 1;  /**< Error type:
+                                                         0 = Error during a sequence run.
+                                                         1 = Error during normal operation, which means a read or write operation. Effectively this
+                                                         means a command error for a read or write operation, or a CRC error for a write data
+                                                         operation. */
+	uint64_t reserved_24_31               : 8;
+	uint64_t error_count                  : 24; /**< Number of errors encountered since last cleared. */
+#else
+	uint64_t error_count                  : 24;
+	uint64_t reserved_24_31               : 8;
+	uint64_t error_type                   : 1;
+	uint64_t reserved_33_39               : 7;
+	uint64_t error_sequence               : 5;
+	uint64_t reserved_45_47               : 3;
+	uint64_t error_pulse_count            : 4;
+	uint64_t reserved_52_54               : 3;
+	uint64_t error_pulse_count_sat        : 1;
+	uint64_t error_pulse_count_valid      : 1;
+	uint64_t reserved_57_61               : 5;
+	uint64_t clear_error_pulse_count      : 1;
+	uint64_t clear_error_count            : 1;
+#endif
+	} s;
+	struct cvmx_lmcx_retry_status_s       cn73xx;
+	struct cvmx_lmcx_retry_status_s       cn78xxp2;
+	struct cvmx_lmcx_retry_status_s       cnf75xx;
+};
+typedef union cvmx_lmcx_retry_status cvmx_lmcx_retry_status_t;
 
 /**
  * cvmx_lmc#_rlevel_ctl
@@ -9002,38 +11381,34 @@ union cvmx_lmcx_rlevel_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_rlevel_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_32_63               : 32;
+	uint64_t reserved_33_63               : 31;
+	uint64_t tccd_sel                     : 1;  /**< When set, the read leveling sequence uses MODEREG_PARAMS3[TCCD_L] to
+                                                         space out back-to-back read commands. Otherwise the back-to-back
+                                                         reads commands are spaced out by a default 4 cycles. */
 	uint64_t pattern                      : 8;  /**< Sets the data pattern used to match in read-leveling operations. */
 	uint64_t reserved_22_23               : 2;
-	uint64_t delay_unload_3               : 1;  /**< When set, unload the PHY silo one cycle later
-                                                         during read-leveling if LMC*_RLEVEL_RANKi[BYTE*<1:0>] = 3
-                                                         DELAY_UNLOAD_3 should normally be set. */
-	uint64_t delay_unload_2               : 1;  /**< When set, unload the PHY silo one cycle later
-                                                         during read-leveling if LMC*_RLEVEL_RANKi[BYTE*<1:0>] = 2
-                                                         DELAY_UNLOAD_2 should normally be set. */
-	uint64_t delay_unload_1               : 1;  /**< When set, unload the PHY silo one cycle later
-                                                         during read-leveling if LMC*_RLEVEL_RANKi[BYTE*<1:0>] = 1
-                                                         DELAY_UNLOAD_1 should normally be set. */
-	uint64_t delay_unload_0               : 1;  /**< When set, unload the PHY silo one cycle later
-                                                         during read-leveling if LMC*_RLEVEL_RANKi[BYTE*<1:0>] = 0
-                                                         DELAY_UNLOAD_0 should normally be set. */
-	uint64_t bitmask                      : 8;  /**< Mask to select bit lanes on which read-leveling
-                                                         feedback is returned when OR_DIS is set to 1 */
-	uint64_t or_dis                       : 1;  /**< Disable or'ing of bits in a byte lane when computing
-                                                         the read-leveling bitmask
-                                                         OR_DIS should normally not be set. */
-	uint64_t offset_en                    : 1;  /**< When set, LMC attempts to select the read-leveling
-                                                         setting that is LMC*RLEVEL_CTL[OFFSET] settings earlier than the
-                                                         last passing read-leveling setting in the largest
-                                                         contiguous sequence of passing settings.
-                                                         When clear, or if the setting selected by LMC*RLEVEL_CTL[OFFSET]
-                                                         did not pass, LMC selects the middle setting in the
-                                                         largest contiguous sequence of passing settings,
-                                                         rounding earlier when necessary. */
-	uint64_t offset                       : 4;  /**< The offset used when LMC*RLEVEL_CTL[OFFSET] is set */
-	uint64_t byte                         : 4;  /**< 0 <= BYTE <= 8
-                                                         Byte index for which bitmask results are saved
-                                                         in LMC*_RLEVEL_DBG */
+	uint64_t delay_unload_3               : 1;  /**< Reserved, must be set.  INTERNAL: When set, unload the PHY silo one cycle later during
+                                                         read-leveling if LMC()_RLEVEL_RANK()[BYTE*<1:0>] = 3. DELAY_UNLOAD_3 should
+                                                         normally be set, particularly at higher speeds. */
+	uint64_t delay_unload_2               : 1;  /**< Reserved, must be set.  INTERNAL: When set, unload the PHY silo one cycle later during
+                                                         read-leveling if LMC()_RLEVEL_RANK()[BYTE*<1:0>] = 2. DELAY_UNLOAD_2 should
+                                                         normally be set. */
+	uint64_t delay_unload_1               : 1;  /**< Reserved, must be set.  INTERNAL: When set, unload the PHY silo one cycle later during
+                                                         read-leveling if LMC()_RLEVEL_RANK()[BYTE*<1:0>] = 1. DELAY_UNLOAD_1 should
+                                                         normally be set. */
+	uint64_t delay_unload_0               : 1;  /**< Reserved, must be set.  INTERNAL: When set, unload the PHY silo one cycle later during
+                                                         read-leveling if LMC()_RLEVEL_RANK()[BYTE*<1:0>] = 0. DELAY_UNLOAD_0 should
+                                                         normally be set. */
+	uint64_t bitmask                      : 8;  /**< Mask to select bit lanes on which read-leveling feedback is returned when OR_DIS is set to 1. */
+	uint64_t or_dis                       : 1;  /**< Disable ORing of bits in a byte lane when computing the read-leveling bitmask. OR_DIS
+                                                         should normally not be set. */
+	uint64_t offset_en                    : 1;  /**< When set, LMC attempts to select the read-leveling setting that is
+                                                         LMC()_RLEVEL_CTL[OFFSET] settings earlier than the last passing read-leveling setting
+                                                         in the largest contiguous sequence of passing settings. When clear, or if the setting
+                                                         selected by LMC()_RLEVEL_CTL[OFFSET] did not pass, LMC selects the middle setting in
+                                                         the largest contiguous sequence of passing settings, rounding earlier when necessary. */
+	uint64_t offset                       : 4;  /**< The offset used when LMC()_RLEVEL_CTL[OFFSET] is set. */
+	uint64_t byte                         : 4;  /**< 0 <= BYTE <= 8. Byte index for which bitmask results are saved in LMC()_RLEVEL_DBG. */
 #else
 	uint64_t byte                         : 4;
 	uint64_t offset                       : 4;
@@ -9046,7 +11421,8 @@ union cvmx_lmcx_rlevel_ctl {
 	uint64_t delay_unload_3               : 1;
 	uint64_t reserved_22_23               : 2;
 	uint64_t pattern                      : 8;
-	uint64_t reserved_32_63               : 32;
+	uint64_t tccd_sel                     : 1;
+	uint64_t reserved_33_63               : 31;
 #endif
 	} s;
 	struct cvmx_lmcx_rlevel_ctl_cn61xx {
@@ -9120,10 +11496,50 @@ union cvmx_lmcx_rlevel_ctl {
 	struct cvmx_lmcx_rlevel_ctl_cn61xx    cn66xx;
 	struct cvmx_lmcx_rlevel_ctl_cn61xx    cn68xx;
 	struct cvmx_lmcx_rlevel_ctl_cn61xx    cn68xxp1;
-	struct cvmx_lmcx_rlevel_ctl_s         cn70xx;
-	struct cvmx_lmcx_rlevel_ctl_s         cn70xxp1;
+	struct cvmx_lmcx_rlevel_ctl_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t pattern                      : 8;  /**< Sets the data pattern used to match in read-leveling operations. */
+	uint64_t reserved_22_23               : 2;
+	uint64_t delay_unload_3               : 1;  /**< When set, unload the PHY silo one cycle later during read-leveling if
+                                                         LMC(0..0)_RLEVEL_RANK(0..1)[BYTE*<1:0>] = 3. DELAY_UNLOAD_3 should normally be set. */
+	uint64_t delay_unload_2               : 1;  /**< When set, unload the PHY silo one cycle later during read-leveling if
+                                                         LMC(0..0)_RLEVEL_RANK(0..1)[BYTE*<1:0>] = 2. DELAY_UNLOAD_2 should normally be set. */
+	uint64_t delay_unload_1               : 1;  /**< When set, unload the PHY silo one cycle later during read-leveling if
+                                                         LMC(0..0)_RLEVEL_RANK(0..1)[BYTE*<1:0>] = 1. DELAY_UNLOAD_1 should normally be set. */
+	uint64_t delay_unload_0               : 1;  /**< When set, unload the PHY silo one cycle later during read-leveling if
+                                                         LMC(0..0)_RLEVEL_RANK(0..1)[BYTE*<1:0>] = 0. DELAY_UNLOAD_0 should normally be set. */
+	uint64_t bitmask                      : 8;  /**< Mask to select bit lanes on which read-leveling feedback is returned when OR_DIS is set to 1. */
+	uint64_t or_dis                       : 1;  /**< Disable ORing of bits in a byte lane when computing the read-leveling bitmask. OR_DIS
+                                                         should normally not be set. */
+	uint64_t offset_en                    : 1;  /**< When set, LMC attempts to select the read-leveling setting that is
+                                                         LMC(0..0)_RLEVEL_CTL[OFFSET] settings earlier than the last passing read-leveling setting
+                                                         in the largest contiguous sequence of passing settings. When clear, or if the setting
+                                                         selected by LMC(0..0)_RLEVEL_CTL[OFFSET] did not pass, LMC selects the middle setting in
+                                                         the largest contiguous sequence of passing settings, rounding earlier when necessary. */
+	uint64_t offset                       : 4;  /**< The offset used when LMC(0..0)_RLEVEL_CTL[OFFSET] is set. */
+	uint64_t byte                         : 4;  /**< 0 <= BYTE <= 8. Byte index for which bitmask results are saved in LMC(0..0)_RLEVEL_DBG. */
+#else
+	uint64_t byte                         : 4;
+	uint64_t offset                       : 4;
+	uint64_t offset_en                    : 1;
+	uint64_t or_dis                       : 1;
+	uint64_t bitmask                      : 8;
+	uint64_t delay_unload_0               : 1;
+	uint64_t delay_unload_1               : 1;
+	uint64_t delay_unload_2               : 1;
+	uint64_t delay_unload_3               : 1;
+	uint64_t reserved_22_23               : 2;
+	uint64_t pattern                      : 8;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} cn70xx;
+	struct cvmx_lmcx_rlevel_ctl_cn70xx    cn70xxp1;
+	struct cvmx_lmcx_rlevel_ctl_cn70xx    cn73xx;
 	struct cvmx_lmcx_rlevel_ctl_s         cn78xx;
+	struct cvmx_lmcx_rlevel_ctl_s         cn78xxp2;
 	struct cvmx_lmcx_rlevel_ctl_cn61xx    cnf71xx;
+	struct cvmx_lmcx_rlevel_ctl_s         cnf75xx;
 };
 typedef union cvmx_lmcx_rlevel_ctl cvmx_lmcx_rlevel_ctl_t;
 
@@ -9142,10 +11558,8 @@ union cvmx_lmcx_rlevel_dbg {
 	uint64_t u64;
 	struct cvmx_lmcx_rlevel_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t bitmask                      : 64; /**< Bitmask generated during deskew settings sweep
-                                                         BITMASK[n]=0 means deskew setting n failed
-                                                         BITMASK[n]=1 means deskew setting n passed
-                                                         for 0 <= n <= 63 */
+	uint64_t bitmask                      : 64; /**< Bitmask generated during read level settings sweep. BITMASK[n] = 0 means read level
+                                                         setting n failed; BITMASK[n] = 1 means read level setting n passed for 0 <= n <= 63. */
 #else
 	uint64_t bitmask                      : 64;
 #endif
@@ -9158,8 +11572,11 @@ union cvmx_lmcx_rlevel_dbg {
 	struct cvmx_lmcx_rlevel_dbg_s         cn68xxp1;
 	struct cvmx_lmcx_rlevel_dbg_s         cn70xx;
 	struct cvmx_lmcx_rlevel_dbg_s         cn70xxp1;
+	struct cvmx_lmcx_rlevel_dbg_s         cn73xx;
 	struct cvmx_lmcx_rlevel_dbg_s         cn78xx;
+	struct cvmx_lmcx_rlevel_dbg_s         cn78xxp2;
 	struct cvmx_lmcx_rlevel_dbg_s         cnf71xx;
+	struct cvmx_lmcx_rlevel_dbg_s         cnf75xx;
 };
 typedef union cvmx_lmcx_rlevel_dbg cvmx_lmcx_rlevel_dbg_t;
 
@@ -9190,28 +11607,26 @@ union cvmx_lmcx_rlevel_rankx {
 	struct cvmx_lmcx_rlevel_rankx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_56_63               : 8;
-	uint64_t status                       : 2;  /**< Indicates status of the read-levelling and where
-                                                         the BYTE* programmings in <35:0> came from:
-                                                         0 = BYTE* values are their reset value
-                                                         1 = BYTE* values were set via a CSR write to this register
-                                                         2 = read-leveling sequence currently in progress (BYTE* values are unpredictable)
-                                                         3 = BYTE* values came from a complete read-leveling sequence */
-	uint64_t byte8                        : 6;  /**< Deskew setting
-                                                         When ECC DRAM is not present (i.e. when DRAM is not
-                                                         attached to chip signals DDR_CBS_0_* and DDR_CB[7:0]),
-                                                         SW should write BYTE8 to a value that does
-                                                         not increase the range of possible BYTE* values. The
-                                                         easiest way to do this is to set
-                                                         LMC*_RLEVEL_RANK*[BYTE8] = LMC*_RLEVEL_RANK*[BYTE0]
-                                                         when there is no ECC DRAM, using the final BYTE0 value. */
-	uint64_t byte7                        : 6;  /**< Deskew setting */
-	uint64_t byte6                        : 6;  /**< Deskew setting */
-	uint64_t byte5                        : 6;  /**< Deskew setting */
-	uint64_t byte4                        : 6;  /**< Deskew setting */
-	uint64_t byte3                        : 6;  /**< Deskew setting */
-	uint64_t byte2                        : 6;  /**< Deskew setting */
-	uint64_t byte1                        : 6;  /**< Deskew setting */
-	uint64_t byte0                        : 6;  /**< Deskew setting */
+	uint64_t status                       : 2;  /**< Indicates status of the read-leveling and where the BYTEn programmings in <53:0> came
+                                                         from:
+                                                         0x0 = BYTEn values are their reset value.
+                                                         0x1 = BYTEn values were set via a CSR write to this register.
+                                                         0x2 = read-leveling sequence currently in progress (BYTEn values are unpredictable).
+                                                         0x3 = BYTEn values came from a complete read-leveling sequence. */
+	uint64_t byte8                        : 6;  /**< "Read level setting.
+                                                         When ECC DRAM is not present in 64-bit mode (i.e. when DRAM is not attached to chip
+                                                         signals DDR#_CBS_0_* and DDR#_CB<7:0>), software should write BYTE8 to a value that does
+                                                         not increase the range of possible BYTE* values. The easiest way to do this is to set
+                                                         LMC()_RLEVEL_RANK()[BYTE8] = LMC()_RLEVEL_RANK()[BYTE0] when there is no
+                                                         ECC DRAM, using the final BYTE0 value." */
+	uint64_t byte7                        : 6;  /**< Read level setting. */
+	uint64_t byte6                        : 6;  /**< Read level setting. */
+	uint64_t byte5                        : 6;  /**< Read level setting. */
+	uint64_t byte4                        : 6;  /**< Read level setting. */
+	uint64_t byte3                        : 6;  /**< Read level setting. */
+	uint64_t byte2                        : 6;  /**< Read level setting. */
+	uint64_t byte1                        : 6;  /**< Read level setting. */
+	uint64_t byte0                        : 6;  /**< Read level setting. */
 #else
 	uint64_t byte0                        : 6;
 	uint64_t byte1                        : 6;
@@ -9234,8 +11649,11 @@ union cvmx_lmcx_rlevel_rankx {
 	struct cvmx_lmcx_rlevel_rankx_s       cn68xxp1;
 	struct cvmx_lmcx_rlevel_rankx_s       cn70xx;
 	struct cvmx_lmcx_rlevel_rankx_s       cn70xxp1;
+	struct cvmx_lmcx_rlevel_rankx_s       cn73xx;
 	struct cvmx_lmcx_rlevel_rankx_s       cn78xx;
+	struct cvmx_lmcx_rlevel_rankx_s       cn78xxp2;
 	struct cvmx_lmcx_rlevel_rankx_s       cnf71xx;
+	struct cvmx_lmcx_rlevel_rankx_s       cnf75xx;
 };
 typedef union cvmx_lmcx_rlevel_rankx cvmx_lmcx_rlevel_rankx_t;
 
@@ -9367,30 +11785,14 @@ union cvmx_lmcx_rodt_mask {
                                                          *UNUSED IN 6xxx, and MBZ* */
 	uint64_t rodt_d2_r0                   : 8;  /**< Read ODT mask DIMM2, RANK0
                                                          *UNUSED IN 6xxx, and MBZ* */
-	uint64_t rodt_d1_r1                   : 8;  /**< Read ODT mask DIMM1, RANK1/DIMM1 in SingleRanked
-                                                         if (RANK_ENA) then
-                                                             RODT_D1_R1[3] must be 0
-                                                         else
-                                                             RODT_D1_R1[3:0] is not used and MBZ
-                                                         *Upper 4 bits UNUSED IN 6xxx, and MBZ* */
-	uint64_t rodt_d1_r0                   : 8;  /**< Read ODT mask DIMM1, RANK0
-                                                         if (RANK_ENA) then
-                                                             RODT_D1_RO[2] must be 0
-                                                         else
-                                                             RODT_D1_RO[3:2,1] must be 0
-                                                         *Upper 4 bits UNUSED IN 6xxx, and MBZ* */
-	uint64_t rodt_d0_r1                   : 8;  /**< Read ODT mask DIMM0, RANK1/DIMM0 in SingleRanked
-                                                         if (RANK_ENA) then
-                                                             RODT_D0_R1[1] must be 0
-                                                         else
-                                                             RODT_D0_R1[3:0] is not used and MBZ
-                                                         *Upper 4 bits UNUSED IN 6xxx, and MBZ* */
-	uint64_t rodt_d0_r0                   : 8;  /**< Read ODT mask DIMM0, RANK0
-                                                         if (RANK_ENA) then
-                                                             RODT_D0_RO[0] must be 0
-                                                         else
-                                                             RODT_D0_RO[1:0,3] must be 0
-                                                         *Upper 4 bits UNUSED IN 6xxx, and MBZ* */
+	uint64_t rodt_d1_r1                   : 8;  /**< Read ODT mask DIMM1, RANK1/DIMM1 in SingleRanked. If RANK_ENA=1, RODT_D1_R1<3> must be
+                                                         zero. Otherwise RODT_D1_R1<3:0> is not used and must be zero. */
+	uint64_t rodt_d1_r0                   : 8;  /**< Read ODT mask DIMM1, RANK0. If RANK_ENA=1, RODT_D1_RO<2> must be zero. Otherwise,
+                                                         RODT_D1_RO<3:2,1> must be zero. */
+	uint64_t rodt_d0_r1                   : 8;  /**< Read ODT mask DIMM0, RANK1/DIMM0 in SingleRanked. If RANK_ENA=1, RODT_D0_R1<1> must be
+                                                         zero. Otherwise, RODT_D0_R1<3:0> is not used and must be zero. */
+	uint64_t rodt_d0_r0                   : 8;  /**< Read ODT mask DIMM0, RANK0. If RANK_ENA=1, RODT_D0_RO<0> must be zero. Otherwise,
+                                                         RODT_D0_RO<1:0,3> must be zero. */
 #else
 	uint64_t rodt_d0_r0                   : 8;
 	uint64_t rodt_d0_r1                   : 8;
@@ -9432,8 +11834,11 @@ union cvmx_lmcx_rodt_mask {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_rodt_mask_cn70xx     cn70xxp1;
+	struct cvmx_lmcx_rodt_mask_cn70xx     cn73xx;
 	struct cvmx_lmcx_rodt_mask_cn70xx     cn78xx;
+	struct cvmx_lmcx_rodt_mask_cn70xx     cn78xxp2;
 	struct cvmx_lmcx_rodt_mask_s          cnf71xx;
+	struct cvmx_lmcx_rodt_mask_cn70xx     cnf75xx;
 };
 typedef union cvmx_lmcx_rodt_mask cvmx_lmcx_rodt_mask_t;
 
@@ -9447,7 +11852,8 @@ union cvmx_lmcx_scramble_cfg0 {
 	uint64_t u64;
 	struct cvmx_lmcx_scramble_cfg0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t key                          : 64; /**< Scramble Key for Data */
+	uint64_t key                          : 64; /**< Scramble key for data. Prior to enabling scrambling this key should be generated from a
+                                                         cryptographically-secure random number generator such as RNM_RANDOM. */
 #else
 	uint64_t key                          : 64;
 #endif
@@ -9456,8 +11862,11 @@ union cvmx_lmcx_scramble_cfg0 {
 	struct cvmx_lmcx_scramble_cfg0_s      cn66xx;
 	struct cvmx_lmcx_scramble_cfg0_s      cn70xx;
 	struct cvmx_lmcx_scramble_cfg0_s      cn70xxp1;
+	struct cvmx_lmcx_scramble_cfg0_s      cn73xx;
 	struct cvmx_lmcx_scramble_cfg0_s      cn78xx;
+	struct cvmx_lmcx_scramble_cfg0_s      cn78xxp2;
 	struct cvmx_lmcx_scramble_cfg0_s      cnf71xx;
+	struct cvmx_lmcx_scramble_cfg0_s      cnf75xx;
 };
 typedef union cvmx_lmcx_scramble_cfg0 cvmx_lmcx_scramble_cfg0_t;
 
@@ -9471,7 +11880,8 @@ union cvmx_lmcx_scramble_cfg1 {
 	uint64_t u64;
 	struct cvmx_lmcx_scramble_cfg1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t key                          : 64; /**< Scramble Key for Addresses */
+	uint64_t key                          : 64; /**< Scramble key for addresses. Prior to enabling scrambling this key should be generated from
+                                                         a cryptographically-secure random number generator such as RNM_RANDOM. */
 #else
 	uint64_t key                          : 64;
 #endif
@@ -9480,10 +11890,34 @@ union cvmx_lmcx_scramble_cfg1 {
 	struct cvmx_lmcx_scramble_cfg1_s      cn66xx;
 	struct cvmx_lmcx_scramble_cfg1_s      cn70xx;
 	struct cvmx_lmcx_scramble_cfg1_s      cn70xxp1;
+	struct cvmx_lmcx_scramble_cfg1_s      cn73xx;
 	struct cvmx_lmcx_scramble_cfg1_s      cn78xx;
+	struct cvmx_lmcx_scramble_cfg1_s      cn78xxp2;
 	struct cvmx_lmcx_scramble_cfg1_s      cnf71xx;
+	struct cvmx_lmcx_scramble_cfg1_s      cnf75xx;
 };
 typedef union cvmx_lmcx_scramble_cfg1 cvmx_lmcx_scramble_cfg1_t;
+
+/**
+ * cvmx_lmc#_scramble_cfg2
+ *
+ * Added in pass 2.0.
+ *
+ */
+union cvmx_lmcx_scramble_cfg2 {
+	uint64_t u64;
+	struct cvmx_lmcx_scramble_cfg2_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t key                          : 64; /**< Scramble key for data. */
+#else
+	uint64_t key                          : 64;
+#endif
+	} s;
+	struct cvmx_lmcx_scramble_cfg2_s      cn73xx;
+	struct cvmx_lmcx_scramble_cfg2_s      cn78xxp2;
+	struct cvmx_lmcx_scramble_cfg2_s      cnf75xx;
+};
+typedef union cvmx_lmcx_scramble_cfg2 cvmx_lmcx_scramble_cfg2_t;
 
 /**
  * cvmx_lmc#_scrambled_fadr
@@ -9508,19 +11942,23 @@ union cvmx_lmcx_scrambled_fadr {
 	uint64_t u64;
 	struct cvmx_lmcx_scrambled_fadr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_40_63               : 24;
+	uint64_t reserved_43_63               : 21;
+	uint64_t fcid                         : 3;  /**< Failing CID number. This field is only valid when interfacing with 3DS DRAMs (i.e., when
+                                                         either
+                                                         LMC()_EXT_CONFIG[DIMM0_CID] or LMC()_EXT_CONFIG[DIMM1_CID] is non-zero). Returns a value
+                                                         of zero
+                                                         otherwise. */
 	uint64_t fill_order                   : 2;  /**< Fill order for failing transaction. */
 	uint64_t reserved_14_37               : 24;
-	uint64_t fcol                         : 14; /**< Failing Column Address[13:0]
-                                                         Technically, represents the address of the 128b data
-                                                         that had an ecc error, i.e., fcol[0] is always 0. Can
-                                                         be used in conjuction with LMC*_CONFIG[DED_ERR] to
-                                                         isolate the 64b chunk of data in error */
+	uint64_t fcol                         : 14; /**< Failing column address <13:0>. Technically, represents the address of the 128b data that
+                                                         had an ECC error, i.e., FCOL<0> is always 0. Can be used in conjunction with
+                                                         LMC()_CONFIG[DED_ERR] to isolate the 64b chunk of data in error. */
 #else
 	uint64_t fcol                         : 14;
 	uint64_t reserved_14_37               : 24;
 	uint64_t fill_order                   : 2;
-	uint64_t reserved_40_63               : 24;
+	uint64_t fcid                         : 3;
+	uint64_t reserved_43_63               : 21;
 #endif
 	} s;
 	struct cvmx_lmcx_scrambled_fadr_cn61xx {
@@ -9567,8 +12005,37 @@ union cvmx_lmcx_scrambled_fadr {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_scrambled_fadr_cn70xx cn70xxp1;
-	struct cvmx_lmcx_scrambled_fadr_cn70xx cn78xx;
+	struct cvmx_lmcx_scrambled_fadr_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_43_63               : 21;
+	uint64_t fcid                         : 3;  /**< Failing CID number. This field is only valid when interfacing with 3DS DRAMs (i.e., when
+                                                         either
+                                                         LMC()_EXT_CONFIG[DIMM0_CID] or LMC()_EXT_CONFIG[DIMM1_CID] is non-zero). Returns a value
+                                                         of zero
+                                                         otherwise. */
+	uint64_t fill_order                   : 2;  /**< Fill order for failing transaction. */
+	uint64_t fdimm                        : 1;  /**< Failing DIMM number. */
+	uint64_t fbunk                        : 1;  /**< Failing rank number. */
+	uint64_t fbank                        : 4;  /**< Failing bank number. Bits <3:0>. */
+	uint64_t frow                         : 18; /**< Failing row address. Bits <17:0>. */
+	uint64_t fcol                         : 14; /**< Failing column address <13:0>. Technically, represents the address of the 128b data that
+                                                         had an ECC error, i.e., FCOL<0> is always 0. Can be used in conjunction with
+                                                         LMC()_CONFIG[DED_ERR] to isolate the 64b chunk of data in error. */
+#else
+	uint64_t fcol                         : 14;
+	uint64_t frow                         : 18;
+	uint64_t fbank                        : 4;
+	uint64_t fbunk                        : 1;
+	uint64_t fdimm                        : 1;
+	uint64_t fill_order                   : 2;
+	uint64_t fcid                         : 3;
+	uint64_t reserved_43_63               : 21;
+#endif
+	} cn73xx;
+	struct cvmx_lmcx_scrambled_fadr_cn73xx cn78xx;
+	struct cvmx_lmcx_scrambled_fadr_cn73xx cn78xxp2;
 	struct cvmx_lmcx_scrambled_fadr_cn61xx cnf71xx;
+	struct cvmx_lmcx_scrambled_fadr_cn73xx cnf75xx;
 };
 typedef union cvmx_lmcx_scrambled_fadr cvmx_lmcx_scrambled_fadr_t;
 
@@ -9587,44 +12054,47 @@ union cvmx_lmcx_seq_ctl {
                                                          when the sequence is completed. */
 	uint64_t seq_sel                      : 4;  /**< Selects the sequence that LMC runs after a 0->1 transition on INIT_START.
                                                          0x0 = Power-up/initialization:
-                                                         LMC(0..3)_CONFIG[RANKMASK] selects participating ranks (should be all ranks with attached
-                                                         DRAM). DDR_CKE* signals are activated (if not already active).
-                                                         The DRAM registers MR0, MR1, MR2, and MR3 are written in the selected ranks.
+                                                         LMC()_CONFIG[RANKMASK] selects participating ranks (should be all ranks with attached
+                                                         DRAM). DDR*_DIMM*_CKE* signals are activated (if not already active). RDIMM register
+                                                         control words 0-15 are written to LMC()_CONFIG[RANKMASK]-selected RDIMMs when
+                                                         LMC()_CONTROL[RDIMM_ENA] = 1 and corresponding LMC()_DIMM_CTL[DIMM*_WMASK] bits
+                                                         are set. (Refer to LMC()_DIMM(0..1)_PARAMS and LMC()_DIMM_CTL descriptions for
+                                                         more details.)
+                                                         The DRAM registers MR0-MR6 are written in the selected ranks.
                                                          0x1 = Read-leveling:
-                                                         LMC(0..3)_CONFIG[RANKMASK] selects the rank to be read-leveled. MR3 written in the
+                                                         LMC()_CONFIG[RANKMASK] selects the rank to be read-leveled. MR3 written in the
                                                          selected rank.
                                                          0x2 = Self-refresh entry:
-                                                         LMC(0..3)_CONFIG[INIT_STATUS] selects the participating ranks (should be all ranks with
+                                                         LMC()_CONFIG[INIT_STATUS] selects the participating ranks (should be all ranks with
                                                          attached DRAM). MR1 and MR2 are written in the selected ranks if
-                                                         LMC(0..3)_CONFIG[SREF_WITH_DLL] = 1. DDR_CKE* signals de-activated.
+                                                         LMC()_CONFIG[SREF_WITH_DLL] = 1. DDR*_DIMM*_CKE* signals de-activated.
                                                          0x3 = Self-refresh exit:
-                                                         LMC(0..3)_CONFIG[RANKMASK] must be set to indicate participating ranks (should be all
-                                                         ranks with attached DRAM). DDR_CKE* signals activated. MR0, MR1, MR2, and MR3 are
-                                                         written in the participating ranks if LMC(0..3)_CONFIG[SREF_WITH_DLL] = 1.
-                                                         LMC(0..3)_CONFIG[INIT_STATUS] is updated for ranks that are selected.
+                                                         LMC()_CONFIG[RANKMASK] must be set to indicate participating ranks (should be all
+                                                         ranks with attached DRAM). DDR*_DIMM*_CKE* signals activated. MR0, MR1, MR2, and MR3 are
+                                                         written in the participating ranks if LMC()_CONFIG[SREF_WITH_DLL] = 1.
+                                                         LMC()_CONFIG[INIT_STATUS] is updated for ranks that are selected.
                                                          0x6 = Write-leveling:
-                                                         RANKMASK selects the rank to be write-leveled.
-                                                         INIT_STATUS must indicate all ranks with attached DRAM.
-                                                         MR1 and MR2 written to INIT_STATUS-selected ranks.
-                                                         0x7 = Init RCW
-                                                         RANKMASK selects participating ranks (should be all ranks with attached DRAM).
-                                                         In DDR3 mode, RDIMM register control words 0-15 will be written to RANKMASK-selected
-                                                         RDIMMs when LMC(0..3)_CONTROL[RDIMM_ENA]=1 and corresponding
-                                                         LMC(0..3)_DIMM_CTL[DIMM*_WMASK]
-                                                         bits are set. (Refer to LMC(0..3)_DIMM(0..1)_PARAMS and LMC(0..3)_DIMM_CTL descriptions
-                                                         below for more details.)  In DDR4 mode, additionally register control words RC1x-RCBx
-                                                         will be written if selected by LMC(0..3)_DDR4_DIMM_CTL[DIMM*_WMASK].  See
-                                                         LMC(0..3)_DIMM(0..1)_DDR4_PARAMS0 and LMC(0..3)_DIMM(0..1)_DDR4_PARAMS1 for the values
-                                                         that are written to the DDR4 RCWs.
+                                                         LMC()_CONFIG[RANKMASK] selects the rank to be write-leveled.
+                                                         LMC()_CONFIG[INIT_STATUS] must indicate all ranks with attached DRAM. MR1 and MR2
+                                                         written in the LMC()_CONFIG[INIT_STATUS]-selected ranks.
+                                                         0x7 = Initialize RCW:
+                                                         LMC()_CONFIG[RANKMASK] selects participating ranks (should be all ranks with attached
+                                                         DRAM). In DDR3 mode, RDIMM register control words 0-15 are written to
+                                                         LMC()_CONFIG[RANKMASK]-selected RDIMMs when LMC()_CONTROL[RDIMM_ENA] = 1 and
+                                                         corresponding LMC()_DIMM_CTL[DIMM*_WMASK] bits are set. (Refer to
+                                                         LMC()_DIMM(0..1)_PARAMS and LMC()_DIMM_CTL descriptions for more details.)
                                                          0x8 = MRW
                                                          Mode Register Write sequence.
                                                          0x9 = MPR
                                                          MPR register read or write sequence.
                                                          0xa = VREFINT
                                                          Vref internal training sequence, also used as deskew training sequence when
-                                                         LMC(0..3)_EXT_CONFIG[VREFINT_SEQ_DESKEW] is set.
+                                                         LMC(0..0)_EXT_CONFIG[VREFINT_SEQ_DESKEW] is set.
                                                          0xb = Offset Training
                                                          Offset training sequence.
+                                                         0xe = Data Buffer Training. Configurable to run different modes of Data Buffer
+                                                         training on DDR4 LRDIMM. See LMC()_DBTRAIN_CTL for more detail.
+                                                         0xf = DDR4 Post Package Repair sequence. See LMC()_PPR_CTL for more detail.
                                                          Self-refresh entry SEQ_SEL's may also be automatically
                                                          generated by hardware upon a chip warm or soft reset
                                                          sequence when LMC*_RESET_CTL[DDR3PWARM,DDR3PSOFT] are set.
@@ -9638,7 +12108,7 @@ union cvmx_lmcx_seq_ctl {
                                                          through the remainder of the first and the second power-up/init.
                                                          If DDR_CKE* deactivation and reactivation is needed for
                                                          a second power-up/init, a DRESET assertion is required
-                                                         between the first and the second. */
+                                                         between the first and the second." */
 	uint64_t init_start                   : 1;  /**< A 0->1 transition starts the DDR memory sequence that is selected by
                                                          LMC()_SEQ_CTL[SEQ_SEL].
                                                          This register is a one-shot and clears itself each time it is set. */
@@ -9651,7 +12121,10 @@ union cvmx_lmcx_seq_ctl {
 	} s;
 	struct cvmx_lmcx_seq_ctl_s            cn70xx;
 	struct cvmx_lmcx_seq_ctl_s            cn70xxp1;
+	struct cvmx_lmcx_seq_ctl_s            cn73xx;
 	struct cvmx_lmcx_seq_ctl_s            cn78xx;
+	struct cvmx_lmcx_seq_ctl_s            cn78xxp2;
+	struct cvmx_lmcx_seq_ctl_s            cnf75xx;
 };
 typedef union cvmx_lmcx_seq_ctl cvmx_lmcx_seq_ctl_t;
 
@@ -9660,41 +12133,30 @@ typedef union cvmx_lmcx_seq_ctl cvmx_lmcx_seq_ctl_t;
  *
  * This register is an assortment of control fields needed by the memory controller. If software
  * has not previously written to this register (since the last DRESET), hardware updates the
- * fields in th
- * LMC(0..3)_WLEVEL_RANK(0..1), LMC(0..3)_CONTROL, and LMC(0..3)_MODEREG_PARAMS0 registers
+ * fields in this register to the minimum allowed value when any of LMC()_RLEVEL_RANK(),
+ * LMC()_WLEVEL_RANK(), LMC()_CONTROL, and LMC()_MODEREG_PARAMS0 registers
  * change. Ideally, only read this register after LMC has been initialized and
- * LMC(0..3)_RLEVEL_RANK(0..1), LMC(0..3)_WLEVEL_RANK(0..1) have valid data.
- * The field value is the minimum CK cycles between when the DRAM
+ * LMC()_RLEVEL_RANK(), LMC()_WLEVEL_RANK() have valid data.
+ *
+ * The interpretation of the fields in this register depends on LMC(0)_CONFIG[DDR2T]:
+ *
+ * * If LMC()_CONFIG[DDR2T]=1, (FieldValue + 4) is the minimum CK cycles between when
+ * the DRAM part registers CAS commands of the first and second types from different cache
+ * blocks.
+ *
+ * If LMC()_CONFIG[DDR2T]=0, (FieldValue + 3) is the minimum CK cycles between when the DRAM
  * part registers CAS commands of the first and second types from different cache blocks.
- *
- * "*_S_INIT" fields are DDR3 timing or DDR4 short timing parameters
- * "*_L_INIT" fields are DDR4 long timing parameters
- *
- * The hardware-calculated minimums are:
- * min R2R_S_INIT = 4
- * min R2W_S_INIT = 8 + (RL + MaxRdSkew) (WL + MinWrSkew) + LMC*_CONTROL[BPRCH]
- * min W2R_S_INIT = 5 + LMC*_TIMING_PARAMS1[TWTR] + WL
- * min W2W_S_INIT = 4
- * min R2R_L_INIT = LMC*_MODEREG_PARAMS3[TCCD_L] (decoded)
- * min R2W_L_INIT = 8 + (RL + MaxRdSkew) (WL + MinWrSkew) + LMC*_CONTROL[BPRCH]
- * min W2R_L_INIT = 5 + LMC*_TIMING_PARAMS2[TWTR_L] + WL
- * min W2W_L_INIT = LMC*_MODEREG_PARAMS3[TCCD_L] (decoded)
- * where
- * RL        = CL  + AL (LMC*_MODEREG_PARAMS0[CL] selects CL, LMC*_MODEREG_PARAMS0[AL] selects
- * AL)
- * WL        = CWL + AL (LMC*_MODEREG_PARAMS0[CWL] selects CWL)
- * MaxRdSkew = max(LMC*_RLEVEL_RANKi[BYTEj]/4) + 1
- * (max is across all ranks i (0..3) and bytes j (0..8))
- * MinWrSkew = min(LMC*_WLEVEL_RANKi[BYTEj]/8) LMC*_CONFIG[EARLY_DQX]
- * (min is across all ranks i (0..3) and bytes j (0..8))
- *
- * R2W_INIT has 1 CK cycle built in for OCTEON-internal ODT settling/channel turnaround time.
+ * FieldValue = 0 is always illegal in this case.
+ * The hardware-calculated minimums for these fields are shown in LMC(0)_SLOT_CTL0 Hardware-
+ * Calculated Minimums.
  */
 union cvmx_lmcx_slot_ctl0 {
 	uint64_t u64;
 	struct cvmx_lmcx_slot_ctl0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_48_63               : 16;
+	uint64_t reserved_50_63               : 14;
+	uint64_t w2r_l_init_ext               : 1;  /**< A 1-bit extenstion to the W2R_L_INIT register. */
+	uint64_t w2r_init_ext                 : 1;  /**< A 1-bit extension to the W2R_INIT register. */
 	uint64_t w2w_l_init                   : 6;  /**< Write-to-write spacing control for back-to-back write followed by write cache block
                                                          accesses to the same rank and DIMM, and same BG for DDR4. */
 	uint64_t w2r_l_init                   : 6;  /**< Write-to-read spacing control for back-to-back write followed by read cache block accesses
@@ -9703,18 +12165,14 @@ union cvmx_lmcx_slot_ctl0 {
                                                          to the same rank and DIMM, and same BG for DDR4. */
 	uint64_t r2r_l_init                   : 6;  /**< Read-to-read spacing control for back-to-back read followed by read cache block accesses
                                                          to the same rank and DIMM, and same BG for DDR4. */
-	uint64_t w2w_init                     : 6;  /**< Write-to-write spacing control
-                                                         for back to back write followed by write cache block
-                                                         accesses to the same rank and DIMM */
-	uint64_t w2r_init                     : 6;  /**< Write-to-read spacing control
-                                                         for back to back write followed by read cache block
-                                                         accesses to the same rank and DIMM */
-	uint64_t r2w_init                     : 6;  /**< Read-to-write spacing control
-                                                         for back to back read followed by write cache block
-                                                         accesses to the same rank and DIMM */
-	uint64_t r2r_init                     : 6;  /**< Read-to-read spacing control
-                                                         for back to back read followed by read cache block
-                                                         accesses to the same rank and DIMM */
+	uint64_t w2w_init                     : 6;  /**< Write-to-write spacing control for back-to-back write followed by write cache block
+                                                         accesses to the same rank and DIMM. */
+	uint64_t w2r_init                     : 6;  /**< Write-to-read spacing control for back-to-back write followed by read cache block accesses
+                                                         to the same rank and DIMM. */
+	uint64_t r2w_init                     : 6;  /**< Read-to-write spacing control for back-to-back read followed by write cache block accesses
+                                                         to the same rank and DIMM. */
+	uint64_t r2r_init                     : 6;  /**< Read-to-read spacing control for back-to-back read followed by read cache block accesses
+                                                         to the same rank and DIMM. */
 #else
 	uint64_t r2r_init                     : 6;
 	uint64_t r2w_init                     : 6;
@@ -9724,7 +12182,9 @@ union cvmx_lmcx_slot_ctl0 {
 	uint64_t r2w_l_init                   : 6;
 	uint64_t w2r_l_init                   : 6;
 	uint64_t w2w_l_init                   : 6;
-	uint64_t reserved_48_63               : 16;
+	uint64_t w2r_init_ext                 : 1;
+	uint64_t w2r_l_init_ext               : 1;
+	uint64_t reserved_50_63               : 14;
 #endif
 	} s;
 	struct cvmx_lmcx_slot_ctl0_cn61xx {
@@ -9755,10 +12215,43 @@ union cvmx_lmcx_slot_ctl0 {
 	struct cvmx_lmcx_slot_ctl0_cn61xx     cn66xx;
 	struct cvmx_lmcx_slot_ctl0_cn61xx     cn68xx;
 	struct cvmx_lmcx_slot_ctl0_cn61xx     cn68xxp1;
-	struct cvmx_lmcx_slot_ctl0_s          cn70xx;
-	struct cvmx_lmcx_slot_ctl0_s          cn70xxp1;
+	struct cvmx_lmcx_slot_ctl0_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t w2w_l_init                   : 6;  /**< Write-to-write spacing control for back-to-back write followed by write cache block
+                                                         accesses to the same rank and DIMM, and same BG for DDR4. */
+	uint64_t w2r_l_init                   : 6;  /**< Write-to-read spacing control for back-to-back write followed by read cache block accesses
+                                                         to the same rank and DIMM, and same BG for DDR4. */
+	uint64_t r2w_l_init                   : 6;  /**< Read-to-write spacing control for back-to-back read followed by write cache block accesses
+                                                         to the same rank and DIMM, and same BG for DDR4. */
+	uint64_t r2r_l_init                   : 6;  /**< Read-to-read spacing control for back-to-back read followed by read cache block accesses
+                                                         to the same rank and DIMM, and same BG for DDR4. */
+	uint64_t w2w_init                     : 6;  /**< Write-to-write spacing control for back-to-back write followed by write cache block
+                                                         accesses to the same rank and DIMM. */
+	uint64_t w2r_init                     : 6;  /**< Write-to-read spacing control for back-to-back write followed by read cache block accesses
+                                                         to the same rank and DIMM. */
+	uint64_t r2w_init                     : 6;  /**< Read-to-write spacing control for back-to-back read followed by write cache block accesses
+                                                         to the same rank and DIMM. */
+	uint64_t r2r_init                     : 6;  /**< Read-to-read spacing control for back-to-back read followed by read cache block accesses
+                                                         to the same rank and DIMM. */
+#else
+	uint64_t r2r_init                     : 6;
+	uint64_t r2w_init                     : 6;
+	uint64_t w2r_init                     : 6;
+	uint64_t w2w_init                     : 6;
+	uint64_t r2r_l_init                   : 6;
+	uint64_t r2w_l_init                   : 6;
+	uint64_t w2r_l_init                   : 6;
+	uint64_t w2w_l_init                   : 6;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} cn70xx;
+	struct cvmx_lmcx_slot_ctl0_cn70xx     cn70xxp1;
+	struct cvmx_lmcx_slot_ctl0_s          cn73xx;
 	struct cvmx_lmcx_slot_ctl0_s          cn78xx;
+	struct cvmx_lmcx_slot_ctl0_s          cn78xxp2;
 	struct cvmx_lmcx_slot_ctl0_cn61xx     cnf71xx;
+	struct cvmx_lmcx_slot_ctl0_s          cnf75xx;
 };
 typedef union cvmx_lmcx_slot_ctl0 cvmx_lmcx_slot_ctl0_t;
 
@@ -9767,51 +12260,36 @@ typedef union cvmx_lmcx_slot_ctl0 cvmx_lmcx_slot_ctl0_t;
  *
  * This register is an assortment of control fields needed by the memory controller. If software
  * has not previously written to this register (since the last DRESET), hardware updates the
- * fields in this register to the minimum allowed value when any of LMC(0..3)_RLEVEL_RANK(0..1),
- * LMC(0..3)_WLEVEL_RANK(0..1), LMC(0..3)_CONTROL and LMC(0..3)_MODEREG_PARAMS0 CSRs change.
+ * fields in this register to the minimum allowed value when any of LMC()_RLEVEL_RANK(),
+ * LMC()_WLEVEL_RANK(), LMC()_CONTROL and LMC()_MODEREG_PARAMS0 CSRs change.
  * Ideally, only read this register after LMC has been initialized and
- * LMC(0..3)_RLEVEL_RANK(0..1), LMC(0..3)_WLEVEL_RANK(0..1) have valid data.
- * The field value is the minimum CK cycles between when the DRAM
- * part registers CAS commands of the first and second types from different cache blocks.
+ * LMC()_RLEVEL_RANK(), LMC()_WLEVEL_RANK() have valid data.
  *
- * The hardware-calculated minimums are:
- * min R2R_XRANK_INIT = 5 + MaxRdSkew MinRdSkew + LMC*_CONTROL[RODT_BPRCH]
- * min R2W_XRANK_INIT = 8 + (RL + MaxRdSkew) - (WL + MinWrSkew) + LMC*_CONTROL[BPRCH]
- * min W2R_XRANK_INIT = 6 + MaxWrSkew + LMC*_CONTROL[FPRCH2]
- * min W2W_XRANK_INIT = 7 + MaxWrSkew - MinWrSkew
- * where
- * RL        = CL  + AL (LMC*_MODEREG_PARAMS0[CL] selects CL, LMC*_MODEREG_PARAMS0[AL] selects
- * AL)
- * WL        = CWL + AL (LMC*_MODEREG_PARAMS0[CWL] selects CWL)
- * MinRdSkew = min(LMC*_RLEVEL_RANKi[BYTEj]/4)                              (min is across all
- * ranks i (0..3) and bytes j (0..8))
- * MaxRdSkew = max(LMC*_RLEVEL_RANKi[BYTEj]/4) + 1                          (max is across all
- * ranks i (0..3) and bytes j (0..8))
- * MinWrSkew = min(LMC*_WLEVEL_RANKi[BYTEj]/8) LMC*_CONFIG[EARLY_DQX]     (min is across all
- * ranks i (0..3) and bytes j (0..8))
- * MaxWrSkew = max(LMC*_WLEVEL_RANKi[BYTEj]/8) LMC*_CONFIG[EARLY_DQX] + 1 (max is across all
- * ranks i (0..3) and bytes j (0..8))
- * R2W_XRANK_INIT has 1 extra CK cycle built in for OCTEON-internal ODT settling/channel
- * turnaround time.
- * W2R_XRANK_INIT has 1 extra CK cycle built in for channel turnaround time.
+ * The interpretation of the fields in this CSR depends on LMC(0)_CONFIG[DDR2T]:
+ *
+ * * If LMC()_CONFIG[DDR2T]=1, (FieldValue + 4) is the minimum CK cycles between when the
+ * DRAM part registers CAS commands of the first and second types from different cache blocks.
+ *
+ * * If LMC()_CONFIG[DDR2T]=0, (FieldValue + 3) is the minimum CK cycles between when the DRAM
+ * part registers CAS commands of the first and second types from different cache blocks.
+ * FieldValue = 0 is always illegal in this case.
+ *
+ * The hardware-calculated minimums for these fields are shown in LMC(0)_SLOT_CTL1 Hardware-
+ * Calculated Minimums.
  */
 union cvmx_lmcx_slot_ctl1 {
 	uint64_t u64;
 	struct cvmx_lmcx_slot_ctl1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_24_63               : 40;
-	uint64_t w2w_xrank_init               : 6;  /**< Write-to-write spacing control
-                                                         for back to back write followed by write cache block
-                                                         accesses across ranks of the same DIMM */
-	uint64_t w2r_xrank_init               : 6;  /**< Write-to-read spacing control
-                                                         for back to back write followed by read cache block
-                                                         accesses across ranks of the same DIMM */
-	uint64_t r2w_xrank_init               : 6;  /**< Read-to-write spacing control
-                                                         for back to back read followed by write cache block
-                                                         accesses across ranks of the same DIMM */
-	uint64_t r2r_xrank_init               : 6;  /**< Read-to-read spacing control
-                                                         for back to back read followed by read cache block
-                                                         accesses across ranks of the same DIMM */
+	uint64_t w2w_xrank_init               : 6;  /**< Write-to-write spacing control for back-to-back write followed by write cache block
+                                                         accesses across ranks of the same DIMM. */
+	uint64_t w2r_xrank_init               : 6;  /**< Write-to-read spacing control for back-to-back write followed by read cache block accesses
+                                                         across ranks of the same DIMM. */
+	uint64_t r2w_xrank_init               : 6;  /**< Read-to-write spacing control for back-to-back read followed by write cache block accesses
+                                                         across ranks of the same DIMM. */
+	uint64_t r2r_xrank_init               : 6;  /**< Read-to-read spacing control for back-to-back read followed by read cache block accesses
+                                                         across ranks of the same DIMM. */
 #else
 	uint64_t r2r_xrank_init               : 6;
 	uint64_t r2w_xrank_init               : 6;
@@ -9828,8 +12306,11 @@ union cvmx_lmcx_slot_ctl1 {
 	struct cvmx_lmcx_slot_ctl1_s          cn68xxp1;
 	struct cvmx_lmcx_slot_ctl1_s          cn70xx;
 	struct cvmx_lmcx_slot_ctl1_s          cn70xxp1;
+	struct cvmx_lmcx_slot_ctl1_s          cn73xx;
 	struct cvmx_lmcx_slot_ctl1_s          cn78xx;
+	struct cvmx_lmcx_slot_ctl1_s          cn78xxp2;
 	struct cvmx_lmcx_slot_ctl1_s          cnf71xx;
+	struct cvmx_lmcx_slot_ctl1_s          cnf75xx;
 };
 typedef union cvmx_lmcx_slot_ctl1 cvmx_lmcx_slot_ctl1_t;
 
@@ -9838,53 +12319,35 @@ typedef union cvmx_lmcx_slot_ctl1 cvmx_lmcx_slot_ctl1_t;
  *
  * This register is an assortment of control fields needed by the memory controller. If software
  * has not previously written to this register (since the last DRESET), hardware updates the
- * fields in this register to the minimum allowed value when any of LMC(0..3)_RLEVEL_RANK(0..1),
- * LMC(0..3)_WLEVEL_RANK(0..1)LMC*_WLEVEL_RANKn, LMC*_CONTROL and LMC*_MODEREG_PARAMS0 CSRs
- * change. Ideally, only read this register after LMC has been initialized and LMC*_RLEVEL_RANKn,
- * LMC*_WLEVEL_RANKn have valid data.
+ * fields in this register to the minimum allowed value when any of LMC()_RLEVEL_RANK(),
+ * LMC()_WLEVEL_RANK(), LMC()_CONTROL and LMC()_MODEREG_PARAMS0 CSRs change.
+ * Ideally, only read this register after LMC has been initialized and
+ * LMC()_RLEVEL_RANK(), LMC()_WLEVEL_RANK() have valid data.
  *
- * The field value is the minimum CK cycles between when the DRAM
- * part registers CAS commands of the first and second types from different cache blocks.
+ * The interpretation of the fields in this CSR depends on LMC(0)_CONFIG[DDR2T]:
  *
- * The hardware-calculated minimums are:
- * min R2R_XDIMM_INIT = 6 + MaxRdSkew MinRdSkew + LMC*_CONTROL[RODT_BPRCH]
- * min R2W_XDIMM_INIT = 9 + (RL + MaxRdSkew) - (WL + MinWrSkew) + LMC*_CONTROL[BPRCH]
- * min W2R_XDIMM_INIT = 6 + MaxWrSkew + LMC*_CONTROL[FPRCH2]
- * min W2W_XDIMM_INIT = 8 + MaxWrSkew - MinWrSkew
- * where
- * RL        = CL  + AL (LMC*_MODEREG_PARAMS0[CL] selects CL, LMC*_MODEREG_PARAMS0[AL] selects
- * AL)
- * WL        = CWL + AL (LMC*_MODEREG_PARAMS0[CWL] selects CWL)
- * MinRdSkew = min(LMC*_RLEVEL_RANKi[BYTEj]/4)                              (min is across all
- * ranks i (0..3) and bytes j (0..8))
- * MaxRdSkew = max(LMC*_RLEVEL_RANKi[BYTEj]/4) + 1                          (max is across all
- * ranks i (0..3) and bytes j (0..8))
- * MinWrSkew = min(LMC*_WLEVEL_RANKi[BYTEj]/8) LMC*_CONFIG[EARLY_DQX]     (min is across all
- * ranks i (0..3) and bytes j (0..8))
- * MaxWrSkew = max(LMC*_WLEVEL_RANKi[BYTEj]/8) LMC*_CONFIG[EARLY_DQX] + 1 (max is across all
- * ranks i (0..3) and bytes j (0..8))
- * R2W_XDIMM_INIT has 2 extra CK cycles built in for OCTEON-internal ODT settling/channel
- * turnaround time.
- * R2R_XDIMM_INIT, W2R_XRANK_INIT, W2W_XDIMM_INIT have 1 extra CK cycle built in for channel
- * turnaround time.
+ * * If LMC()_CONFIG[DDR2T] = 1, (FieldValue + 4) is the minimum CK cycles between when the
+ * DRAM part registers CAS commands of the first and second types from different cache blocks.
+ *
+ * * If LMC()_CONFIG[DDR2T] = 0, (FieldValue + 3) is the minimum CK cycles between when the
+ * DRAM part registers CAS commands of the first and second types from different cache blocks.
+ * FieldValue = 0 is always illegal in this case.
+ *
+ * The hardware-calculated minimums for these fields are shown in LMC Registers.
  */
 union cvmx_lmcx_slot_ctl2 {
 	uint64_t u64;
 	struct cvmx_lmcx_slot_ctl2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_24_63               : 40;
-	uint64_t w2w_xdimm_init               : 6;  /**< Write-to-write spacing control
-                                                         for back to back write followed by write cache block
-                                                         accesses across DIMMs */
-	uint64_t w2r_xdimm_init               : 6;  /**< Write-to-read spacing control
-                                                         for back to back write followed by read cache block
-                                                         accesses across DIMMs */
-	uint64_t r2w_xdimm_init               : 6;  /**< Read-to-write spacing control
-                                                         for back to back read followed by write cache block
-                                                         accesses across DIMMs */
-	uint64_t r2r_xdimm_init               : 6;  /**< Read-to-read spacing control
-                                                         for back to back read followed by read cache block
-                                                         accesses across DIMMs */
+	uint64_t w2w_xdimm_init               : 6;  /**< Write-to-write spacing control for back-to-back write followed by write cache block
+                                                         accesses across DIMMs. */
+	uint64_t w2r_xdimm_init               : 6;  /**< Write-to-read spacing control for back-to-back write followed by read cache block accesses
+                                                         across DIMMs. */
+	uint64_t r2w_xdimm_init               : 6;  /**< Read-to-write spacing control for back-to-back read followed by write cache block accesses
+                                                         across DIMMs. */
+	uint64_t r2r_xdimm_init               : 6;  /**< Read-to-read spacing control for back-to-back read followed by read cache block accesses
+                                                         across DIMMs. */
 #else
 	uint64_t r2r_xdimm_init               : 6;
 	uint64_t r2w_xdimm_init               : 6;
@@ -9901,10 +12364,77 @@ union cvmx_lmcx_slot_ctl2 {
 	struct cvmx_lmcx_slot_ctl2_s          cn68xxp1;
 	struct cvmx_lmcx_slot_ctl2_s          cn70xx;
 	struct cvmx_lmcx_slot_ctl2_s          cn70xxp1;
+	struct cvmx_lmcx_slot_ctl2_s          cn73xx;
 	struct cvmx_lmcx_slot_ctl2_s          cn78xx;
+	struct cvmx_lmcx_slot_ctl2_s          cn78xxp2;
 	struct cvmx_lmcx_slot_ctl2_s          cnf71xx;
+	struct cvmx_lmcx_slot_ctl2_s          cnf75xx;
 };
 typedef union cvmx_lmcx_slot_ctl2 cvmx_lmcx_slot_ctl2_t;
+
+/**
+ * cvmx_lmc#_slot_ctl3
+ *
+ * This register is an assortment of control fields needed by the memory controller. If software
+ * has not previously written to this register (since the last DRESET), hardware updates the
+ * fields in this register to the minimum allowed value when any of LMC()_RLEVEL_RANK(),
+ * LMC()_WLEVEL_RANK(), LMC()_CONTROL and LMC()_MODEREG_PARAMS0 CSRs change.
+ * Ideally, only read this register after LMC has been initialized and
+ * LMC()_RLEVEL_RANK(), LMC()_WLEVEL_RANK() have valid data.
+ *
+ * The interpretation of the fields in this CSR depends on LMC(0)_CONFIG[DDR2T]:
+ *
+ * * If LMC()_CONFIG[DDR2T] = 1, (FieldValue + 4) is the minimum CK cycles between when the
+ * DRAM part registers CAS commands of the first and second types from different cache blocks.
+ *
+ * * If LMC()_CONFIG[DDR2T] = 0, (FieldValue + 3) is the minimum CK cycles between when the
+ * DRAM part registers CAS commands of the first and second types from different cache blocks.
+ * FieldValue = 0 is always illegal in this case.
+ *
+ * The hardware-calculated minimums for these fields are shown in LMC Registers.
+ */
+union cvmx_lmcx_slot_ctl3 {
+	uint64_t u64;
+	struct cvmx_lmcx_slot_ctl3_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_50_63               : 14;
+	uint64_t w2r_l_xrank_init_ext         : 1;  /**< A 1-bit extension to the W2R_L_XRANK_INIT register. */
+	uint64_t w2r_xrank_init_ext           : 1;  /**< A 1-bit extension to the W2R_XRANK_INIT register. */
+	uint64_t w2w_l_xrank_init             : 6;  /**< Write-to-write spacing control for back-to-back write followed by write cache block
+                                                         accesses to a different logical rank, and same BG for DDR4. */
+	uint64_t w2r_l_xrank_init             : 6;  /**< Write-to-read spacing control for back-to-back write followed by read cache block accesses
+                                                         to a different logical rank, and same BG for DDR4. */
+	uint64_t r2w_l_xrank_init             : 6;  /**< Read-to-write spacing control for back-to-back read followed by write cache block accesses
+                                                         to a different logical rank, and same BG for DDR4. */
+	uint64_t r2r_l_xrank_init             : 6;  /**< Read-to-read spacing control for back-to-back read followed by read cache block accesses
+                                                         to a different logical rank, and same BG for DDR4. */
+	uint64_t w2w_xrank_init               : 6;  /**< Write-to-write spacing control for back-to-back write followed by write cache block
+                                                         accesses to a different logical rank. */
+	uint64_t w2r_xrank_init               : 6;  /**< Write-to-read spacing control for back-to-back write followed by read cache block accesses
+                                                         to a different logical rank. */
+	uint64_t r2w_xrank_init               : 6;  /**< Read-to-write spacing control for back-to-back read followed by write cache block accesses
+                                                         to a different logical rank. */
+	uint64_t r2r_xrank_init               : 6;  /**< Read-to-read spacing control for back-to-back read followed by read cache block accesses
+                                                         to a different logical rank. */
+#else
+	uint64_t r2r_xrank_init               : 6;
+	uint64_t r2w_xrank_init               : 6;
+	uint64_t w2r_xrank_init               : 6;
+	uint64_t w2w_xrank_init               : 6;
+	uint64_t r2r_l_xrank_init             : 6;
+	uint64_t r2w_l_xrank_init             : 6;
+	uint64_t w2r_l_xrank_init             : 6;
+	uint64_t w2w_l_xrank_init             : 6;
+	uint64_t w2r_xrank_init_ext           : 1;
+	uint64_t w2r_l_xrank_init_ext         : 1;
+	uint64_t reserved_50_63               : 14;
+#endif
+	} s;
+	struct cvmx_lmcx_slot_ctl3_s          cn73xx;
+	struct cvmx_lmcx_slot_ctl3_s          cn78xxp2;
+	struct cvmx_lmcx_slot_ctl3_s          cnf75xx;
+};
+typedef union cvmx_lmcx_slot_ctl3 cvmx_lmcx_slot_ctl3_t;
 
 /**
  * cvmx_lmc#_timing_params0
@@ -9913,19 +12443,27 @@ union cvmx_lmcx_timing_params0 {
 	uint64_t u64;
 	struct cvmx_lmcx_timing_params0_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_26_63               : 38;
-	uint64_t tmrd                         : 4;  /**< Indicates tMRD constraints.
-                                                         Set TMRD (CSR field) = RNDUP[tMRD(ns)/tCYC(ns)]-1,
-                                                         where tMRD is from the DDR3 spec, and tCYC(ns)
-                                                         is the DDR clock frequency (not data rate).
-                                                         TYP=4nCK */
+	uint64_t reserved_54_63               : 10;
+	uint64_t tbcw                         : 6;  /**< Indicates tBCW constraints. Set this field as follows:
+                                                         _ RNDUP[TBCW(ns) / TCYC(ns)] - 1
+                                                         where TBCW is from the JEDEC DDR4DB spec, and TCYC(ns) is the DDR clock frequency (not
+                                                         data rate).
+                                                         TYP = 16. */
+	uint64_t reserved_26_47               : 22;
+	uint64_t tmrd                         : 4;  /**< Indicates TMRD constraints. Set this field as follows:
+                                                         _ RNDUP[TMRD(ns) / TCYC(ns)] - 1
+                                                         where TMRD is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 8nCK. */
 	uint64_t reserved_8_21                : 14;
 	uint64_t tckeon                       : 8;  /**< Reserved. Should be written to zero. */
 #else
 	uint64_t tckeon                       : 8;
 	uint64_t reserved_8_21                : 14;
 	uint64_t tmrd                         : 4;
-	uint64_t reserved_26_63               : 38;
+	uint64_t reserved_26_47               : 22;
+	uint64_t tbcw                         : 6;
+	uint64_t reserved_54_63               : 10;
 #endif
 	} s;
 	struct cvmx_lmcx_timing_params0_cn61xx {
@@ -10140,8 +12678,85 @@ union cvmx_lmcx_timing_params0 {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_timing_params0_cn70xx cn70xxp1;
-	struct cvmx_lmcx_timing_params0_cn70xx cn78xx;
+	struct cvmx_lmcx_timing_params0_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_54_63               : 10;
+	uint64_t tbcw                         : 6;  /**< Indicates tBCW constraints. Set this field as follows:
+                                                         _ RNDUP[TBCW(ns) / TCYC(ns)] - 1
+                                                         where TBCW is from the JEDEC DDR4DB spec, and TCYC(ns) is the DDR clock frequency (not
+                                                         data rate).
+                                                         TYP = 16. */
+	uint64_t tcksre                       : 4;  /**< Indicates TCKSRE constraints. Set this field as follows:
+                                                         _ RNDUP[TCKSRE(ns) / TCYC(ns)] - 1
+                                                         where TCKSRE is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = max(5nCK, 10 ns). */
+	uint64_t trp                          : 5;  /**< Indicates TRP constraints. Set TRP as follows:
+                                                         _ RNDUP[TRP(ns) / TCYC(ns)] - 1
+                                                         where TRP and TRTP are from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency
+                                                         (not data rate).
+                                                         TYP TRP = 10-15ns.
+                                                         TYP TRTP = max(4nCK, 7.5 ns). */
+	uint64_t tzqinit                      : 4;  /**< Indicates TZQINIT constraints. Set this field as follows:
+                                                         _ RNDUP[TZQINIT(ns) / (256 * TCYC(ns))]
+                                                         where TZQINIT is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 2 (equivalent to 512). */
+	uint64_t tdllk                        : 4;  /**< Indicates TDLLK constraints. Set this field as follows:
+                                                         _ RNDUP[TDLLK(ns) / (256 * TCYC(ns))]
+                                                         where TDLLK is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 3 (equivalent to 768).
+                                                         This parameter is used in self-refresh exit and assumed to be greater than TRFC. */
+	uint64_t tmod                         : 5;  /**< Indicates tMOD constraints. Set this field as follows:
+                                                         _ RNDUP[TMOD(ns) / TCYC(ns)] - 1
+                                                         where TMOD is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = max(24nCK, 15 ns). */
+	uint64_t tmrd                         : 4;  /**< Indicates TMRD constraints. Set this field as follows:
+                                                         _ RNDUP[TMRD(ns) / TCYC(ns)] - 1
+                                                         where TMRD is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 8nCK. */
+	uint64_t txpr                         : 6;  /**< Indicates TXPR constraints. Set this field as follows:
+                                                         _ RNDUP[TXPR(ns) / (16 * TCYC(ns))]
+                                                         where TXPR is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = max(5nCK, TRFC+10 ns). */
+	uint64_t tcke                         : 4;  /**< Indicates TCKE constraints. Set this field as follows:
+                                                         _ RNDUP[TCKE(ns) / TCYC(ns)] - 1
+                                                         where TCKE is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = max(3nCK, 7.5/5.625/5.625/5 ns).
+                                                         Because a DDR4 register can shorten the pulse width of CKE (it delays the falling edge
+                                                         but does not delay the rising edge), care must be taken to set this parameter larger
+                                                         to account for this effective reduction in the pulse width. */
+	uint64_t tzqcs                        : 4;  /**< Indicates TZQCS constraints. This field is set as follows:
+                                                         _ RNDUP[(2 * TZQCS(ns)) / (16 * TCYC(ns))]
+                                                         where TZQCS is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP >= 8 (greater-than-or-equal-to 128), to allow for dclk90 calibration. */
+	uint64_t reserved_0_7                 : 8;
+#else
+	uint64_t reserved_0_7                 : 8;
+	uint64_t tzqcs                        : 4;
+	uint64_t tcke                         : 4;
+	uint64_t txpr                         : 6;
+	uint64_t tmrd                         : 4;
+	uint64_t tmod                         : 5;
+	uint64_t tdllk                        : 4;
+	uint64_t tzqinit                      : 4;
+	uint64_t trp                          : 5;
+	uint64_t tcksre                       : 4;
+	uint64_t tbcw                         : 6;
+	uint64_t reserved_54_63               : 10;
+#endif
+	} cn73xx;
+	struct cvmx_lmcx_timing_params0_cn73xx cn78xx;
+	struct cvmx_lmcx_timing_params0_cn73xx cn78xxp2;
 	struct cvmx_lmcx_timing_params0_cn61xx cnf71xx;
+	struct cvmx_lmcx_timing_params0_cn73xx cnf75xx;
 };
 typedef union cvmx_lmcx_timing_params0 cvmx_lmcx_timing_params0_t;
 
@@ -10152,15 +12767,41 @@ union cvmx_lmcx_timing_params1 {
 	uint64_t u64;
 	struct cvmx_lmcx_timing_params1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_4_63                : 60;
-	uint64_t tmprr                        : 4;  /**< Indicates tMPRR constraints.
-                                                         Set TMPRR (CSR field) = RNDUP[tMPRR(ns)/tCYC(ns)]-1,
-                                                         where tMPRR is from the DDR3 spec, and tCYC(ns)
-                                                         is the DDR clock frequency (not data rate).
-                                                         TYP=1nCK */
+	uint64_t reserved_59_63               : 5;
+	uint64_t txp_ext                      : 1;  /**< A 1-bit extension to the TXP register. */
+	uint64_t trcd_ext                     : 1;  /**< A 1-bit extension to the TRCD register. */
+	uint64_t tpdm_full_cycle_ena          : 1;  /**< When set, this field enables the addition of one-cycle delay to the
+                                                         Write/Read latency calculation. This is to compensate the case when
+                                                         tPDM delay in the RCD of an RDIMM/LRDIMM is greater than one-cycle.
+                                                         Only valid in RDIMM  (LMC()_CTL[RDIMM_ENA]=1) or LRDIMM
+                                                         (LMC()_CONFIG[LRDIMM_ENA=1) mode. */
+	uint64_t trfc_dlr                     : 7;  /**< Indicates TRFC_DLR constraints. Set this field as follows:
+                                                         _ RNDUP[TRFC_DLR(ns) / (8 * TCYC(ns))]
+                                                         where TRFC_DLR is from the JEDEC 3D Stacked SDRAM spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 90-120 ns.
+                                                         0x0 = reserved.
+                                                         0x1 = 8 TCYC.
+                                                         0x2 = 16 TCYC.
+                                                         0x3 = 24 TCYC.
+                                                         0x4 = 32 TCYC.
+                                                         - ...
+                                                         0x7E = 1008 TCYC.
+                                                         0x7F = 1016 TCYC. */
+	uint64_t reserved_4_48                : 45;
+	uint64_t tmprr                        : 4;  /**< Indicates TMPRR constraints. Set this field as follows:
+                                                         _ RNDUP[TMPRR(ns) / TCYC(ns)] - 1
+                                                         where TMPRR is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 1 nCK */
 #else
 	uint64_t tmprr                        : 4;
-	uint64_t reserved_4_63                : 60;
+	uint64_t reserved_4_48                : 45;
+	uint64_t trfc_dlr                     : 7;
+	uint64_t tpdm_full_cycle_ena          : 1;
+	uint64_t trcd_ext                     : 1;
+	uint64_t txp_ext                      : 1;
+	uint64_t reserved_59_63               : 5;
 #endif
 	} s;
 	struct cvmx_lmcx_timing_params1_cn61xx {
@@ -10491,8 +13132,143 @@ union cvmx_lmcx_timing_params1 {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_timing_params1_cn70xx cn70xxp1;
-	struct cvmx_lmcx_timing_params1_cn70xx cn78xx;
+	struct cvmx_lmcx_timing_params1_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_59_63               : 5;
+	uint64_t txp_ext                      : 1;  /**< A 1-bit extension to the TXP register. */
+	uint64_t trcd_ext                     : 1;  /**< A 1-bit extension to the TRCD register. */
+	uint64_t tpdm_full_cycle_ena          : 1;  /**< When set, this field enables the addition of one-cycle delay to the
+                                                         Write/Read latency calculation. This is to compensate the case when
+                                                         tPDM delay in the RCD of an RDIMM/LRDIMM is greater than one-cycle.
+                                                         Only valid in RDIMM  (LMC()_CTL[RDIMM_ENA]=1) or LRDIMM
+                                                         (LMC()_CONFIG[LRDIMM_ENA=1) mode. */
+	uint64_t trfc_dlr                     : 7;  /**< Indicates TRFC_DLR constraints. Set this field as follows:
+                                                         _ RNDUP[TRFC_DLR(ns) / (8 * TCYC(ns))]
+                                                         where TRFC_DLR is from the JEDEC 3D Stacked SDRAM spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 90-120 ns.
+                                                         0x0 = reserved.
+                                                         0x1 = 8 TCYC.
+                                                         0x2 = 16 TCYC.
+                                                         0x3 = 24 TCYC.
+                                                         0x4 = 32 TCYC.
+                                                         - ...
+                                                         0x7E = 1008 TCYC.
+                                                         0x7F = 1016 TCYC. */
+	uint64_t txpdll                       : 5;  /**< Indicates TXPDLL constraints. Set this field as follows:
+                                                         _ RNDUP[TXPDLL(ns) / TCYC(ns)] - 1
+                                                         where TXPDLL is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP=max(10nCK, 24 ns) */
+	uint64_t tfaw                         : 5;  /**< Indicates TFAW constraints. Set this field as follows:
+                                                         _ RNDUP[TFAW(ns) / (4 * TCYC(ns))]
+                                                         where TFAW is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 30-40 ns
+                                                         When interfacing with DIMMs that contain 3DS DRAMs, set this field as follows:
+                                                         _ RNDUP[TFAW_SLR(ns) / (4 * TCYC(ns))]
+                                                         where TFAW_SLR is the Four activate window to the same logical rank from the
+                                                         JEDEC DDR4 3D Stacked spec. */
+	uint64_t twldqsen                     : 4;  /**< Indicates TWLDQSEN constraints. Set this field as follows:
+                                                         _ RNDUP[TWLDQSEN(ns) / (4 * TCYC(ns))]
+                                                         where TWLDQSEN is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = max(25nCK) */
+	uint64_t twlmrd                       : 4;  /**< Indicates TWLMRD constraints. Set this field as follows:
+                                                         _ RNDUP[TWLMRD(ns) / (4 * TCYC(ns))]
+                                                         where TWLMRD is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = max(40nCK) */
+	uint64_t txp                          : 3;  /**< Indicates TXP constraints. Set this field as follows:
+                                                         _ RNDUP[TXP(ns) / TCYC(ns)] - 1
+                                                         where TXP is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP=max(3nCK, 7.5 ns) */
+	uint64_t trrd                         : 3;  /**< Indicates TRRD constraints. Set this field as follows:
+                                                         _ RNDUP[TRRD(ns) / TCYC(ns)] - 1,
+                                                         where TRRD is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = max(4nCK, 10 ns)
+                                                         0x0 = Reserved.
+                                                         0x1 = 2 TCYC.
+                                                         - ...
+                                                         0x6 = 7 TCYC.
+                                                         0x7 = 8 TCYC.
+                                                         For DDR4, this is the TRRD_S parameter. */
+	uint64_t trfc                         : 7;  /**< Indicates TRFC constraints. Set this field as follows:
+                                                         _ RNDUP[TRFC(ns) / (8 * TCYC(ns))]
+                                                         where TRFC is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 90-350 ns
+                                                         0x0 = reserved.
+                                                         0x1 = 8 TCYC.
+                                                         0x2 = 16 TCYC.
+                                                         0x3 = 24 TCYC.
+                                                         0x4 = 32 TCYC.
+                                                         - ...
+                                                         0x7E = 1008 TCYC.
+                                                         0x7F = 1016 TCYC. */
+	uint64_t twtr                         : 4;  /**< Indicates TWTR constraints. Set this field as follows:
+                                                         _ RNDUP[TWTR(ns) / TCYC(ns)] - 1
+                                                         where TWTR is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = max(4nCK, 7.5 ns)
+                                                         For DDR4, this CSR field represents TWTR_S.
+                                                         0x0 = reserved.
+                                                         0x1 = 2.
+                                                         - ...
+                                                         0x7 = 8.
+                                                         0x8-0xF = reserved. */
+	uint64_t trcd                         : 4;  /**< Indicates TRCD constraints. Set this field as follows:
+                                                         _ RNDUP[TRCD(ns) / TCYC(ns)]
+                                                         where TRCD is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 10-15 ns
+                                                         0x0 = reserved.
+                                                         0x1 = 2 (2 is the smallest value allowed).
+                                                         0x2 = 2.
+                                                         - ...
+                                                         0xE = 14.
+                                                         0xA-0xF = reserved.
+                                                         In 2T mode, make this register TRCD - 1, not going below 2. */
+	uint64_t tras                         : 6;  /**< Indicates TRAS constraints. Set TRAS (CSR field) as follows:
+                                                         _ RNDUP[TRAS(ns)/TCYC(ns)] - 1,
+                                                         where TRAS is from the DDR3/DDR4 spec, and TCYC(ns) is the DDR clock frequency (not data
+                                                         rate).
+                                                         TYP = 35ns - 9 * TREFI
+                                                         0x0 = reserved.
+                                                         0x1 = 2 TCYC.
+                                                         - 0010:  3 TCYC.
+                                                         - ...
+                                                         0x3F: 64 TCYC. */
+	uint64_t tmprr                        : 4;  /**< Indicates TMPRR constraints. Set this field as follows:
+                                                         _ RNDUP[TMPRR(ns) / TCYC(ns)] - 1
+                                                         where TMPRR is from the JEDEC DDR3/DDR4 spec, and TCYC(ns) is the DDR clock
+                                                         frequency (not data rate).
+                                                         TYP = 1 nCK */
+#else
+	uint64_t tmprr                        : 4;
+	uint64_t tras                         : 6;
+	uint64_t trcd                         : 4;
+	uint64_t twtr                         : 4;
+	uint64_t trfc                         : 7;
+	uint64_t trrd                         : 3;
+	uint64_t txp                          : 3;
+	uint64_t twlmrd                       : 4;
+	uint64_t twldqsen                     : 4;
+	uint64_t tfaw                         : 5;
+	uint64_t txpdll                       : 5;
+	uint64_t trfc_dlr                     : 7;
+	uint64_t tpdm_full_cycle_ena          : 1;
+	uint64_t trcd_ext                     : 1;
+	uint64_t txp_ext                      : 1;
+	uint64_t reserved_59_63               : 5;
+#endif
+	} cn73xx;
+	struct cvmx_lmcx_timing_params1_cn73xx cn78xx;
+	struct cvmx_lmcx_timing_params1_cn73xx cn78xxp2;
 	struct cvmx_lmcx_timing_params1_cn61xx cnf71xx;
+	struct cvmx_lmcx_timing_params1_cn73xx cnf75xx;
 };
 typedef union cvmx_lmcx_timing_params1 cvmx_lmcx_timing_params1_t;
 
@@ -10506,7 +13282,10 @@ union cvmx_lmcx_timing_params2 {
 	uint64_t u64;
 	struct cvmx_lmcx_timing_params2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_15_63               : 49;
+	uint64_t reserved_16_63               : 48;
+	uint64_t trrd_l_ext                   : 1;  /**< MSB of TWTR_L constraints. Set this field
+                                                         when requiring tRRD_L of more than 8 nCK. Otherwise
+                                                         this bit must be 0. */
 	uint64_t trtp                         : 4;  /**< Specifies the TRTP parameter, in cycles. Set this field as follows:
                                                          _ RNDUP[TRTP(ns) / TCYC(ns)] - 1,
                                                          For DDR3, typical = max(4 nCK, 7.5ns).
@@ -10539,12 +13318,49 @@ union cvmx_lmcx_timing_params2 {
 	uint64_t twtr_l                       : 4;
 	uint64_t t_rw_op_max                  : 4;
 	uint64_t trtp                         : 4;
-	uint64_t reserved_15_63               : 49;
+	uint64_t trrd_l_ext                   : 1;
+	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
-	struct cvmx_lmcx_timing_params2_s     cn70xx;
-	struct cvmx_lmcx_timing_params2_s     cn70xxp1;
+	struct cvmx_lmcx_timing_params2_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_15_63               : 49;
+	uint64_t trtp                         : 4;  /**< Specifies the TRTP parameter, in cycles. Set this field as follows:
+                                                         RNDUP[TRTP(ns) / TCYC(ns)] - 1,
+                                                         For DDR3, typical = max(4 nCK, 7.5ns).
+                                                         For DDR4 the TRTP parameter is dictated by the TWR MR bits. */
+	uint64_t t_rw_op_max                  : 4;  /**< Specifies the maximum delay for a read or write operation to complete, used to set the
+                                                         timing of MRW and MPR operations. Set this field as follows:
+                                                         RNDUP[Maximum operation delay (cycles) / 8]
+                                                         Typical = 0x7. */
+	uint64_t twtr_l                       : 4;  /**< Specifies TWTR_L constraints. Set this field as follows:
+                                                         RNDUP[TWTR_L(ns) / TCYC(ns)] - 1
+                                                         where TWTR_L is from the JEDEC DDR4 spec, and TCYC(ns) is the DDR clock frequency (not the
+                                                         data rate).
+                                                         Typical = MAX(4 nCK, 7.5 ns)
+                                                         INTERNAL: Seems the '- 1' is because we add 1 back into slot timing equation */
+	uint64_t trrd_l                       : 3;  /**< Specifies TRRD_L constraints. Set this field as follows:
+                                                         RNDUP[TRRD_L(ns) / TCYC(ns)] - 1,
+                                                         where TRRD_L is from the JEDEC DDR4 spec, and TCYC(ns) is the DDR clock frequency (not the
+                                                         data rate).
+                                                         Typical = MAX(4 nCK, 7.5 ns)
+                                                         0x0 = reserved. 0x4 = five TCYC.
+                                                         0x1 = two TCYC. 0x5 = six TCYC.
+                                                         0x2 = three TCYC. 0x6 = seven TCYC.
+                                                         0x3 = four TCYC. 0x7 = eight TCYC. */
+#else
+	uint64_t trrd_l                       : 3;
+	uint64_t twtr_l                       : 4;
+	uint64_t t_rw_op_max                  : 4;
+	uint64_t trtp                         : 4;
+	uint64_t reserved_15_63               : 49;
+#endif
+	} cn70xx;
+	struct cvmx_lmcx_timing_params2_cn70xx cn70xxp1;
+	struct cvmx_lmcx_timing_params2_s     cn73xx;
 	struct cvmx_lmcx_timing_params2_s     cn78xx;
+	struct cvmx_lmcx_timing_params2_s     cn78xxp2;
+	struct cvmx_lmcx_timing_params2_s     cnf75xx;
 };
 typedef union cvmx_lmcx_timing_params2 cvmx_lmcx_timing_params2_t;
 
@@ -10616,28 +13432,34 @@ union cvmx_lmcx_wlevel_ctl {
 	struct cvmx_lmcx_wlevel_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_22_63               : 42;
-	uint64_t rtt_nom                      : 3;  /**< RTT_NOM
-                                                         LMC writes a decoded value to MR1[Rtt_Nom] of the rank during
-                                                         write leveling. Per JEDEC DDR3 specifications,
-                                                         only values MR1[Rtt_Nom] = 1 (RQZ/4), 2 (RQZ/2), or 3 (RQZ/6)
-                                                         are allowed during write leveling with output buffer enabled.
-                                                         000 : LMC writes 001 (RZQ/4)   to MR1[Rtt_Nom]
-                                                         001 : LMC writes 010 (RZQ/2)   to MR1[Rtt_Nom]
-                                                         010 : LMC writes 011 (RZQ/6)   to MR1[Rtt_Nom]
-                                                         011 : LMC writes 100 (RZQ/12)  to MR1[Rtt_Nom]
-                                                         100 : LMC writes 101 (RZQ/8)   to MR1[Rtt_Nom]
-                                                         101 : LMC writes 110 (Rsvd)    to MR1[Rtt_Nom]
-                                                         110 : LMC writes 111 (Rsvd)    to  MR1[Rtt_Nom]
-                                                         111 : LMC writes 000 (Disabled) to MR1[Rtt_Nom] */
-	uint64_t bitmask                      : 8;  /**< Mask to select bit lanes on which write-leveling
-                                                         feedback is returned when OR_DIS is set to 1 */
-	uint64_t or_dis                       : 1;  /**< Disable or'ing of bits in a byte lane when computing
-                                                         the write-leveling bitmask */
+	uint64_t rtt_nom                      : 3;  /**< LMC writes a decoded value to MR1[Rtt_Nom] of the rank during write leveling. Per JEDEC
+                                                         DDR3 specifications, only values MR1[Rtt_Nom] = 1 (RZQ/4), 2 (RZQ/2), or 3 (RZQ/6) are
+                                                         allowed during write leveling with output buffer enabled.
+                                                         DDR3 Spec:
+                                                         0x0 = LMC writes 0x1 (RZQ/4) to MR1[Rtt_Nom].
+                                                         0x1 = LMC writes 0x2 (RZQ/2) to MR1[Rtt_Nom].
+                                                         0x2 = LMC writes 0x3 (RZQ/6) to MR1[Rtt_Nom].
+                                                         0x3 = LMC writes 0x4 (RZQ/12) to MR1[Rtt_Nom].
+                                                         0x4 = LMC writes 0x5 (RZQ/8) to MR1[Rtt_Nom].
+                                                         0x5 = LMC writes 0x6 (Rsvd) to MR1[Rtt_Nom].
+                                                         0x6 = LMC writes 0x7 (Rsvd) to MR1[Rtt_Nom].
+                                                         0x7 = LMC writes 0x0 (Disabled) to MR1[Rtt_Nom].
+                                                         In DDR4 LRDIMM application, this is used to program the Data Buffer Control Word BC00
+                                                         during the Host Interface Write Leveling Mode:
+                                                         0x0 = LMC writes 0x1 (RZQ/4).
+                                                         0x1 = LMC writes 0x2 (RZQ/2).
+                                                         0x2 = LMC writes 0x3 (RZQ/6).
+                                                         0x3 = LMC writes 0x4 (RZQ/1).
+                                                         0x4 = LMC writes 0x5 (RZQ/5).
+                                                         0x5 = LMC writes 0x6 (RZQ/3).
+                                                         0x6 = LMC writes 0x7 (RZQ/7).
+                                                         0x7 = LMC writes 0x0 (Disabled). */
+	uint64_t bitmask                      : 8;  /**< Mask to select bit lanes on which write-leveling feedback is returned when OR_DIS is set to 1. */
+	uint64_t or_dis                       : 1;  /**< Disable ORing of bits in a byte lane when computing the write-leveling bitmask. */
 	uint64_t sset                         : 1;  /**< Run write-leveling on the current setting only. */
-	uint64_t lanemask                     : 9;  /**< One-hot mask to select byte lane to be leveled by
-                                                         the write-leveling sequence
-                                                         Used with x16 parts where the upper and lower byte
-                                                         lanes need to be leveled independently */
+	uint64_t lanemask                     : 9;  /**< One-shot mask to select byte lane to be leveled by the write-leveling sequence. Used with
+                                                         *16 parts where the upper and lower byte lanes need to be leveled independently.
+                                                         This field is also used for byte lane masking during read-leveling sequence. */
 #else
 	uint64_t lanemask                     : 9;
 	uint64_t sset                         : 1;
@@ -10668,8 +13490,11 @@ union cvmx_lmcx_wlevel_ctl {
 	struct cvmx_lmcx_wlevel_ctl_s         cn68xxp1;
 	struct cvmx_lmcx_wlevel_ctl_s         cn70xx;
 	struct cvmx_lmcx_wlevel_ctl_s         cn70xxp1;
+	struct cvmx_lmcx_wlevel_ctl_s         cn73xx;
 	struct cvmx_lmcx_wlevel_ctl_s         cn78xx;
+	struct cvmx_lmcx_wlevel_ctl_s         cn78xxp2;
 	struct cvmx_lmcx_wlevel_ctl_s         cnf71xx;
+	struct cvmx_lmcx_wlevel_ctl_s         cnf75xx;
 };
 typedef union cvmx_lmcx_wlevel_ctl cvmx_lmcx_wlevel_ctl_t;
 
@@ -10689,17 +13514,14 @@ union cvmx_lmcx_wlevel_dbg {
 	struct cvmx_lmcx_wlevel_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t bitmask                      : 8;  /**< Bitmask generated during deskew settings sweep
-                                                         if LMCX_WLEVEL_CTL[SSET]=0
-                                                           BITMASK[n]=0 means deskew setting n failed
-                                                           BITMASK[n]=1 means deskew setting n passed
-                                                           for 0 <= n <= 7
-                                                           BITMASK contains the first 8 results of the total 16
-                                                           collected by LMC during the write-leveling sequence
-                                                         else if LMCX_WLEVEL_CTL[SSET]=1
-                                                           BITMASK[0]=0 means curr deskew setting failed
-                                                           BITMASK[0]=1 means curr deskew setting passed */
-	uint64_t byte                         : 4;  /**< 0 <= BYTE <= 8 */
+	uint64_t bitmask                      : 8;  /**< Bitmask generated during write level settings sweep. If LMC()_WLEVEL_CTL[SSET]=0,
+                                                         BITMASK<n>=0 means write level setting n failed; BITMASK<n>=1 means write level setting n
+                                                         passed for
+                                                         0 <= n <= 7. BITMASK contains the first 8 results of the total 16 collected by LMC during
+                                                         the write-leveling sequence.
+                                                         If LMC()_WLEVEL_CTL[SSET]=1, BITMASK<0>=0 means curr write level setting failed;
+                                                         BITMASK<0>=1 means curr write level setting passed. */
+	uint64_t byte                         : 4;  /**< 0 <= BYTE <= 8. */
 #else
 	uint64_t byte                         : 4;
 	uint64_t bitmask                      : 8;
@@ -10714,8 +13536,11 @@ union cvmx_lmcx_wlevel_dbg {
 	struct cvmx_lmcx_wlevel_dbg_s         cn68xxp1;
 	struct cvmx_lmcx_wlevel_dbg_s         cn70xx;
 	struct cvmx_lmcx_wlevel_dbg_s         cn70xxp1;
+	struct cvmx_lmcx_wlevel_dbg_s         cn73xx;
 	struct cvmx_lmcx_wlevel_dbg_s         cn78xx;
+	struct cvmx_lmcx_wlevel_dbg_s         cn78xxp2;
 	struct cvmx_lmcx_wlevel_dbg_s         cnf71xx;
+	struct cvmx_lmcx_wlevel_dbg_s         cnf75xx;
 };
 typedef union cvmx_lmcx_wlevel_dbg cvmx_lmcx_wlevel_dbg_t;
 
@@ -10754,38 +13579,27 @@ union cvmx_lmcx_wlevel_rankx {
 	struct cvmx_lmcx_wlevel_rankx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_47_63               : 17;
-	uint64_t status                       : 2;  /**< Indicates status of the write-leveling and where
-                                                         the BYTE* programmings in <44:0> came from:
-                                                         0 = BYTE* values are their reset value
-                                                         1 = BYTE* values were set via a CSR write to this register
-                                                         2 = write-leveling sequence currently in progress (BYTE* values are unpredictable)
-                                                         3 = BYTE* values came from a complete write-leveling sequence, irrespective of
-                                                             which lanes are masked via LMC*WLEVEL_CTL[LANEMASK] */
-	uint64_t byte8                        : 5;  /**< Deskew setting
-                                                         Bit 0 of BYTE8 must be zero during normal operation.
-                                                         When ECC DRAM is not present (i.e. when DRAM is not
-                                                         attached to chip signals DDR_CBS_0_* and DDR_CB[7:0]),
-                                                         SW should write BYTE8 with a value that does
-                                                         not increase the range of possible BYTE* values. The
-                                                         easiest way to do this is to set
-                                                         LMC*_WLEVEL_RANK*[BYTE8] = LMC*_WLEVEL_RANK*[BYTE0]
-                                                         when there is no ECC DRAM, using the final BYTE0 value. */
-	uint64_t byte7                        : 5;  /**< Deskew setting
-                                                         Bit 0 of BYTE7 must be zero during normal operation */
-	uint64_t byte6                        : 5;  /**< Deskew setting
-                                                         Bit 0 of BYTE6 must be zero during normal operation */
-	uint64_t byte5                        : 5;  /**< Deskew setting
-                                                         Bit 0 of BYTE5 must be zero during normal operation */
-	uint64_t byte4                        : 5;  /**< Deskew setting
-                                                         Bit 0 of BYTE4 must be zero during normal operation */
-	uint64_t byte3                        : 5;  /**< Deskew setting
-                                                         Bit 0 of BYTE3 must be zero during normal operation */
-	uint64_t byte2                        : 5;  /**< Deskew setting
-                                                         Bit 0 of BYTE2 must be zero during normal operation */
-	uint64_t byte1                        : 5;  /**< Deskew setting
-                                                         Bit 0 of BYTE1 must be zero during normal operation */
-	uint64_t byte0                        : 5;  /**< Deskew setting
-                                                         Bit 0 of BYTE0 must be zero during normal operation */
+	uint64_t status                       : 2;  /**< Indicates status of the write-leveling and where the BYTE* programmings in <44:0> came
+                                                         from:
+                                                         0x0 = BYTE* values are their reset value.
+                                                         0x1 = BYTE* values were set via a CSR write to this register.
+                                                         0x2 = write-leveling sequence currently in progress (BYTE* values are unpredictable).
+                                                         0x3 = BYTE* values came from a complete write-leveling sequence, irrespective of which
+                                                         lanes are masked via LMC()_WLEVEL_CTL[LANEMASK]. */
+	uint64_t byte8                        : 5;  /**< "Write level setting. Bit 0 of BYTE8 must be zero during normal operation. When ECC DRAM
+                                                         is not present in 64-bit mode (i.e. when DRAM is not attached to chip signals DDR#_CBS_0_*
+                                                         and DDR#_CB<7:0>), software should write BYTE8 with a value that does not increase the
+                                                         range of possible BYTE* values. The easiest way to do this is to set
+                                                         LMC()_WLEVEL_RANK()[BYTE8] = LMC()_WLEVEL_RANK()[BYTE0] when there is no
+                                                         ECC DRAM, using the final BYTE0 value." */
+	uint64_t byte7                        : 5;  /**< Write level setting. Bit 0 of BYTE7 must be zero during normal operation. */
+	uint64_t byte6                        : 5;  /**< Write level setting. Bit 0 of BYTE6 must be zero during normal operation. */
+	uint64_t byte5                        : 5;  /**< Write level setting. Bit 0 of BYTE5 must be zero during normal operation. */
+	uint64_t byte4                        : 5;  /**< Write level setting. Bit 0 of BYTE4 must be zero during normal operation. */
+	uint64_t byte3                        : 5;  /**< Write level setting. Bit 0 of BYTE3 must be zero during normal operation. */
+	uint64_t byte2                        : 5;  /**< Write level setting. Bit 0 of BYTE2 must be zero during normal operation. */
+	uint64_t byte1                        : 5;  /**< Write level setting. Bit 0 of BYTE1 must be zero during normal operation. */
+	uint64_t byte0                        : 5;  /**< Write level setting. Bit 0 of BYTE0 must be zero during normal operation. */
 #else
 	uint64_t byte0                        : 5;
 	uint64_t byte1                        : 5;
@@ -10808,8 +13622,11 @@ union cvmx_lmcx_wlevel_rankx {
 	struct cvmx_lmcx_wlevel_rankx_s       cn68xxp1;
 	struct cvmx_lmcx_wlevel_rankx_s       cn70xx;
 	struct cvmx_lmcx_wlevel_rankx_s       cn70xxp1;
+	struct cvmx_lmcx_wlevel_rankx_s       cn73xx;
 	struct cvmx_lmcx_wlevel_rankx_s       cn78xx;
+	struct cvmx_lmcx_wlevel_rankx_s       cn78xxp2;
 	struct cvmx_lmcx_wlevel_rankx_s       cnf71xx;
+	struct cvmx_lmcx_wlevel_rankx_s       cnf75xx;
 };
 typedef union cvmx_lmcx_wlevel_rankx cvmx_lmcx_wlevel_rankx_t;
 
@@ -10970,18 +13787,12 @@ union cvmx_lmcx_wodt_mask {
                                                          *UNUSED IN 6xxx, and MBZ* */
 	uint64_t wodt_d2_r0                   : 8;  /**< Write ODT mask DIMM2, RANK0
                                                          *UNUSED IN 6xxx, and MBZ* */
-	uint64_t wodt_d1_r1                   : 8;  /**< Write ODT mask DIMM1, RANK1/DIMM1 in SingleRanked
-                                                         if (!RANK_ENA) then WODT_D1_R1[3:0] MBZ
-                                                         *Upper 4 bits UNUSED IN 6xxx, and MBZ* */
-	uint64_t wodt_d1_r0                   : 8;  /**< Write ODT mask DIMM1, RANK0
-                                                         if (!RANK_ENA) then WODT_D1_R0[3,1] MBZ
-                                                         *Upper 4 bits UNUSED IN 6xxx, and MBZ* */
-	uint64_t wodt_d0_r1                   : 8;  /**< Write ODT mask DIMM0, RANK1/DIMM0 in SingleRanked
-                                                         if (!RANK_ENA) then WODT_D0_R1[3:0] MBZ
-                                                         *Upper 4 bits UNUSED IN 6xxx, and MBZ* */
-	uint64_t wodt_d0_r0                   : 8;  /**< Write ODT mask DIMM0, RANK0
-                                                         if (!RANK_ENA) then WODT_D0_R0[3,1] MBZ
-                                                         *Upper 4 bits UNUSED IN 6xxx, and MBZ* */
+	uint64_t wodt_d1_r1                   : 8;  /**< Write ODT mask DIMM1, RANK1/DIMM1 in SingleRanked.
+                                                         If RANK_ENA=0, WODT_D1_R1<3:0> must be zero. */
+	uint64_t wodt_d1_r0                   : 8;  /**< Write ODT mask DIMM1, RANK0. If RANK_ENA=0, WODT_D1_R0<3,1> must be zero. */
+	uint64_t wodt_d0_r1                   : 8;  /**< Write ODT mask DIMM0, RANK1/DIMM0 in SingleRanked. If RANK_ENA=0, WODT_D0_R1<3:0> must be
+                                                         zero. */
+	uint64_t wodt_d0_r0                   : 8;  /**< Write ODT mask DIMM0, RANK0. If RANK_ENA=0, WODT_D0_R0<3,1> must be zero. */
 #else
 	uint64_t wodt_d0_r0                   : 8;
 	uint64_t wodt_d0_r1                   : 8;
@@ -11022,8 +13833,11 @@ union cvmx_lmcx_wodt_mask {
 #endif
 	} cn70xx;
 	struct cvmx_lmcx_wodt_mask_cn70xx     cn70xxp1;
+	struct cvmx_lmcx_wodt_mask_cn70xx     cn73xx;
 	struct cvmx_lmcx_wodt_mask_cn70xx     cn78xx;
+	struct cvmx_lmcx_wodt_mask_cn70xx     cn78xxp2;
 	struct cvmx_lmcx_wodt_mask_s          cnf71xx;
+	struct cvmx_lmcx_wodt_mask_cn70xx     cnf75xx;
 };
 typedef union cvmx_lmcx_wodt_mask cvmx_lmcx_wodt_mask_t;
 

@@ -763,7 +763,7 @@ static int octeon3_eth_global_init(unsigned int node)
 		goto done;
 	}
 
-	__cvmx_helper_init_port_config_data();
+	__cvmx_helper_init_port_config_data(node);
 	rv = __cvmx_helper_pko3_init_global(node, oen->pko_aura.laura | (node << 10));
 	if (rv) {
 		pr_err("cvmx_helper_pko3_init_global failed\n");

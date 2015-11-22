@@ -74,35 +74,13 @@ int cvmx_pko3_get_queue_base(int ipd_port);
  */
 int cvmx_pko3_get_queue_num(int ipd_port);
 
-/*
- * Configure Port Queue and its children Scheduler Queue
+/**
+ * Get L1/Port Queue number assigned to interface port.
  *
- * Port Queues (a.k.a L1) are assigned 1-to-1 to MACs.
- * L2 Scheduler Queues are used for specifying channels, and thus there
- * could be multiple L2 SQs attached to a single L1 PQ, either in a
- * fair round-robin scheduling, or with static and/or round-robin priorities.
- *
- * @param node is the OCI node location for the queues to be configured
- * @param mac_num is the LMAC number to that is associated with the Port Queue,
- * @param which is identical to the Port Queue number that is configured
- * @param child_base is the number of the first L2 SQ attached to the PQ
- * @param child_count is the number of L2 SQ children to attach to PQ
- * @param stat_prio_count is the priority setting for the children L2 SQs
- *
- * If <stat_prio_count> is -1, the L2 children will have equal Round-Robin
- * relationship with eachother. If <stat_prio_count> is 0, all L2 children
- * will be arranged in Weighted-Round-Robin, with the first having the most
- * precedence. If <stat_prio_count> is between 1 and 8, it indicates how
- * many children will have static priority settings (with the first having
- * the most precedence), with the remaining L2 children having WRR scheduling.
- *
- * @returns 0 on success, -1 on failure.
- *
- * Note: this function supports the configuration of node-local unit.
+ * @param xiface is interface number.
+ * @param index is port index.
  */
-int cvmx_pko3_pq_config_children(unsigned node, unsigned mac_num,
-			unsigned child_base,
-			unsigned child_count, int stat_prio_count);
+int cvmx_pko3_get_port_queue(int xiface, int index);
 
 /*
  * Configure L3 through L5 Scheduler Queues and Descriptor Queues
@@ -110,7 +88,7 @@ int cvmx_pko3_pq_config_children(unsigned node, unsigned mac_num,
  * The Scheduler Queues in Levels 3 to 5 and Descriptor Queues are
  * configured one-to-one or many-to-one to a single parent Scheduler
  * Queues. The level of the parent SQ is specified in an argument,
- * as well as the number of childer to attach to the specific parent.
+ * as well as the number of children to attach to the specific parent.
  * The children can have fair round-robin or priority-based scheduling
  * when multiple children are assigned a single parent.
  *
@@ -188,8 +166,11 @@ int __cvmx_pko3_ipd_dq_unregister(int xiface, int index);
 void cvmx_pko3_map_channel(unsigned node,
 	unsigned pq_num, unsigned l2_l3_q_num, uint16_t channel);
 
+extern int cvmx_pko3_pq_config(unsigned node, unsigned mac_num,
+			 unsigned pq_num);
+
 extern int cvmx_pko3_port_cir_set(unsigned node, unsigned pq_num,
-		unsigned long rate_kbips, unsigned burst_bytes);
+		unsigned long rate_kbips, unsigned burst_bytes, int adj_bytes);
 extern int cvmx_pko3_dq_cir_set(unsigned node, unsigned pq_num,
 		unsigned long rate_kbips, unsigned burst_bytes);
 extern int cvmx_pko3_dq_pir_set(unsigned node, unsigned pq_num,
@@ -235,7 +216,6 @@ extern void cvmx_pko3_dq_red(unsigned node, unsigned dq_num,
 #define	CVMX_SHOFT_MAX()	CVMX_SHOFT_TO_U64((1<<CVMX_SHOFT_MANT_BITS)-1, \
 						(1<<CVMX_SHOFT_EXP_BITS)-1)
 #define	CVMX_SHOFT_MIN()	CVMX_SHOFT_TO_U64(0, 0)
-
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

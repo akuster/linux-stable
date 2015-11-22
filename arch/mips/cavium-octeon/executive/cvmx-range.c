@@ -78,8 +78,9 @@ static int64_t cvmx_range_find_next_available(uint64_t range_addr, uint64_t inde
 	for (i = index; i < size; i += align) {
 		uint64_t r_owner = cvmx_read64_uint64(addr_of_element(range_addr,i));
 		if (debug)
-			cvmx_dprintf("index=%d owner=%llx\n", (int) i,
-				     (unsigned long long) r_owner);
+			cvmx_dprintf("%s: index=%d owner=%llx\n",
+				__func__, (int) i, 
+				(unsigned long long) r_owner);
 		if (r_owner == CVMX_RANGE_AVAILABLE)
 			return i;
 	}
@@ -101,7 +102,8 @@ static int64_t cvmx_range_find_last_available(uint64_t range_addr, uint64_t inde
 		uint64_t r_owner = cvmx_read64_uint64(
 			addr_of_element(range_addr, i));
 		if (debug)
-			cvmx_dprintf("index=%d owner=%llx\n", (int) i,
+			cvmx_dprintf("%s: index=%d owner=%llx\n",
+				__func__, (int) i,
 				(unsigned long long) r_owner);
 		if (r_owner == CVMX_RANGE_AVAILABLE)
 			return i;
@@ -154,8 +156,13 @@ int cvmx_range_alloc_ordered(uint64_t range_addr, uint64_t owner, uint64_t cnt, 
 			return first_available;
 		}
 	}
-	cvmx_dprintf("ERROR: failed to allocate range cnt=%d \n", (int)cnt);
-	cvmx_range_show(range_addr);
+
+	if (debug) {
+		cvmx_dprintf("ERROR: %s: failed to allocate range cnt=%d\n",
+			__func__, (int)cnt);
+		cvmx_range_show(range_addr);
+	}
+
 	return -1;
 }
 
@@ -174,8 +181,9 @@ int  cvmx_range_alloc_non_contiguos(uint64_t range_addr, uint64_t owner, uint64_
 	for (i = 0; i < size; i++) {
 		uint64_t r_owner = cvmx_read64_uint64(addr_of_element(range_addr,i));
 		if (debug)
-			cvmx_dprintf("index=%d owner=%llx\n", (int) i,
-				     (unsigned long long) r_owner);
+			cvmx_dprintf("%s: index=%d owner=%llx\n",
+				__func__, (int) i,
+				(unsigned long long) r_owner);
 		if (r_owner == CVMX_RANGE_AVAILABLE)
 			elements[element_index++] = (int) i;
 
@@ -184,8 +192,9 @@ int  cvmx_range_alloc_non_contiguos(uint64_t range_addr, uint64_t owner, uint64_
 	}
 	if (element_index != cnt) {
 		if (debug)
-			cvmx_dprintf("ERROR: failed to allocate non contiguous cnt=%d"
-				     " available=%d\n", (int)cnt, (int) element_index);
+			cvmx_dprintf("%s: failed to allocate non contiguous cnt=%d"
+				     " available=%d\n",
+				     __func__, (int)cnt, (int) element_index);
 		return -1;
 	}
 	for (i = 0; i < cnt; i++) {
@@ -203,8 +212,9 @@ int cvmx_range_reserve(uint64_t range_addr, uint64_t owner, uint64_t base, uint6
 
 	size = cvmx_read64_uint64(addr_of_size(range_addr));
 	if (up > size) {
-		cvmx_dprintf("ERROR: invalid base or cnt. "
+		cvmx_dprintf("ERROR: %s: invalid base or cnt. "
 			    "range_addr=0x%llx, owner=0x%llx, size=%d base+cnt=%d\n",
+			     __func__,
 			     (unsigned long long)range_addr,
 			     (unsigned long long)owner,
 			     (int)size, (int)up);
@@ -213,9 +223,13 @@ int cvmx_range_reserve(uint64_t range_addr, uint64_t owner, uint64_t base, uint6
 	for (i = base; i < up; i++) {
 		r_owner = cvmx_read64_uint64(addr_of_element(range_addr,i));
 		if (debug)
-			cvmx_dprintf("%d: %llx\n", (int) i, (unsigned long long) r_owner);
+			cvmx_dprintf("%s: %d: %llx\n",
+				__func__, (int) i,
+				(unsigned long long) r_owner);
 		if (r_owner != CVMX_RANGE_AVAILABLE) {
-			cvmx_dprintf("INFO: resource already reserved base+cnt=%d %llu %llu %llx %llx %llx\n",
+		    if (debug)
+			cvmx_dprintf("%s: resource already reserved base+cnt=%d %llu %llu %llx %llx %llx\n",
+				     __func__,
 				     (int)i, (unsigned long long)cnt, (unsigned long long)base,
 				     (unsigned long long)r_owner, (unsigned long long)range_addr,
 				     (unsigned long long)owner);
@@ -254,8 +268,9 @@ int __cvmx_range_is_allocated(uint64_t range_addr, int bases[], int count)
 	for (i = 0; i < cnt; i++) {
 		uint64_t base = bases[i];
 		if (base >= size) {
-			cvmx_dprintf("ERROR: invalid base or cnt size=%d "
-				     "base=%d \n", (int) size, (int)base);
+			cvmx_dprintf("ERROR: %s: invalid base or cnt size=%d "
+				     "base=%d \n",
+				     __func__, (int) size, (int)base);
 			return 0;
 		}
 		r_owner = cvmx_read64_uint64(addr_of_element(range_addr,base));
@@ -292,7 +307,9 @@ int cvmx_range_free_with_base(uint64_t range_addr, int base, int cnt)
 
 	size = cvmx_read64_uint64(addr_of_size(range_addr));
 	if (up > size) {
-		cvmx_dprintf("ERROR: invalid base or cnt size=%d base+cnt=%d \n", (int) size, (int)up);
+		cvmx_dprintf("ERROR: %s: invalid base or cnt size=%d"
+			" base+cnt=%d\n",
+			__func__, (int) size, (int)up);
 		return -1;
 	}
 	for (i = base; i < up; i++) {
@@ -304,9 +321,10 @@ int cvmx_range_free_with_base(uint64_t range_addr, int base, int cnt)
 uint64_t cvmx_range_get_owner(uint64_t range_addr, uint64_t base)
 {
 	uint64_t size = cvmx_read64_uint64(addr_of_size(range_addr));
+
 	if (base >= size) {
-		cvmx_dprintf("ERROR: invalid base or cnt size=%d base=%d\n",
-			(int) size, (int)base);
+		cvmx_dprintf("ERROR: %s: invalid base or cnt size=%d base=%d\n",
+			__func__, (int) size, (int)base);
 		return 0;
 	}
 	return cvmx_read64_uint64(addr_of_element(range_addr, base));
@@ -319,13 +337,18 @@ void cvmx_range_show(uint64_t range_addr)
 	size = cvmx_read64_uint64(addr_of_size(range_addr));
 	pval = cvmx_read64_uint64(addr_of_element(range_addr, 0));
 	pindex = 0;
+
+	cvmx_dprintf ("index=%d: owner %llx\n",
+				(int) pindex, CAST_ULL(pval));
+
 	for (i = 1; i < size; i++) {
 		val = cvmx_read64_uint64(addr_of_element(range_addr,i));
 		if (val != pval) {
-			cvmx_dprintf ("i=%d : %llx \n", (int) pindex, (unsigned long long)pval);
+			cvmx_dprintf ("index=%d: owner %llx\n",
+				(int) pindex, CAST_ULL(pval));
 			pindex = i;
 			pval = val;
 		}
 	}
-	cvmx_dprintf ("i=%d : %d \n", (int) pindex, (int)pval);
+	cvmx_dprintf("index=%d: owner %llx\n", (int) pindex, CAST_ULL(pval));
 }

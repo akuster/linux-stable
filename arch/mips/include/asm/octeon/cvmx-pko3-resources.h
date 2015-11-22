@@ -74,6 +74,10 @@ extern int cvmx_pko_alloc_queues(int node, int level, int owner, int base_queue,
  */
 extern int cvmx_pko_free_queues(int node, int level, int owner);
 
+extern int __cvmx_pko3_dq_param_setup(unsigned node);
+
+int cvmx_pko3_num_level_queues(enum cvmx_pko3_level_e level);
+
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
 }

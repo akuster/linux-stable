@@ -93,6 +93,10 @@ static inline uint64_t cvmx_clock_get_count(cvmx_clock_t clock)
 	case CVMX_CLOCK_CORE:
 		{
 #ifndef __mips__
+			if (OCTEON_IS_MODEL(OCTEON_CN78XX)
+			    || OCTEON_IS_MODEL(OCTEON_CN73XX)
+			    || OCTEON_IS_MODEL(OCTEON_CNF75XX))
+				return cvmx_read_csr(CVMX_FPA_CLK_COUNT);
 			return cvmx_read_csr(CVMX_IPD_CLK_COUNT);
 #elif defined(CVMX_ABI_O32)
 			uint32_t tmp_low, tmp_hi;
@@ -114,11 +118,15 @@ static inline uint64_t cvmx_clock_get_count(cvmx_clock_t clock)
 		}
 	case CVMX_CLOCK_SCLK:
 	case CVMX_CLOCK_IPD:
-		if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX)
+		    || OCTEON_IS_MODEL(OCTEON_CN73XX)
+		    || OCTEON_IS_MODEL(OCTEON_CNF75XX))
 			return cvmx_read_csr(CVMX_FPA_CLK_COUNT);
 		return cvmx_read_csr(CVMX_IPD_CLK_COUNT);
 	case CVMX_CLOCK_TIM:
-		if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX)
+		    || OCTEON_IS_MODEL(OCTEON_CN73XX)
+		    || OCTEON_IS_MODEL(OCTEON_CNF75XX))
 			return cvmx_read_csr(CVMX_TIM_FR_RN_CYCLES);
 		return cvmx_read_csr(CVMX_IPD_CLK_COUNT);
 

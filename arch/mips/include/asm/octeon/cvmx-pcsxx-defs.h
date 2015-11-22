@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -53,644 +53,644 @@
 #define __CVMX_PCSXX_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_10GBX_STATUS_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_10GBX_STATUS_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_10GBX_STATUS_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_10GBX_STATUS_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_10GBX_STATUS_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_10GBX_STATUS_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_BIST_STATUS_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_BIST_STATUS_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_BIST_STATUS_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_BIST_STATUS_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_BIST_STATUS_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_BIST_STATUS_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_BIT_LOCK_STATUS_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_BIT_LOCK_STATUS_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_BIT_LOCK_STATUS_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_BIT_LOCK_STATUS_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_BIT_LOCK_STATUS_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_BIT_LOCK_STATUS_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_CONTROL1_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_CONTROL1_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_CONTROL1_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_CONTROL1_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_CONTROL1_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_CONTROL1_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_CONTROL2_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_CONTROL2_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_CONTROL2_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_CONTROL2_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_CONTROL2_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_CONTROL2_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_INT_EN_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_INT_EN_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_INT_EN_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_INT_EN_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_INT_EN_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_INT_EN_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_INT_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_INT_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_INT_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_INT_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_INT_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_INT_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_LOG_ANL_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_LOG_ANL_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_LOG_ANL_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_LOG_ANL_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_LOG_ANL_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_LOG_ANL_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_MISC_CTL_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_MISC_CTL_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_MISC_CTL_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_MISC_CTL_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_MISC_CTL_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_MISC_CTL_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_RX_SYNC_STATES_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_RX_SYNC_STATES_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_RX_SYNC_STATES_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_RX_SYNC_STATES_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_RX_SYNC_STATES_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_RX_SYNC_STATES_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_SERDES_CRDT_CNT_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_SERDES_CRDT_CNT_REG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_PCSXX_SERDES_CRDT_CNT_REG(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_PCSXX_SERDES_CRDT_CNT_REG(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00011800B0000880ull);
 }
 #else
-#define CVMX_PCSXX_SERDES_CRDT_CNT_REG(block_id) (CVMX_ADD_IO_SEG(0x00011800B0000880ull))
+#define CVMX_PCSXX_SERDES_CRDT_CNT_REG(offset) (CVMX_ADD_IO_SEG(0x00011800B0000880ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_SPD_ABIL_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_SPD_ABIL_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_SPD_ABIL_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_SPD_ABIL_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_SPD_ABIL_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_SPD_ABIL_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + (block_id) * 0x8000000ull;
-}
-#endif
-#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_STATUS1_REG(unsigned long block_id)
-{
-	switch(cvmx_get_octeon_family()) {
-		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + ((block_id) & 1) * 0x8000000ull;
-			break;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + ((block_id) & 0) * 0x8000000ull;
-			break;
-		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + ((block_id) & 7) * 0x1000000ull;
-			break;
-	}
-	cvmx_warn("CVMX_PCSXX_STATUS1_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + ((block_id) & 0) * 0x8000000ull;
-}
-#else
-static inline uint64_t CVMX_PCSXX_STATUS1_REG(unsigned long block_id)
-{
-	switch(cvmx_get_octeon_family()) {
-		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + (block_id) * 0x8000000ull;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + (block_id) * 0x8000000ull;
-		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + (block_id) * 0x1000000ull;
-	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_STATUS2_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_STATUS1_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_STATUS2_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_STATUS1_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_STATUS2_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_STATUS1_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_TX_RX_POLARITY_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_STATUS2_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_TX_RX_POLARITY_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_STATUS2_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_TX_RX_POLARITY_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_STATUS2_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + (offset) * 0x8000000ull;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PCSXX_TX_RX_STATES_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_TX_RX_POLARITY_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 1))
-				return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + ((block_id) & 1) * 0x8000000ull;
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + ((offset) & 1) * 0x8000000ull;
 			break;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + ((block_id) & 0) * 0x8000000ull;
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + ((offset) & 0) * 0x8000000ull;
 			break;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id <= 4))
-				return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + ((block_id) & 7) * 0x1000000ull;
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + ((offset) & 7) * 0x1000000ull;
 			break;
 	}
-	cvmx_warn("CVMX_PCSXX_TX_RX_STATES_REG (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + ((block_id) & 0) * 0x8000000ull;
+	cvmx_warn("CVMX_PCSXX_TX_RX_POLARITY_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + ((offset) & 0) * 0x8000000ull;
 }
 #else
-static inline uint64_t CVMX_PCSXX_TX_RX_STATES_REG(unsigned long block_id)
+static inline uint64_t CVMX_PCSXX_TX_RX_POLARITY_REG(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
 		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + (block_id) * 0x8000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + (offset) * 0x8000000ull;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + (block_id) * 0x1000000ull;
+			return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + (offset) * 0x1000000ull;
 	}
-	return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + (block_id) * 0x8000000ull;
+	return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + (offset) * 0x8000000ull;
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_PCSXX_TX_RX_STATES_REG(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + ((offset) & 1) * 0x8000000ull;
+			break;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + ((offset) & 0) * 0x8000000ull;
+			break;
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 4))
+				return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + ((offset) & 7) * 0x1000000ull;
+			break;
+	}
+	cvmx_warn("CVMX_PCSXX_TX_RX_STATES_REG (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + ((offset) & 0) * 0x8000000ull;
+}
+#else
+static inline uint64_t CVMX_PCSXX_TX_RX_STATES_REG(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN56XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + (offset) * 0x8000000ull;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN52XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + (offset) * 0x8000000ull;
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + (offset) * 0x1000000ull;
+	}
+	return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + (offset) * 0x8000000ull;
 }
 #endif
 

@@ -22,12 +22,13 @@ obj-y += executive/
 
 obj-$(CONFIG_SMP)			+= smp.o
 obj-$(CONFIG_NUMA)			+= octeon-numa.o
+obj-$(CONFIG_NUMA)                     += csrc-fpa-clk.o
 obj-$(CONFIG_SYSFS)			+= octeon-power-throttle.o
 obj-$(CONFIG_SYSFS)                     += cacheinfo.o
 obj-$(CONFIG_MTD)			+= flash_setup.o
 obj-$(CONFIG_OCTEON_ILM)		+= oct_ilm.o
 #obj-$(CONFIG_CAVIUM_OCTEON_NAND)	+= octeon-nand.o
-obj-$(CONFIG_CAVIUM_OCTEON_ERROR_TREE)	+= octeon-error-tree.o octeon-78xx-errors.o
+obj-$(CONFIG_CAVIUM_OCTEON_ERROR_TREE)	+= octeon-error-tree.o octeon-78xx-errors.o octeon-73xx-errors.o octeon-7xxx-errors.o
 obj-$(CONFIG_SYSFS)                     += cacheinfo.o
 obj-$(CONFIG_CAVIUM_OCTEON_KERNEL_CRYPTO) += octeon-crypto.o
 obj-$(CONFIG_OCTEON_ERROR_INJECTOR)	+= octeon-error-injector.o

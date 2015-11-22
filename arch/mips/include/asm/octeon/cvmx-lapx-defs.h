@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -53,59 +53,59 @@
 #define __CVMX_LAPX_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_BIST_RESULT(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_BIST_RESULT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_BIST_RESULT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010000ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_BIST_RESULT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010000ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_BIST_RESULT(block_id) (CVMX_ADD_IO_SEG(0x000118000C010000ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_BIST_RESULT(offset) (CVMX_ADD_IO_SEG(0x000118000C010000ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_CFG(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_CFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_CFG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010040ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_CFG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010040ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_CFG(block_id) (CVMX_ADD_IO_SEG(0x000118000C010040ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_CFG(offset) (CVMX_ADD_IO_SEG(0x000118000C010040ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_EDAT_ERR_ST(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_EDAT_ERR_ST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_EDAT_ERR_ST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010220ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_EDAT_ERR_ST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010220ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_EDAT_ERR_ST(block_id) (CVMX_ADD_IO_SEG(0x000118000C010220ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_EDAT_ERR_ST(offset) (CVMX_ADD_IO_SEG(0x000118000C010220ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_EMSK_ERR_ST(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_EMSK_ERR_ST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_EMSK_ERR_ST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010218ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_EMSK_ERR_ST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010218ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_EMSK_ERR_ST(block_id) (CVMX_ADD_IO_SEG(0x000118000C010218ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_EMSK_ERR_ST(offset) (CVMX_ADD_IO_SEG(0x000118000C010218ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_ERR_CFG(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_ERR_CFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_ERR_CFG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010050ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_ERR_CFG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010050ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_ERR_CFG(block_id) (CVMX_ADD_IO_SEG(0x000118000C010050ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_ERR_CFG(offset) (CVMX_ADD_IO_SEG(0x000118000C010050ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_LAPX_EXPX_DATA(unsigned long offset, unsigned long block_id)
@@ -130,26 +130,26 @@ static inline uint64_t CVMX_LAPX_EXPX_VALID(unsigned long offset, unsigned long 
 #define CVMX_LAPX_EXPX_VALID(offset, block_id) (CVMX_ADD_IO_SEG(0x000118000C030000ull) + (((offset) & 15) + ((block_id) & 1) * 0x200000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_FREE_STATE(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_FREE_STATE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_FREE_STATE(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010100ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_FREE_STATE(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010100ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_FREE_STATE(block_id) (CVMX_ADD_IO_SEG(0x000118000C010100ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_FREE_STATE(offset) (CVMX_ADD_IO_SEG(0x000118000C010100ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_GEN_INT(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_GEN_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_GEN_INT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010010ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_GEN_INT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010010ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_GEN_INT(block_id) (CVMX_ADD_IO_SEG(0x000118000C010010ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_GEN_INT(offset) (CVMX_ADD_IO_SEG(0x000118000C010010ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_LAPX_LABX_STATE(unsigned long offset, unsigned long block_id)
@@ -174,26 +174,26 @@ static inline uint64_t CVMX_LAPX_LAB_DATAX(unsigned long offset, unsigned long b
 #define CVMX_LAPX_LAB_DATAX(offset, block_id) (CVMX_ADD_IO_SEG(0x000118000C080000ull) + (((offset) & 2047) + ((block_id) & 1) * 0x200000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_LAB_ERR_ST(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_LAB_ERR_ST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_LAB_ERR_ST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010200ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_LAB_ERR_ST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010200ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_LAB_ERR_ST(block_id) (CVMX_ADD_IO_SEG(0x000118000C010200ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_LAB_ERR_ST(offset) (CVMX_ADD_IO_SEG(0x000118000C010200ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_NXT_ERR_ST(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_NXT_ERR_ST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_NXT_ERR_ST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010210ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_NXT_ERR_ST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010210ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_NXT_ERR_ST(block_id) (CVMX_ADD_IO_SEG(0x000118000C010210ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_NXT_ERR_ST(offset) (CVMX_ADD_IO_SEG(0x000118000C010210ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_LAPX_QUEX_CFG(unsigned long offset, unsigned long block_id)
@@ -218,59 +218,59 @@ static inline uint64_t CVMX_LAPX_QUEX_STATE(unsigned long offset, unsigned long 
 #define CVMX_LAPX_QUEX_STATE(offset, block_id) (CVMX_ADD_IO_SEG(0x000118000C050000ull) + (((offset) & 3) + ((block_id) & 1) * 0x200000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_RESP_STATE(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_RESP_STATE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_RESP_STATE(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010108ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_RESP_STATE(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010108ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_RESP_STATE(block_id) (CVMX_ADD_IO_SEG(0x000118000C010108ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_RESP_STATE(offset) (CVMX_ADD_IO_SEG(0x000118000C010108ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_SFT_RST(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_SFT_RST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_SFT_RST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C000008ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_SFT_RST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C000008ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_SFT_RST(block_id) (CVMX_ADD_IO_SEG(0x000118000C000008ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_SFT_RST(offset) (CVMX_ADD_IO_SEG(0x000118000C000008ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_STA_ERR_ST(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_STA_ERR_ST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_STA_ERR_ST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010208ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_STA_ERR_ST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010208ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_STA_ERR_ST(block_id) (CVMX_ADD_IO_SEG(0x000118000C010208ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_STA_ERR_ST(offset) (CVMX_ADD_IO_SEG(0x000118000C010208ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_TIMEOUT(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_TIMEOUT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_TIMEOUT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010060ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_TIMEOUT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010060ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_TIMEOUT(block_id) (CVMX_ADD_IO_SEG(0x000118000C010060ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_TIMEOUT(offset) (CVMX_ADD_IO_SEG(0x000118000C010060ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_LAPX_XID_POS(unsigned long block_id)
+static inline uint64_t CVMX_LAPX_XID_POS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_LAPX_XID_POS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000118000C010070ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_LAPX_XID_POS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000118000C010070ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_LAPX_XID_POS(block_id) (CVMX_ADD_IO_SEG(0x000118000C010070ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_LAPX_XID_POS(offset) (CVMX_ADD_IO_SEG(0x000118000C010070ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 
 /**
@@ -303,6 +303,7 @@ union cvmx_lapx_bist_result {
 #endif
 	} s;
 	struct cvmx_lapx_bist_result_s        cn78xx;
+	struct cvmx_lapx_bist_result_s        cn78xxp2;
 };
 typedef union cvmx_lapx_bist_result cvmx_lapx_bist_result_t;
 
@@ -330,7 +331,8 @@ union cvmx_lapx_cfg {
 	uint64_t ooo                          : 1;  /**< Out-of-order Transaction ID mode:
                                                          0 = FIFO ordering on each ILA/ASE channel, no transaction id (XID) inserted.
                                                          1 = Allow out of order returns of packets from the TCAM/ASE; insert a transaction id (XID)
-                                                         into request packets, and expect one in response packets. */
+                                                         into request packets, and expect one in response packets.
+                                                         LAP(1)_CFG[OOO] must be set as the ASE only supports out-of-order mode. */
 	uint64_t ena                          : 1;  /**< Enable LAP.
                                                          0 = LAP disabled, any lookups will result in out-of-LAB interrupt.
                                                          1 = LAP enabled.
@@ -352,6 +354,7 @@ union cvmx_lapx_cfg {
 #endif
 	} s;
 	struct cvmx_lapx_cfg_s                cn78xx;
+	struct cvmx_lapx_cfg_s                cn78xxp2;
 };
 typedef union cvmx_lapx_cfg cvmx_lapx_cfg_t;
 
@@ -379,6 +382,7 @@ union cvmx_lapx_edat_err_st {
 #endif
 	} s;
 	struct cvmx_lapx_edat_err_st_s        cn78xx;
+	struct cvmx_lapx_edat_err_st_s        cn78xxp2;
 };
 typedef union cvmx_lapx_edat_err_st cvmx_lapx_edat_err_st_t;
 
@@ -406,6 +410,7 @@ union cvmx_lapx_emsk_err_st {
 #endif
 	} s;
 	struct cvmx_lapx_emsk_err_st_s        cn78xx;
+	struct cvmx_lapx_emsk_err_st_s        cn78xxp2;
 };
 typedef union cvmx_lapx_emsk_err_st cvmx_lapx_emsk_err_st_t;
 
@@ -454,6 +459,7 @@ union cvmx_lapx_err_cfg {
 #endif
 	} s;
 	struct cvmx_lapx_err_cfg_s            cn78xx;
+	struct cvmx_lapx_err_cfg_s            cn78xxp2;
 };
 typedef union cvmx_lapx_err_cfg cvmx_lapx_err_cfg_t;
 
@@ -474,6 +480,7 @@ union cvmx_lapx_expx_data {
 #endif
 	} s;
 	struct cvmx_lapx_expx_data_s          cn78xx;
+	struct cvmx_lapx_expx_data_s          cn78xxp2;
 };
 typedef union cvmx_lapx_expx_data cvmx_lapx_expx_data_t;
 
@@ -497,6 +504,7 @@ union cvmx_lapx_expx_valid {
 #endif
 	} s;
 	struct cvmx_lapx_expx_valid_s         cn78xx;
+	struct cvmx_lapx_expx_valid_s         cn78xxp2;
 };
 typedef union cvmx_lapx_expx_valid cvmx_lapx_expx_valid_t;
 
@@ -526,6 +534,7 @@ union cvmx_lapx_free_state {
 #endif
 	} s;
 	struct cvmx_lapx_free_state_s         cn78xx;
+	struct cvmx_lapx_free_state_s         cn78xxp2;
 };
 typedef union cvmx_lapx_free_state cvmx_lapx_free_state_t;
 
@@ -600,6 +609,7 @@ union cvmx_lapx_gen_int {
 #endif
 	} s;
 	struct cvmx_lapx_gen_int_s            cn78xx;
+	struct cvmx_lapx_gen_int_s            cn78xxp2;
 };
 typedef union cvmx_lapx_gen_int cvmx_lapx_gen_int_t;
 
@@ -634,6 +644,7 @@ union cvmx_lapx_labx_state {
 #endif
 	} s;
 	struct cvmx_lapx_labx_state_s         cn78xx;
+	struct cvmx_lapx_labx_state_s         cn78xxp2;
 };
 typedef union cvmx_lapx_labx_state cvmx_lapx_labx_state_t;
 
@@ -653,6 +664,7 @@ union cvmx_lapx_lab_datax {
 #endif
 	} s;
 	struct cvmx_lapx_lab_datax_s          cn78xx;
+	struct cvmx_lapx_lab_datax_s          cn78xxp2;
 };
 typedef union cvmx_lapx_lab_datax cvmx_lapx_lab_datax_t;
 
@@ -678,6 +690,7 @@ union cvmx_lapx_lab_err_st {
 #endif
 	} s;
 	struct cvmx_lapx_lab_err_st_s         cn78xx;
+	struct cvmx_lapx_lab_err_st_s         cn78xxp2;
 };
 typedef union cvmx_lapx_lab_err_st cvmx_lapx_lab_err_st_t;
 
@@ -705,6 +718,7 @@ union cvmx_lapx_nxt_err_st {
 #endif
 	} s;
 	struct cvmx_lapx_nxt_err_st_s         cn78xx;
+	struct cvmx_lapx_nxt_err_st_s         cn78xxp2;
 };
 typedef union cvmx_lapx_nxt_err_st cvmx_lapx_nxt_err_st_t;
 
@@ -727,6 +741,7 @@ union cvmx_lapx_quex_cfg {
 #endif
 	} s;
 	struct cvmx_lapx_quex_cfg_s           cn78xx;
+	struct cvmx_lapx_quex_cfg_s           cn78xxp2;
 };
 typedef union cvmx_lapx_quex_cfg cvmx_lapx_quex_cfg_t;
 
@@ -765,6 +780,7 @@ union cvmx_lapx_quex_state {
 #endif
 	} s;
 	struct cvmx_lapx_quex_state_s         cn78xx;
+	struct cvmx_lapx_quex_state_s         cn78xxp2;
 };
 typedef union cvmx_lapx_quex_state cvmx_lapx_quex_state_t;
 
@@ -794,6 +810,7 @@ union cvmx_lapx_resp_state {
 #endif
 	} s;
 	struct cvmx_lapx_resp_state_s         cn78xx;
+	struct cvmx_lapx_resp_state_s         cn78xxp2;
 };
 typedef union cvmx_lapx_resp_state cvmx_lapx_resp_state_t;
 
@@ -816,6 +833,7 @@ union cvmx_lapx_sft_rst {
 #endif
 	} s;
 	struct cvmx_lapx_sft_rst_s            cn78xx;
+	struct cvmx_lapx_sft_rst_s            cn78xxp2;
 };
 typedef union cvmx_lapx_sft_rst cvmx_lapx_sft_rst_t;
 
@@ -841,6 +859,7 @@ union cvmx_lapx_sta_err_st {
 #endif
 	} s;
 	struct cvmx_lapx_sta_err_st_s         cn78xx;
+	struct cvmx_lapx_sta_err_st_s         cn78xxp2;
 };
 typedef union cvmx_lapx_sta_err_st cvmx_lapx_sta_err_st_t;
 
@@ -875,6 +894,7 @@ union cvmx_lapx_timeout {
 #endif
 	} s;
 	struct cvmx_lapx_timeout_s            cn78xx;
+	struct cvmx_lapx_timeout_s            cn78xxp2;
 };
 typedef union cvmx_lapx_timeout cvmx_lapx_timeout_t;
 
@@ -919,6 +939,7 @@ union cvmx_lapx_xid_pos {
 #endif
 	} s;
 	struct cvmx_lapx_xid_pos_s            cn78xx;
+	struct cvmx_lapx_xid_pos_s            cn78xxp2;
 };
 typedef union cvmx_lapx_xid_pos cvmx_lapx_xid_pos_t;
 

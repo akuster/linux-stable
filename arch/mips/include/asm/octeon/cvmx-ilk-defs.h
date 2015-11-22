@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -1411,6 +1411,7 @@ union cvmx_ilk_bist_sum {
 	uint64_t rxf_x2p                      : 1;
 #endif
 	} cn78xx;
+	struct cvmx_ilk_bist_sum_cn78xx       cn78xxp2;
 };
 typedef union cvmx_ilk_bist_sum cvmx_ilk_bist_sum_t;
 
@@ -1425,8 +1426,7 @@ union cvmx_ilk_gbl_cfg {
 	uint64_t rid_rstdis                   : 1;  /**< Disable automatic reassembly-ID error recovery. For diagnostic use only. */
 	uint64_t reset                        : 1;  /**< Reset ILK. For diagnostic use only. */
 	uint64_t cclk_dis                     : 1;  /**< Disable ILK conditional clocking. For diagnostic use only. */
-	uint64_t rxf_xlink                    : 1;  /**< Causes external loopback traffic to switch links. Enabling this allow simultaneous use of
-                                                         external and internal loopback. */
+	uint64_t rxf_xlink                    : 1;  /**< Reserved. */
 #else
 	uint64_t rxf_xlink                    : 1;
 	uint64_t cclk_dis                     : 1;
@@ -1449,6 +1449,7 @@ union cvmx_ilk_gbl_cfg {
 #endif
 	} cn68xxp1;
 	struct cvmx_ilk_gbl_cfg_s             cn78xx;
+	struct cvmx_ilk_gbl_cfg_s             cn78xxp2;
 };
 typedef union cvmx_ilk_gbl_cfg cvmx_ilk_gbl_cfg_t;
 
@@ -1477,6 +1478,7 @@ union cvmx_ilk_gbl_err_cfg {
 #endif
 	} s;
 	struct cvmx_ilk_gbl_err_cfg_s         cn78xx;
+	struct cvmx_ilk_gbl_err_cfg_s         cn78xxp2;
 };
 typedef union cvmx_ilk_gbl_err_cfg cvmx_ilk_gbl_err_cfg_t;
 
@@ -1532,6 +1534,7 @@ union cvmx_ilk_gbl_int {
 	} cn68xx;
 	struct cvmx_ilk_gbl_int_cn68xx        cn68xxp1;
 	struct cvmx_ilk_gbl_int_s             cn78xx;
+	struct cvmx_ilk_gbl_int_s             cn78xxp2;
 };
 typedef union cvmx_ilk_gbl_int cvmx_ilk_gbl_int_t;
 
@@ -1629,6 +1632,7 @@ union cvmx_ilk_lnex_trn_ctl {
 #endif
 	} s;
 	struct cvmx_ilk_lnex_trn_ctl_s        cn78xx;
+	struct cvmx_ilk_lnex_trn_ctl_s        cn78xxp2;
 };
 typedef union cvmx_ilk_lnex_trn_ctl cvmx_ilk_lnex_trn_ctl_t;
 
@@ -1655,6 +1659,7 @@ union cvmx_ilk_lnex_trn_ld {
 #endif
 	} s;
 	struct cvmx_ilk_lnex_trn_ld_s         cn78xx;
+	struct cvmx_ilk_lnex_trn_ld_s         cn78xxp2;
 };
 typedef union cvmx_ilk_lnex_trn_ld cvmx_ilk_lnex_trn_ld_t;
 
@@ -1681,6 +1686,7 @@ union cvmx_ilk_lnex_trn_lp {
 #endif
 	} s;
 	struct cvmx_ilk_lnex_trn_lp_s         cn78xx;
+	struct cvmx_ilk_lnex_trn_lp_s         cn78xxp2;
 };
 typedef union cvmx_ilk_lnex_trn_lp cvmx_ilk_lnex_trn_lp_t;
 
@@ -1697,8 +1703,8 @@ union cvmx_ilk_lne_dbg {
 	uint64_t tx_bad_sync_cnt              : 3;  /**< Specifies the number of bad sync words on the selected lane. */
 	uint64_t tx_bad_scram_cnt             : 3;  /**< Specifies the number of bad scrambler state on the selected lane. */
 	uint64_t tx_bad_lane_sel              : 16; /**< Select the lane to apply the error-injection counts. */
-	uint64_t tx_dis_dispr                 : 16; /**< Per-lane disparity disable. */
-	uint64_t tx_dis_scram                 : 16; /**< Per-lane scrambler disable. */
+	uint64_t tx_dis_dispr                 : 16; /**< Per-lane disparity disable. For diagnostic use only. */
+	uint64_t tx_dis_scram                 : 16; /**< Per-lane scrambler disable. For diagnostic use only. */
 #else
 	uint64_t tx_dis_scram                 : 16;
 	uint64_t tx_dis_dispr                 : 16;
@@ -1740,6 +1746,7 @@ union cvmx_ilk_lne_dbg {
 	} cn68xx;
 	struct cvmx_ilk_lne_dbg_cn68xx        cn68xxp1;
 	struct cvmx_ilk_lne_dbg_s             cn78xx;
+	struct cvmx_ilk_lne_dbg_s             cn78xxp2;
 };
 typedef union cvmx_ilk_lne_dbg cvmx_ilk_lne_dbg_t;
 
@@ -1792,6 +1799,7 @@ union cvmx_ilk_lne_sts_msg {
 	} cn68xx;
 	struct cvmx_ilk_lne_sts_msg_cn68xx    cn68xxp1;
 	struct cvmx_ilk_lne_sts_msg_s         cn78xx;
+	struct cvmx_ilk_lne_sts_msg_s         cn78xxp2;
 };
 typedef union cvmx_ilk_lne_sts_msg cvmx_ilk_lne_sts_msg_t;
 
@@ -1810,7 +1818,7 @@ union cvmx_ilk_rid_cfg {
                                                          restrict each link individually. */
 	uint64_t reserved_7_31                : 25;
 	uint64_t base                         : 7;  /**< The base RID for ILK. There is a shared pool of 96 RIDs for all MACs.
-                                                         ILK can allocate any RID in the range of
+                                                         See PKI_REASM_E. ILK can allocate any RID in the range of
                                                          _ BASE -> (BASE+(MAX_CNT-1)).
                                                          BASE and MAX_CNT must be constrained such that:
                                                          _ 1) BASE >= 2.
@@ -1829,6 +1837,7 @@ union cvmx_ilk_rid_cfg {
 #endif
 	} s;
 	struct cvmx_ilk_rid_cfg_s             cn78xx;
+	struct cvmx_ilk_rid_cfg_s             cn78xxp2;
 };
 typedef union cvmx_ilk_rid_cfg cvmx_ilk_rid_cfg_t;
 
@@ -1848,6 +1857,7 @@ union cvmx_ilk_rxx_byte_cntx {
 #endif
 	} s;
 	struct cvmx_ilk_rxx_byte_cntx_s       cn78xx;
+	struct cvmx_ilk_rxx_byte_cntx_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_byte_cntx cvmx_ilk_rxx_byte_cntx_t;
 
@@ -1875,6 +1885,7 @@ union cvmx_ilk_rxx_cal_entryx {
 #endif
 	} s;
 	struct cvmx_ilk_rxx_cal_entryx_s      cn78xx;
+	struct cvmx_ilk_rxx_cal_entryx_s      cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_cal_entryx cvmx_ilk_rxx_cal_entryx_t;
 
@@ -2110,6 +2121,7 @@ union cvmx_ilk_rxx_cfg0 {
 #endif
 	} cn68xxp1;
 	struct cvmx_ilk_rxx_cfg0_s            cn78xx;
+	struct cvmx_ilk_rxx_cfg0_s            cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_cfg0 cvmx_ilk_rxx_cfg0_t;
 
@@ -2216,6 +2228,7 @@ union cvmx_ilk_rxx_cfg1 {
 	} cn68xx;
 	struct cvmx_ilk_rxx_cfg1_cn68xx       cn68xxp1;
 	struct cvmx_ilk_rxx_cfg1_s            cn78xx;
+	struct cvmx_ilk_rxx_cfg1_s            cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_cfg1 cvmx_ilk_rxx_cfg1_t;
 
@@ -2234,6 +2247,7 @@ union cvmx_ilk_rxx_chax {
 #endif
 	} s;
 	struct cvmx_ilk_rxx_chax_s            cn78xx;
+	struct cvmx_ilk_rxx_chax_s            cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_chax cvmx_ilk_rxx_chax_t;
 
@@ -2255,6 +2269,7 @@ union cvmx_ilk_rxx_cha_xonx {
 #endif
 	} s;
 	struct cvmx_ilk_rxx_cha_xonx_s        cn78xx;
+	struct cvmx_ilk_rxx_cha_xonx_s        cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_cha_xonx cvmx_ilk_rxx_cha_xonx_t;
 
@@ -2283,6 +2298,7 @@ union cvmx_ilk_rxx_err_cfg {
 #endif
 	} s;
 	struct cvmx_ilk_rxx_err_cfg_s         cn78xx;
+	struct cvmx_ilk_rxx_err_cfg_s         cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_err_cfg cvmx_ilk_rxx_err_cfg_t;
 
@@ -2517,6 +2533,7 @@ union cvmx_ilk_rxx_int {
 #endif
 	} cn68xxp1;
 	struct cvmx_ilk_rxx_int_s             cn78xx;
+	struct cvmx_ilk_rxx_int_s             cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_int cvmx_ilk_rxx_int_t;
 
@@ -2607,6 +2624,7 @@ union cvmx_ilk_rxx_jabber {
 	struct cvmx_ilk_rxx_jabber_s          cn68xx;
 	struct cvmx_ilk_rxx_jabber_s          cn68xxp1;
 	struct cvmx_ilk_rxx_jabber_s          cn78xx;
+	struct cvmx_ilk_rxx_jabber_s          cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_jabber cvmx_ilk_rxx_jabber_t;
 
@@ -2952,6 +2970,7 @@ union cvmx_ilk_rxx_pkt_cntx {
 #endif
 	} s;
 	struct cvmx_ilk_rxx_pkt_cntx_s        cn78xx;
+	struct cvmx_ilk_rxx_pkt_cntx_s        cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_pkt_cntx cvmx_ilk_rxx_pkt_cntx_t;
 
@@ -2988,6 +3007,7 @@ union cvmx_ilk_rxx_rid {
 #endif
 	} cn68xx;
 	struct cvmx_ilk_rxx_rid_s             cn78xx;
+	struct cvmx_ilk_rxx_rid_s             cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_rid cvmx_ilk_rxx_rid_t;
 
@@ -3028,6 +3048,7 @@ union cvmx_ilk_rxx_stat0 {
 #endif
 	} cn68xxp1;
 	struct cvmx_ilk_rxx_stat0_s           cn78xx;
+	struct cvmx_ilk_rxx_stat0_s           cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_stat0 cvmx_ilk_rxx_stat0_t;
 
@@ -3059,6 +3080,7 @@ union cvmx_ilk_rxx_stat1 {
 	} cn68xx;
 	struct cvmx_ilk_rxx_stat1_cn68xx      cn68xxp1;
 	struct cvmx_ilk_rxx_stat1_s           cn78xx;
+	struct cvmx_ilk_rxx_stat1_s           cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_stat1 cvmx_ilk_rxx_stat1_t;
 
@@ -3117,6 +3139,7 @@ union cvmx_ilk_rxx_stat2 {
 #endif
 	} cn68xxp1;
 	struct cvmx_ilk_rxx_stat2_s           cn78xx;
+	struct cvmx_ilk_rxx_stat2_s           cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_stat2 cvmx_ilk_rxx_stat2_t;
 
@@ -3147,6 +3170,7 @@ union cvmx_ilk_rxx_stat3 {
 	} cn68xx;
 	struct cvmx_ilk_rxx_stat3_cn68xx      cn68xxp1;
 	struct cvmx_ilk_rxx_stat3_s           cn78xx;
+	struct cvmx_ilk_rxx_stat3_s           cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_stat3 cvmx_ilk_rxx_stat3_t;
 
@@ -3179,6 +3203,7 @@ union cvmx_ilk_rxx_stat4 {
 	} cn68xx;
 	struct cvmx_ilk_rxx_stat4_cn68xx      cn68xxp1;
 	struct cvmx_ilk_rxx_stat4_s           cn78xx;
+	struct cvmx_ilk_rxx_stat4_s           cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_stat4 cvmx_ilk_rxx_stat4_t;
 
@@ -3221,6 +3246,7 @@ union cvmx_ilk_rxx_stat5 {
 #endif
 	} cn68xxp1;
 	struct cvmx_ilk_rxx_stat5_s           cn78xx;
+	struct cvmx_ilk_rxx_stat5_s           cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_stat5 cvmx_ilk_rxx_stat5_t;
 
@@ -3253,6 +3279,7 @@ union cvmx_ilk_rxx_stat6 {
 	} cn68xx;
 	struct cvmx_ilk_rxx_stat6_cn68xx      cn68xxp1;
 	struct cvmx_ilk_rxx_stat6_s           cn78xx;
+	struct cvmx_ilk_rxx_stat6_s           cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_stat6 cvmx_ilk_rxx_stat6_t;
 
@@ -3284,6 +3311,7 @@ union cvmx_ilk_rxx_stat7 {
 	} cn68xx;
 	struct cvmx_ilk_rxx_stat7_cn68xx      cn68xxp1;
 	struct cvmx_ilk_rxx_stat7_s           cn78xx;
+	struct cvmx_ilk_rxx_stat7_s           cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_stat7 cvmx_ilk_rxx_stat7_t;
 
@@ -3310,6 +3338,7 @@ union cvmx_ilk_rxx_stat8 {
 	struct cvmx_ilk_rxx_stat8_s           cn68xx;
 	struct cvmx_ilk_rxx_stat8_s           cn68xxp1;
 	struct cvmx_ilk_rxx_stat8_s           cn78xx;
+	struct cvmx_ilk_rxx_stat8_s           cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_stat8 cvmx_ilk_rxx_stat8_t;
 
@@ -3331,6 +3360,7 @@ union cvmx_ilk_rxx_stat9 {
 	struct cvmx_ilk_rxx_stat9_s           cn68xx;
 	struct cvmx_ilk_rxx_stat9_s           cn68xxp1;
 	struct cvmx_ilk_rxx_stat9_s           cn78xx;
+	struct cvmx_ilk_rxx_stat9_s           cn78xxp2;
 };
 typedef union cvmx_ilk_rxx_stat9 cvmx_ilk_rxx_stat9_t;
 
@@ -3427,6 +3457,7 @@ union cvmx_ilk_rx_lnex_cfg {
 #endif
 	} cn68xxp1;
 	struct cvmx_ilk_rx_lnex_cfg_s         cn78xx;
+	struct cvmx_ilk_rx_lnex_cfg_s         cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_cfg cvmx_ilk_rx_lnex_cfg_t;
 
@@ -3502,6 +3533,7 @@ union cvmx_ilk_rx_lnex_int {
 	} cn68xx;
 	struct cvmx_ilk_rx_lnex_int_cn68xx    cn68xxp1;
 	struct cvmx_ilk_rx_lnex_int_s         cn78xx;
+	struct cvmx_ilk_rx_lnex_int_s         cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_int cvmx_ilk_rx_lnex_int_t;
 
@@ -3565,6 +3597,7 @@ union cvmx_ilk_rx_lnex_stat0 {
 	struct cvmx_ilk_rx_lnex_stat0_s       cn68xx;
 	struct cvmx_ilk_rx_lnex_stat0_s       cn68xxp1;
 	struct cvmx_ilk_rx_lnex_stat0_s       cn78xx;
+	struct cvmx_ilk_rx_lnex_stat0_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat0 cvmx_ilk_rx_lnex_stat0_t;
 
@@ -3586,6 +3619,7 @@ union cvmx_ilk_rx_lnex_stat1 {
 	struct cvmx_ilk_rx_lnex_stat1_s       cn68xx;
 	struct cvmx_ilk_rx_lnex_stat1_s       cn68xxp1;
 	struct cvmx_ilk_rx_lnex_stat1_s       cn78xx;
+	struct cvmx_ilk_rx_lnex_stat1_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat1 cvmx_ilk_rx_lnex_stat1_t;
 
@@ -3610,6 +3644,7 @@ union cvmx_ilk_rx_lnex_stat10 {
 #endif
 	} s;
 	struct cvmx_ilk_rx_lnex_stat10_s      cn78xx;
+	struct cvmx_ilk_rx_lnex_stat10_s      cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat10 cvmx_ilk_rx_lnex_stat10_t;
 
@@ -3636,6 +3671,7 @@ union cvmx_ilk_rx_lnex_stat2 {
 	struct cvmx_ilk_rx_lnex_stat2_s       cn68xx;
 	struct cvmx_ilk_rx_lnex_stat2_s       cn68xxp1;
 	struct cvmx_ilk_rx_lnex_stat2_s       cn78xx;
+	struct cvmx_ilk_rx_lnex_stat2_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat2 cvmx_ilk_rx_lnex_stat2_t;
 
@@ -3657,6 +3693,7 @@ union cvmx_ilk_rx_lnex_stat3 {
 	struct cvmx_ilk_rx_lnex_stat3_s       cn68xx;
 	struct cvmx_ilk_rx_lnex_stat3_s       cn68xxp1;
 	struct cvmx_ilk_rx_lnex_stat3_s       cn78xx;
+	struct cvmx_ilk_rx_lnex_stat3_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat3 cvmx_ilk_rx_lnex_stat3_t;
 
@@ -3683,6 +3720,7 @@ union cvmx_ilk_rx_lnex_stat4 {
 	struct cvmx_ilk_rx_lnex_stat4_s       cn68xx;
 	struct cvmx_ilk_rx_lnex_stat4_s       cn68xxp1;
 	struct cvmx_ilk_rx_lnex_stat4_s       cn78xx;
+	struct cvmx_ilk_rx_lnex_stat4_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat4 cvmx_ilk_rx_lnex_stat4_t;
 
@@ -3704,6 +3742,7 @@ union cvmx_ilk_rx_lnex_stat5 {
 	struct cvmx_ilk_rx_lnex_stat5_s       cn68xx;
 	struct cvmx_ilk_rx_lnex_stat5_s       cn68xxp1;
 	struct cvmx_ilk_rx_lnex_stat5_s       cn78xx;
+	struct cvmx_ilk_rx_lnex_stat5_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat5 cvmx_ilk_rx_lnex_stat5_t;
 
@@ -3726,6 +3765,7 @@ union cvmx_ilk_rx_lnex_stat6 {
 	struct cvmx_ilk_rx_lnex_stat6_s       cn68xx;
 	struct cvmx_ilk_rx_lnex_stat6_s       cn68xxp1;
 	struct cvmx_ilk_rx_lnex_stat6_s       cn78xx;
+	struct cvmx_ilk_rx_lnex_stat6_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat6 cvmx_ilk_rx_lnex_stat6_t;
 
@@ -3747,6 +3787,7 @@ union cvmx_ilk_rx_lnex_stat7 {
 	struct cvmx_ilk_rx_lnex_stat7_s       cn68xx;
 	struct cvmx_ilk_rx_lnex_stat7_s       cn68xxp1;
 	struct cvmx_ilk_rx_lnex_stat7_s       cn78xx;
+	struct cvmx_ilk_rx_lnex_stat7_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat7 cvmx_ilk_rx_lnex_stat7_t;
 
@@ -3768,6 +3809,7 @@ union cvmx_ilk_rx_lnex_stat8 {
 	struct cvmx_ilk_rx_lnex_stat8_s       cn68xx;
 	struct cvmx_ilk_rx_lnex_stat8_s       cn68xxp1;
 	struct cvmx_ilk_rx_lnex_stat8_s       cn78xx;
+	struct cvmx_ilk_rx_lnex_stat8_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat8 cvmx_ilk_rx_lnex_stat8_t;
 
@@ -3794,6 +3836,7 @@ union cvmx_ilk_rx_lnex_stat9 {
 	struct cvmx_ilk_rx_lnex_stat9_s       cn68xx;
 	struct cvmx_ilk_rx_lnex_stat9_s       cn68xxp1;
 	struct cvmx_ilk_rx_lnex_stat9_s       cn78xx;
+	struct cvmx_ilk_rx_lnex_stat9_s       cn78xxp2;
 };
 typedef union cvmx_ilk_rx_lnex_stat9 cvmx_ilk_rx_lnex_stat9_t;
 
@@ -3936,6 +3979,7 @@ union cvmx_ilk_ser_cfg {
 	} cn68xx;
 	struct cvmx_ilk_ser_cfg_cn68xx        cn68xxp1;
 	struct cvmx_ilk_ser_cfg_s             cn78xx;
+	struct cvmx_ilk_ser_cfg_s             cn78xxp2;
 };
 typedef union cvmx_ilk_ser_cfg cvmx_ilk_ser_cfg_t;
 
@@ -3955,6 +3999,7 @@ union cvmx_ilk_txx_byte_cntx {
 #endif
 	} s;
 	struct cvmx_ilk_txx_byte_cntx_s       cn78xx;
+	struct cvmx_ilk_txx_byte_cntx_s       cn78xxp2;
 };
 typedef union cvmx_ilk_txx_byte_cntx cvmx_ilk_txx_byte_cntx_t;
 
@@ -3982,6 +4027,7 @@ union cvmx_ilk_txx_cal_entryx {
 #endif
 	} s;
 	struct cvmx_ilk_txx_cal_entryx_s      cn78xx;
+	struct cvmx_ilk_txx_cal_entryx_s      cn78xxp2;
 };
 typedef union cvmx_ilk_txx_cal_entryx cvmx_ilk_txx_cal_entryx_t;
 
@@ -4003,7 +4049,9 @@ union cvmx_ilk_txx_cfg0 {
                                                          current value. */
 	uint64_t lnk_stats_ena                : 1;  /**< Enable link statistics counters. */
 	uint64_t mltuse_fc_ena                : 1;  /**< When set, the multiuse field of control words contains flow-control status. Otherwise, the
-                                                         multiuse field contains ILK_TX()_CFG1[TX_MLTUSE] */
+                                                         multiuse field contains ILK_TX()_CFG1[TX_MLTUSE].   This field must not be changed unless
+                                                         ILK_TX()_CFG0.LANE_ENA=0.  Setting ILK_TX()_CFG0.MLTUSE_FC_ENA=1 requires
+                                                         ILK_TX()_CFG0.CAL_ENA=1. */
 	uint64_t cal_ena                      : 1;  /**< Enable TX calendar. When not asserted, the default calendar is used:
                                                          First control word:
                                                          _ entry 0 = link
@@ -4166,6 +4214,7 @@ union cvmx_ilk_txx_cfg0 {
 	} cn68xx;
 	struct cvmx_ilk_txx_cfg0_cn68xx       cn68xxp1;
 	struct cvmx_ilk_txx_cfg0_s            cn78xx;
+	struct cvmx_ilk_txx_cfg0_s            cn78xxp2;
 };
 typedef union cvmx_ilk_txx_cfg0 cvmx_ilk_txx_cfg0_t;
 
@@ -4176,18 +4225,15 @@ union cvmx_ilk_txx_cfg1 {
 	uint64_t u64;
 	struct cvmx_ilk_txx_cfg1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ser_low                      : 4;  /**< Reserved. */
+	uint64_t ser_low                      : 4;  /**< Reduce latency by limiting the amount of data in flight for each SerDes.  Writting to 0
+                                                         causes
+                                                         hardware to determine a typically optimal value.   Added in pass 2. */
 	uint64_t reserved_53_59               : 7;
 	uint64_t brst_min                     : 5;  /**< Minimum size of a data burst, as a multiple of 32-byte blocks. 0 disables the scheduling
                                                          enhancement. When non-zero, must satisfy:
                                                          _ (BRST_SHRT*8) <= (BRST_MIN*32) <= (BRST_MAX*64)/2. */
 	uint64_t reserved_43_47               : 5;
-	uint64_t ser_limit                    : 10; /**< Reduce latency by limiting the amount of data in flight for each SerDes. If 0x0, hardware
-                                                         will compute it. Otherwise, SER_LIMIT must be set as follows:
-                                                         _ SER_LIMIT >= 148 + (BAUD / SCLK) * (12 + (NUM_LANES/2))
-                                                         For instance, for sclk=1.1GHz,BAUD=10.3125,NUM_LANES=16 :
-                                                         _ SER_LIMIT >= 148 + (10.3125 / 1.1 * (12 + (12/2))
-                                                         _ SER_LIMIT >= 317 */
+	uint64_t ser_limit                    : 10; /**< Reserved. */
 	uint64_t pkt_busy                     : 1;  /**< Packet busy. When set to 1, indicates the TX-link is transmitting data. */
 	uint64_t pipe_crd_dis                 : 1;  /**< Disable channel credits. Should be set to 1 when PKO is configured to ignore channel credits. */
 	uint64_t ptp_delay                    : 5;  /**< Reserved. */
@@ -4208,7 +4254,7 @@ union cvmx_ilk_txx_cfg1 {
                                                          at the end of a packet instead of
                                                          the end of a burst. */
 	uint64_t rx_link_fc_ign               : 1;  /**< Ignore the link flow-control status received in burst/idle control words */
-	uint64_t rmatch                       : 1;  /**< Enable rate matching circuitry. */
+	uint64_t rmatch                       : 1;  /**< Reserved. */
 	uint64_t tx_mltuse                    : 8;  /**< Multiuse bits are used when ILK_TX()_CFG0[MLTUSE_FC_ENA] = 0. */
 #else
 	uint64_t tx_mltuse                    : 8;
@@ -4337,6 +4383,7 @@ union cvmx_ilk_txx_cfg1 {
 #endif
 	} cn68xxp1;
 	struct cvmx_ilk_txx_cfg1_s            cn78xx;
+	struct cvmx_ilk_txx_cfg1_s            cn78xxp2;
 };
 typedef union cvmx_ilk_txx_cfg1 cvmx_ilk_txx_cfg1_t;
 
@@ -4358,6 +4405,7 @@ union cvmx_ilk_txx_cha_xonx {
 #endif
 	} s;
 	struct cvmx_ilk_txx_cha_xonx_s        cn78xx;
+	struct cvmx_ilk_txx_cha_xonx_s        cn78xxp2;
 };
 typedef union cvmx_ilk_txx_cha_xonx cvmx_ilk_txx_cha_xonx_t;
 
@@ -4369,8 +4417,14 @@ union cvmx_ilk_txx_dbg {
 	struct cvmx_ilk_txx_dbg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_29_63               : 35;
-	uint64_t data_rate                    : 13; /**< Reserved. */
-	uint64_t low_delay                    : 6;  /**< Reserved. */
+	uint64_t data_rate                    : 13; /**< The number of coprocessor-clocks to transmit 32 words, where each word is 67 bits.  HW
+                                                         will automatically calculate a conservative value for this field.  SW can override the
+                                                         calculation by writing
+                                                                _ DAT_RATE = roundup((67*SCLK / GBAUD)*32).
+                                                         Added in pass 2. */
+	uint64_t low_delay                    : 6;  /**< The delay before reacting to a lane low data indication, as a multiple of 64
+                                                         coprocessor-clocks.
+                                                         Added in pass 2. */
 	uint64_t reserved_3_9                 : 7;
 	uint64_t tx_bad_crc24                 : 1;  /**< Send a control word with bad CRC24. Hardware clears this field once the injection is performed. */
 	uint64_t tx_bad_ctlw2                 : 1;  /**< Send a control word without the control bit set. */
@@ -4401,6 +4455,7 @@ union cvmx_ilk_txx_dbg {
 	} cn68xx;
 	struct cvmx_ilk_txx_dbg_cn68xx        cn68xxp1;
 	struct cvmx_ilk_txx_dbg_s             cn78xx;
+	struct cvmx_ilk_txx_dbg_s             cn78xxp2;
 };
 typedef union cvmx_ilk_txx_dbg cvmx_ilk_txx_dbg_t;
 
@@ -4429,6 +4484,7 @@ union cvmx_ilk_txx_err_cfg {
 #endif
 	} s;
 	struct cvmx_ilk_txx_err_cfg_s         cn78xx;
+	struct cvmx_ilk_txx_err_cfg_s         cn78xxp2;
 };
 typedef union cvmx_ilk_txx_err_cfg cvmx_ilk_txx_err_cfg_t;
 
@@ -4632,6 +4688,7 @@ union cvmx_ilk_txx_int {
 	} cn68xx;
 	struct cvmx_ilk_txx_int_cn68xx        cn68xxp1;
 	struct cvmx_ilk_txx_int_s             cn78xx;
+	struct cvmx_ilk_txx_int_s             cn78xxp2;
 };
 typedef union cvmx_ilk_txx_int cvmx_ilk_txx_int_t;
 
@@ -4947,6 +5004,7 @@ union cvmx_ilk_txx_pkt_cntx {
 #endif
 	} s;
 	struct cvmx_ilk_txx_pkt_cntx_s        cn78xx;
+	struct cvmx_ilk_txx_pkt_cntx_s        cn78xxp2;
 };
 typedef union cvmx_ilk_txx_pkt_cntx cvmx_ilk_txx_pkt_cntx_t;
 
@@ -4973,6 +5031,7 @@ union cvmx_ilk_txx_rmatch {
 	struct cvmx_ilk_txx_rmatch_s          cn68xx;
 	struct cvmx_ilk_txx_rmatch_s          cn68xxp1;
 	struct cvmx_ilk_txx_rmatch_s          cn78xx;
+	struct cvmx_ilk_txx_rmatch_s          cn78xxp2;
 };
 typedef union cvmx_ilk_txx_rmatch cvmx_ilk_txx_rmatch_t;
 

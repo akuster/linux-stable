@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -43,7 +43,7 @@
  * File defining functions for working with different Octeon
  * models.
  *
- * <hr>$Revision: 105060 $<hr>
+ * <hr>$Revision: 122055 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/octeon.h>
@@ -56,7 +56,7 @@
 #endif
 
 #if defined(CVMX_BUILD_FOR_LINUX_USER) || defined(CVMX_BUILD_FOR_STANDALONE)
-#include <octeon-bootinfo.h>
+#include <octeon-boot-info.h>
 #include "cvmx-sysinfo.h"
 
 /**
@@ -440,6 +440,8 @@ const char *octeon_model_get_string_buffer(uint32_t chip_id, char *buffer)
 			suffix = "AAP";
 		break;
 	case 0x95:		/* CN78XX */
+		if (num_cores == 6)	/* Other core counts match generic */
+			core_model = "35";
 		if (OCTEON_IS_MODEL(OCTEON_CN76XX))
 			family = "76";
 		else
@@ -470,6 +472,34 @@ const char *octeon_model_get_string_buffer(uint32_t chip_id, char *buffer)
 		if (fus_dat2.cn70xx.nocrypto)
 			suffix = "CP";
 		else if (fus_dat3.cn70xx.nodfa_dte)
+			suffix = "SCP";
+		else
+			suffix = "AAP";
+		break;
+	case 0x97:		/* CN73XX */
+		if (num_cores == 6)	/* Other core counts match generic */
+			core_model = "35";
+		family = "73";
+		if (fus_dat3.cn73xx.l2c_crip == 2)
+			family = "72";
+		if (fus_dat3.cn73xx.nozip
+				&& fus_dat3.cn73xx.nodfa_dte
+				&& fus_dat3.cn73xx.nohna_dte) {
+			if (!fus_dat2.cn73xx.raid_en) {
+				suffix = "CP";
+			}
+			else {
+				suffix = "SCP";
+			}
+		}
+		else 
+			suffix = "AAP";
+		break;
+	case 0x98:		/* CN75XX */
+		family = "F75";
+		if (fus_dat3.cn78xx.nozip
+		    && fus_dat3.cn78xx.nodfa_dte
+		    && fus_dat3.cn78xx.nohna_dte)
 			suffix = "SCP";
 		else
 			suffix = "AAP";

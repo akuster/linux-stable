@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -72,13 +72,18 @@ static inline uint64_t CVMX_GPIO_BIT_CFGX(unsigned long offset)
 			if ((offset <= 15))
 				return CVMX_ADD_IO_SEG(0x0001070000000800ull) + ((offset) & 15) * 8;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return CVMX_ADD_IO_SEG(0x0001070000000900ull) + ((offset) & 31) * 8;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 19))
 				return CVMX_ADD_IO_SEG(0x0001070000000900ull) + ((offset) & 31) * 8;
 			break;
 	}
 	cvmx_warn("CVMX_GPIO_BIT_CFGX (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001070000000800ull) + ((offset) & 15) * 8;
+	return CVMX_ADD_IO_SEG(0x0001070000000900ull) + ((offset) & 31) * 8;
 }
 #else
 static inline uint64_t CVMX_GPIO_BIT_CFGX(unsigned long offset)
@@ -98,10 +103,13 @@ static inline uint64_t CVMX_GPIO_BIT_CFGX(unsigned long offset)
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000800ull) + (offset) * 8;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001070000000900ull) + (offset) * 8;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001070000000900ull) + (offset) * 8;
 	}
-	return CVMX_ADD_IO_SEG(0x0001070000000800ull) + (offset) * 8;
+	return CVMX_ADD_IO_SEG(0x0001070000000900ull) + (offset) * 8;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -126,8 +134,10 @@ static inline uint64_t CVMX_GPIO_CLK_GENX(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 3))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 3)))))
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
 		cvmx_warn("CVMX_GPIO_CLK_GENX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00010700000008C0ull) + ((offset) & 3) * 8;
 }
@@ -154,7 +164,9 @@ static inline uint64_t CVMX_GPIO_CLK_SYNCEX(unsigned long offset)
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_GPIO_CLK_SYNCEX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00010700000008E0ull) + ((offset) & 1) * 8;
 }
@@ -165,7 +177,7 @@ static inline uint64_t CVMX_GPIO_CLK_SYNCEX(unsigned long offset)
 #define CVMX_GPIO_COMP CVMX_GPIO_COMP_FUNC()
 static inline uint64_t CVMX_GPIO_COMP_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_GPIO_COMP not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001070000000D00ull);
 }
@@ -187,7 +199,9 @@ static inline uint64_t CVMX_GPIO_DBG_ENA_FUNC(void)
 static inline uint64_t CVMX_GPIO_INTRX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 15)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 15))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_GPIO_INTRX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000000A00ull) + ((offset) & 15) * 8;
 }
@@ -199,7 +213,9 @@ static inline uint64_t CVMX_GPIO_INTRX(unsigned long offset)
 static inline uint64_t CVMX_GPIO_MC_INTRX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset >= 4) && (offset <= 7))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset >= 4) && (offset <= 7)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset >= 4) && (offset <= 7)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset >= 4) && (offset <= 7))))))
 		cvmx_warn("CVMX_GPIO_MC_INTRX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000000C20ull) + ((offset) & 7) * 8 - 8*4;
 }
@@ -207,10 +223,23 @@ static inline uint64_t CVMX_GPIO_MC_INTRX(unsigned long offset)
 #define CVMX_GPIO_MC_INTRX(offset) (CVMX_ADD_IO_SEG(0x0001070000000C20ull) + ((offset) & 7) * 8 - 8*4)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GPIO_MC_INTRX_W1S(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset >= 4) && (offset <= 7)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset >= 4) && (offset <= 7)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset >= 4) && (offset <= 7))))))
+		cvmx_warn("CVMX_GPIO_MC_INTRX_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070000000E20ull) + ((offset) & 7) * 8 - 8*4;
+}
+#else
+#define CVMX_GPIO_MC_INTRX_W1S(offset) (CVMX_ADD_IO_SEG(0x0001070000000E20ull) + ((offset) & 7) * 8 - 8*4)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_GPIO_MULTI_CAST CVMX_GPIO_MULTI_CAST_FUNC()
 static inline uint64_t CVMX_GPIO_MULTI_CAST_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_GPIO_MULTI_CAST not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00010700000008B0ull);
 }
@@ -221,7 +250,7 @@ static inline uint64_t CVMX_GPIO_MULTI_CAST_FUNC(void)
 #define CVMX_GPIO_OCLA_EXTEN_TRIG CVMX_GPIO_OCLA_EXTEN_TRIG_FUNC()
 static inline uint64_t CVMX_GPIO_OCLA_EXTEN_TRIG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_GPIO_OCLA_EXTEN_TRIG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00010700000008B8ull);
 }
@@ -252,10 +281,33 @@ static inline uint64_t CVMX_GPIO_SATA_CTL_FUNC(void)
 #define CVMX_GPIO_SATA_CTL (CVMX_ADD_IO_SEG(0x00010700000008A8ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GPIO_SATA_CTLX(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_GPIO_SATA_CTLX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070000000D80ull) + ((offset) & 1) * 8;
+}
+#else
+#define CVMX_GPIO_SATA_CTLX(offset) (CVMX_ADD_IO_SEG(0x0001070000000D80ull) + ((offset) & 1) * 8)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_GPIO_SATA_LAB_LB CVMX_GPIO_SATA_LAB_LB_FUNC()
+static inline uint64_t CVMX_GPIO_SATA_LAB_LB_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_GPIO_SATA_LAB_LB not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x0001070000000D40ull);
+}
+#else
+#define CVMX_GPIO_SATA_LAB_LB (CVMX_ADD_IO_SEG(0x0001070000000D40ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_GPIO_TIM_CTL CVMX_GPIO_TIM_CTL_FUNC()
 static inline uint64_t CVMX_GPIO_TIM_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_GPIO_TIM_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00010700000008A0ull);
 }
@@ -264,6 +316,18 @@ static inline uint64_t CVMX_GPIO_TIM_CTL_FUNC(void)
 #endif
 #define CVMX_GPIO_TX_CLR (CVMX_ADD_IO_SEG(0x0001070000000890ull))
 #define CVMX_GPIO_TX_SET (CVMX_ADD_IO_SEG(0x0001070000000888ull))
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_GPIO_USBDRD_CTLX(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_GPIO_USBDRD_CTLX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070000000D20ull) + ((offset) & 1) * 8;
+}
+#else
+#define CVMX_GPIO_USBDRD_CTLX(offset) (CVMX_ADD_IO_SEG(0x0001070000000D20ull) + ((offset) & 1) * 8)
+#endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_GPIO_USBH_CTL CVMX_GPIO_USBH_CTL_FUNC()
 static inline uint64_t CVMX_GPIO_USBH_CTL_FUNC(void)
@@ -323,14 +387,16 @@ union cvmx_gpio_bit_cfgx {
 	uint64_t reserved_15_63               : 49;
 	uint64_t clk_gen                      : 1;  /**< When TX_OE is set, GPIO pin becomes a clock */
 	uint64_t clk_sel                      : 2;  /**< Selects which of the 4 GPIO clock generators */
-	uint64_t fil_sel                      : 4;  /**< Global counter bit-select (controls sample rate) */
-	uint64_t fil_cnt                      : 4;  /**< Number of consecutive samples to change state */
-	uint64_t int_type                     : 1;  /**< Type of interrupt
-                                                         0 = level (default)
-                                                         1 = rising edge */
-	uint64_t int_en                       : 1;  /**< Bit mask to indicate which bits to raise interrupt */
-	uint64_t rx_xor                       : 1;  /**< Invert the GPIO pin */
-	uint64_t tx_oe                        : 1;  /**< Drive the GPIO pin as an output pin */
+	uint64_t fil_sel                      : 4;  /**< Filter select. Global counter bit-select (controls sample rate). */
+	uint64_t fil_cnt                      : 4;  /**< Filter count. Specifies the number of consecutive samples (FIL_CNT+1) to change state.
+                                                         Zero to disable the filter. */
+	uint64_t int_type                     : 1;  /**< Type of interrupt when pin is an input and [INT_EN] set. When set, rising edge interrupt,
+                                                         else level interrupt. Only valid for GPIO 0..15, no function for GPIO 16..31. */
+	uint64_t int_en                       : 1;  /**< GPIO_BIT_CFG()[INT_EN] enable interrupts going to GPIO_INTR()[INTR] as well as
+                                                         GPIO_MC_INTR(4..7)[INTR]. When GPIO_INTR()[INT_TYPE] is level interrupt,
+                                                         changing  GPIO_INTR()[INT_EN] to zero will cause GPIO_INTR()[INTR] to be cleared. */
+	uint64_t rx_xor                       : 1;  /**< Receive inversion. When set to 1, inverts the received GPIO signal. */
+	uint64_t tx_oe                        : 1;  /**< Transmit output enable. When set to 1, the GPIO pin is driven as an output pin. */
 #else
 	uint64_t tx_oe                        : 1;
 	uint64_t rx_xor                       : 1;
@@ -431,8 +497,11 @@ union cvmx_gpio_bit_cfgx {
                                                            0x1a-  : Reserved.
                                                          Note: GPIO[19:10] controls are ignored if PCM is enabled.  See PCM(0..3)_TDM_CFG */
 	uint64_t reserved_12_15               : 4;
-	uint64_t fil_sel                      : 4;  /**< Global counter bit-select (controls sample rate) */
-	uint64_t fil_cnt                      : 4;  /**< Number of consecutive samples to change state */
+	uint64_t fil_sel                      : 4;  /**< Filter select. Global counter bit-select (controls sample rate).
+                                                         Filter are XOR inverter are also appliable to GPIO input muxing signals and interrupts. */
+	uint64_t fil_cnt                      : 4;  /**< Filter count. Specifies the number of consecutive samples (FIL_CNT+1) to change state.
+                                                         Zero to disable the filter.
+                                                         Filter are XOR inverter are also appliable to GPIO input muxing signals and interrupts. */
 	uint64_t int_type                     : 1;  /**< Type of interrupt
                                                          0 = level (default)
                                                          1 = rising edge */
@@ -452,8 +521,11 @@ union cvmx_gpio_bit_cfgx {
 #endif
 	} cn70xx;
 	struct cvmx_gpio_bit_cfgx_cn70xx      cn70xxp1;
+	struct cvmx_gpio_bit_cfgx_cn70xx      cn73xx;
 	struct cvmx_gpio_bit_cfgx_cn70xx      cn78xx;
+	struct cvmx_gpio_bit_cfgx_cn70xx      cn78xxp2;
 	struct cvmx_gpio_bit_cfgx_cn61xx      cnf71xx;
+	struct cvmx_gpio_bit_cfgx_cn70xx      cnf75xx;
 };
 typedef union cvmx_gpio_bit_cfgx cvmx_gpio_bit_cfgx_t;
 
@@ -487,11 +559,11 @@ union cvmx_gpio_clk_genx {
 	struct cvmx_gpio_clk_genx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t n                            : 32; /**< Determines the frequency of the GPIO clk generator
-                                                         NOTE: Fgpio_clk = Feclk * N / 2^32
-                                                               N = (Fgpio_clk / Feclk) * 2^32
-                                                         NOTE: writing N == 0 stops the clock generator
-                                                         N  should be <= 2^31-1. */
+	uint64_t n                            : 32; /**< Determines the frequency of the GPIO clock generator. N should be less than or equal to
+                                                         2^31-1.
+                                                         The frequency of the GPIO clock generator equals the coprocessor-clock frequency times N
+                                                         divided by 2^32.
+                                                         Writing N = 0x0 stops the clock generator. */
 #else
 	uint64_t n                            : 32;
 	uint64_t reserved_32_63               : 32;
@@ -509,8 +581,11 @@ union cvmx_gpio_clk_genx {
 	struct cvmx_gpio_clk_genx_s           cn68xxp1;
 	struct cvmx_gpio_clk_genx_s           cn70xx;
 	struct cvmx_gpio_clk_genx_s           cn70xxp1;
+	struct cvmx_gpio_clk_genx_s           cn73xx;
 	struct cvmx_gpio_clk_genx_s           cn78xx;
+	struct cvmx_gpio_clk_genx_s           cn78xxp2;
 	struct cvmx_gpio_clk_genx_s           cnf71xx;
+	struct cvmx_gpio_clk_genx_s           cnf75xx;
 };
 typedef union cvmx_gpio_clk_genx cvmx_gpio_clk_genx_t;
 
@@ -619,13 +694,14 @@ union cvmx_gpio_clk_syncex {
 	struct cvmx_gpio_clk_syncex_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t div                          : 2;  /**< GPIO internal clock divider setting relative to QLM SERDES CLOCK_SYNCE. The maximum
+	uint64_t div                          : 2;  /**< GPIO internal clock divider setting relative to QLM/DLM SERDES CLOCK_SYNCE. The maximum
                                                          supported GPIO output frequency is 125 MHz.
                                                          0x0 = Divide by 20.
                                                          0x1 = Divide by 40.
                                                          0x2 = Divide by 80.
                                                          0x3 = Divide by 160. */
-	uint64_t lane_sel                     : 2;  /**< Selects which RX lane clock from QLMx to use as the GPIO internal QLMx clock. */
+	uint64_t lane_sel                     : 2;  /**< Selects which RX lane clock from QLMx(DLMx) to use as the GPIO internal QLMx(DLMx) clock.
+                                                         For DLMx, valid LANE_SEL is 0/1. */
 #else
 	uint64_t lane_sel                     : 2;
 	uint64_t div                          : 2;
@@ -669,18 +745,19 @@ union cvmx_gpio_clk_syncex {
 #endif
 	} cn70xx;
 	struct cvmx_gpio_clk_syncex_cn70xx    cn70xxp1;
-	struct cvmx_gpio_clk_syncex_cn78xx {
+	struct cvmx_gpio_clk_syncex_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t qlm_sel                      : 4;  /**< Selects which QLM(0..7) to select from. */
+	uint64_t qlm_sel                      : 4;  /**< Selects which QLM(0..3) or DLM(4..6) to select from, values 7-15 are invalid. */
 	uint64_t reserved_4_7                 : 4;
-	uint64_t div                          : 2;  /**< GPIO internal clock divider setting relative to QLM SERDES CLOCK_SYNCE. The maximum
+	uint64_t div                          : 2;  /**< GPIO internal clock divider setting relative to QLM/DLM SERDES CLOCK_SYNCE. The maximum
                                                          supported GPIO output frequency is 125 MHz.
                                                          0x0 = Divide by 20.
                                                          0x1 = Divide by 40.
                                                          0x2 = Divide by 80.
                                                          0x3 = Divide by 160. */
-	uint64_t lane_sel                     : 2;  /**< Selects which RX lane clock from QLMx to use as the GPIO internal QLMx clock. */
+	uint64_t lane_sel                     : 2;  /**< Selects which RX lane clock from QLMx(DLMx) to use as the GPIO internal QLMx(DLMx) clock.
+                                                         For DLMx, valid LANE_SEL is 0/1. */
 #else
 	uint64_t lane_sel                     : 2;
 	uint64_t div                          : 2;
@@ -688,7 +765,10 @@ union cvmx_gpio_clk_syncex {
 	uint64_t qlm_sel                      : 4;
 	uint64_t reserved_12_63               : 52;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_gpio_clk_syncex_cn73xx    cn78xx;
+	struct cvmx_gpio_clk_syncex_cn73xx    cn78xxp2;
+	struct cvmx_gpio_clk_syncex_cn73xx    cnf75xx;
 };
 typedef union cvmx_gpio_clk_syncex cvmx_gpio_clk_syncex_t;
 
@@ -701,14 +781,14 @@ union cvmx_gpio_comp {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_11_63               : 53;
 	uint64_t pctl                         : 3;  /**< GPIO bus driver PCTL. Suggested values:
-                                                         0x4 = 75 ohm.
-                                                         0x6 = 50 ohm.
-                                                         0x7 = 40 ohm. */
+                                                         0x4 = 60 ohm.
+                                                         0x6 = 40 ohm.
+                                                         0x7 = 30 ohm. */
 	uint64_t reserved_3_7                 : 5;
 	uint64_t nctl                         : 3;  /**< GPIO bus driver NCTL. Suggested values:
-                                                         0x4 = 75 ohm.
-                                                         0x6 = 50 ohm.
-                                                         0x7 = 40 ohm. */
+                                                         0x4 = 60 ohm.
+                                                         0x6 = 40 ohm.
+                                                         0x7 = 30 ohm. */
 #else
 	uint64_t nctl                         : 3;
 	uint64_t reserved_3_7                 : 5;
@@ -716,7 +796,10 @@ union cvmx_gpio_comp {
 	uint64_t reserved_11_63               : 53;
 #endif
 	} s;
+	struct cvmx_gpio_comp_s               cn73xx;
 	struct cvmx_gpio_comp_s               cn78xx;
+	struct cvmx_gpio_comp_s               cn78xxp2;
+	struct cvmx_gpio_comp_s               cnf75xx;
 };
 typedef union cvmx_gpio_comp cvmx_gpio_comp_t;
 
@@ -790,15 +873,32 @@ union cvmx_gpio_intrx {
 	uint64_t u64;
 	struct cvmx_gpio_intrx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_2_63                : 62;
+	uint64_t intr_w1s                     : 1;  /**< GPIO signalled interrupt. If interrupts are edge sensitive, write one to set, otherwise
+                                                         will clear automatically when GPIO pin de-asserts. Read out value is INTR.
+                                                         GPIO_INTR(4..7)[INTR_W1S] can also introduce GPIO_MC_INTR(4..7) when multicast mode is
+                                                         enabled. */
+	uint64_t intr                         : 1;  /**< GPIO signalled interrupt. If interrupts are edge sensitive, write one to clear, otherwise
+                                                         will clear automatically when GPIO pin de-asserts. Throws GPIO_INTSN_E::GPIO_INTR(). */
+#else
+	uint64_t intr                         : 1;
+	uint64_t intr_w1s                     : 1;
+	uint64_t reserved_2_63                : 62;
+#endif
+	} s;
+	struct cvmx_gpio_intrx_s              cn73xx;
+	struct cvmx_gpio_intrx_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
 	uint64_t intr                         : 1;  /**< GPIO signalled interrupt. If interrupts are edge sensitive, write one to clear, otherwise
-                                                         will clear automatically when GPIO pin de-asserts. Throws GPIO_INTSN_E::GPIO_INTR(5). */
+                                                         will clear automatically when GPIO pin de-asserts. Throws GPIO_INTSN_E::GPIO_INTR(). */
 #else
 	uint64_t intr                         : 1;
 	uint64_t reserved_1_63                : 63;
 #endif
-	} s;
-	struct cvmx_gpio_intrx_s              cn78xx;
+	} cn78xx;
+	struct cvmx_gpio_intrx_s              cn78xxp2;
+	struct cvmx_gpio_intrx_s              cnf75xx;
 };
 typedef union cvmx_gpio_intrx cvmx_gpio_intrx_t;
 
@@ -822,9 +922,57 @@ union cvmx_gpio_mc_intrx {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_gpio_mc_intrx_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t intr                         : 16; /**< GPIO interrupt for each core. When corresponding GPIO4-7 is edge-triggered and MILTI_CAST
+                                                         is enabled, a GPIO assertion will set all 48 bits. Each bit is expected to be routed to
+                                                         interrupt a different core using the CIU, and each core will then write one to clear its
+                                                         corresponding bit in this register. Throws GPIO_INTSN_E::GPIO_MC_INTR()_PP(). */
+#else
+	uint64_t intr                         : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
 	struct cvmx_gpio_mc_intrx_s           cn78xx;
+	struct cvmx_gpio_mc_intrx_s           cn78xxp2;
+	struct cvmx_gpio_mc_intrx_cn73xx      cnf75xx;
 };
 typedef union cvmx_gpio_mc_intrx cvmx_gpio_mc_intrx_t;
+
+/**
+ * cvmx_gpio_mc_intr#_w1s
+ */
+union cvmx_gpio_mc_intrx_w1s {
+	uint64_t u64;
+	struct cvmx_gpio_mc_intrx_w1s_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t intr                         : 48; /**< GPIO interrupt for each core. When corresponding GPIO4-7 is edge-triggered and MILTI_CAST
+                                                         is enabled, a GPIO assertion will set all 48 bits. Each bit is expected to be routed to
+                                                         interrupt a different core using the CIU, and each core will then write one to clear its
+                                                         corresponding bit in this register. Throws GPIO_INTSN_E::GPIO_MC_INTR()_PP(). */
+#else
+	uint64_t intr                         : 48;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_gpio_mc_intrx_w1s_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t intr                         : 16; /**< GPIO interrupt for each core. When corresponding GPIO4-7 is edge-triggered and MILTI_CAST
+                                                         is enabled, a GPIO assertion will set all 48 bits. Each bit is expected to be routed to
+                                                         interrupt a different core using the CIU, and each core will then write one to clear its
+                                                         corresponding bit in this register. Throws GPIO_INTSN_E::GPIO_MC_INTR()_PP(). */
+#else
+	uint64_t intr                         : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
+	struct cvmx_gpio_mc_intrx_w1s_s       cn78xxp2;
+	struct cvmx_gpio_mc_intrx_w1s_cn73xx  cnf75xx;
+};
+typedef union cvmx_gpio_mc_intrx_w1s cvmx_gpio_mc_intrx_w1s_t;
 
 /**
  * cvmx_gpio_multi_cast
@@ -837,13 +985,9 @@ union cvmx_gpio_multi_cast {
 	struct cvmx_gpio_multi_cast_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
-	uint64_t en                           : 1;  /**< Enable GPIO Interrupt Multicast mode
-                                                         When EN is set, GPIO<7:4> will function in
-                                                         multicast mode allowing these four GPIOs to
-                                                         interrupt multi-cores.
-                                                         Multicast functionality allows the GPIO to exist
-                                                         as per cnMIPS interrupts as opposed to a global
-                                                         interrupt. */
+	uint64_t en                           : 1;  /**< Enable GPIO interrupt multicast mode. When EN is set, GPIO<7:4> functions in multicast
+                                                         mode allowing these four GPIOs to interrupt multiple cores. Multicast functionality allows
+                                                         the GPIO to exist as per-cnMIPS interrupts as opposed to a global interrupt. */
 #else
 	uint64_t en                           : 1;
 	uint64_t reserved_1_63                : 63;
@@ -852,8 +996,11 @@ union cvmx_gpio_multi_cast {
 	struct cvmx_gpio_multi_cast_s         cn61xx;
 	struct cvmx_gpio_multi_cast_s         cn70xx;
 	struct cvmx_gpio_multi_cast_s         cn70xxp1;
+	struct cvmx_gpio_multi_cast_s         cn73xx;
 	struct cvmx_gpio_multi_cast_s         cn78xx;
+	struct cvmx_gpio_multi_cast_s         cn78xxp2;
 	struct cvmx_gpio_multi_cast_s         cnf71xx;
+	struct cvmx_gpio_multi_cast_s         cnf75xx;
 };
 typedef union cvmx_gpio_multi_cast cvmx_gpio_multi_cast_t;
 
@@ -866,8 +1013,8 @@ union cvmx_gpio_ocla_exten_trig {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_6_63                : 58;
 	uint64_t m_trig                       : 1;  /**< Manual trigger. Used only when SEL=0x1F. */
-	uint64_t sel                          : 5;  /**< Selects the GPIO(0..19) input pin to use, or 0x1F for manual trigger, to use in the OCLA
-                                                         coprocessor for GPIO-based triggering. */
+	uint64_t sel                          : 5;  /**< Selects the GPIO(0..30) input pin to use, or 0x1F for manual trigger. It is used in the
+                                                         OCLA coprocessor for GPIO-based triggering. */
 #else
 	uint64_t sel                          : 5;
 	uint64_t m_trig                       : 1;
@@ -876,7 +1023,10 @@ union cvmx_gpio_ocla_exten_trig {
 	} s;
 	struct cvmx_gpio_ocla_exten_trig_s    cn70xx;
 	struct cvmx_gpio_ocla_exten_trig_s    cn70xxp1;
+	struct cvmx_gpio_ocla_exten_trig_s    cn73xx;
 	struct cvmx_gpio_ocla_exten_trig_s    cn78xx;
+	struct cvmx_gpio_ocla_exten_trig_s    cn78xxp2;
+	struct cvmx_gpio_ocla_exten_trig_s    cnf75xx;
 };
 typedef union cvmx_gpio_ocla_exten_trig cvmx_gpio_ocla_exten_trig_t;
 
@@ -919,15 +1069,23 @@ union cvmx_gpio_rx_dat {
 	uint64_t u64;
 	struct cvmx_gpio_rx_dat_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t dat                          : 32; /**< GPIO read data. */
+#else
+	uint64_t dat                          : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_gpio_rx_dat_cn30xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_24_63               : 40;
 	uint64_t dat                          : 24; /**< GPIO Read Data */
 #else
 	uint64_t dat                          : 24;
 	uint64_t reserved_24_63               : 40;
 #endif
-	} s;
-	struct cvmx_gpio_rx_dat_s             cn30xx;
-	struct cvmx_gpio_rx_dat_s             cn31xx;
+	} cn30xx;
+	struct cvmx_gpio_rx_dat_cn30xx        cn31xx;
 	struct cvmx_gpio_rx_dat_cn38xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
@@ -938,7 +1096,7 @@ union cvmx_gpio_rx_dat {
 #endif
 	} cn38xx;
 	struct cvmx_gpio_rx_dat_cn38xx        cn38xxp2;
-	struct cvmx_gpio_rx_dat_s             cn50xx;
+	struct cvmx_gpio_rx_dat_cn30xx        cn50xx;
 	struct cvmx_gpio_rx_dat_cn38xx        cn52xx;
 	struct cvmx_gpio_rx_dat_cn38xx        cn52xxp1;
 	struct cvmx_gpio_rx_dat_cn38xx        cn56xx;
@@ -961,8 +1119,11 @@ union cvmx_gpio_rx_dat {
 	struct cvmx_gpio_rx_dat_cn38xx        cn68xxp1;
 	struct cvmx_gpio_rx_dat_cn61xx        cn70xx;
 	struct cvmx_gpio_rx_dat_cn61xx        cn70xxp1;
+	struct cvmx_gpio_rx_dat_s             cn73xx;
 	struct cvmx_gpio_rx_dat_cn61xx        cn78xx;
+	struct cvmx_gpio_rx_dat_cn61xx        cn78xxp2;
 	struct cvmx_gpio_rx_dat_cn61xx        cnf71xx;
+	struct cvmx_gpio_rx_dat_s             cnf75xx;
 };
 typedef union cvmx_gpio_rx_dat cvmx_gpio_rx_dat_t;
 
@@ -1007,6 +1168,53 @@ union cvmx_gpio_sata_ctl {
 typedef union cvmx_gpio_sata_ctl cvmx_gpio_sata_ctl_t;
 
 /**
+ * cvmx_gpio_sata_ctl#
+ */
+union cvmx_gpio_sata_ctlx {
+	uint64_t u64;
+	struct cvmx_gpio_sata_ctlx_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_13_63               : 51;
+	uint64_t mp_switch                    : 5;  /**< Selects the GPIO(0..31) input pin for SATA mechanical presence switch input;
+                                                         indicated the state of external device presence switch, (0) switch open,
+                                                         (1) switch closed. See SATA()_UAHC_p0_CMD[MPSS]. */
+	uint64_t reserved_5_7                 : 3;
+	uint64_t cp_det                       : 5;  /**< Selects the GPIO(0..31) input pin for SATA cold presence detect input;
+                                                         detects addition (1) or removal (0) of the powered-down device;
+                                                         see SATA()_UAHC_p0_CMD[CPS]. */
+#else
+	uint64_t cp_det                       : 5;
+	uint64_t reserved_5_7                 : 3;
+	uint64_t mp_switch                    : 5;
+	uint64_t reserved_13_63               : 51;
+#endif
+	} s;
+	struct cvmx_gpio_sata_ctlx_s          cn73xx;
+	struct cvmx_gpio_sata_ctlx_s          cnf75xx;
+};
+typedef union cvmx_gpio_sata_ctlx cvmx_gpio_sata_ctlx_t;
+
+/**
+ * cvmx_gpio_sata_lab_lb
+ */
+union cvmx_gpio_sata_lab_lb {
+	uint64_t u64;
+	struct cvmx_gpio_sata_lab_lb_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_5_63                : 59;
+	uint64_t sel                          : 5;  /**< Selects the GPIO(0..31) input pin for SATA BIST lab-loopback pin.
+                                                         see SATA()_UAHC_GBL_BISTCR[LLB]. */
+#else
+	uint64_t sel                          : 5;
+	uint64_t reserved_5_63                : 59;
+#endif
+	} s;
+	struct cvmx_gpio_sata_lab_lb_s        cn73xx;
+	struct cvmx_gpio_sata_lab_lb_s        cnf75xx;
+};
+typedef union cvmx_gpio_sata_lab_lb cvmx_gpio_sata_lab_lb_t;
+
+/**
  * cvmx_gpio_tim_ctl
  */
 union cvmx_gpio_tim_ctl {
@@ -1014,7 +1222,7 @@ union cvmx_gpio_tim_ctl {
 	struct cvmx_gpio_tim_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
-	uint64_t sel                          : 5;  /**< Selects the GPIO(0..19) input pin to use in the Timer coprocessor for GPIO-based timing. */
+	uint64_t sel                          : 5;  /**< Selects the GPIO(0..31) input pin to use in the Timer coprocessor for GPIO-based timing. */
 #else
 	uint64_t sel                          : 5;
 	uint64_t reserved_5_63                : 59;
@@ -1030,7 +1238,10 @@ union cvmx_gpio_tim_ctl {
 #endif
 	} cn68xx;
 	struct cvmx_gpio_tim_ctl_cn68xx       cn68xxp1;
+	struct cvmx_gpio_tim_ctl_s            cn73xx;
 	struct cvmx_gpio_tim_ctl_s            cn78xx;
+	struct cvmx_gpio_tim_ctl_s            cn78xxp2;
+	struct cvmx_gpio_tim_ctl_s            cnf75xx;
 };
 typedef union cvmx_gpio_tim_ctl cvmx_gpio_tim_ctl_t;
 
@@ -1041,17 +1252,24 @@ union cvmx_gpio_tx_clr {
 	uint64_t u64;
 	struct cvmx_gpio_tx_clr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t clr                          : 32; /**< Clear mask. Bit mask to indicate which GPIO_TX_DAT bits to set to 0. When read, CLR
+                                                         returns the GPIO_TX_DAT storage. */
+#else
+	uint64_t clr                          : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_gpio_tx_clr_cn30xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_24_63               : 40;
-	uint64_t clr                          : 24; /**< Bit mask to indicate which GPIO_TX_DAT bits to set
-                                                         to '0'. When read, CLR returns the GPIO_TX_DAT
-                                                         storage. */
+	uint64_t clr                          : 24; /**< Bit mask to indicate which bits to drive to '0'. */
 #else
 	uint64_t clr                          : 24;
 	uint64_t reserved_24_63               : 40;
 #endif
-	} s;
-	struct cvmx_gpio_tx_clr_s             cn30xx;
-	struct cvmx_gpio_tx_clr_s             cn31xx;
+	} cn30xx;
+	struct cvmx_gpio_tx_clr_cn30xx        cn31xx;
 	struct cvmx_gpio_tx_clr_cn38xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
@@ -1062,7 +1280,7 @@ union cvmx_gpio_tx_clr {
 #endif
 	} cn38xx;
 	struct cvmx_gpio_tx_clr_cn38xx        cn38xxp2;
-	struct cvmx_gpio_tx_clr_s             cn50xx;
+	struct cvmx_gpio_tx_clr_cn30xx        cn50xx;
 	struct cvmx_gpio_tx_clr_cn38xx        cn52xx;
 	struct cvmx_gpio_tx_clr_cn38xx        cn52xxp1;
 	struct cvmx_gpio_tx_clr_cn38xx        cn56xx;
@@ -1087,8 +1305,11 @@ union cvmx_gpio_tx_clr {
 	struct cvmx_gpio_tx_clr_cn38xx        cn68xxp1;
 	struct cvmx_gpio_tx_clr_cn61xx        cn70xx;
 	struct cvmx_gpio_tx_clr_cn61xx        cn70xxp1;
+	struct cvmx_gpio_tx_clr_s             cn73xx;
 	struct cvmx_gpio_tx_clr_cn61xx        cn78xx;
+	struct cvmx_gpio_tx_clr_cn61xx        cn78xxp2;
 	struct cvmx_gpio_tx_clr_cn61xx        cnf71xx;
+	struct cvmx_gpio_tx_clr_s             cnf75xx;
 };
 typedef union cvmx_gpio_tx_clr cvmx_gpio_tx_clr_t;
 
@@ -1099,17 +1320,24 @@ union cvmx_gpio_tx_set {
 	uint64_t u64;
 	struct cvmx_gpio_tx_set_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t set                          : 32; /**< Set mask. Bit mask to indicate which GPIO_TX_DAT bits to set to 1. When read, SET returns
+                                                         the GPIO_TX_DAT storage. */
+#else
+	uint64_t set                          : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_gpio_tx_set_cn30xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_24_63               : 40;
-	uint64_t set                          : 24; /**< Bit mask to indicate which GPIO_TX_DAT bits to set
-                                                         to '1'. When read, SET returns the GPIO_TX_DAT
-                                                         storage. */
+	uint64_t set                          : 24; /**< Bit mask to indicate which bits to drive to '1'. */
 #else
 	uint64_t set                          : 24;
 	uint64_t reserved_24_63               : 40;
 #endif
-	} s;
-	struct cvmx_gpio_tx_set_s             cn30xx;
-	struct cvmx_gpio_tx_set_s             cn31xx;
+	} cn30xx;
+	struct cvmx_gpio_tx_set_cn30xx        cn31xx;
 	struct cvmx_gpio_tx_set_cn38xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
@@ -1120,7 +1348,7 @@ union cvmx_gpio_tx_set {
 #endif
 	} cn38xx;
 	struct cvmx_gpio_tx_set_cn38xx        cn38xxp2;
-	struct cvmx_gpio_tx_set_s             cn50xx;
+	struct cvmx_gpio_tx_set_cn30xx        cn50xx;
 	struct cvmx_gpio_tx_set_cn38xx        cn52xx;
 	struct cvmx_gpio_tx_set_cn38xx        cn52xxp1;
 	struct cvmx_gpio_tx_set_cn38xx        cn56xx;
@@ -1145,10 +1373,32 @@ union cvmx_gpio_tx_set {
 	struct cvmx_gpio_tx_set_cn38xx        cn68xxp1;
 	struct cvmx_gpio_tx_set_cn61xx        cn70xx;
 	struct cvmx_gpio_tx_set_cn61xx        cn70xxp1;
+	struct cvmx_gpio_tx_set_s             cn73xx;
 	struct cvmx_gpio_tx_set_cn61xx        cn78xx;
+	struct cvmx_gpio_tx_set_cn61xx        cn78xxp2;
 	struct cvmx_gpio_tx_set_cn61xx        cnf71xx;
+	struct cvmx_gpio_tx_set_s             cnf75xx;
 };
 typedef union cvmx_gpio_tx_set cvmx_gpio_tx_set_t;
+
+/**
+ * cvmx_gpio_usbdrd_ctl#
+ */
+union cvmx_gpio_usbdrd_ctlx {
+	uint64_t u64;
+	struct cvmx_gpio_usbdrd_ctlx_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_5_63                : 59;
+	uint64_t sel                          : 5;  /**< Selects the GPIO(0..31) input pin for USBDRD over-current control. */
+#else
+	uint64_t sel                          : 5;
+	uint64_t reserved_5_63                : 59;
+#endif
+	} s;
+	struct cvmx_gpio_usbdrd_ctlx_s        cn73xx;
+	struct cvmx_gpio_usbdrd_ctlx_s        cnf75xx;
+};
+typedef union cvmx_gpio_usbdrd_ctlx cvmx_gpio_usbdrd_ctlx_t;
 
 /**
  * cvmx_gpio_usbh_ctl
@@ -1193,6 +1443,7 @@ union cvmx_gpio_usbh_ctl {
 	uint64_t reserved_5_63                : 59;
 #endif
 	} cn78xx;
+	struct cvmx_gpio_usbh_ctl_cn78xx      cn78xxp2;
 };
 typedef union cvmx_gpio_usbh_ctl cvmx_gpio_usbh_ctl_t;
 
@@ -1302,8 +1553,11 @@ union cvmx_gpio_xbit_cfgx {
                                                            0x1a-  : Reserved.
                                                          Note: GPIO[19:10] controls are ignored if PCM is enabled.  See PCM(0..3)_TDM_CFG */
 	uint64_t reserved_12_15               : 4;
-	uint64_t fil_sel                      : 4;  /**< Global counter bit-select (controls sample rate) */
-	uint64_t fil_cnt                      : 4;  /**< Number of consecutive samples to change state */
+	uint64_t fil_sel                      : 4;  /**< Filter select. Global counter bit-select (controls sample rate).
+                                                         Filter are XOR inverter are also appliable to GPIO input muxing signals and interrupts. */
+	uint64_t fil_cnt                      : 4;  /**< Filter count. Specifies the number of consecutive samples (FIL_CNT+1) to change state.
+                                                         Zero to disable the filter.
+                                                         Filter are XOR inverter are also appliable to GPIO input muxing signals and interrupts. */
 	uint64_t int_type                     : 1;  /**< Type of interrupt
                                                          0 = level (default)
                                                          1 = rising edge */

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -991,8 +991,24 @@ union cvmx_pcsx_anx_ext_st_reg {
 	struct cvmx_pcsx_anx_ext_st_reg_s     cn66xx;
 	struct cvmx_pcsx_anx_ext_st_reg_s     cn68xx;
 	struct cvmx_pcsx_anx_ext_st_reg_s     cn68xxp1;
-	struct cvmx_pcsx_anx_ext_st_reg_s     cn70xx;
-	struct cvmx_pcsx_anx_ext_st_reg_s     cn70xxp1;
+	struct cvmx_pcsx_anx_ext_st_reg_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t thou_xfd                     : 1;  /**< 1 means PHY is 1000BASE-X Full Dup capable */
+	uint64_t thou_xhd                     : 1;  /**< 1 means PHY is 1000BASE-X Half Dup capable */
+	uint64_t thou_tfd                     : 1;  /**< 1 means PHY is 1000BASE-T Full Dup capable */
+	uint64_t thou_thd                     : 1;  /**< 1 means PHY is 1000BASE-T Half Dup capable */
+	uint64_t reserved_11_0                : 12;
+#else
+	uint64_t reserved_11_0                : 12;
+	uint64_t thou_thd                     : 1;
+	uint64_t thou_tfd                     : 1;
+	uint64_t thou_xhd                     : 1;
+	uint64_t thou_xfd                     : 1;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn70xx;
+	struct cvmx_pcsx_anx_ext_st_reg_cn70xx cn70xxp1;
 	struct cvmx_pcsx_anx_ext_st_reg_s     cnf71xx;
 };
 typedef union cvmx_pcsx_anx_ext_st_reg cvmx_pcsx_anx_ext_st_reg_t;

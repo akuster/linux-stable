@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -86,6 +86,8 @@
  *	This type is used for sgmii, rgmii, xaui and rxaui interfaces.
  * @param ILK
  *	This type is used for ilk interfaces.
+ * @param SRIO
+ *	This type is used for serial-RapidIo interfaces.
  * @param NPI
  *	This type is used for npi interfaces.
  * @param LB
@@ -97,6 +99,7 @@ enum port_map_if_type {
 	INVALID_IF_TYPE = 0,
 	GMII,
 	ILK,
+	SRIO,
 	NPI,
 	LB
 };
@@ -144,7 +147,7 @@ static const struct ipd_port_map ipd_port_map_68xx[CVMX_HELPER_MAX_IFACE] = {
  * Interface number to ipd port map for the octeon 78xx.
  *
  * This mapping corresponds to WQE(CHAN) enumeration in
- * HRM Sections 11.15, MKI_CHAN_E, Section 11.6
+ * HRM Sections 11.15, PKI_CHAN_E, Section 11.6
  *
  */
 static const struct ipd_port_map ipd_port_map_78xx[CVMX_HELPER_MAX_IFACE] = {
@@ -159,6 +162,31 @@ static const struct ipd_port_map ipd_port_map_78xx[CVMX_HELPER_MAX_IFACE] = {
 	{NPI,	0x100,	0x13f,	0x00},		/* Interface 8 - DPI */
 	{LB,	0x000,	0x03f,	0x00},		/* Interface 9 - LOOPBACK */
 };
+
+/**
+ * @INTERNAL
+ * Interface number to ipd port map for the octeon 73xx.
+ */
+static const struct ipd_port_map ipd_port_map_73xx[CVMX_HELPER_MAX_IFACE] = {
+	{GMII,	0x800,	0x83f,	0x00},		/* Interface 0 - BGX(0,0-3) */
+	{GMII,	0x900,	0x93f,	0x00},		/* Interface 1  -BGX(1,0-3) */
+	{GMII,	0xa00,	0xa3f,	0x00},		/* Interface 2  -BGX(2,0-3) */
+	{NPI,	0x100,	0x17f,	0x00},		/* Interface 3 - DPI */
+	{LB,	0x000,	0x03f,	0x00},		/* Interface 4 - LOOPBACK */
+};
+
+/**
+ * @INTERNAL
+ * Interface number to ipd port map for the octeon 75xx.
+ */
+static const struct ipd_port_map ipd_port_map_75xx[CVMX_HELPER_MAX_IFACE] = {
+	{GMII,	0x800,	0x83f,	0x00},		/* Interface 0 - BGX0 */
+	{SRIO,	0x240,	0x241,	0x00},		/* Interface 1 - SRIO 0 */
+	{SRIO,	0x242,	0x243,	0x00},		/* Interface 2 - SRIO 1 */
+	{NPI,	0x100,	0x13f,	0x00},		/* Interface 3 - DPI */
+	{LB,	0x000,	0x03f,	0x00},		/* Interface 4 - LOOPBACK */
+};
+
 
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 /**
@@ -221,6 +249,8 @@ const char *cvmx_helper_interface_mode_to_string(cvmx_helper_interface_mode_t mo
 		return "40G_KR4";
 	case CVMX_HELPER_INTERFACE_MODE_10G_KR:
 		return "10G_KR";
+	case CVMX_HELPER_INTERFACE_MODE_MIXED:
+		return "MIXED";
 	}
 	return "UNKNOWN";
 }
@@ -382,7 +412,7 @@ static void cvmx_packet_short_ptr_calculate(void)
 		if (__cvmx_ipd_mode_no_wptr())
 			/* packet pool, set to 0 in hardware */
 			__cvmx_wqe_pool = 0;
-		else 
+		else
 			/* WQE pool as configured */
 			__cvmx_wqe_pool =
 				cvmx_read_csr(CVMX_IPD_WQE_FPA_QUEUE) & 7;
@@ -592,7 +622,7 @@ void cvmx_wqe_free(cvmx_wqe_t *work)
 		/* WQE is separate from packet buffer, free it */
 		aura = __cvmx_fpa3_gaura(
 				wqe->word0.aura >> 10,
-				wqe->word0.aura * 0x3ff);
+				wqe->word0.aura & 0x3ff);
 
 		cvmx_fpa3_free(work, aura, ncl);
 	} else {
@@ -677,7 +707,7 @@ void cvmx_helper_free_packet_data(cvmx_wqe_t *work)
 			cvmx_fpa3_gaura_t aura =
 				__cvmx_fpa3_gaura(
 					wqe->word0.aura >> 10,
-					wqe->word0.aura * 0x3ff);
+					wqe->word0.aura & 0x3ff);
 
 			bptr.u64 = buffer_ptr.u64;
 
@@ -783,8 +813,8 @@ EXPORT_SYMBOL(cvmx_helper_setup_red);
  * ports. These setting apply to almost all configurations of all
  * chips.
  *
- * @param interface interface to configure
- * @param num_ports number of ports on the interface
+ * @param xiface Interface to configure
+ * @param num_ports Number of ports on the interface
  *
  * @return Zero on success, negative on failure
  */
@@ -799,7 +829,7 @@ int __cvmx_helper_setup_gmx(int xiface, int num_ports)
 
 	/* The common BGX settings are already done in the appropriate
 	   enable functions, nothing to do here. */
-	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+	if (octeon_has_feature(OCTEON_FEATURE_BGX))
 		return 0;
 
 	/* Tell GMX the number of TX ports on this interface */
@@ -942,6 +972,12 @@ int cvmx_helper_get_ipd_port(int xiface, int index)
 		} else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
 			port_map = ipd_port_map_78xx;
 			ipd_port = cvmx_helper_node_to_ipd_port(xi.node, 0);
+		} else if (OCTEON_IS_MODEL(OCTEON_CN73XX)) {
+			port_map = ipd_port_map_73xx;
+			ipd_port = 0;
+		} else if (OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+			port_map = ipd_port_map_75xx;
+			ipd_port = 0;
 		}
 		else
 			return -1;
@@ -961,10 +997,15 @@ int cvmx_helper_get_ipd_port(int xiface, int index)
 			return ipd_port + index;
 		else if (port_map[xi.interface].type == NPI)
 			return ipd_port + index;
+		else if (port_map[xi.interface].type == SRIO)
+			return ipd_port + index;
 		else if (port_map[xi.interface].type == LB)
 			return ipd_port + index;
-		else
+		else {
+			cvmx_dprintf("ERROR: %s: interface %u:%u bad mode\n",
+				__func__, xi.node, xi.interface);
 			return -1;
+		}
 
 	} else if (cvmx_helper_interface_get_mode(xiface) == CVMX_HELPER_INTERFACE_MODE_AGL) {
 		return 24;
@@ -1071,6 +1112,28 @@ int cvmx_helper_get_interface_num(int ipd_port)
 				return cvmx_helper_node_interface_to_xiface(xp.node, i);
 		}
 		return -1;
+	} else if (OCTEON_IS_MODEL(OCTEON_CN73XX)) {
+		const struct ipd_port_map	*port_map;
+		int				i;
+		struct cvmx_xport xp = cvmx_helper_ipd_port_to_xport(ipd_port);
+		port_map = ipd_port_map_73xx;
+		for (i = 0; i < CVMX_HELPER_MAX_IFACE; i++) {
+			if (xp.port >= port_map[i].first_ipd_port &&
+			    xp.port <= port_map[i].last_ipd_port)
+				return i;
+		}
+		return -1;
+	} else if (OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		const struct ipd_port_map	*port_map;
+		int				i;
+		struct cvmx_xport xp = cvmx_helper_ipd_port_to_xport(ipd_port);
+		port_map = ipd_port_map_75xx;
+		for (i = 0; i < CVMX_HELPER_MAX_IFACE; i++) {
+			if (xp.port >= port_map[i].first_ipd_port &&
+			    xp.port <= port_map[i].last_ipd_port)
+				return cvmx_helper_node_interface_to_xiface(xp.node, i);
+		}
+		return -1;
 	} else if (OCTEON_IS_MODEL(OCTEON_CN70XX) && ipd_port == 24) {
 		return 4;
 	} else {
@@ -1093,10 +1156,9 @@ int cvmx_helper_get_interface_num(int ipd_port)
 	}
 	cvmx_dprintf("cvmx_helper_get_interface_num: Illegal IPD port number %d\n",
 		     ipd_port);
-
 	return -1;
 }
-EXPORT_SYMBOL_GPL(cvmx_helper_get_interface_num);
+EXPORT_SYMBOL(cvmx_helper_get_interface_num);
 
 /**
  * Returns the interface index number for an IPD/PKO port
@@ -1122,6 +1184,16 @@ int cvmx_helper_get_interface_index_num(int ipd_port)
 			port_map = ipd_port_map_78xx;
 			ipd_port = xp.port;
 		}
+		else if (OCTEON_IS_MODEL(OCTEON_CN73XX)) {
+			struct cvmx_xport xp = cvmx_helper_ipd_port_to_xport(ipd_port);
+			port_map = ipd_port_map_73xx;
+			ipd_port = xp.port;
+		}
+		else if (OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+			struct cvmx_xport xp = cvmx_helper_ipd_port_to_xport(ipd_port);
+			port_map = ipd_port_map_75xx;
+			ipd_port = xp.port;
+		}
 		else
 			return -1;
 
@@ -1138,20 +1210,38 @@ int cvmx_helper_get_interface_index_num(int ipd_port)
 
 		/* Convert the ipd port to the interface port */
 		switch (type) {
+		/* Ethernet interfaces have a channel in lower 4 bits
+		 * that is does not discriminate traffic, and is ignored.
+		 */
 		case GMII:
-			port = ((ipd_port & 0xff) >> 6);
-			return port ? (port - 1) : ((ipd_port & 0xff) >> 4);
-			break;
+			port = ipd_port - port_map[i].first_ipd_port;
 
+			/* CN68XX adds 0x40 to IPD_PORT when in XAUI/RXAUI
+			 * mode of operation, adjust for that case
+			 */
+			if (port >= port_map[i].ipd_port_adj)
+				port -= port_map[i].ipd_port_adj;
+
+			port >>= 4;
+			/* cvmx_dprintf("%s: ipd_port=%#x port=%d,%d\n", __func__, ipd_port, port,i); */
+			return port;
+
+		/*
+		 * These interfaces do not have physical ports,
+		 * but have logical channels instead that separate
+		 * traffic into logical streams
+		 */
 		case ILK:
+		case SRIO:
 		case NPI:
 		case LB:
-			return ipd_port & 0xff;
-			break;
+			port = ipd_port - port_map[i].first_ipd_port;
+		        /* cvmx_dprintf("%s: ipd_port=%#x port=%d, i = %d\n", __func__, ipd_port, port,i); */
+			return port;
 
 		default:
-			cvmx_dprintf("cvmx_helper_get_interface_index_num: "
-				     "Illegal IPD port number %d\n", ipd_port);
+			cvmx_printf("ERROR: %s: Illegal IPD port number %#x\n",
+				__func__, ipd_port);
 			return -1;
 		}
 	}
@@ -1168,4 +1258,4 @@ int cvmx_helper_get_interface_index_num(int ipd_port)
 
 	return -1;
 }
-EXPORT_SYMBOL_GPL(cvmx_helper_get_interface_index_num);
+EXPORT_SYMBOL(cvmx_helper_get_interface_index_num);

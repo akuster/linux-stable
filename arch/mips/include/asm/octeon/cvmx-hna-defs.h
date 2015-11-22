@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -56,7 +56,7 @@
 #define CVMX_HNA_BIST0 CVMX_HNA_BIST0_FUNC()
 static inline uint64_t CVMX_HNA_BIST0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_BIST0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800470007F0ull);
 }
@@ -67,7 +67,7 @@ static inline uint64_t CVMX_HNA_BIST0_FUNC(void)
 #define CVMX_HNA_BIST1 CVMX_HNA_BIST1_FUNC()
 static inline uint64_t CVMX_HNA_BIST1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_BIST1 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800470007F8ull);
 }
@@ -78,7 +78,7 @@ static inline uint64_t CVMX_HNA_BIST1_FUNC(void)
 #define CVMX_HNA_CONFIG CVMX_HNA_CONFIG_FUNC()
 static inline uint64_t CVMX_HNA_CONFIG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_CONFIG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000000ull);
 }
@@ -89,7 +89,7 @@ static inline uint64_t CVMX_HNA_CONFIG_FUNC(void)
 #define CVMX_HNA_CONTROL CVMX_HNA_CONTROL_FUNC()
 static inline uint64_t CVMX_HNA_CONTROL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_CONTROL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000020ull);
 }
@@ -100,7 +100,7 @@ static inline uint64_t CVMX_HNA_CONTROL_FUNC(void)
 #define CVMX_HNA_DBELL CVMX_HNA_DBELL_FUNC()
 static inline uint64_t CVMX_HNA_DBELL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_DBELL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001470000000000ull);
 }
@@ -111,7 +111,7 @@ static inline uint64_t CVMX_HNA_DBELL_FUNC(void)
 #define CVMX_HNA_DIFCTL CVMX_HNA_DIFCTL_FUNC()
 static inline uint64_t CVMX_HNA_DIFCTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_DIFCTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001470600000000ull);
 }
@@ -122,7 +122,7 @@ static inline uint64_t CVMX_HNA_DIFCTL_FUNC(void)
 #define CVMX_HNA_DIFRDPTR CVMX_HNA_DIFRDPTR_FUNC()
 static inline uint64_t CVMX_HNA_DIFRDPTR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_DIFRDPTR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001470200000000ull);
 }
@@ -130,10 +130,21 @@ static inline uint64_t CVMX_HNA_DIFRDPTR_FUNC(void)
 #define CVMX_HNA_DIFRDPTR (CVMX_ADD_IO_SEG(0x0001470200000000ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_HNA_ECO CVMX_HNA_ECO_FUNC()
+static inline uint64_t CVMX_HNA_ECO_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
+		cvmx_warn("CVMX_HNA_ECO not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011800470000D0ull);
+}
+#else
+#define CVMX_HNA_ECO (CVMX_ADD_IO_SEG(0x00011800470000D0ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_HNA_ERROR CVMX_HNA_ERROR_FUNC()
 static inline uint64_t CVMX_HNA_ERROR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_ERROR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000028ull);
 }
@@ -144,7 +155,7 @@ static inline uint64_t CVMX_HNA_ERROR_FUNC(void)
 #define CVMX_HNA_ERROR_CAPTURE_DATA CVMX_HNA_ERROR_CAPTURE_DATA_FUNC()
 static inline uint64_t CVMX_HNA_ERROR_CAPTURE_DATA_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_ERROR_CAPTURE_DATA not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000038ull);
 }
@@ -155,7 +166,7 @@ static inline uint64_t CVMX_HNA_ERROR_CAPTURE_DATA_FUNC(void)
 #define CVMX_HNA_ERROR_CAPTURE_INFO CVMX_HNA_ERROR_CAPTURE_INFO_FUNC()
 static inline uint64_t CVMX_HNA_ERROR_CAPTURE_INFO_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_ERROR_CAPTURE_INFO not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000030ull);
 }
@@ -166,6 +177,7 @@ static inline uint64_t CVMX_HNA_ERROR_CAPTURE_INFO_FUNC(void)
 static inline uint64_t CVMX_HNA_HNC0_RAM1X(unsigned long offset)
 {
 	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 63))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
 		cvmx_warn("CVMX_HNA_HNC0_RAM1X(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001470400000000ull) + ((offset) & 63) * 8;
@@ -177,6 +189,7 @@ static inline uint64_t CVMX_HNA_HNC0_RAM1X(unsigned long offset)
 static inline uint64_t CVMX_HNA_HNC0_RAM2X(unsigned long offset)
 {
 	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 63))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
 		cvmx_warn("CVMX_HNA_HNC0_RAM2X(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001470400040000ull) + ((offset) & 63) * 8;
@@ -188,6 +201,7 @@ static inline uint64_t CVMX_HNA_HNC0_RAM2X(unsigned long offset)
 static inline uint64_t CVMX_HNA_HNC1_RAM1X(unsigned long offset)
 {
 	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 63))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
 		cvmx_warn("CVMX_HNA_HNC1_RAM1X(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001470400400000ull) + ((offset) & 63) * 8;
@@ -199,6 +213,7 @@ static inline uint64_t CVMX_HNA_HNC1_RAM1X(unsigned long offset)
 static inline uint64_t CVMX_HNA_HNC1_RAM2X(unsigned long offset)
 {
 	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 63))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
 		cvmx_warn("CVMX_HNA_HNC1_RAM2X(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001470400440000ull) + ((offset) & 63) * 8;
@@ -210,7 +225,7 @@ static inline uint64_t CVMX_HNA_HNC1_RAM2X(unsigned long offset)
 #define CVMX_HNA_HPU_CSR CVMX_HNA_HPU_CSR_FUNC()
 static inline uint64_t CVMX_HNA_HPU_CSR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_HPU_CSR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000010ull);
 }
@@ -221,7 +236,7 @@ static inline uint64_t CVMX_HNA_HPU_CSR_FUNC(void)
 #define CVMX_HNA_HPU_DBG CVMX_HNA_HPU_DBG_FUNC()
 static inline uint64_t CVMX_HNA_HPU_DBG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_HPU_DBG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000008ull);
 }
@@ -232,7 +247,7 @@ static inline uint64_t CVMX_HNA_HPU_DBG_FUNC(void)
 #define CVMX_HNA_HPU_EIR CVMX_HNA_HPU_EIR_FUNC()
 static inline uint64_t CVMX_HNA_HPU_EIR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_HPU_EIR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000018ull);
 }
@@ -243,7 +258,7 @@ static inline uint64_t CVMX_HNA_HPU_EIR_FUNC(void)
 #define CVMX_HNA_PFC0_CNT CVMX_HNA_PFC0_CNT_FUNC()
 static inline uint64_t CVMX_HNA_PFC0_CNT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_PFC0_CNT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000090ull);
 }
@@ -254,7 +269,7 @@ static inline uint64_t CVMX_HNA_PFC0_CNT_FUNC(void)
 #define CVMX_HNA_PFC0_CTL CVMX_HNA_PFC0_CTL_FUNC()
 static inline uint64_t CVMX_HNA_PFC0_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_PFC0_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000088ull);
 }
@@ -265,7 +280,7 @@ static inline uint64_t CVMX_HNA_PFC0_CTL_FUNC(void)
 #define CVMX_HNA_PFC1_CNT CVMX_HNA_PFC1_CNT_FUNC()
 static inline uint64_t CVMX_HNA_PFC1_CNT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_PFC1_CNT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800470000A0ull);
 }
@@ -276,7 +291,7 @@ static inline uint64_t CVMX_HNA_PFC1_CNT_FUNC(void)
 #define CVMX_HNA_PFC1_CTL CVMX_HNA_PFC1_CTL_FUNC()
 static inline uint64_t CVMX_HNA_PFC1_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_PFC1_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000098ull);
 }
@@ -287,7 +302,7 @@ static inline uint64_t CVMX_HNA_PFC1_CTL_FUNC(void)
 #define CVMX_HNA_PFC2_CNT CVMX_HNA_PFC2_CNT_FUNC()
 static inline uint64_t CVMX_HNA_PFC2_CNT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_PFC2_CNT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800470000B0ull);
 }
@@ -298,7 +313,7 @@ static inline uint64_t CVMX_HNA_PFC2_CNT_FUNC(void)
 #define CVMX_HNA_PFC2_CTL CVMX_HNA_PFC2_CTL_FUNC()
 static inline uint64_t CVMX_HNA_PFC2_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_PFC2_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800470000A8ull);
 }
@@ -309,7 +324,7 @@ static inline uint64_t CVMX_HNA_PFC2_CTL_FUNC(void)
 #define CVMX_HNA_PFC3_CNT CVMX_HNA_PFC3_CNT_FUNC()
 static inline uint64_t CVMX_HNA_PFC3_CNT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_PFC3_CNT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800470000C0ull);
 }
@@ -320,7 +335,7 @@ static inline uint64_t CVMX_HNA_PFC3_CNT_FUNC(void)
 #define CVMX_HNA_PFC3_CTL CVMX_HNA_PFC3_CTL_FUNC()
 static inline uint64_t CVMX_HNA_PFC3_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_PFC3_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00011800470000B8ull);
 }
@@ -331,7 +346,7 @@ static inline uint64_t CVMX_HNA_PFC3_CTL_FUNC(void)
 #define CVMX_HNA_PFC_GCTL CVMX_HNA_PFC_GCTL_FUNC()
 static inline uint64_t CVMX_HNA_PFC_GCTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_PFC_GCTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000080ull);
 }
@@ -342,7 +357,7 @@ static inline uint64_t CVMX_HNA_PFC_GCTL_FUNC(void)
 #define CVMX_HNA_SBD_DBG0 CVMX_HNA_SBD_DBG0_FUNC()
 static inline uint64_t CVMX_HNA_SBD_DBG0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_SBD_DBG0 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000040ull);
 }
@@ -353,7 +368,7 @@ static inline uint64_t CVMX_HNA_SBD_DBG0_FUNC(void)
 #define CVMX_HNA_SBD_DBG1 CVMX_HNA_SBD_DBG1_FUNC()
 static inline uint64_t CVMX_HNA_SBD_DBG1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_SBD_DBG1 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000048ull);
 }
@@ -364,7 +379,7 @@ static inline uint64_t CVMX_HNA_SBD_DBG1_FUNC(void)
 #define CVMX_HNA_SBD_DBG2 CVMX_HNA_SBD_DBG2_FUNC()
 static inline uint64_t CVMX_HNA_SBD_DBG2_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_SBD_DBG2 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000050ull);
 }
@@ -375,7 +390,7 @@ static inline uint64_t CVMX_HNA_SBD_DBG2_FUNC(void)
 #define CVMX_HNA_SBD_DBG3 CVMX_HNA_SBD_DBG3_FUNC()
 static inline uint64_t CVMX_HNA_SBD_DBG3_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_HNA_SBD_DBG3 not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180047000058ull);
 }
@@ -412,7 +427,9 @@ union cvmx_hna_bist0 {
 	uint64_t reserved_60_63               : 4;
 #endif
 	} s;
+	struct cvmx_hna_bist0_s               cn73xx;
 	struct cvmx_hna_bist0_s               cn78xx;
+	struct cvmx_hna_bist0_s               cn78xxp2;
 };
 typedef union cvmx_hna_bist0 cvmx_hna_bist0_t;
 
@@ -443,7 +460,9 @@ union cvmx_hna_bist1 {
 	uint64_t reserved_7_63                : 57;
 #endif
 	} s;
+	struct cvmx_hna_bist1_s               cn73xx;
 	struct cvmx_hna_bist1_s               cn78xx;
+	struct cvmx_hna_bist1_s               cn78xxp2;
 };
 typedef union cvmx_hna_bist1 cvmx_hna_bist1_t;
 
@@ -497,10 +516,10 @@ union cvmx_hna_config {
 	uint64_t ecccordis                    : 1;  /**< ECC correction disable. When set, all HNA ECC protected data structures disable their ECC
                                                          correction logic. When clear (default) ECC correction is always enabled. */
 	uint64_t clmskcrip                    : 4;  /**< Cluster cripple mask. A one in each bit of the mask represents which HPC cluster to
-                                                         cripple. CN78XX HNA has 4 clusters, where all CLMSKCRIP mask bits are used.
-                                                         Software NOTE: The MIO_FUS___HNA_CLMASK_CRIPPLE[3:0] fuse bits are forced into
-                                                         this register at reset. Any fuse bits that contain 1 are disallowed during a
-                                                         write operation and are always read as 1. */
+                                                         cripple.
+                                                         MIO_FUS_DAT3[HNA_INFO_CLM] fuse bits are forced into this
+                                                         register at reset. Any fuse bits that contain 1 are disallowed during a write and are
+                                                         always read as 1. */
 	uint64_t hpu_clcrip                   : 3;  /**< HPU cluster cripple. Encoding which represents number of HPUs to cripple for each
                                                          cluster. Typically HPU_CLCRIP=0x0, which enables all HPUs within each cluster. However,
                                                          when the HNA performance counters are used, software may want to limit the number of HPUs
@@ -547,7 +566,102 @@ union cvmx_hna_config {
 	uint64_t reserved_25_63               : 39;
 #endif
 	} s;
+	struct cvmx_hna_config_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_25_63               : 39;
+	uint64_t stk_ll_dis                   : 1;  /**< Stack linked-list disable. When set, the linked-list mechanism for run stack and save
+                                                         stack structures is disabled. In this mode, the linked-list chunk boundary checking is not
+                                                         done, and therefore the previous/next pointers are non-existent. The stacks are
+                                                         effectively in an infinite linear buffer, bounded only by the maximum sizes provided in
+                                                         the instruction (IWORD3[RUNSTACKSZ] and IWORD6[SVSTACKSZ]). There is no space reserved for
+                                                         the previous and next pointers, and [STK_CHKSZ] is ignored.
+                                                         When the STK_LL_DIS is cleared, the stack linked-list mechanism operates as per spec. */
+	uint64_t reserved_23_23               : 1;
+	uint64_t stk_chksz                    : 3;  /**< Stack chunk size. This encoded value specifies the chunk size for both the RNSTK/SVSTK
+                                                         data structures. The RNSTK/SVSTK use a doubly linked list where each chunk's first two
+                                                         64-bit entries contain the previous and next chunk pointers.
+                                                         0x0 = 32 entries or 256 bytes.
+                                                         0x1 = 64 entries or 512 bytes.
+                                                         0x2 = 128 entries or 1K bytes.
+                                                         0x3 = 256 entries or 2K bytes.
+                                                         0x4 = 512 entries or 4K bytes.
+                                                         0x5 = 1024 entries or 8K bytes.
+                                                         0x6 = 2048 entries or 16K bytes.
+                                                         0x7 = 4096 entries or 32K bytes.
+                                                         NOTE: This field can only be changed at initialization/power on time before the HNA is fed
+                                                         instructions. */
+	uint64_t rnstk_lwm                    : 4;  /**< RNSTK low watermark. This field specifies the low watermark for the run stack. Valid
+                                                         range: 0-15.
+                                                         Once the run stack goes below the low watermark, HNA fills entries from the global run
+                                                         stack head to the local run stack tail. The granularity of this field is represented as
+                                                         number of 128B cachelines.
+                                                         NOTE: This field can only be changed at initialization/power on time before the HNA is fed
+                                                         instructions. */
+	uint64_t rnstk_hwm                    : 4;  /**< RNSTK high watermark. This field specifies the high watermark for the run stack. Valid
+                                                         range: 0-15.
+                                                         Once the local run stack level goes above the high watermark, the HNA spills entries from
+                                                         the local run stack tail to the global run stack head (in DDR memory). The granularity of
+                                                         this field is represented as number of 128B cachelines.
+                                                         NOTE: This field can only be changed at initialization/power on time before the HNA is fed
+                                                         instructions. */
+	uint64_t reserved_9_11                : 3;
+	uint64_t ecccordis                    : 1;  /**< ECC correction disable. When set, all HNA ECC protected data structures disable their ECC
+                                                         correction logic. When clear (default) ECC correction is always enabled. */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t clmskcrip                    : 2;  /**< Cluster cripple mask. A one in each bit of the mask represents which HPC cluster to
+                                                         cripple. CN73XX HNA has 2 clusters, where all CLMSKCRIP mask bits are used.
+                                                         MIO_FUS_DAT3[HNA_INFO_CLM] fuse bits are forced into this
+                                                         register at reset. Any fuse bits that contain 1 are disallowed during a write and are
+                                                         always read as 1. */
+	uint64_t hpu_clcrip                   : 3;  /**< HPU cluster cripple. Encoding which represents number of HPUs to cripple for each
+                                                         cluster. Typically HPU_CLCRIP=0x0, which enables all HPUs within each cluster. However,
+                                                         when the HNA performance counters are used, software may want to limit the number of HPUs
+                                                         per cluster available, as there are only 4 parallel performance counters.
+                                                         0x0 = HPU[9:0]:ON, All engines enabled
+                                                         0x1 = HPU[9]:OFF /HPU[8:0]:ON, (n-1) engines enabled.
+                                                         0x2 = HPU[9:8]:OFF /HPU[7:0]:ON, (n-2) engines enabled.
+                                                         0x2 = HPU[9:7]:OFF /HPU[6:0]:ON, (n-3) engines enabled.
+                                                         0x3 = HPU[9:6]:OFF /HPU[5:0]:ON, (n-4) engines enabled.
+                                                         0x4 = HPU[9:5]:OFF /HPU[4:0]:ON, (n-5) engines enabled.
+                                                         0x5 = HPU[9:4]:OFF /HPU[3:0]:ON, (n-6) engines enabled.
+                                                         0x6 = HPU[9:2]:OFF /HPU[1:0]:ON, (n-8) engines enabled.
+                                                         0x7 = HPU[9:1]:OFF /HPU[0]:ON, (n-9) 1 engine enabled.
+                                                         NOTE: Higher numbered HPUs are crippled first. For instance, on CN78XX (with 10
+                                                         HPUs/cluster), if HPU_CLCRIP=0x1, then HPU numbers [9] within the cluster are
+                                                         crippled and only HPU numbers 0-8 are available.
+                                                         Software NOTE: The MIO_FUS___HNA_NUMHPU_CRIPPLE[2:0] fuse bits are forced into this
+                                                         register at reset. Any fuse bits that contain 1 are disallowed during a write and are
+                                                         always read as 1.
+                                                         INTERNAL: The encodings are done in such a way as to later be used with fuses (for future
+                                                         revisions which will disable some number of HPUs). Blowing a fuse has the effect that
+                                                         there will always be fewer HPUs available. [i.e: we never want a customer to blow
+                                                         additional fuses to get more HPUs]. */
+	uint64_t hpuclkdis                    : 1;  /**< HNA clock disable source. When set, the HNA clocks for HPU (thread engine) operation are
+                                                         disabled (to conserve overall chip clocking power when the HNA function is not used).
+                                                         NOTE: When set, software must never issue NCB-direct CSR operations to the HNA (will
+                                                         result in NCB bus timeout errors).
+                                                         NOTE: This should only be written to a different value during power-on software
+                                                         initialization.
+                                                         Software NOTE: The MIO_FUS___HNA_HPU_DISABLE fuse bit is forced into this register at
+                                                         reset. If the fuse bit contains 1, writes to HPUCLKDIS are disallowed and are always read
+                                                         as 1. */
+#else
+	uint64_t hpuclkdis                    : 1;
+	uint64_t hpu_clcrip                   : 3;
+	uint64_t clmskcrip                    : 2;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t ecccordis                    : 1;
+	uint64_t reserved_9_11                : 3;
+	uint64_t rnstk_hwm                    : 4;
+	uint64_t rnstk_lwm                    : 4;
+	uint64_t stk_chksz                    : 3;
+	uint64_t reserved_23_23               : 1;
+	uint64_t stk_ll_dis                   : 1;
+	uint64_t reserved_25_63               : 39;
+#endif
+	} cn73xx;
 	struct cvmx_hna_config_s              cn78xx;
+	struct cvmx_hna_config_s              cn78xxp2;
 };
 typedef union cvmx_hna_config cvmx_hna_config_t;
 
@@ -595,7 +709,9 @@ union cvmx_hna_control {
 	uint64_t reserved_13_63               : 51;
 #endif
 	} s;
+	struct cvmx_hna_control_s             cn73xx;
 	struct cvmx_hna_control_s             cn78xx;
+	struct cvmx_hna_control_s             cn78xxp2;
 };
 typedef union cvmx_hna_control cvmx_hna_control_t;
 
@@ -627,7 +743,9 @@ union cvmx_hna_dbell {
 	uint64_t reserved_20_63               : 44;
 #endif
 	} s;
+	struct cvmx_hna_dbell_s               cn73xx;
 	struct cvmx_hna_dbell_s               cn78xx;
+	struct cvmx_hna_dbell_s               cn78xxp2;
 };
 typedef union cvmx_hna_dbell cvmx_hna_dbell_t;
 
@@ -675,7 +793,9 @@ union cvmx_hna_difctl {
 	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
+	struct cvmx_hna_difctl_s              cn73xx;
 	struct cvmx_hna_difctl_s              cn78xx;
+	struct cvmx_hna_difctl_s              cn78xxp2;
 };
 typedef union cvmx_hna_difctl cvmx_hna_difctl_t;
 
@@ -709,9 +829,31 @@ union cvmx_hna_difrdptr {
 	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
+	struct cvmx_hna_difrdptr_s            cn73xx;
 	struct cvmx_hna_difrdptr_s            cn78xx;
+	struct cvmx_hna_difrdptr_s            cn78xxp2;
 };
 typedef union cvmx_hna_difrdptr cvmx_hna_difrdptr_t;
+
+/**
+ * cvmx_hna_eco
+ */
+union cvmx_hna_eco {
+	uint64_t u64;
+	struct cvmx_hna_eco_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t eco_rw                       : 32; /**< Added in pass 2.
+                                                         INTERNAL: Reserved for ECO usage. */
+#else
+	uint64_t eco_rw                       : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_hna_eco_s                 cn73xx;
+	struct cvmx_hna_eco_s                 cn78xxp2;
+};
+typedef union cvmx_hna_eco cvmx_hna_eco_t;
 
 /**
  * cvmx_hna_error
@@ -795,7 +937,9 @@ union cvmx_hna_error {
 	uint64_t reserved_21_63               : 43;
 #endif
 	} s;
+	struct cvmx_hna_error_s               cn73xx;
 	struct cvmx_hna_error_s               cn78xx;
+	struct cvmx_hna_error_s               cn78xxp2;
 };
 typedef union cvmx_hna_error cvmx_hna_error_t;
 
@@ -849,7 +993,9 @@ union cvmx_hna_error_capture_data {
 	uint64_t hpu_stat                     : 64;
 #endif
 	} s;
+	struct cvmx_hna_error_capture_data_s  cn73xx;
 	struct cvmx_hna_error_capture_data_s  cn78xx;
+	struct cvmx_hna_error_capture_data_s  cn78xxp2;
 };
 typedef union cvmx_hna_error_capture_data cvmx_hna_error_capture_data_t;
 
@@ -882,7 +1028,9 @@ union cvmx_hna_error_capture_info {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
+	struct cvmx_hna_error_capture_info_s  cn73xx;
 	struct cvmx_hna_error_capture_info_s  cn78xx;
+	struct cvmx_hna_error_capture_info_s  cn78xxp2;
 };
 typedef union cvmx_hna_error_capture_info cvmx_hna_error_capture_info_t;
 
@@ -902,7 +1050,9 @@ union cvmx_hna_hnc0_ram1x {
 	uint64_t ram1_data                    : 64;
 #endif
 	} s;
+	struct cvmx_hna_hnc0_ram1x_s          cn73xx;
 	struct cvmx_hna_hnc0_ram1x_s          cn78xx;
+	struct cvmx_hna_hnc0_ram1x_s          cn78xxp2;
 };
 typedef union cvmx_hna_hnc0_ram1x cvmx_hna_hnc0_ram1x_t;
 
@@ -922,7 +1072,9 @@ union cvmx_hna_hnc0_ram2x {
 	uint64_t ram2_data                    : 64;
 #endif
 	} s;
+	struct cvmx_hna_hnc0_ram2x_s          cn73xx;
 	struct cvmx_hna_hnc0_ram2x_s          cn78xx;
+	struct cvmx_hna_hnc0_ram2x_s          cn78xxp2;
 };
 typedef union cvmx_hna_hnc0_ram2x cvmx_hna_hnc0_ram2x_t;
 
@@ -942,7 +1094,9 @@ union cvmx_hna_hnc1_ram1x {
 	uint64_t ram1_data                    : 64;
 #endif
 	} s;
+	struct cvmx_hna_hnc1_ram1x_s          cn73xx;
 	struct cvmx_hna_hnc1_ram1x_s          cn78xx;
+	struct cvmx_hna_hnc1_ram1x_s          cn78xxp2;
 };
 typedef union cvmx_hna_hnc1_ram1x cvmx_hna_hnc1_ram1x_t;
 
@@ -962,7 +1116,9 @@ union cvmx_hna_hnc1_ram2x {
 	uint64_t ram2_data                    : 64;
 #endif
 	} s;
+	struct cvmx_hna_hnc1_ram2x_s          cn73xx;
 	struct cvmx_hna_hnc1_ram2x_s          cn78xx;
+	struct cvmx_hna_hnc1_ram2x_s          cn78xxp2;
 };
 typedef union cvmx_hna_hnc1_ram2x cvmx_hna_hnc1_ram2x_t;
 
@@ -983,7 +1139,9 @@ union cvmx_hna_hpu_csr {
 	uint64_t csrdat                       : 64;
 #endif
 	} s;
+	struct cvmx_hna_hpu_csr_s             cn73xx;
 	struct cvmx_hna_hpu_csr_s             cn78xx;
+	struct cvmx_hna_hpu_csr_s             cn78xxp2;
 };
 typedef union cvmx_hna_hpu_csr cvmx_hna_hpu_csr_t;
 
@@ -1011,7 +1169,9 @@ union cvmx_hna_hpu_dbg {
 	uint64_t reserved_8_63                : 56;
 #endif
 	} s;
+	struct cvmx_hna_hpu_dbg_s             cn73xx;
 	struct cvmx_hna_hpu_dbg_s             cn78xx;
+	struct cvmx_hna_hpu_dbg_s             cn78xxp2;
 };
 typedef union cvmx_hna_hpu_dbg cvmx_hna_hpu_dbg_t;
 
@@ -1047,7 +1207,9 @@ union cvmx_hna_hpu_eir {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
+	struct cvmx_hna_hpu_eir_s             cn73xx;
 	struct cvmx_hna_hpu_eir_s             cn78xx;
+	struct cvmx_hna_hpu_eir_s             cn78xxp2;
 };
 typedef union cvmx_hna_hpu_eir cvmx_hna_hpu_eir_t;
 
@@ -1065,7 +1227,9 @@ union cvmx_hna_pfc0_cnt {
 	uint64_t pfcnt                        : 64;
 #endif
 	} s;
+	struct cvmx_hna_pfc0_cnt_s            cn73xx;
 	struct cvmx_hna_pfc0_cnt_s            cn78xx;
+	struct cvmx_hna_pfc0_cnt_s            cn78xxp2;
 };
 typedef union cvmx_hna_pfc0_cnt cvmx_hna_pfc0_cnt_t;
 
@@ -1094,7 +1258,9 @@ union cvmx_hna_pfc0_ctl {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_hna_pfc0_ctl_s            cn73xx;
 	struct cvmx_hna_pfc0_ctl_s            cn78xx;
+	struct cvmx_hna_pfc0_ctl_s            cn78xxp2;
 };
 typedef union cvmx_hna_pfc0_ctl cvmx_hna_pfc0_ctl_t;
 
@@ -1112,7 +1278,9 @@ union cvmx_hna_pfc1_cnt {
 	uint64_t pfcnt                        : 64;
 #endif
 	} s;
+	struct cvmx_hna_pfc1_cnt_s            cn73xx;
 	struct cvmx_hna_pfc1_cnt_s            cn78xx;
+	struct cvmx_hna_pfc1_cnt_s            cn78xxp2;
 };
 typedef union cvmx_hna_pfc1_cnt cvmx_hna_pfc1_cnt_t;
 
@@ -1140,7 +1308,9 @@ union cvmx_hna_pfc1_ctl {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_hna_pfc1_ctl_s            cn73xx;
 	struct cvmx_hna_pfc1_ctl_s            cn78xx;
+	struct cvmx_hna_pfc1_ctl_s            cn78xxp2;
 };
 typedef union cvmx_hna_pfc1_ctl cvmx_hna_pfc1_ctl_t;
 
@@ -1158,7 +1328,9 @@ union cvmx_hna_pfc2_cnt {
 	uint64_t pfcnt                        : 64;
 #endif
 	} s;
+	struct cvmx_hna_pfc2_cnt_s            cn73xx;
 	struct cvmx_hna_pfc2_cnt_s            cn78xx;
+	struct cvmx_hna_pfc2_cnt_s            cn78xxp2;
 };
 typedef union cvmx_hna_pfc2_cnt cvmx_hna_pfc2_cnt_t;
 
@@ -1186,7 +1358,9 @@ union cvmx_hna_pfc2_ctl {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_hna_pfc2_ctl_s            cn73xx;
 	struct cvmx_hna_pfc2_ctl_s            cn78xx;
+	struct cvmx_hna_pfc2_ctl_s            cn78xxp2;
 };
 typedef union cvmx_hna_pfc2_ctl cvmx_hna_pfc2_ctl_t;
 
@@ -1204,7 +1378,9 @@ union cvmx_hna_pfc3_cnt {
 	uint64_t pfcnt                        : 64;
 #endif
 	} s;
+	struct cvmx_hna_pfc3_cnt_s            cn73xx;
 	struct cvmx_hna_pfc3_cnt_s            cn78xx;
+	struct cvmx_hna_pfc3_cnt_s            cn78xxp2;
 };
 typedef union cvmx_hna_pfc3_cnt cvmx_hna_pfc3_cnt_t;
 
@@ -1232,7 +1408,9 @@ union cvmx_hna_pfc3_ctl {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_hna_pfc3_ctl_s            cn73xx;
 	struct cvmx_hna_pfc3_ctl_s            cn78xx;
+	struct cvmx_hna_pfc3_ctl_s            cn78xxp2;
 };
 typedef union cvmx_hna_pfc3_ctl cvmx_hna_pfc3_ctl_t;
 
@@ -1291,7 +1469,9 @@ union cvmx_hna_pfc_gctl {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
+	struct cvmx_hna_pfc_gctl_s            cn73xx;
 	struct cvmx_hna_pfc_gctl_s            cn78xx;
+	struct cvmx_hna_pfc_gctl_s            cn78xxp2;
 };
 typedef union cvmx_hna_pfc_gctl cvmx_hna_pfc_gctl_t;
 
@@ -1339,7 +1519,9 @@ union cvmx_hna_sbd_dbg0 {
 	uint64_t sbd                          : 64;
 #endif
 	} s;
+	struct cvmx_hna_sbd_dbg0_s            cn73xx;
 	struct cvmx_hna_sbd_dbg0_s            cn78xx;
+	struct cvmx_hna_sbd_dbg0_s            cn78xxp2;
 };
 typedef union cvmx_hna_sbd_dbg0 cvmx_hna_sbd_dbg0_t;
 
@@ -1363,7 +1545,9 @@ union cvmx_hna_sbd_dbg1 {
 	uint64_t sbd                          : 64;
 #endif
 	} s;
+	struct cvmx_hna_sbd_dbg1_s            cn73xx;
 	struct cvmx_hna_sbd_dbg1_s            cn78xx;
+	struct cvmx_hna_sbd_dbg1_s            cn78xxp2;
 };
 typedef union cvmx_hna_sbd_dbg1 cvmx_hna_sbd_dbg1_t;
 
@@ -1387,7 +1571,9 @@ union cvmx_hna_sbd_dbg2 {
 	uint64_t sbd                          : 64;
 #endif
 	} s;
+	struct cvmx_hna_sbd_dbg2_s            cn73xx;
 	struct cvmx_hna_sbd_dbg2_s            cn78xx;
+	struct cvmx_hna_sbd_dbg2_s            cn78xxp2;
 };
 typedef union cvmx_hna_sbd_dbg2 cvmx_hna_sbd_dbg2_t;
 
@@ -1421,7 +1607,9 @@ union cvmx_hna_sbd_dbg3 {
 	uint64_t sbd                          : 64;
 #endif
 	} s;
+	struct cvmx_hna_sbd_dbg3_s            cn73xx;
 	struct cvmx_hna_sbd_dbg3_s            cn78xx;
+	struct cvmx_hna_sbd_dbg3_s            cn78xxp2;
 };
 typedef union cvmx_hna_sbd_dbg3 cvmx_hna_sbd_dbg3_t;
 

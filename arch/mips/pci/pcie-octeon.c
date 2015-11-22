@@ -30,6 +30,9 @@
 static int pcie_disable;
 module_param(pcie_disable, int, S_IRUGO);
 
+int cvmx_primary_pcie_bus_number = 1;
+module_param(cvmx_primary_pcie_bus_number, int, S_IRUGO);
+
 static int enable_pcie_14459_war;
 static int enable_pcie_bus_num_war[CVMX_PCIE_MAX_PORTS];
 
@@ -37,10 +40,10 @@ struct octeon_pcie_interface {
 	struct pci_controller controller;
 	struct resource mem;
 	struct resource io;
-	char mem_name[20];
-	char io_name[20];
+	char mem_name[24];
+	char io_name[24];
 	int node;
-	int pem;
+	int pem; /* port */
 };
 
 struct pcie_17400_chip_data {
@@ -52,6 +55,13 @@ struct pcie_17400_chip_data {
 	unsigned int intsn;
 };
 
+static struct octeon_pcie_interface *octeon_pcie_bus2interface(struct pci_bus *bus)
+{
+	struct octeon_pcie_interface *r;
+
+	r = container_of(bus->sysdata, struct octeon_pcie_interface, controller);
+	return r;
+}
 
 static void pcie_17400_enable(struct irq_data *data)
 {
@@ -81,7 +91,7 @@ static struct irq_chip pcie_17400_chip = {
 #endif
 };
 
-static int pcie_17400_irqs[4][4];
+static int pcie_17400_irqs[2][4][4];
 
 static irqreturn_t pcie_17400_handler(int irq, void *data)
 {
@@ -104,7 +114,6 @@ static irqreturn_t pcie_17400_handler(int irq, void *data)
 static int __init octeon_pcie78xx_pcibios_map_irq(const struct pci_dev *dev,
 					      u8 slot, u8 pin)
 {
-	struct pci_controller *c;
 	struct octeon_pcie_interface *pcie;
 	unsigned int intsn;
 	struct irq_domain *d;
@@ -118,9 +127,7 @@ static int __init octeon_pcie78xx_pcibios_map_irq(const struct pci_dev *dev,
 	while (dev->bus && dev->bus->parent)
 		dev = to_pci_dev(dev->bus->bridge);
 
-	c = dev->bus->sysdata;
-	pcie = container_of(c, struct octeon_pcie_interface, controller);
-
+	pcie = octeon_pcie_bus2interface(dev->bus);
 	pin--; /* Adjust from 1 based to 0 based pinA */
 
 	intsn = 0xc003c + pin + (0x1000 * pcie->pem);
@@ -132,8 +139,11 @@ static int __init octeon_pcie78xx_pcibios_map_irq(const struct pci_dev *dev,
 	if (!OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
 		return irq;
 
-	if (pcie_17400_irqs[pin][pcie->pem])
-		return pcie_17400_irqs[pin][pcie->pem];
+	WARN_ON(pcie->node >= ARRAY_SIZE(pcie_17400_irqs));
+	WARN_ON(pin >= ARRAY_SIZE(pcie_17400_irqs[0]));
+	WARN_ON(pcie->pem >= ARRAY_SIZE(pcie_17400_irqs[0][0]));
+	if (pcie_17400_irqs[pcie->node][pin][pcie->pem])
+		return pcie_17400_irqs[pcie->node][pin][pcie->pem];
 
 	/* Else use the PCIE-17400 WAR */
 	cd = kzalloc_node(sizeof(*cd), GFP_KERNEL, pcie->node);
@@ -154,13 +164,13 @@ static int __init octeon_pcie78xx_pcibios_map_irq(const struct pci_dev *dev,
 	irqd_set_trigger_type(irq_get_irq_data(irq), IRQ_TYPE_EDGE_RISING);
 
 	irq_set_status_flags(irq, IRQ_NOAUTOEN);
-	rv = request_irq(irq, pcie_17400_handler, 0, "inta-war", cd);
+	rv = request_irq(irq, pcie_17400_handler, IRQF_NO_THREAD, "inta-war", cd);
 	if (WARN(rv, "request_irq failed.\n"))
 		goto err;
 
 	irq_set_chip_and_handler(cd->irq, &pcie_17400_chip, handle_simple_irq);
 	irq_set_chip_data(cd->irq, cd);
-	pcie_17400_irqs[pin][pcie->pem] = cd->irq;
+	pcie_17400_irqs[pcie->node][pin][pcie->pem] = cd->irq;
 
 	return cd->irq;
 
@@ -168,6 +178,27 @@ err:
 	kfree(cd);
 	return rv;
 }
+
+int pcibus_to_node(struct pci_bus *bus)
+{
+#ifdef CONFIG_NUMA
+	struct octeon_pcie_interface *pi;
+
+	/* Only chips with PCIE have a possibility of nodes other than 0. */
+	if (!octeon_has_feature(OCTEON_FEATURE_PCIE))
+		return 0;
+
+	while (bus->parent) {
+		struct pci_dev *dev = to_pci_dev(bus->bridge);
+		bus = dev->bus;
+	}
+	pi = octeon_pcie_bus2interface(bus);
+	return pi->node;
+#else
+	return 0;
+#endif
+}
+EXPORT_SYMBOL(pcibus_to_node);
 
 /**
  * Map a PCI device to the appropriate interrupt line
@@ -263,27 +294,29 @@ static int octeon_pcie_read_config(struct pci_bus *bus, unsigned int devfn,
 	int retry_cnt = 0;
 	int max_retry_cnt = 10;
 	u32 cfg_retry_cnt = 0;
-	unsigned int pcie_port = pci_domain_nr(bus);
+	struct octeon_pcie_interface *pi = octeon_pcie_bus2interface(bus);
+	int gport = pi->node << 4 | pi->pem;
 
 	cvmmemctl_save.u64 = 0;
-	BUG_ON(pcie_port >= ARRAY_SIZE(enable_pcie_bus_num_war));
+	WARN_ON(pi->pem >= ARRAY_SIZE(enable_pcie_bus_num_war));
 	/*
 	 * For the top level bus make sure our hardware bus number
 	 * matches the software one
 	 */
 	if (bus->parent == NULL) {
-		if (enable_pcie_bus_num_war[pcie_port])
+		if (enable_pcie_bus_num_war[pi->pem])
 			bus_number = 0;
 		else {
 			union cvmx_pciercx_cfg006 pciercx_cfg006;
-			pciercx_cfg006.u32 = cvmx_pcie_cfgx_read(pcie_port,
-					     CVMX_PCIERCX_CFG006(pcie_port));
-			if (pciercx_cfg006.s.pbnum != bus_number) {
+			pciercx_cfg006.u32 = cvmx_pcie_cfgx_read_node(pi->node, pi->pem,
+					     CVMX_PCIERCX_CFG006(pi->pem));
+			if (pciercx_cfg006.s.pbnum
+			    && pciercx_cfg006.s.pbnum != bus_number) {
 				pciercx_cfg006.s.pbnum = bus_number;
 				pciercx_cfg006.s.sbnum = bus_number;
 				pciercx_cfg006.s.subbnum = bus_number;
-				cvmx_pcie_cfgx_write(pcie_port,
-					    CVMX_PCIERCX_CFG006(pcie_port),
+				cvmx_pcie_cfgx_write_node(pi->node, pi->pem,
+					    CVMX_PCIERCX_CFG006(pi->pem),
 					    pciercx_cfg006.u32);
 			}
 		}
@@ -383,20 +416,20 @@ static int octeon_pcie_read_config(struct pci_bus *bus, unsigned int devfn,
 	if ((OCTEON_IS_MODEL(OCTEON_CN63XX)) && (enable_pcie_14459_war))
 		cfg_retry_cnt = disable_cfg_read_retry();
 
-	pr_debug("pcie_cfg_rd port=%d b=%d devfn=0x%03x reg=0x%03x"
-		 " size=%d ", pcie_port, bus_number, devfn, reg, size);
+	pr_debug("pcie_cfg_rd port=%d:%d b=%d devfn=0x%03x reg=0x%03x size=%d ...\n",
+		 pi->node, pi->pem, bus_number, devfn, reg, size);
 	do {
 		switch (size) {
 		case 4:
-			*val = cvmx_pcie_config_read32(pcie_port, bus_number,
+			*val = cvmx_pcie_config_read32(gport, bus_number,
 				devfn >> 3, devfn & 0x7, reg);
 		break;
 		case 2:
-			*val = cvmx_pcie_config_read16(pcie_port, bus_number,
+			*val = cvmx_pcie_config_read16(gport, bus_number,
 				devfn >> 3, devfn & 0x7, reg);
 		break;
 		case 1:
-			*val = cvmx_pcie_config_read8(pcie_port, bus_number,
+			*val = cvmx_pcie_config_read8(gport, bus_number,
 				devfn >> 3, devfn & 0x7, reg);
 		break;
 		default:
@@ -418,7 +451,7 @@ static int octeon_pcie_read_config(struct pci_bus *bus, unsigned int devfn,
 
 	if ((OCTEON_IS_MODEL(OCTEON_CN63XX)) && (enable_pcie_14459_war))
 		set_cfg_read_retry(cfg_retry_cnt);
-	pr_debug("val=%08x  : tries=%02d\n", *val, retry_cnt);
+	pr_debug("  pcie_cfg_rd -> val=%08x  : tries=%02d\n", *val, retry_cnt);
 	if (OCTEON_IS_MODEL(OCTEON_CN56XX_PASS1) ||
 	    OCTEON_IS_MODEL(OCTEON_CN56XX_PASS1_1))
 		write_c0_cvmmemctl(cvmmemctl_save.u64);
@@ -438,34 +471,43 @@ static int octeon_pcie_write_config(struct pci_bus *bus, unsigned int devfn,
 				    int reg, int size, u32 val)
 {
 	int bus_number = bus->number;
-	unsigned int pcie_port = pci_domain_nr(bus);
+	struct octeon_pcie_interface *pi = octeon_pcie_bus2interface(bus);
+	int gport = pi->node << 4 | pi->pem;
 
-	BUG_ON(pcie_port >= ARRAY_SIZE(enable_pcie_bus_num_war));
+	WARN_ON(pi->pem >= ARRAY_SIZE(enable_pcie_bus_num_war));
 
-	if ((bus->parent == NULL) && (enable_pcie_bus_num_war[pcie_port]))
+	if ((bus->parent == NULL) && (enable_pcie_bus_num_war[pi->pem]))
 		bus_number = 0;
 
-	pr_debug("pcie_cfg_wr port=%d b=%d devfn=0x%03x"
-		 " reg=0x%03x size=%d val=%08x\n", pcie_port, bus_number, devfn,
+	pr_debug("pcie_cfg_wr port=%d:%d b=%d devfn=0x%03x reg=0x%03x size=%d val=%08x\n",
+		 pi->node, pi->pem, bus_number, devfn,
 		 reg, size, val);
 
 
 	switch (size) {
 	case 4:
-		cvmx_pcie_config_write32(pcie_port, bus_number, devfn >> 3,
+		cvmx_pcie_config_write32(gport, bus_number, devfn >> 3,
 					 devfn & 0x7, reg, val);
 		break;
 	case 2:
-		cvmx_pcie_config_write16(pcie_port, bus_number, devfn >> 3,
+		cvmx_pcie_config_write16(gport, bus_number, devfn >> 3,
 					 devfn & 0x7, reg, val);
 		break;
 	case 1:
-		cvmx_pcie_config_write8(pcie_port, bus_number, devfn >> 3,
+		cvmx_pcie_config_write8(gport, bus_number, devfn >> 3,
 					devfn & 0x7, reg, val);
 		break;
 	default:
 		return PCIBIOS_FUNC_NOT_SUPPORTED;
 	}
+#if PCI_CONFIG_SPACE_DELAY
+	/*
+	 * Delay on writes so that devices have time to come up. Some
+	 * bridges need this to allow time for the secondary busses to
+	 * work
+	 */
+	udelay(PCI_CONFIG_SPACE_DELAY);
+#endif
 	return PCIBIOS_SUCCESSFUL;
 }
 
@@ -480,15 +522,15 @@ static struct pci_ops octeon_pcie_ops = {
 	octeon_pcie_write_config,
 };
 
-static struct octeon_pcie_interface octeon_pcie[4];
+static struct octeon_pcie_interface octeon_pcie[2][4]; /* node, port */
 
-static void octeon_pcie_interface_init(struct octeon_pcie_interface *iface, int node, int pem)
+static void octeon_pcie_interface_init(struct octeon_pcie_interface *iface, unsigned node, unsigned pem)
 {
-	snprintf(iface->mem_name, sizeof(iface->mem_name), "OCTEON PCIe-%d MEM", pem);
+	snprintf(iface->mem_name, sizeof(iface->mem_name), "OCTEON PCIe-%u:%u MEM", node, pem);
 	iface->mem.name = iface->mem_name;
 	iface->mem.flags = IORESOURCE_MEM;
 
-	snprintf(iface->mem_name, sizeof(iface->mem_name), "OCTEON PCIe-%d IO", pem);
+	snprintf(iface->io_name, sizeof(iface->io_name), "OCTEON PCIe-%u:%u IO", node, pem);
 	iface->io.name = iface->io_name;
 	iface->io.flags = IORESOURCE_IO;
 
@@ -530,6 +572,148 @@ static int device_needs_bus_num_war(uint32_t deviceid)
 	return 0;
 }
 
+static void __init octeon_pcie_setup_port(unsigned int node, unsigned int port)
+{
+	int result;
+	int host_mode = 0;
+	int srio_war15205 = 0;
+	union cvmx_sli_ctl_portx sli_ctl_portx;
+	union cvmx_sriox_status_reg sriox_status_reg;
+	int gport = (node << 4) | port;
+
+
+	WARN_ON(node >= ARRAY_SIZE(octeon_pcie) ||
+		port >= ARRAY_SIZE(octeon_pcie[0]));
+
+	pr_notice("PCIe: Initializing port %u:%u\n", node, port);
+
+	if (octeon_has_feature(OCTEON_FEATURE_NPEI)) {
+		if (port == 1) {
+			host_mode = 1;
+			/*
+			 * Skip the 2nd port on CN52XX if port is in
+			 * 4 lane mode
+			 */
+			if (OCTEON_IS_MODEL(OCTEON_CN52XX)) {
+				union cvmx_npei_dbg_data dbg_data;
+				dbg_data.u64 = cvmx_read_csr(CVMX_PEXP_NPEI_DBG_DATA);
+				if (dbg_data.cn52xx.qlm0_link_width)
+					host_mode = 0;
+			}
+		} else {
+			union cvmx_npei_ctl_status npei_ctl_status;
+			npei_ctl_status.u64 =
+				cvmx_read_csr(CVMX_PEXP_NPEI_CTL_STATUS);
+			host_mode = npei_ctl_status.s.host_mode;
+		}
+	} else {
+		union cvmx_mio_rst_ctlx mio_rst_ctl;
+		if (OCTEON_IS_OCTEON3())
+			mio_rst_ctl.u64 = cvmx_read_csr_node(node, CVMX_RST_CTLX(port));
+		else
+			mio_rst_ctl.u64 = cvmx_read_csr(CVMX_MIO_RST_CTLX(port));
+		host_mode = mio_rst_ctl.s.host_mode;
+	}
+
+	if (host_mode) {
+		uint32_t device;
+
+		/* CN63XX pass 1_x/2.0 errata PCIe-15205 */
+		if (OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_X) ||
+		    OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_0)) {
+			sriox_status_reg.u64 = cvmx_read_csr(CVMX_SRIOX_STATUS_REG(port));
+			if (sriox_status_reg.s.srio)
+				/* Port is SRIO */
+				srio_war15205 += 1;
+		}
+		result = cvmx_pcie_rc_initialize(gport);
+		if (result < 0)
+			return;
+
+		/* Set IO offsets, Memory/IO resource start and end limits */
+		octeon_pcie_interface_init(&octeon_pcie[node][port], node, port);
+		/* Memory offsets are physical addresses */
+		octeon_pcie[node][port].controller.mem_offset = cvmx_pcie_get_mem_base_address(gport);
+		/*
+		 * To calculate the address for accessing the 2nd PCIe device,
+		 * either 'io_map_base' (pci_iomap()), or 'mips_io_port_base'
+		 * (ioport_map()) value is added to
+		 * pci_resource_start(dev,bar)). The 'mips_io_port_base' is set
+		 * only once based on first PCIe. Also changing 'io_map_base'
+		 * based on first slot's value so that both the routines will
+		 * work properly.
+		 */
+		octeon_pcie[node][port].controller.io_map_base =
+			CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(0));
+		/*
+		 * To keep things similar to PCI, we start
+		 * device addresses at the same place as PCI
+		 * uisng big bar support. This normally
+		 * translates to 4GB-256MB, which is the same
+		 * as most x86 PCs.
+		 */
+		octeon_pcie[node][port].mem.start =
+			cvmx_pcie_get_mem_base_address(gport) + (4ul << 30) - (OCTEON_PCI_BAR1_HOLE_SIZE << 20);
+		octeon_pcie[node][port].mem.end =
+			cvmx_pcie_get_mem_base_address(gport) + cvmx_pcie_get_mem_size(gport) - 1;
+		if (gport == 0) {
+			/* IO offsets are Mips virtual addresses */
+			octeon_pcie[node][port].controller.io_offset = 0;
+			/*
+			 * Ports must be above 16KB for the ISA bus
+			 * filtering in the PCI-X to PCI bridge.
+			 */
+			octeon_pcie[node][port].io.start = 4 << 10;
+			octeon_pcie[node][port].io.end = cvmx_pcie_get_io_size(gport) - 1;
+		} else {
+			u64 io_offset = ((u64)port) << 32 | ((u64)node) << 36;
+			octeon_pcie[node][port].controller.io_offset = io_offset;
+			octeon_pcie[node][port].io.start = io_offset;
+			octeon_pcie[node][port].io.end =
+				octeon_pcie[node][port].io.start + cvmx_pcie_get_io_size(gport) - 1;
+		}
+		msleep(100); /* Some devices need extra time */
+		octeon_pcie[node][port].controller.index = gport;
+		register_pci_controller(&octeon_pcie[node][port].controller);
+
+		device = cvmx_pcie_config_read32(gport, 0, 0, 0, 0);
+		enable_pcie_bus_num_war[port] =	device_needs_bus_num_war(device);
+	} else {
+		pr_notice("PCIe: Port %d:%d in endpoint mode, skipping.\n", node, port);
+		/* CN63XX pass 1_x/2.0 errata PCIe-15205 */
+		if (OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_X) ||
+		    OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_0)) {
+			srio_war15205 += 1;
+		}
+	}
+
+	/*
+	 * CN63XX pass 1_x/2.0 errata PCIe-15205 requires setting all
+	 * of SRIO MACs SLI_CTL_PORT*[INT*_MAP] to similar value and
+	 * all of PCIe Macs SLI_CTL_PORT*[INT*_MAP] to different value
+	 * from the previous set values
+	 */
+	if (OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_X) ||
+	    OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_0)) {
+		if (srio_war15205 == 1) {
+			sli_ctl_portx.u64 = cvmx_read_csr(CVMX_PEXP_SLI_CTL_PORTX(port));
+			sli_ctl_portx.s.inta_map = 1;
+			sli_ctl_portx.s.intb_map = 1;
+			sli_ctl_portx.s.intc_map = 1;
+			sli_ctl_portx.s.intd_map = 1;
+			cvmx_write_csr(CVMX_PEXP_SLI_CTL_PORTX(port), sli_ctl_portx.u64);
+
+			sli_ctl_portx.u64 = cvmx_read_csr(CVMX_PEXP_SLI_CTL_PORTX(!port));
+			sli_ctl_portx.s.inta_map = 0;
+			sli_ctl_portx.s.intb_map = 0;
+			sli_ctl_portx.s.intc_map = 0;
+			sli_ctl_portx.s.intd_map = 0;
+			cvmx_write_csr(CVMX_PEXP_SLI_CTL_PORTX(!port), sli_ctl_portx.u64);
+		}
+	}
+
+}
+
 /**
  * Initialize the Octeon PCIe controllers
  *
@@ -537,11 +721,8 @@ static int device_needs_bus_num_war(uint32_t deviceid)
  */
 static int __init octeon_pcie_setup(void)
 {
-	int result;
-	int host_mode = 0, port;
-	int srio_war15205 = 0;
-	union cvmx_sli_ctl_portx sli_ctl_portx;
-	union cvmx_sriox_status_reg sriox_status_reg;
+	int node;
+	int port;
 
 	/* These chips don't have PCIe */
 	if (!octeon_has_feature(OCTEON_FEATURE_PCIE))
@@ -567,9 +748,7 @@ static int __init octeon_pcie_setup(void)
 	 */
 	set_io_port_base(CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(0)));
 	ioport_resource.start = 0;
-	ioport_resource.end =
-		cvmx_pcie_get_io_base_address(CVMX_PCIE_PORTS-1) -
-		cvmx_pcie_get_io_base_address(0) + (1ull << 34) - 1;
+	ioport_resource.end = (1ull << 37) - 1;
 
 	/*
 	 * Create a dummy PCIe controller to swallow up bus 0. IDT bridges
@@ -582,146 +761,10 @@ static int __init octeon_pcie_setup(void)
 	octeon_dummy_controller.mem_resource->end = (1ull<<48);
 	register_pci_controller(&octeon_dummy_controller);
 
-	for (port = 0; port < CVMX_PCIE_PORTS; port++) {
-		if (octeon_has_feature(OCTEON_FEATURE_NPEI)) {
-			if (port == 1) {
-				host_mode = 1;
-				/*
-				 * Skip the 2nd port on CN52XX if port is in
-				 * 4 lane mode
-				 */
-				if (OCTEON_IS_MODEL(OCTEON_CN52XX)) {
-					union cvmx_npei_dbg_data dbg_data;
-					dbg_data.u64 = cvmx_read_csr(CVMX_PEXP_NPEI_DBG_DATA);
-					if (dbg_data.cn52xx.qlm0_link_width)
-						host_mode = 0;
-				}
-			} else {
-				union cvmx_npei_ctl_status npei_ctl_status;
-				npei_ctl_status.u64 =
-					cvmx_read_csr(CVMX_PEXP_NPEI_CTL_STATUS);
-				host_mode = npei_ctl_status.s.host_mode;
-				octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_PCIE;
-			}
-		} else {
-			union cvmx_mio_rst_ctlx mio_rst_ctl;
-			if (OCTEON_IS_OCTEON3())
-				mio_rst_ctl.u64 = cvmx_read_csr(CVMX_RST_CTLX(port));
-			else
-				mio_rst_ctl.u64 = cvmx_read_csr(CVMX_MIO_RST_CTLX(port));
-			host_mode = mio_rst_ctl.s.host_mode;
-			if (port == 0)
-				octeon_dma_bar_type = OCTEON_DMA_BAR_TYPE_PCIE2;
-		}
+	for_each_online_node (node)
+		for (port = 0; port < CVMX_PCIE_PORTS; port++)
+			octeon_pcie_setup_port(node, port);
 
-		if (host_mode) {
-			uint32_t device;
-			pr_notice("PCIe: Initializing port %d\n", port);
-
-			/* CN63XX pass 1_x/2.0 errata PCIe-15205 */
-			if (OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_X) ||
-				OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_0)) {
-				sriox_status_reg.u64 = cvmx_read_csr(
-						CVMX_SRIOX_STATUS_REG(port));
-				if (sriox_status_reg.s.srio)
-					/* Port is SRIO */
-					srio_war15205 += 1;
-			}
-			result = cvmx_pcie_rc_initialize(port);
-			if (result < 0)
-				continue;
-
-			/* Set IO offsets, Memory/IO resource start and end limits */
-			switch (port) {
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-				octeon_pcie_interface_init(&octeon_pcie[port], 0, port);
-				/* Memory offsets are physical addresses */
-				octeon_pcie[port].controller.mem_offset = cvmx_pcie_get_mem_base_address(port);
-				/*
-				 * To calculate the address for accessing the 2nd PCIe device,
-				 * either 'io_map_base' (pci_iomap()), or 'mips_io_port_base'
-				 * (ioport_map()) value is added to
-				 * pci_resource_start(dev,bar)). The 'mips_io_port_base' is set
-				 * only once based on first PCIe. Also changing 'io_map_base'
-				 * based on first slot's value so that both the routines will
-				 * work properly.
-				 */
-				octeon_pcie[port].controller.io_map_base = CVMX_ADD_IO_SEG(cvmx_pcie_get_io_base_address(0));
-				/*
-				 * To keep things similar to PCI, we start
-				 * device addresses at the same place as PCI
-				 * uisng big bar support. This normally
-				 * translates to 4GB-256MB, which is the same
-				 * as most x86 PCs.
-				 */
-				octeon_pcie[port].mem.start =
-					cvmx_pcie_get_mem_base_address(port) + (4ul << 30) - (OCTEON_PCI_BAR1_HOLE_SIZE << 20);
-				octeon_pcie[port].mem.end =
-					cvmx_pcie_get_mem_base_address(port) + cvmx_pcie_get_mem_size(port) - 1;
-				if (port == 0) {
-					/* IO offsets are Mips virtual addresses */
-					octeon_pcie[port].controller.io_offset = 0;
-					/*
-					 * Ports must be above 16KB for the ISA bus
-					 * filtering in the PCI-X to PCI bridge.
-					 */
-					octeon_pcie[port].io.start = 4 << 10;
-					octeon_pcie[port].io.end = cvmx_pcie_get_io_size(port) - 1;
-				} else {
-					octeon_pcie[port].controller.io_offset =
-					octeon_pcie[port].io.start =
-						(cvmx_pcie_get_io_base_address(port) & ((1ull << 34) - 1)) + (1ull << 20);
-					octeon_pcie[port].io.end = octeon_pcie[port].io.start + (1ull << 20);
-				}
-				msleep(100); /* Some devices need extra time */
-				octeon_pcie[port].controller.index = port;
-				register_pci_controller(&octeon_pcie[port].controller);
-				break;
-			default:
-				break;
-			}
-			device = cvmx_pcie_config_read32(port, 0, 0, 0, 0);
-			enable_pcie_bus_num_war[port] =
-				device_needs_bus_num_war(device);
-		} else {
-			pr_notice("PCIe: Port 0 in endpoint mode, skipping.\n");
-			/* CN63XX pass 1_x/2.0 errata PCIe-15205 */
-			if (OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_X) ||
-				OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_0)) {
-				srio_war15205 += 1;
-			}
-		}
-	}
-
-	/*
-	 * CN63XX pass 1_x/2.0 errata PCIe-15205 requires setting all
-	 * of SRIO MACs SLI_CTL_PORT*[INT*_MAP] to similar value and
-	 * all of PCIe Macs SLI_CTL_PORT*[INT*_MAP] to different value
-	 * from the previous set values
-	 */
-	for (port = 0; port < CVMX_PCIE_PORTS; port++) {
-		if (OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_X) ||
-		    OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_0)) {
-			if (srio_war15205 == 1) {
-				sli_ctl_portx.u64 = cvmx_read_csr(CVMX_PEXP_SLI_CTL_PORTX(port));
-				sli_ctl_portx.s.inta_map = 1;
-				sli_ctl_portx.s.intb_map = 1;
-				sli_ctl_portx.s.intc_map = 1;
-				sli_ctl_portx.s.intd_map = 1;
-				cvmx_write_csr(CVMX_PEXP_SLI_CTL_PORTX(port), sli_ctl_portx.u64);
-
-				sli_ctl_portx.u64 = cvmx_read_csr(CVMX_PEXP_SLI_CTL_PORTX(!port));
-				sli_ctl_portx.s.inta_map = 0;
-				sli_ctl_portx.s.intb_map = 0;
-				sli_ctl_portx.s.intc_map = 0;
-				sli_ctl_portx.s.intd_map = 0;
-				cvmx_write_csr(CVMX_PEXP_SLI_CTL_PORTX(!port), sli_ctl_portx.u64);
-			}
-		}
-	}
 
 	octeon_pci_dma_init();
 

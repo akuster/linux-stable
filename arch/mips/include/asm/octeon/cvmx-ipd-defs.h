@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -172,15 +172,15 @@ static inline uint64_t CVMX_IPD_NEXT_WQE_PTR_FUNC(void)
 #endif
 #define CVMX_IPD_NOT_1ST_MBUFF_SKIP (CVMX_ADD_IO_SEG(0x00014F0000000008ull))
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_IPD_ON_BP_DROP_PKTX(unsigned long block_id)
+static inline uint64_t CVMX_IPD_ON_BP_DROP_PKTX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_IPD_ON_BP_DROP_PKTX(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_IPD_ON_BP_DROP_PKTX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00014F0000004100ull);
 }
 #else
-#define CVMX_IPD_ON_BP_DROP_PKTX(block_id) (CVMX_ADD_IO_SEG(0x00014F0000004100ull))
+#define CVMX_IPD_ON_BP_DROP_PKTX(offset) (CVMX_ADD_IO_SEG(0x00014F0000004100ull))
 #endif
 #define CVMX_IPD_PACKET_MBUFF_SIZE (CVMX_ADD_IO_SEG(0x00014F0000000010ull))
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -393,15 +393,15 @@ static inline uint64_t CVMX_IPD_PORT_QOS_X_CNT(unsigned long offset)
 #define CVMX_IPD_PORT_QOS_X_CNT(offset) (CVMX_ADD_IO_SEG(0x00014F0000000888ull) + ((offset) & 511) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_IPD_PORT_SOPX(unsigned long block_id)
+static inline uint64_t CVMX_IPD_PORT_SOPX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_IPD_PORT_SOPX(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_IPD_PORT_SOPX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00014F0000004400ull);
 }
 #else
-#define CVMX_IPD_PORT_SOPX(block_id) (CVMX_ADD_IO_SEG(0x00014F0000004400ull))
+#define CVMX_IPD_PORT_SOPX(offset) (CVMX_ADD_IO_SEG(0x00014F0000004400ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_IPD_PRC_HOLD_PTR_FIFO_CTL CVMX_IPD_PRC_HOLD_PTR_FIFO_CTL_FUNC()
@@ -470,15 +470,15 @@ static inline uint64_t CVMX_IPD_QOSX_RED_MARKS(unsigned long offset)
 #endif
 #define CVMX_IPD_QUE0_FREE_PAGE_CNT (CVMX_ADD_IO_SEG(0x00014F0000000330ull))
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_IPD_RED_BPID_ENABLEX(unsigned long block_id)
+static inline uint64_t CVMX_IPD_RED_BPID_ENABLEX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_IPD_RED_BPID_ENABLEX(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_IPD_RED_BPID_ENABLEX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00014F0000004200ull);
 }
 #else
-#define CVMX_IPD_RED_BPID_ENABLEX(block_id) (CVMX_ADD_IO_SEG(0x00014F0000004200ull))
+#define CVMX_IPD_RED_BPID_ENABLEX(offset) (CVMX_ADD_IO_SEG(0x00014F0000004200ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_IPD_RED_DELAY CVMX_IPD_RED_DELAY_FUNC()

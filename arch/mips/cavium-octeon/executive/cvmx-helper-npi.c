@@ -43,7 +43,7 @@
  * Functions for NPI initialization, configuration,
  * and monitoring.
  *
- * <hr>$Revision: 99993 $<hr>
+ * <hr>$Revision: 120569 $<hr>
  */
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
@@ -84,7 +84,9 @@ void cvmx_npi_config_set_num_pipes(int num_pipes)
 int __cvmx_helper_npi_probe(int interface)
 {
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
-			return 32;
+		return 32;
+        } else if (OCTEON_IS_MODEL(OCTEON_CN73XX)) {
+		return 128;
         } else if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
                 return 64;
         } else if (!(OCTEON_IS_MODEL(OCTEON_CN52XX_PASS1_X) ||
@@ -104,7 +106,7 @@ int __cvmx_helper_npi_probe(int interface)
  * I/O should be fully functional. This is called with IPD
  * enabled but PKO disabled.
  *
- * @param interface Interface to bring up
+ * @param xiface Interface to bring up
  *
  * @return Zero on success, negative on failure
  */

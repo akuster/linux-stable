@@ -12,7 +12,9 @@
 #include <linux/irqflags.h>
 #include <linux/notifier.h>
 #include <asm/octeon/cvmx.h>
+#include <asm/octeon/cvmx-fpa3.h>
 #include <linux/irq.h>
+#include <linux/slab.h>
 
 extern int octeon_is_simulation(void);
 extern int octeon_is_pci_host(void);
@@ -155,7 +157,12 @@ union octeon_cvmemctl {
 		/* RO 1 = BIST fail, 0 = BIST pass */
 		uint64_t wbfbist:1;
 		/* Reserved */
-		uint64_t reserved:13;
+		uint64_t reserved:6;
+		/* When set, LMTDMA/LMTST operations are permitted */
+		uint64_t lmtena:1;
+		/* Selects the CVMSEG LM cacheline used by LMTDMA
+		   LMTST and wide atomic store operations */
+		uint64_t lmtline:6;
 		/* When set, TLB parity errors can occur. */
 		uint64_t tlbperrena:1;
 		/* OCTEON II - When set, CVMSET LM parity errors are enabled. */
@@ -293,7 +300,9 @@ union octeon_cvmemctl {
 		uint64_t disstpref:1;
 		uint64_t lmemperrena:1;
 		uint64_t tlbperrena:1;
-		uint64_t reserved:13;
+		uint64_t lmtline:6;
+		uint64_t lmtena:1;
+		uint64_t reserved:6;
 		uint64_t wbfbist:1;
 		uint64_t ptgbist:1;
 		uint64_t dcmbist:1;
@@ -308,21 +317,24 @@ struct octeon_ciu_chip_data {
 	union {
 		struct {		/* only used for ciu3 */
 			u64 ciu3_addr;
-			unsigned int intsn;
-            unsigned int idt; 
+			union {
+				unsigned int intsn;
+				unsigned int idt; /* For errbit irq */
+			};
 		};
 		struct {		/* only used for ciu/ciu2 */
 			u8 line;
 			u8 bit;
-			u8 gpio_line;
 		};
 	};
+	int gpio_line;
 	int current_cpu;	/* Next CPU expected to take this irq */
 	int ciu_node; /* NUMA node number of the CIU */
 };
 
 extern void octeon_write_lcd(const char *s);
 extern void octeon_check_cpu_bist(void);
+extern int octeon_get_boot_debug_flag(void);
 extern int octeon_get_boot_uart(void);
 
 struct uart_port;
@@ -413,12 +425,17 @@ struct irq_domain *octeon_irq_get_block_domain(int node, uint8_t block);
 #if IS_ENABLED(CONFIG_CAVIUM_OCTEON_ERROR_TREE)
 int octeon_error_tree_enable(enum cvmx_error_groups group, int unit);
 int octeon_error_tree_disable(enum cvmx_error_groups group, int unit);
+int octeon_error_tree_shutdown(void);
 #else
 static inline int octeon_error_tree_enable(enum cvmx_error_groups group, int unit)
 {
 	return 0;
 }
 static inline int octeon_error_tree_disable(enum cvmx_error_groups group, int unit)
+{
+	return 0;
+}
+static inline int octeon_error_tree_shutdown(void)
 {
 	return 0;
 }
@@ -453,7 +470,7 @@ int unregister_co_cache_error_notifier(struct notifier_block *nb);
 #define CO_CACHE_ERROR_WB_PARITY 2
 #define CO_CACHE_ERROR_TLB_PARITY 3
 
-extern unsigned long long cache_err_dcache[NR_CPUS];
+extern unsigned long long cache_err_dcache[];
 
 /* Octeon multiplier save/restore routines from octeon_switch.S */
 void octeon_mult_save(void);
@@ -468,5 +485,16 @@ void octeon_mult_restore3(void);
 void octeon_mult_restore3_end(void);
 void octeon_mult_restore2(void);
 void octeon_mult_restore2_end(void);
+
+#if IS_ENABLED(CONFIG_OCTEON_FPA3)
+int octeon_fpa3_init(int node);
+int octeon_fpa3_pool_init(int node, int pool_num, cvmx_fpa3_pool_t *pool,
+			  void **pool_stack, int num_ptrs);
+int octeon_fpa3_aura_init(cvmx_fpa3_pool_t pool, int aura_num,
+			  cvmx_fpa3_gaura_t *aura, int num_bufs,
+			  unsigned int limit);
+int octeon_mem_fill_fpa3(int node, struct kmem_cache *cache,
+			  cvmx_fpa3_gaura_t aura, int num_bufs);
+#endif
 
 #endif /* __ASM_OCTEON_OCTEON_H */

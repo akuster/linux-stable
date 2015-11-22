@@ -42,7 +42,7 @@
  *
  * Interface to PCIe as a host(RC) or target(EP)
  *
- * <hr>$Revision: 104992 $<hr>
+ * <hr>$Revision: 115657 $<hr>
  */
 
 #ifndef __CVMX_PCIE_H__
@@ -63,9 +63,10 @@ extern "C" {
 #endif
 
 #define CVMX_PCIE_MAX_PORTS	4
-#define CVMX_PCIE_PORTS		(OCTEON_IS_MODEL(OCTEON_CN78XX) 	\
-				  ? CVMX_PCIE_MAX_PORTS 		\
-				   : (OCTEON_IS_MODEL(OCTEON_CN70XX) ? 3 : 2))
+#define CVMX_PCIE_PORTS		((OCTEON_IS_MODEL(OCTEON_CN78XX)	\
+				  || OCTEON_IS_MODEL(OCTEON_CN73XX)) 	\
+				 ? CVMX_PCIE_MAX_PORTS   		\
+				 : (OCTEON_IS_MODEL(OCTEON_CN70XX) ? 3 : 2))
 
 /*
  * The physical memory base mapped by BAR1.  256MB at the end of the
@@ -134,7 +135,7 @@ typedef union {
 		uint64_t port:2;
 		uint64_t es:2;
 		uint64_t node:2;
-		uint64_t reserved_38_39:4;
+		uint64_t reserved_38_39:2;
 		uint64_t subdid:3;
 		uint64_t did:5;
 		uint64_t io:1;
@@ -156,7 +157,7 @@ typedef union {
 	struct {
 		uint64_t address:36;
 		uint64_t node:2;
-		uint64_t reserved_38_39:4;
+		uint64_t reserved_38_39:2;
 		uint64_t subdid:3;
 		uint64_t did:5;
 		uint64_t io:1;

@@ -204,7 +204,7 @@ int cvmx_pki_cluster_grp_free(int node, int cl_grp)
  */
 int cvmx_pki_cluster_alloc(int node, int num_clusters, uint64_t *cluster_mask)
 {
-	int cluster = 0;
+	unsigned cluster = 0;
 	int clusters[CVMX_PKI_NUM_CLUSTER];
 
 	if (node >= CVMX_MAX_NODES) {
@@ -246,7 +246,7 @@ int cvmx_pki_cluster_alloc(int node, int num_clusters, uint64_t *cluster_mask)
  */
 int cvmx_pki_cluster_free(int node, uint64_t cluster_mask)
 {
-	int cluster = 0;
+	unsigned cluster = 0;
 	if (cluster_mask > 0) {
 		while (cluster < CVMX_PKI_NUM_CLUSTER) {
 			if (cluster_mask & (0x01L << cluster)) {
@@ -393,7 +393,8 @@ int cvmx_pki_qpg_entry_free(int node, int base_offset, int count)
 void __cvmx_pki_global_rsrc_free(int node)
 {
 	int cnt;
-	int cluster, bank;
+	unsigned  cluster;
+	int  bank;
 
 	cnt = CVMX_PKI_NUM_CLUSTER_GROUP;
 	if (cvmx_free_global_resource_range_with_base(CVMX_GR_TAG_CLUSTER_GRP(node), 0, cnt) == -1) {
@@ -480,7 +481,7 @@ int cvmx_pki_bpid_alloc(int node, int bpid)
 /**
  * This function frees a bpid from pool of global bpid per node.
  * @param node	 node to free bpid from.
- * @param style	 bpid to free
+ * @param bpid	 bpid to free
  * @return 	 0 on success, -1 on failure or
  */
 int cvmx_pki_bpid_free(int node, int bpid)
@@ -490,5 +491,33 @@ int cvmx_pki_bpid_free(int node, int bpid)
 		return -1;
 	}
 	return 0;
+}
+
+int cvmx_pki_mtag_idx_alloc(int node, int idx)
+{
+	if (cvmx_create_global_resource_range(CVMX_GR_TAG_MTAG_IDX(node), CVMX_PKI_NUM_MTAG_IDX)) {
+		cvmx_printf("ERROR: Failed to create MTAG-IDX global resource\n");
+		return -1;
+	}
+	if (idx >= 0) {
+		idx = cvmx_reserve_global_resource_range(CVMX_GR_TAG_MTAG_IDX(node), idx, idx, 1);
+		if (idx == -1) {
+			cvmx_dprintf("INFO: MTAG index %d is already reserved\n", (int)idx);
+			return CVMX_RESOURCE_ALREADY_RESERVED;
+		}
+	} else {
+		idx = cvmx_allocate_global_resource_range(CVMX_GR_TAG_MTAG_IDX(node), idx, 1, 1);
+		if (idx == -1) {
+			cvmx_printf("ERROR: Failed to allocate MTAG index\n");
+			return CVMX_RESOURCE_ALLOC_FAILED;
+		}
+	}
+	return idx;
+}
+
+void cvmx_pki_mtag_idx_free(int node, int idx)
+{
+	if (cvmx_free_global_resource_range_with_base(CVMX_GR_TAG_MTAG_IDX(node), idx, 1) == -1)
+		cvmx_printf("ERROR Failed to release MTAG index %d\n", (int)idx);
 }
 

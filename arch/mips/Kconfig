@@ -757,7 +757,9 @@ config CAVIUM_OCTEON_SOC
 	select SYS_SUPPORTS_SMP
 	select NR_CPUS_DEFAULT_64
 	select MIPS_NR_CPU_NR_MAP_1024
-	select SYS_SUPPORTS_NUMA
+    select HANDLE_DOMAIN_IRQ
+    select USB_ARCH_HAS_XHCI
+    select SYS_SUPPORTS_NUMA
 	help
 	  This option supports all of the Octeon SoCs and reference
 	  boards from Cavium, Inc. The Cavium Octeon processor is a

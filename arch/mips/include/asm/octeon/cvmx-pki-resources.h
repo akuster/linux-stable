@@ -175,7 +175,7 @@ int cvmx_pki_bpid_alloc(int node, int bpid);
 /**
  * This function frees a bpid from pool of global bpid per node.
  * @param node	 node to free bpid from.
- * @param style	 bpid to free
+ * @param bpid	 bpid to free
  * @return 	 0 on success, -1 on failure or
  */
 int cvmx_pki_bpid_free(int node, int bpid);
@@ -184,6 +184,25 @@ int cvmx_pki_bpid_free(int node, int bpid);
  * This function frees all the PKI software resources
  * (clusters, styles, qpg_entry, pcam_entry etc) for the specified node
  */
+
+/**
+ * This function allocates/reserves an index from pool of global MTAG-IDX per node.
+ * @param node	node to allocate index from.
+ * @param idx	index  to allocate, if -1 it will be allocated
+ * @return 	MTAG index number on success,
+ *		-1 on alloc failure.
+ *		-2 on resource already reserved.
+ */
+int cvmx_pki_mtag_idx_alloc(int node, int idx);
+
+/**
+ * This function frees an index from pool of global MTAG-IDX per node.
+ * @param node	 node to free bpid from.
+ * @param bpid	 bpid to free
+ * @return 	 0 on success, -1 on failure or
+ */
+int cvmx_pki_mtag_idx_free(int node, int idx);
+
 void __cvmx_pki_global_rsrc_free(int node);
 
 #ifdef	__cplusplus

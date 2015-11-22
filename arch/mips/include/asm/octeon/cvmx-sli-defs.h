@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -56,51 +56,203 @@
 #define CVMX_SLI_BIST_STATUS CVMX_SLI_BIST_STATUS_FUNC()
 static inline uint64_t CVMX_SLI_BIST_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_BIST_STATUS not supported on this chip\n");
-	return 0x0000000000000580ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000580ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028580ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_BIST_STATUS not supported on this chip\n");
+	return 0x0000000000028580ull;
 }
 #else
-#define CVMX_SLI_BIST_STATUS (0x0000000000000580ull)
+#define CVMX_SLI_BIST_STATUS CVMX_SLI_BIST_STATUS_FUNC()
+static inline uint64_t CVMX_SLI_BIST_STATUS_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000580ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028580ull;
+	}
+	return 0x0000000000028580ull;
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_CIU_INT_ENB CVMX_SLI_CIU_INT_ENB_FUNC()
+static inline uint64_t CVMX_SLI_CIU_INT_ENB_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_CIU_INT_ENB not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011F0000027110ull);
+}
+#else
+#define CVMX_SLI_CIU_INT_ENB (CVMX_ADD_IO_SEG(0x00011F0000027110ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_CIU_INT_SUM CVMX_SLI_CIU_INT_SUM_FUNC()
+static inline uint64_t CVMX_SLI_CIU_INT_SUM_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_CIU_INT_SUM not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011F0000027100ull);
+}
+#else
+#define CVMX_SLI_CIU_INT_SUM (CVMX_ADD_IO_SEG(0x00011F0000027100ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_CTL_PORTX(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 2))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 1)))))
-		cvmx_warn("CVMX_SLI_CTL_PORTX(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000000050ull + ((offset) & 3) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return 0x0000000000000050ull + ((offset) & 1) * 16;
+			break;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 2))
+				return 0x0000000000010050ull + ((offset) & 3) * 16;
+			break;
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 3))
+				return 0x0000000000000050ull + ((offset) & 3) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 3))
+				return 0x00000000000106E0ull + ((offset) & 3) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 3))
+				return 0x00000000000286E0ull + ((offset) & 3) * 16;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_CTL_PORTX (offset = %lu) not supported on this chip\n", offset);
+	return 0x00000000000286E0ull + ((offset) & 3) * 16;
 }
 #else
-#define CVMX_SLI_CTL_PORTX(offset) (0x0000000000000050ull + ((offset) & 3) * 16)
+static inline uint64_t CVMX_SLI_CTL_PORTX(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000050ull + (offset) * 16;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010050ull + (offset) * 16;
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000050ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000106E0ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000286E0ull + (offset) * 16;
+	}
+	return 0x00000000000286E0ull + (offset) * 16;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_CTL_STATUS CVMX_SLI_CTL_STATUS_FUNC()
 static inline uint64_t CVMX_SLI_CTL_STATUS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_CTL_STATUS not supported on this chip\n");
-	return 0x0000000000000570ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000570ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028570ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_CTL_STATUS not supported on this chip\n");
+	return 0x0000000000028570ull;
 }
 #else
-#define CVMX_SLI_CTL_STATUS (0x0000000000000570ull)
+#define CVMX_SLI_CTL_STATUS CVMX_SLI_CTL_STATUS_FUNC()
+static inline uint64_t CVMX_SLI_CTL_STATUS_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000570ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028570ull;
+	}
+	return 0x0000000000028570ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_DATA_OUT_CNT CVMX_SLI_DATA_OUT_CNT_FUNC()
 static inline uint64_t CVMX_SLI_DATA_OUT_CNT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_DATA_OUT_CNT not supported on this chip\n");
-	return 0x00000000000005F0ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000005F0ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000285F0ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_DATA_OUT_CNT not supported on this chip\n");
+	return 0x00000000000285F0ull;
 }
 #else
-#define CVMX_SLI_DATA_OUT_CNT (0x00000000000005F0ull)
+#define CVMX_SLI_DATA_OUT_CNT CVMX_SLI_DATA_OUT_CNT_FUNC()
+static inline uint64_t CVMX_SLI_DATA_OUT_CNT_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000005F0ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000285F0ull;
+	}
+	return 0x00000000000285F0ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_DBG_DATA CVMX_SLI_DBG_DATA_FUNC()
@@ -127,53 +279,128 @@ static inline uint64_t CVMX_SLI_DBG_SELECT_FUNC(void)
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_DMAX_CNT(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 1)))))
-		cvmx_warn("CVMX_SLI_DMAX_CNT(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000000400ull + ((offset) & 1) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return 0x0000000000000400ull + ((offset) & 1) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return 0x0000000000028400ull + ((offset) & 1) * 16;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_DMAX_CNT (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000028400ull + ((offset) & 1) * 16;
 }
 #else
-#define CVMX_SLI_DMAX_CNT(offset) (0x0000000000000400ull + ((offset) & 1) * 16)
+static inline uint64_t CVMX_SLI_DMAX_CNT(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000400ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028400ull + (offset) * 16;
+	}
+	return 0x0000000000028400ull + (offset) * 16;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_DMAX_INT_LEVEL(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 1)))))
-		cvmx_warn("CVMX_SLI_DMAX_INT_LEVEL(%lu) is invalid on this chip\n", offset);
-	return 0x00000000000003E0ull + ((offset) & 1) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return 0x00000000000003E0ull + ((offset) & 1) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return 0x00000000000283E0ull + ((offset) & 1) * 16;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_DMAX_INT_LEVEL (offset = %lu) not supported on this chip\n", offset);
+	return 0x00000000000283E0ull + ((offset) & 1) * 16;
 }
 #else
-#define CVMX_SLI_DMAX_INT_LEVEL(offset) (0x00000000000003E0ull + ((offset) & 1) * 16)
+static inline uint64_t CVMX_SLI_DMAX_INT_LEVEL(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000003E0ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000283E0ull + (offset) * 16;
+	}
+	return 0x00000000000283E0ull + (offset) * 16;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_DMAX_TIM(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 1)))))
-		cvmx_warn("CVMX_SLI_DMAX_TIM(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000000420ull + ((offset) & 1) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return 0x0000000000000420ull + ((offset) & 1) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return 0x0000000000028420ull + ((offset) & 1) * 16;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_DMAX_TIM (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000028420ull + ((offset) & 1) * 16;
 }
 #else
-#define CVMX_SLI_DMAX_TIM(offset) (0x0000000000000420ull + ((offset) & 1) * 16)
+static inline uint64_t CVMX_SLI_DMAX_TIM(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000420ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028420ull + (offset) * 16;
+	}
+	return 0x0000000000028420ull + (offset) * 16;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_INT_ENB_CIU CVMX_SLI_INT_ENB_CIU_FUNC()
@@ -259,109 +486,450 @@ static inline uint64_t CVMX_SLI_LAST_WIN_RDATA3_FUNC(void)
 #define CVMX_SLI_LAST_WIN_RDATA3 (0x00000000000006D0ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_MACX_PFX_DMA_VF_INT(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_MACX_PFX_DMA_VF_INT(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000027280ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_MACX_PFX_DMA_VF_INT(offset, block_id) (0x0000000000027280ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_MACX_PFX_DMA_VF_INT_ENB(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_MACX_PFX_DMA_VF_INT_ENB(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000027500ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_MACX_PFX_DMA_VF_INT_ENB(offset, block_id) (0x0000000000027500ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_MACX_PFX_FLR_VF_INT(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_MACX_PFX_FLR_VF_INT(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000027400ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_MACX_PFX_FLR_VF_INT(offset, block_id) (0x0000000000027400ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_MACX_PFX_INT_ENB(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_MACX_PFX_INT_ENB(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000027080ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_MACX_PFX_INT_ENB(offset, block_id) (0x0000000000027080ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_MACX_PFX_INT_SUM(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_MACX_PFX_INT_SUM(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000027000ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_MACX_PFX_INT_SUM(offset, block_id) (0x0000000000027000ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_MACX_PFX_MBOX_INT(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_MACX_PFX_MBOX_INT(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000027380ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_MACX_PFX_MBOX_INT(offset, block_id) (0x0000000000027380ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_MACX_PFX_PKT_VF_INT(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_MACX_PFX_PKT_VF_INT(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000027300ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_MACX_PFX_PKT_VF_INT(offset, block_id) (0x0000000000027300ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_MACX_PFX_PKT_VF_INT_ENB(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_MACX_PFX_PKT_VF_INT_ENB(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000027580ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_MACX_PFX_PKT_VF_INT_ENB(offset, block_id) (0x0000000000027580ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_MACX_PFX_PP_VF_INT(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_MACX_PFX_PP_VF_INT(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000027200ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_MACX_PFX_PP_VF_INT(offset, block_id) (0x0000000000027200ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_MACX_PFX_PP_VF_INT_ENB(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_MACX_PFX_PP_VF_INT_ENB(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000027480ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_MACX_PFX_PP_VF_INT_ENB(offset, block_id) (0x0000000000027480ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MAC_CREDIT_CNT CVMX_SLI_MAC_CREDIT_CNT_FUNC()
 static inline uint64_t CVMX_SLI_MAC_CREDIT_CNT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MAC_CREDIT_CNT not supported on this chip\n");
-	return 0x0000000000003D70ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003D70ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023D70ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MAC_CREDIT_CNT not supported on this chip\n");
+	return 0x0000000000023D70ull;
 }
 #else
-#define CVMX_SLI_MAC_CREDIT_CNT (0x0000000000003D70ull)
+#define CVMX_SLI_MAC_CREDIT_CNT CVMX_SLI_MAC_CREDIT_CNT_FUNC()
+static inline uint64_t CVMX_SLI_MAC_CREDIT_CNT_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003D70ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023D70ull;
+	}
+	return 0x0000000000023D70ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MAC_CREDIT_CNT2 CVMX_SLI_MAC_CREDIT_CNT2_FUNC()
 static inline uint64_t CVMX_SLI_MAC_CREDIT_CNT2_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MAC_CREDIT_CNT2 not supported on this chip\n");
-	return 0x0000000000003E10ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000013E10ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023E10ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MAC_CREDIT_CNT2 not supported on this chip\n");
+	return 0x0000000000023E10ull;
 }
 #else
-#define CVMX_SLI_MAC_CREDIT_CNT2 (0x0000000000003E10ull)
+#define CVMX_SLI_MAC_CREDIT_CNT2 CVMX_SLI_MAC_CREDIT_CNT2_FUNC()
+static inline uint64_t CVMX_SLI_MAC_CREDIT_CNT2_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000013E10ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023E10ull;
+	}
+	return 0x0000000000023E10ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MAC_NUMBER CVMX_SLI_MAC_NUMBER_FUNC()
 static inline uint64_t CVMX_SLI_MAC_NUMBER_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MAC_NUMBER not supported on this chip\n");
-	return 0x0000000000003E00ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003E00ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020050ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MAC_NUMBER not supported on this chip\n");
+	return 0x0000000000020050ull;
 }
 #else
-#define CVMX_SLI_MAC_NUMBER (0x0000000000003E00ull)
+#define CVMX_SLI_MAC_NUMBER CVMX_SLI_MAC_NUMBER_FUNC()
+static inline uint64_t CVMX_SLI_MAC_NUMBER_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003E00ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020050ull;
+	}
+	return 0x0000000000020050ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MEM_ACCESS_CTL CVMX_SLI_MEM_ACCESS_CTL_FUNC()
 static inline uint64_t CVMX_SLI_MEM_ACCESS_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MEM_ACCESS_CTL not supported on this chip\n");
-	return 0x00000000000002F0ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000002F0ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000282F0ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MEM_ACCESS_CTL not supported on this chip\n");
+	return 0x00000000000282F0ull;
 }
 #else
-#define CVMX_SLI_MEM_ACCESS_CTL (0x00000000000002F0ull)
+#define CVMX_SLI_MEM_ACCESS_CTL CVMX_SLI_MEM_ACCESS_CTL_FUNC()
+static inline uint64_t CVMX_SLI_MEM_ACCESS_CTL_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000002F0ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000282F0ull;
+	}
+	return 0x00000000000282F0ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_MEM_ACCESS_SUBIDX(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && (((offset >= 12) && (offset <= 27)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && (((offset >= 12) && (offset <= 27)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && (((offset >= 12) && (offset <= 27)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && (((offset >= 12) && (offset <= 27)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset >= 12) && (offset <= 27)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset >= 12) && (offset <= 27)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && (((offset >= 12) && (offset <= 27))))))
-		cvmx_warn("CVMX_SLI_MEM_ACCESS_SUBIDX(%lu) is invalid on this chip\n", offset);
-	return 0x00000000000000E0ull + ((offset) & 31) * 16 - 16*12;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if (((offset >= 12) && (offset <= 27)))
+				return 0x00000000000000E0ull + ((offset) & 31) * 16 - 16*12;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if (((offset >= 12) && (offset <= 27)))
+				return 0x00000000000280E0ull + ((offset) & 31) * 16 - 16*12;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MEM_ACCESS_SUBIDX (offset = %lu) not supported on this chip\n", offset);
+	return 0x00000000000280E0ull + ((offset) & 31) * 16 - 16*12;
 }
 #else
-#define CVMX_SLI_MEM_ACCESS_SUBIDX(offset) (0x00000000000000E0ull + ((offset) & 31) * 16 - 16*12)
+static inline uint64_t CVMX_SLI_MEM_ACCESS_SUBIDX(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000000E0ull + (offset) * 16 - 16*12;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000280E0ull + (offset) * 16 - 16*12;
+	}
+	return 0x00000000000280E0ull + (offset) * 16 - 16*12;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MEM_CTL CVMX_SLI_MEM_CTL_FUNC()
 static inline uint64_t CVMX_SLI_MEM_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_SLI_MEM_CTL not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F00000105E0ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000285E0ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000105E0ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MEM_CTL not supported on this chip\n");
+	return 0x00000000000285E0ull;
 }
 #else
-#define CVMX_SLI_MEM_CTL (CVMX_ADD_IO_SEG(0x00011F00000105E0ull))
+#define CVMX_SLI_MEM_CTL CVMX_SLI_MEM_CTL_FUNC()
+static inline uint64_t CVMX_SLI_MEM_CTL_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000285E0ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000105E0ull;
+	}
+	return 0x00000000000285E0ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MEM_INT_SUM CVMX_SLI_MEM_INT_SUM_FUNC()
 static inline uint64_t CVMX_SLI_MEM_INT_SUM_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_SLI_MEM_INT_SUM not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F00000105D0ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000285D0ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000105D0ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MEM_INT_SUM not supported on this chip\n");
+	return 0x00000000000285D0ull;
 }
 #else
-#define CVMX_SLI_MEM_INT_SUM (CVMX_ADD_IO_SEG(0x00011F00000105D0ull))
+#define CVMX_SLI_MEM_INT_SUM CVMX_SLI_MEM_INT_SUM_FUNC()
+static inline uint64_t CVMX_SLI_MEM_INT_SUM_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000285D0ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000105D0ull;
+	}
+	return 0x00000000000285D0ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_MSIXX_TABLE_ADDR(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 64)))))
-		cvmx_warn("CVMX_SLI_MSIXX_TABLE_ADDR(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011F0000016000ull) + ((offset) & 127) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 64))
+				return 0x0000000000000000ull + ((offset) & 127) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 64))
+				return 0x0000000000016000ull + ((offset) & 127) * 16;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MSIXX_TABLE_ADDR (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000000000ull + ((offset) & 127) * 16;
 }
 #else
-#define CVMX_SLI_MSIXX_TABLE_ADDR(offset) (CVMX_ADD_IO_SEG(0x00011F0000016000ull) + ((offset) & 127) * 16)
+static inline uint64_t CVMX_SLI_MSIXX_TABLE_ADDR(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000000ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000016000ull + (offset) * 16;
+	}
+	return 0x0000000000000000ull + (offset) * 16;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_MSIXX_TABLE_DATA(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 64)))))
-		cvmx_warn("CVMX_SLI_MSIXX_TABLE_DATA(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011F0000016008ull) + ((offset) & 127) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 64))
+				return 0x0000000000000008ull + ((offset) & 127) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 64))
+				return 0x0000000000016008ull + ((offset) & 127) * 16;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MSIXX_TABLE_DATA (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000000008ull + ((offset) & 127) * 16;
 }
 #else
-#define CVMX_SLI_MSIXX_TABLE_DATA(offset) (CVMX_ADD_IO_SEG(0x00011F0000016008ull) + ((offset) & 127) * 16)
+static inline uint64_t CVMX_SLI_MSIXX_TABLE_DATA(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000008ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000016008ull + (offset) * 16;
+	}
+	return 0x0000000000000008ull + (offset) * 16;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_MSIX_MACX_PF_TABLE_ADDR(unsigned long offset)
@@ -369,10 +937,10 @@ static inline uint64_t CVMX_SLI_MSIX_MACX_PF_TABLE_ADDR(unsigned long offset)
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3)))))
 		cvmx_warn("CVMX_SLI_MSIX_MACX_PF_TABLE_ADDR(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011F0000017C00ull) + ((offset) & 3) * 16;
+	return 0x0000000000017C00ull + ((offset) & 3) * 16;
 }
 #else
-#define CVMX_SLI_MSIX_MACX_PF_TABLE_ADDR(offset) (CVMX_ADD_IO_SEG(0x00011F0000017C00ull) + ((offset) & 3) * 16)
+#define CVMX_SLI_MSIX_MACX_PF_TABLE_ADDR(offset) (0x0000000000017C00ull + ((offset) & 3) * 16)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_MSIX_MACX_PF_TABLE_DATA(unsigned long offset)
@@ -380,32 +948,70 @@ static inline uint64_t CVMX_SLI_MSIX_MACX_PF_TABLE_DATA(unsigned long offset)
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3)))))
 		cvmx_warn("CVMX_SLI_MSIX_MACX_PF_TABLE_DATA(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011F0000017C08ull) + ((offset) & 3) * 16;
+	return 0x0000000000017C08ull + ((offset) & 3) * 16;
 }
 #else
-#define CVMX_SLI_MSIX_MACX_PF_TABLE_DATA(offset) (CVMX_ADD_IO_SEG(0x00011F0000017C08ull) + ((offset) & 3) * 16)
+#define CVMX_SLI_MSIX_MACX_PF_TABLE_DATA(offset) (0x0000000000017C08ull + ((offset) & 3) * 16)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MSIX_PBA0 CVMX_SLI_MSIX_PBA0_FUNC()
 static inline uint64_t CVMX_SLI_MSIX_PBA0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_SLI_MSIX_PBA0 not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F0000017000ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001000ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000017000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MSIX_PBA0 not supported on this chip\n");
+	return 0x0000000000001000ull;
 }
 #else
-#define CVMX_SLI_MSIX_PBA0 (CVMX_ADD_IO_SEG(0x00011F0000017000ull))
+#define CVMX_SLI_MSIX_PBA0 CVMX_SLI_MSIX_PBA0_FUNC()
+static inline uint64_t CVMX_SLI_MSIX_PBA0_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001000ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000017000ull;
+	}
+	return 0x0000000000001000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MSIX_PBA1 CVMX_SLI_MSIX_PBA1_FUNC()
 static inline uint64_t CVMX_SLI_MSIX_PBA1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_SLI_MSIX_PBA1 not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F0000017010ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001008ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000017010ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MSIX_PBA1 not supported on this chip\n");
+	return 0x0000000000001008ull;
 }
 #else
-#define CVMX_SLI_MSIX_PBA1 (CVMX_ADD_IO_SEG(0x00011F0000017010ull))
+#define CVMX_SLI_MSIX_PBA1 CVMX_SLI_MSIX_PBA1_FUNC()
+static inline uint64_t CVMX_SLI_MSIX_PBA1_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001008ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000017010ull;
+	}
+	return 0x0000000000001008ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MSI_ENB0 CVMX_SLI_MSI_ENB0_FUNC()
@@ -455,56 +1061,211 @@ static inline uint64_t CVMX_SLI_MSI_ENB3_FUNC(void)
 #define CVMX_SLI_MSI_RCV0 CVMX_SLI_MSI_RCV0_FUNC()
 static inline uint64_t CVMX_SLI_MSI_RCV0_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MSI_RCV0 not supported on this chip\n");
-	return 0x0000000000003C10ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003C10ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023C10ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MSI_RCV0 not supported on this chip\n");
+	return 0x0000000000023C10ull;
 }
 #else
-#define CVMX_SLI_MSI_RCV0 (0x0000000000003C10ull)
+#define CVMX_SLI_MSI_RCV0 CVMX_SLI_MSI_RCV0_FUNC()
+static inline uint64_t CVMX_SLI_MSI_RCV0_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003C10ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023C10ull;
+	}
+	return 0x0000000000023C10ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MSI_RCV1 CVMX_SLI_MSI_RCV1_FUNC()
 static inline uint64_t CVMX_SLI_MSI_RCV1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MSI_RCV1 not supported on this chip\n");
-	return 0x0000000000003C20ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003C20ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023C20ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MSI_RCV1 not supported on this chip\n");
+	return 0x0000000000023C20ull;
 }
 #else
-#define CVMX_SLI_MSI_RCV1 (0x0000000000003C20ull)
+#define CVMX_SLI_MSI_RCV1 CVMX_SLI_MSI_RCV1_FUNC()
+static inline uint64_t CVMX_SLI_MSI_RCV1_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003C20ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023C20ull;
+	}
+	return 0x0000000000023C20ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MSI_RCV2 CVMX_SLI_MSI_RCV2_FUNC()
 static inline uint64_t CVMX_SLI_MSI_RCV2_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MSI_RCV2 not supported on this chip\n");
-	return 0x0000000000003C30ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003C30ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023C30ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MSI_RCV2 not supported on this chip\n");
+	return 0x0000000000023C30ull;
 }
 #else
-#define CVMX_SLI_MSI_RCV2 (0x0000000000003C30ull)
+#define CVMX_SLI_MSI_RCV2 CVMX_SLI_MSI_RCV2_FUNC()
+static inline uint64_t CVMX_SLI_MSI_RCV2_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003C30ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023C30ull;
+	}
+	return 0x0000000000023C30ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MSI_RCV3 CVMX_SLI_MSI_RCV3_FUNC()
 static inline uint64_t CVMX_SLI_MSI_RCV3_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MSI_RCV3 not supported on this chip\n");
-	return 0x0000000000003C40ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003C40ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023C40ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MSI_RCV3 not supported on this chip\n");
+	return 0x0000000000023C40ull;
 }
 #else
-#define CVMX_SLI_MSI_RCV3 (0x0000000000003C40ull)
+#define CVMX_SLI_MSI_RCV3 CVMX_SLI_MSI_RCV3_FUNC()
+static inline uint64_t CVMX_SLI_MSI_RCV3_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003C40ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023C40ull;
+	}
+	return 0x0000000000023C40ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MSI_RD_MAP CVMX_SLI_MSI_RD_MAP_FUNC()
 static inline uint64_t CVMX_SLI_MSI_RD_MAP_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MSI_RD_MAP not supported on this chip\n");
-	return 0x0000000000003CA0ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003CA0ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023CA0ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MSI_RD_MAP not supported on this chip\n");
+	return 0x0000000000023CA0ull;
 }
 #else
-#define CVMX_SLI_MSI_RD_MAP (0x0000000000003CA0ull)
+#define CVMX_SLI_MSI_RD_MAP CVMX_SLI_MSI_RD_MAP_FUNC()
+static inline uint64_t CVMX_SLI_MSI_RD_MAP_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003CA0ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023CA0ull;
+	}
+	return 0x0000000000023CA0ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_MSI_W1C_ENB0 CVMX_SLI_MSI_W1C_ENB0_FUNC()
@@ -598,135 +1359,448 @@ static inline uint64_t CVMX_SLI_MSI_W1S_ENB3_FUNC(void)
 #define CVMX_SLI_MSI_WR_MAP CVMX_SLI_MSI_WR_MAP_FUNC()
 static inline uint64_t CVMX_SLI_MSI_WR_MAP_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_MSI_WR_MAP not supported on this chip\n");
-	return 0x0000000000003C90ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003C90ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023C90ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_MSI_WR_MAP not supported on this chip\n");
+	return 0x0000000000023C90ull;
 }
 #else
-#define CVMX_SLI_MSI_WR_MAP (0x0000000000003C90ull)
+#define CVMX_SLI_MSI_WR_MAP CVMX_SLI_MSI_WR_MAP_FUNC()
+static inline uint64_t CVMX_SLI_MSI_WR_MAP_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003C90ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023C90ull;
+	}
+	return 0x0000000000023C90ull;
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_NQM_RSP_ERR_SND_DBG CVMX_SLI_NQM_RSP_ERR_SND_DBG_FUNC()
+static inline uint64_t CVMX_SLI_NQM_RSP_ERR_SND_DBG_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_NQM_RSP_ERR_SND_DBG not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011F0000028800ull);
+}
+#else
+#define CVMX_SLI_NQM_RSP_ERR_SND_DBG (CVMX_ADD_IO_SEG(0x00011F0000028800ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PCIE_MSI_RCV CVMX_SLI_PCIE_MSI_RCV_FUNC()
 static inline uint64_t CVMX_SLI_PCIE_MSI_RCV_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_PCIE_MSI_RCV not supported on this chip\n");
-	return 0x0000000000003CB0ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003CB0ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023CB0ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PCIE_MSI_RCV not supported on this chip\n");
+	return 0x0000000000023CB0ull;
 }
 #else
-#define CVMX_SLI_PCIE_MSI_RCV (0x0000000000003CB0ull)
+#define CVMX_SLI_PCIE_MSI_RCV CVMX_SLI_PCIE_MSI_RCV_FUNC()
+static inline uint64_t CVMX_SLI_PCIE_MSI_RCV_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003CB0ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023CB0ull;
+	}
+	return 0x0000000000023CB0ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PCIE_MSI_RCV_B1 CVMX_SLI_PCIE_MSI_RCV_B1_FUNC()
 static inline uint64_t CVMX_SLI_PCIE_MSI_RCV_B1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_PCIE_MSI_RCV_B1 not supported on this chip\n");
-	return 0x0000000000000650ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000650ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028650ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PCIE_MSI_RCV_B1 not supported on this chip\n");
+	return 0x0000000000028650ull;
 }
 #else
-#define CVMX_SLI_PCIE_MSI_RCV_B1 (0x0000000000000650ull)
+#define CVMX_SLI_PCIE_MSI_RCV_B1 CVMX_SLI_PCIE_MSI_RCV_B1_FUNC()
+static inline uint64_t CVMX_SLI_PCIE_MSI_RCV_B1_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000650ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028650ull;
+	}
+	return 0x0000000000028650ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PCIE_MSI_RCV_B2 CVMX_SLI_PCIE_MSI_RCV_B2_FUNC()
 static inline uint64_t CVMX_SLI_PCIE_MSI_RCV_B2_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_PCIE_MSI_RCV_B2 not supported on this chip\n");
-	return 0x0000000000000660ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000660ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028660ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PCIE_MSI_RCV_B2 not supported on this chip\n");
+	return 0x0000000000028660ull;
 }
 #else
-#define CVMX_SLI_PCIE_MSI_RCV_B2 (0x0000000000000660ull)
+#define CVMX_SLI_PCIE_MSI_RCV_B2 CVMX_SLI_PCIE_MSI_RCV_B2_FUNC()
+static inline uint64_t CVMX_SLI_PCIE_MSI_RCV_B2_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000660ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028660ull;
+	}
+	return 0x0000000000028660ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PCIE_MSI_RCV_B3 CVMX_SLI_PCIE_MSI_RCV_B3_FUNC()
 static inline uint64_t CVMX_SLI_PCIE_MSI_RCV_B3_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_PCIE_MSI_RCV_B3 not supported on this chip\n");
-	return 0x0000000000000670ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000670ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028670ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PCIE_MSI_RCV_B3 not supported on this chip\n");
+	return 0x0000000000028670ull;
 }
 #else
-#define CVMX_SLI_PCIE_MSI_RCV_B3 (0x0000000000000670ull)
+#define CVMX_SLI_PCIE_MSI_RCV_B3 CVMX_SLI_PCIE_MSI_RCV_B3_FUNC()
+static inline uint64_t CVMX_SLI_PCIE_MSI_RCV_B3_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000670ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028670ull;
+	}
+	return 0x0000000000028670ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_CNTS(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_SLI_PKTX_CNTS(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000002400ull + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return 0x0000000000002400ull + ((offset) & 31) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000012400ull + ((offset) & 63) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x00000000000100B0ull + ((offset) & 127) * 0x20000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_CNTS (offset = %lu) not supported on this chip\n", offset);
+	return 0x00000000000100B0ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_CNTS(offset) (0x0000000000002400ull + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKTX_CNTS(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000002400ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000012400ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000100B0ull + (offset) * 0x20000ull;
+	}
+	return 0x00000000000100B0ull + (offset) * 0x20000ull;
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_PKTX_ERROR_INFO(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 127))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 127)))))
+		cvmx_warn("CVMX_SLI_PKTX_ERROR_INFO(%lu) is invalid on this chip\n", offset);
+	return 0x00000000000100C0ull + ((offset) & 127) * 0x20000ull;
+}
+#else
+#define CVMX_SLI_PKTX_ERROR_INFO(offset) (0x00000000000100C0ull + ((offset) & 127) * 0x20000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_INPUT_CONTROL(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
-		cvmx_warn("CVMX_SLI_PKTX_INPUT_CONTROL(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011F0000014000ull) + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x0000000000010000ull + ((offset) & 127) * 0x20000ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000014000ull + ((offset) & 63) * 16;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_INPUT_CONTROL (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000010000ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_INPUT_CONTROL(offset) (CVMX_ADD_IO_SEG(0x00011F0000014000ull) + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKTX_INPUT_CONTROL(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010000ull + (offset) * 0x20000ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000014000ull + (offset) * 16;
+	}
+	return 0x0000000000010000ull + (offset) * 0x20000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_INSTR_BADDR(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_SLI_PKTX_INSTR_BADDR(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000002800ull + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return 0x0000000000002800ull + ((offset) & 31) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000012800ull + ((offset) & 63) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x0000000000010010ull + ((offset) & 127) * 0x20000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_INSTR_BADDR (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000010010ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_INSTR_BADDR(offset) (0x0000000000002800ull + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKTX_INSTR_BADDR(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000002800ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000012800ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010010ull + (offset) * 0x20000ull;
+	}
+	return 0x0000000000010010ull + (offset) * 0x20000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_INSTR_BAOFF_DBELL(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_SLI_PKTX_INSTR_BAOFF_DBELL(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000002C00ull + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return 0x0000000000002C00ull + ((offset) & 31) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000012C00ull + ((offset) & 63) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x0000000000010020ull + ((offset) & 127) * 0x20000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_INSTR_BAOFF_DBELL (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000010020ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_INSTR_BAOFF_DBELL(offset) (0x0000000000002C00ull + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKTX_INSTR_BAOFF_DBELL(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000002C00ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000012C00ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010020ull + (offset) * 0x20000ull;
+	}
+	return 0x0000000000010020ull + (offset) * 0x20000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_INSTR_FIFO_RSIZE(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_SLI_PKTX_INSTR_FIFO_RSIZE(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000003000ull + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return 0x0000000000003000ull + ((offset) & 31) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000013000ull + ((offset) & 63) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x0000000000010030ull + ((offset) & 127) * 0x20000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_INSTR_FIFO_RSIZE (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000010030ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_INSTR_FIFO_RSIZE(offset) (0x0000000000003000ull + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKTX_INSTR_FIFO_RSIZE(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003000ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000013000ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010030ull + (offset) * 0x20000ull;
+	}
+	return 0x0000000000010030ull + (offset) * 0x20000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_INSTR_HEADER(unsigned long offset)
@@ -747,13 +1821,32 @@ static inline uint64_t CVMX_SLI_PKTX_INSTR_HEADER(unsigned long offset)
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_INT_LEVELS(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
-		cvmx_warn("CVMX_SLI_PKTX_INT_LEVELS(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011F0000014400ull) + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x00000000000100A0ull + ((offset) & 127) * 0x20000ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000014400ull + ((offset) & 63) * 16;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_INT_LEVELS (offset = %lu) not supported on this chip\n", offset);
+	return 0x00000000000100A0ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_INT_LEVELS(offset) (CVMX_ADD_IO_SEG(0x00011F0000014400ull) + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKTX_INT_LEVELS(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000100A0ull + (offset) * 0x20000ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000014400ull + (offset) * 16;
+	}
+	return 0x00000000000100A0ull + (offset) * 0x20000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_IN_BP(unsigned long offset)
@@ -771,83 +1864,254 @@ static inline uint64_t CVMX_SLI_PKTX_IN_BP(unsigned long offset)
 #define CVMX_SLI_PKTX_IN_BP(offset) (0x0000000000003800ull + ((offset) & 31) * 16)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SLI_PKTX_OUTPUT_CONTROL(unsigned long offset)
+static inline uint64_t CVMX_SLI_PKTX_MBOX_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
-		cvmx_warn("CVMX_SLI_PKTX_OUTPUT_CONTROL(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011F0000014800ull) + ((offset) & 63) * 16;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 127))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 127)))))
+		cvmx_warn("CVMX_SLI_PKTX_MBOX_INT(%lu) is invalid on this chip\n", offset);
+	return 0x0000000000010210ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_OUTPUT_CONTROL(offset) (CVMX_ADD_IO_SEG(0x00011F0000014800ull) + ((offset) & 63) * 16)
+#define CVMX_SLI_PKTX_MBOX_INT(offset) (0x0000000000010210ull + ((offset) & 127) * 0x20000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_PKTX_OUTPUT_CONTROL(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x0000000000010050ull + ((offset) & 127) * 0x20000ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000014800ull + ((offset) & 63) * 16;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_OUTPUT_CONTROL (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000010050ull + ((offset) & 127) * 0x20000ull;
+}
+#else
+static inline uint64_t CVMX_SLI_PKTX_OUTPUT_CONTROL(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010050ull + (offset) * 0x20000ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000014800ull + (offset) * 16;
+	}
+	return 0x0000000000010050ull + (offset) * 0x20000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_OUT_SIZE(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_SLI_PKTX_OUT_SIZE(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000000C00ull + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return 0x0000000000000C00ull + ((offset) & 31) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000010C00ull + ((offset) & 63) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x0000000000010060ull + ((offset) & 127) * 0x20000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_OUT_SIZE (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000010060ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_OUT_SIZE(offset) (0x0000000000000C00ull + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKTX_OUT_SIZE(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000C00ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010C00ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010060ull + (offset) * 0x20000ull;
+	}
+	return 0x0000000000010060ull + (offset) * 0x20000ull;
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_PKTX_PF_VF_MBOX_SIGX(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 63)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 63))))))
+		cvmx_warn("CVMX_SLI_PKTX_PF_VF_MBOX_SIGX(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000010200ull + (((offset) & 1) + ((block_id) & 63) * 0x4000ull) * 8;
+}
+#else
+#define CVMX_SLI_PKTX_PF_VF_MBOX_SIGX(offset, block_id) (0x0000000000010200ull + (((offset) & 1) + ((block_id) & 63) * 0x4000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_SLIST_BADDR(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_SLI_PKTX_SLIST_BADDR(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000001400ull + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return 0x0000000000001400ull + ((offset) & 31) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000011400ull + ((offset) & 63) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x0000000000010070ull + ((offset) & 127) * 0x20000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_SLIST_BADDR (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000010070ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_SLIST_BADDR(offset) (0x0000000000001400ull + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKTX_SLIST_BADDR(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001400ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000011400ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010070ull + (offset) * 0x20000ull;
+	}
+	return 0x0000000000010070ull + (offset) * 0x20000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_SLIST_BAOFF_DBELL(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_SLI_PKTX_SLIST_BAOFF_DBELL(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000001800ull + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return 0x0000000000001800ull + ((offset) & 31) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000011800ull + ((offset) & 63) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x0000000000010080ull + ((offset) & 127) * 0x20000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_SLIST_BAOFF_DBELL (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000010080ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_SLIST_BAOFF_DBELL(offset) (0x0000000000001800ull + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKTX_SLIST_BAOFF_DBELL(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001800ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000011800ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010080ull + (offset) * 0x20000ull;
+	}
+	return 0x0000000000010080ull + (offset) * 0x20000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_SLIST_FIFO_RSIZE(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_SLI_PKTX_SLIST_FIFO_RSIZE(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000001C00ull + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return 0x0000000000001C00ull + ((offset) & 31) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000011C00ull + ((offset) & 63) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x0000000000010090ull + ((offset) & 127) * 0x20000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKTX_SLIST_FIFO_RSIZE (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000010090ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKTX_SLIST_FIFO_RSIZE(offset) (0x0000000000001C00ull + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKTX_SLIST_FIFO_RSIZE(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001C00ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000011C00ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010090ull + (offset) * 0x20000ull;
+	}
+	return 0x0000000000010090ull + (offset) * 0x20000ull;
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_PKTX_VF_INT_SUM(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 127))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 127)))))
+		cvmx_warn("CVMX_SLI_PKTX_VF_INT_SUM(%lu) is invalid on this chip\n", offset);
+	return 0x00000000000100D0ull + ((offset) & 127) * 0x20000ull;
+}
+#else
+#define CVMX_SLI_PKTX_VF_INT_SUM(offset) (0x00000000000100D0ull + ((offset) & 127) * 0x20000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKTX_VF_SIG(unsigned long offset)
@@ -855,21 +2119,63 @@ static inline uint64_t CVMX_SLI_PKTX_VF_SIG(unsigned long offset)
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
 		cvmx_warn("CVMX_SLI_PKTX_VF_SIG(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011F0000014C00ull) + ((offset) & 63) * 16;
+	return 0x0000000000014C00ull + ((offset) & 63) * 16;
 }
 #else
-#define CVMX_SLI_PKTX_VF_SIG(offset) (CVMX_ADD_IO_SEG(0x00011F0000014C00ull) + ((offset) & 63) * 16)
+#define CVMX_SLI_PKTX_VF_SIG(offset) (0x0000000000014C00ull + ((offset) & 63) * 16)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_PKT_BIST_STATUS CVMX_SLI_PKT_BIST_STATUS_FUNC()
+static inline uint64_t CVMX_SLI_PKT_BIST_STATUS_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_PKT_BIST_STATUS not supported on this chip\n");
+	return 0x0000000000029220ull;
+}
+#else
+#define CVMX_SLI_PKT_BIST_STATUS (0x0000000000029220ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_CNT_INT CVMX_SLI_PKT_CNT_INT_FUNC()
 static inline uint64_t CVMX_SLI_PKT_CNT_INT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_PKT_CNT_INT not supported on this chip\n");
-	return 0x0000000000001130ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001130ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029130ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKT_CNT_INT not supported on this chip\n");
+	return 0x0000000000029130ull;
 }
 #else
-#define CVMX_SLI_PKT_CNT_INT (0x0000000000001130ull)
+#define CVMX_SLI_PKT_CNT_INT CVMX_SLI_PKT_CNT_INT_FUNC()
+static inline uint64_t CVMX_SLI_PKT_CNT_INT_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001130ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029130ull;
+	}
+	return 0x0000000000029130ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_CNT_INT_ENB CVMX_SLI_PKT_CNT_INT_ENB_FUNC()
@@ -938,6 +2244,17 @@ static inline uint64_t CVMX_SLI_PKT_DPADDR_FUNC(void)
 #define CVMX_SLI_PKT_DPADDR (0x0000000000001080ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_PKT_GBL_CONTROL CVMX_SLI_PKT_GBL_CONTROL_FUNC()
+static inline uint64_t CVMX_SLI_PKT_GBL_CONTROL_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_PKT_GBL_CONTROL not supported on this chip\n");
+	return 0x0000000000029210ull;
+}
+#else
+#define CVMX_SLI_PKT_GBL_CONTROL (0x0000000000029210ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_INPUT_CONTROL CVMX_SLI_PKT_INPUT_CONTROL_FUNC()
 static inline uint64_t CVMX_SLI_PKT_INPUT_CONTROL_FUNC(void)
 {
@@ -985,12 +2302,31 @@ static inline uint64_t CVMX_SLI_PKT_INSTR_SIZE_FUNC(void)
 #define CVMX_SLI_PKT_INT CVMX_SLI_PKT_INT_FUNC()
 static inline uint64_t CVMX_SLI_PKT_INT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_SLI_PKT_INT not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F0000011160ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029160ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000011160ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKT_INT not supported on this chip\n");
+	return 0x0000000000029160ull;
 }
 #else
-#define CVMX_SLI_PKT_INT (CVMX_ADD_IO_SEG(0x00011F0000011160ull))
+#define CVMX_SLI_PKT_INT CVMX_SLI_PKT_INT_FUNC()
+static inline uint64_t CVMX_SLI_PKT_INT_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029160ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000011160ull;
+	}
+	return 0x0000000000029160ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_INT_LEVELS CVMX_SLI_PKT_INT_LEVELS_FUNC()
@@ -1017,41 +2353,131 @@ static inline uint64_t CVMX_SLI_PKT_IN_BP_FUNC(void)
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKT_IN_DONEX_CNTS(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 31))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 31)))))
-		cvmx_warn("CVMX_SLI_PKT_IN_DONEX_CNTS(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000002000ull + ((offset) & 63) * 16;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return 0x0000000000002000ull + ((offset) & 31) * 16;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 63))
+				return 0x0000000000012000ull + ((offset) & 63) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 127))
+				return 0x0000000000010040ull + ((offset) & 127) * 0x20000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKT_IN_DONEX_CNTS (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000010040ull + ((offset) & 127) * 0x20000ull;
 }
 #else
-#define CVMX_SLI_PKT_IN_DONEX_CNTS(offset) (0x0000000000002000ull + ((offset) & 63) * 16)
+static inline uint64_t CVMX_SLI_PKT_IN_DONEX_CNTS(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000002000ull + (offset) * 16;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000012000ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000010040ull + (offset) * 0x20000ull;
+	}
+	return 0x0000000000010040ull + (offset) * 0x20000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_IN_INSTR_COUNTS CVMX_SLI_PKT_IN_INSTR_COUNTS_FUNC()
 static inline uint64_t CVMX_SLI_PKT_IN_INSTR_COUNTS_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_PKT_IN_INSTR_COUNTS not supported on this chip\n");
-	return 0x0000000000001200ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001200ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029200ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKT_IN_INSTR_COUNTS not supported on this chip\n");
+	return 0x0000000000029200ull;
 }
 #else
-#define CVMX_SLI_PKT_IN_INSTR_COUNTS (0x0000000000001200ull)
+#define CVMX_SLI_PKT_IN_INSTR_COUNTS CVMX_SLI_PKT_IN_INSTR_COUNTS_FUNC()
+static inline uint64_t CVMX_SLI_PKT_IN_INSTR_COUNTS_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001200ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029200ull;
+	}
+	return 0x0000000000029200ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_IN_INT CVMX_SLI_PKT_IN_INT_FUNC()
 static inline uint64_t CVMX_SLI_PKT_IN_INT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_SLI_PKT_IN_INT not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F0000011150ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029150ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000011150ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKT_IN_INT not supported on this chip\n");
+	return 0x0000000000029150ull;
 }
 #else
-#define CVMX_SLI_PKT_IN_INT (CVMX_ADD_IO_SEG(0x00011F0000011150ull))
+#define CVMX_SLI_PKT_IN_INT CVMX_SLI_PKT_IN_INT_FUNC()
+static inline uint64_t CVMX_SLI_PKT_IN_INT_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029150ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000011150ull;
+	}
+	return 0x0000000000029150ull;
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_PKT_IN_JABBER CVMX_SLI_PKT_IN_JABBER_FUNC()
+static inline uint64_t CVMX_SLI_PKT_IN_JABBER_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_PKT_IN_JABBER not supported on this chip\n");
+	return 0x0000000000029170ull;
+}
+#else
+#define CVMX_SLI_PKT_IN_JABBER (0x0000000000029170ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_IN_PCIE_PORT CVMX_SLI_PKT_IN_PCIE_PORT_FUNC()
@@ -1081,10 +2507,10 @@ static inline uint64_t CVMX_SLI_PKT_MAC0_SIG0_FUNC(void)
 {
 	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_SLI_PKT_MAC0_SIG0 not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F0000011300ull);
+	return 0x0000000000011300ull;
 }
 #else
-#define CVMX_SLI_PKT_MAC0_SIG0 (CVMX_ADD_IO_SEG(0x00011F0000011300ull))
+#define CVMX_SLI_PKT_MAC0_SIG0 (0x0000000000011300ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_MAC0_SIG1 CVMX_SLI_PKT_MAC0_SIG1_FUNC()
@@ -1092,10 +2518,10 @@ static inline uint64_t CVMX_SLI_PKT_MAC0_SIG1_FUNC(void)
 {
 	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_SLI_PKT_MAC0_SIG1 not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F0000011310ull);
+	return 0x0000000000011310ull;
 }
 #else
-#define CVMX_SLI_PKT_MAC0_SIG1 (CVMX_ADD_IO_SEG(0x00011F0000011310ull))
+#define CVMX_SLI_PKT_MAC0_SIG1 (0x0000000000011310ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_MAC1_SIG0 CVMX_SLI_PKT_MAC1_SIG0_FUNC()
@@ -1103,10 +2529,10 @@ static inline uint64_t CVMX_SLI_PKT_MAC1_SIG0_FUNC(void)
 {
 	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_SLI_PKT_MAC1_SIG0 not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F0000011320ull);
+	return 0x0000000000011320ull;
 }
 #else
-#define CVMX_SLI_PKT_MAC1_SIG0 (CVMX_ADD_IO_SEG(0x00011F0000011320ull))
+#define CVMX_SLI_PKT_MAC1_SIG0 (0x0000000000011320ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_MAC1_SIG1 CVMX_SLI_PKT_MAC1_SIG1_FUNC()
@@ -1114,10 +2540,22 @@ static inline uint64_t CVMX_SLI_PKT_MAC1_SIG1_FUNC(void)
 {
 	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
 		cvmx_warn("CVMX_SLI_PKT_MAC1_SIG1 not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F0000011330ull);
+	return 0x0000000000011330ull;
 }
 #else
-#define CVMX_SLI_PKT_MAC1_SIG1 (CVMX_ADD_IO_SEG(0x00011F0000011330ull))
+#define CVMX_SLI_PKT_MAC1_SIG1 (0x0000000000011330ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_PKT_MACX_PFX_RINFO(unsigned long offset, unsigned long block_id)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 3))))))
+		cvmx_warn("CVMX_SLI_PKT_MACX_PFX_RINFO(%lu,%lu) is invalid on this chip\n", offset, block_id);
+	return 0x0000000000029030ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16;
+}
+#else
+#define CVMX_SLI_PKT_MACX_PFX_RINFO(offset, block_id) (0x0000000000029030ull + (((offset) & 1) + ((block_id) & 3) * 0x2ull) * 16)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_SLI_PKT_MACX_RINFO(unsigned long offset)
@@ -1125,32 +2563,82 @@ static inline uint64_t CVMX_SLI_PKT_MACX_RINFO(unsigned long offset)
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3)))))
 		cvmx_warn("CVMX_SLI_PKT_MACX_RINFO(%lu) is invalid on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x00011F0000011030ull) + ((offset) & 3) * 16;
+	return 0x0000000000011030ull + ((offset) & 3) * 16;
 }
 #else
-#define CVMX_SLI_PKT_MACX_RINFO(offset) (CVMX_ADD_IO_SEG(0x00011F0000011030ull) + ((offset) & 3) * 16)
+#define CVMX_SLI_PKT_MACX_RINFO(offset) (0x0000000000011030ull + ((offset) & 3) * 16)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_MEM_CTL CVMX_SLI_PKT_MEM_CTL_FUNC()
 static inline uint64_t CVMX_SLI_PKT_MEM_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_SLI_PKT_MEM_CTL not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F0000011120ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029120ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000011120ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKT_MEM_CTL not supported on this chip\n");
+	return 0x0000000000029120ull;
 }
 #else
-#define CVMX_SLI_PKT_MEM_CTL (CVMX_ADD_IO_SEG(0x00011F0000011120ull))
+#define CVMX_SLI_PKT_MEM_CTL CVMX_SLI_PKT_MEM_CTL_FUNC()
+static inline uint64_t CVMX_SLI_PKT_MEM_CTL_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029120ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000011120ull;
+	}
+	return 0x0000000000029120ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_OUTPUT_WMARK CVMX_SLI_PKT_OUTPUT_WMARK_FUNC()
 static inline uint64_t CVMX_SLI_PKT_OUTPUT_WMARK_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_PKT_OUTPUT_WMARK not supported on this chip\n");
-	return 0x0000000000001180ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001180ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029180ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKT_OUTPUT_WMARK not supported on this chip\n");
+	return 0x0000000000029180ull;
 }
 #else
-#define CVMX_SLI_PKT_OUTPUT_WMARK (0x0000000000001180ull)
+#define CVMX_SLI_PKT_OUTPUT_WMARK CVMX_SLI_PKT_OUTPUT_WMARK_FUNC()
+static inline uint64_t CVMX_SLI_PKT_OUTPUT_WMARK_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001180ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029180ull;
+	}
+	return 0x0000000000029180ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_OUT_BMODE CVMX_SLI_PKT_OUT_BMODE_FUNC()
@@ -1175,6 +2663,50 @@ static inline uint64_t CVMX_SLI_PKT_OUT_BP_EN_FUNC(void)
 #define CVMX_SLI_PKT_OUT_BP_EN (0x0000000000001240ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_PKT_OUT_BP_EN2_W1C CVMX_SLI_PKT_OUT_BP_EN2_W1C_FUNC()
+static inline uint64_t CVMX_SLI_PKT_OUT_BP_EN2_W1C_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_PKT_OUT_BP_EN2_W1C not supported on this chip\n");
+	return 0x0000000000029290ull;
+}
+#else
+#define CVMX_SLI_PKT_OUT_BP_EN2_W1C (0x0000000000029290ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_PKT_OUT_BP_EN2_W1S CVMX_SLI_PKT_OUT_BP_EN2_W1S_FUNC()
+static inline uint64_t CVMX_SLI_PKT_OUT_BP_EN2_W1S_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_PKT_OUT_BP_EN2_W1S not supported on this chip\n");
+	return 0x0000000000029270ull;
+}
+#else
+#define CVMX_SLI_PKT_OUT_BP_EN2_W1S (0x0000000000029270ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_PKT_OUT_BP_EN_W1C CVMX_SLI_PKT_OUT_BP_EN_W1C_FUNC()
+static inline uint64_t CVMX_SLI_PKT_OUT_BP_EN_W1C_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_PKT_OUT_BP_EN_W1C not supported on this chip\n");
+	return 0x0000000000029280ull;
+}
+#else
+#define CVMX_SLI_PKT_OUT_BP_EN_W1C (0x0000000000029280ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_PKT_OUT_BP_EN_W1S CVMX_SLI_PKT_OUT_BP_EN_W1S_FUNC()
+static inline uint64_t CVMX_SLI_PKT_OUT_BP_EN_W1S_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_PKT_OUT_BP_EN_W1S not supported on this chip\n");
+	return 0x0000000000029260ull;
+}
+#else
+#define CVMX_SLI_PKT_OUT_BP_EN_W1S (0x0000000000029260ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_OUT_ENB CVMX_SLI_PKT_OUT_ENB_FUNC()
 static inline uint64_t CVMX_SLI_PKT_OUT_ENB_FUNC(void)
 {
@@ -1197,6 +2729,17 @@ static inline uint64_t CVMX_SLI_PKT_PCIE_PORT_FUNC(void)
 #define CVMX_SLI_PKT_PCIE_PORT (0x00000000000010E0ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_PKT_PKIND_VALID CVMX_SLI_PKT_PKIND_VALID_FUNC()
+static inline uint64_t CVMX_SLI_PKT_PKIND_VALID_FUNC(void)
+{
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_PKT_PKIND_VALID not supported on this chip\n");
+	return 0x0000000000029190ull;
+}
+#else
+#define CVMX_SLI_PKT_PKIND_VALID (0x0000000000029190ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_PORT_IN_RST CVMX_SLI_PKT_PORT_IN_RST_FUNC()
 static inline uint64_t CVMX_SLI_PKT_PORT_IN_RST_FUNC(void)
 {
@@ -1211,12 +2754,31 @@ static inline uint64_t CVMX_SLI_PKT_PORT_IN_RST_FUNC(void)
 #define CVMX_SLI_PKT_RING_RST CVMX_SLI_PKT_RING_RST_FUNC()
 static inline uint64_t CVMX_SLI_PKT_RING_RST_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
-		cvmx_warn("CVMX_SLI_PKT_RING_RST not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011F00000111E0ull);
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000291E0ull;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000111E0ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKT_RING_RST not supported on this chip\n");
+	return 0x00000000000291E0ull;
 }
 #else
-#define CVMX_SLI_PKT_RING_RST (CVMX_ADD_IO_SEG(0x00011F00000111E0ull))
+#define CVMX_SLI_PKT_RING_RST CVMX_SLI_PKT_RING_RST_FUNC()
+static inline uint64_t CVMX_SLI_PKT_RING_RST_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000291E0ull;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000111E0ull;
+	}
+	return 0x00000000000291E0ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_SLIST_ES CVMX_SLI_PKT_SLIST_ES_FUNC()
@@ -1255,12 +2817,43 @@ static inline uint64_t CVMX_SLI_PKT_SLIST_ROR_FUNC(void)
 #define CVMX_SLI_PKT_TIME_INT CVMX_SLI_PKT_TIME_INT_FUNC()
 static inline uint64_t CVMX_SLI_PKT_TIME_INT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_PKT_TIME_INT not supported on this chip\n");
-	return 0x0000000000001140ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001140ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029140ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_PKT_TIME_INT not supported on this chip\n");
+	return 0x0000000000029140ull;
 }
 #else
-#define CVMX_SLI_PKT_TIME_INT (0x0000000000001140ull)
+#define CVMX_SLI_PKT_TIME_INT CVMX_SLI_PKT_TIME_INT_FUNC()
+static inline uint64_t CVMX_SLI_PKT_TIME_INT_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000001140ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000029140ull;
+	}
+	return 0x0000000000029140ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_PKT_TIME_INT_ENB CVMX_SLI_PKT_TIME_INT_ENB_FUNC()
@@ -1285,76 +2878,305 @@ static inline uint64_t CVMX_SLI_PORTX_PKIND(unsigned long offset)
 #define CVMX_SLI_PORTX_PKIND(offset) (0x0000000000000800ull + ((offset) & 31) * 16)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_SLI_S2M_PORTX_CTL(unsigned long offset)
+#define CVMX_SLI_PP_PKT_CSR_CONTROL CVMX_SLI_PP_PKT_CSR_CONTROL_FUNC()
+static inline uint64_t CVMX_SLI_PP_PKT_CSR_CONTROL_FUNC(void)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 2))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 1)))))
-		cvmx_warn("CVMX_SLI_S2M_PORTX_CTL(%lu) is invalid on this chip\n", offset);
-	return 0x0000000000003D80ull + ((offset) & 3) * 16;
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
+		cvmx_warn("CVMX_SLI_PP_PKT_CSR_CONTROL not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011F00000282D0ull);
 }
 #else
-#define CVMX_SLI_S2M_PORTX_CTL(offset) (0x0000000000003D80ull + ((offset) & 3) * 16)
+#define CVMX_SLI_PP_PKT_CSR_CONTROL (CVMX_ADD_IO_SEG(0x00011F00000282D0ull))
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+#define CVMX_SLI_S2C_END_MERGE CVMX_SLI_S2C_END_MERGE_FUNC()
+static inline uint64_t CVMX_SLI_S2C_END_MERGE_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011F0000025000ull);
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011F0000015000ull);
+			break;
+	}
+	cvmx_warn("CVMX_SLI_S2C_END_MERGE not supported on this chip\n");
+	return CVMX_ADD_IO_SEG(0x00011F0000025000ull);
+}
+#else
+#define CVMX_SLI_S2C_END_MERGE CVMX_SLI_S2C_END_MERGE_FUNC()
+static inline uint64_t CVMX_SLI_S2C_END_MERGE_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011F0000025000ull);
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x00011F0000015000ull);
+	}
+	return CVMX_ADD_IO_SEG(0x00011F0000025000ull);
+}
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_SLI_S2M_PORTX_CTL(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 1))
+				return 0x0000000000003D80ull + ((offset) & 1) * 16;
+			break;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 2))
+				return 0x0000000000013D80ull + ((offset) & 3) * 16;
+			break;
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 3))
+				return 0x0000000000003D80ull + ((offset) & 3) * 16;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 3))
+				return 0x0000000000023D80ull + ((offset) & 3) * 16;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_S2M_PORTX_CTL (offset = %lu) not supported on this chip\n", offset);
+	return 0x0000000000023D80ull + ((offset) & 3) * 16;
+}
+#else
+static inline uint64_t CVMX_SLI_S2M_PORTX_CTL(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003D80ull + (offset) * 16;
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000013D80ull + (offset) * 16;
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000003D80ull + (offset) * 16;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000023D80ull + (offset) * 16;
+	}
+	return 0x0000000000023D80ull + (offset) * 16;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_SCRATCH_1 CVMX_SLI_SCRATCH_1_FUNC()
 static inline uint64_t CVMX_SLI_SCRATCH_1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_SCRATCH_1 not supported on this chip\n");
-	return 0x00000000000003C0ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000003C0ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000283C0ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_SCRATCH_1 not supported on this chip\n");
+	return 0x00000000000283C0ull;
 }
 #else
-#define CVMX_SLI_SCRATCH_1 (0x00000000000003C0ull)
+#define CVMX_SLI_SCRATCH_1 CVMX_SLI_SCRATCH_1_FUNC()
+static inline uint64_t CVMX_SLI_SCRATCH_1_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000003C0ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000283C0ull;
+	}
+	return 0x00000000000283C0ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_SCRATCH_2 CVMX_SLI_SCRATCH_2_FUNC()
 static inline uint64_t CVMX_SLI_SCRATCH_2_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_SCRATCH_2 not supported on this chip\n");
-	return 0x00000000000003D0ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000003D0ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000283D0ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_SCRATCH_2 not supported on this chip\n");
+	return 0x00000000000283D0ull;
 }
 #else
-#define CVMX_SLI_SCRATCH_2 (0x00000000000003D0ull)
+#define CVMX_SLI_SCRATCH_2 CVMX_SLI_SCRATCH_2_FUNC()
+static inline uint64_t CVMX_SLI_SCRATCH_2_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000003D0ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000283D0ull;
+	}
+	return 0x00000000000283D0ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_STATE1 CVMX_SLI_STATE1_FUNC()
 static inline uint64_t CVMX_SLI_STATE1_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_STATE1 not supported on this chip\n");
-	return 0x0000000000000620ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000620ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028620ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_STATE1 not supported on this chip\n");
+	return 0x0000000000028620ull;
 }
 #else
-#define CVMX_SLI_STATE1 (0x0000000000000620ull)
+#define CVMX_SLI_STATE1 CVMX_SLI_STATE1_FUNC()
+static inline uint64_t CVMX_SLI_STATE1_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000620ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028620ull;
+	}
+	return 0x0000000000028620ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_STATE2 CVMX_SLI_STATE2_FUNC()
 static inline uint64_t CVMX_SLI_STATE2_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_STATE2 not supported on this chip\n");
-	return 0x0000000000000630ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000630ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028630ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_STATE2 not supported on this chip\n");
+	return 0x0000000000028630ull;
 }
 #else
-#define CVMX_SLI_STATE2 (0x0000000000000630ull)
+#define CVMX_SLI_STATE2 CVMX_SLI_STATE2_FUNC()
+static inline uint64_t CVMX_SLI_STATE2_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000630ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028630ull;
+	}
+	return 0x0000000000028630ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_STATE3 CVMX_SLI_STATE3_FUNC()
 static inline uint64_t CVMX_SLI_STATE3_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_STATE3 not supported on this chip\n");
-	return 0x0000000000000640ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000640ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028640ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_STATE3 not supported on this chip\n");
+	return 0x0000000000028640ull;
 }
 #else
-#define CVMX_SLI_STATE3 (0x0000000000000640ull)
+#define CVMX_SLI_STATE3 CVMX_SLI_STATE3_FUNC()
+static inline uint64_t CVMX_SLI_STATE3_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000640ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000028640ull;
+	}
+	return 0x0000000000028640ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_TX_PIPE CVMX_SLI_TX_PIPE_FUNC()
@@ -1371,67 +3193,253 @@ static inline uint64_t CVMX_SLI_TX_PIPE_FUNC(void)
 #define CVMX_SLI_WINDOW_CTL CVMX_SLI_WINDOW_CTL_FUNC()
 static inline uint64_t CVMX_SLI_WINDOW_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_WINDOW_CTL not supported on this chip\n");
-	return 0x00000000000002E0ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000002E0ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000282E0ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_WINDOW_CTL not supported on this chip\n");
+	return 0x00000000000282E0ull;
 }
 #else
-#define CVMX_SLI_WINDOW_CTL (0x00000000000002E0ull)
+#define CVMX_SLI_WINDOW_CTL CVMX_SLI_WINDOW_CTL_FUNC()
+static inline uint64_t CVMX_SLI_WINDOW_CTL_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000002E0ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x00000000000282E0ull;
+	}
+	return 0x00000000000282E0ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_WIN_RD_ADDR CVMX_SLI_WIN_RD_ADDR_FUNC()
 static inline uint64_t CVMX_SLI_WIN_RD_ADDR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_WIN_RD_ADDR not supported on this chip\n");
-	return 0x0000000000000010ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000010ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020010ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_WIN_RD_ADDR not supported on this chip\n");
+	return 0x0000000000020010ull;
 }
 #else
-#define CVMX_SLI_WIN_RD_ADDR (0x0000000000000010ull)
+#define CVMX_SLI_WIN_RD_ADDR CVMX_SLI_WIN_RD_ADDR_FUNC()
+static inline uint64_t CVMX_SLI_WIN_RD_ADDR_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000010ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020010ull;
+	}
+	return 0x0000000000020010ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_WIN_RD_DATA CVMX_SLI_WIN_RD_DATA_FUNC()
 static inline uint64_t CVMX_SLI_WIN_RD_DATA_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_WIN_RD_DATA not supported on this chip\n");
-	return 0x0000000000000040ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000040ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020040ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_WIN_RD_DATA not supported on this chip\n");
+	return 0x0000000000020040ull;
 }
 #else
-#define CVMX_SLI_WIN_RD_DATA (0x0000000000000040ull)
+#define CVMX_SLI_WIN_RD_DATA CVMX_SLI_WIN_RD_DATA_FUNC()
+static inline uint64_t CVMX_SLI_WIN_RD_DATA_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000040ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020040ull;
+	}
+	return 0x0000000000020040ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_WIN_WR_ADDR CVMX_SLI_WIN_WR_ADDR_FUNC()
 static inline uint64_t CVMX_SLI_WIN_WR_ADDR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_WIN_WR_ADDR not supported on this chip\n");
-	return 0x0000000000000000ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000000ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020000ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_WIN_WR_ADDR not supported on this chip\n");
+	return 0x0000000000020000ull;
 }
 #else
-#define CVMX_SLI_WIN_WR_ADDR (0x0000000000000000ull)
+#define CVMX_SLI_WIN_WR_ADDR CVMX_SLI_WIN_WR_ADDR_FUNC()
+static inline uint64_t CVMX_SLI_WIN_WR_ADDR_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000000ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020000ull;
+	}
+	return 0x0000000000020000ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_WIN_WR_DATA CVMX_SLI_WIN_WR_DATA_FUNC()
 static inline uint64_t CVMX_SLI_WIN_WR_DATA_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_WIN_WR_DATA not supported on this chip\n");
-	return 0x0000000000000020ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000020ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020020ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_WIN_WR_DATA not supported on this chip\n");
+	return 0x0000000000020020ull;
 }
 #else
-#define CVMX_SLI_WIN_WR_DATA (0x0000000000000020ull)
+#define CVMX_SLI_WIN_WR_DATA CVMX_SLI_WIN_WR_DATA_FUNC()
+static inline uint64_t CVMX_SLI_WIN_WR_DATA_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000020ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020020ull;
+	}
+	return 0x0000000000020020ull;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_SLI_WIN_WR_MASK CVMX_SLI_WIN_WR_MASK_FUNC()
 static inline uint64_t CVMX_SLI_WIN_WR_MASK_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
-		cvmx_warn("CVMX_SLI_WIN_WR_MASK not supported on this chip\n");
-	return 0x0000000000000030ull;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000030ull;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020030ull;
+			break;
+	}
+	cvmx_warn("CVMX_SLI_WIN_WR_MASK not supported on this chip\n");
+	return 0x0000000000020030ull;
 }
 #else
-#define CVMX_SLI_WIN_WR_MASK (0x0000000000000030ull)
+#define CVMX_SLI_WIN_WR_MASK CVMX_SLI_WIN_WR_MASK_FUNC()
+static inline uint64_t CVMX_SLI_WIN_WR_MASK_FUNC(void)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000000030ull;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return 0x0000000000020030ull;
+	}
+	return 0x0000000000020030ull;
+}
 #endif
 
 /**
@@ -1446,30 +3454,30 @@ union cvmx_sli_bist_status {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
 	uint64_t ncb_req                      : 1;  /**< BIST status for IOI Request FIFO. */
-	uint64_t n2p0_c                       : 1;  /**< BIST Status for N2P Port0 Cmd */
-	uint64_t n2p0_o                       : 1;  /**< BIST Status for N2P Port0 Data */
+	uint64_t n2p0_c                       : 1;  /**< BIST status for N2P Port0 cmd. */
+	uint64_t n2p0_o                       : 1;  /**< BIST status for N2P Port0 data. */
 	uint64_t n2p1_c                       : 1;  /**< BIST status for N2P Port1 cmd. */
 	uint64_t n2p1_o                       : 1;  /**< BIST status for N2P Port1 data. */
-	uint64_t cpl_p0                       : 1;  /**< BIST Status for CPL Port 0 */
-	uint64_t cpl_p1                       : 1;  /**< BIST Status for CPL Port 1 */
+	uint64_t cpl_p0                       : 1;  /**< BIST status for CPL Port 0. */
+	uint64_t cpl_p1                       : 1;  /**< BIST status for CPL Port 1. */
 	uint64_t reserved_19_24               : 6;
-	uint64_t p2n0_c0                      : 1;  /**< BIST Status for P2N Port0 C0 */
-	uint64_t p2n0_c1                      : 1;  /**< BIST Status for P2N Port0 C1 */
-	uint64_t p2n0_n                       : 1;  /**< BIST Status for P2N Port0 N */
-	uint64_t p2n0_p0                      : 1;  /**< BIST Status for P2N Port0 P0 */
-	uint64_t p2n0_p1                      : 1;  /**< BIST Status for P2N Port0 P1 */
-	uint64_t p2n1_c0                      : 1;  /**< BIST Status for P2N Port1 C0 */
-	uint64_t p2n1_c1                      : 1;  /**< BIST Status for P2N Port1 C1 */
-	uint64_t p2n1_n                       : 1;  /**< BIST Status for P2N Port1 N */
-	uint64_t p2n1_p0                      : 1;  /**< BIST Status for P2N Port1 P0 */
-	uint64_t p2n1_p1                      : 1;  /**< BIST Status for P2N Port1 P1 */
+	uint64_t p2n0_c0                      : 1;  /**< BIST status for P2N port0 C0. */
+	uint64_t p2n0_c1                      : 1;  /**< BIST status for P2N port0 C1. */
+	uint64_t p2n0_n                       : 1;  /**< BIST status for P2N port0 N. */
+	uint64_t p2n0_p0                      : 1;  /**< BIST status for P2N port0 P0. */
+	uint64_t p2n0_p1                      : 1;  /**< BIST status for P2N port0 P1. */
+	uint64_t p2n1_c0                      : 1;  /**< BIST status for P2N port1 C0. */
+	uint64_t p2n1_c1                      : 1;  /**< BIST status for P2N port1 C1. */
+	uint64_t p2n1_n                       : 1;  /**< BIST status for P2N port1 N. */
+	uint64_t p2n1_p0                      : 1;  /**< BIST status for P2N port1 P0. */
+	uint64_t p2n1_p1                      : 1;  /**< BIST status for P2N port1 P1. */
 	uint64_t reserved_6_8                 : 3;
-	uint64_t dsi1_1                       : 1;  /**< BIST Status for DSI1 Memory 1 */
-	uint64_t dsi1_0                       : 1;  /**< BIST Status for DSI1 Memory 0 */
-	uint64_t dsi0_1                       : 1;  /**< BIST Status for DSI0 Memory 1 */
-	uint64_t dsi0_0                       : 1;  /**< BIST Status for DSI0 Memory 0 */
-	uint64_t msi                          : 1;  /**< BIST Status for MSI Memory Map */
-	uint64_t ncb_cmd                      : 1;  /**< BIST Status for NCB Outbound Commands */
+	uint64_t dsi1_1                       : 1;  /**< BIST status for DSI1 memory 1. */
+	uint64_t dsi1_0                       : 1;  /**< BIST status for DSI1 memory 0. */
+	uint64_t dsi0_1                       : 1;  /**< BIST status for DSI0 memory 1. */
+	uint64_t dsi0_0                       : 1;  /**< BIST status for DSI0 memory 0. */
+	uint64_t msi                          : 1;  /**< BIST status for MSI memory map. */
+	uint64_t ncb_cmd                      : 1;  /**< BIST status for IOI outbound commands. */
 #else
 	uint64_t ncb_cmd                      : 1;
 	uint64_t msi                          : 1;
@@ -1663,20 +3671,447 @@ union cvmx_sli_bist_status {
 #endif
 	} cn70xx;
 	struct cvmx_sli_bist_status_cn70xx    cn70xxp1;
+	struct cvmx_sli_bist_status_s         cn73xx;
 	struct cvmx_sli_bist_status_s         cn78xx;
+	struct cvmx_sli_bist_status_s         cn78xxp2;
 	struct cvmx_sli_bist_status_cn61xx    cnf71xx;
+	struct cvmx_sli_bist_status_s         cnf75xx;
 };
 typedef union cvmx_sli_bist_status cvmx_sli_bist_status_t;
+
+/**
+ * cvmx_sli_ciu_int_enb
+ *
+ * Interrupt enable register for a given SLI_CIU_INT_SUM register.
+ *
+ */
+union cvmx_sli_ciu_int_enb {
+	uint64_t u64;
+	struct cvmx_sli_ciu_int_enb_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_51_63               : 13;
+	uint64_t m3_un_wi                     : 1;  /**< Enables SLI_CIU_INT_SUM[M3_UN_WI] to generate an interrupt to the CIU. */
+	uint64_t m3_un_b0                     : 1;  /**< Enables SLI_CIU_INT_SUM[M3_UN_B0] to generate an interrupt to the CIU. */
+	uint64_t m3_up_wi                     : 1;  /**< Enables SLI_CIU_INT_SUM[M3_UP_WI] to generate an interrupt to the CIU. */
+	uint64_t m3_up_b0                     : 1;  /**< Enables SLI_CIU_INT_SUM[M3_UP_B0] to generate an interrupt to the CIU. */
+	uint64_t m2_un_wi                     : 1;  /**< Enables SLI_CIU_INT_SUM[M2_UN_WI] to generate an interrupt to the CIU. */
+	uint64_t m2_un_b0                     : 1;  /**< Enables SLI_CIU_INT_SUM[M2_UN_B0] to generate an interrupt to the CIU. */
+	uint64_t m2_up_wi                     : 1;  /**< Enables SLI_CIU_INT_SUM[M2_UP_WI] to generate an interrupt to the CIU. */
+	uint64_t m2_up_b0                     : 1;  /**< Enables SLI_CIU_INT[M2_UP_B0] to generate an interrupt to the CIU. */
+	uint64_t m1_un_wi                     : 1;  /**< Enables SLI_CIU_INT[M1_UN_WI] to generate an interrupt to the CIU. */
+	uint64_t m1_un_b0                     : 1;  /**< Enables SLI_CIU_INT_SUM[M1_UN_B0] to generate an interrupt to the CIU. */
+	uint64_t m1_up_wi                     : 1;  /**< Enables SLI_CIU_INT_SUM[M1_UP_WI] to generate an interrupt to the CIU. */
+	uint64_t m1_up_b0                     : 1;  /**< Enables SLI_CIU_INT_SUM[M1_UP_B0] to generate an interrupt to the CIU. */
+	uint64_t m0_un_wi                     : 1;  /**< Enables SLI_CIU_INT_SUM[M0_UN_WI] to generate an interrupt to the CIU. */
+	uint64_t m0_un_b0                     : 1;  /**< Enables SLI_CIU_INT_SUM[M0_UN_B0] to generate an interrupt to the CIU. */
+	uint64_t m0_up_wi                     : 1;  /**< Enables SLI_CIU_INT_SUM[M0_UP_WI] to generate an interrupt to the CIU. */
+	uint64_t m0_up_b0                     : 1;  /**< Enables SLI_CIU_INT_SUM[M0_UP_B0] to generate an interrupt to the CIU. */
+	uint64_t m3p0_pppf_err                : 1;  /**< Enables SLI_CIU_INT_SUM[M3P0_PPPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m3p0_pktpf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M3P0_PKTPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m3p0_dmapf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M3P0_DMAPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m2p0_pppf_err                : 1;  /**< Enables SLI_CIU_INT[M2P0_PPPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m2p0_ppvf_err                : 1;  /**< Enables SLI_CIU_INT_SUM[M2P0_PPVF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m2p0_pktpf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M2P0_PKTPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m2p0_pktvf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M2P0_PKTVF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m2p0_dmapf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M2P0_DMAPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m2p0_dmavf_err               : 1;  /**< Enables SLI_CIU_INT[M2P0_DMAVF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m1p0_pppf_err                : 1;  /**< Enables SLI_CIU_INT[M1P0_PPPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m1p0_pktpf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M1P0_PKTPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m1p0_dmapf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M1P0_DMAPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p1_pppf_err                : 1;  /**< Enables SLI_CIU_INT_SUM[M0P1_PPPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p1_ppvf_err                : 1;  /**< Enables SLI_CIU_INT_SUM[M0P1_PPVF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p1_pktpf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M0P1_PKTPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p1_pktvf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M0P1_PKTVF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p1_dmapf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M0P1_DMAPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p1_dmavf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M0P1_DMAVF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p0_pppf_err                : 1;  /**< Enables SLI_CIU_INT_SUM[M0P0_PPPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p0_ppvf_err                : 1;  /**< Enables SLI_CIU_INT_SUM[M0P0_PPVF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p0_pktpf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M0P0_PKTPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p0_pktvf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M0P0_PKTVF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p0_dmapf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M0P0_DMAPF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m0p0_dmavf_err               : 1;  /**< Enables SLI_CIU_INT_SUM[M0P0_DMAVF_ERR] to generate an interrupt to the CIU. */
+	uint64_t m2v0_flr                     : 1;  /**< Enables SLI_CIU_INT_SUM[M2V0_FLR] to generate an interrupt to the CIU. */
+	uint64_t m2p0_flr                     : 1;  /**< Enables SLI_CIU_INT_SUM[M2P0_FLR] to generate an interrupt to the CIU. */
+	uint64_t reserved_5_8                 : 4;
+	uint64_t m0v1_flr                     : 1;  /**< Enables SLI_CIU_INT_SUM[M0V1_FLR] to generate an interrupt to the CIU. */
+	uint64_t m0p1_flr                     : 1;  /**< Enables SLI_CIU_INT_SUM[M0P1_FLR] to generate an interrupt to the CIU. */
+	uint64_t m0v0_flr                     : 1;  /**< Enables SLI_CIU_INT_SUM[M0V0_FLR] to generate an interrupt to the CIU. */
+	uint64_t m0p0_flr                     : 1;  /**< Enables SLI_CIU_INT_SUM[M0P0_FLR] to generate an interrupt to the CIU. */
+	uint64_t rml_to                       : 1;  /**< Enables SLI_CIU_INT_SUM[RML_TO] to generate an interrupt to the CIU. */
+#else
+	uint64_t rml_to                       : 1;
+	uint64_t m0p0_flr                     : 1;
+	uint64_t m0v0_flr                     : 1;
+	uint64_t m0p1_flr                     : 1;
+	uint64_t m0v1_flr                     : 1;
+	uint64_t reserved_5_8                 : 4;
+	uint64_t m2p0_flr                     : 1;
+	uint64_t m2v0_flr                     : 1;
+	uint64_t m0p0_dmavf_err               : 1;
+	uint64_t m0p0_dmapf_err               : 1;
+	uint64_t m0p0_pktvf_err               : 1;
+	uint64_t m0p0_pktpf_err               : 1;
+	uint64_t m0p0_ppvf_err                : 1;
+	uint64_t m0p0_pppf_err                : 1;
+	uint64_t m0p1_dmavf_err               : 1;
+	uint64_t m0p1_dmapf_err               : 1;
+	uint64_t m0p1_pktvf_err               : 1;
+	uint64_t m0p1_pktpf_err               : 1;
+	uint64_t m0p1_ppvf_err                : 1;
+	uint64_t m0p1_pppf_err                : 1;
+	uint64_t m1p0_dmapf_err               : 1;
+	uint64_t m1p0_pktpf_err               : 1;
+	uint64_t m1p0_pppf_err                : 1;
+	uint64_t m2p0_dmavf_err               : 1;
+	uint64_t m2p0_dmapf_err               : 1;
+	uint64_t m2p0_pktvf_err               : 1;
+	uint64_t m2p0_pktpf_err               : 1;
+	uint64_t m2p0_ppvf_err                : 1;
+	uint64_t m2p0_pppf_err                : 1;
+	uint64_t m3p0_dmapf_err               : 1;
+	uint64_t m3p0_pktpf_err               : 1;
+	uint64_t m3p0_pppf_err                : 1;
+	uint64_t m0_up_b0                     : 1;
+	uint64_t m0_up_wi                     : 1;
+	uint64_t m0_un_b0                     : 1;
+	uint64_t m0_un_wi                     : 1;
+	uint64_t m1_up_b0                     : 1;
+	uint64_t m1_up_wi                     : 1;
+	uint64_t m1_un_b0                     : 1;
+	uint64_t m1_un_wi                     : 1;
+	uint64_t m2_up_b0                     : 1;
+	uint64_t m2_up_wi                     : 1;
+	uint64_t m2_un_b0                     : 1;
+	uint64_t m2_un_wi                     : 1;
+	uint64_t m3_up_b0                     : 1;
+	uint64_t m3_up_wi                     : 1;
+	uint64_t m3_un_b0                     : 1;
+	uint64_t m3_un_wi                     : 1;
+	uint64_t reserved_51_63               : 13;
+#endif
+	} s;
+	struct cvmx_sli_ciu_int_enb_s         cn73xx;
+	struct cvmx_sli_ciu_int_enb_s         cnf75xx;
+};
+typedef union cvmx_sli_ciu_int_enb cvmx_sli_ciu_int_enb_t;
+
+/**
+ * cvmx_sli_ciu_int_sum
+ *
+ * The fields in this register are set when an interrupt condition occurs; write 1 to clear.
+ * A bit set in this register will send and interrupt to CIU
+ */
+union cvmx_sli_ciu_int_sum {
+	uint64_t u64;
+	struct cvmx_sli_ciu_int_sum_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_51_63               : 13;
+	uint64_t m3_un_wi                     : 1;  /**< Received unsupported N-TLP for window register from MAC 3. This occurs when the window
+                                                         registers are disabled and a window register access occurs.
+                                                         This can only be set by a PF and not a VF access.
+                                                         This bit is set when SLI_MAC()_PF()_INT_SUM[UN_WI]
+                                                         Throws SLI_INTSN_E::SLI_INT_M3_UN_WI. */
+	uint64_t m3_un_b0                     : 1;  /**< Received unsupported N-TLP for Bar 0 from MAC 3. This occurs when the BAR 0 address space
+                                                         is disabled.
+                                                         This can only be set by a PF and not a VF access.
+                                                         This bit is set when SLI_MAC()_PF()_INT_SUM[UN_B0]
+                                                         Throws SLI_INTSN_E::SLI_INT_M3_UN_B0. */
+	uint64_t m3_up_wi                     : 1;  /**< Received unsupported P-TLP for window register from MAC 3. This occurs when the window
+                                                         registers are disabled and a window register access occurs.
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M3_UP_WI. */
+	uint64_t m3_up_b0                     : 1;  /**< Received unsupported P-TLP for Bar 0 from MAC 3. This occurs when the BAR 0 address space
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M3_UP_B0. */
+	uint64_t m2_un_wi                     : 1;  /**< Received unsupported N-TLP for window register from MAC 2. This occurs when the window
+                                                         registers are disabled and a window register access occurs.
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M2_UN_WI. */
+	uint64_t m2_un_b0                     : 1;  /**< Received unsupported N-TLP for Bar 0 from MAC 2. This occurs when the BAR 0 address space
+                                                         is disabled.
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M2_UN_B0. */
+	uint64_t m2_up_wi                     : 1;  /**< Received unsupported P-TLP for window register from MAC 2. This occurs when the window
+                                                         registers are disabled and a window register access occurs.
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M2_UP_WI. */
+	uint64_t m2_up_b0                     : 1;  /**< Received unsupported P-TLP for Bar 0 from MAC 2. This occurs when the BAR 0 address space
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M2_UP_B0. */
+	uint64_t m1_un_wi                     : 1;  /**< Received unsupported N-TLP for window register from MAC 1. This occurs when the window
+                                                         registers are disabled and a window register access occurs.
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M1_UN_WI. */
+	uint64_t m1_un_b0                     : 1;  /**< Received unsupported N-TLP for Bar 0 from MAC 1. This occurs when the BAR 0 address space
+                                                         is disabled.
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M1_UN_B0. */
+	uint64_t m1_up_wi                     : 1;  /**< Received unsupported P-TLP for window register from MAC 1. This occurs when the window
+                                                         registers are disabled and a window register access occurs.
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M1_UP_WI. */
+	uint64_t m1_up_b0                     : 1;  /**< Received unsupported P-TLP for Bar 0 from MAC 1. This occurs when the BAR 0 address space
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M1_UP_B0. */
+	uint64_t m0_un_wi                     : 1;  /**< Received unsupported N-TLP for window register from MAC 0. This occurs when the window
+                                                         registers are disabled and a window register access occurs.
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0_UN_WI. */
+	uint64_t m0_un_b0                     : 1;  /**< Received unsupported N-TLP for Bar 0 from MAC 0. This occurs when the BAR 0 address space
+                                                         is disabled.
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0_UN_B0. */
+	uint64_t m0_up_wi                     : 1;  /**< Received unsupported P-TLP for window register from MAC 0. This occurs when the window
+                                                         registers are disabled and a window register access occurs.
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0_UP_WI. */
+	uint64_t m0_up_b0                     : 1;  /**< Received unsupported P-TLP for Bar 0 from MAC 0. This occurs when the BAR 0 address space
+                                                         This can only be set by a PF and not a VF access.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0_UP_B0. */
+	uint64_t m3p0_pppf_err                : 1;  /**< On Mac3 PF0, when an error response is received for a PF PP transaction read,
+                                                         this bit is set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M3P0_PPPF_ERR. */
+	uint64_t m3p0_pktpf_err               : 1;  /**< On Mac3 PF0, When an error response is received for a PF packet transaction read or a
+                                                         doorbell
+                                                         overflow for a ring associated with this PF occurs,
+                                                         this bit is set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M3P0_PKTPF_ERR. */
+	uint64_t m3p0_dmapf_err               : 1;  /**< On Mac3 PF0, when an error response is received for a PF DMA transcation read, this bit is
+                                                         set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M3P0_DMAPF_ERR. */
+	uint64_t m2p0_pppf_err                : 1;  /**< On Mac2 PF0, when an error response is received for a PF PP transaction read,
+                                                         this bit is set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M2P0_PPPF_ERR. */
+	uint64_t m2p0_ppvf_err                : 1;  /**< On Mac2 PF0, when an error response is received for a VF PP transaction read, this bit is
+                                                         set.
+                                                         A subsequent read to SLI_MAC()_PF()_PP_VF_INT is required to discover which VF.
+                                                         Throws SLI_INTSN_E::SLI_INT_M2P0_PPVF_ERR. */
+	uint64_t m2p0_pktpf_err               : 1;  /**< On Mac2 PF0, When an error response is received for a PF packet transaction read or a
+                                                         doorbell
+                                                         overflow for a ring associated with this PF occurs,
+                                                         this bit is set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M2P0_PKTPF_ERR. */
+	uint64_t m2p0_pktvf_err               : 1;  /**< On Mac2 PF0, when an error response is received for a VF PP transaction read, a doorbell
+                                                         overflow for a ring associated with a VF occurs or an illegal memory access from a VF
+                                                         occurs,
+                                                         this bit is set.
+                                                         A subsequent read to SLI_MAC()_PF()_PKT_VF_INT is required to discover which VF.
+                                                         Throws SLI_INTSN_E::SLI_INT_M2P0_PKTVF_ERR. */
+	uint64_t m2p0_dmapf_err               : 1;  /**< On Mac2 PF0, when an error response is received for a PF DMA transcation read, this bit is
+                                                         set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M2P0_DMAPF_ERR. */
+	uint64_t m2p0_dmavf_err               : 1;  /**< When an error response is received for a VF DMA transaction read on MAC2 PF0, this bit is
+                                                         set.
+                                                         A subsequent read to SLI_MAC()_PF()_DMA_VF_INT is required to discover which VF.
+                                                         Throws SLI_INTSN_E::SLI_INT_M2P0_DMAVF_ERR. */
+	uint64_t m1p0_pppf_err                : 1;  /**< On Mac1 PF0, when an error response is received for a PF PP transaction read,
+                                                         this bit is set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M1P0_PPPF_ERR. */
+	uint64_t m1p0_pktpf_err               : 1;  /**< On Mac1 PF0, When an error response is received for a PF packet transaction read or a
+                                                         doorbell
+                                                         overflow for a ring associated with this PF occurs,
+                                                         this bit is set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M1P0_PKTPF_ERR. */
+	uint64_t m1p0_dmapf_err               : 1;  /**< On Mac1 PF0, when an error response is received for a PF DMA transcation read, this bit is
+                                                         set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M1P0_DMAPF_ERR. */
+	uint64_t m0p1_pppf_err                : 1;  /**< On Mac0 PF1, when an error response is received for a PF PP transaction read,
+                                                         this bit is set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P1_PPPF_ERR. */
+	uint64_t m0p1_ppvf_err                : 1;  /**< On Mac0 PF1, when an error response is received for a VF PP transaction read, this bit is
+                                                         set.
+                                                         A subsequent read to SLI_MAC()_PF()_PP_VF_INT is required to discover which VF.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P1_PPVF_ERR. */
+	uint64_t m0p1_pktpf_err               : 1;  /**< On Mac0 PF1, When an error response is received for a PF packet transaction read or a
+                                                         doorbell
+                                                         overflow for a ring associated with this PF occurs,
+                                                         this bit is set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P1_PKTPF_ERR. */
+	uint64_t m0p1_pktvf_err               : 1;  /**< On Mac0 PF1, when an error response is received for a VF PP transaction read, a doorbell
+                                                         overflow for a ring associated with a VF occurs or an illegal memory access from a VF
+                                                         occurs,
+                                                         this bit is set.
+                                                         A subsequent read to SLI_MAC()_PF()_PKT_VF_INT is required to discover which VF.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P1_PKTVF_ERR. */
+	uint64_t m0p1_dmapf_err               : 1;  /**< On Mac0 PF1, when an error response is received for a PF DMA transcation read, this bit is
+                                                         set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P1_DMAPF_ERR. */
+	uint64_t m0p1_dmavf_err               : 1;  /**< When an error response is received for a VF DMA transaction read on MAC0 PF1, this bit is
+                                                         set.
+                                                         A subsequent read to SLI_MAC()_PF()_DMA_VF_INT is required to discover which VF.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P1_DMAVF_ERR. */
+	uint64_t m0p0_pppf_err                : 1;  /**< On Mac0 PF0, when an error response is received for a PF PP transaction read,
+                                                         this bit is set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P0_PPPF_ERR. */
+	uint64_t m0p0_ppvf_err                : 1;  /**< On Mac0 PF0, when an error response is received for a VF PP transaction read, this bit is
+                                                         set.
+                                                         A subsequent read to SLI_MAC()_PF()_PP_VF_INT is required to discover which VF.
+                                                         Note: this will only be set for SRIOV PF's PEM0 PF0 PF1 PEM2 PF0
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P0_PPVF_ERR. */
+	uint64_t m0p0_pktpf_err               : 1;  /**< On Mac0 PF0, When an error response is received for a PF packet transaction read or a
+                                                         doorbell
+                                                         overflow for a ring associated with this PF occurs,
+                                                         this bit is set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P0_PKTPF_ERR. */
+	uint64_t m0p0_pktvf_err               : 1;  /**< On Mac0 PF0, when an error response is received for a VF PP transaction read, a doorbell
+                                                         overflow for a ring associated with a VF occurs or an illegal memory access from a VF
+                                                         occurs,
+                                                         this bit is set.
+                                                         A subsequent read to SLI_MAC()_PF()_PKT_VF_INT is required to discover which VF.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P0_PKTVF_ERR. */
+	uint64_t m0p0_dmapf_err               : 1;  /**< On Mac0 PF0, when an error response is received for a PF DMA transcation read, this bit is
+                                                         set.
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P0_DMAPF_ERR. */
+	uint64_t m0p0_dmavf_err               : 1;  /**< When an error response is received for a VF DMA transaction read on MAC0 PF0, this bit is
+                                                         set.
+                                                         A subsequent read to SLI_MAC()_PF()_DMA_VF_INT is required to discover which VF.
+                                                         Note: this will only be set for SRIOV PF's PEM0 PF0 PF1 PEM2 PF0
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P0_DMAVF_ERR. */
+	uint64_t m2v0_flr                     : 1;  /**< A FLR occurred for a VF on PEM2 PF0
+                                                         A subsequent read to SLI_MAC()_PF()_FLR_VF_INT is required to discover which VF
+                                                         had a FLR
+                                                         Throws SLI_INTSN_E::SLI_INT_M2V0_FLR. */
+	uint64_t m2p0_flr                     : 1;  /**< A FLR occurred for PEM0 PF2
+                                                         Throws SLI_INTSN_E::SLI_INT_M2P0_FLR. */
+	uint64_t reserved_5_8                 : 4;
+	uint64_t m0v1_flr                     : 1;  /**< A FLR occurred for a VF on PEM0 PF1
+                                                         A subsequent read to SLI_MAC()_PF()_FLR_VF_INT is required to discover which VF
+                                                         had a FLR
+                                                         Throws SLI_INTSN_E::SLI_INT_M0V1_FLR. */
+	uint64_t m0p1_flr                     : 1;  /**< A FLR occurred for PEM0 PF1
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P1_FLR. */
+	uint64_t m0v0_flr                     : 1;  /**< A FLR occurred for a VF on PEM0 PF0
+                                                         A subsequent read to SLI_MAC()_PF()_FLR_VF_INT is required to discover which VF
+                                                         had a FLR
+                                                         Throws SLI_INTSN_E::SLI_INT_M0V0_FLR. */
+	uint64_t m0p0_flr                     : 1;  /**< A FLR occurred for PEM0 PF0
+                                                         Throws SLI_INTSN_E::SLI_INT_M0P0_FLR. */
+	uint64_t rml_to                       : 1;  /**< A read or write transfer to a RSL that did not complete within
+                                                         SLI_WINDOW_CTL[TIME] coprocessor-clock cycles
+                                                         Throws SLI_INTSN_E::SLI_INT_RML_TO. */
+#else
+	uint64_t rml_to                       : 1;
+	uint64_t m0p0_flr                     : 1;
+	uint64_t m0v0_flr                     : 1;
+	uint64_t m0p1_flr                     : 1;
+	uint64_t m0v1_flr                     : 1;
+	uint64_t reserved_5_8                 : 4;
+	uint64_t m2p0_flr                     : 1;
+	uint64_t m2v0_flr                     : 1;
+	uint64_t m0p0_dmavf_err               : 1;
+	uint64_t m0p0_dmapf_err               : 1;
+	uint64_t m0p0_pktvf_err               : 1;
+	uint64_t m0p0_pktpf_err               : 1;
+	uint64_t m0p0_ppvf_err                : 1;
+	uint64_t m0p0_pppf_err                : 1;
+	uint64_t m0p1_dmavf_err               : 1;
+	uint64_t m0p1_dmapf_err               : 1;
+	uint64_t m0p1_pktvf_err               : 1;
+	uint64_t m0p1_pktpf_err               : 1;
+	uint64_t m0p1_ppvf_err                : 1;
+	uint64_t m0p1_pppf_err                : 1;
+	uint64_t m1p0_dmapf_err               : 1;
+	uint64_t m1p0_pktpf_err               : 1;
+	uint64_t m1p0_pppf_err                : 1;
+	uint64_t m2p0_dmavf_err               : 1;
+	uint64_t m2p0_dmapf_err               : 1;
+	uint64_t m2p0_pktvf_err               : 1;
+	uint64_t m2p0_pktpf_err               : 1;
+	uint64_t m2p0_ppvf_err                : 1;
+	uint64_t m2p0_pppf_err                : 1;
+	uint64_t m3p0_dmapf_err               : 1;
+	uint64_t m3p0_pktpf_err               : 1;
+	uint64_t m3p0_pppf_err                : 1;
+	uint64_t m0_up_b0                     : 1;
+	uint64_t m0_up_wi                     : 1;
+	uint64_t m0_un_b0                     : 1;
+	uint64_t m0_un_wi                     : 1;
+	uint64_t m1_up_b0                     : 1;
+	uint64_t m1_up_wi                     : 1;
+	uint64_t m1_un_b0                     : 1;
+	uint64_t m1_un_wi                     : 1;
+	uint64_t m2_up_b0                     : 1;
+	uint64_t m2_up_wi                     : 1;
+	uint64_t m2_un_b0                     : 1;
+	uint64_t m2_un_wi                     : 1;
+	uint64_t m3_up_b0                     : 1;
+	uint64_t m3_up_wi                     : 1;
+	uint64_t m3_un_b0                     : 1;
+	uint64_t m3_un_wi                     : 1;
+	uint64_t reserved_51_63               : 13;
+#endif
+	} s;
+	struct cvmx_sli_ciu_int_sum_s         cn73xx;
+	struct cvmx_sli_ciu_int_sum_s         cnf75xx;
+};
+typedef union cvmx_sli_ciu_int_sum cvmx_sli_ciu_int_sum_t;
 
 /**
  * cvmx_sli_ctl_port#
  *
  * These registers contains control information for access to ports.
- *
+ * Note: SLI_CTL_PORT0 controls PF0 and PF1
  */
 union cvmx_sli_ctl_portx {
 	uint64_t u64;
 	struct cvmx_sli_ctl_portx_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_22_63               : 42;
+	uint64_t intd                         : 1;  /**< When '0' Intd wire asserted. Before mapping. */
+	uint64_t intc                         : 1;  /**< When '0' Intc wire asserted. Before mapping. */
+	uint64_t intb                         : 1;  /**< When '0' Intb wire asserted. Before mapping. */
+	uint64_t inta                         : 1;  /**< When '0' Inta wire asserted. Before mapping. */
+	uint64_t dis_port                     : 1;  /**< When set, the output to the MAC is disabled. This occurs when the MAC reset line
+                                                         transitions from deasserted to asserted. Writing a 1 to this location clears this
+                                                         condition when the MAC is no longer in reset and the output to the MAC is at the beginning
+                                                         of a transfer. */
+	uint64_t waitl_com                    : 1;  /**< When set to 1, causes the SLI to wait for a commit from the L2C before sending additional
+                                                         completions to the L2C from the MAC.
+                                                         Set this for more conservative behavior. Clear this for more aggressive, higher-
+                                                         performance behavior. */
+	uint64_t intd_map                     : 2;  /**< Maps INTD to INTA(00), INTB(01), INTC(10) or
+                                                         INTD (11). */
+	uint64_t intc_map                     : 2;  /**< Maps INTC to INTA(00), INTB(01), INTC(10) or
+                                                         INTD (11). */
+	uint64_t intb_map                     : 2;  /**< Maps INTB to INTA(00), INTB(01), INTC(10) or
+                                                         INTD (11). */
+	uint64_t inta_map                     : 2;  /**< Maps INTA to INTA(00), INTB(01), INTC(10) or
+                                                         INTD (11). */
+	uint64_t ctlp_ro                      : 1;  /**< Relaxed ordering enable for completion TLPS */
+	uint64_t reserved_6_6                 : 1;
+	uint64_t ptlp_ro                      : 1;  /**< Relaxed ordering enable for posted TLPS */
+	uint64_t reserved_1_4                 : 4;
+	uint64_t wait_com                     : 1;  /**< Wait for commit. When set to 1, causes the SLI to wait for a commit from the L2C before
+                                                         sending additional stores to the L2C from the MAC. The SLI requests a commit on the last
+                                                         store if more than one STORE operation is required on the IOI. Most applications will not
+                                                         notice a difference, so this bit should not be set. Setting the bit is more conservative
+                                                         on ordering, lower performance. */
+#else
+	uint64_t wait_com                     : 1;
+	uint64_t reserved_1_4                 : 4;
+	uint64_t ptlp_ro                      : 1;
+	uint64_t reserved_6_6                 : 1;
+	uint64_t ctlp_ro                      : 1;
+	uint64_t inta_map                     : 2;
+	uint64_t intb_map                     : 2;
+	uint64_t intc_map                     : 2;
+	uint64_t intd_map                     : 2;
+	uint64_t waitl_com                    : 1;
+	uint64_t dis_port                     : 1;
+	uint64_t inta                         : 1;
+	uint64_t intb                         : 1;
+	uint64_t intc                         : 1;
+	uint64_t intd                         : 1;
+	uint64_t reserved_22_63               : 42;
+#endif
+	} s;
+	struct cvmx_sli_ctl_portx_s           cn61xx;
+	struct cvmx_sli_ctl_portx_s           cn63xx;
+	struct cvmx_sli_ctl_portx_s           cn63xxp1;
+	struct cvmx_sli_ctl_portx_s           cn66xx;
+	struct cvmx_sli_ctl_portx_s           cn68xx;
+	struct cvmx_sli_ctl_portx_s           cn68xxp1;
+	struct cvmx_sli_ctl_portx_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_22_63               : 42;
 	uint64_t intd                         : 1;  /**< When '0' Intd wire asserted. Before mapping. */
@@ -1706,7 +4141,7 @@ union cvmx_sli_ctl_portx {
 	uint64_t ctlp_ro                      : 1;  /**< Relaxed ordering enable for Completion TLPS. */
 	uint64_t reserved_6_6                 : 1;
 	uint64_t ptlp_ro                      : 1;  /**< Relaxed ordering enable for Posted TLPS. */
-	uint64_t reserved_1_4                 : 4;
+	uint64_t reserved_4_1                 : 4;
 	uint64_t wait_com                     : 1;  /**< When set '1' casues the SLI to wait for a commit
                                                          from the L2C before sending additional stores to
                                                          the L2C from a MAC.
@@ -1718,7 +4153,7 @@ union cvmx_sli_ctl_portx {
                                                          conservative on ordering, lower performance */
 #else
 	uint64_t wait_com                     : 1;
-	uint64_t reserved_1_4                 : 4;
+	uint64_t reserved_4_1                 : 4;
 	uint64_t ptlp_ro                      : 1;
 	uint64_t reserved_6_6                 : 1;
 	uint64_t ctlp_ro                      : 1;
@@ -1734,16 +4169,9 @@ union cvmx_sli_ctl_portx {
 	uint64_t intd                         : 1;
 	uint64_t reserved_22_63               : 42;
 #endif
-	} s;
-	struct cvmx_sli_ctl_portx_s           cn61xx;
-	struct cvmx_sli_ctl_portx_s           cn63xx;
-	struct cvmx_sli_ctl_portx_s           cn63xxp1;
-	struct cvmx_sli_ctl_portx_s           cn66xx;
-	struct cvmx_sli_ctl_portx_s           cn68xx;
-	struct cvmx_sli_ctl_portx_s           cn68xxp1;
-	struct cvmx_sli_ctl_portx_s           cn70xx;
-	struct cvmx_sli_ctl_portx_s           cn70xxp1;
-	struct cvmx_sli_ctl_portx_cn78xx {
+	} cn70xx;
+	struct cvmx_sli_ctl_portx_cn70xx      cn70xxp1;
+	struct cvmx_sli_ctl_portx_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_18_63               : 46;
 	uint64_t dis_port                     : 1;  /**< When set, the output to the MAC is disabled. This occurs when the MAC reset line
@@ -1775,8 +4203,11 @@ union cvmx_sli_ctl_portx {
 	uint64_t dis_port                     : 1;
 	uint64_t reserved_18_63               : 46;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_sli_ctl_portx_cn73xx      cn78xx;
+	struct cvmx_sli_ctl_portx_cn73xx      cn78xxp2;
 	struct cvmx_sli_ctl_portx_s           cnf71xx;
+	struct cvmx_sli_ctl_portx_cn73xx      cnf75xx;
 };
 typedef union cvmx_sli_ctl_portx cvmx_sli_ctl_portx_t;
 
@@ -1793,8 +4224,12 @@ union cvmx_sli_ctl_status {
 	struct cvmx_sli_ctl_status_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t m2s1_ncbi                    : 4;  /**< Contains the IOBI that traffic from M2S1 is placed on. Values 2-15 are reserved. */
-	uint64_t m2s0_ncbi                    : 4;  /**< Contains the IOBI that traffic from M2S0 is placed on. Values 2-15 are reserved. */
+	uint64_t m2s1_ncbi                    : 4;  /**< Contains the IOBI that traffic (inbound BAR1/BAR2 posted writes, inbound BAR1/BAR2
+                                                         non-posted reads, outbound BAR1/BAR2 completions, and inbound CPU completions)
+                                                         from MAC2 and MAC3 is placed on. Values 2-15 are reserved. */
+	uint64_t m2s0_ncbi                    : 4;  /**< Contains the IOBI that traffic  (inbound BAR1/BAR2 posted writes, inbound BAR1/BAR2
+                                                         non-posted reads, outbound BAR1/BAR2 completions, and inbound CPU completions)
+                                                         from MAC0 and MAC1 is placed on.  Values 2-15 are reserved. */
 	uint64_t oci_id                       : 4;  /**< The CCPI ID. */
 	uint64_t p1_ntags                     : 6;  /**< Number of tags available for MAC port 1.
                                                          In RC mode, one tag is needed for each outbound TLP that requires a CPL TLP.
@@ -1802,13 +4237,13 @@ union cvmx_sli_ctl_status {
                                                          1.
                                                          This field should only be written as part of a reset sequence and before issuing any read
                                                          operations, CFGs, or I/O transactions from the core(s). */
-	uint64_t p0_ntags                     : 6;  /**< Number of tags available for outbound TLPs to the
-                                                         MACS. One tag is needed for each outbound TLP that
-                                                         requires a CPL TLP.
-                                                         This field should only be written as part of
-                                                         reset sequence, before issuing any reads, CFGs, or
-                                                         IO transactions from the core(s). */
-	uint64_t chip_rev                     : 8;  /**< The chip revision. */
+	uint64_t p0_ntags                     : 6;  /**< Number of tags available for MAC port 0.
+                                                         In RC mode, one tag is needed for each outbound TLP that requires a CPL TLP.
+                                                         In EP mode, the number of tags required for a TLP request is 1 per 64-bytes of CPL data +
+                                                         1.
+                                                         This field should only be written as part of a reset sequence and before issuing any read
+                                                         operations, CFGs, or I/O transactions from the core(s). */
+	uint64_t chip_rev                     : 8;  /**< Chip revision level. */
 #else
 	uint64_t chip_rev                     : 8;
 	uint64_t p0_ntags                     : 6;
@@ -1868,8 +4303,43 @@ union cvmx_sli_ctl_status {
 	struct cvmx_sli_ctl_status_cn63xx     cn68xxp1;
 	struct cvmx_sli_ctl_status_cn63xx     cn70xx;
 	struct cvmx_sli_ctl_status_cn63xx     cn70xxp1;
+	struct cvmx_sli_ctl_status_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t m2s1_ncbi                    : 4;  /**< Contains the IOBI that traffic (inbound BAR1/BAR2 posted writes, inbound BAR1/BAR2
+                                                         non-posted reads, outbound BAR1/BAR2 completions, and inbound CPU completions)
+                                                         from MAC2 and MAC3 is placed on. Values 2-15 are reserved. */
+	uint64_t m2s0_ncbi                    : 4;  /**< Contains the IOBI that traffic  (inbound BAR1/BAR2 posted writes, inbound BAR1/BAR2
+                                                         non-posted reads, outbound BAR1/BAR2 completions, and inbound CPU completions)
+                                                         from MAC0 and MAC1 is placed on.  Values 2-15 are reserved. */
+	uint64_t reserved_20_23               : 4;
+	uint64_t p1_ntags                     : 6;  /**< Number of tags available for MAC port 1.
+                                                         In RC mode, one tag is needed for each outbound TLP that requires a CPL TLP.
+                                                         In EP mode, the number of tags required for a TLP request is 1 per 64-bytes of CPL data +
+                                                         1.
+                                                         This field should only be written as part of a reset sequence and before issuing any read
+                                                         operations, CFGs, or I/O transactions from the core(s). */
+	uint64_t p0_ntags                     : 6;  /**< Number of tags available for MAC port 0.
+                                                         In RC mode, one tag is needed for each outbound TLP that requires a CPL TLP.
+                                                         In EP mode, the number of tags required for a TLP request is 1 per 64-bytes of CPL data +
+                                                         1.
+                                                         This field should only be written as part of a reset sequence and before issuing any read
+                                                         operations, CFGs, or I/O transactions from the core(s). */
+	uint64_t chip_rev                     : 8;  /**< Chip revision level. */
+#else
+	uint64_t chip_rev                     : 8;
+	uint64_t p0_ntags                     : 6;
+	uint64_t p1_ntags                     : 6;
+	uint64_t reserved_20_23               : 4;
+	uint64_t m2s0_ncbi                    : 4;
+	uint64_t m2s1_ncbi                    : 4;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} cn73xx;
 	struct cvmx_sli_ctl_status_s          cn78xx;
+	struct cvmx_sli_ctl_status_s          cn78xxp2;
 	struct cvmx_sli_ctl_status_cn61xx     cnf71xx;
+	struct cvmx_sli_ctl_status_cn73xx     cnf75xx;
 };
 typedef union cvmx_sli_ctl_status cvmx_sli_ctl_status_t;
 
@@ -1884,18 +4354,14 @@ union cvmx_sli_data_out_cnt {
 	struct cvmx_sli_data_out_cnt_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_44_63               : 20;
-	uint64_t p1_ucnt                      : 16; /**< FIFO1 Unload Count. This counter is incremented by
-                                                         '1' every time a word is removed from Data Out
-                                                         FIFO1. Whose count is shown in P1_FCNT. */
-	uint64_t p1_fcnt                      : 6;  /**< FIFO1 Data Out Count. Number of address data words
-                                                         presently buffered in the FIFO1.
-                                                         MACs associated with FIFO1: NONE */
-	uint64_t p0_ucnt                      : 16; /**< FIFO0 Unload Count. This counter is incremented by
-                                                         '1' every time a word is removed from Data Out
-                                                         FIFO0. Whose count is shown in P0_FCNT. */
-	uint64_t p0_fcnt                      : 6;  /**< FIFO0 Data Out Count. Number of address data words
-                                                         presently buffered in the FIFO0.
-                                                         MACs associated with FIFO0: PCIe0, PCIe1 */
+	uint64_t p1_ucnt                      : 16; /**< FIFO1 unload count. This counter is incremented by 1 every time a word is removed from
+                                                         data out FIFO1, whose count is shown in P1_FCNT. */
+	uint64_t p1_fcnt                      : 6;  /**< FIFO1 data out count. Number of address data words presently buffered in the FIFO1. MACs
+                                                         associated with FIFO1: PCIe2, PCIe3. */
+	uint64_t p0_ucnt                      : 16; /**< FIFO0 unload count. This counter is incremented by 1 every time a word is removed from
+                                                         data out FIFO0, whose count is shown in P0_FCNT. */
+	uint64_t p0_fcnt                      : 6;  /**< FIFO0 data out count. Number of address data words presently buffered in the FIFO0. MACs
+                                                         associated with FIFO0: PCIe0, PCIe1. */
 #else
 	uint64_t p0_fcnt                      : 6;
 	uint64_t p0_ucnt                      : 16;
@@ -1912,8 +4378,11 @@ union cvmx_sli_data_out_cnt {
 	struct cvmx_sli_data_out_cnt_s        cn68xxp1;
 	struct cvmx_sli_data_out_cnt_s        cn70xx;
 	struct cvmx_sli_data_out_cnt_s        cn70xxp1;
+	struct cvmx_sli_data_out_cnt_s        cn73xx;
 	struct cvmx_sli_data_out_cnt_s        cn78xx;
+	struct cvmx_sli_data_out_cnt_s        cn78xxp2;
 	struct cvmx_sli_data_out_cnt_s        cnf71xx;
+	struct cvmx_sli_data_out_cnt_s        cnf75xx;
 };
 typedef union cvmx_sli_data_out_cnt cvmx_sli_data_out_cnt_t;
 
@@ -2003,13 +4472,12 @@ union cvmx_sli_dmax_cnt {
 	struct cvmx_sli_dmax_cnt_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t cnt                          : 32; /**< The DMA counter.
-                                                         Writing this field will cause the written value
-                                                         to be subtracted from DMA. HW will optionally
-                                                         increment this field after it completes an
-                                                         OUTBOUND or EXTERNAL-ONLY DMA instruction. These
-                                                         increments may cause interrupts. Refer to
-                                                         SLI_DMAx_INT_LEVEL and SLI_INT_SUM[DCNT,DTIME]. */
+	uint64_t cnt                          : 32; /**< The DMA counter. SLI/DPI hardware subtracts the written value from
+                                                         the counter whenever software writes this CSR. SLI/DPI hardware increments this
+                                                         counter after completing an OUTBOUND or EXTERNAL-ONLY DMA instruction
+                                                         with DPI_DMA_INSTR_HDR_S[CA] set DPI_DMA_INSTR_HDR_S[CSEL] equal to this
+                                                         CSR index. These increments may cause interrupts.
+                                                         See SLI_DMA()_INT_LEVEL and SLI_INT_SUM[DCNT,DTIME]. */
 #else
 	uint64_t cnt                          : 32;
 	uint64_t reserved_32_63               : 32;
@@ -2023,8 +4491,11 @@ union cvmx_sli_dmax_cnt {
 	struct cvmx_sli_dmax_cnt_s            cn68xxp1;
 	struct cvmx_sli_dmax_cnt_s            cn70xx;
 	struct cvmx_sli_dmax_cnt_s            cn70xxp1;
+	struct cvmx_sli_dmax_cnt_s            cn73xx;
 	struct cvmx_sli_dmax_cnt_s            cn78xx;
+	struct cvmx_sli_dmax_cnt_s            cn78xxp2;
 	struct cvmx_sli_dmax_cnt_s            cnf71xx;
+	struct cvmx_sli_dmax_cnt_s            cnf75xx;
 };
 typedef union cvmx_sli_dmax_cnt cvmx_sli_dmax_cnt_t;
 
@@ -2038,14 +4509,11 @@ union cvmx_sli_dmax_int_level {
 	uint64_t u64;
 	struct cvmx_sli_dmax_int_level_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t time                         : 32; /**< Whenever the SLI_DMAx_TIM[TIM] timer exceeds
-                                                         this value, SLI_INT_SUM[DTIME<x>] is set.
-                                                         The SLI_DMAx_TIM[TIM] timer increments every SLI
-                                                         clock whenever SLI_DMAx_CNT[CNT]!=0, and is
-                                                         cleared when SLI_INT_SUM[DTIME<x>] is written with
+	uint64_t time                         : 32; /**< Whenever the SLI_DMA()_TIM[TIM] timer exceeds this value, SLI_INT_SUM[DTIME<x>] is
+                                                         set. The SLI_DMA()_TIM[TIM] timer increments every SLI clock whenever
+                                                         SLI_DMA()_CNT[CNT] != 0, and is cleared when SLI_INT_SUM[DTIME<x>] is written with
                                                          one. */
-	uint64_t cnt                          : 32; /**< Whenever SLI_DMAx_CNT[CNT] exceeds this value,
-                                                         SLI_INT_SUM[DCNT<x>] is set. */
+	uint64_t cnt                          : 32; /**< Whenever SLI_DMA()_CNT[CNT] exceeds this value, SLI_INT_SUM[DCNT<x>] is set. */
 #else
 	uint64_t cnt                          : 32;
 	uint64_t time                         : 32;
@@ -2059,8 +4527,11 @@ union cvmx_sli_dmax_int_level {
 	struct cvmx_sli_dmax_int_level_s      cn68xxp1;
 	struct cvmx_sli_dmax_int_level_s      cn70xx;
 	struct cvmx_sli_dmax_int_level_s      cn70xxp1;
+	struct cvmx_sli_dmax_int_level_s      cn73xx;
 	struct cvmx_sli_dmax_int_level_s      cn78xx;
+	struct cvmx_sli_dmax_int_level_s      cn78xxp2;
 	struct cvmx_sli_dmax_int_level_s      cnf71xx;
+	struct cvmx_sli_dmax_int_level_s      cnf75xx;
 };
 typedef union cvmx_sli_dmax_int_level cvmx_sli_dmax_int_level_t;
 
@@ -2075,9 +4546,8 @@ union cvmx_sli_dmax_tim {
 	struct cvmx_sli_dmax_tim_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t tim                          : 32; /**< The DMA timer value.
-                                                         The timer will increment when SLI_DMAx_CNT[CNT]!=0
-                                                         and will clear when SLI_DMAx_CNT[CNT]==0 */
+	uint64_t tim                          : 32; /**< The DMA timer value. The timer increments when
+                                                         SLI_DMA()_CNT[CNT]!=0 and clears when SLI_DMA()_CNT[CNT]=0. */
 #else
 	uint64_t tim                          : 32;
 	uint64_t reserved_32_63               : 32;
@@ -2091,8 +4561,11 @@ union cvmx_sli_dmax_tim {
 	struct cvmx_sli_dmax_tim_s            cn68xxp1;
 	struct cvmx_sli_dmax_tim_s            cn70xx;
 	struct cvmx_sli_dmax_tim_s            cn70xxp1;
+	struct cvmx_sli_dmax_tim_s            cn73xx;
 	struct cvmx_sli_dmax_tim_s            cn78xx;
+	struct cvmx_sli_dmax_tim_s            cn78xxp2;
 	struct cvmx_sli_dmax_tim_s            cnf71xx;
+	struct cvmx_sli_dmax_tim_s            cnf75xx;
 };
 typedef union cvmx_sli_dmax_tim cvmx_sli_dmax_tim_t;
 
@@ -2525,7 +4998,7 @@ union cvmx_sli_int_enb_ciu {
 	struct cvmx_sli_int_enb_ciu_cn68xx    cn68xxp1;
 	struct cvmx_sli_int_enb_ciu_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_61_63               : 3;
+	uint64_t reserved_63_61               : 3;
 	uint64_t ill_pad                      : 1;  /**< Illegal packet csr address. */
 	uint64_t sprt3_err                    : 1;  /**< Error Response received on SLI port 3. */
 	uint64_t sprt2_err                    : 1;  /**< Error Response received on SLI port 2. */
@@ -2539,11 +5012,11 @@ union cvmx_sli_int_enb_ciu {
 	uint64_t pout_err                     : 1;  /**< Packet Out Interrupt, Error From PKO. */
 	uint64_t psldbof                      : 1;  /**< Packet Scatterlist Doorbell Count Overflow. */
 	uint64_t pidbof                       : 1;  /**< Packet Instruction Doorbell Count Overflow. */
-	uint64_t reserved_38_47               : 10;
+	uint64_t reserved_47_38               : 10;
 	uint64_t dtime                        : 2;  /**< DMA Timer Interrupts */
 	uint64_t dcnt                         : 2;  /**< DMA Count Interrupts */
 	uint64_t dmafi                        : 2;  /**< DMA set Forced Interrupts */
-	uint64_t reserved_29_31               : 3;
+	uint64_t reserved_31_29               : 3;
 	uint64_t mio_int2                     : 1;  /**< Enables SLI_INT_SUM[28] to generate an
                                                          interrupt on the RSL.
                                                          THIS SHOULD NEVER BE SET */
@@ -2559,7 +5032,7 @@ union cvmx_sli_int_enb_ciu {
                                                          interrupt on the RSL. */
 	uint64_t m2_up_b0                     : 1;  /**< Enables SLI_INT_SUM[20] to generate an
                                                          interrupt on the RSL. */
-	uint64_t reserved_18_19               : 2;
+	uint64_t reserved_19_18               : 2;
 	uint64_t mio_int1                     : 1;  /**< Enables SLI_INT_SUM[17] to generate an
                                                          interrupt on the RSL.
                                                          THIS SHOULD NEVER BE SET */
@@ -2582,7 +5055,7 @@ union cvmx_sli_int_enb_ciu {
                                                          interrupt on the RSL. */
 	uint64_t m0_up_b0                     : 1;  /**< Enables SLI_INT_SUM[8] to generate an
                                                          interrupt on the RSL. */
-	uint64_t reserved_6_7                 : 2;
+	uint64_t reserved_7_6                 : 2;
 	uint64_t ptime                        : 1;  /**< Enables SLI_INT_SUM[5] to generate an
                                                          interrupt on the RSL. */
 	uint64_t pcnt                         : 1;  /**< Enables SLI_INT_SUM[4] to generate an
@@ -2601,7 +5074,7 @@ union cvmx_sli_int_enb_ciu {
 	uint64_t iob2big                      : 1;
 	uint64_t pcnt                         : 1;
 	uint64_t ptime                        : 1;
-	uint64_t reserved_6_7                 : 2;
+	uint64_t reserved_7_6                 : 2;
 	uint64_t m0_up_b0                     : 1;
 	uint64_t m0_up_wi                     : 1;
 	uint64_t m0_un_b0                     : 1;
@@ -2612,7 +5085,7 @@ union cvmx_sli_int_enb_ciu {
 	uint64_t m1_un_wi                     : 1;
 	uint64_t mio_int0                     : 1;
 	uint64_t mio_int1                     : 1;
-	uint64_t reserved_18_19               : 2;
+	uint64_t reserved_19_18               : 2;
 	uint64_t m2_up_b0                     : 1;
 	uint64_t m2_up_wi                     : 1;
 	uint64_t m2_un_b0                     : 1;
@@ -2622,11 +5095,11 @@ union cvmx_sli_int_enb_ciu {
 	uint64_t m3_un_b0                     : 1;
 	uint64_t m3_un_wi                     : 1;
 	uint64_t mio_int2                     : 1;
-	uint64_t reserved_29_31               : 3;
+	uint64_t reserved_31_29               : 3;
 	uint64_t dmafi                        : 2;
 	uint64_t dcnt                         : 2;
 	uint64_t dtime                        : 2;
-	uint64_t reserved_38_47               : 10;
+	uint64_t reserved_47_38               : 10;
 	uint64_t pidbof                       : 1;
 	uint64_t psldbof                      : 1;
 	uint64_t pout_err                     : 1;
@@ -2640,7 +5113,7 @@ union cvmx_sli_int_enb_ciu {
 	uint64_t sprt2_err                    : 1;
 	uint64_t sprt3_err                    : 1;
 	uint64_t ill_pad                      : 1;
-	uint64_t reserved_61_63               : 3;
+	uint64_t reserved_63_61               : 3;
 #endif
 	} cn70xx;
 	struct cvmx_sli_int_enb_ciu_cn70xx    cn70xxp1;
@@ -2721,7 +5194,8 @@ union cvmx_sli_int_enb_portx {
                                                          interrupt to the PCIE core for MSI/inta. */
 	uint64_t m0_up_b0                     : 1;  /**< Enables SLI_INT_SUM[8] to generate an
                                                          interrupt to the PCIE core for MSI/inta. */
-	uint64_t mio_int3                     : 1;  /**< Enables SLI_INT_SUM[MIO_INT3] to generate an interrupt to the MAC core for MSI/INTA. */
+	uint64_t mio_int3                     : 1;  /**< Enables SLI_INT_SUM[MIO_INT3] to generate an interrupt to the MAC core for MSI/INTA.
+                                                         MIO_INT3 should only be set in SLI_INT_ENB_PORT3. */
 	uint64_t reserved_6_6                 : 1;
 	uint64_t ptime                        : 1;  /**< Enables SLI_INT_SUM[5] to generate an
                                                          interrupt to the PCIE core for MSI/inta. */
@@ -3118,7 +5592,7 @@ union cvmx_sli_int_enb_portx {
 	struct cvmx_sli_int_enb_portx_cn68xx  cn68xxp1;
 	struct cvmx_sli_int_enb_portx_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_61_63               : 3;
+	uint64_t reserved_63_61               : 3;
 	uint64_t ill_pad                      : 1;  /**< Illegal packet csr address. */
 	uint64_t sprt3_err                    : 1;  /**< Error Response received on SLI port 3. */
 	uint64_t sprt2_err                    : 1;  /**< Error Response received on SLI port 2. */
@@ -3132,11 +5606,11 @@ union cvmx_sli_int_enb_portx {
 	uint64_t pout_err                     : 1;  /**< Packet Out Interrupt, Error From PKO. */
 	uint64_t psldbof                      : 1;  /**< Packet Scatterlist Doorbell Count Overflow. */
 	uint64_t pidbof                       : 1;  /**< Packet Instruction Doorbell Count Overflow. */
-	uint64_t reserved_38_47               : 10;
+	uint64_t reserved_47_38               : 10;
 	uint64_t dtime                        : 2;  /**< DMA Timer Interrupts */
 	uint64_t dcnt                         : 2;  /**< DMA Count Interrupts */
 	uint64_t dmafi                        : 2;  /**< DMA set Forced Interrupts */
-	uint64_t reserved_30_31               : 2;
+	uint64_t reserved_31_30               : 2;
 	uint64_t mac2_int                     : 1;  /**< Enables SLI_INT_SUM[29] to generate an
                                                          interrupt to the PCIE-Port2 for MSI/inta.
                                                          SLI_INT_ENB_PORT2[MAC0_INT] sould NEVER be set.
@@ -3186,7 +5660,7 @@ union cvmx_sli_int_enb_portx {
                                                          interrupt to the PCIE core for MSI/inta. */
 	uint64_t m0_up_b0                     : 1;  /**< Enables SLI_INT_SUM[8] to generate an
                                                          interrupt to the PCIE core for MSI/inta. */
-	uint64_t reserved_6_7                 : 2;
+	uint64_t reserved_7_6                 : 2;
 	uint64_t ptime                        : 1;  /**< Enables SLI_INT_SUM[5] to generate an
                                                          interrupt to the PCIE core for MSI/inta. */
 	uint64_t pcnt                         : 1;  /**< Enables SLI_INT_SUM[4] to generate an
@@ -3205,7 +5679,7 @@ union cvmx_sli_int_enb_portx {
 	uint64_t iob2big                      : 1;
 	uint64_t pcnt                         : 1;
 	uint64_t ptime                        : 1;
-	uint64_t reserved_6_7                 : 2;
+	uint64_t reserved_7_6                 : 2;
 	uint64_t m0_up_b0                     : 1;
 	uint64_t m0_up_wi                     : 1;
 	uint64_t m0_un_b0                     : 1;
@@ -3228,11 +5702,11 @@ union cvmx_sli_int_enb_portx {
 	uint64_t m3_un_wi                     : 1;
 	uint64_t mio_int2                     : 1;
 	uint64_t mac2_int                     : 1;
-	uint64_t reserved_30_31               : 2;
+	uint64_t reserved_31_30               : 2;
 	uint64_t dmafi                        : 2;
 	uint64_t dcnt                         : 2;
 	uint64_t dtime                        : 2;
-	uint64_t reserved_38_47               : 10;
+	uint64_t reserved_47_38               : 10;
 	uint64_t pidbof                       : 1;
 	uint64_t psldbof                      : 1;
 	uint64_t pout_err                     : 1;
@@ -3246,7 +5720,7 @@ union cvmx_sli_int_enb_portx {
 	uint64_t sprt2_err                    : 1;
 	uint64_t sprt3_err                    : 1;
 	uint64_t ill_pad                      : 1;
-	uint64_t reserved_61_63               : 3;
+	uint64_t reserved_63_61               : 3;
 #endif
 	} cn70xx;
 	struct cvmx_sli_int_enb_portx_cn70xx  cn70xxp1;
@@ -3280,9 +5754,9 @@ union cvmx_sli_int_enb_portx {
 	uint64_t m2_up_b0                     : 1;  /**< Enables SLI_INT_SUM[M2_UP_B0] to generate an interrupt to the MAC core for MSI/INTA. */
 	uint64_t reserved_18_19               : 2;
 	uint64_t mio_int1                     : 1;  /**< Enables SLI_INT_SUM[MIO_INT1] to generate an interrupt to the MAC core for MSI/INTA.
-                                                         SLI_INT_ENB_PORT0[MIO_INT1] should never be set. */
+                                                         MIO_INT1 should only be set in SLI_INT_ENB_PORT1. */
 	uint64_t mio_int0                     : 1;  /**< Enables SLI_INT_SUM[MIO_INT0] to generate an interrupt to the MAC core for MSI/INTA.
-                                                         SLI_INT_ENB_PORT1[MIO_INT0] should never be set. */
+                                                         MIO_INT0 should only be set in SLI_INT_ENB_PORT0. */
 	uint64_t m1_un_wi                     : 1;  /**< Enables SLI_INT_SUM[M1_UN_WI] to generate an interrupt to the MAC core for MSI/INTA. */
 	uint64_t m1_un_b0                     : 1;  /**< Enables SLI_INT_SUM[M1_UN_B0] to generate an interrupt to the MAC core for MSI/INTA. */
 	uint64_t m1_up_wi                     : 1;  /**< Enables SLI_INT_SUM[M1_UP_WI] to generate an interrupt to the MAC core for MSI/INTA. */
@@ -3291,8 +5765,10 @@ union cvmx_sli_int_enb_portx {
 	uint64_t m0_un_b0                     : 1;  /**< Enables SLI_INT_SUM[M0_UN_B0] to generate an interrupt to the MAC core for MSI/INTA. */
 	uint64_t m0_up_wi                     : 1;  /**< Enables SLI_INT_SUM[M0_UP_WI] to generate an interrupt to the MAC core for MSI/INTA. */
 	uint64_t m0_up_b0                     : 1;  /**< Enables SLI_INT_SUM[M0_UP_B0] to generate an interrupt to the MAC core for MSI/INTA. */
-	uint64_t mio_int3                     : 1;  /**< Enables SLI_INT_SUM[MIO_INT3] to generate an interrupt to the MAC core for MSI/INTA. */
-	uint64_t mio_int2                     : 1;  /**< Enables SLI_INT_SUM[MIO_INT2] to generate an interrupt to the MAC core for MSI/INTA. */
+	uint64_t mio_int3                     : 1;  /**< Enables SLI_INT_SUM[MIO_INT3] to generate an interrupt to the MAC core for MSI/INTA.
+                                                         MIO_INT3 should only be set in SLI_INT_ENB_PORT3. */
+	uint64_t mio_int2                     : 1;  /**< Enables SLI_INT_SUM[MIO_INT2] to generate an interrupt to the MAC core for MSI/INTA.
+                                                         MIO_INT2 should only be set in SLI_INT_ENB_PORT2. */
 	uint64_t ptime                        : 1;  /**< Enables SLI_INT_SUM[PTIME] to generate an interrupt to the MAC core for MSI/INTA. */
 	uint64_t pcnt                         : 1;  /**< Enables SLI_INT_SUM[PCNT] to generate an interrupt to the PCIE core for MSI/INTA. */
 	uint64_t reserved_1_3                 : 3;
@@ -3343,6 +5819,7 @@ union cvmx_sli_int_enb_portx {
 	uint64_t reserved_60_63               : 4;
 #endif
 	} cn78xx;
+	struct cvmx_sli_int_enb_portx_cn78xx  cn78xxp2;
 	struct cvmx_sli_int_enb_portx_cn61xx  cnf71xx;
 };
 typedef union cvmx_sli_int_enb_portx cvmx_sli_int_enb_portx_t;
@@ -3351,8 +5828,9 @@ typedef union cvmx_sli_int_enb_portx cvmx_sli_int_enb_portx_t;
  * cvmx_sli_int_sum
  *
  * The fields in this register are set when an interrupt condition occurs; write 1 to clear. All
- * fields of the CSR are valid when a PF reads the CSR. When read by a VF, only fields PTIME and
- * PCNT are valid.
+ * fields of the register are valid when a PF reads the register. Not available to VF's, and
+ * writes by the
+ * VF do not modify the register.
  */
 union cvmx_sli_int_sum {
 	uint64_t u64;
@@ -3445,7 +5923,8 @@ union cvmx_sli_int_sum {
 	uint64_t m0_up_b0                     : 1;  /**< Received Unsupported P-TLP for Bar0 from MAC 0.
                                                          This occurs when the BAR 0 address space is
                                                          disabeled. */
-	uint64_t mio_int3                     : 1;  /**< Interrupt from MIO for Port 3. Throws SLI_INTSN_E::SLI_INT_MIO_INT3. */
+	uint64_t mio_int3                     : 1;  /**< CIU interrupt output for MAC 3. A copy of CIU3_DEST(x)_IO_INT[INTR],
+                                                         where x=CIU_DEST_IO_E::PEM(3) (i.e. x=4). */
 	uint64_t reserved_6_6                 : 1;
 	uint64_t ptime                        : 1;  /**< Packet Timer has an interrupt. Which rings can
                                                          be found in SLI_PKT_TIME_INT. */
@@ -4078,27 +6557,53 @@ union cvmx_sli_int_sum {
 	struct cvmx_sli_int_sum_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
-	uint64_t sprt3_err                    : 1;  /**< SLI port 3 error. When an error response is received on SLI port 3, this bit is set.
+	uint64_t sprt3_err                    : 1;  /**< SLI/DPI sets [SPRT3_ERR] when it receives an error response on a completion for a
+                                                         transaction mastered by DPI from MAC3/FPORT=3. When MAC3 is PEM3 (PCIe),
+                                                         the error response may be due to a UR or CA completion, or a timeout. DPI
+                                                         masters all transactions created to service all of DPI Instruction (packet) input,
+                                                         DPI packet output, and DPI DMA Instructions.
                                                          Throws SLI_INTSN_E::SLI_INT_SPRT3_ERR. */
-	uint64_t sprt2_err                    : 1;  /**< SLI port 2 error. When an error response is received on SLI port 2, this bit is set.
+	uint64_t sprt2_err                    : 1;  /**< SLI/DPI sets [SPRT2_ERR] when it receives an error response on a completion for a
+                                                         read mastered by DPI from MAC2/FPORT=2. When MAC2 is PEM2 (PCIe),
+                                                         the error response may be due to a UR or CA completion, or a timeout. DPI
+                                                         masters all transactions created to service all of DPI Instruction (packet) input,
+                                                         DPI packet output, and DPI DMA Instructions.
                                                          Throws SLI_INTSN_E::SLI_INT_SPRT2_ERR. */
-	uint64_t sprt1_err                    : 1;  /**< SLI port 1 error. When an error response is received on SLI port 1, this bit is set.
+	uint64_t sprt1_err                    : 1;  /**< SLI/DPI sets [SPRT1_ERR] when it receives an error response on a completion for a
+                                                         read mastered by DPI from MAC1/FPORT=1. When MAC1 is PEM1 (PCIe),
+                                                         the error response may be due to a UR or CA completion, or a timeout. DPI
+                                                         masters all transactions created to service all of DPI Instruction (packet) input,
+                                                         DPI packet output, and DPI DMA Instructions.
                                                          Throws SLI_INTSN_E::SLI_INT_SPRT1_ERR. */
-	uint64_t sprt0_err                    : 1;  /**< SLI port 0 error. When an error response is received on SLI port 0, this bit is set.
+	uint64_t sprt0_err                    : 1;  /**< SLI/DPI sets [SPRT0_ERR] when it receives an error response on a completion for a
+                                                         read mastered by DPI from MAC0/FPORT=0. When MAC0 is PEM0 (PCIe),
+                                                         the error response may be due to a UR or CA completion, or a timeout. DPI
+                                                         masters all transactions created to service all of DPI Instruction (packet) input,
+                                                         DPI packet output, and DPI DMA Instructions.
                                                          Throws SLI_INTSN_E::SLI_INT_SPRT0_ERR. */
-	uint64_t pins_err                     : 1;  /**< Packet instruction read error. When a read error occurs on a packet instruction, this bit
-                                                         is set. Throws SLI_INTSN_E::SLI_INT_PINS_ERR. */
-	uint64_t pop_err                      : 1;  /**< Packet scatter pointer pair error. When a read error occurs on a packet scatter pointer
-                                                         pair, this bit is set. Throws SLI_INTSN_E::SLI_INT_POP_ERR. */
-	uint64_t pdi_err                      : 1;  /**< Packet data read error. When a read error occurs on a packet data read, this bit is set.
+	uint64_t pins_err                     : 1;  /**< Packet instruction read error. SLI/DPI sets [PINS_ERR] when it receives an error
+                                                         response to a DPI Instruction (packet) input instruction read. Whenever
+                                                         SLI/DPI sets [PINS_ERR], it also will have set one of [SPRT*_ERR].
+                                                         Throws SLI_INTSN_E::SLI_INT_PINS_ERR. */
+	uint64_t pop_err                      : 1;  /**< Packet pointer pair error. SLI/DPI sets [POP_ERR] when it receives
+                                                         an error response on a DPI packet output buffer/info pointer pair read.
+                                                         Whenever SLI/DPI sets [POP_ERR], it also will have set one of [SPRT*_ERR].
+                                                         Throws SLI_INTSN_E::SLI_INT_POP_ERR. */
+	uint64_t pdi_err                      : 1;  /**< Packet data read error. SLI/DPI sets [PDI_ERR] when it receives an error
+                                                         response to a DPI Instruction (packet) input packet data read. Whenever
+                                                         SLI/DPI sets [PDI_ERR], it also will have set one of [SPRT*_ERR].
                                                          Throws SLI_INTSN_E::SLI_INT_PDI_ERR. */
-	uint64_t pgl_err                      : 1;  /**< Packet gather list read error. When a read error occurs on a packet gather list read, this
-                                                         bit is set. Throws SLI_INTSN_E::SLI_INT_PGL_ERR. */
+	uint64_t pgl_err                      : 1;  /**< Packet gather list read error. SLI/DPI sets [PDI_ERR] when it receives an error
+                                                         response to a DPI Instruction (packet) input indirect gather list read. Whenever
+                                                         SLI/DPI sets [PGL_ERR], it also will have set one of [SPRT*_ERR].
+                                                         Throws SLI_INTSN_E::SLI_INT_PGL_ERR. */
 	uint64_t reserved_50_51               : 2;
-	uint64_t psldbof                      : 1;  /**< Packet scatter list doorbell count overflowed. Which doorbell can be found in
-                                                         DPI_PINT_INFO[PSLDBOF]. Throws SLI_INTSN_E::SLI_INT_PSLDBOF. */
-	uint64_t pidbof                       : 1;  /**< Packet instruction doorbell count overflowed. Which doorbell can be found in
-                                                         DPI_PINT_INFO[PIDBOF]. Throws SLI_INTSN_E::SLI_INT_PIDBOF. */
+	uint64_t psldbof                      : 1;  /**< Packet output doorbell count overflowed. SLI/DPI sets [PSLDBOF]
+                                                         whenever a DPI packet output doorbell overflows.
+                                                         Throws SLI_INTSN_E::SLI_INT_PSLDBOF. */
+	uint64_t pidbof                       : 1;  /**< Packet instruction input doorbell count overflowed. SLI/DPI sets
+                                                         [PIDBOF] whenever a DPI Instruction (packet) input doorbell overflows.
+                                                         Throws SLI_INTSN_E::SLI_INT_PIDBOF. */
 	uint64_t reserved_38_47               : 10;
 	uint64_t dtime                        : 2;  /**< Whenever SLI_DMA()_CNT[CNT] is not 0, the SLI_DMA()_TIM[TIM] timer increments
                                                          every SLI clock. DTIME<x> is set whenever SLI_DMA()_TIM[TIM] >
@@ -4107,9 +6612,13 @@ union cvmx_sli_int_sum {
                                                          SLI_INTSN_E::SLI_INT_DTIME0/1. */
 	uint64_t dcnt                         : 2;  /**< DCNT<x> is set whenever SLI_DMAx_CNT[CNT] > SLI_DMA()_INT_LEVEL[CNT]. DCNT<x> is
                                                          normally cleared by decreasing SLI_DMA()_CNT[CNT]. Throws SLI_INTSN_E::SLI_INT_DCNT0/1. */
-	uint64_t dmafi                        : 2;  /**< DMA set forced interrupts. Throws SLI_INTSN_E::SLI_INT_DMAFI0/1. */
+	uint64_t dmafi                        : 2;  /**< DMA set forced interrupts. Set by SLI/DPI after completing a DPI DMA
+                                                         Instruction with DPI_DMA_INSTR_HDR_S[FI] set.
+                                                         Throws SLI_INTSN_E::SLI_INT_DMAFI0/1. */
 	uint64_t reserved_29_31               : 3;
-	uint64_t vf_err                       : 1;  /**< Illegal access from VF. Throws SLI_INTSN_E::SLI_INT_VF_ERR. */
+	uint64_t vf_err                       : 1;  /**< Illegal BAR0 access from a virtual function. SLI/DPI may set [VF_ERR] whenever a
+                                                         virtual function accesses a VF BAR0 address/CSR that it shouldn't have.
+                                                         Throws SLI_INTSN_E::SLI_INT_VF_ERR. */
 	uint64_t m3_un_wi                     : 1;  /**< Received unsupported N-TLP for window register from MAC 3. This occurs when the window
                                                          registers are disabled and a window register access occurs. Throws
                                                          SLI_INTSN_E::SLI_INT_M3_UN_WI. */
@@ -4131,8 +6640,10 @@ union cvmx_sli_int_sum {
 	uint64_t m2_up_b0                     : 1;  /**< Received unsupported P-TLP for Bar0 from MAC 2. This occurs when the BAR 0 address space
                                                          is disabled. Throws SLI_INTSN_E::SLI_INT_M2_UP_B0. */
 	uint64_t reserved_18_19               : 2;
-	uint64_t mio_int1                     : 1;  /**< Interrupt from MIO for PORT 1. Throws SLI_INTSN_E::SLI_INT_MIO_INT1. */
-	uint64_t mio_int0                     : 1;  /**< Interrupt from MIO for PORT 0. Throws SLI_INTSN_E::SLI_INT_MIO_INT0. */
+	uint64_t mio_int1                     : 1;  /**< CIU interrupt output for MAC 1. A copy of CIU3_DEST(x)_IO_INT[INTR],
+                                                         where x=CIU_DEST_IO_E::PEM(1) (i.e. x=2). */
+	uint64_t mio_int0                     : 1;  /**< CIU interrupt output for MAC 0. A copy of CIU3_DEST(x)_IO_INT[INTR],
+                                                         where x=CIU_DEST_IO_E::PEM(0) (i.e. x=1). */
 	uint64_t m1_un_wi                     : 1;  /**< Received unsupported N-TLP for window register from MAC 1. This occurs when the window
                                                          registers are disabled and a window register access occurs. Throws
                                                          SLI_INTSN_E::SLI_INT_M1_UN_WI. */
@@ -4153,12 +6664,16 @@ union cvmx_sli_int_sum {
                                                          SLI_INTSN_E::SLI_INT_M0_UP_WI. */
 	uint64_t m0_up_b0                     : 1;  /**< Received unsupported P-TLP for Bar 0 from MAC 0. This occurs when the BAR 0 address space
                                                          is disabled. Throws SLI_INTSN_E::SLI_INT_M0_UP_B0. */
-	uint64_t mio_int3                     : 1;  /**< Interrupt from MIO for Port 3. Throws SLI_INTSN_E::SLI_INT_MIO_INT3. */
-	uint64_t mio_int2                     : 1;  /**< Interrupt from MIO for Port 2. Throws SLI_INTSN_E::SLI_INT_MIO_INT2. */
-	uint64_t ptime                        : 1;  /**< Packet timer has an interrupt. The specific rings can be found in SLI_PKT_TIME_INT. Throws
-                                                         SLI_INTSN_E::SLI_INT_PTIME. */
-	uint64_t pcnt                         : 1;  /**< Packet counter has an interrupt. The specific rings can be found in SLI_PKT_CNT_INT.
-                                                         Throws SLI_INTSN_E::SLI_INT_PCNT. */
+	uint64_t mio_int3                     : 1;  /**< CIU interrupt output for MAC 3. A copy of CIU3_DEST(x)_IO_INT[INTR],
+                                                         where x=CIU_DEST_IO_E::PEM(3) (i.e. x=4). */
+	uint64_t mio_int2                     : 1;  /**< CIU interrupt output for MAC 2. A copy of CIU3_DEST(x)_IO_INT[INTR],
+                                                         where x=CIU_DEST_IO_E::PEM(2) (i.e. x=3). */
+	uint64_t ptime                        : 1;  /**< Packet timer has an interrupt. Asserts if, for any i, both
+                                                         SLI_PKT_TIME_INT<i> and SLI_PKT(i)_OUTPUT_CONTROL[TENB] are set.
+                                                         [PTIME] assertion throws SLI_INTSN_E::SLI_INT_PTIME to CIU. */
+	uint64_t pcnt                         : 1;  /**< Packet counter has an interrupt. Asserts if, for any i, both
+                                                         SLI_PKT_CNT_INT<i> and SLI_PKT(i)_OUTPUT_CONTROL[CENB] are set.
+                                                         [PCNT] assertion throws SLI_INTSN_E::SLI_INT_PCNT to CIU. */
 	uint64_t reserved_1_3                 : 3;
 	uint64_t rml_to                       : 1;  /**< A read or write transfer to a RSL that did not complete within
                                                          SLI_WINDOW_CTL[TIME] coprocessor-clock cycles, or a notification from the CCPI
@@ -4211,6 +6726,7 @@ union cvmx_sli_int_sum {
 	uint64_t reserved_60_63               : 4;
 #endif
 	} cn78xx;
+	struct cvmx_sli_int_sum_cn78xx        cn78xxp2;
 	struct cvmx_sli_int_sum_cn61xx        cnf71xx;
 };
 typedef union cvmx_sli_int_sum cvmx_sli_int_sum_t;
@@ -4316,6 +6832,371 @@ union cvmx_sli_last_win_rdata3 {
 typedef union cvmx_sli_last_win_rdata3 cvmx_sli_last_win_rdata3_t;
 
 /**
+ * cvmx_sli_mac#_pf#_dma_vf_int
+ *
+ * When an error response is received for a VF DMA transaction read, the appropriate VF indexed
+ * bit is set.  The appropriate PF should read the appropriate register.
+ * These registers are only valid for PEM0 PF0, PEM0 PF1, PEM2 PF0
+ */
+union cvmx_sli_macx_pfx_dma_vf_int {
+	uint64_t u64;
+	struct cvmx_sli_macx_pfx_dma_vf_int_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t vf_int                       : 64; /**< When an error response is received for a VF DMA transaction read, the appropriate VF
+                                                         indexed
+                                                         bit is set. */
+#else
+	uint64_t vf_int                       : 64;
+#endif
+	} s;
+	struct cvmx_sli_macx_pfx_dma_vf_int_s cn73xx;
+	struct cvmx_sli_macx_pfx_dma_vf_int_s cnf75xx;
+};
+typedef union cvmx_sli_macx_pfx_dma_vf_int cvmx_sli_macx_pfx_dma_vf_int_t;
+
+/**
+ * cvmx_sli_mac#_pf#_dma_vf_int_enb
+ *
+ * These registers are only valid for PEM0 PF0, PEM0 PF1, PEM2 PF0
+ *
+ */
+union cvmx_sli_macx_pfx_dma_vf_int_enb {
+	uint64_t u64;
+	struct cvmx_sli_macx_pfx_dma_vf_int_enb_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t vf_int_enb                   : 64; /**< Enables DMA interrupts for the corresponding VF. */
+#else
+	uint64_t vf_int_enb                   : 64;
+#endif
+	} s;
+	struct cvmx_sli_macx_pfx_dma_vf_int_enb_s cn73xx;
+	struct cvmx_sli_macx_pfx_dma_vf_int_enb_s cnf75xx;
+};
+typedef union cvmx_sli_macx_pfx_dma_vf_int_enb cvmx_sli_macx_pfx_dma_vf_int_enb_t;
+
+/**
+ * cvmx_sli_mac#_pf#_flr_vf_int
+ *
+ * When a
+ * These registers are only valid for PEM0 PF0, PEM0 PF1, PEM2 PF0
+ */
+union cvmx_sli_macx_pfx_flr_vf_int {
+	uint64_t u64;
+	struct cvmx_sli_macx_pfx_flr_vf_int_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t vf_int                       : 64; /**< When an VF causes a flr the appropriate VF indexed bit is set. */
+#else
+	uint64_t vf_int                       : 64;
+#endif
+	} s;
+	struct cvmx_sli_macx_pfx_flr_vf_int_s cn73xx;
+	struct cvmx_sli_macx_pfx_flr_vf_int_s cnf75xx;
+};
+typedef union cvmx_sli_macx_pfx_flr_vf_int cvmx_sli_macx_pfx_flr_vf_int_t;
+
+/**
+ * cvmx_sli_mac#_pf#_int_enb
+ *
+ * Interrupt enable register for a given PF SLI_MAC()_PF()_INT_SUM register.
+ * CN73XX valid copies are MAC0 PF0, MAC0 PF1, MAC1 PF0, MAC2 PF0, MAC3 PF3
+ * PEM0 PF0, PEM0 PF1, PEM1 PF0, PEM2 PF0, PEM3 PF0,
+ */
+union cvmx_sli_macx_pfx_int_enb {
+	uint64_t u64;
+	struct cvmx_sli_macx_pfx_int_enb_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pppf_err                     : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[PPPF_ERR] to generate an interrupt to the MAC core
+                                                         for MSI/INTA. */
+	uint64_t ppvf_err                     : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[PPVF_ERR] to generate an interrupt to the MAC core
+                                                         for MSI/INTA.
+                                                         Note: this corresponding interrupt will only be valid for SRIOV PF's PEM0 PF0 PF1 PEM2 PF0 */
+	uint64_t pktpf_err                    : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[PKTPF_ERR] to generate an interrupt to the MAC core
+                                                         for MSI/INTA. */
+	uint64_t pktvf_err                    : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[PKTVF_ERR] to generate an interrupt to the MAC core
+                                                         for MSI/INTA.
+                                                         Note: this corresponding interrupt will only be valid for SRIOV PF's PEM0 PF0 PF1 PEM2 PF0 */
+	uint64_t dmapf_err                    : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[DMAPF_ERR] to generate an interrupt to the MAC core
+                                                         for MSI/INTA. */
+	uint64_t dmavf_err                    : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[DMAVF_ERR] to generate an interrupt to the MAC core
+                                                         for MSI/INTA.
+                                                         Note: this corresponding interrupt will only be valid for SRIOV PF's PEM0 PF0 PF1 PEM2 PF0 */
+	uint64_t vf_mbox                      : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[VF_MBOX] to generate an interrupt to the MAC core
+                                                         for MSI/INTA.
+                                                         Note: this corresponding interrupt will only be valid for SRIOV PF's PEM0 PF0 PF1 PEM2 PF0 */
+	uint64_t reserved_38_56               : 19;
+	uint64_t dtime                        : 2;  /**< Enables SLI_MAC()_PF()_INT_SUM[DTIME] to generate an interrupt to the MAC core for
+                                                         MSI/INTA. */
+	uint64_t dcnt                         : 2;  /**< Enables SLI_MAC()_PF()_INT_SUM[DCNT] to generate an interrupt to the MAC core for MSI/INTA. */
+	uint64_t dmafi                        : 2;  /**< Enables SLI_MAC()_PF()_INT_SUM[DMAFI] to generate an interrupt to the MAC core for
+                                                         MSI/INTA. */
+	uint64_t reserved_12_31               : 20;
+	uint64_t un_wi                        : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[UN_WI] to generate an interrupt to the MAC core for
+                                                         MSI/INTA. */
+	uint64_t un_b0                        : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[UN_B0] to generate an interrupt to the MAC core for
+                                                         MSI/INTA. */
+	uint64_t up_wi                        : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[UP_WI] to generate an interrupt to the MAC core for
+                                                         MSI/INTA. */
+	uint64_t up_b0                        : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[UP_B0] to generate an interrupt to the MAC core for
+                                                         MSI/INTA. */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t ptime                        : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[PTIME] to generate an interrupt to the MAC core for
+                                                         MSI/INTA. */
+	uint64_t pcnt                         : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[PCNT] to generate an interrupt to the MAC core for MSI/INTA. */
+	uint64_t reserved_2_3                 : 2;
+	uint64_t mio_int                      : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[MIO_INT] to generate an interrupt to the MAC core
+                                                         for MSI/INTA. */
+	uint64_t rml_to                       : 1;  /**< Enables SLI_MAC()_PF()_INT_SUM[RML_TO] to generate an interrupt to the MAC core
+                                                         for MSI/INTA. */
+#else
+	uint64_t rml_to                       : 1;
+	uint64_t mio_int                      : 1;
+	uint64_t reserved_2_3                 : 2;
+	uint64_t pcnt                         : 1;
+	uint64_t ptime                        : 1;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t up_b0                        : 1;
+	uint64_t up_wi                        : 1;
+	uint64_t un_b0                        : 1;
+	uint64_t un_wi                        : 1;
+	uint64_t reserved_12_31               : 20;
+	uint64_t dmafi                        : 2;
+	uint64_t dcnt                         : 2;
+	uint64_t dtime                        : 2;
+	uint64_t reserved_38_56               : 19;
+	uint64_t vf_mbox                      : 1;
+	uint64_t dmavf_err                    : 1;
+	uint64_t dmapf_err                    : 1;
+	uint64_t pktvf_err                    : 1;
+	uint64_t pktpf_err                    : 1;
+	uint64_t ppvf_err                     : 1;
+	uint64_t pppf_err                     : 1;
+#endif
+	} s;
+	struct cvmx_sli_macx_pfx_int_enb_s    cn73xx;
+	struct cvmx_sli_macx_pfx_int_enb_s    cnf75xx;
+};
+typedef union cvmx_sli_macx_pfx_int_enb cvmx_sli_macx_pfx_int_enb_t;
+
+/**
+ * cvmx_sli_mac#_pf#_int_sum
+ *
+ * Interrupt summary register for a given PF.
+ * CN73XX valid copies are MAC0 PF0, MAC0 PF1, MAC1 PF0, MAC2 PF0, MAC3 PF0
+ * The fields in this register are set when an interrupt condition occurs; write 1 to clear.
+ * These register are valid for these physical functions
+ * PEM0 PF0, PEM0 PF1, PEM1 PF0, PEM2 PF0, PEM3 PF0,
+ */
+union cvmx_sli_macx_pfx_int_sum {
+	uint64_t u64;
+	struct cvmx_sli_macx_pfx_int_sum_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t pppf_err                     : 1;  /**< When an error response is received for a PF PP transaction read, this bit is set. */
+	uint64_t ppvf_err                     : 1;  /**< When an error response is received for a VF PP transaction read, this bit is set.
+                                                         A subsequent read to SLI_MAC()_PF()_PP_VF_INT is required to discover which VF.
+                                                         Note: this will only be set for SRIOV PF's PEM0 PF0 PF1 PEM2 PF0 */
+	uint64_t pktpf_err                    : 1;  /**< This bit is set when any of the following events occur
+                                                         1) An error response is received for PF packet transaction read.
+                                                         2) A doorbell overflow for a ring associated with this PF occurs in
+                                                            SLI_PKT()_INSTR_BAOFF_DBELL or SLI_PKT()_SLIST_BAOFF_DBELL.
+                                                         3) A packet was receveived from PKO for ring X, SLI_PKT_GBL_CONTROL[NOPTR_D] = 0
+                                                            and SLI_PKTX_SLIST_BAOFF_DBELL[DBELL] = 0. */
+	uint64_t pktvf_err                    : 1;  /**< This bit is set when any of the following events occur
+                                                         1) An error response is received for VF packet transaction read.
+                                                         2) A doorbell overflow for a ring associated with a VF occurs in
+                                                            SLI_PKT()_INSTR_BAOFF_DBELL or SLI_PKT()_SLIST_BAOFF_DBELL.
+                                                         3) A packet was receveived from PKO for ring X, SLI_PKT_GBL_CONTROL[NOPTR_D] = 0
+                                                            and SLI_PKTX_SLIST_BAOFF_DBELL[DBELL] = 0.
+                                                         4) An illegal bar0 bar1 bar2 memory access from a VF occurs.
+                                                         A subsequent read to SLI_MAC()_PF()_PKT_VF_INT is required to discover which VF.
+                                                         Note: this will only be set for SRIOV PF's PEM0 PF0 PF1 PEM2 PF0 */
+	uint64_t dmapf_err                    : 1;  /**< When an error response is received for a PF DMA transcation read, this bit is set. */
+	uint64_t dmavf_err                    : 1;  /**< When an error response is received for a VF DMA transaction read, this bit is set.
+                                                         A subsequent read to SLI_MAC()_PF()_DMA_VF_INT is required to discover which VF.
+                                                         Note: this will only be set for SRIOV PF's PEM0 PF0 PF1 PEM2 PF0 */
+	uint64_t vf_mbox                      : 1;  /**< When an VF wants to communicate to a PF it writes its SLI_PKT_PF_MBOX_SIG2 register
+                                                         causing
+                                                         this bit to be set.
+                                                         A subsequent read to SLI_MAC()_PF()_MBOX_INT is required to discover which VF.
+                                                         Note: this will only be set for SRIOV PF's PEM0 PF0 PF1 PEM2 PF0 */
+	uint64_t reserved_38_56               : 19;
+	uint64_t dtime                        : 2;  /**< Whenever SLI_DMA()_CNT[CNT] is not 0, the SLI_DMA()_TIM[TIM] timer increments
+                                                         every SLI clock. DTIME<x> is set whenever SLI_DMA()_TIM[TIM] >
+                                                         SLI_DMA()_INT_LEVEL[TIME]. DTIME<x> is normally cleared by clearing
+                                                         SLI_DMA()_CNT[CNT] (which also clears SLI_DMA()_TIM[TIM]). */
+	uint64_t dcnt                         : 2;  /**< DCNT<x> is set whenever SLI_DMAx_CNT[CNT] > SLI_DMA()_INT_LEVEL[CNT]. DCNT<x> is
+                                                         normally cleared by decreasing SLI_DMA()_CNT[CNT]. */
+	uint64_t dmafi                        : 2;  /**< DMA set forced interrupts. Set by SLI/DPI after completing a DPI DMA
+                                                         Instruction with DPI_DMA_INSTR_HDR_S[FI] set. */
+	uint64_t reserved_12_31               : 20;
+	uint64_t un_wi                        : 1;  /**< Received unsupported N-TLP for window register from MAC. This occurs when the window
+                                                         registers are disabled and a window register access occurs.
+                                                         This can only be set by a PF and not a VF access. */
+	uint64_t un_b0                        : 1;  /**< Received unsupported N-TLP for Bar 0 from MAC. This occurs when the BAR 0 address space
+                                                         is disabled.
+                                                         This can only be set by a PF and not a VF access. */
+	uint64_t up_wi                        : 1;  /**< Received unsupported P-TLP for window register from MAC. This occurs when the window
+                                                         registers are disabled and a window register access occurs.
+                                                         This can only be set by a PF and not a VF access. */
+	uint64_t up_b0                        : 1;  /**< Received unsupported P-TLP for Bar 0 from MAC. This occurs when the BAR 0 address space
+                                                         This can only be set by a PF and not a VF access. */
+	uint64_t reserved_6_7                 : 2;
+	uint64_t ptime                        : 1;  /**< The preferred method to service PTIME interrupts is through MSIX rings.  This bit is only
+                                                         used
+                                                         for legacy code.
+                                                         Packet timer has an interrupt. The specific rings can be found in SLI_PKT_TIME_INT. */
+	uint64_t pcnt                         : 1;  /**< The preferred method to service PCNT interrupts is through MSIX rings.  This bit is only
+                                                         used
+                                                         for legacy code.
+                                                         Packet counter has an interrupt. The specific rings can be found in SLI_PKT_CNT_INT. */
+	uint64_t reserved_2_3                 : 2;
+	uint64_t mio_int                      : 1;  /**< Interrupt from CIU for this PF. Each PF has a seperate interrupt from CIU, except MAC 0
+                                                         PF0 and PF1
+                                                         which share a common interrupts from CIU, */
+	uint64_t rml_to                       : 1;  /**< A read or write transfer to a RSL that did not complete within
+                                                         SLI_WINDOW_CTL[TIME] coprocessor-clock cycles. */
+#else
+	uint64_t rml_to                       : 1;
+	uint64_t mio_int                      : 1;
+	uint64_t reserved_2_3                 : 2;
+	uint64_t pcnt                         : 1;
+	uint64_t ptime                        : 1;
+	uint64_t reserved_6_7                 : 2;
+	uint64_t up_b0                        : 1;
+	uint64_t up_wi                        : 1;
+	uint64_t un_b0                        : 1;
+	uint64_t un_wi                        : 1;
+	uint64_t reserved_12_31               : 20;
+	uint64_t dmafi                        : 2;
+	uint64_t dcnt                         : 2;
+	uint64_t dtime                        : 2;
+	uint64_t reserved_38_56               : 19;
+	uint64_t vf_mbox                      : 1;
+	uint64_t dmavf_err                    : 1;
+	uint64_t dmapf_err                    : 1;
+	uint64_t pktvf_err                    : 1;
+	uint64_t pktpf_err                    : 1;
+	uint64_t ppvf_err                     : 1;
+	uint64_t pppf_err                     : 1;
+#endif
+	} s;
+	struct cvmx_sli_macx_pfx_int_sum_s    cn73xx;
+	struct cvmx_sli_macx_pfx_int_sum_s    cnf75xx;
+};
+typedef union cvmx_sli_macx_pfx_int_sum cvmx_sli_macx_pfx_int_sum_t;
+
+/**
+ * cvmx_sli_mac#_pf#_mbox_int
+ *
+ * When an VF wants to communicate to a PF it writes its SLI_PKT(0..63)_PF_VF_MBOX_SIG(0..1)
+ * register the appropriate Ring indexed bit is set.  The PF should then read the appropriate
+ * SLI_PKT()_PF_VF_MBOX_SIG() indexed register.
+ * These registers are only valid for PEM0 PF0, PEM0 PF1, PEM2 PF0
+ */
+union cvmx_sli_macx_pfx_mbox_int {
+	uint64_t u64;
+	struct cvmx_sli_macx_pfx_mbox_int_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t vf_int                       : 64; /**< When an VF wants to communicate to a PF it writes its SLI_PKT(0..63)_PF_VF_MBOX_SIG(0..1)
+                                                         register the appropriate ring indexed bit is set.  The PF should then read  the
+                                                         appropriate SLI_PKT()_PF_VF_MBOX_SIG() indexed register. */
+#else
+	uint64_t vf_int                       : 64;
+#endif
+	} s;
+	struct cvmx_sli_macx_pfx_mbox_int_s   cn73xx;
+	struct cvmx_sli_macx_pfx_mbox_int_s   cnf75xx;
+};
+typedef union cvmx_sli_macx_pfx_mbox_int cvmx_sli_macx_pfx_mbox_int_t;
+
+/**
+ * cvmx_sli_mac#_pf#_pkt_vf_int
+ *
+ * When an error response is received for a VF PP transaction read, a doorbell
+ * overflow for a ring associated with a VF occurs or an illegal memory access from a VF occurs,
+ * the appropriate VF indexed bit is set.  The appropriate PF should read the appropriate
+ * register.
+ * These registers are only valid for PEM0 PF0, PEM0 PF1, PEM2 PF0
+ */
+union cvmx_sli_macx_pfx_pkt_vf_int {
+	uint64_t u64;
+	struct cvmx_sli_macx_pfx_pkt_vf_int_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t vf_int                       : 64; /**< When an error response is received for a VF PKT transaction read, the appropriate VF
+                                                         indexed
+                                                         bit is set. */
+#else
+	uint64_t vf_int                       : 64;
+#endif
+	} s;
+	struct cvmx_sli_macx_pfx_pkt_vf_int_s cn73xx;
+	struct cvmx_sli_macx_pfx_pkt_vf_int_s cnf75xx;
+};
+typedef union cvmx_sli_macx_pfx_pkt_vf_int cvmx_sli_macx_pfx_pkt_vf_int_t;
+
+/**
+ * cvmx_sli_mac#_pf#_pkt_vf_int_enb
+ *
+ * These registers are only valid for PEM0 PF0, PEM0 PF1, PEM2 PF0
+ *
+ */
+union cvmx_sli_macx_pfx_pkt_vf_int_enb {
+	uint64_t u64;
+	struct cvmx_sli_macx_pfx_pkt_vf_int_enb_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t vf_int_enb                   : 64; /**< Enables PKT interrupts for the corresponding VF. */
+#else
+	uint64_t vf_int_enb                   : 64;
+#endif
+	} s;
+	struct cvmx_sli_macx_pfx_pkt_vf_int_enb_s cn73xx;
+	struct cvmx_sli_macx_pfx_pkt_vf_int_enb_s cnf75xx;
+};
+typedef union cvmx_sli_macx_pfx_pkt_vf_int_enb cvmx_sli_macx_pfx_pkt_vf_int_enb_t;
+
+/**
+ * cvmx_sli_mac#_pf#_pp_vf_int
+ *
+ * When an error response is received for a VF PP transaction read, the appropriate VF indexed
+ * bit is set.  The appropriate PF should read the appropriate register.
+ * These registers are only valid for PEM0 PF0, PEM0 PF1, PEM2 PF0
+ */
+union cvmx_sli_macx_pfx_pp_vf_int {
+	uint64_t u64;
+	struct cvmx_sli_macx_pfx_pp_vf_int_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t vf_int                       : 64; /**< When an error response is received for a VF PP transaction read, the appropriate VF
+                                                         indexed
+                                                         bit is set. */
+#else
+	uint64_t vf_int                       : 64;
+#endif
+	} s;
+	struct cvmx_sli_macx_pfx_pp_vf_int_s  cn73xx;
+	struct cvmx_sli_macx_pfx_pp_vf_int_s  cnf75xx;
+};
+typedef union cvmx_sli_macx_pfx_pp_vf_int cvmx_sli_macx_pfx_pp_vf_int_t;
+
+/**
+ * cvmx_sli_mac#_pf#_pp_vf_int_enb
+ *
+ * These registers are only valid for PEM0 PF0, PEM0 PF1, PEM2 PF0
+ *
+ */
+union cvmx_sli_macx_pfx_pp_vf_int_enb {
+	uint64_t u64;
+	struct cvmx_sli_macx_pfx_pp_vf_int_enb_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t vf_int_enb                   : 64; /**< Enables PP interrupts for the corresponding VF. */
+#else
+	uint64_t vf_int_enb                   : 64;
+#endif
+	} s;
+	struct cvmx_sli_macx_pfx_pp_vf_int_enb_s cn73xx;
+	struct cvmx_sli_macx_pfx_pp_vf_int_enb_s cnf75xx;
+};
+typedef union cvmx_sli_macx_pfx_pp_vf_int_enb cvmx_sli_macx_pfx_pp_vf_int_enb_t;
+
+/**
  * cvmx_sli_mac_credit_cnt
  *
  * This register contains the number of credits for the MAC port FIFOs used by the SLI. This
@@ -4328,24 +7209,18 @@ union cvmx_sli_mac_credit_cnt {
 	struct cvmx_sli_mac_credit_cnt_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_54_63               : 10;
-	uint64_t p1_c_d                       : 1;  /**< When set does not allow writing of P1_CCNT. */
-	uint64_t p1_n_d                       : 1;  /**< When set does not allow writing of P1_NCNT. */
-	uint64_t p1_p_d                       : 1;  /**< When set does not allow writing of P1_PCNT. */
-	uint64_t p0_c_d                       : 1;  /**< When set does not allow writing of P0_CCNT. */
-	uint64_t p0_n_d                       : 1;  /**< When set does not allow writing of P0_NCNT. */
-	uint64_t p0_p_d                       : 1;  /**< When set does not allow writing of P0_PCNT. */
-	uint64_t p1_ccnt                      : 8;  /**< Port1 C-TLP FIFO Credits.
-                                                         Legal values are 0x25 to 0x80. */
-	uint64_t p1_ncnt                      : 8;  /**< Port1 N-TLP FIFO Credits.
-                                                         Legal values are 0x5 to 0x10. */
-	uint64_t p1_pcnt                      : 8;  /**< Port1 P-TLP FIFO Credits.
-                                                         Legal values are 0x25 to 0x80. */
-	uint64_t p0_ccnt                      : 8;  /**< Port0 C-TLP FIFO Credits.
-                                                         Legal values are 0x25 to 0x80. */
-	uint64_t p0_ncnt                      : 8;  /**< Port0 N-TLP FIFO Credits.
-                                                         Legal values are 0x5 to 0x10. */
-	uint64_t p0_pcnt                      : 8;  /**< Port0 P-TLP FIFO Credits.
-                                                         Legal values are 0x25 to 0x80. */
+	uint64_t p1_c_d                       : 1;  /**< When set, does not allow writing of P1_CCNT. */
+	uint64_t p1_n_d                       : 1;  /**< When set, does not allow writing of P1_NCNT. */
+	uint64_t p1_p_d                       : 1;  /**< When set, does not allow writing of P1_PCNT. */
+	uint64_t p0_c_d                       : 1;  /**< When set, does not allow writing of P0_CCNT. */
+	uint64_t p0_n_d                       : 1;  /**< When set, does not allow writing of P0_NCNT. */
+	uint64_t p0_p_d                       : 1;  /**< When set, does not allow writing of P0_PCNT. */
+	uint64_t p1_ccnt                      : 8;  /**< Port 1 C-TLP FIFO credits. Legal values are 0x25 to 0x80. */
+	uint64_t p1_ncnt                      : 8;  /**< Port 1 N-TLP FIFO credits. Legal values are 0x5 to 0x20. */
+	uint64_t p1_pcnt                      : 8;  /**< Port 1 P-TLP FIFO credits. Legal values are 0x25 to 0x80. */
+	uint64_t p0_ccnt                      : 8;  /**< Port 0 C-TLP FIFO credits. Legal values are 0x25 to 0x80. */
+	uint64_t p0_ncnt                      : 8;  /**< Port 0 N-TLP FIFO credits. Legal values are 0x5 to 0x20. */
+	uint64_t p0_pcnt                      : 8;  /**< Port 0 P-TLP FIFO credits. Legal values are 0x25 to 0x80. */
 #else
 	uint64_t p0_pcnt                      : 8;
 	uint64_t p0_ncnt                      : 8;
@@ -4394,8 +7269,11 @@ union cvmx_sli_mac_credit_cnt {
 	struct cvmx_sli_mac_credit_cnt_s      cn68xxp1;
 	struct cvmx_sli_mac_credit_cnt_s      cn70xx;
 	struct cvmx_sli_mac_credit_cnt_s      cn70xxp1;
+	struct cvmx_sli_mac_credit_cnt_s      cn73xx;
 	struct cvmx_sli_mac_credit_cnt_s      cn78xx;
+	struct cvmx_sli_mac_credit_cnt_s      cn78xxp2;
 	struct cvmx_sli_mac_credit_cnt_s      cnf71xx;
+	struct cvmx_sli_mac_credit_cnt_s      cnf75xx;
 };
 typedef union cvmx_sli_mac_credit_cnt cvmx_sli_mac_credit_cnt_t;
 
@@ -4412,24 +7290,18 @@ union cvmx_sli_mac_credit_cnt2 {
 	struct cvmx_sli_mac_credit_cnt2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_54_63               : 10;
-	uint64_t p3_c_d                       : 1;  /**< When set does not allow writing of P3_CCNT. */
-	uint64_t p3_n_d                       : 1;  /**< When set does not allow writing of P3_NCNT. */
-	uint64_t p3_p_d                       : 1;  /**< When set does not allow writing of P3_PCNT. */
-	uint64_t p2_c_d                       : 1;  /**< When set does not allow writing of P2_CCNT. */
-	uint64_t p2_n_d                       : 1;  /**< When set does not allow writing of P2_NCNT. */
-	uint64_t p2_p_d                       : 1;  /**< When set does not allow writing of P2_PCNT. */
-	uint64_t p3_ccnt                      : 8;  /**< Port3 C-TLP FIFO Credits.
-                                                         Legal values are 0x25 to 0x80. */
-	uint64_t p3_ncnt                      : 8;  /**< Port3 N-TLP FIFO Credits.
-                                                         Legal values are 0x5 to 0x10. */
-	uint64_t p3_pcnt                      : 8;  /**< Port3 P-TLP FIFO Credits.
-                                                         Legal values are 0x25 to 0x80. */
-	uint64_t p2_ccnt                      : 8;  /**< Port2 C-TLP FIFO Credits.
-                                                         Legal values are 0x25 to 0x80. */
-	uint64_t p2_ncnt                      : 8;  /**< Port2 N-TLP FIFO Credits.
-                                                         Legal values are 0x5 to 0x10. */
-	uint64_t p2_pcnt                      : 8;  /**< Port2 P-TLP FIFO Credits.
-                                                         Legal values are 0x25 to 0x80. */
+	uint64_t p3_c_d                       : 1;  /**< When set, does not allow writing of P3_CCNT. */
+	uint64_t p3_n_d                       : 1;  /**< When set, does not allow writing of P3_NCNT. */
+	uint64_t p3_p_d                       : 1;  /**< When set, does not allow writing of P3_PCNT. */
+	uint64_t p2_c_d                       : 1;  /**< When set, does not allow writing of P2_CCNT. */
+	uint64_t p2_n_d                       : 1;  /**< When set, does not allow writing of P2_NCNT. */
+	uint64_t p2_p_d                       : 1;  /**< When set, does not allow writing of P2_PCNT. */
+	uint64_t p3_ccnt                      : 8;  /**< Port 3 C-TLP FIFO credits. Legal values are 0x25 to 0x80. */
+	uint64_t p3_ncnt                      : 8;  /**< Port 3 N-TLP FIFO credits. Legal values are 0x5 to 0x20. */
+	uint64_t p3_pcnt                      : 8;  /**< Port 3 P-TLP FIFO credits. Legal values are 0x25 to 0x80. */
+	uint64_t p2_ccnt                      : 8;  /**< Port 2 C-TLP FIFO credits. Legal values are 0x25 to 0x80. */
+	uint64_t p2_ncnt                      : 8;  /**< Port 2 N-TLP FIFO credits. Legal values are 0x5 to 0x20. */
+	uint64_t p2_pcnt                      : 8;  /**< Port 2 P-TLP FIFO credits. Legal values are 0x25 to 0x80. */
 #else
 	uint64_t p2_pcnt                      : 8;
 	uint64_t p2_ncnt                      : 8;
@@ -4450,8 +7322,11 @@ union cvmx_sli_mac_credit_cnt2 {
 	struct cvmx_sli_mac_credit_cnt2_s     cn66xx;
 	struct cvmx_sli_mac_credit_cnt2_s     cn70xx;
 	struct cvmx_sli_mac_credit_cnt2_s     cn70xxp1;
+	struct cvmx_sli_mac_credit_cnt2_s     cn73xx;
 	struct cvmx_sli_mac_credit_cnt2_s     cn78xx;
+	struct cvmx_sli_mac_credit_cnt2_s     cn78xxp2;
 	struct cvmx_sli_mac_credit_cnt2_s     cnf71xx;
+	struct cvmx_sli_mac_credit_cnt2_s     cnf75xx;
 };
 typedef union cvmx_sli_mac_credit_cnt2 cvmx_sli_mac_credit_cnt2_t;
 
@@ -4466,8 +7341,8 @@ union cvmx_sli_mac_number {
 	struct cvmx_sli_mac_number_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_9_63                : 55;
-	uint64_t a_mode                       : 1;  /**< SLI in Authenticate Mode. */
-	uint64_t num                          : 8;  /**< The mac number. */
+	uint64_t a_mode                       : 1;  /**< SLI in Authentik mode. */
+	uint64_t num                          : 8;  /**< MAC number. */
 #else
 	uint64_t num                          : 8;
 	uint64_t a_mode                       : 1;
@@ -4489,8 +7364,11 @@ union cvmx_sli_mac_number {
 	struct cvmx_sli_mac_number_cn63xx     cn68xxp1;
 	struct cvmx_sli_mac_number_s          cn70xx;
 	struct cvmx_sli_mac_number_s          cn70xxp1;
+	struct cvmx_sli_mac_number_s          cn73xx;
 	struct cvmx_sli_mac_number_s          cn78xx;
+	struct cvmx_sli_mac_number_s          cn78xxp2;
 	struct cvmx_sli_mac_number_s          cnf71xx;
+	struct cvmx_sli_mac_number_s          cnf75xx;
 };
 typedef union cvmx_sli_mac_number cvmx_sli_mac_number_t;
 
@@ -4505,14 +7383,9 @@ union cvmx_sli_mem_access_ctl {
 	struct cvmx_sli_mem_access_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_14_63               : 50;
-	uint64_t max_word                     : 4;  /**< The maximum number of words to merge into a single
-                                                         write operation from the PPs to the MAC. Legal
-                                                         values are 1 to 16, where a '0' is treated as 16. */
-	uint64_t timer                        : 10; /**< When the SLI starts a PP to MAC write it waits
-                                                         no longer than the value of TIMER in eclks to
-                                                         merge additional writes from the PPs into 1
-                                                         large write. The values for this field is 1 to
-                                                         1024 where a value of '0' is treated as 1024. */
+	uint64_t max_word                     : 4;  /**< Maximum number of words. Specifies the maximum number of words to merge into a single
+                                                         write operation from the cores to the MAC. Legal values are 1 to 16, with 0 treated as 16. */
+	uint64_t timer                        : 10; /**< N/A */
 #else
 	uint64_t timer                        : 10;
 	uint64_t max_word                     : 4;
@@ -4527,8 +7400,11 @@ union cvmx_sli_mem_access_ctl {
 	struct cvmx_sli_mem_access_ctl_s      cn68xxp1;
 	struct cvmx_sli_mem_access_ctl_s      cn70xx;
 	struct cvmx_sli_mem_access_ctl_s      cn70xxp1;
+	struct cvmx_sli_mem_access_ctl_s      cn73xx;
 	struct cvmx_sli_mem_access_ctl_s      cn78xx;
+	struct cvmx_sli_mem_access_ctl_s      cn78xxp2;
 	struct cvmx_sli_mem_access_ctl_s      cnf71xx;
+	struct cvmx_sli_mem_access_ctl_s      cnf75xx;
 };
 typedef union cvmx_sli_mem_access_ctl cvmx_sli_mem_access_ctl_t;
 
@@ -4542,34 +7418,32 @@ union cvmx_sli_mem_access_subidx {
 	uint64_t u64;
 	struct cvmx_sli_mem_access_subidx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_43_63               : 21;
-	uint64_t zero                         : 1;  /**< Causes all byte reads to be zero length reads.
-                                                         Returns to the EXEC a zero for all read data.
-                                                         This must be zero for sRIO ports. */
-	uint64_t port                         : 3;  /**< Physical MAC Port that reads/writes to
-                                                         this subid are sent to. Must be <= 1, as there are
-                                                         only two ports present. */
-	uint64_t nmerge                       : 1;  /**< When set, no merging is allowed in this window. */
-	uint64_t esr                          : 2;  /**< ES<1:0> for reads to this subid.
-                                                         ES<1:0> is the endian-swap attribute for these MAC
-                                                         memory space reads. */
-	uint64_t esw                          : 2;  /**< ES<1:0> for writes to this subid.
-                                                         ES<1:0> is the endian-swap attribute for these MAC
-                                                         memory space writes. */
-	uint64_t wtype                        : 2;  /**< ADDRTYPE<1:0> for writes to this subid
-                                                         For PCIe:
-                                                         - ADDRTYPE<0> is the relaxed-order attribute
-                                                         - ADDRTYPE<1> is the no-snoop attribute
-                                                         For sRIO:
-                                                         - ADDRTYPE<1:0> help select an SRIO*_S2M_TYPE*
-                                                           entry */
-	uint64_t rtype                        : 2;  /**< ADDRTYPE<1:0> for reads to this subid
-                                                         For PCIe:
-                                                         - ADDRTYPE<0> is the relaxed-order attribute
-                                                         - ADDRTYPE<1> is the no-snoop attribute
-                                                         For sRIO:
-                                                         - ADDRTYPE<1:0> help select an SRIO*_S2M_TYPE*
-                                                           entry */
+	uint64_t reserved_60_63               : 4;
+	uint64_t pvf                          : 16; /**< Selects the function number accessed by the reads/writes/atomics. DPI_DMA_FUNC_SEL_S
+                                                         describes the format of this field. If [PVF]!=0, [PORT] must select a PCIe MAC that
+                                                         supports more than one physical function and/or must select a PCIe MAC
+                                                         with SR-IOV enabled. */
+	uint64_t reserved_43_43               : 1;
+	uint64_t zero                         : 1;  /**< Causes all byte read operations to be zero-length read operations. Returns 0s to the EXEC
+                                                         for all read data. */
+	uint64_t port                         : 3;  /**< The MAC that the reads/writes/atomics are sent to. */
+	uint64_t nmerge                       : 1;  /**< When set, no merging is allowed in this window. Applicable to writes only. */
+	uint64_t esr                          : 2;  /**< Endian swap for read operations. ES<1:0> for read operations to this subID. ES<1:0> is the
+                                                         endian-swap attribute for these MAC memory space read operations. Not used for write or
+                                                         atomic operations.
+                                                         Enumerated by SLI_ENDIANSWAP_E. */
+	uint64_t esw                          : 2;  /**< Endian swap for write operations. ES<1:0> for write operations to this subID. ES<1:0> is
+                                                         the endian-swap attribute for these MAC memory space write operations. Not used for reads
+                                                         and IOBDMAs.
+                                                         Enumerated by SLI_ENDIANSWAP_E. */
+	uint64_t wtype                        : 2;  /**< Write type. ADDRTYPE<1:0> for write operations to this subID.
+                                                         * ADDRTYPE<0> is the relaxed-order attribute.
+                                                         * ADDRTYPE<1> is the no-snoop attribute.
+                                                         Not used for reads and IOBDMAs. */
+	uint64_t rtype                        : 2;  /**< Read type. ADDRTYPE<1:0> for read operations to this subID.
+                                                         * ADDRTYPE<0> is the relaxed-order attribute.
+                                                         * ADDRTYPE<1> is the no-snoop attribute.
+                                                         Not used for writes and atomics. */
 	uint64_t reserved_0_29                : 30;
 #else
 	uint64_t reserved_0_29                : 30;
@@ -4580,7 +7454,9 @@ union cvmx_sli_mem_access_subidx {
 	uint64_t nmerge                       : 1;
 	uint64_t port                         : 3;
 	uint64_t zero                         : 1;
-	uint64_t reserved_43_63               : 21;
+	uint64_t reserved_43_43               : 1;
+	uint64_t pvf                          : 16;
+	uint64_t reserved_60_63               : 4;
 #endif
 	} s;
 	struct cvmx_sli_mem_access_subidx_cn61xx {
@@ -4673,8 +7549,53 @@ union cvmx_sli_mem_access_subidx {
 	struct cvmx_sli_mem_access_subidx_cn68xx cn68xxp1;
 	struct cvmx_sli_mem_access_subidx_cn61xx cn70xx;
 	struct cvmx_sli_mem_access_subidx_cn61xx cn70xxp1;
+	struct cvmx_sli_mem_access_subidx_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_60_63               : 4;
+	uint64_t pvf                          : 16; /**< Selects the function number accessed by the reads/writes/atomics. DPI_DMA_FUNC_SEL_S
+                                                         describes the format of this field. If [PVF]!=0, [PORT] must select a PCIe MAC that
+                                                         supports more than one physical function and/or must select a PCIe MAC
+                                                         with SR-IOV enabled. */
+	uint64_t reserved_43_43               : 1;
+	uint64_t zero                         : 1;  /**< Causes all byte read operations to be zero-length read operations. Returns 0s to the EXEC
+                                                         for all read data. */
+	uint64_t port                         : 3;  /**< The MAC that the reads/writes/atomics are sent to. */
+	uint64_t nmerge                       : 1;  /**< When set, no merging is allowed in this window. Applicable to writes only. */
+	uint64_t esr                          : 2;  /**< Endian swap for read operations. ES<1:0> for read operations to this subID. ES<1:0> is the
+                                                         endian-swap attribute for these MAC memory space read operations. Not used for write or
+                                                         atomic operations.
+                                                         Enumerated by SLI_ENDIANSWAP_E. */
+	uint64_t esw                          : 2;  /**< Endian swap for write operations. ES<1:0> for write operations to this subID. ES<1:0> is
+                                                         the endian-swap attribute for these MAC memory space write operations. Not used for reads
+                                                         and IOBDMAs.
+                                                         Enumerated by SLI_ENDIANSWAP_E. */
+	uint64_t wtype                        : 2;  /**< Write type. ADDRTYPE<1:0> for write operations to this subID.
+                                                         * ADDRTYPE<0> is the relaxed-order attribute.
+                                                         * ADDRTYPE<1> is the no-snoop attribute.
+                                                         Not used for reads and IOBDMAs. */
+	uint64_t rtype                        : 2;  /**< Read type. ADDRTYPE<1:0> for read operations to this subID.
+                                                         * ADDRTYPE<0> is the relaxed-order attribute.
+                                                         * ADDRTYPE<1> is the no-snoop attribute.
+                                                         Not used for writes and atomics. */
+	uint64_t ba                           : 30; /**< Bus address. Address bits<63:34> for read/write/atomic operations. */
+#else
+	uint64_t ba                           : 30;
+	uint64_t rtype                        : 2;
+	uint64_t wtype                        : 2;
+	uint64_t esw                          : 2;
+	uint64_t esr                          : 2;
+	uint64_t nmerge                       : 1;
+	uint64_t port                         : 3;
+	uint64_t zero                         : 1;
+	uint64_t reserved_43_43               : 1;
+	uint64_t pvf                          : 16;
+	uint64_t reserved_60_63               : 4;
+#endif
+	} cn73xx;
 	struct cvmx_sli_mem_access_subidx_cn61xx cn78xx;
+	struct cvmx_sli_mem_access_subidx_cn61xx cn78xxp2;
 	struct cvmx_sli_mem_access_subidx_cn61xx cnf71xx;
+	struct cvmx_sli_mem_access_subidx_cn73xx cnf75xx;
 };
 typedef union cvmx_sli_mem_access_subidx cvmx_sli_mem_access_subidx_t;
 
@@ -4729,7 +7650,10 @@ union cvmx_sli_mem_ctl {
 	uint64_t reserved_27_63               : 37;
 #endif
 	} s;
+	struct cvmx_sli_mem_ctl_s             cn73xx;
 	struct cvmx_sli_mem_ctl_s             cn78xx;
+	struct cvmx_sli_mem_ctl_s             cn78xxp2;
+	struct cvmx_sli_mem_ctl_s             cnf75xx;
 };
 typedef union cvmx_sli_mem_ctl cvmx_sli_mem_ctl_t;
 
@@ -4784,7 +7708,10 @@ union cvmx_sli_mem_int_sum {
 	uint64_t reserved_18_63               : 46;
 #endif
 	} s;
+	struct cvmx_sli_mem_int_sum_s         cn73xx;
 	struct cvmx_sli_mem_int_sum_s         cn78xx;
+	struct cvmx_sli_mem_int_sum_s         cn78xxp2;
+	struct cvmx_sli_mem_int_sum_s         cnf75xx;
 };
 typedef union cvmx_sli_mem_int_sum cvmx_sli_mem_int_sum_t;
 
@@ -4919,8 +7846,11 @@ union cvmx_sli_msi_rcv0 {
 	struct cvmx_sli_msi_rcv0_s            cn68xxp1;
 	struct cvmx_sli_msi_rcv0_s            cn70xx;
 	struct cvmx_sli_msi_rcv0_s            cn70xxp1;
+	struct cvmx_sli_msi_rcv0_s            cn73xx;
 	struct cvmx_sli_msi_rcv0_s            cn78xx;
+	struct cvmx_sli_msi_rcv0_s            cn78xxp2;
 	struct cvmx_sli_msi_rcv0_s            cnf71xx;
+	struct cvmx_sli_msi_rcv0_s            cnf75xx;
 };
 typedef union cvmx_sli_msi_rcv0 cvmx_sli_msi_rcv0_t;
 
@@ -4947,8 +7877,11 @@ union cvmx_sli_msi_rcv1 {
 	struct cvmx_sli_msi_rcv1_s            cn68xxp1;
 	struct cvmx_sli_msi_rcv1_s            cn70xx;
 	struct cvmx_sli_msi_rcv1_s            cn70xxp1;
+	struct cvmx_sli_msi_rcv1_s            cn73xx;
 	struct cvmx_sli_msi_rcv1_s            cn78xx;
+	struct cvmx_sli_msi_rcv1_s            cn78xxp2;
 	struct cvmx_sli_msi_rcv1_s            cnf71xx;
+	struct cvmx_sli_msi_rcv1_s            cnf75xx;
 };
 typedef union cvmx_sli_msi_rcv1 cvmx_sli_msi_rcv1_t;
 
@@ -4975,8 +7908,11 @@ union cvmx_sli_msi_rcv2 {
 	struct cvmx_sli_msi_rcv2_s            cn68xxp1;
 	struct cvmx_sli_msi_rcv2_s            cn70xx;
 	struct cvmx_sli_msi_rcv2_s            cn70xxp1;
+	struct cvmx_sli_msi_rcv2_s            cn73xx;
 	struct cvmx_sli_msi_rcv2_s            cn78xx;
+	struct cvmx_sli_msi_rcv2_s            cn78xxp2;
 	struct cvmx_sli_msi_rcv2_s            cnf71xx;
+	struct cvmx_sli_msi_rcv2_s            cnf75xx;
 };
 typedef union cvmx_sli_msi_rcv2 cvmx_sli_msi_rcv2_t;
 
@@ -5003,8 +7939,11 @@ union cvmx_sli_msi_rcv3 {
 	struct cvmx_sli_msi_rcv3_s            cn68xxp1;
 	struct cvmx_sli_msi_rcv3_s            cn70xx;
 	struct cvmx_sli_msi_rcv3_s            cn70xxp1;
+	struct cvmx_sli_msi_rcv3_s            cn73xx;
 	struct cvmx_sli_msi_rcv3_s            cn78xx;
+	struct cvmx_sli_msi_rcv3_s            cn78xxp2;
 	struct cvmx_sli_msi_rcv3_s            cnf71xx;
+	struct cvmx_sli_msi_rcv3_s            cnf75xx;
 };
 typedef union cvmx_sli_msi_rcv3 cvmx_sli_msi_rcv3_t;
 
@@ -5019,10 +7958,8 @@ union cvmx_sli_msi_rd_map {
 	struct cvmx_sli_msi_rd_map_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t rd_int                       : 8;  /**< The value of the map at the location PREVIOUSLY
-                                                         written to the MSI_INT field of this register. */
-	uint64_t msi_int                      : 8;  /**< Selects the value that would be received when the
-                                                         SLI_PCIE_MSI_RCV register is written. */
+	uint64_t rd_int                       : 8;  /**< The value of the map at the location previously written to the MSI_INT field of this register. */
+	uint64_t msi_int                      : 8;  /**< Selects the value that is received when the SLI_PCIE_MSI_RCV register is written. */
 #else
 	uint64_t msi_int                      : 8;
 	uint64_t rd_int                       : 8;
@@ -5037,8 +7974,11 @@ union cvmx_sli_msi_rd_map {
 	struct cvmx_sli_msi_rd_map_s          cn68xxp1;
 	struct cvmx_sli_msi_rd_map_s          cn70xx;
 	struct cvmx_sli_msi_rd_map_s          cn70xxp1;
+	struct cvmx_sli_msi_rd_map_s          cn73xx;
 	struct cvmx_sli_msi_rd_map_s          cn78xx;
+	struct cvmx_sli_msi_rd_map_s          cn78xxp2;
 	struct cvmx_sli_msi_rd_map_s          cnf71xx;
+	struct cvmx_sli_msi_rd_map_s          cnf75xx;
 };
 typedef union cvmx_sli_msi_rd_map cvmx_sli_msi_rd_map_t;
 
@@ -5286,12 +8226,10 @@ union cvmx_sli_msi_wr_map {
 	struct cvmx_sli_msi_wr_map_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t ciu_int                      : 8;  /**< Selects which bit in the SLI_MSI_RCV# (0-255)
-                                                         will be set when the value specified in the
-                                                         MSI_INT of this register is recevied during a
-                                                         write to the SLI_PCIE_MSI_RCV register. */
-	uint64_t msi_int                      : 8;  /**< Selects the value that would be received when the
-                                                         SLI_PCIE_MSI_RCV register is written. */
+	uint64_t ciu_int                      : 8;  /**< Selects which bit in the SLI_MSI_RCV() (0-255) will be set when the value specified in
+                                                         the MSI_INT of this register is received during a write operation to the SLI_PCIE_MSI_RCV
+                                                         register. */
+	uint64_t msi_int                      : 8;  /**< Selects the value that is received when the SLI_PCIE_MSI_RCV register is written. */
 #else
 	uint64_t msi_int                      : 8;
 	uint64_t ciu_int                      : 8;
@@ -5306,8 +8244,11 @@ union cvmx_sli_msi_wr_map {
 	struct cvmx_sli_msi_wr_map_s          cn68xxp1;
 	struct cvmx_sli_msi_wr_map_s          cn70xx;
 	struct cvmx_sli_msi_wr_map_s          cn70xxp1;
+	struct cvmx_sli_msi_wr_map_s          cn73xx;
 	struct cvmx_sli_msi_wr_map_s          cn78xx;
+	struct cvmx_sli_msi_wr_map_s          cn78xxp2;
 	struct cvmx_sli_msi_wr_map_s          cnf71xx;
+	struct cvmx_sli_msi_wr_map_s          cnf75xx;
 };
 typedef union cvmx_sli_msi_wr_map cvmx_sli_msi_wr_map_t;
 
@@ -5317,45 +8258,53 @@ typedef union cvmx_sli_msi_wr_map cvmx_sli_msi_wr_map_t;
  * The MSI-X table must be addressed on a 8-byte aligned boundary and cannot be burst read or
  * written.
  *
- * The MSI-X Table is 65 entries deep. Each MAC can see up to 64 VF ring entries and its own PF
- * entry. The first 64 entries contain MSI-X vectors for each of the 64 DPI packet rings.
- * Entries, or rings, are assigned to PEM0 and/or PEM2 based on the SRN, RPVF, and TRS fields of
- * SLI_PKT_MAC()_RINFO. Each VF has access to only its own entries and therefore sees the MSI-X
- * table as smaller than 64 entries, unless all 64 rings are assigned to it. A VF must not try to
- * configure more entries than it owns. A VF always sees its first entry as entry 0. The actual
- * MSI-X table offset is calculated as follows:   (SRN + ((VF-1) * RPVF)).
+ * The MSI-X Table is (128 + 5) entries deep. Each PF of a MAC can see up to 64 VF ring entries
+ * and its own PF entry. The (MAC0,PF0), (MAC0,PF1), (MAC1,PF0), (MAC2,PF0), and (MAC3,PF0),
+ * each can see up to 64 entries and its own PF entry.
+ * The first 128 entries contain MSI-X vectors for each of the 128 DPI packet rings.
+ * Entries, or rings, are assigned to (MAC0,PF0), (MAC0,PF1), and (MAC2,PF0) based on the SRN,
+ * RPVF,TRS. and NVFS fields of SLI_PKT_MAC()_RINFO.
+ * Each VF has access to only its own entries and therefore sees the MSI-X table as large as 8
+ * entries,
+ * A VF must not try to configure more entries than it owns. A VF always sees its first entry as
+ * entry 0.
+ * The actual MSI-X table offset is calculated as follows:   (SRN + ((VF-1) * RPVF)).
  *
  * <pre>
- *    RPVF   Rings VF believes it owns   Max VFs
+ *    RPVF   Rings VF owns               Max VFs
  *    ---    -------------------------   -------
+ *      0    0                           0
  *      1    0                           64
  *      2    0,1                         32
  *      4    0,1,2,3                     16
  *      8    0,1,2,3,4,5,6,7              8
- *     16    0,1,2,...13,14,15            4
- *     32    0,1,2,...29,30,31            2
- *     64    0,1,2,...61,62,63            1
  * </pre>
  *
  * A MAC's PF can access the entries for its VF (a total of TNR, regardless of VF Mode).
  *
- * The last (i.e. 65th) entry is for PCIe related errors and is only accessible by the
- * PF. There are actually two entries at the 65th location; one for each MAC's PF. The hardware
- * will enable writing to and reading from the appropriate entry based on the pcsr_src vector.
+ * When (TNR > 0), then the last, i.e. (TNR+1), entry is for PCIe related errors and is only
+ * accessible by the PF. When (TNR = 0), then entry 0 is of PCIe related errors and is only
+ * accessible by PF.
  *
- * In PF mode, there is no virtual function support, but a PF can configure up to 65 entries
- * (up to 64 VF rings + 1 PF ring) for itself.
+ * Each MAC can access one PF. The hardware will enable writing to and reading from the
+ * appropriate entry based on the pcsr_src vector.
+ *
+ * In non SRIO-V mode, there is no virtual function support, but a PF can configure up to 65
+ * entries (up to 64 VF rings + 1 PF ring) for itself.
  */
 union cvmx_sli_msixx_table_addr {
 	uint64_t u64;
 	struct cvmx_sli_msixx_table_addr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t addr                         : 64; /**< Message address[63:0]. */
+	uint64_t addr                         : 64; /**< Message address. */
 #else
 	uint64_t addr                         : 64;
 #endif
 	} s;
+	struct cvmx_sli_msixx_table_addr_s    cn73xx;
 	struct cvmx_sli_msixx_table_addr_s    cn78xx;
+	struct cvmx_sli_msixx_table_addr_s    cn78xxp2;
+	struct cvmx_sli_msixx_table_addr_s    cnf75xx;
 };
 typedef union cvmx_sli_msixx_table_addr cvmx_sli_msixx_table_addr_t;
 
@@ -5371,14 +8320,17 @@ union cvmx_sli_msixx_table_data {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_33_63               : 31;
 	uint64_t vector_ctl                   : 1;  /**< Message mask. */
-	uint64_t data                         : 32; /**< Message data[31:0]. */
+	uint64_t data                         : 32; /**< Message data. */
 #else
 	uint64_t data                         : 32;
 	uint64_t vector_ctl                   : 1;
 	uint64_t reserved_33_63               : 31;
 #endif
 	} s;
+	struct cvmx_sli_msixx_table_data_s    cn73xx;
 	struct cvmx_sli_msixx_table_data_s    cn78xx;
+	struct cvmx_sli_msixx_table_data_s    cn78xxp2;
+	struct cvmx_sli_msixx_table_data_s    cnf75xx;
 };
 typedef union cvmx_sli_msixx_table_data cvmx_sli_msixx_table_data_t;
 
@@ -5398,6 +8350,7 @@ union cvmx_sli_msix_macx_pf_table_addr {
 #endif
 	} s;
 	struct cvmx_sli_msix_macx_pf_table_addr_s cn78xx;
+	struct cvmx_sli_msix_macx_pf_table_addr_s cn78xxp2;
 };
 typedef union cvmx_sli_msix_macx_pf_table_addr cvmx_sli_msix_macx_pf_table_addr_t;
 
@@ -5421,20 +8374,17 @@ union cvmx_sli_msix_macx_pf_table_data {
 #endif
 	} s;
 	struct cvmx_sli_msix_macx_pf_table_data_s cn78xx;
+	struct cvmx_sli_msix_macx_pf_table_data_s cn78xxp2;
 };
 typedef union cvmx_sli_msix_macx_pf_table_data cvmx_sli_msix_macx_pf_table_data_t;
 
 /**
  * cvmx_sli_msix_pba0
  *
- * "The MSI-X Pending Bit Array must be addressed on a 8-byte aligned boundary and
+ * The MSI-X Pending Bit Array must be addressed on a 8-byte aligned boundary and
  * cannot be burst read.
- * In VF Mode, a PF will find its error interrupt in bit position 0. Bits [63:1]
- * are returned as zero.
- *
- * A VF will find its pending completion interrupts (one for each of the configured
- * (up to 64) DPI Packet Rings) in bit positions [(RPVF-1):0]. If RPVF<64, bits [63:RPVF]
- * are returned as zero.
+ * In SRIO-V Mode, a VF will find its pending completion interrupts in bit
+ * positions [(RPVF-1):0]. If RPVF<64, bits [63:RPVF] are returned as zero.
  *
  * Each VF can read their own pending completion interrupts based on the ring/VF
  * configuration. Therefore, a VF sees the PBA as smaller than what is shown below
@@ -5443,26 +8393,24 @@ typedef union cvmx_sli_msix_macx_pf_table_data cvmx_sli_msix_macx_pf_table_data_
  * <pre>
  *    RPVF  Interrupts per VF   Pending bits returned
  *    ----  -----------------   ---------------------
+ *      0            0          0
  *      1            1          MSG_PND0
  *      2            2          MSG_PND1  - MSG_PND0
  *      4            4          MSG_PND3  - MSG_PND0
  *      8            8          MSG_PND7  - MSG_PND0
- *     16           16          MSG_PND15 - MSG_PND0
- *     32           32          MSG_PND31 - MSG_PND0
- *     64           64          MSG_PND63 - MSG_PND0
  * </pre>
  *
- * In PF Mode there is no virtual function support, but the PF can configure up to 65
- * entries (up to 64 DPI Packet Rings plus 1 PF ring) for itself.
- *
- * In PF Mode, if SLI_PEM()_TNR=63 (i.e. 64 total DPI Packet Rings configured), a PF will
+ * If SLI_PEM()_TNR=63 (i.e. 64 total DPI Packet Rings configured), a PF will
  * find its pending completion interrupts in bit positions [63:0]. When SLI_PEM()_TNR=63,
  * the PF will find its PCIe error interrupt in SLI_MSIX_PBA1, bit position 0.
  *
- * If SLI_PEM()_TNR<63 (i.e. 1, 2, 4, 8, 16, or 32 rings configured), a PF will find its
+ * If SLI_PEM()_TNR<63 (i.e. 0, 1, 2, 4, or 8 rings configured), a PF will find its
  * ring pending completion interrupts in bit positions [TNR:0]. It will find its PCIe
  * error interrupt in bit position [(TNR+1)]. Bits [63:(TNR+2)] are returned as zero.
- * When SLI_PEM()_TNR<63 in PF Mode, SLI_MSIX_PBA1 is not used and returns zeros."
+ * When SLI_PEM()_TNR<63, SLI_MSIX_PBA1 is not used and returns zeros."
+ *
+ * If SRIO-V Mode is off there is no virtual function support, but the PF can configure up to 65
+ * entries (up to 64 DPI Packet Rings plus 1 PF ring) for itself.
  */
 union cvmx_sli_msix_pba0 {
 	uint64_t u64;
@@ -5473,7 +8421,10 @@ union cvmx_sli_msix_pba0 {
 	uint64_t msg_pnd                      : 64;
 #endif
 	} s;
+	struct cvmx_sli_msix_pba0_s           cn73xx;
 	struct cvmx_sli_msix_pba0_s           cn78xx;
+	struct cvmx_sli_msix_pba0_s           cn78xxp2;
+	struct cvmx_sli_msix_pba0_s           cnf75xx;
 };
 typedef union cvmx_sli_msix_pba0 cvmx_sli_msix_pba0_t;
 
@@ -5483,12 +8434,12 @@ typedef union cvmx_sli_msix_pba0 cvmx_sli_msix_pba0_t;
  * The MSI-X pending bit array must be addressed on a 8-byte aligned boundary and cannot be
  * burst read.
  *
- * PF_PND is assigned to PCIe related errors. The error bit is only be found in PBA1 when the MAC
- * is in PF Mode (i.e. no virtualization) and SLI_PEM()_TNR=63 (i.e. 64 total DPI Packet Rings
- * configured).
+ * PF_PND is assigned to PCIe related errors. The error bit can only be found in PBA1 when
+ * SLI_PEM()_TNR=63 (i.e. 64 total DPI Packet Rings configured).
  *
- * This register is accessible by the PF; a VF read returns zeros. A read by a particular PF only
- * returns its own pending status. That is, both PFs read this register, but the hardware ensures
+ * This register is accessible by the PF. A read by a particular PF only
+ * returns its own pending status. That is, any PF can read this register, but the hardware
+ * ensures
  * that the PF only sees its own status.
  */
 union cvmx_sli_msix_pba1 {
@@ -5502,9 +8453,34 @@ union cvmx_sli_msix_pba1 {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_sli_msix_pba1_s           cn73xx;
 	struct cvmx_sli_msix_pba1_s           cn78xx;
+	struct cvmx_sli_msix_pba1_s           cn78xxp2;
+	struct cvmx_sli_msix_pba1_s           cnf75xx;
 };
 typedef union cvmx_sli_msix_pba1 cvmx_sli_msix_pba1_t;
+
+/**
+ * cvmx_sli_nqm_rsp_err_snd_dbg
+ *
+ * This register is for diagnostic use only.
+ *
+ */
+union cvmx_sli_nqm_rsp_err_snd_dbg {
+	uint64_t u64;
+	struct cvmx_sli_nqm_rsp_err_snd_dbg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_12_63               : 52;
+	uint64_t vf_index                     : 12; /**< On the SLI NQM_RSP_ERR interface, force-send this vf_index. For diagnostic use only. */
+#else
+	uint64_t vf_index                     : 12;
+	uint64_t reserved_12_63               : 52;
+#endif
+	} s;
+	struct cvmx_sli_nqm_rsp_err_snd_dbg_s cn73xx;
+	struct cvmx_sli_nqm_rsp_err_snd_dbg_s cnf75xx;
+};
+typedef union cvmx_sli_nqm_rsp_err_snd_dbg cvmx_sli_nqm_rsp_err_snd_dbg_t;
 
 /**
  * cvmx_sli_pcie_msi_rcv
@@ -5517,11 +8493,9 @@ union cvmx_sli_pcie_msi_rcv {
 	struct cvmx_sli_pcie_msi_rcv_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
-	uint64_t intr                         : 8;  /**< A write to this register will result in a bit in
-                                                         one of the SLI_MSI_RCV# registers being set.
-                                                         Which bit is set is dependent on the previously
-                                                         written using the SLI_MSI_WR_MAP register or if
-                                                         not previously written the reset value of the MAP. */
+	uint64_t intr                         : 8;  /**< A write operation to this register results in a bit in one of the SLI_MSI_RCV()
+                                                         registers being set. Which bit is set depends on the value previously written using the
+                                                         SLI_MSI_WR_MAP register, or if not previously written, the reset value of the MAP. */
 #else
 	uint64_t intr                         : 8;
 	uint64_t reserved_8_63                : 56;
@@ -5535,15 +8509,19 @@ union cvmx_sli_pcie_msi_rcv {
 	struct cvmx_sli_pcie_msi_rcv_s        cn68xxp1;
 	struct cvmx_sli_pcie_msi_rcv_s        cn70xx;
 	struct cvmx_sli_pcie_msi_rcv_s        cn70xxp1;
+	struct cvmx_sli_pcie_msi_rcv_s        cn73xx;
 	struct cvmx_sli_pcie_msi_rcv_s        cn78xx;
+	struct cvmx_sli_pcie_msi_rcv_s        cn78xxp2;
 	struct cvmx_sli_pcie_msi_rcv_s        cnf71xx;
+	struct cvmx_sli_pcie_msi_rcv_s        cnf75xx;
 };
 typedef union cvmx_sli_pcie_msi_rcv cvmx_sli_pcie_msi_rcv_t;
 
 /**
  * cvmx_sli_pcie_msi_rcv_b1
  *
- * This register is where MSI write operations are directed from the MAC. This CSR can be used by
+ * This register is where MSI write operations are directed from the MAC. This register can be
+ * used by
  * the PCIe MACs.
  */
 union cvmx_sli_pcie_msi_rcv_b1 {
@@ -5551,11 +8529,9 @@ union cvmx_sli_pcie_msi_rcv_b1 {
 	struct cvmx_sli_pcie_msi_rcv_b1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t intr                         : 8;  /**< A write to this register will result in a bit in
-                                                         one of the SLI_MSI_RCV# registers being set.
-                                                         Which bit is set is dependent on the previously
-                                                         written using the SLI_MSI_WR_MAP register or if
-                                                         not previously written the reset value of the MAP. */
+	uint64_t intr                         : 8;  /**< A write to this register results in a bit in one of the SLI_MSI_RCVn registers being set.
+                                                         Which bit is set depends on what is previously written using SLI_MSI_WR_MAP. If nothing is
+                                                         previously written, the bit set is the reset value of the MAP. */
 	uint64_t reserved_0_7                 : 8;
 #else
 	uint64_t reserved_0_7                 : 8;
@@ -5571,15 +8547,19 @@ union cvmx_sli_pcie_msi_rcv_b1 {
 	struct cvmx_sli_pcie_msi_rcv_b1_s     cn68xxp1;
 	struct cvmx_sli_pcie_msi_rcv_b1_s     cn70xx;
 	struct cvmx_sli_pcie_msi_rcv_b1_s     cn70xxp1;
+	struct cvmx_sli_pcie_msi_rcv_b1_s     cn73xx;
 	struct cvmx_sli_pcie_msi_rcv_b1_s     cn78xx;
+	struct cvmx_sli_pcie_msi_rcv_b1_s     cn78xxp2;
 	struct cvmx_sli_pcie_msi_rcv_b1_s     cnf71xx;
+	struct cvmx_sli_pcie_msi_rcv_b1_s     cnf75xx;
 };
 typedef union cvmx_sli_pcie_msi_rcv_b1 cvmx_sli_pcie_msi_rcv_b1_t;
 
 /**
  * cvmx_sli_pcie_msi_rcv_b2
  *
- * This register is where MSI write operations are directed from the MAC.  This CSR can be used
+ * This register is where MSI write operations are directed from the MAC.  This register can be
+ * used
  * by PCIe MACs.
  */
 union cvmx_sli_pcie_msi_rcv_b2 {
@@ -5587,11 +8567,9 @@ union cvmx_sli_pcie_msi_rcv_b2 {
 	struct cvmx_sli_pcie_msi_rcv_b2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_24_63               : 40;
-	uint64_t intr                         : 8;  /**< A write to this register will result in a bit in
-                                                         one of the SLI_MSI_RCV# registers being set.
-                                                         Which bit is set is dependent on the previously
-                                                         written using the SLI_MSI_WR_MAP register or if
-                                                         not previously written the reset value of the MAP. */
+	uint64_t intr                         : 8;  /**< A write to this register results in a bit in one of the SLI_MSI_RCVn registers being set.
+                                                         Which bit is set depends on what is previously written using the SLI_MSI_WR_MAP register.
+                                                         If nothing is previously written, the bit set is the reset value of the MAP. */
 	uint64_t reserved_0_15                : 16;
 #else
 	uint64_t reserved_0_15                : 16;
@@ -5607,15 +8585,19 @@ union cvmx_sli_pcie_msi_rcv_b2 {
 	struct cvmx_sli_pcie_msi_rcv_b2_s     cn68xxp1;
 	struct cvmx_sli_pcie_msi_rcv_b2_s     cn70xx;
 	struct cvmx_sli_pcie_msi_rcv_b2_s     cn70xxp1;
+	struct cvmx_sli_pcie_msi_rcv_b2_s     cn73xx;
 	struct cvmx_sli_pcie_msi_rcv_b2_s     cn78xx;
+	struct cvmx_sli_pcie_msi_rcv_b2_s     cn78xxp2;
 	struct cvmx_sli_pcie_msi_rcv_b2_s     cnf71xx;
+	struct cvmx_sli_pcie_msi_rcv_b2_s     cnf75xx;
 };
 typedef union cvmx_sli_pcie_msi_rcv_b2 cvmx_sli_pcie_msi_rcv_b2_t;
 
 /**
  * cvmx_sli_pcie_msi_rcv_b3
  *
- * This register is where MSI write operations are directed from the MAC. This CSR can be used by
+ * This register is where MSI write operations are directed from the MAC. This register can be
+ * used by
  * PCIe MACs.
  */
 union cvmx_sli_pcie_msi_rcv_b3 {
@@ -5623,11 +8605,9 @@ union cvmx_sli_pcie_msi_rcv_b3 {
 	struct cvmx_sli_pcie_msi_rcv_b3_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t intr                         : 8;  /**< A write to this register will result in a bit in
-                                                         one of the SLI_MSI_RCV# registers being set.
-                                                         Which bit is set is dependent on the previously
-                                                         written using the SLI_MSI_WR_MAP register or if
-                                                         not previously written the reset value of the MAP. */
+	uint64_t intr                         : 8;  /**< A write to this register results in a bit in one of the SLI_MSI_RCVn registers being set.
+                                                         Which bit is set depends on what is previously written using the SLI_MSI_WR_MAP register.
+                                                         If nothing is previously written, the bit set is the reset value of the MAP. */
 	uint64_t reserved_0_23                : 24;
 #else
 	uint64_t reserved_0_23                : 24;
@@ -5643,8 +8623,11 @@ union cvmx_sli_pcie_msi_rcv_b3 {
 	struct cvmx_sli_pcie_msi_rcv_b3_s     cn68xxp1;
 	struct cvmx_sli_pcie_msi_rcv_b3_s     cn70xx;
 	struct cvmx_sli_pcie_msi_rcv_b3_s     cn70xxp1;
+	struct cvmx_sli_pcie_msi_rcv_b3_s     cn73xx;
 	struct cvmx_sli_pcie_msi_rcv_b3_s     cn78xx;
+	struct cvmx_sli_pcie_msi_rcv_b3_s     cn78xxp2;
 	struct cvmx_sli_pcie_msi_rcv_b3_s     cnf71xx;
+	struct cvmx_sli_pcie_msi_rcv_b3_s     cnf75xx;
 };
 typedef union cvmx_sli_pcie_msi_rcv_b3 cvmx_sli_pcie_msi_rcv_b3_t;
 
@@ -5658,30 +8641,41 @@ union cvmx_sli_pktx_cnts {
 	uint64_t u64;
 	struct cvmx_sli_pktx_cnts_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t po_int                       : 1;  /**< "Returns a 1 when either the corresponding bit in SLI_PKT_TIME_INT[RING[\#]] or
-                                                         SLI_PKT_CNT_INT[RING[\#]] is set." */
-	uint64_t pi_int                       : 1;  /**< Returns a 1 when corresponding bit of SLI_PKT_IN_INT[RING[\#]] is set. */
-	uint64_t reserved_54_61               : 8;
-	uint64_t timer                        : 22; /**< Timer incremented every 1024 core clocks
-                                                         when SLI_PKTS#_CNTS[CNT] is non zero. Field
-                                                         cleared when SLI_PKTS#_CNTS[CNT] goes to 0.
-                                                         Field is also cleared when SLI_PKT_TIME_INT is
-                                                         cleared.
-                                                         The first increment of this count can occur
-                                                         between 0 to 1023 core clocks. */
-	uint64_t cnt                          : 32; /**< ring counter. This field is incremented as
-                                                         packets are sent out and decremented in response to
-                                                         writes to this field.
-                                                         When SLI_PKT_OUT_BMODE is '0' a value of 1 is
-                                                         added to the register for each packet, when '1'
-                                                         and the info-pointer is NOT used the length of the
-                                                         packet plus 8 is added, when '1' and info-pointer
-                                                         mode IS used the packet length is added to this
-                                                         field. */
+	uint64_t po_int                       : 1;  /**< Packet output interrupt bit for the ring. [PO_INT] reads as one whenever:
+                                                          * [CNT]   > SLI_PKT()_INT_LEVELS[CNT], or
+                                                          * [TIMER] > SLI_PKT()_INT_LEVELS[TIME]
+                                                         [PO_INT] can cause an MSI-X interrupt for ring, and its [CNT] ([TIMER]) component
+                                                         can cause SLI_MAC()_PF()_INT_SUM[PCNT] (SLI_MAC()_PF()_INT_SUM[PTIME]) to
+                                                         be set if
+                                                         SLI_PKT()_OUTPUT_CONTROL[CENB] (SLI_PKT()_OUTPUT_CONTROL[TENB]) is set.
+                                                         SLI_PKT_CNT_INT (SLI_PKT_TIME_INT) shows the [CNT] ([TIMER]) component
+                                                         for this and all other rings. See also SLI_PKT_IN_DONE()_CNTS[PO_INT]. */
+	uint64_t pi_int                       : 1;  /**< Packet input interrupt bit for the ring. A copy of SLI_PKT_IN_DONE()_CNTS[PI_INT]. */
+	uint64_t mbox_int                     : 1;  /**< Reads corresponding bit in SLI_PKT()_MBOX_INT. */
+	uint64_t resend                       : 1;  /**< A write of 1 will resend an MSI-X interrupt message if there is a pending interrupt in
+                                                         P0_INT, PI_INT or MBOX_INT for this ring after the write of [CNT] occurs.
+                                                         [RESEND] and [CNT] must be written together with the assumption that the write of
+                                                         [CNT] will clear the [PO_INT] interrupt bit. If the write of [CNT] does not cause
+                                                         the [CNT] to drop below the thresholds another MSI-X message will be sent.
+                                                         The [RESEND] bit will never effect INTA/B/C/D or MSI interrupt. */
+	uint64_t reserved_54_59               : 6;
+	uint64_t timer                        : 22; /**< Timer, incremented every 1024 coprocessor-clock cycles when [CNT] is
+                                                         not zero. The hardware clears both [TIMER] and [PO_INT] when [CNT]
+                                                         goes to 0. The first increment of this count can occur between 0 to
+                                                         1023 coprocessor-clock cycles after [CNT] becomes non-zero. */
+	uint64_t cnt                          : 32; /**< Ring counter. Hardware adds to [CNT] as it sends packets out. On a write
+                                                         to this register, hardware subtracts the amount written to the [CNT] field from
+                                                         [CNT], which will clear [PO_INT] if [CNT] becomes <= SLI_PKT()_INT_LEVELS[CNT].
+                                                         When SLI_PKT()_OUTPUT_CONTROL[BMODE] is clear, the hardware adds 1
+                                                         to [CNT] per packet. When SLI_PKT()_OUTPUT_CONTROL[BMODE] is set, the hardware
+                                                         adds (packet_length+X) to [CNT] per packet. X is zero when info pointer mode
+                                                         is used, 8 when info pointer mode is not used. */
 #else
 	uint64_t cnt                          : 32;
 	uint64_t timer                        : 22;
-	uint64_t reserved_54_61               : 8;
+	uint64_t reserved_54_59               : 6;
+	uint64_t resend                       : 1;
+	uint64_t mbox_int                     : 1;
 	uint64_t pi_int                       : 1;
 	uint64_t po_int                       : 1;
 #endif
@@ -5716,12 +8710,138 @@ union cvmx_sli_pktx_cnts {
 	struct cvmx_sli_pktx_cnts_cn61xx      cn66xx;
 	struct cvmx_sli_pktx_cnts_cn61xx      cn68xx;
 	struct cvmx_sli_pktx_cnts_cn61xx      cn68xxp1;
-	struct cvmx_sli_pktx_cnts_cn61xx      cn70xx;
-	struct cvmx_sli_pktx_cnts_cn61xx      cn70xxp1;
-	struct cvmx_sli_pktx_cnts_s           cn78xx;
+	struct cvmx_sli_pktx_cnts_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_63_54               : 10;
+	uint64_t timer                        : 22; /**< "Timer incremented every 1024 core clocks
+                                                         when SLI_PKTS#_CNTS[CNT] is non zero. Field
+                                                         cleared when SLI_PKTS#_CNTS[CNT] goes to 0.
+                                                         Field is also cleared when SLI_PKT_TIME_INT is
+                                                         cleared.
+                                                         The first increment of this count can occur
+                                                         between 0 to 1023 core clocks." */
+	uint64_t cnt                          : 32; /**< ring counter. This field is incremented as
+                                                         packets are sent out and decremented in response to
+                                                         writes to this field.
+                                                         When SLI_PKT_OUT_BMODE is '0' a value of 1 is
+                                                         added to the register for each packet, when '1'
+                                                         and the info-pointer is NOT used the length of the
+                                                         packet plus 8 is added, when '1' and info-pointer
+                                                         mode IS used the packet length is added to this
+                                                         field. */
+#else
+	uint64_t cnt                          : 32;
+	uint64_t timer                        : 22;
+	uint64_t reserved_63_54               : 10;
+#endif
+	} cn70xx;
+	struct cvmx_sli_pktx_cnts_cn70xx      cn70xxp1;
+	struct cvmx_sli_pktx_cnts_s           cn73xx;
+	struct cvmx_sli_pktx_cnts_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t po_int                       : 1;  /**< Packet output interrupt bit for the ring (i). [PO_INT] reads as one whenever:
+                                                          * [CNT]   > SLI_PKT(i)_INT_LEVELS[CNT], or
+                                                          * [TIMER] > SLI_PKT(i)_INT_LEVELS[TIME]
+                                                         [PO_INT] can cause an MSI-X interrupt for ring i, and its [CNT] ([TIMER]) component
+                                                         can cause SLI_INT_SUM[PCNT] (SLI_INT_SUM[PTIME]) to be set if
+                                                         SLI_PKT(i)_OUTPUT_CONTROL[CENB] (SLI_PKT(i)_OUTPUT_CONTROL[TENB]) is set.
+                                                         SLI_PKT_CNT_INT (SLI_PKT_TIME_INT) shows the [CNT] ([TIMER]) component
+                                                         for this and all other rings. See also SLI_PKT_IN_DONE(i)_CNTS[PO_INT]. */
+	uint64_t pi_int                       : 1;  /**< Packet input interrupt bit for the ring. A copy of SLI_PKT_IN_DONE(0..63)_CNTS[PI_INT]. */
+	uint64_t reserved_61_54               : 8;
+	uint64_t timer                        : 22; /**< Timer, incremented every 1024 coprocessor-clock cycles when [CNT] is
+                                                         not zero. The hardware clears both [TIMER] and [PO_INT] when [CNT]
+                                                         goes to 0. The first increment of this count can occur between 0 to
+                                                         1023 coprocessor-clock cycles after [CNT] becomes non-zero. */
+	uint64_t cnt                          : 32; /**< Ring counter. Hardware adds to [CNT] as it sends packets out. On a write
+                                                         to this register, hardware subtracts the amount written to the [CNT] field from
+                                                         [CNT], which will clear [PO_INT] if [CNT] becomes <= SLI_PKT(i)_INT_LEVELS[CNT].
+                                                         When SLI_PKT()_OUTPUT_CONTROL[BMODE] is clear, the hardware adds 1
+                                                         to [CNT] per packet. When SLI_PKT()_OUTPUT_CONTROL[BMODE] is set, the hardware
+                                                         adds (packet_length+X) to [CNT] per packet. X is zero when info pointer mode
+                                                         is used, 8 when info pointer mode is not used. */
+#else
+	uint64_t cnt                          : 32;
+	uint64_t timer                        : 22;
+	uint64_t reserved_61_54               : 8;
+	uint64_t pi_int                       : 1;
+	uint64_t po_int                       : 1;
+#endif
+	} cn78xx;
+	struct cvmx_sli_pktx_cnts_cn78xx      cn78xxp2;
 	struct cvmx_sli_pktx_cnts_cn61xx      cnf71xx;
+	struct cvmx_sli_pktx_cnts_s           cnf75xx;
 };
 typedef union cvmx_sli_pktx_cnts cvmx_sli_pktx_cnts_t;
+
+/**
+ * cvmx_sli_pkt#_error_info
+ *
+ * The fields in this register are set when an error conditions occur and can be cleared.
+ * These fields are for information purpose only and do NOT generate interrupts.
+ */
+union cvmx_sli_pktx_error_info {
+	uint64_t u64;
+	struct cvmx_sli_pktx_error_info_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_8_63                : 56;
+	uint64_t osize_err                    : 1;  /**< A VF created a bad instruction that caused a gather inbound packet to exceed
+                                                         64K bytes. */
+	uint64_t nobdell_err                  : 1;  /**< A VF has no slists doorbell pointers for an outbound packet that is ready
+                                                         to be sent. */
+	uint64_t pins_err                     : 1;  /**< Packet instruction read error. When a read error occurs on a packet instruction, this bit
+                                                         is set. */
+	uint64_t pop_err                      : 1;  /**< Packet scatter pointer pair error. When a read error occurs on a packet scatter pointer
+                                                         pair, this bit is set. */
+	uint64_t pdi_err                      : 1;  /**< Packet data read error. When a read error occurs on a packet data read, this bit is set. */
+	uint64_t pgl_err                      : 1;  /**< Packet gather list read error. When a read error occurs on a packet gather list read, this
+                                                         bit is set. */
+	uint64_t psldbof                      : 1;  /**< Packet scatter list doorbell count overflowed. Which doorbell can be found in
+                                                         DPI_PINT_INFO[PSLDBOF]. */
+	uint64_t pidbof                       : 1;  /**< Packet instruction doorbell count overflowed. Which doorbell can be found in
+                                                         DPI_PINT_INFO[PIDBOF]. */
+#else
+	uint64_t pidbof                       : 1;
+	uint64_t psldbof                      : 1;
+	uint64_t pgl_err                      : 1;
+	uint64_t pdi_err                      : 1;
+	uint64_t pop_err                      : 1;
+	uint64_t pins_err                     : 1;
+	uint64_t nobdell_err                  : 1;
+	uint64_t osize_err                    : 1;
+	uint64_t reserved_8_63                : 56;
+#endif
+	} s;
+	struct cvmx_sli_pktx_error_info_s     cn73xx;
+	struct cvmx_sli_pktx_error_info_cnf75xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_7_63                : 57;
+	uint64_t nobdell_err                  : 1;  /**< A VF has no slists doorbell pointers for an outbound packet that is ready
+                                                         to be sent. */
+	uint64_t pins_err                     : 1;  /**< Packet instruction read error. When a read error occurs on a packet instruction, this bit
+                                                         is set. */
+	uint64_t pop_err                      : 1;  /**< Packet scatter pointer pair error. When a read error occurs on a packet scatter pointer
+                                                         pair, this bit is set. */
+	uint64_t pdi_err                      : 1;  /**< Packet data read error. When a read error occurs on a packet data read, this bit is set. */
+	uint64_t pgl_err                      : 1;  /**< Packet gather list read error. When a read error occurs on a packet gather list read, this
+                                                         bit is set. */
+	uint64_t psldbof                      : 1;  /**< Packet scatter list doorbell count overflowed. Which doorbell can be found in
+                                                         DPI_PINT_INFO[PSLDBOF]. */
+	uint64_t pidbof                       : 1;  /**< Packet instruction doorbell count overflowed. Which doorbell can be found in
+                                                         DPI_PINT_INFO[PIDBOF]. */
+#else
+	uint64_t pidbof                       : 1;
+	uint64_t psldbof                      : 1;
+	uint64_t pgl_err                      : 1;
+	uint64_t pdi_err                      : 1;
+	uint64_t pop_err                      : 1;
+	uint64_t pins_err                     : 1;
+	uint64_t nobdell_err                  : 1;
+	uint64_t reserved_7_63                : 57;
+#endif
+	} cnf75xx;
+};
+typedef union cvmx_sli_pktx_error_info cvmx_sli_pktx_error_info_t;
 
 /**
  * cvmx_sli_pkt#_in_bp
@@ -5772,14 +8892,208 @@ union cvmx_sli_pktx_input_control {
 	uint64_t u64;
 	struct cvmx_sli_pktx_input_control_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_39_63               : 25;
-	uint64_t vf_num                       : 7;  /**< The VF number that this ring belongs to. A value of 0 means that this ring belongs to the
-                                                         PF. The VF number is the value sent to and received from the MAC. This means that if ring
-                                                         x belongs to MAC0 and ring y belongs to MAC1, they both could have a VF_NUM of 1. Legal
-                                                         value are 0-64. */
+	uint64_t reserved_55_63               : 9;
+	uint64_t rpvf                         : 7;  /**< The number of rings assigned to this VF.
+                                                         Read only copy of SLI_PKT_MAC(0..3)_PF(0..1)_RINFO[RPVF] */
+	uint64_t reserved_31_47               : 17;
+	uint64_t mac_num                      : 2;  /**< The MAC (PEM) that the physical function belongs to. Legal value are 0-3.
+                                                         [MAC_NUM] is RO when accessed via BAR0 of a virtual function, and R/W otherwise.
+                                                         [MAC_NUM] applies to the ring pair, which includes both this input
+                                                         ring and to the output ring of the same index. */
+	uint64_t quiet                        : 1;  /**< Asserted after a rings has gone into reset and the the ring has met the conditions
+                                                         of SLI_PKT_GBL_CONTROL[QTIME]. */
+	uint64_t reserved_27_27               : 1;
+	uint64_t rdsize                       : 2;  /**< Number of instructions to be read in one MAC read request. Two bit value are:
+                                                         0x0 = 1 Instruction.
+                                                         0x1 = 2 Instructions.
+                                                         0x2 = 3 Instructions.
+                                                         0x3 = 4 Instructions. */
+	uint64_t is_64b                       : 1;  /**< When IS_64B=1, instruction input ring i uses 64B versus 32B. */
+	uint64_t rst                          : 1;  /**< Packet reset. When [RST]=1, the rings are in reset. [RST] can be set
+                                                         by software writing a 1 to the field, by hardware upon receipt of an
+                                                         FLR to an associated function, or by hardware when it receives an error
+                                                         response for a read associated with the rings.
+                                                         [RST] applies to both this input ring and to the output ring of the same
+                                                         index.
+                                                         Software canot clear [RST] from 1->0 until the [QUIET] bit is a 1.
+                                                         A ring reset may clear all state associated with the input and
+                                                         output rings, so software must completely re-initialize both
+                                                         before reusing them.
+                                                         See also SLI_PKT_RING_RST[RST]. */
+	uint64_t enb                          : 1;  /**< Enable for the input ring i. Whenever [RST] is set, hardware forces
+                                                         [ENB] clear.  Software can only write [ENB] to 1.  [ENB] can only be cleared
+                                                         only by writing SLI_PKT()_INPUT_CONTROL[RST].  Once [ENB] is cleared software can
+                                                         only write [ENB] to a 1 once [QUIET] is a 1.
+                                                         In the PF, [ENB] is also SLI_PKT_INSTR_ENB<i>. */
+	uint64_t pbp_dhi                      : 13; /**< Not used by hardware, but may be cleared by hardware when [RST] is set. */
+	uint64_t d_nsr                        : 1;  /**< If [USE_CSR]=1, [D_NSR] is ADDRTYPE<1> for First Direct and Gather DPTR
+                                                         reads. ADDRTYPE<1> is the no-snoop attribute for PCIe. (DPTR Format 0)
+                                                         If [USE_CSR]=0, [D_NSR] is MACADD<61> for First Direct and Gather DPTR
+                                                         reads. (ADDRTYPE<1> comes from DPTR<61> in these cases when [USE_CSR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t d_esr                        : 2;  /**< If [USE_CSR]=1, [D_ESR] is ES<1:0> for First Direct and Gather DPTR reads.
+                                                         ES<1:0> is the endian-swap attribute for these MAC memory space reads.
+                                                         Enumerated by SLI_ENDIANSWAP_E.
+                                                         (DPTR Format 0)
+                                                         If [USE_CSR]=0, [D_NSR] is MACADD<63:62> for First Direct and Gather DPTR
+                                                         reads. (ES<1:0> comes from DPTR<63:62> in these cases when [USE_CSR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t d_ror                        : 1;  /**< If [USE_CSR]=1, [D_ROR] is ADDRTYPE<0> for First Direct and Gather DPTR
+                                                         reads. ADDRTYPE<0> is the relaxed-order attribute for PCIe. (DPTR Format 0)
+                                                         If [USE_CSR]=0, [D_NSR] is MACADD<60> for First Direct and Gather DPTR
+                                                         reads. (ADDRTYPE<0> comes from DPTR<60> in these cases when [USE_CSR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t use_csr                      : 1;  /**< When set to 1, [D_ROR], [D_ESR], and [D_NSR] are used for ROR, ESR, and NSR,
+                                                         respectively. (DPTR Format 0) When clear to 0, <63:60> from a First Direct
+                                                         or Gather DPTR are used. (DPTR Format 1) The bits not used for ROR, ESR,
+                                                         and NSR become bits <63:60> of the address used to fetch packet data. */
+	uint64_t nsr                          : 1;  /**< [NSR] is ADDRTYPE<1> for input instruction reads (from
+                                                         SLI_PKT()_INSTR_BADDR+) and First Indirect DPTR reads. ADDRTYPE<1>
+                                                         is the no-snoop attribute for PCIe. */
+	uint64_t esr                          : 2;  /**< [ESR] is ES<1:0> for input instruction reads (from
+                                                         SLI_PKT()_INSTR_BADDR+) and First Indirect DPTR reads. ES<1:0> is
+                                                         the endian-swap attribute for these MAC memory space reads.
+                                                         Enumerated by SLI_ENDIANSWAP_E. */
+	uint64_t ror                          : 1;  /**< [ROR] is ADDRTYPE<0> for input instruction reads (from
+                                                         SLI_PKT()_INSTR_BADDR+) and First Indirect DPTR reads.
+                                                         ADDRTYPE<0> is the relaxed-order attribute for PCIe. */
+#else
+	uint64_t ror                          : 1;
+	uint64_t esr                          : 2;
+	uint64_t nsr                          : 1;
+	uint64_t use_csr                      : 1;
+	uint64_t d_ror                        : 1;
+	uint64_t d_esr                        : 2;
+	uint64_t d_nsr                        : 1;
+	uint64_t pbp_dhi                      : 13;
+	uint64_t enb                          : 1;
+	uint64_t rst                          : 1;
+	uint64_t is_64b                       : 1;
+	uint64_t rdsize                       : 2;
+	uint64_t reserved_27_27               : 1;
+	uint64_t quiet                        : 1;
+	uint64_t mac_num                      : 2;
+	uint64_t reserved_31_47               : 17;
+	uint64_t rpvf                         : 7;
+	uint64_t reserved_55_63               : 9;
+#endif
+	} s;
+	struct cvmx_sli_pktx_input_control_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_55_63               : 9;
+	uint64_t rpvf                         : 7;  /**< The number of rings assigned to this VF.
+                                                         Read only copy of SLI_PKT_MAC(0..3)_PF(0..1)_RINFO[RPVF] */
+	uint64_t pvf_num                      : 16; /**< The function that the ring belongs to. DPI_DMA_FUNC_SEL_S describes
+                                                         the format of this field. If [PVF_NUM]!=0, [MAC_NUM] must select a
+                                                         PCIe MAC that supports more than one physical function and/or must
+                                                         select a PCIe MAC with SR-IOV enabled.
+                                                         [PVF_NUM] configuration must match SLI_PKT_MAC()_PF()_RINFO
+                                                         configuration.
+                                                         [PVF_NUM] is RO when accessed via BAR0 of a virtual function, and R/W
+                                                         otherwise.
+                                                         [PVF_NUM] applies to the ring pair, which includes both this input
+                                                         ring and to the output ring of the same index. */
 	uint64_t reserved_31_31               : 1;
-	uint64_t mac_num                      : 2;  /**< The MAC that the ring belongs to. Legal value are 0-3. This applies for both
-                                                         input and output rings. */
+	uint64_t mac_num                      : 2;  /**< The MAC (PEM) that the physical function belongs to. Legal value are 0-3.
+                                                         [MAC_NUM] is RO when accessed via BAR0 of a virtual function, and R/W otherwise.
+                                                         [MAC_NUM] applies to the ring pair, which includes both this input
+                                                         ring and to the output ring of the same index. */
+	uint64_t quiet                        : 1;  /**< Asserted after a rings has gone into reset and the the ring has met the conditions
+                                                         of SLI_PKT_GBL_CONTROL[QTIME]. */
+	uint64_t reserved_27_27               : 1;
+	uint64_t rdsize                       : 2;  /**< Number of instructions to be read in one MAC read request. Two bit value are:
+                                                         0x0 = 1 Instruction.
+                                                         0x1 = 2 Instructions.
+                                                         0x2 = 3 Instructions.
+                                                         0x3 = 4 Instructions. */
+	uint64_t is_64b                       : 1;  /**< When IS_64B=1, instruction input ring i uses 64B versus 32B. */
+	uint64_t rst                          : 1;  /**< Packet reset. When [RST]=1, the rings are in reset. [RST] can be set
+                                                         by software writing a 1 to the field, by hardware upon receipt of an
+                                                         FLR to an associated function, or by hardware when it receives an error
+                                                         response for a read associated with the rings.
+                                                         [RST] applies to both this input ring and to the output ring of the same
+                                                         index.
+                                                         Software canot clear [RST] from 1->0 until the [QUIET] bit is a 1.
+                                                         A ring reset may clear all state associated with the input and
+                                                         output rings, so software must completely re-initialize both
+                                                         before reusing them.
+                                                         See also SLI_PKT_RING_RST[RST]. */
+	uint64_t enb                          : 1;  /**< Enable for the input ring i. Whenever [RST] is set, hardware forces
+                                                         [ENB] clear.  Software can only write [ENB] to 1.  [ENB] can only be cleared
+                                                         only by writing SLI_PKT()_INPUT_CONTROL[RST].  Once [ENB] is cleared software can
+                                                         only write [ENB] to a 1 once [QUIET] is a 1.
+                                                         In the PF, [ENB] is also SLI_PKT_INSTR_ENB<i>. */
+	uint64_t pbp_dhi                      : 13; /**< Not used by hardware, but may be cleared by hardware when [RST] is set. */
+	uint64_t d_nsr                        : 1;  /**< If [USE_CSR]=1, [D_NSR] is ADDRTYPE<1> for First Direct and Gather DPTR
+                                                         reads. ADDRTYPE<1> is the no-snoop attribute for PCIe. (DPTR Format 0)
+                                                         If [USE_CSR]=0, [D_NSR] is MACADD<61> for First Direct and Gather DPTR
+                                                         reads. (ADDRTYPE<1> comes from DPTR<61> in these cases when [USE_CSR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t d_esr                        : 2;  /**< If [USE_CSR]=1, [D_ESR] is ES<1:0> for First Direct and Gather DPTR reads.
+                                                         ES<1:0> is the endian-swap attribute for these MAC memory space reads.
+                                                         Enumerated by SLI_ENDIANSWAP_E.
+                                                         (DPTR Format 0)
+                                                         If [USE_CSR]=0, [D_NSR] is MACADD<63:62> for First Direct and Gather DPTR
+                                                         reads. (ES<1:0> comes from DPTR<63:62> in these cases when [USE_CSR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t d_ror                        : 1;  /**< If [USE_CSR]=1, [D_ROR] is ADDRTYPE<0> for First Direct and Gather DPTR
+                                                         reads. ADDRTYPE<0> is the relaxed-order attribute for PCIe. (DPTR Format 0)
+                                                         If [USE_CSR]=0, [D_NSR] is MACADD<60> for First Direct and Gather DPTR
+                                                         reads. (ADDRTYPE<0> comes from DPTR<60> in these cases when [USE_CSR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t use_csr                      : 1;  /**< When set to 1, [D_ROR], [D_ESR], and [D_NSR] are used for ROR, ESR, and NSR,
+                                                         respectively. (DPTR Format 0) When clear to 0, <63:60> from a First Direct
+                                                         or Gather DPTR are used. (DPTR Format 1) The bits not used for ROR, ESR,
+                                                         and NSR become bits <63:60> of the address used to fetch packet data. */
+	uint64_t nsr                          : 1;  /**< [NSR] is ADDRTYPE<1> for input instruction reads (from
+                                                         SLI_PKT()_INSTR_BADDR+) and First Indirect DPTR reads. ADDRTYPE<1>
+                                                         is the no-snoop attribute for PCIe. */
+	uint64_t esr                          : 2;  /**< [ESR] is ES<1:0> for input instruction reads (from
+                                                         SLI_PKT()_INSTR_BADDR+) and First Indirect DPTR reads. ES<1:0> is
+                                                         the endian-swap attribute for these MAC memory space reads.
+                                                         Enumerated by SLI_ENDIANSWAP_E. */
+	uint64_t ror                          : 1;  /**< [ROR] is ADDRTYPE<0> for input instruction reads (from
+                                                         SLI_PKT()_INSTR_BADDR+) and First Indirect DPTR reads.
+                                                         ADDRTYPE<0> is the relaxed-order attribute for PCIe. */
+#else
+	uint64_t ror                          : 1;
+	uint64_t esr                          : 2;
+	uint64_t nsr                          : 1;
+	uint64_t use_csr                      : 1;
+	uint64_t d_ror                        : 1;
+	uint64_t d_esr                        : 2;
+	uint64_t d_nsr                        : 1;
+	uint64_t pbp_dhi                      : 13;
+	uint64_t enb                          : 1;
+	uint64_t rst                          : 1;
+	uint64_t is_64b                       : 1;
+	uint64_t rdsize                       : 2;
+	uint64_t reserved_27_27               : 1;
+	uint64_t quiet                        : 1;
+	uint64_t mac_num                      : 2;
+	uint64_t reserved_31_31               : 1;
+	uint64_t pvf_num                      : 16;
+	uint64_t rpvf                         : 7;
+	uint64_t reserved_55_63               : 9;
+#endif
+	} cn73xx;
+	struct cvmx_sli_pktx_input_control_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_39_63               : 25;
+	uint64_t vf_num                       : 7;  /**< The function number that the ring belongs to. When [VF_NUM]=0, the physical
+                                                         function controls the ring. When [VF_NUM]!=0, it must correctly indicate the
+                                                         virtual function number that controls the ring. ([VF_NUM]=1 selects the first
+                                                         virtual function within the selected physical function, [VF_NUM]=2 selects
+                                                         the second virtual function within the selected physical function ...)
+                                                         Legal values are 0..64.
+                                                         [VF_NUM] is RO when accessed via BAR0 of a virtual function, and R/W otherwise.
+                                                         [VF_NUM] applies to both this input ring and to the output ring of the same
+                                                         index. */
+	uint64_t reserved_31_31               : 1;
+	uint64_t mac_num                      : 2;  /**< The MAC (PEM) that the physical function belongs to. Legal value are 0-3.
+                                                         [MAC_NUM] is RO when accessed via BAR0 of a virtual function, and R/W otherwise.
+                                                         [MAC_NUM] applies to both this input ring and to the output ring of the same
+                                                         index. */
 	uint64_t reserved_27_28               : 2;
 	uint64_t rdsize                       : 2;  /**< Number of instructions to be read in one MAC read request for the 4 ports, 16 rings. Two
                                                          bit value are:
@@ -5788,55 +9102,50 @@ union cvmx_sli_pktx_input_control {
                                                          0x2 = 3 Instructions.
                                                          0x3 = 4 Instructions. */
 	uint64_t is_64b                       : 1;  /**< When IS_64B=1, instruction input ring i uses 64B. */
-	uint64_t rst                          : 1;  /**< Packet reset. This bit is set for a ring when the ring enters the reset state. This can be
-                                                         done by writing a 1 to the field, when a FLR associated with the ring occurs, or when an
-                                                         error response is received for a read done by the ring. This applies for both
-                                                         input and output rings. See SLI_INT_SUM[PGL_ERR]. When
-                                                         receiving a PGL_ERR interrupt, software should:
-                                                         1. Wait 2ms to allow any outstanding reads to return or be timed out.
-                                                         2. Write a 0 to this bit.
-                                                         3. Start up the packet input/output again (all previous CSR setting of the packet-
-                                                         input/output will be lost).
+	uint64_t rst                          : 1;  /**< Packet reset. When [RST]=1, the rings are in reset. [RST] can be set
+                                                         by software writing a 1 to the field, by hardware upon receipt of an
+                                                         FLR to an associated function, or by hardware when it receives an error
+                                                         response for a read associated with the rings.
+                                                         [MAC_NUM] applies to both this input ring and to the output ring of the same
+                                                         index.
+                                                         Software should not clear [RST] from 1->0 until [RST] has been asserted
+                                                         for at least 2ms. A ring reset may clear all state associated with the
+                                                         input and output rings, so software must completely re-initialize both
+                                                         before reusing them.
                                                          See also SLI_PKT_RING_RST[RST]. */
-	uint64_t enb                          : 1;  /**< Packet output enable. When ENB<i>=1, packet output ring i is enabled.
-                                                         When the ring is in reset, caused by a failing read associated with the ring, the ring
-                                                         being put into
-                                                         reset by writing the reset bit associated with a ring, a FLR or the MAC the ring is
-                                                         associated with
-                                                         being in reset, will cause this bit to clear and be able to be set again till the reset
-                                                         condition is removed. */
-	uint64_t pbp_dhi                      : 13; /**< PBP_DHI replaces address bits that are used for parse mode and skip-length when
-                                                         SLI_PKTi_INSTR_HEADER[PBP] = 1. PBP_DHI becomes either MACADD<63:55> or MACADD<59:51> for
-                                                         the instruction DPTR read operations in this case. The instruction DPTR read operations
-                                                         are called first direct or first indirect. When PBP = 1, if first direct and USE_CSR = 0,
-                                                         PBP_DHI becomes MACADD<59:51>, else MACADD<63:55>. */
-	uint64_t d_nsr                        : 1;  /**< ADDRTYPE<1> or MACADD<61> for packet input data read operations. D_NSR becomes either
-                                                         ADDRTYPE<1> or MACADD<61> for MAC memory space read operations of packet input data
-                                                         fetched for any packet input ring. ADDRTYPE<1> if USE_CSR = 1, else MACADD<61>. In the
-                                                         latter case, ADDRTYPE<1> comes from DPTR<61>. ADDRTYPE<1> is the no-snoop attribute for
-                                                         PCIe. */
-	uint64_t d_esr                        : 2;  /**< ES<1:0> or MACADD<63:62> for packet input data read operations. D_ESR becomes either
-                                                         ES<1:0> or MACADD<63:62> for MAC memory space read operations of packet input data fetched
-                                                         for any packet input ring. ES<1:0> if USE_CSR = 1, else MACADD<63:62>. In the latter case,
-                                                         ES<1:0> comes from DPTR<63:62>. ES<1:0> is the endian-swap attribute for these MAC memory
-                                                         space read operations. */
-	uint64_t d_ror                        : 1;  /**< ADDRTYPE<0> or MACADD<60> for packet input data read operations. D_ROR becomes either
-                                                         ADDRTYPE<0> or MACADD<60> for MAC memory space read operations of packet input data
-                                                         fetched for any packet input ring. ADDRTYPE<0> if USE_CSR = 1, else MACADD<60>. In the
-                                                         latter case, ADDRTYPE<0> comes from DPTR<60>. ADDRTYPE<0> is the relaxed-order attribute
-                                                         for PCIe. */
-	uint64_t use_csr                      : 1;  /**< When set to 1, the CSR value is used for ROR, ESR, and NSR. When clear to 0, the value in
-                                                         DPTR is used. In turn, the bits not used for ROR, ESR, and NSR are used for bits [63:60]
-                                                         of the address used to fetch packet data. */
-	uint64_t nsr                          : 1;  /**< ADDRTYPE<1> for packet input instruction read operations and gather list (i.e. DPI
-                                                         component) read operations from MAC memory space. ADDRTYPE<1> is the no-snoop attribute
-                                                         for PCIe. */
-	uint64_t esr                          : 2;  /**< ES<1:0> for packet input instruction read operations and gather list (i.e. DPI component)
-                                                         read operations from MAC memory space. ES<1:0> is the endian-swap attribute for these MAC
-                                                         memory space read operations. */
-	uint64_t ror                          : 1;  /**< ADDRTYPE<0> for packet input instruction read operations and gather list (i.e. DPI
-                                                         component) read operations from MAC memory space. ADDRTYPE<0> is the relaxed-order
-                                                         attribute for PCIe. */
+	uint64_t enb                          : 1;  /**< Enable for the input ring i. Whenever [RST] is set, hardware forces
+                                                         [ENB] clear.
+                                                         In the PF, [ENB] is also SLI_PKT_INSTR_ENB<i>. */
+	uint64_t pbp_dhi                      : 13; /**< Not used by hardware, but may be cleared by hardware when [RST] is set. */
+	uint64_t d_nsr                        : 1;  /**< If [USE_CSR]=1, [D_NSR] is ADDRTYPE<1> for First Direct and Gather DPTR
+                                                         reads. ADDRTYPE<1> is the no-snoop attribute for PCIe. (DPTR Format 0)
+                                                         If [USE_CSR]=0, [D_NSR] is MACADD<61> for First Direct and Gather DPTR
+                                                         reads. (ADDRTYPE<1> comes from DPTR<61> in these cases when [USE_CSR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t d_esr                        : 2;  /**< If [USE_CSR]=1, [D_ESR] is ES<1:0> for First Direct and Gather DPTR reads.
+                                                         ES<1:0> is the endian-swap attribute for these MAC memory space reads.
+                                                         (DPTR Format 0)
+                                                         If [USE_CSR]=0, [D_NSR] is MACADD<63:62> for First Direct and Gather DPTR
+                                                         reads. (ES<1:0> comes from DPTR<63:62> in these cases when [USE_CSR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t d_ror                        : 1;  /**< If [USE_CSR]=1, [D_ROR] is ADDRTYPE<0> for First Direct and Gather DPTR
+                                                         reads. ADDRTYPE<0> is the relaxed-order attribute for PCIe. (DPTR Format 0)
+                                                         If [USE_CSR]=0, [D_NSR] is MACADD<60> for First Direct and Gather DPTR
+                                                         reads. (ADDRTYPE<0> comes from DPTR<60> in these cases when [USE_CSR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t use_csr                      : 1;  /**< When set to 1, [D_ROR], [D_ESR], and [D_NSR] are used for ROR, ESR, and NSR,
+                                                         respectively. (DPTR Format 0) When clear to 0, <63:60> from a First Direct
+                                                         or Gather DPTR are used. (DPTR Format 1) The bits not used for ROR, ESR,
+                                                         and NSR become bits <63:60> of the address used to fetch packet data. */
+	uint64_t nsr                          : 1;  /**< [NSR] is ADDRTYPE<1> for input instruction reads (from
+                                                         SLI_PKT()_INSTR_BADDR+) and First Indirect DPTR reads. ADDRTYPE<1>
+                                                         is the no-snoop attribute for PCIe. */
+	uint64_t esr                          : 2;  /**< [ESR] is ES<1:0> for input instruction reads (from
+                                                         SLI_PKT()_INSTR_BADDR+) and First Indirect DPTR reads. ES<1:0> is
+                                                         the endian-swap attribute for these MAC memory space reads. */
+	uint64_t ror                          : 1;  /**< [ROR] is ADDRTYPE<0> for input instruction reads (from
+                                                         SLI_PKT()_INSTR_BADDR+) and First Indirect DPTR reads.
+                                                         ADDRTYPE<0> is the relaxed-order attribute for PCIe. */
 #else
 	uint64_t ror                          : 1;
 	uint64_t esr                          : 2;
@@ -5856,8 +9165,9 @@ union cvmx_sli_pktx_input_control {
 	uint64_t vf_num                       : 7;
 	uint64_t reserved_39_63               : 25;
 #endif
-	} s;
-	struct cvmx_sli_pktx_input_control_s  cn78xx;
+	} cn78xx;
+	struct cvmx_sli_pktx_input_control_cn78xx cn78xxp2;
+	struct cvmx_sli_pktx_input_control_cn73xx cnf75xx;
 };
 typedef union cvmx_sli_pktx_input_control cvmx_sli_pktx_input_control_t;
 
@@ -5871,7 +9181,9 @@ union cvmx_sli_pktx_instr_baddr {
 	uint64_t u64;
 	struct cvmx_sli_pktx_instr_baddr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t addr                         : 61; /**< Base address for Instructions. */
+	uint64_t addr                         : 61; /**< Base address for instruction ring. [ADDR] Must be naturally-aligned to the
+                                                         instruction size selected by SLI_PKT()_INPUT_CONTROL[IS_64B].  The hardware
+                                                         will ignore the bottom bits if not naturally aligned. */
 	uint64_t reserved_0_2                 : 3;
 #else
 	uint64_t reserved_0_2                 : 3;
@@ -5886,8 +9198,11 @@ union cvmx_sli_pktx_instr_baddr {
 	struct cvmx_sli_pktx_instr_baddr_s    cn68xxp1;
 	struct cvmx_sli_pktx_instr_baddr_s    cn70xx;
 	struct cvmx_sli_pktx_instr_baddr_s    cn70xxp1;
+	struct cvmx_sli_pktx_instr_baddr_s    cn73xx;
 	struct cvmx_sli_pktx_instr_baddr_s    cn78xx;
+	struct cvmx_sli_pktx_instr_baddr_s    cn78xxp2;
 	struct cvmx_sli_pktx_instr_baddr_s    cnf71xx;
+	struct cvmx_sli_pktx_instr_baddr_s    cnf75xx;
 };
 typedef union cvmx_sli_pktx_instr_baddr cvmx_sli_pktx_instr_baddr_t;
 
@@ -5901,12 +9216,14 @@ union cvmx_sli_pktx_instr_baoff_dbell {
 	uint64_t u64;
 	struct cvmx_sli_pktx_instr_baoff_dbell_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t aoff                         : 32; /**< The offset from the SLI_PKT[0..31]_INSTR_BADDR
-                                                         where the next instruction will be read. */
-	uint64_t dbell                        : 32; /**< Instruction doorbell count. Writes to this field
-                                                         will increment the value here. Reads will return
-                                                         present value. A write of 0xffffffff will set the
-                                                         DBELL and AOFF fields to '0'. */
+	uint64_t aoff                         : 32; /**< The offset from the SLI_PKT()_INSTR_BADDR where the next instruction will be
+                                                         read from.
+                                                         A write of 0xFFFFFFFF to [DBELL] clears both [DBELL] and [AOFF]. */
+	uint64_t dbell                        : 32; /**< Instruction doorbell count. Writes to this register increment [DBELL] by the
+                                                         value written to [DBELL]. Hardware decrements [DBELL] as it reads instructions,
+                                                         simultaneously also "incrementing" [AOFF].
+                                                         A write of 0xFFFFFFFF to [DBELL] clears both [DBELL] and [AOFF].
+                                                         Writes of non 0xFFFFFFFF are ignored if this ring is in reset */
 #else
 	uint64_t dbell                        : 32;
 	uint64_t aoff                         : 32;
@@ -5920,8 +9237,11 @@ union cvmx_sli_pktx_instr_baoff_dbell {
 	struct cvmx_sli_pktx_instr_baoff_dbell_s cn68xxp1;
 	struct cvmx_sli_pktx_instr_baoff_dbell_s cn70xx;
 	struct cvmx_sli_pktx_instr_baoff_dbell_s cn70xxp1;
+	struct cvmx_sli_pktx_instr_baoff_dbell_s cn73xx;
 	struct cvmx_sli_pktx_instr_baoff_dbell_s cn78xx;
+	struct cvmx_sli_pktx_instr_baoff_dbell_s cn78xxp2;
 	struct cvmx_sli_pktx_instr_baoff_dbell_s cnf71xx;
+	struct cvmx_sli_pktx_instr_baoff_dbell_s cnf75xx;
 };
 typedef union cvmx_sli_pktx_instr_baoff_dbell cvmx_sli_pktx_instr_baoff_dbell_t;
 
@@ -5935,11 +9255,12 @@ union cvmx_sli_pktx_instr_fifo_rsize {
 	uint64_t u64;
 	struct cvmx_sli_pktx_instr_fifo_rsize_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t max                          : 9;  /**< Max Fifo Size. */
-	uint64_t rrp                          : 9;  /**< Fifo read pointer. */
-	uint64_t wrp                          : 9;  /**< Fifo write pointer. */
-	uint64_t fcnt                         : 5;  /**< Fifo count. */
-	uint64_t rsize                        : 32; /**< Instruction ring size. */
+	uint64_t max                          : 9;  /**< Max FIFO size. */
+	uint64_t rrp                          : 9;  /**< FIFO read pointer. */
+	uint64_t wrp                          : 9;  /**< FIFO write pointer. */
+	uint64_t fcnt                         : 5;  /**< FIFO count. */
+	uint64_t rsize                        : 32; /**< Instruction ring size.  Legal values have to be greater then 128.
+                                                         Writes to [RSIZE] of less than 128 will set [RSIZE] to 128. */
 #else
 	uint64_t rsize                        : 32;
 	uint64_t fcnt                         : 5;
@@ -5956,8 +9277,11 @@ union cvmx_sli_pktx_instr_fifo_rsize {
 	struct cvmx_sli_pktx_instr_fifo_rsize_s cn68xxp1;
 	struct cvmx_sli_pktx_instr_fifo_rsize_s cn70xx;
 	struct cvmx_sli_pktx_instr_fifo_rsize_s cn70xxp1;
+	struct cvmx_sli_pktx_instr_fifo_rsize_s cn73xx;
 	struct cvmx_sli_pktx_instr_fifo_rsize_s cn78xx;
+	struct cvmx_sli_pktx_instr_fifo_rsize_s cn78xxp2;
 	struct cvmx_sli_pktx_instr_fifo_rsize_s cnf71xx;
+	struct cvmx_sli_pktx_instr_fifo_rsize_s cnf75xx;
 };
 typedef union cvmx_sli_pktx_instr_fifo_rsize cvmx_sli_pktx_instr_fifo_rsize_t;
 
@@ -6108,8 +9432,73 @@ union cvmx_sli_pktx_instr_header {
 	struct cvmx_sli_pktx_instr_header_cn61xx cn66xx;
 	struct cvmx_sli_pktx_instr_header_s   cn68xx;
 	struct cvmx_sli_pktx_instr_header_cn61xx cn68xxp1;
-	struct cvmx_sli_pktx_instr_header_cn61xx cn70xx;
-	struct cvmx_sli_pktx_instr_header_cn61xx cn70xxp1;
+	struct cvmx_sli_pktx_instr_header_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_44_63               : 20;
+	uint64_t pbp                          : 1;  /**< Enable Packet-by-packet mode.
+                                                         Allows DPI to generate PKT_INST_HDR[PM,SL]
+                                                         differently per DPI instruction.
+                                                         USE_IHDR must be set whenever PBP is set. */
+	uint64_t reserved_38_42               : 5;
+	uint64_t rparmode                     : 2;  /**< Parse Mode. Becomes PKT_INST_HDR[PM]
+                                                         when DPI_INST_HDR[R]==1 and PBP==0 */
+	uint64_t reserved_35_35               : 1;
+	uint64_t rskp_len                     : 7;  /**< Skip Length. Becomes PKT_INST_HDR[SL]
+                                                         when DPI_INST_HDR[R]==1 and PBP==0 */
+	uint64_t reserved_27_26               : 2;
+	uint64_t rnqos                        : 1;  /**< Becomes PKT_INST_HDR[NQOS]
+                                                         when DPI_INST_HDR[R]==1 */
+	uint64_t rngrp                        : 1;  /**< Becomes PKT_INST_HDR[NGRP]
+                                                         when DPI_INST_HDR[R]==1 */
+	uint64_t rntt                         : 1;  /**< Becomes PKT_INST_HDR[NTT]
+                                                         when DPI_INST_HDR[R]==1 */
+	uint64_t rntag                        : 1;  /**< Becomes PKT_INST_HDR[NTAG]
+                                                         when DPI_INST_HDR[R]==1 */
+	uint64_t use_ihdr                     : 1;  /**< When set '1' DPI always prepends a PKT_INST_HDR
+                                                         as part of the packet data sent to PIP/IPD,
+                                                         regardless of DPI_INST_HDR[R]. (DPI also always
+                                                         prepends a PKT_INST_HDR when DPI_INST_HDR[R]=1.)
+                                                         USE_IHDR must be set whenever PBP is set. */
+	uint64_t reserved_20_16               : 5;
+	uint64_t par_mode                     : 2;  /**< Parse Mode. Becomes PKT_INST_HDR[PM]
+                                                         when DPI_INST_HDR[R]==0 and USE_IHDR==1 and PBP==0 */
+	uint64_t reserved_13_13               : 1;
+	uint64_t skp_len                      : 7;  /**< Skip Length. Becomes PKT_INST_HDR[SL]
+                                                         when DPI_INST_HDR[R]==0 and USE_IHDR==1 and PBP==0 */
+	uint64_t reserved_5_4                 : 2;
+	uint64_t nqos                         : 1;  /**< Becomes PKT_INST_HDR[NQOS]
+                                                         when DPI_INST_HDR[R]==0 (and USE_IHDR==1) */
+	uint64_t ngrp                         : 1;  /**< Becomes PKT_INST_HDR[NGRP]
+                                                         when DPI_INST_HDR[R]==0 (and USE_IHDR==1) */
+	uint64_t ntt                          : 1;  /**< Becomes PKT_INST_HDR[NTT]
+                                                         when DPI_INST_HDR[R]==0 (and USE_IHDR==1) */
+	uint64_t ntag                         : 1;  /**< Becomes PKT_INST_HDR[NTAG]
+                                                         when DPI_INST_HDR[R]==0 (and USE_IHDR==1) */
+#else
+	uint64_t ntag                         : 1;
+	uint64_t ntt                          : 1;
+	uint64_t ngrp                         : 1;
+	uint64_t nqos                         : 1;
+	uint64_t reserved_5_4                 : 2;
+	uint64_t skp_len                      : 7;
+	uint64_t reserved_13_13               : 1;
+	uint64_t par_mode                     : 2;
+	uint64_t reserved_20_16               : 5;
+	uint64_t use_ihdr                     : 1;
+	uint64_t rntag                        : 1;
+	uint64_t rntt                         : 1;
+	uint64_t rngrp                        : 1;
+	uint64_t rnqos                        : 1;
+	uint64_t reserved_27_26               : 2;
+	uint64_t rskp_len                     : 7;
+	uint64_t reserved_35_35               : 1;
+	uint64_t rparmode                     : 2;
+	uint64_t reserved_38_42               : 5;
+	uint64_t pbp                          : 1;
+	uint64_t reserved_44_63               : 20;
+#endif
+	} cn70xx;
+	struct cvmx_sli_pktx_instr_header_cn70xx cn70xxp1;
 	struct cvmx_sli_pktx_instr_header_cn61xx cnf71xx;
 };
 typedef union cvmx_sli_pktx_instr_header cvmx_sli_pktx_instr_header_t;
@@ -6125,19 +9514,72 @@ union cvmx_sli_pktx_int_levels {
 	struct cvmx_sli_pktx_int_levels_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_54_63               : 10;
-	uint64_t time                         : 22; /**< Output ring counter time interrupt threshold.
-                                                         SLI sets SLI_PKT_TIME_INT[PORT<i>] whenever SLI_PKT()_CNTS[TIMER] > TIME. */
-	uint64_t cnt                          : 32; /**< Output ring counter interrupt threshold. SLI sets SLI_PKT_CNT_INT[PORT<i>] whenever
-                                                         SLI_PKT()_CNTS[CNT] > CNT. */
+	uint64_t time                         : 22; /**< Output ring counter time interrupt threshold. SLI sets SLI_PKT()_CNTS[PO_INT]
+                                                         (and SLI_PKT_TIME_INT<i> and SLI_PKT_INT<i>), and may cause an MSI-X, MSI, or
+                                                         INTA/B/C/D interrupt, whenever SLI_PKT()_CNTS[TIMER] > [TIME].
+                                                         Whenever software changes the value of [TIME], it should also subsequently write
+                                                         the corresponding SLI_PKT()_CNTS register (with a value of zero if desired)
+                                                         to ensure that the hardware correspondingly updates SLI_PKT()_CNTS[PO_INT]. */
+	uint64_t cnt                          : 32; /**< Output ring counter interrupt threshold. SLI sets SLI_PKT()_CNTS[PO_INT]
+                                                         (and SLI_PKT_CNT_INT<i> and SLI_PKT_INT<i>), and may cause an MSI-X, MSI, or
+                                                         INTA/B/C/D interrupt, whenever SLI_PKT()_CNTS[CNT] > [CNT].
+                                                         Whenever software changes the value of [TIME], it should also subsequently write
+                                                         the corresponding SLI_PKT()_CNTS register (with a value of zero if desired)
+                                                         to ensure that the hardware correspondingly updates SLI_PKT()_CNTS[PO_INT]. */
 #else
 	uint64_t cnt                          : 32;
 	uint64_t time                         : 22;
 	uint64_t reserved_54_63               : 10;
 #endif
 	} s;
+	struct cvmx_sli_pktx_int_levels_s     cn73xx;
 	struct cvmx_sli_pktx_int_levels_s     cn78xx;
+	struct cvmx_sli_pktx_int_levels_s     cn78xxp2;
+	struct cvmx_sli_pktx_int_levels_s     cnf75xx;
 };
 typedef union cvmx_sli_pktx_int_levels cvmx_sli_pktx_int_levels_t;
+
+/**
+ * cvmx_sli_pkt#_mbox_int
+ *
+ * This register contains information to service mbox interrupts to the VF
+ * when the PF writes SLI_PKT()_PF_VF_MBOX_SIG(0).
+ */
+union cvmx_sli_pktx_mbox_int {
+	uint64_t u64;
+	struct cvmx_sli_pktx_mbox_int_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t po_int                       : 1;  /**< "Returns a 1 when either the corresponding bit in SLI_PKT_TIME_INT[RING<\#>] or
+                                                         SLI_PKT_CNT_INT[RING<\#>] is set. This interrupt can be cleared by writing
+                                                         SLI_PKT()_CNTS[CNT]." */
+	uint64_t pi_int                       : 1;  /**< "Reads corresponding bit of SLI_PKT_IN_INT[RING<\#>]. This interrupt
+                                                         can be cleared by writing SLI_PKT_IN_DONE()_CNTS." */
+	uint64_t mbox_int                     : 1;  /**< Set to one when a PF writes the corresponding ring SLI_PKT(0..63)_PF_VF_MBOX_SIG(0)
+                                                         register. Writes will clear this interrupt.  This bit can only be written by the VF side.
+                                                         It cannot be cleared by the PF. [MBOX_INT] can cause an MSI-X interrupt for the ring,
+                                                         but will never cause an INTA/B/C/D nor MSI interrupt nor set any
+                                                         SLI_MAC()_PF()_INT_SUM bit. */
+	uint64_t resend                       : 1;  /**< A write of 1 will resend an MSI-X interrupt message if there is a pending interrupt in
+                                                         P0_INT, PI_INT or MBOX_INT for this ring after the clear of [MBOX_INT] occurs.
+                                                         [RESEND] and [MBOX_INT] must be written together with the assumption that the write of
+                                                         [CNT] will clear the [MBOX_INT] interrupt bit.
+                                                         The [RESEND] bit will never effect INTA/B/C/D or MSI interrupt */
+	uint64_t reserved_1_59                : 59;
+	uint64_t mbox_en                      : 1;  /**< Enables interrupt to the MSIX vector associated with this VF when the PF writes the
+                                                         corresponding ring in SLI_PKT(0..63)_VF_MBOX_SIG(0). */
+#else
+	uint64_t mbox_en                      : 1;
+	uint64_t reserved_1_59                : 59;
+	uint64_t resend                       : 1;
+	uint64_t mbox_int                     : 1;
+	uint64_t pi_int                       : 1;
+	uint64_t po_int                       : 1;
+#endif
+	} s;
+	struct cvmx_sli_pktx_mbox_int_s       cn73xx;
+	struct cvmx_sli_pktx_mbox_int_s       cnf75xx;
+};
+typedef union cvmx_sli_pktx_mbox_int cvmx_sli_pktx_mbox_int_t;
 
 /**
  * cvmx_sli_pkt#_out_size
@@ -6150,9 +9592,10 @@ union cvmx_sli_pktx_out_size {
 	struct cvmx_sli_pktx_out_size_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_23_63               : 41;
-	uint64_t isize                        : 7;  /**< INFO BYTES size (bytes) for ring X. Legal sizes
-                                                         are 0 to 120. Not used in buffer-pointer-only mode. */
-	uint64_t bsize                        : 16; /**< BUFFER SIZE (bytes) for ring X. */
+	uint64_t isize                        : 7;  /**< Info bytes size (bytes) for this ring. Legal sizes are 0 to 120. Not used in buffer-
+                                                         pointer-only mode. Writes of [ISIZE] greater than 120 will set [ISIZE] to 120. */
+	uint64_t bsize                        : 16; /**< Buffer size (bytes) for this ring. Legal values have to be greater then 128.
+                                                         Writes of [BSIZE] less than 128 will set [BSIZE] to 128. */
 #else
 	uint64_t bsize                        : 16;
 	uint64_t isize                        : 7;
@@ -6167,8 +9610,11 @@ union cvmx_sli_pktx_out_size {
 	struct cvmx_sli_pktx_out_size_s       cn68xxp1;
 	struct cvmx_sli_pktx_out_size_s       cn70xx;
 	struct cvmx_sli_pktx_out_size_s       cn70xxp1;
+	struct cvmx_sli_pktx_out_size_s       cn73xx;
 	struct cvmx_sli_pktx_out_size_s       cn78xx;
+	struct cvmx_sli_pktx_out_size_s       cn78xxp2;
 	struct cvmx_sli_pktx_out_size_s       cnf71xx;
+	struct cvmx_sli_pktx_out_size_s       cnf75xx;
 };
 typedef union cvmx_sli_pktx_out_size cvmx_sli_pktx_out_size_t;
 
@@ -6183,55 +9629,65 @@ union cvmx_sli_pktx_output_control {
 	struct cvmx_sli_pktx_output_control_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_14_63               : 50;
-	uint64_t tenb                         : 1;  /**< Output ring packet timer interrupt enable. When both TENB and corresponding
-                                                         SLI_PKT_TIME_INT[PORT<i>] are set, for any i, SLI_INT_SUM[PTIME] is set, which can cause
-                                                         an interrupt. */
-	uint64_t cenb                         : 1;  /**< Output ring packet counter interrupt enable. When both CENB and corresponding
-                                                         SLI_PKT_CNT_INT[PORT<i>] are set, for any i, SLI_INT_SUM[PCNT] is set, which can cause an
-                                                         interrupt. */
+	uint64_t tenb                         : 1;  /**< SLI_MAC()_PF()_INT_SUM[PTIME] interrupt enable for this ring i. When [TENB] is set
+                                                         and (SLI_PKT(i)_CNTS[TIMER] > SLI_PKT(i)_INT_LEVELS[TIME]),
+                                                         SLI_MAC()_PF()_INT_SUM[PTIME]
+                                                         will be set, and SLI_MAC()_PF()_INT_SUM interrupts can occur if
+                                                         SLI_MAC()_PF()_INT_SUM[PTIME] is enabled to generate interrupts.
+                                                         When [TENB] is clear, SLI_MAC()_PF()_INT_SUM[PTIME] will never assert due to ring
+                                                         i.
+                                                         [TENB] is RO when accessed via BAR0 of a virtual function, and R/W otherwise.
+                                                         [TENB] has no effect on SLI_PKT_TIME_INT or SLI_PKT_INT, and
+                                                         has no effect on any non-SLI_MAC()_PF()_INT_SUM interrupt. */
+	uint64_t cenb                         : 1;  /**< SLI_MAC()_PF()_INT_SUM[PCNT] interrupt enable for this ring i. When [CENB] is set
+                                                         and (SLI_PKT(i)_CNTS[TIMER] > SLI_PKT(i)_INT_LEVELS[TIME]),
+                                                         SLI_MAC()_PF()_INT_SUM[PCNT]
+                                                         will be set, and SLI_INT_SUM interrupts can occur if SLI_MAC()_PF()_INT_SUM[PCNT]
+                                                         is enabled to generate interrupts.
+                                                         When [CENB] is clear, SLI_INT_SUM[PCNT] will never assert due to ring i.
+                                                         [CENB] is RO when accessed via BAR0 of a virtual function, and R/W otherwise.
+                                                         [CENB] has no effect on SLI_PKT_CNT_INT or SLI_PKT_INT, and
+                                                         has no effect on any non-SLI_MAC()_PF()_INT_SUM interrupt. */
 	uint64_t iptr                         : 1;  /**< When IPTR=1, packet output ring is in info-pointer mode; otherwise the packet output ring
                                                          is in buffer-pointer-only mode. */
-	uint64_t es                           : 2;  /**< ES or MACADD<63:62> for buffer/info write operations to buffer/info pair MAC memory space
-                                                         addresses fetched from packet output ring. ES<1:0> if SLI_PKT()_OUTPUT_CONTROL[DPTR]=1,
-                                                         else MACADD<63:62>. In the latter case, ES<1:0> comes from DPTR<63:62>. ES<1:0> is the
-                                                         endian-swap attribute for these MAC memory space writes. */
-	uint64_t nsr                          : 1;  /**< ADDRTYPE<1> or MACADD<61> for buffer/info write operations. NSR    becomes either
-                                                         ADDRTYPE<1> or MACADD<61> for writes to buffer/info pair MAC memory space addresses
-                                                         fetched from packet output ring. ADDRTYPE<1> if SLI_PKT()_OUTPUT_CONTROL[DPTR]=1, else
-                                                         MACADD<61>. In the latter case, ADDRTYPE<1> comes from DPTR<61>. ADDRTYPE<1> is the no-
-                                                         snoop attribute for PCIe. */
-	uint64_t ror                          : 1;  /**< ADDRTYPE<0> or MACADD<60> for buffer/info write operations. ROR    becomes either
-                                                         ADDRTYPE<0> or MACADD<60> for writes to buffer/info pair MAC memory space addresses
-                                                         fetched from packet output ring. ADDRTYPE<0> if SLI_PKT()_OUTPUT_CONTROL[DPTR]=1, else
-                                                         MACADD<60>. In the latter case, ADDRTYPE<0> comes from DPTR<60>. ADDRTYPE<0> is the
-                                                         relaxed-order attribute for PCIe. */
-	uint64_t dptr                         : 1;  /**< Determines whether buffer/info pointers are DPTR format 0 or DPTR format 1. When DPTR=1,
-                                                         the buffer/info pointers fetched from packet output ring are DPTR format 0. When DPTR=0,
-                                                         the buffer/info pointers fetched from packet output ring i are DPTR format 1. (Replace
-                                                         SLI_PKT()_INPUT_CONTROL[D_ESR,D_NSR,D_ROR] in the descriptions of DPTR format 0/1 in
-                                                         DPI Instruction Input Initialization with SLI_PKT()_OUTPUT_CONTROL[ES],
-                                                         SLI_PKT()_OUTPUT_CONTROL[NSR], and SLI_PKT()_OUTPUT_CONTROL[ROR], respectively, though.) */
+	uint64_t es                           : 2;  /**< If [DPTR]=1, [ES] is ES<1:0> for buffer/info write operations to buffer/info
+                                                         pair MAC memory space addresses fetched from packet output ring. ES<1:0> is the
+                                                         endian-swap attribute for these MAC memory space writes. (DPTR Format 0)
+                                                         If [DPTR]=0, [ES] is MACADD<63:62> for buffer/info write operations to buffer/info
+                                                         pair MAC memory space addresses fetched from packet output ring. (<63:62> of the
+                                                         buffer or info pointer is ES<1:0> for the writes in this case when [DPTR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t nsr                          : 1;  /**< If [DPTR]=1, [NSR] is ADDRTYPE<1> for buffer/info write operations to buffer/info
+                                                         pair MAC memory space addresses fetched from packet output ring. ADDRTYPE<1> is
+                                                         the no-snoop attribute for PCIe. (DPTR Format 0)
+                                                         If [DPTR]=0, [NSR] is MACADD<61> for buffer/info write operations to buffer/info
+                                                         pair MAC memory space addresses fetched from packet output ring. (<61> of the
+                                                         buffer or info pointer is ADDRTYPE<1> for the writes in this case when [DPTR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t ror                          : 1;  /**< If [DPTR]=1, [ROR] is ADDRTYPE<0> for buffer/info write operations to buffer/info
+                                                         pair MAC memory space addresses fetched from packet output ring. ADDRTYPE<0> is
+                                                         the relaxed-order attribute for PCIe. (DPTR Format 0)
+                                                         If [DPTR]=0, [ROR] is MACADD<60> for buffer/info write operations to buffer/info
+                                                         pair MAC memory space addresses fetched from packet output ring. (<60> of the
+                                                         buffer or info pointer is ADDRTYPE<0> for the writes in this case when [DPTR]=0.)
+                                                         (DPTR Format 1) */
+	uint64_t dptr                         : 1;  /**< Determines [ES,NSR,ROR] usage and the format of buffer/info pointers. When set,
+                                                         buffer/info pointers are DPTR format 0. When clear, buffer/info pointers
+                                                         are DPTR format 1. */
 	uint64_t bmode                        : 1;  /**< Determines whether SLI_PKT()_CNTS[CNT] is a byte or packet counter. When BMODE=1,
                                                          SLI_PKT()_CNTS[CNT] is a byte counter, else SLI_PKT()_CNTS[CNT] is a packet counter. */
-	uint64_t es_p                         : 2;  /**< ES<1:0> for the packet output ring reads that fetch buffer/info pointer pairs. ES<1:0> is
-                                                         the endian-swap attribute for these MAC memory space reads. */
-	uint64_t nsr_p                        : 1;  /**< ADDRTYPE<1> or MACADD<61> for buffer/info write operations. NSR    becomes either
-                                                         ADDRTYPE<1> or MACADD<61> for writes to buffer/info pair MAC memory space addresses
-                                                         fetched from packet output ring. ADDRTYPE<1> if SLI_PKT()_OUTPUT_CONTROL[DPTR]=1,
-                                                         else MACADD<61>. In the latter case, ADDRTYPE<1> comes from DPTR<61>. ADDRTYPE<1> is the
-                                                         no-snoop attribute for PCIe. */
-	uint64_t ror_p                        : 1;  /**< ADDRTYPE<0> for the packet output ring reads that fetch buffer/info pointer pairs. ROR
-                                                         becomes ADDRTYPE<0> in DPI/SLI reads that fetch buffer/info pairs from packet output ring
-                                                         (from address SLI_PKT()_SLIST_BADDR+ in MAC memory space.) ADDRTYPE<0> is the relaxed-
-                                                         order
-                                                         attribute for PCIe. */
-	uint64_t enb                          : 1;  /**< Packet output enable. When ENB=1, packet output ring is enabled. When the ring is in
-                                                         reset,
-                                                         caused by a failing read associated with the ring, the ring being put into reset by
-                                                         writing the reset bit associated with a ring, a FLR or the MAC the ring is associated with
-                                                         being in reset, will cause this bit to clear and be able to be set again till the reset
-                                                         condition is removed. This is a mirror of SLI_PKT_OUT_ENB (setting a bit here will set a
-                                                         bit in that CSR). */
+	uint64_t es_p                         : 2;  /**< [ES_P] is ES<1:0> for the packet output ring reads that fetch buffer/info pointer pairs
+                                                         (from SLI_PKT()_SLIST_BADDR[ADDR]+). ES<1:0> is the endian-swap attribute for these
+                                                         MAC memory space reads. */
+	uint64_t nsr_p                        : 1;  /**< [NSR_P] is ADDRTYPE<1> for the packet output ring reads that fetch buffer/info pointer
+                                                         pairs (from SLI_PKT()_SLIST_BADDR[ADDR]+). ADDRTYPE<1> is the no-snoop attribute for PCIe. */
+	uint64_t ror_p                        : 1;  /**< [ROR_P] is ADDRTYPE<0> for the packet output ring reads that fetch buffer/info pointer
+                                                         pairs (from SLI_PKT()_SLIST_BADDR[ADDR]+). ADDRTYPE<0> is the relaxed-order attribute
+                                                         for PCIe. */
+	uint64_t enb                          : 1;  /**< Enable for the output ring. Whenever SLI_PKT()_INPUT_CONTROL[RST] is set, hardware
+                                                         forces [ENB] clear.  Software can only write [ENB] to 1.  [ENB] can only be cleared
+                                                         only by writing SLI_PKT()_INPUT_CONTROL[RST].  Once [ENB] is cleared software can
+                                                         only write [ENB] to a 1 once SLI_PKT()_INPUT_CONTROL[QUIET] is 1. */
 #else
 	uint64_t enb                          : 1;
 	uint64_t ror_p                        : 1;
@@ -6248,9 +9704,55 @@ union cvmx_sli_pktx_output_control {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_sli_pktx_output_control_s cn73xx;
 	struct cvmx_sli_pktx_output_control_s cn78xx;
+	struct cvmx_sli_pktx_output_control_s cn78xxp2;
+	struct cvmx_sli_pktx_output_control_s cnf75xx;
 };
 typedef union cvmx_sli_pktx_output_control cvmx_sli_pktx_output_control_t;
+
+/**
+ * cvmx_sli_pkt#_pf_vf_mbox_sig#
+ *
+ * These registers are used for communication of data from the PF to the VF and vice versa.
+ *
+ * There are two registers per ring, SIG(0) and SIG(1). The PF and VF, both, have read and
+ * write access to these registers.
+ *
+ * For PF to VF ring interrupt, MBOX_EN bit of the SLI_PKT(0..127)_MBOX_INT must be set.
+ * When MBOX_EN bit is set, write from the PF to byte-0 of the SIG(0) register will cause
+ * an interrupt by setting MBOX_INT field in corresponding ring address of
+ * SLI_PKT()_MBOX_INT[MBOX_INT],
+ * SLI_PKT_IN_DONE()_CNTS[MBOX_INT], SLI_PKT()_CNTS[MBOX_INT].
+ *
+ * For VF to PF ring interrupt, VF_MBOX bit of the SLI_MAC(0..3)_PF(0..1)_INT_ENB must be set.
+ * When VF_MBOX bit is set, write from the VF to byte-0 of the SIG(1) register will cause an
+ * interrupt by setting ring address VF_INT field in corresponding SLI_MAC()_PF()_MBOX_INT
+ * register,
+ * which may cause an interrupt to occure through PF.
+ *
+ * Each PF and VF can only access the rings that its owns as programmed by SLI_PKT_MAC()_RINFO.
+ * The signaling is ring based. If a VF owns more than one ring it can ignore the other
+ * rings registers if not needed.
+ *
+ * INTERNAL:
+ *   VERIF - PF Write SIG0 interrupts VF owning the same ring. VF Write SIG0 no interrupt.
+ *   VERIF - VF Write SIG1 interrupts PF owning the same ring. PF Write SIG1 no interrupt.
+ */
+union cvmx_sli_pktx_pf_vf_mbox_sigx {
+	uint64_t u64;
+	struct cvmx_sli_pktx_pf_vf_mbox_sigx_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t data                         : 64; /**< Communication data from PF to VF. Writes to SLI_PKT(0..127)_PF_VF_MBOX_SIG(0)
+                                                         in the corresponding VF. */
+#else
+	uint64_t data                         : 64;
+#endif
+	} s;
+	struct cvmx_sli_pktx_pf_vf_mbox_sigx_s cn73xx;
+	struct cvmx_sli_pktx_pf_vf_mbox_sigx_s cnf75xx;
+};
+typedef union cvmx_sli_pktx_pf_vf_mbox_sigx cvmx_sli_pktx_pf_vf_mbox_sigx_t;
 
 /**
  * cvmx_sli_pkt#_slist_baddr
@@ -6262,7 +9764,7 @@ union cvmx_sli_pktx_slist_baddr {
 	uint64_t u64;
 	struct cvmx_sli_pktx_slist_baddr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t addr                         : 60; /**< Base address for scatter list pointers. */
+	uint64_t addr                         : 60; /**< Base address for the packet output ring, containing buffer/info pointer pairs. */
 	uint64_t reserved_0_3                 : 4;
 #else
 	uint64_t reserved_0_3                 : 4;
@@ -6277,8 +9779,11 @@ union cvmx_sli_pktx_slist_baddr {
 	struct cvmx_sli_pktx_slist_baddr_s    cn68xxp1;
 	struct cvmx_sli_pktx_slist_baddr_s    cn70xx;
 	struct cvmx_sli_pktx_slist_baddr_s    cn70xxp1;
+	struct cvmx_sli_pktx_slist_baddr_s    cn73xx;
 	struct cvmx_sli_pktx_slist_baddr_s    cn78xx;
+	struct cvmx_sli_pktx_slist_baddr_s    cn78xxp2;
 	struct cvmx_sli_pktx_slist_baddr_s    cnf71xx;
+	struct cvmx_sli_pktx_slist_baddr_s    cnf75xx;
 };
 typedef union cvmx_sli_pktx_slist_baddr cvmx_sli_pktx_slist_baddr_t;
 
@@ -6292,16 +9797,15 @@ union cvmx_sli_pktx_slist_baoff_dbell {
 	uint64_t u64;
 	struct cvmx_sli_pktx_slist_baoff_dbell_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t aoff                         : 32; /**< The offset from the SLI_PKT[0..31]_SLIST_BADDR
-                                                         where the next SList pointer will be read.
-                                                         A write of 0xFFFFFFFF to the DBELL field will
-                                                         clear DBELL and AOFF */
-	uint64_t dbell                        : 32; /**< Scatter list doorbell count. Writes to this field
-                                                         will increment the value here. Reads will return
-                                                         present value. The value of this field is
-                                                         decremented as read operations are ISSUED for
-                                                         scatter pointers.
-                                                         A write of 0xFFFFFFFF will clear DBELL and AOFF */
+	uint64_t aoff                         : 32; /**< Address offset. The offset from the SLI_PKT()_SLIST_BADDR where the next buffer/info
+                                                         pointer
+                                                         pair will be read.
+                                                         A write of 0xFFFFFFFF to [DBELL] clears both [DBELL] and [AOFF]. */
+	uint64_t dbell                        : 32; /**< Buffer/info pointer pair doorbell count. Software writes this register increment
+                                                         [DBELL] by the amount written to [DBELL]. Hardware decrements [DBELL] as it
+                                                         issues read operations for buffer/info pointer pairs, simultaneously also
+                                                         "incrementing" [AOFF].
+                                                         A write of 0xFFFFFFFF to [DBELL] clears both [DBELL] and [AOFF]. */
 #else
 	uint64_t dbell                        : 32;
 	uint64_t aoff                         : 32;
@@ -6315,8 +9819,11 @@ union cvmx_sli_pktx_slist_baoff_dbell {
 	struct cvmx_sli_pktx_slist_baoff_dbell_s cn68xxp1;
 	struct cvmx_sli_pktx_slist_baoff_dbell_s cn70xx;
 	struct cvmx_sli_pktx_slist_baoff_dbell_s cn70xxp1;
+	struct cvmx_sli_pktx_slist_baoff_dbell_s cn73xx;
 	struct cvmx_sli_pktx_slist_baoff_dbell_s cn78xx;
+	struct cvmx_sli_pktx_slist_baoff_dbell_s cn78xxp2;
 	struct cvmx_sli_pktx_slist_baoff_dbell_s cnf71xx;
+	struct cvmx_sli_pktx_slist_baoff_dbell_s cnf75xx;
 };
 typedef union cvmx_sli_pktx_slist_baoff_dbell cvmx_sli_pktx_slist_baoff_dbell_t;
 
@@ -6331,8 +9838,9 @@ union cvmx_sli_pktx_slist_fifo_rsize {
 	struct cvmx_sli_pktx_slist_fifo_rsize_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t rsize                        : 32; /**< The number of scatter pointer pairs contained in
-                                                         the scatter list ring. */
+	uint64_t rsize                        : 32; /**< The number of buffer/info pointer pairs in the ring.
+                                                         Legal values have to be greater then 128.
+                                                         Writes to [RSIZE] of less than 128 will set [RSIZE] to 128. */
 #else
 	uint64_t rsize                        : 32;
 	uint64_t reserved_32_63               : 32;
@@ -6344,17 +9852,60 @@ union cvmx_sli_pktx_slist_fifo_rsize {
 	struct cvmx_sli_pktx_slist_fifo_rsize_s cn66xx;
 	struct cvmx_sli_pktx_slist_fifo_rsize_s cn68xx;
 	struct cvmx_sli_pktx_slist_fifo_rsize_s cn68xxp1;
-	struct cvmx_sli_pktx_slist_fifo_rsize_s cn70xx;
-	struct cvmx_sli_pktx_slist_fifo_rsize_s cn70xxp1;
-	struct cvmx_sli_pktx_slist_fifo_rsize_s cn78xx;
+	struct cvmx_sli_pktx_slist_fifo_rsize_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_63_32               : 32;
+	uint64_t rsize                        : 32; /**< The number of scatter pointer pairs contained in
+                                                         the scatter list ring. */
+#else
+	uint64_t rsize                        : 32;
+	uint64_t reserved_63_32               : 32;
+#endif
+	} cn70xx;
+	struct cvmx_sli_pktx_slist_fifo_rsize_cn70xx cn70xxp1;
+	struct cvmx_sli_pktx_slist_fifo_rsize_cn70xx cn73xx;
+	struct cvmx_sli_pktx_slist_fifo_rsize_cn70xx cn78xx;
+	struct cvmx_sli_pktx_slist_fifo_rsize_cn70xx cn78xxp2;
 	struct cvmx_sli_pktx_slist_fifo_rsize_s cnf71xx;
+	struct cvmx_sli_pktx_slist_fifo_rsize_cn70xx cnf75xx;
 };
 typedef union cvmx_sli_pktx_slist_fifo_rsize cvmx_sli_pktx_slist_fifo_rsize_t;
 
 /**
+ * cvmx_sli_pkt#_vf_int_sum
+ *
+ * This register contains summary interrupts bits for a VF. A VF read of this register
+ * for any of its 8 rings will return the same 8 bit summary for packet input, packet
+ * output and mailbox interrupts. If a PF reads this register it will return 0x0.
+ */
+union cvmx_sli_pktx_vf_int_sum {
+	uint64_t u64;
+	struct cvmx_sli_pktx_vf_int_sum_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_40_63               : 24;
+	uint64_t mbox                         : 8;  /**< Summary read-only bits of SLI_PKT()_PF_VF_MBOX_SIG()[MBOX_INT] for rings owned by this VF. */
+	uint64_t reserved_24_31               : 8;
+	uint64_t pkt_out                      : 8;  /**< Summary read-only bits of SLI_PKT_IN_DONE()_CNTS[PI_INT] for rings owned by this VF. */
+	uint64_t reserved_8_15                : 8;
+	uint64_t pkt_in                       : 8;  /**< Summary read-only bits of SLI_PKT()_CNTS[PO_INT] for rings owned by this VF. */
+#else
+	uint64_t pkt_in                       : 8;
+	uint64_t reserved_8_15                : 8;
+	uint64_t pkt_out                      : 8;
+	uint64_t reserved_24_31               : 8;
+	uint64_t mbox                         : 8;
+	uint64_t reserved_40_63               : 24;
+#endif
+	} s;
+	struct cvmx_sli_pktx_vf_int_sum_s     cn73xx;
+	struct cvmx_sli_pktx_vf_int_sum_s     cnf75xx;
+};
+typedef union cvmx_sli_pktx_vf_int_sum cvmx_sli_pktx_vf_int_sum_t;
+
+/**
  * cvmx_sli_pkt#_vf_sig
  *
- * This register is used to signal between PF/VF. These 64 CSRs are index by VF number.
+ * This register is used to signal between PF/VF. These 64 registers are index by VF number.
  *
  */
 union cvmx_sli_pktx_vf_sig {
@@ -6367,14 +9918,63 @@ union cvmx_sli_pktx_vf_sig {
 #endif
 	} s;
 	struct cvmx_sli_pktx_vf_sig_s         cn78xx;
+	struct cvmx_sli_pktx_vf_sig_s         cn78xxp2;
 };
 typedef union cvmx_sli_pktx_vf_sig cvmx_sli_pktx_vf_sig_t;
 
 /**
+ * cvmx_sli_pkt_bist_status
+ *
+ * This is the built-in self-test (BIST) status register. Each bit is the BIST result of an
+ * individual memory (per bit, 0 = pass and 1 = fail).
+ */
+union cvmx_sli_pkt_bist_status {
+	uint64_t u64;
+	struct cvmx_sli_pkt_bist_status_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_22_63               : 42;
+	uint64_t bist                         : 22; /**< BIST results. Hardware sets a bit in BIST for memory that fails.
+                                                         INTERNAL:
+                                                           poi_fifo_status,
+                                                           psf_fifo_status,
+                                                           pdf_fifo_status,
+                                                           pbn_fifo_status,
+                                                           pfp_fifo_status,
+                                                           pcsr_pout_size_bstatus,
+                                                           gii_imem_bstatus,
+                                                           pcsr_in_done_bstatus,
+                                                           pcsr_instr_mem_bstatus,
+                                                           pcsr_slist_bstatus,
+                                                           pfm_mem_bstatus,
+                                                           pif_fifo_bstatus,
+                                                           msix_mailbox_bstatus,
+                                                           msix_vfdata_bstatus | msix_vfaddr_bstatus,
+                                                           pop_mem0_bstatus,
+                                                           pop_mem1_bstatus,
+                                                           pout_int_bstatus,
+                                                           prd_gdata_fifo_bstatus,
+                                                           prd_glist_rd_fifo_bstatus,
+                                                           prd_pblk_rd_fifo_bstatus,
+                                                           prd_pkt_rd_fifo_bstatus,
+                                                           pwc_ififo_bstatus */
+#else
+	uint64_t bist                         : 22;
+	uint64_t reserved_22_63               : 42;
+#endif
+	} s;
+	struct cvmx_sli_pkt_bist_status_s     cn73xx;
+	struct cvmx_sli_pkt_bist_status_s     cnf75xx;
+};
+typedef union cvmx_sli_pkt_bist_status cvmx_sli_pkt_bist_status_t;
+
+/**
  * cvmx_sli_pkt_cnt_int
  *
- * This register specifies which packet rings are interrupting because of packet counters.
- *
+ * This register specifies which output packet rings are interrupting because of packet counters.
+ * A bit set in this interrupt register will set a corresponding bit in SLI_PKT_INT and can
+ * also cause SLI_MAC()_PF()_INT_SUM[PCNT] to be set if SLI_PKT()_OUTPUT_CONTROL[CENB] is set.
+ * When read by a function, this register informs which rings owned by the function (0 to N,
+ * N as large as 63) have this interrupt pending.
  */
 union cvmx_sli_pkt_cnt_int {
 	uint64_t u64;
@@ -6405,17 +10005,24 @@ union cvmx_sli_pkt_cnt_int {
 	struct cvmx_sli_pkt_cnt_int_cn61xx    cn68xxp1;
 	struct cvmx_sli_pkt_cnt_int_cn61xx    cn70xx;
 	struct cvmx_sli_pkt_cnt_int_cn61xx    cn70xxp1;
-	struct cvmx_sli_pkt_cnt_int_cn78xx {
+	struct cvmx_sli_pkt_cnt_int_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ring                         : 64; /**< Output ring packet counter interrupt bits SLI sets RING<i> whenever
-                                                         SLI_PKT()_CNTS[CNT] > SLI_PKT()_INT_LEVELS[CNT].
-                                                         SLI_PKT_CNT_INT_ENB[RING<i>] is the corresponding enable.
-                                                         This field will be updated whenever there is a change in SLI_PKT()_CNTS[CNT]; */
+	uint64_t ring                         : 64; /**< Multi-ring output ring packet counter interrupt bits. RING<i> is one
+                                                         whenever SLI_PKT(i)_CNTS[CNT] > SLI_PKT(i)_INT_LEVELS[CNT].
+                                                         RING<i> is the CNT component of SLI_PKT(i)_CNTS[PO_INT]
+                                                         (and SLI_PKT_IN_DONE(i)_CNTS[PO_INT]), and one of the components
+                                                         of SLI_PKT_INT[RING<i>]. Hardware may not update RING<i> when
+                                                         software modifies SLI_PKT(i)_INT_LEVELS[CNT] - refer to the
+                                                         description of SLI_PKT()_INT_LEVELS[CNT].
+                                                         SLI_PKT(i)_OUTPUT_CONTROL[CENB] does not affect RING<i>. */
 #else
 	uint64_t ring                         : 64;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_sli_pkt_cnt_int_cn73xx    cn78xx;
+	struct cvmx_sli_pkt_cnt_int_cn73xx    cn78xxp2;
 	struct cvmx_sli_pkt_cnt_int_cn61xx    cnf71xx;
+	struct cvmx_sli_pkt_cnt_int_cn73xx    cnf75xx;
 };
 typedef union cvmx_sli_pkt_cnt_int cvmx_sli_pkt_cnt_int_t;
 
@@ -6639,6 +10246,50 @@ union cvmx_sli_pkt_dpaddr {
 typedef union cvmx_sli_pkt_dpaddr cvmx_sli_pkt_dpaddr_t;
 
 /**
+ * cvmx_sli_pkt_gbl_control
+ *
+ * This register contains control bits that effect every packet ring
+ *
+ */
+union cvmx_sli_pkt_gbl_control {
+	uint64_t u64;
+	struct cvmx_sli_pkt_gbl_control_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t qtime                        : 16; /**< After a packet ring is disabled on the assertion of SLI_PKT()_INPUT_CONTROL[RST],
+                                                         the hardware will set the SLI_PKT()_INPUT_CONTROL[QUIET] bit
+                                                         after at least [QTIME] * 1024 cycles. */
+	uint64_t reserved_14_15               : 2;
+	uint64_t bpkind                       : 6;  /**< PKIND sent to PKI when DPI_PKT_INST_HDR_S[PKIND] corresponding bit in
+                                                         SLI_PKT_PKIND_VALID[ENB] is set to a 0. */
+	uint64_t reserved_4_7                 : 4;
+	uint64_t pkpfval                      : 1;  /**< when zero, only VF's are subject to SLI_PKT_PKIND_VALID constraints, and PF instructions
+                                                         can select any PKI PKIND.
+                                                         When one, both PF's and VF's are subject to SLI_PKT_PKIND_VALID constraints. */
+	uint64_t bpflr_d                      : 1;  /**< Disables clearing SLI_PKT_OUT_BP_EN bit on an FLR. */
+	uint64_t noptr_d                      : 1;  /**< Disables putting a ring into reset when a packet is received from PKO and
+                                                         the associated ring has no doorbells to send the packet out.
+                                                         SLI_PKT_IN_DONE()_CNTS[CNT] when written. */
+	uint64_t picnt_d                      : 1;  /**< Disables the subtraction of SLI_PKT_IN_DONE()_CNTS[CNT] from
+                                                         SLI_PKT_IN_DONE()_CNTS[CNT] when written. */
+#else
+	uint64_t picnt_d                      : 1;
+	uint64_t noptr_d                      : 1;
+	uint64_t bpflr_d                      : 1;
+	uint64_t pkpfval                      : 1;
+	uint64_t reserved_4_7                 : 4;
+	uint64_t bpkind                       : 6;
+	uint64_t reserved_14_15               : 2;
+	uint64_t qtime                        : 16;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_sli_pkt_gbl_control_s     cn73xx;
+	struct cvmx_sli_pkt_gbl_control_s     cnf75xx;
+};
+typedef union cvmx_sli_pkt_gbl_control cvmx_sli_pkt_gbl_control_t;
+
+/**
  * cvmx_sli_pkt_in_bp
  *
  * Which input rings have backpressure applied.
@@ -6682,21 +10333,40 @@ union cvmx_sli_pkt_in_donex_cnts {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t po_int                       : 1;  /**< "Returns a 1 when either the corresponding bit in SLI_PKT_TIME_INT[RING[\#]] or
                                                          SLI_PKT_CNT_INT[RING[\#]] is set." */
-	uint64_t pi_int                       : 1;  /**< "Returns a 1 when corresponding bit of SLI_PKT_IN_INT[RING[\#]] is set. Writing a 1 to this
-                                                         field clears the corresponding bit in SLI_PKT_IN_INT[RING[\#]]." */
-	uint64_t reserved_49_61               : 13;
-	uint64_t cint_enb                     : 1;  /**< When set, allows corresponding bit in SLI_PKT_IN_INT[RING[\#]] to be set. */
-	uint64_t wmark                        : 16; /**< "When the value of SLI_PKT_IN_DONE()_CNTS[CNT[15:0]] is updated to be equal to
-                                                         SLI_PKT_IN_DONE()_CNTS[WMARK[15:0]] and SLI_PKT_IN_DONE()_CNTS[CINT_ENB] is also
-                                                         set, the corresponding bit in SLI_PKT_IN_INT[RING[\#]] will be set." */
-	uint64_t cnt                          : 32; /**< This field is incrmented by '1' when an instruction
-                                                         is completed. This field is incremented as the
-                                                         last of the data is read from the MAC. */
+	uint64_t pi_int                       : 1;  /**< Packet input interrupt bit for the ring. The hardware sets [PI_INT] whenever it updates
+                                                         [CNT<31:0>] and is greater then [WMARK][15:0] and CINT_ENB is set.
+                                                         The hardware will clear [PI_INT] when [CNT<31:0>] is less then or equal to [WMARK][15:0]
+                                                         [PI_INT] can cause an MSI-X interrupt for the ring, but will never cause an INTA/B/C/D
+                                                         nor MSI interrupt nor set any SLI_MAC()_PF()_INT_SUM bit. SLI_PKT_IN_INT is a
+                                                         multi-ring version of [PI_INT], and [PI_INT] is one component of SLI_PKT_INT. See also
+                                                         SLI_PKT()_CNTS[PI_INT]. */
+	uint64_t mbox_int                     : 1;  /**< Reads corresponding bit in SLI_PKT()_MBOX_INT. */
+	uint64_t resend                       : 1;  /**< A write of 1 will resend an MSI-X interrupt message if there is a pending interrupt in
+                                                         P0_INT, PI_INT or MBOX_INT for this ring after the write of [CNT] occurs.
+                                                         [RESEND] and [CNT] must be written together with the assumption that the write of
+                                                         [CNT] will clear the [PI_INT] interrupt bit. If the write of [CNT] does not cause
+                                                         the [CNT] to drop below the thresholds another MSI-X message will be sent.
+                                                         The [RESEND] bit will never effect INTA/B/C/D or MSI interrupt */
+	uint64_t reserved_49_59               : 11;
+	uint64_t cint_enb                     : 1;  /**< Packet input interrupt enable bit for the ring. When [CINT_ENB] is set,
+                                                         the hardware will set [PI_INT] whenever it updates [CNT] and it is greater
+                                                         than [WMARK].
+                                                         When [CINT_ENB] is clear,  the hardware will never set [PI_INT]. */
+	uint64_t wmark                        : 16; /**< Packet input interrupt watermark for the ring. If [CINT_ENB] is set
+                                                         and WMARK does not equal 0xFFFF, the hardware sets [PI_INT] whenever
+                                                         it updates [CNT][31:0] and it is greater than [16'b0,[WMARK][15:0]]. */
+	uint64_t cnt                          : 32; /**< Packet input done count for the ring. The hardware increments [CNT] by one
+                                                         after it finishes reading (from the remote host) an instruction from the ring
+                                                         and all of its associated packet data.
+                                                         If SLI_PKT_GBL_CONTROL[PICNT_D] is not set, when [CNT] is written it will subtract
+                                                         the value from [CNT]. */
 #else
 	uint64_t cnt                          : 32;
 	uint64_t wmark                        : 16;
 	uint64_t cint_enb                     : 1;
-	uint64_t reserved_49_61               : 13;
+	uint64_t reserved_49_59               : 11;
+	uint64_t resend                       : 1;
+	uint64_t mbox_int                     : 1;
 	uint64_t pi_int                       : 1;
 	uint64_t po_int                       : 1;
 #endif
@@ -6717,10 +10387,49 @@ union cvmx_sli_pkt_in_donex_cnts {
 	struct cvmx_sli_pkt_in_donex_cnts_cn61xx cn66xx;
 	struct cvmx_sli_pkt_in_donex_cnts_cn61xx cn68xx;
 	struct cvmx_sli_pkt_in_donex_cnts_cn61xx cn68xxp1;
-	struct cvmx_sli_pkt_in_donex_cnts_cn61xx cn70xx;
-	struct cvmx_sli_pkt_in_donex_cnts_cn61xx cn70xxp1;
-	struct cvmx_sli_pkt_in_donex_cnts_s   cn78xx;
+	struct cvmx_sli_pkt_in_donex_cnts_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_63_32               : 32;
+	uint64_t cnt                          : 32; /**< This field is incrmented by '1' when an instruction
+                                                         is completed. This field is incremented as the
+                                                         last of the data is read from the MAC. */
+#else
+	uint64_t cnt                          : 32;
+	uint64_t reserved_63_32               : 32;
+#endif
+	} cn70xx;
+	struct cvmx_sli_pkt_in_donex_cnts_cn70xx cn70xxp1;
+	struct cvmx_sli_pkt_in_donex_cnts_s   cn73xx;
+	struct cvmx_sli_pkt_in_donex_cnts_cn78xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t po_int                       : 1;  /**< Packet output interrupt bit for the ring. A copy of SLI_PKT(i)_CNTS[PO_INT]. */
+	uint64_t pi_int                       : 1;  /**< Packet input interrupt bit for the ring. The hardware sets [PI_INT] whenever it updates
+                                                         [CNT<15:0>] to equal [WMARK] when CINT_ENB is set. Writing a 1 clears [PI_INT].
+                                                         [PI_INT] can cause an MSI-X interrupt for the ring, but will never cause an INTA/B/C/D
+                                                         nor MSI interrupt nor set any SLI_INT_SUM bit. SLI_PKT_IN_INT is a multi-ring version of
+                                                         [PI_INT], and [PI_INT] is one component of SLI_PKT_INT. See also
+                                                         SLI_PKT(0..63)_CNTS[PI_INT]. */
+	uint64_t reserved_61_49               : 13;
+	uint64_t cint_enb                     : 1;  /**< Packet input interrupt enable bit for the ring. When [CINT_ENB] is set, the hardware will
+                                                         set [PI_INT] whenever it updates [CNT<15:0>] to equal [WMARK]. When [CINT_ENB]
+                                                         is clear, the hardware will never set [PI_INT]. */
+	uint64_t wmark                        : 16; /**< Packet input interrupt watermark for the ring. If [CINT_ENB] is set, the hardware
+                                                         sets [PI_INT] whenever it updates [CNT<15:0>] to equal [WMARK]. */
+	uint64_t cnt                          : 32; /**< Packet input done count for the ring. The hardware increments [CNT] by one
+                                                         after it finishes reading (from the remote host) an instruction from the ring
+                                                         and all of its associated packet data. */
+#else
+	uint64_t cnt                          : 32;
+	uint64_t wmark                        : 16;
+	uint64_t cint_enb                     : 1;
+	uint64_t reserved_61_49               : 13;
+	uint64_t pi_int                       : 1;
+	uint64_t po_int                       : 1;
+#endif
+	} cn78xx;
+	struct cvmx_sli_pkt_in_donex_cnts_cn78xx cn78xxp2;
 	struct cvmx_sli_pkt_in_donex_cnts_cn61xx cnf71xx;
+	struct cvmx_sli_pkt_in_donex_cnts_s   cnf75xx;
 };
 typedef union cvmx_sli_pkt_in_donex_cnts cvmx_sli_pkt_in_donex_cnts_t;
 
@@ -6728,16 +10437,15 @@ typedef union cvmx_sli_pkt_in_donex_cnts cvmx_sli_pkt_in_donex_cnts_t;
  * cvmx_sli_pkt_in_instr_counts
  *
  * This register contains keeps track of the number of instructions read into the FIFO and
- * packets sent to PKI.
+ * packets sent to PKI. This register is PF-only.
  */
 union cvmx_sli_pkt_in_instr_counts {
 	uint64_t u64;
 	struct cvmx_sli_pkt_in_instr_counts_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t wr_cnt                       : 32; /**< Shows the number of packets sent to the IPD. */
-	uint64_t rd_cnt                       : 32; /**< Shows the value of instructions that have had reads
-                                                         issued for them.
-                                                         to the Packet-ring is in reset. */
+	uint64_t wr_cnt                       : 32; /**< Write count. This field shows the number of packets sent to PKI. */
+	uint64_t rd_cnt                       : 32; /**< Read count. This field shows the value of instructions that have had read operations
+                                                         issued for them. */
 #else
 	uint64_t rd_cnt                       : 32;
 	uint64_t wr_cnt                       : 32;
@@ -6751,33 +10459,64 @@ union cvmx_sli_pkt_in_instr_counts {
 	struct cvmx_sli_pkt_in_instr_counts_s cn68xxp1;
 	struct cvmx_sli_pkt_in_instr_counts_s cn70xx;
 	struct cvmx_sli_pkt_in_instr_counts_s cn70xxp1;
+	struct cvmx_sli_pkt_in_instr_counts_s cn73xx;
 	struct cvmx_sli_pkt_in_instr_counts_s cn78xx;
+	struct cvmx_sli_pkt_in_instr_counts_s cn78xxp2;
 	struct cvmx_sli_pkt_in_instr_counts_s cnf71xx;
+	struct cvmx_sli_pkt_in_instr_counts_s cnf75xx;
 };
 typedef union cvmx_sli_pkt_in_instr_counts cvmx_sli_pkt_in_instr_counts_t;
 
 /**
  * cvmx_sli_pkt_in_int
  *
- * When read by a VF, this register informs which rings owned by the VF (0 to 63) have an
- * interrupt pending. In PF mode, this register returns an unpredictable value. Writing 1s to
- * clear this register clears both packet count and packet time interrupts. The clearing of the
- * interrupts will be reflected in SLI_PKT_CNT_INT and SLI_PKT_TIME_INT.
+ * This register specifies which input packets rings are interrupting because of done cnts.
+ * A bit set in this intterupt register will set a corresponding bit in SLI_PKT_INT which
+ * can cause a MSIX interrupt.  When read by a function, this register informs which rings
+ * owned by the function (0 to N, N as large as 63) have this interrupt pending.
+ * SLI_PKT_IN_INT conditions can cause MSI-X interrupts, but do not cause any
+ * SLI_MAC()_PF()_INT_SUM
+ * bit to set, and cannot cause INTA/B/C/D nor MSI interrupts.
  */
 union cvmx_sli_pkt_in_int {
 	uint64_t u64;
 	struct cvmx_sli_pkt_in_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ring                         : 64; /**< Set when SLI_PKT_IN_DONE()_CNTS[CNT[15:0]] is updated to be equal to
-                                                         SLI_PKT_IN_DONE()_CNTS[WMARK[15:0]] and SLI_PKT_IN_DONE()_CNTS[CINT_ENB] is set.
-                                                         Cleared when SLI_PKT_IN_DONE()_CNTS[PI_INT] is cleared. */
+	uint64_t ring                         : 64; /**< Multi-ring packet input interrupt register. Each RING<i> is a read-only copy of
+                                                         SLI_PKT_IN_DONE(i)_CNTS[PI_INT]. */
 #else
 	uint64_t ring                         : 64;
 #endif
 	} s;
+	struct cvmx_sli_pkt_in_int_s          cn73xx;
 	struct cvmx_sli_pkt_in_int_s          cn78xx;
+	struct cvmx_sli_pkt_in_int_s          cn78xxp2;
+	struct cvmx_sli_pkt_in_int_s          cnf75xx;
 };
 typedef union cvmx_sli_pkt_in_int cvmx_sli_pkt_in_int_t;
+
+/**
+ * cvmx_sli_pkt_in_jabber
+ *
+ * Register to set limit on sli packet input packet sizes
+ *
+ */
+union cvmx_sli_pkt_in_jabber {
+	uint64_t u64;
+	struct cvmx_sli_pkt_in_jabber_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t size                         : 32; /**< Byte count for limiting sizes of packet sizes that are allowed for sli packet inbound
+                                                         packets. */
+#else
+	uint64_t size                         : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_sli_pkt_in_jabber_s       cn73xx;
+	struct cvmx_sli_pkt_in_jabber_s       cnf75xx;
+};
+typedef union cvmx_sli_pkt_in_jabber cvmx_sli_pkt_in_jabber_t;
 
 /**
  * cvmx_sli_pkt_in_pcie_port
@@ -7006,8 +10745,8 @@ typedef union cvmx_sli_pkt_input_control cvmx_sli_pkt_input_control_t;
 /**
  * cvmx_sli_pkt_instr_enb
  *
- * This register enables the instruction fetch for a packet ring. This is the PF version; also
- * see SLI_PKT()_INPUT_CONTROL[ENB].
+ * Multi-ring instruction input enable register. This register is PF-only.
+ *
  */
 union cvmx_sli_pkt_instr_enb {
 	uint64_t u64;
@@ -7035,6 +10774,7 @@ union cvmx_sli_pkt_instr_enb {
 	struct cvmx_sli_pkt_instr_enb_cn61xx  cn70xx;
 	struct cvmx_sli_pkt_instr_enb_cn61xx  cn70xxp1;
 	struct cvmx_sli_pkt_instr_enb_s       cn78xx;
+	struct cvmx_sli_pkt_instr_enb_s       cn78xxp2;
 	struct cvmx_sli_pkt_instr_enb_cn61xx  cnf71xx;
 };
 typedef union cvmx_sli_pkt_instr_enb cvmx_sli_pkt_instr_enb_t;
@@ -7109,21 +10849,33 @@ typedef union cvmx_sli_pkt_instr_size cvmx_sli_pkt_instr_size_t;
 /**
  * cvmx_sli_pkt_int
  *
- * When read by a VF, this register informs which rings owned by the VF (0 to 63) have an
- * interrupt pending. In PF mode, this register returns an unpredictable value. Writing 1s to
- * clear this register clears both packet count and packet time interrupts. The clearing of the
- * interrupts will be reflected in SLI_PKT_CNT_INT and SLI_PKT_TIME_INT.
+ * This register combines the SLI_PKT_CNT_INT, SLI_PKT_TIME_INT or SLI_PKT_IN_INT interrupt
+ * registers. When read by a function, this register informs which rings owned by the function
+ * (0 to N, N as large as 63) have an interrupt pending.
  */
 union cvmx_sli_pkt_int {
 	uint64_t u64;
 	struct cvmx_sli_pkt_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ring                         : 64; /**< Ring 63-0 has packet count or packet time interrupt. */
+	uint64_t ring                         : 64; /**< Multi-ring packet interrupt register. Each RING<i> is set whenever any
+                                                         of these three conditions are true:
+                                                          * SLI_PKT(i)_CNTS[CNT] > SLI_PKT(i)_INT_LEVELS[CNT] (i.e. SLI_PKT_CNT_INT<i>
+                                                            is set), or
+                                                          * SLI_PKT(i)_CNTS[TIMER] > SLI_PKT(i)_INT_LEVELS[TIME] (i.e. SLI_PKT_TIME_INT<i>
+                                                            is set), or
+                                                          * SLI_PKT_IN_DONE(i)_CNTS[PI_INT] (i.e. SLI_PKT_IN_INT<i>) is set.
+                                                         Any of these three conditions can cause an MSI-X interrupt, but only
+                                                         the first two (i.e. SLI_PKT_CNT_INT and SLI_PKT_TIME_INT) can cause
+                                                         INTA/B/C/D and MSI interrupts.
+                                                         SLI_PKT(i)_OUTPUT_CONTROL[CENB,TENB] have no effect on RING<i>. */
 #else
 	uint64_t ring                         : 64;
 #endif
 	} s;
+	struct cvmx_sli_pkt_int_s             cn73xx;
 	struct cvmx_sli_pkt_int_s             cn78xx;
+	struct cvmx_sli_pkt_int_s             cn78xxp2;
+	struct cvmx_sli_pkt_int_s             cnf75xx;
 };
 typedef union cvmx_sli_pkt_int cvmx_sli_pkt_int_t;
 
@@ -7193,10 +10945,72 @@ union cvmx_sli_pkt_iptr {
 typedef union cvmx_sli_pkt_iptr cvmx_sli_pkt_iptr_t;
 
 /**
+ * cvmx_sli_pkt_mac#_pf#_rinfo
+ *
+ * This register sets the total number and starting number of rings for a given MAC and PF
+ * combination. In SRIOV mode SLI_PKT_MAC()_PF()_RINFO[RPVF] and
+ * SLI_PKT_MAC()_PF()_RINFO[NVFS] must be non zero and determine which rings the PF and
+ * VF's own.
+ *
+ * An individual VF will own SLI_PKT_MAC()_PF()_RINFO[RPVF] number of rings.
+ *
+ * A PF will own the rings starting from ((SLI_PKT_MAC()_PF()_RINFO[SRN] +
+ * (SLI_PKT_MAC()_PF()_RINFO[RPVF] * SLI_PKT_MAC()_PF()_RINFO[NVFS]))
+ * to (SLI_PKT_MAC()_PF()_RINFO[SRN] + (SLI_PKT_MAC()_PF()_RINFO[TRS] -
+ * 1)).  SLI_PKT()_INPUT_CONTROL[PVF_NUM] must be written to values that
+ * correlate with the fields in this register.
+ *
+ * e.g. Given:
+ * _ SLI_PKT_MAC0_PF1_RINFO[SRN] = 32,
+ * _ SLI_PKT_MAC0_PF1_RINFO[TRS] = 35,
+ * _ SLI_PKT_MAC0_PF1_RINFO[RPVF] = 4,
+ * _ SLI_PKT_MAC0_PF1_RINFO[NVFS] = 7:
+ * _ rings owned by VF1 32,33,34,35
+ * _ rings owned by VF2 36,37,38,39
+ * _ rings owned by VF3 40,41,42,43
+ * _ rings owned by VF4 44,45,46,47
+ * _ rings owned by VF5 48,49,50,51
+ * _ rings owned by VF6 52,53,54,55
+ * _ rings owned by VF7 56,57,58,59
+ * _ rings owned by PF  60,61,62,63,64,65,66
+ *
+ * CNXXXX valid copies are MAC0 PF0, MAC0 PF1, MAC1 PF0, MAC2 PF0, MAC3 PF3.
+ */
+union cvmx_sli_pkt_macx_pfx_rinfo {
+	uint64_t u64;
+	struct cvmx_sli_pkt_macx_pfx_rinfo_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_55_63               : 9;
+	uint64_t nvfs                         : 7;  /**< The number of VF's for this PF. This field must not be zero whenever RPVF != 0.
+                                                         Legal values are 0 to 64, with the requirement of (NVFS * RPVF) <= TRS. */
+	uint64_t reserved_40_47               : 8;
+	uint64_t rpvf                         : 8;  /**< The number of rings assigned to a VF for this PF. Legal values are 0,1,2,4,8
+                                                         with the requirement of (NVFS * RPVF) <= TRS. */
+	uint64_t reserved_24_31               : 8;
+	uint64_t trs                          : 8;  /**< The number of rings assigned to the PF. Legal value are 0 to 64. */
+	uint64_t reserved_7_15                : 9;
+	uint64_t srn                          : 7;  /**< The starting ring number used by the PF. Legal value are 0 to 127. */
+#else
+	uint64_t srn                          : 7;
+	uint64_t reserved_7_15                : 9;
+	uint64_t trs                          : 8;
+	uint64_t reserved_24_31               : 8;
+	uint64_t rpvf                         : 8;
+	uint64_t reserved_40_47               : 8;
+	uint64_t nvfs                         : 7;
+	uint64_t reserved_55_63               : 9;
+#endif
+	} s;
+	struct cvmx_sli_pkt_macx_pfx_rinfo_s  cn73xx;
+	struct cvmx_sli_pkt_macx_pfx_rinfo_s  cnf75xx;
+};
+typedef union cvmx_sli_pkt_macx_pfx_rinfo cvmx_sli_pkt_macx_pfx_rinfo_t;
+
+/**
  * cvmx_sli_pkt_mac#_rinfo
  *
  * This register sets the total number and starting number of rings used by the MAC.
- *
+ * This register is PF-only.
  */
 union cvmx_sli_pkt_macx_rinfo {
 	uint64_t u64;
@@ -7218,14 +11032,15 @@ union cvmx_sli_pkt_macx_rinfo {
 #endif
 	} s;
 	struct cvmx_sli_pkt_macx_rinfo_s      cn78xx;
+	struct cvmx_sli_pkt_macx_rinfo_s      cn78xxp2;
 };
 typedef union cvmx_sli_pkt_macx_rinfo cvmx_sli_pkt_macx_rinfo_t;
 
 /**
  * cvmx_sli_pkt_mac0_sig0
  *
- * This register is used to signal between PF/VF. This CSR can be R/W by the PF from MAC0 and any VF.
- *
+ * This register is used to signal between PF/VF. This register can be R/W by the PF from MAC0
+ * and any VF.
  */
 union cvmx_sli_pkt_mac0_sig0 {
 	uint64_t u64;
@@ -7237,14 +11052,15 @@ union cvmx_sli_pkt_mac0_sig0 {
 #endif
 	} s;
 	struct cvmx_sli_pkt_mac0_sig0_s       cn78xx;
+	struct cvmx_sli_pkt_mac0_sig0_s       cn78xxp2;
 };
 typedef union cvmx_sli_pkt_mac0_sig0 cvmx_sli_pkt_mac0_sig0_t;
 
 /**
  * cvmx_sli_pkt_mac0_sig1
  *
- * This register is used to signal between PF/VF. This CSR can be R/W by the PF from MAC0 and any VF.
- *
+ * This register is used to signal between PF/VF. This register can be R/W by the PF from MAC0
+ * and any VF.
  */
 union cvmx_sli_pkt_mac0_sig1 {
 	uint64_t u64;
@@ -7256,14 +11072,15 @@ union cvmx_sli_pkt_mac0_sig1 {
 #endif
 	} s;
 	struct cvmx_sli_pkt_mac0_sig1_s       cn78xx;
+	struct cvmx_sli_pkt_mac0_sig1_s       cn78xxp2;
 };
 typedef union cvmx_sli_pkt_mac0_sig1 cvmx_sli_pkt_mac0_sig1_t;
 
 /**
  * cvmx_sli_pkt_mac1_sig0
  *
- * This register is used to signal between PF/VF. This CSR can be R/W by the PF from MAC1 and any VF.
- *
+ * This register is used to signal between PF/VF. This register can be R/W by the PF from MAC1
+ * and any VF.
  */
 union cvmx_sli_pkt_mac1_sig0 {
 	uint64_t u64;
@@ -7275,14 +11092,15 @@ union cvmx_sli_pkt_mac1_sig0 {
 #endif
 	} s;
 	struct cvmx_sli_pkt_mac1_sig0_s       cn78xx;
+	struct cvmx_sli_pkt_mac1_sig0_s       cn78xxp2;
 };
 typedef union cvmx_sli_pkt_mac1_sig0 cvmx_sli_pkt_mac1_sig0_t;
 
 /**
  * cvmx_sli_pkt_mac1_sig1
  *
- * This register is used to signal between PF/VF. This CSR can be R/W by the PF from MAC1 and any VF.
- *
+ * This register is used to signal between PF/VF. This register can be R/W by the PF from MAC1
+ * and any VF.
  */
 union cvmx_sli_pkt_mac1_sig1 {
 	uint64_t u64;
@@ -7294,6 +11112,7 @@ union cvmx_sli_pkt_mac1_sig1 {
 #endif
 	} s;
 	struct cvmx_sli_pkt_mac1_sig1_s       cn78xx;
+	struct cvmx_sli_pkt_mac1_sig1_s       cn78xxp2;
 };
 typedef union cvmx_sli_pkt_mac1_sig1 cvmx_sli_pkt_mac1_sig1_t;
 
@@ -7306,6 +11125,138 @@ typedef union cvmx_sli_pkt_mac1_sig1 cvmx_sli_pkt_mac1_sig1_t;
 union cvmx_sli_pkt_mem_ctl {
 	uint64_t u64;
 	struct cvmx_sli_pkt_mem_ctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t msix_mbox_fs                 : 2;  /**< Used to flip the synd. for pcsr_ncsr_msix_mailbox_flip_synd. */
+	uint64_t msix_mbox_ecc                : 1;  /**< When set pcsr_ncsr_msix_mailbox_ecc_ena will have an ECC not generated and checked. */
+	uint64_t reserved_36_44               : 9;
+	uint64_t pos_fs                       : 2;  /**< Used to flip the synd. for pcsr_pout_size_csr_flip_synd. */
+	uint64_t pos_ecc                      : 1;  /**< When set will have an ECC not generated and checked. */
+	uint64_t pinm_fs                      : 2;  /**< Used to flip the synd. for pcsr_instr_mem_csr_flip_synd. */
+	uint64_t pinm_ecc                     : 1;  /**< When set pcsr_instr_mem_csr_cor_dis will have an ECC not generated and checked. */
+	uint64_t pind_fs                      : 2;  /**< Used to flip the synd. for pcsr_in_done_csr_flip_synd. */
+	uint64_t pind_ecc                     : 1;  /**< When set pcsr_in_done_csr_cor_dis will have an ECC not generated and checked. */
+	uint64_t point_fs                     : 2;  /**< Used to flip the synd. for pout_int_csr_flip_synd. */
+	uint64_t point_ecc                    : 1;  /**< When set pout_int_csr_cor_dis will have an ECC not generated and checked. */
+	uint64_t slist_fs                     : 2;  /**< Used to flip the synd. for pcsr_slist_csr_flip_synd. */
+	uint64_t slist_ecc                    : 1;  /**< When set pcsr_slist_csr_cor_dis will have an ECC not generated and checked. */
+	uint64_t pop1_fs                      : 2;  /**< Used to flip the synd for packet-out-pointer memory1. */
+	uint64_t pop1_ecc                     : 1;  /**< When set Packet Out Pointer memory1 will have an ECC not generated and checked. */
+	uint64_t pop0_fs                      : 2;  /**< Used to flip the synd for packet-out-pointer memory0. */
+	uint64_t pop0_ecc                     : 1;  /**< When set packet-out-pointer memory0 will have an ECC not generated and checked. */
+	uint64_t pfp_fs                       : 2;  /**< Reserved. INTERNAL: Placeholder. ECC not implemented due to critical path. */
+	uint64_t pfp_ecc                      : 1;  /**< Reserved. INTERNAL: Placeholder. ECC not implemented due to critical path. */
+	uint64_t pbn_fs                       : 2;  /**< Used to flip the synd for pointer-base-number memory. */
+	uint64_t pbn_ecc                      : 1;  /**< When set pointer-base-number memory will have an ECC not generated and checked. */
+	uint64_t pdf_fs                       : 2;  /**< Used to flip the synd for packet-data-info memory. */
+	uint64_t pdf_ecc                      : 1;  /**< When set packet data memory will have an ECC not generated and checked. */
+	uint64_t psf_fs                       : 2;  /**< Used to flip the synd for PSF memory. */
+	uint64_t psf_ecc                      : 1;  /**< When set PSF memory will have an ECC not generated and checked. */
+	uint64_t poi_fs                       : 2;  /**< Used to flip the synd for packet-out-info memory. */
+	uint64_t poi_ecc                      : 1;  /**< When set packet-out-info memory will have an ECC not generated and checked. */
+#else
+	uint64_t poi_ecc                      : 1;
+	uint64_t poi_fs                       : 2;
+	uint64_t psf_ecc                      : 1;
+	uint64_t psf_fs                       : 2;
+	uint64_t pdf_ecc                      : 1;
+	uint64_t pdf_fs                       : 2;
+	uint64_t pbn_ecc                      : 1;
+	uint64_t pbn_fs                       : 2;
+	uint64_t pfp_ecc                      : 1;
+	uint64_t pfp_fs                       : 2;
+	uint64_t pop0_ecc                     : 1;
+	uint64_t pop0_fs                      : 2;
+	uint64_t pop1_ecc                     : 1;
+	uint64_t pop1_fs                      : 2;
+	uint64_t slist_ecc                    : 1;
+	uint64_t slist_fs                     : 2;
+	uint64_t point_ecc                    : 1;
+	uint64_t point_fs                     : 2;
+	uint64_t pind_ecc                     : 1;
+	uint64_t pind_fs                      : 2;
+	uint64_t pinm_ecc                     : 1;
+	uint64_t pinm_fs                      : 2;
+	uint64_t pos_ecc                      : 1;
+	uint64_t pos_fs                       : 2;
+	uint64_t reserved_36_44               : 9;
+	uint64_t msix_mbox_ecc                : 1;
+	uint64_t msix_mbox_fs                 : 2;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} s;
+	struct cvmx_sli_pkt_mem_ctl_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_48_63               : 16;
+	uint64_t msix_mbox_fs                 : 2;  /**< Used to flip the synd. for pcsr_ncsr_msix_mailbox_flip_synd. */
+	uint64_t msix_mbox_ecc                : 1;  /**< When set pcsr_ncsr_msix_mailbox_ecc_ena will have an ECC not generated and checked. */
+	uint64_t msix_data_fs                 : 2;  /**< Used to flip the synd. for pcsr_ncsr_msix_data_flip_synd. */
+	uint64_t msix_data_ecc                : 1;  /**< When set pcsr_ncsr_msix_data_ecc_ena will have an ECC not generated and checked. */
+	uint64_t msix_addr_fs                 : 2;  /**< Used to flip the synd. for pcsr_ncsr_msix_addr_flip_synd. */
+	uint64_t msix_addr_ecc                : 1;  /**< When set pcsr_ncsr_msix_addr_ecc_ena will have an ECC not generated and checked. */
+	uint64_t pof_fs                       : 2;  /**< Used to flip the synd for packet-out-fifo memory. */
+	uint64_t pof_ecc                      : 1;  /**< When set packet-out-fifo memory will have an ECC not generated and checked. */
+	uint64_t pos_fs                       : 2;  /**< Used to flip the synd. for pcsr_pout_size_csr_flip_synd. */
+	uint64_t pos_ecc                      : 1;  /**< When set will have an ECC not generated and checked. */
+	uint64_t pinm_fs                      : 2;  /**< Used to flip the synd. for pcsr_instr_mem_csr_flip_synd. */
+	uint64_t pinm_ecc                     : 1;  /**< When set pcsr_instr_mem_csr_cor_dis will have an ECC not generated and checked. */
+	uint64_t pind_fs                      : 2;  /**< Used to flip the synd. for pcsr_in_done_csr_flip_synd. */
+	uint64_t pind_ecc                     : 1;  /**< When set pcsr_in_done_csr_cor_dis will have an ECC not generated and checked. */
+	uint64_t point_fs                     : 2;  /**< Used to flip the synd. for pout_int_csr_flip_synd. */
+	uint64_t point_ecc                    : 1;  /**< When set pout_int_csr_cor_dis will have an ECC not generated and checked. */
+	uint64_t slist_fs                     : 2;  /**< Used to flip the synd. for pcsr_slist_csr_flip_synd. */
+	uint64_t slist_ecc                    : 1;  /**< When set pcsr_slist_csr_cor_dis will have an ECC not generated and checked. */
+	uint64_t pop1_fs                      : 2;  /**< Used to flip the synd for packet-out-pointer memory1. */
+	uint64_t pop1_ecc                     : 1;  /**< When set Packet Out Pointer memory1 will have an ECC not generated and checked. */
+	uint64_t pop0_fs                      : 2;  /**< Used to flip the synd for packet-out-pointer memory0. */
+	uint64_t pop0_ecc                     : 1;  /**< When set packet-out-pointer memory0 will have an ECC not generated and checked. */
+	uint64_t pfp_fs                       : 2;  /**< Reserved. INTERNAL: Placeholder. ECC not implemented due to critical path. */
+	uint64_t pfp_ecc                      : 1;  /**< Reserved. INTERNAL: Placeholder. ECC not implemented due to critical path. */
+	uint64_t pbn_fs                       : 2;  /**< Used to flip the synd for pointer-base-number memory. */
+	uint64_t pbn_ecc                      : 1;  /**< When set pointer-base-number memory will have an ECC not generated and checked. */
+	uint64_t pdf_fs                       : 2;  /**< Used to flip the synd for packet-data-info memory. */
+	uint64_t pdf_ecc                      : 1;  /**< When set packet data memory will have an ECC not generated and checked. */
+	uint64_t psf_fs                       : 2;  /**< Used to flip the synd for PSF memory. */
+	uint64_t psf_ecc                      : 1;  /**< When set PSF memory will have an ECC not generated and checked. */
+	uint64_t poi_fs                       : 2;  /**< Used to flip the synd for packet-out-info memory. */
+	uint64_t poi_ecc                      : 1;  /**< When set packet-out-info memory will have an ECC not generated and checked. */
+#else
+	uint64_t poi_ecc                      : 1;
+	uint64_t poi_fs                       : 2;
+	uint64_t psf_ecc                      : 1;
+	uint64_t psf_fs                       : 2;
+	uint64_t pdf_ecc                      : 1;
+	uint64_t pdf_fs                       : 2;
+	uint64_t pbn_ecc                      : 1;
+	uint64_t pbn_fs                       : 2;
+	uint64_t pfp_ecc                      : 1;
+	uint64_t pfp_fs                       : 2;
+	uint64_t pop0_ecc                     : 1;
+	uint64_t pop0_fs                      : 2;
+	uint64_t pop1_ecc                     : 1;
+	uint64_t pop1_fs                      : 2;
+	uint64_t slist_ecc                    : 1;
+	uint64_t slist_fs                     : 2;
+	uint64_t point_ecc                    : 1;
+	uint64_t point_fs                     : 2;
+	uint64_t pind_ecc                     : 1;
+	uint64_t pind_fs                      : 2;
+	uint64_t pinm_ecc                     : 1;
+	uint64_t pinm_fs                      : 2;
+	uint64_t pos_ecc                      : 1;
+	uint64_t pos_fs                       : 2;
+	uint64_t pof_ecc                      : 1;
+	uint64_t pof_fs                       : 2;
+	uint64_t msix_addr_ecc                : 1;
+	uint64_t msix_addr_fs                 : 2;
+	uint64_t msix_data_ecc                : 1;
+	uint64_t msix_data_fs                 : 2;
+	uint64_t msix_mbox_ecc                : 1;
+	uint64_t msix_mbox_fs                 : 2;
+	uint64_t reserved_48_63               : 16;
+#endif
+	} cn73xx;
+	struct cvmx_sli_pkt_mem_ctl_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_44_63               : 20;
 	uint64_t msid_fs                      : 2;  /**< Used to flip the synd. for pcsr_ncsr_msix_data_flip_synd. */
@@ -7369,8 +11320,9 @@ union cvmx_sli_pkt_mem_ctl {
 	uint64_t msid_fs                      : 2;
 	uint64_t reserved_44_63               : 20;
 #endif
-	} s;
-	struct cvmx_sli_pkt_mem_ctl_s         cn78xx;
+	} cn78xx;
+	struct cvmx_sli_pkt_mem_ctl_cn78xx    cn78xxp2;
+	struct cvmx_sli_pkt_mem_ctl_cn73xx    cnf75xx;
 };
 typedef union cvmx_sli_pkt_mem_ctl cvmx_sli_pkt_mem_ctl_t;
 
@@ -7418,7 +11370,7 @@ union cvmx_sli_pkt_out_bp_en {
 	struct cvmx_sli_pkt_out_bp_en_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bp_en                        : 64; /**< When set, enable the channel-level backpressure to be sent to PKO. Backpressure is sent to
-                                                         the PKO on the channels 0x100-0x13F. */
+                                                         the PKO on the channels 0x100-0x13F. See SLI_PKT_OUTPUT_WMARK[WMARK]. */
 #else
 	uint64_t bp_en                        : 64;
 #endif
@@ -7437,14 +11389,107 @@ union cvmx_sli_pkt_out_bp_en {
 	} cn68xx;
 	struct cvmx_sli_pkt_out_bp_en_cn68xx  cn68xxp1;
 	struct cvmx_sli_pkt_out_bp_en_s       cn78xx;
+	struct cvmx_sli_pkt_out_bp_en_s       cn78xxp2;
 };
 typedef union cvmx_sli_pkt_out_bp_en cvmx_sli_pkt_out_bp_en_t;
 
 /**
+ * cvmx_sli_pkt_out_bp_en2_w1c
+ *
+ * This register disables sending backpressure to PKO.
+ *
+ */
+union cvmx_sli_pkt_out_bp_en2_w1c {
+	uint64_t u64;
+	struct cvmx_sli_pkt_out_bp_en2_w1c_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t w1c                          : 64; /**< When set, disables the channel-level backpressure to be sent to PKO. Backpressure is sent
+                                                         to
+                                                         the PKO on the channels 0x140-0x17F. See SLI_PKT_OUTPUT_WMARK[WMARK].
+                                                         A read of this register will return the current value of the enables for those channels. */
+#else
+	uint64_t w1c                          : 64;
+#endif
+	} s;
+	struct cvmx_sli_pkt_out_bp_en2_w1c_s  cn73xx;
+	struct cvmx_sli_pkt_out_bp_en2_w1c_s  cnf75xx;
+};
+typedef union cvmx_sli_pkt_out_bp_en2_w1c cvmx_sli_pkt_out_bp_en2_w1c_t;
+
+/**
+ * cvmx_sli_pkt_out_bp_en2_w1s
+ *
+ * This register enables sending backpressure to PKO.
+ *
+ */
+union cvmx_sli_pkt_out_bp_en2_w1s {
+	uint64_t u64;
+	struct cvmx_sli_pkt_out_bp_en2_w1s_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t w1s                          : 64; /**< When set, enables the channel-level backpressure to be sent to PKO. Backpressure is sent
+                                                         to
+                                                         the PKO on the channels 0x140-0x17F. See SLI_PKT_OUTPUT_WMARK[WMARK].
+                                                         A read of this register will return the current value of the enables for those channels. */
+#else
+	uint64_t w1s                          : 64;
+#endif
+	} s;
+	struct cvmx_sli_pkt_out_bp_en2_w1s_s  cn73xx;
+	struct cvmx_sli_pkt_out_bp_en2_w1s_s  cnf75xx;
+};
+typedef union cvmx_sli_pkt_out_bp_en2_w1s cvmx_sli_pkt_out_bp_en2_w1s_t;
+
+/**
+ * cvmx_sli_pkt_out_bp_en_w1c
+ *
+ * This register disables sending backpressure to PKO.
+ *
+ */
+union cvmx_sli_pkt_out_bp_en_w1c {
+	uint64_t u64;
+	struct cvmx_sli_pkt_out_bp_en_w1c_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t w1c                          : 64; /**< When set, disables the channel-level backpressure to be sent to PKO. Backpressure is sent
+                                                         to
+                                                         the PKO on the channels 0x100-0x13F. See SLI_PKT_OUTPUT_WMARK[WMARK].
+                                                         A read of this register will return the current value of the enables for those channels. */
+#else
+	uint64_t w1c                          : 64;
+#endif
+	} s;
+	struct cvmx_sli_pkt_out_bp_en_w1c_s   cn73xx;
+	struct cvmx_sli_pkt_out_bp_en_w1c_s   cnf75xx;
+};
+typedef union cvmx_sli_pkt_out_bp_en_w1c cvmx_sli_pkt_out_bp_en_w1c_t;
+
+/**
+ * cvmx_sli_pkt_out_bp_en_w1s
+ *
+ * This register enables sending backpressure to PKO.
+ *
+ */
+union cvmx_sli_pkt_out_bp_en_w1s {
+	uint64_t u64;
+	struct cvmx_sli_pkt_out_bp_en_w1s_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t w1s                          : 64; /**< When set, enables the channel-level backpressure to be sent to PKO. Backpressure is sent
+                                                         to
+                                                         the PKO on the channels 0x100-0x13F. See SLI_PKT_OUTPUT_WMARK[WMARK].
+                                                         A read of this register will return the current value of the enables for those channels. */
+#else
+	uint64_t w1s                          : 64;
+#endif
+	} s;
+	struct cvmx_sli_pkt_out_bp_en_w1s_s   cn73xx;
+	struct cvmx_sli_pkt_out_bp_en_w1s_s   cnf75xx;
+};
+typedef union cvmx_sli_pkt_out_bp_en_w1s cvmx_sli_pkt_out_bp_en_w1s_t;
+
+/**
  * cvmx_sli_pkt_out_enb
  *
- * This register enables the output packet engines. This is the PF version; also see
- * SLI_PKT()_OUTPUT_CONTROL[ENB].
+ * Multi-ring packet output enable register. This register is PF-only.
+ *
  */
 union cvmx_sli_pkt_out_enb {
 	uint64_t u64;
@@ -7478,6 +11523,7 @@ union cvmx_sli_pkt_out_enb {
 	struct cvmx_sli_pkt_out_enb_cn61xx    cn70xx;
 	struct cvmx_sli_pkt_out_enb_cn61xx    cn70xxp1;
 	struct cvmx_sli_pkt_out_enb_s         cn78xx;
+	struct cvmx_sli_pkt_out_enb_s         cn78xxp2;
 	struct cvmx_sli_pkt_out_enb_cn61xx    cnf71xx;
 };
 typedef union cvmx_sli_pkt_out_enb cvmx_sli_pkt_out_enb_t;
@@ -7487,15 +11533,16 @@ typedef union cvmx_sli_pkt_out_enb cvmx_sli_pkt_out_enb_t;
  *
  * This register sets the value that determines when backpressure is applied to the PKO. When
  * SLI_PKT()_SLIST_BAOFF_DBELL[DBELL] is less than [WMARK], backpressure is sent to PKO for
- * the associated channel.
+ * the associated channel. This register is PF-only.
  */
 union cvmx_sli_pkt_output_wmark {
 	uint64_t u64;
 	struct cvmx_sli_pkt_output_wmark_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t wmark                        : 32; /**< Value when DBELL count drops below backpressure
-                                                         for the ring will be applied to the PKO. */
+	uint64_t wmark                        : 32; /**< Packet output backpressure watermark. When SLI_PKT_OUT_BP_EN<i> is set and
+                                                         SLI_PKT(i)_SLIST_BAOFF_DBELL[DBELL] drops below this value, PKO receives backpressure
+                                                         for channel/ring i. */
 #else
 	uint64_t wmark                        : 32;
 	uint64_t reserved_32_63               : 32;
@@ -7509,8 +11556,11 @@ union cvmx_sli_pkt_output_wmark {
 	struct cvmx_sli_pkt_output_wmark_s    cn68xxp1;
 	struct cvmx_sli_pkt_output_wmark_s    cn70xx;
 	struct cvmx_sli_pkt_output_wmark_s    cn70xxp1;
+	struct cvmx_sli_pkt_output_wmark_s    cn73xx;
 	struct cvmx_sli_pkt_output_wmark_s    cn78xx;
+	struct cvmx_sli_pkt_output_wmark_s    cn78xxp2;
 	struct cvmx_sli_pkt_output_wmark_s    cnf71xx;
+	struct cvmx_sli_pkt_output_wmark_s    cnf75xx;
 };
 typedef union cvmx_sli_pkt_output_wmark cvmx_sli_pkt_output_wmark_t;
 
@@ -7546,6 +11596,30 @@ union cvmx_sli_pkt_pcie_port {
 typedef union cvmx_sli_pkt_pcie_port cvmx_sli_pkt_pcie_port_t;
 
 /**
+ * cvmx_sli_pkt_pkind_valid
+ *
+ * Enables bits per PKIND that are allowed to be sent to PKI specified in the
+ * DPI_PKT_INST_HDR_S[PKIND]
+ * DPI packet instruction field.
+ */
+union cvmx_sli_pkt_pkind_valid {
+	uint64_t u64;
+	struct cvmx_sli_pkt_pkind_valid_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t enb                          : 64; /**< Enables bits for 64 possible pkinds.  If set to a 1, the corresponding
+                                                         DPI_PKT_INST_HDR_S[PKIND] is allowed to be passed to PKI.  If set to a 0,
+                                                         the DPI_PKT_INST_HDR_S[PKIND] will be changed to the pkind set in
+                                                         SLI_PKT_GBL_CONTROL[BPKIND] when sent to PKI. */
+#else
+	uint64_t enb                          : 64;
+#endif
+	} s;
+	struct cvmx_sli_pkt_pkind_valid_s     cn73xx;
+	struct cvmx_sli_pkt_pkind_valid_s     cnf75xx;
+};
+typedef union cvmx_sli_pkt_pkind_valid cvmx_sli_pkt_pkind_valid_t;
+
+/**
  * cvmx_sli_pkt_port_in_rst
  *
  * SLI_PKT_PORT_IN_RST = SLI Packet Port In Reset
@@ -7579,19 +11653,22 @@ typedef union cvmx_sli_pkt_port_in_rst cvmx_sli_pkt_port_in_rst_t;
 /**
  * cvmx_sli_pkt_ring_rst
  *
- * This register shows which rings are in reset. See also SLI_PKT()_INPUT_CONTROL[RST].
- *
+ * When read by a PF, this register informs which rings owned by the function (0 to N, N as large
+ * as 63) are in reset. See also SLI_PKT()_INPUT_CONTROL[RST].
  */
 union cvmx_sli_pkt_ring_rst {
 	uint64_t u64;
 	struct cvmx_sli_pkt_ring_rst_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t rst                          : 64; /**< Ring in reset. When asserted 1, the vector bit corresponding to the packet ring is in reset. */
+	uint64_t rst                          : 64; /**< RST<i> is a read-only copy of SLI_PKT(i)_INPUT_CONTROL[RST]. */
 #else
 	uint64_t rst                          : 64;
 #endif
 	} s;
+	struct cvmx_sli_pkt_ring_rst_s        cn73xx;
 	struct cvmx_sli_pkt_ring_rst_s        cn78xx;
+	struct cvmx_sli_pkt_ring_rst_s        cn78xxp2;
+	struct cvmx_sli_pkt_ring_rst_s        cnf75xx;
 };
 typedef union cvmx_sli_pkt_ring_rst cvmx_sli_pkt_ring_rst_t;
 
@@ -7704,8 +11781,13 @@ typedef union cvmx_sli_pkt_slist_ror cvmx_sli_pkt_slist_ror_t;
 /**
  * cvmx_sli_pkt_time_int
  *
- * This register specifies which packets' rings are interrupting because of packet timers.
- *
+ * This register specifies which output packets rings are interrupting because of packet timers.
+ * A bit set in this interrupt register will set a corresponding bit in SLI_PKT_INT and can
+ * also cause SLI_MAC()_PF()_INT_SUM[PTIME] to be set if
+ * SLI_PKT()_OUTPUT_CONTROL[TENB]
+ * is set. When read by a function, this register informs which rings owned by the function (0 to
+ * N,
+ * N as large as 63) have this interrupt pending.
  */
 union cvmx_sli_pkt_time_int {
 	uint64_t u64;
@@ -7736,17 +11818,24 @@ union cvmx_sli_pkt_time_int {
 	struct cvmx_sli_pkt_time_int_cn61xx   cn68xxp1;
 	struct cvmx_sli_pkt_time_int_cn61xx   cn70xx;
 	struct cvmx_sli_pkt_time_int_cn61xx   cn70xxp1;
-	struct cvmx_sli_pkt_time_int_cn78xx {
+	struct cvmx_sli_pkt_time_int_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ring                         : 64; /**< Output ring packet timer interrupt bits SLI sets RING<i> whenever
-                                                         SLI_PKT()_CNTS[TIMER] > SLI_PKT()_INT_LEVELS[TIME]. SLI_PKT_TIME_INT_ENB[RING<i>] is
-                                                         the corresponding enable. This field will be updated whenever there is a change
-                                                         in SLI_PKT()_CNTS[TIMER]; */
+	uint64_t ring                         : 64; /**< Multi-ring output ring packet time interrupt bits. RING<i> reads as one
+                                                         whenever SLI_PKT(i)_CNTS[TIMER] > SLI_PKT(i)_INT_LEVELS[TIME].
+                                                         RING<i> is the TIMER component of SLI_PKT(i)_CNTS[PO_INT]
+                                                         (and SLI_PKT_IN_DONE(i)_CNTS[PO_INT]), and one of the components
+                                                         of SLI_PKT_INT[RING<i>]. Hardware may not update RING<i> when
+                                                         software modifies SLI_PKT(i)_INT_LEVELS[TIME] - refer to the
+                                                         description of SLI_PKT()_INT_LEVELS[TIME].
+                                                         SLI_PKT(i)_OUTPUT_CONTROL[TENB] does not affect RING<i>. */
 #else
 	uint64_t ring                         : 64;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_sli_pkt_time_int_cn73xx   cn78xx;
+	struct cvmx_sli_pkt_time_int_cn73xx   cn78xxp2;
 	struct cvmx_sli_pkt_time_int_cn61xx   cnf71xx;
+	struct cvmx_sli_pkt_time_int_cn73xx   cnf75xx;
 };
 typedef union cvmx_sli_pkt_time_int cvmx_sli_pkt_time_int_t;
 
@@ -7845,6 +11934,55 @@ union cvmx_sli_portx_pkind {
 typedef union cvmx_sli_portx_pkind cvmx_sli_portx_pkind_t;
 
 /**
+ * cvmx_sli_pp_pkt_csr_control
+ *
+ * This register provides access to SLI packet register space from the cores.
+ *
+ */
+union cvmx_sli_pp_pkt_csr_control {
+	uint64_t u64;
+	struct cvmx_sli_pp_pkt_csr_control_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_18_63               : 46;
+	uint64_t mac                          : 2;  /**< MAC number to use on a PP register accesses to SLI Packet CSRs. */
+	uint64_t pvf                          : 16; /**< Function number to use on a PP register accesses to SLI Packet CSRs,
+                                                         where <15:13> selects the PF the
+                                                         VF belongs to, and <12:0> selects the VF within that PF (or 0x0 for the PF
+                                                         itself). */
+#else
+	uint64_t pvf                          : 16;
+	uint64_t mac                          : 2;
+	uint64_t reserved_18_63               : 46;
+#endif
+	} s;
+	struct cvmx_sli_pp_pkt_csr_control_s  cn73xx;
+	struct cvmx_sli_pp_pkt_csr_control_s  cnf75xx;
+};
+typedef union cvmx_sli_pp_pkt_csr_control cvmx_sli_pp_pkt_csr_control_t;
+
+/**
+ * cvmx_sli_s2c_end_merge
+ *
+ * Writing this CSR will cause a merge to end.
+ *
+ */
+union cvmx_sli_s2c_end_merge {
+	uint64_t u64;
+	struct cvmx_sli_s2c_end_merge_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_0_63                : 64;
+#else
+	uint64_t reserved_0_63                : 64;
+#endif
+	} s;
+	struct cvmx_sli_s2c_end_merge_s       cn73xx;
+	struct cvmx_sli_s2c_end_merge_s       cn78xx;
+	struct cvmx_sli_s2c_end_merge_s       cn78xxp2;
+	struct cvmx_sli_s2c_end_merge_s       cnf75xx;
+};
+typedef union cvmx_sli_s2c_end_merge cvmx_sli_s2c_end_merge_t;
+
+/**
  * cvmx_sli_s2m_port#_ctl
  *
  * These registers contain control for access from SLI to a MAC port. Write operations to these
@@ -7856,29 +11994,46 @@ union cvmx_sli_s2m_portx_ctl {
 	uint64_t u64;
 	struct cvmx_sli_s2m_portx_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_6_63                : 58;
+	uint64_t reserved_7_63                : 57;
+	uint64_t dvferr                       : 1;  /**< Disables setting SLI_MAC()_PF()_INT_SUM[PKTVF_ERR] for vf illegal memory access */
 	uint64_t lcl_node                     : 1;  /**< Local CCPI node. When set to 1, all window access is treated as local CCPI
                                                          access. Normally, if address bits [37:36] of the window address CSRs are not
                                                          equal to the chip's CCPI value, the window operation is sent to the CCPI for
                                                          remote chip access. This field, when set, disables this and treats all access to
                                                          be for the local CCPI. */
-	uint64_t wind_d                       : 1;  /**< When set '1' disables access to the Window
-                                                         Registers from the MAC-Port.
-                                                         When Authenticate-Mode is set the reset value of
-                                                         this field is "1" else "0'. */
-	uint64_t bar0_d                       : 1;  /**< When set '1' disables access from MAC to
-                                                         BAR-0 address offsets: Less Than 0x330,
-                                                         0x3CD0, and greater than 0x3D70 excluding
-                                                         0x3e00.
-                                                         When Authenticate-Mode is set the reset value of
-                                                         this field is "1" else "0'. */
+	uint64_t wind_d                       : 1;  /**< Window disable. When set to 1, disables access to the window registers from the MAC port. */
+	uint64_t bar0_d                       : 1;  /**< BAR0 disable. When set to 1, disables access from the MAC to BAR0 for the following
+                                                         address offsets:
+                                                           SLI_WIN_WR_ADDR
+                                                           SLI_WIN_RD_ADDR
+                                                           SLI_WIN_WR_DATA
+                                                           SLI_WIN_WR_MASK
+                                                           SLI_WIN_RD_DATA
+                                                           SLI_MAC_CREDIT_CNT
+                                                           SLI_S2M_PORT(0..3)_CTL
+                                                           SLI_MAC_CREDIT_CNT2
+                                                           SLI_S2C_END_MERGE
+                                                           SLI_CIU_INT_SUM
+                                                           SLI_CIU_INT_ENB
+                                                           SLI_MAC(0..3)_PF(0..1)_FLR_VF_INT
+                                                           SLI_MEM_ACCESS_SUBID(12..27)
+                                                           SLI_PP_PKT_CSR_CONTROL
+                                                           SLI_WINDOW_CTL
+                                                           SLI_MEM_ACCESS_CTL
+                                                           SLI_CTL_STATUS
+                                                           SLI_BIST_STATUS
+                                                           SLI_MEM_INT_SUM
+                                                           SLI_MEM_CTL
+                                                           SLI_CTL_PORT(0..3)
+                                                           SLI_PKT_MEM_CTL */
 	uint64_t reserved_0_2                 : 3;
 #else
 	uint64_t reserved_0_2                 : 3;
 	uint64_t bar0_d                       : 1;
 	uint64_t wind_d                       : 1;
 	uint64_t lcl_node                     : 1;
-	uint64_t reserved_6_63                : 58;
+	uint64_t dvferr                       : 1;
+	uint64_t reserved_7_63                : 57;
 #endif
 	} s;
 	struct cvmx_sli_s2m_portx_ctl_cn61xx {
@@ -7922,11 +12077,63 @@ union cvmx_sli_s2m_portx_ctl {
 	struct cvmx_sli_s2m_portx_ctl_cn61xx  cn68xxp1;
 	struct cvmx_sli_s2m_portx_ctl_cn61xx  cn70xx;
 	struct cvmx_sli_s2m_portx_ctl_cn61xx  cn70xxp1;
+	struct cvmx_sli_s2m_portx_ctl_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_7_63                : 57;
+	uint64_t dvferr                       : 1;  /**< Disables setting SLI_MAC()_PF()_INT_SUM[PKTVF_ERR] for vf illegal memory access */
+	uint64_t lcl_node                     : 1;  /**< Local CCPI node. When set to 1, all window access is treated as local CCPI
+                                                         access. Normally, if address bits [37:36] of the window address CSRs are not
+                                                         equal to the chip's CCPI value, the window operation is sent to the CCPI for
+                                                         remote chip access. This field, when set, disables this and treats all access to
+                                                         be for the local CCPI. */
+	uint64_t wind_d                       : 1;  /**< Window disable. When set to 1, disables access to the window registers from the MAC port. */
+	uint64_t bar0_d                       : 1;  /**< BAR0 disable. When set to 1, disables access from the MAC to BAR0 for the following
+                                                         address offsets:
+                                                           SLI_WIN_WR_ADDR
+                                                           SLI_WIN_RD_ADDR
+                                                           SLI_WIN_WR_DATA
+                                                           SLI_WIN_WR_MASK
+                                                           SLI_WIN_RD_DATA
+                                                           SLI_MAC_CREDIT_CNT
+                                                           SLI_S2M_PORT(0..3)_CTL
+                                                           SLI_MAC_CREDIT_CNT2
+                                                           SLI_S2C_END_MERGE
+                                                           SLI_CIU_INT_SUM
+                                                           SLI_CIU_INT_ENB
+                                                           SLI_MAC(0..3)_PF(0..1)_FLR_VF_INT
+                                                           SLI_MEM_ACCESS_SUBID(12..27)
+                                                           SLI_PP_PKT_CSR_CONTROL
+                                                           SLI_WINDOW_CTL
+                                                           SLI_MEM_ACCESS_CTL
+                                                           SLI_CTL_STATUS
+                                                           SLI_BIST_STATUS
+                                                           SLI_MEM_INT_SUM
+                                                           SLI_MEM_CTL
+                                                           SLI_CTL_PORT(0..3)
+                                                           SLI_NQM_RSP_ERR_SND_DBG
+                                                           SLI_PKT_MEM_CTL */
+	uint64_t ld_cmd                       : 2;  /**< When SLI issues a load command to the L2C that is to be cached, this field selects the
+                                                         type of load command to use:
+                                                         0x0 = LDD.
+                                                         0x1 = LDI.
+                                                         0x2 = LDE.
+                                                         0x3 = LDY. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t ld_cmd                       : 2;
+	uint64_t bar0_d                       : 1;
+	uint64_t wind_d                       : 1;
+	uint64_t lcl_node                     : 1;
+	uint64_t dvferr                       : 1;
+	uint64_t reserved_7_63                : 57;
+#endif
+	} cn73xx;
 	struct cvmx_sli_s2m_portx_ctl_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_6_63                : 58;
 	uint64_t lcl_node                     : 1;  /**< Local CCPI node. When set to 1, all window access is treated as local CCPI
-                                                         access. Normally, if address bits [37:36] of the window address CSRs are not
+                                                         access. Normally, if address bits [37:36] of the window address registers are not
                                                          equal to the chip's CCPI value, the window operation is sent to the CCPI for
                                                          remote chip access. This field, when set, disables this and treats all access to
                                                          be for the local CCPI. */
@@ -7952,7 +12159,9 @@ union cvmx_sli_s2m_portx_ctl {
 	uint64_t reserved_6_63                : 58;
 #endif
 	} cn78xx;
+	struct cvmx_sli_s2m_portx_ctl_cn78xx  cn78xxp2;
 	struct cvmx_sli_s2m_portx_ctl_cn61xx  cnf71xx;
+	struct cvmx_sli_s2m_portx_ctl_cn73xx  cnf75xx;
 };
 typedef union cvmx_sli_s2m_portx_ctl cvmx_sli_s2m_portx_ctl_t;
 
@@ -7966,7 +12175,7 @@ union cvmx_sli_scratch_1 {
 	uint64_t u64;
 	struct cvmx_sli_scratch_1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t data                         : 64; /**< The value in this register is totaly SW dependent. */
+	uint64_t data                         : 64; /**< The value in this register is totally software dependent. */
 #else
 	uint64_t data                         : 64;
 #endif
@@ -7979,8 +12188,11 @@ union cvmx_sli_scratch_1 {
 	struct cvmx_sli_scratch_1_s           cn68xxp1;
 	struct cvmx_sli_scratch_1_s           cn70xx;
 	struct cvmx_sli_scratch_1_s           cn70xxp1;
+	struct cvmx_sli_scratch_1_s           cn73xx;
 	struct cvmx_sli_scratch_1_s           cn78xx;
+	struct cvmx_sli_scratch_1_s           cn78xxp2;
 	struct cvmx_sli_scratch_1_s           cnf71xx;
+	struct cvmx_sli_scratch_1_s           cnf75xx;
 };
 typedef union cvmx_sli_scratch_1 cvmx_sli_scratch_1_t;
 
@@ -7994,7 +12206,7 @@ union cvmx_sli_scratch_2 {
 	uint64_t u64;
 	struct cvmx_sli_scratch_2_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t data                         : 64; /**< The value in this register is totaly SW dependent. */
+	uint64_t data                         : 64; /**< The value in this register is totally software dependent. */
 #else
 	uint64_t data                         : 64;
 #endif
@@ -8007,8 +12219,11 @@ union cvmx_sli_scratch_2 {
 	struct cvmx_sli_scratch_2_s           cn68xxp1;
 	struct cvmx_sli_scratch_2_s           cn70xx;
 	struct cvmx_sli_scratch_2_s           cn70xxp1;
+	struct cvmx_sli_scratch_2_s           cn73xx;
 	struct cvmx_sli_scratch_2_s           cn78xx;
+	struct cvmx_sli_scratch_2_s           cn78xxp2;
 	struct cvmx_sli_scratch_2_s           cnf71xx;
+	struct cvmx_sli_scratch_2_s           cnf75xx;
 };
 typedef union cvmx_sli_scratch_2 cvmx_sli_scratch_2_t;
 
@@ -8022,10 +12237,10 @@ union cvmx_sli_state1 {
 	uint64_t u64;
 	struct cvmx_sli_state1_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t cpl1                         : 12; /**< CPL1 State */
-	uint64_t cpl0                         : 12; /**< CPL0 State */
-	uint64_t arb                          : 1;  /**< ARB State */
-	uint64_t csr                          : 39; /**< CSR State */
+	uint64_t cpl1                         : 12; /**< CPL1 state. */
+	uint64_t cpl0                         : 12; /**< CPL0 state. */
+	uint64_t arb                          : 1;  /**< ARB state. */
+	uint64_t csr                          : 39; /**< CSR state. */
 #else
 	uint64_t csr                          : 39;
 	uint64_t arb                          : 1;
@@ -8041,8 +12256,11 @@ union cvmx_sli_state1 {
 	struct cvmx_sli_state1_s              cn68xxp1;
 	struct cvmx_sli_state1_s              cn70xx;
 	struct cvmx_sli_state1_s              cn70xxp1;
+	struct cvmx_sli_state1_s              cn73xx;
 	struct cvmx_sli_state1_s              cn78xx;
+	struct cvmx_sli_state1_s              cn78xxp2;
 	struct cvmx_sli_state1_s              cnf71xx;
+	struct cvmx_sli_state1_s              cnf75xx;
 };
 typedef union cvmx_sli_state1 cvmx_sli_state1_t;
 
@@ -8089,7 +12307,7 @@ union cvmx_sli_state2 {
 	struct cvmx_sli_state2_cn61xx         cn68xxp1;
 	struct cvmx_sli_state2_cn61xx         cn70xx;
 	struct cvmx_sli_state2_cn61xx         cn70xxp1;
-	struct cvmx_sli_state2_cn78xx {
+	struct cvmx_sli_state2_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_57_63               : 7;
 	uint64_t nnp1                         : 8;  /**< NNP1 state. */
@@ -8109,8 +12327,11 @@ union cvmx_sli_state2 {
 	uint64_t nnp1                         : 8;
 	uint64_t reserved_57_63               : 7;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_sli_state2_cn73xx         cn78xx;
+	struct cvmx_sli_state2_cn73xx         cn78xxp2;
 	struct cvmx_sli_state2_cn61xx         cnf71xx;
+	struct cvmx_sli_state2_cn73xx         cnf75xx;
 };
 typedef union cvmx_sli_state2 cvmx_sli_state2_t;
 
@@ -8151,7 +12372,7 @@ union cvmx_sli_state3 {
 	struct cvmx_sli_state3_cn61xx         cn68xxp1;
 	struct cvmx_sli_state3_cn61xx         cn70xx;
 	struct cvmx_sli_state3_cn61xx         cn70xxp1;
-	struct cvmx_sli_state3_cn78xx {
+	struct cvmx_sli_state3_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
 	uint64_t psm1                         : 15; /**< PSM1 state. */
@@ -8165,8 +12386,11 @@ union cvmx_sli_state3 {
 	uint64_t psm1                         : 15;
 	uint64_t reserved_60_63               : 4;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_sli_state3_cn73xx         cn78xx;
+	struct cvmx_sli_state3_cn73xx         cn78xxp2;
 	struct cvmx_sli_state3_cn61xx         cnf71xx;
+	struct cvmx_sli_state3_cn73xx         cnf75xx;
 };
 typedef union cvmx_sli_state3 cvmx_sli_state3_t;
 
@@ -8219,30 +12443,32 @@ typedef union cvmx_sli_tx_pipe cvmx_sli_tx_pipe_t;
 /**
  * cvmx_sli_win_rd_addr
  *
- * When the LSB of this CSR is written, the address in this CSR will be read. The data returned
- * from this read will be placed in the WIN_RD_DATA CSR. This CSR should NOT be used to read
- * SLI_* registers.
- *
- * If SLI_S2M_PORT()_CTL[LCL_NODE] the MAC that it is set for will not be able to write
- * SLI_WIN_RD_ADDR[37:36] which will always be written with the chips CCPI-ID.
+ * When the LSB of this register is written, the address in this register will be read. The data
+ * returned from this read will be placed in the WIN_RD_DATA register. This register should NOT
+ * be used to read SLI_* registers.
  */
 union cvmx_sli_win_rd_addr {
 	uint64_t u64;
 	struct cvmx_sli_win_rd_addr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_51_63               : 13;
-	uint64_t ld_cmd                       : 2;  /**< The load command sent wit hthe read.
-                                                         0x3 == Load 8-bytes, 0x2 == Load 4-bytes,
-                                                         0x1 == Load 2-bytes, 0x0 == Load 1-bytes, */
-	uint64_t iobit                        : 1;  /**< A 1 or 0 can be written here but will not be used
-                                                         in address generation. */
-	uint64_t rd_addr                      : 48; /**< The address to be read from.
-                                                         [47:40] = NCB_ID
-                                                         [39:0]  = Address
-                                                         When [47:43] == SLI & [42:40] == 0 bits [39:0] are:
-                                                              [39:32] == x, Not Used
-                                                              [31:24] == RSL_ID
-                                                              [23:0]  == RSL Register Offset */
+	uint64_t ld_cmd                       : 2;  /**< The load command sent with the read.
+                                                         0x0 = Load 1 bytes.
+                                                         0x1 = Load 2 bytes.
+                                                         0x2 = Load 4 bytes.
+                                                         0x3 = Load 8 bytes. */
+	uint64_t iobit                        : 1;  /**< A 1 or 0 can be written here, but will not be used in address generation. */
+	uint64_t rd_addr                      : 48; /**< The address to be read.
+                                                         [47:40] = NCB_ID.
+                                                         [39:38] = 0x0, Not used.
+                                                         [37:36] = CCPI_ID.
+                                                         [35:0]  = Address.
+                                                         When [47:43] specifies SLI and [42:40] = 0x0, bits [39:0] are defined as follows:
+                                                         [39:38] = Not used.
+                                                         [37:36] = CCPI_ID.
+                                                         [35:32] = 0x0, Not used.
+                                                         [31:24] = RSL_ID.
+                                                         [23:0]  = RSL register offset. */
 #else
 	uint64_t rd_addr                      : 48;
 	uint64_t iobit                        : 1;
@@ -8258,16 +12484,19 @@ union cvmx_sli_win_rd_addr {
 	struct cvmx_sli_win_rd_addr_s         cn68xxp1;
 	struct cvmx_sli_win_rd_addr_s         cn70xx;
 	struct cvmx_sli_win_rd_addr_s         cn70xxp1;
+	struct cvmx_sli_win_rd_addr_s         cn73xx;
 	struct cvmx_sli_win_rd_addr_s         cn78xx;
+	struct cvmx_sli_win_rd_addr_s         cn78xxp2;
 	struct cvmx_sli_win_rd_addr_s         cnf71xx;
+	struct cvmx_sli_win_rd_addr_s         cnf75xx;
 };
 typedef union cvmx_sli_win_rd_addr cvmx_sli_win_rd_addr_t;
 
 /**
  * cvmx_sli_win_rd_data
  *
- * This CSR holds the data returned when a read operation is started by the writing of the
- * SLI_WIN_RD_ADDR CSR.
+ * This register holds the data returned when a read operation is started by the writing of the
+ * SLI_WIN_RD_ADDR register.
  */
 union cvmx_sli_win_rd_data {
 	uint64_t u64;
@@ -8286,45 +12515,39 @@ union cvmx_sli_win_rd_data {
 	struct cvmx_sli_win_rd_data_s         cn68xxp1;
 	struct cvmx_sli_win_rd_data_s         cn70xx;
 	struct cvmx_sli_win_rd_data_s         cn70xxp1;
+	struct cvmx_sli_win_rd_data_s         cn73xx;
 	struct cvmx_sli_win_rd_data_s         cn78xx;
+	struct cvmx_sli_win_rd_data_s         cn78xxp2;
 	struct cvmx_sli_win_rd_data_s         cnf71xx;
+	struct cvmx_sli_win_rd_data_s         cnf75xx;
 };
 typedef union cvmx_sli_win_rd_data cvmx_sli_win_rd_data_t;
 
 /**
  * cvmx_sli_win_wr_addr
  *
- * Add Lock Register (set on read, clear on write), software uses to control access to BAR0
- * space.
- *
- * * Total Address is 16Kb; 0x0000 - 0x3fff, 0x000 - 0x7fe(Reg, every other 8B).
- * * General  5kb; 0x0000 - 0x13ff, 0x000 - 0x27e(Reg-General).
- * * PktMem  10Kb; 0x1400 - 0x3bff, 0x280 - 0x77e(Reg-General-Packet).
- * * Rsvd     1Kb; 0x3c00 - 0x3fff, 0x780 - 0x7fe(Reg-NCB Only Mode).
- *
  * This register contains the address to be written to when a write operation is started by
- * writing the SLI_WIN_WR_DATA register. This register should not be used to write SLI_*
+ * writing the SLI_WIN_WR_DATA register.
  *
  * This register should NOT be used to write SLI_* registers.
- *
- * If SLI_S2M_PORT()_CTL[LCL_NODE] the MAC that it is set for will not be able to write
- * SLI_WIN_WR_ADDR[37:36] which will always be written with the chips CCPI-ID.
  */
 union cvmx_sli_win_wr_addr {
 	uint64_t u64;
 	struct cvmx_sli_win_wr_addr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_49_63               : 15;
-	uint64_t iobit                        : 1;  /**< A 1 or 0 can be written here but this will always
-                                                         read as '0'. */
-	uint64_t wr_addr                      : 45; /**< The address that will be written to when the
-                                                         SLI_WIN_WR_DATA register is written.
-                                                         [47:40] = NCB_ID
-                                                         [39:3]  = Address
-                                                         When [47:43] == SLI & [42:40] == 0 bits [39:0] are:
-                                                              [39:32] == x, Not Used
-                                                              [31:24] == RSL_ID
-                                                              [23:3]  == RSL Register Offset */
+	uint64_t iobit                        : 1;  /**< A 1 or 0 can be written here, but this will always read as 0. */
+	uint64_t wr_addr                      : 45; /**< The address that is written to when the SLI_WIN_WR_DATA register is written.
+                                                         [47:40] = NCB_ID.
+                                                         [39:38] = 0x0, Not used.
+                                                         [37:36] = CCPI_ID.
+                                                         [35:0]  = Address.
+                                                         When [47:43] specifies SLI and [42:40] = 0x0, bits [39:0] are defined as follows:
+                                                         [39:38] = Not used.
+                                                         [37:36] = CCPI_ID.
+                                                         [35:32] = 0x0, Not used.
+                                                         [31:24] = RSL_ID.
+                                                         [23:0]  = RSL register offset. */
 	uint64_t reserved_0_2                 : 3;
 #else
 	uint64_t reserved_0_2                 : 3;
@@ -8341,8 +12564,11 @@ union cvmx_sli_win_wr_addr {
 	struct cvmx_sli_win_wr_addr_s         cn68xxp1;
 	struct cvmx_sli_win_wr_addr_s         cn70xx;
 	struct cvmx_sli_win_wr_addr_s         cn70xxp1;
+	struct cvmx_sli_win_wr_addr_s         cn73xx;
 	struct cvmx_sli_win_wr_addr_s         cn78xx;
+	struct cvmx_sli_win_wr_addr_s         cn78xxp2;
 	struct cvmx_sli_win_wr_addr_s         cnf71xx;
+	struct cvmx_sli_win_wr_addr_s         cnf75xx;
 };
 typedef union cvmx_sli_win_wr_addr cvmx_sli_win_wr_addr_t;
 
@@ -8357,9 +12583,8 @@ union cvmx_sli_win_wr_data {
 	uint64_t u64;
 	struct cvmx_sli_win_wr_data_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t wr_data                      : 64; /**< The data to be written. Whenever the LSB of this
-                                                         register is written, the Window Write will take
-                                                         place. */
+	uint64_t wr_data                      : 64; /**< The data to be written. Whenever the LSB of this register is written, the window write
+                                                         operation takes place. */
 #else
 	uint64_t wr_data                      : 64;
 #endif
@@ -8372,8 +12597,11 @@ union cvmx_sli_win_wr_data {
 	struct cvmx_sli_win_wr_data_s         cn68xxp1;
 	struct cvmx_sli_win_wr_data_s         cn70xx;
 	struct cvmx_sli_win_wr_data_s         cn70xxp1;
+	struct cvmx_sli_win_wr_data_s         cn73xx;
 	struct cvmx_sli_win_wr_data_s         cn78xx;
+	struct cvmx_sli_win_wr_data_s         cn78xxp2;
 	struct cvmx_sli_win_wr_data_s         cnf71xx;
+	struct cvmx_sli_win_wr_data_s         cnf75xx;
 };
 typedef union cvmx_sli_win_wr_data cvmx_sli_win_wr_data_t;
 
@@ -8388,11 +12616,10 @@ union cvmx_sli_win_wr_mask {
 	struct cvmx_sli_win_wr_mask_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
-	uint64_t wr_mask                      : 8;  /**< The data to be written. When a bit is '1'
-                                                         the corresponding byte will be written. The values
-                                                         of this field must be contiguos and for 1, 2, 4, or
-                                                         8 byte operations and aligned to operation size.
-                                                         A Value of 0 will produce unpredictable results */
+	uint64_t wr_mask                      : 8;  /**< The byte mask for the data to be written. When a bit is 1, the corresponding byte will be
+                                                         written. The values of this field must be contiguous and for one-, two-, four-, or eight-
+                                                         byte operations and aligned to operation size. A value of 0x0 produces unpredictable
+                                                         results. */
 #else
 	uint64_t wr_mask                      : 8;
 	uint64_t reserved_8_63                : 56;
@@ -8406,8 +12633,11 @@ union cvmx_sli_win_wr_mask {
 	struct cvmx_sli_win_wr_mask_s         cn68xxp1;
 	struct cvmx_sli_win_wr_mask_s         cn70xx;
 	struct cvmx_sli_win_wr_mask_s         cn70xxp1;
+	struct cvmx_sli_win_wr_mask_s         cn73xx;
 	struct cvmx_sli_win_wr_mask_s         cn78xx;
+	struct cvmx_sli_win_wr_mask_s         cn78xxp2;
 	struct cvmx_sli_win_wr_mask_s         cnf71xx;
+	struct cvmx_sli_win_wr_mask_s         cnf75xx;
 };
 typedef union cvmx_sli_win_wr_mask cvmx_sli_win_wr_mask_t;
 
@@ -8421,14 +12651,8 @@ union cvmx_sli_window_ctl {
 	uint64_t u64;
 	struct cvmx_sli_window_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t ocx_time                     : 32; /**< OCX time. When a command acknowledge or a request to fetch read data is expected
-                                                         from CCPI, SLI waits this many SCLKs before determining that the CCPI is not
-                                                         going to respond and timeout the request. */
-	uint64_t time                         : 32; /**< Time to wait in core clocks for a
-                                                         BAR0 access to completeon the NCB
-                                                         before timing out. A value of 0 will cause no
-                                                         timeouts. A minimum value of 0x200000 should be
-                                                         used when this register is not set to 0x0. */
+	uint64_t ocx_time                     : 32; /**< This fields is unused. */
+	uint64_t time                         : 32; /**< Time to wait. The number of coprocessor-clock cycles to wait for a window access before timing out. */
 #else
 	uint64_t time                         : 32;
 	uint64_t ocx_time                     : 32;
@@ -8454,8 +12678,11 @@ union cvmx_sli_window_ctl {
 	struct cvmx_sli_window_ctl_cn61xx     cn68xxp1;
 	struct cvmx_sli_window_ctl_cn61xx     cn70xx;
 	struct cvmx_sli_window_ctl_cn61xx     cn70xxp1;
+	struct cvmx_sli_window_ctl_s          cn73xx;
 	struct cvmx_sli_window_ctl_s          cn78xx;
+	struct cvmx_sli_window_ctl_s          cn78xxp2;
 	struct cvmx_sli_window_ctl_cn61xx     cnf71xx;
+	struct cvmx_sli_window_ctl_s          cnf75xx;
 };
 typedef union cvmx_sli_window_ctl cvmx_sli_window_ctl_t;
 

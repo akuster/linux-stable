@@ -50,7 +50,6 @@
 #include <asm/octeon/cvmx-pip-defs.h>
 #include <asm/octeon/cvmx-dbg-defs.h>
 #include <asm/octeon/cvmx-sso-defs.h>
-
 #include <asm/octeon/cvmx-fpa1.h>
 #include <asm/octeon/cvmx-wqe.h>
 #include <asm/octeon/cvmx-ipd.h>
@@ -106,9 +105,9 @@ void cvmx_ipd_convert_to_newcfg(cvmx_ipd_config_t ipd_config)
 			ipd_config.port_config.tag_fields.ipv4_dst_ip;
 	pki_dflt_style[node].tag_cfg.tag_fields.ip_prot_nexthdr = ipd_config.port_config.tag_fields.ipv6_next_header |
 			ipd_config.port_config.tag_fields.ipv4_protocol;
-	pki_dflt_style[node].tag_cfg.tag_fields.layer_d_src = ipd_config.port_config.tag_fields.ipv6_src_port |
+	pki_dflt_style[node].tag_cfg.tag_fields.layer_f_src = ipd_config.port_config.tag_fields.ipv6_src_port |
 			ipd_config.port_config.tag_fields.ipv4_src_port;
-	pki_dflt_style[node].tag_cfg.tag_fields.layer_d_dst = ipd_config.port_config.tag_fields.ipv6_dst_port |
+	pki_dflt_style[node].tag_cfg.tag_fields.layer_f_dst = ipd_config.port_config.tag_fields.ipv6_dst_port |
 			ipd_config.port_config.tag_fields.ipv4_dst_port;
 	pki_dflt_style[node].tag_cfg.tag_fields.input_port = ipd_config.port_config.tag_fields.input_port;
 
@@ -128,8 +127,6 @@ void cvmx_ipd_convert_to_newcfg(cvmx_ipd_config_t ipd_config)
 	cvmx_helper_pki_set_dflt_aura(node, ipd_config.packet_pool.pool_num,
 					 ipd_config.packet_pool.pool_num, ipd_config.packet_pool.buffer_count);
 }
-
-
 
 int cvmx_ipd_set_config(cvmx_ipd_config_t ipd_config)
 {
@@ -152,15 +149,14 @@ void cvmx_ipd_set_packet_pool_buffer_count(uint64_t buffer_count)
 void cvmx_ipd_set_packet_pool_config(int64_t pool, uint64_t buffer_size,
 				     uint64_t buffer_count)
 {
+	cvmx_ipd_cfg.packet_pool.pool_num = pool;
+	cvmx_ipd_cfg.packet_pool.buffer_size = buffer_size;
+	cvmx_ipd_cfg.packet_pool.buffer_count = buffer_count;
 	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
 		int node = cvmx_get_node_num();
 		int64_t aura = pool;
 		cvmx_helper_pki_set_dflt_pool(node, pool, buffer_size, buffer_count);
 		cvmx_helper_pki_set_dflt_aura(node, aura, pool, buffer_count);
-	} else {
-		cvmx_ipd_cfg.packet_pool.pool_num = pool;
-		cvmx_ipd_cfg.packet_pool.buffer_size = buffer_size;
-		cvmx_ipd_cfg.packet_pool.buffer_count = buffer_count;
 	}
 }
 EXPORT_SYMBOL(cvmx_ipd_set_packet_pool_config);
@@ -436,6 +432,14 @@ void cvmx_ipd_config(uint64_t mbuff_size,
 	cvmx_ipd_second_next_ptr_back_t second_back_struct;
 	cvmx_ipd_wqe_fpa_queue_t wqe_pool;
 	cvmx_ipd_ctl_status_t ipd_ctl_reg;
+
+	/* Enforce 1st skip minimum if WQE shares the buffer with packet */
+	if (octeon_has_feature(OCTEON_FEATURE_NO_WPTR)) {
+		union cvmx_ipd_ctl_status ctl_status;
+		ctl_status.u64 = cvmx_read_csr(CVMX_IPD_CTL_STATUS);
+		if (ctl_status.s.no_wptr != 0 && first_mbuff_skip < 16)
+			first_mbuff_skip = 16;
+	}
 
 	first_skip.u64 = 0;
 	first_skip.s.skip_sz = first_mbuff_skip;

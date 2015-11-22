@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -53,65 +53,77 @@
 #define __CVMX_USBDRDX_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_CAPLENGTH(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_CAPLENGTH(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_CAPLENGTH(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000000ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_CAPLENGTH(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000000ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_CAPLENGTH(block_id) (CVMX_ADD_IO_SEG(0x0001680000000000ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_CAPLENGTH(offset) (CVMX_ADD_IO_SEG(0x0001680000000000ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_CONFIG(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_CONFIG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_CONFIG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000058ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_CONFIG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000058ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_CONFIG(block_id) (CVMX_ADD_IO_SEG(0x0001680000000058ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_CONFIG(offset) (CVMX_ADD_IO_SEG(0x0001680000000058ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_CRCR(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_CRCR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_CRCR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000038ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_CRCR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000038ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_CRCR(block_id) (CVMX_ADD_IO_SEG(0x0001680000000038ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_CRCR(offset) (CVMX_ADD_IO_SEG(0x0001680000000038ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_DALEPENA(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_DALEPENA(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_DALEPENA(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C720ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_DALEPENA(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C720ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_DALEPENA(block_id) (CVMX_ADD_IO_SEG(0x000168000000C720ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_DALEPENA(offset) (CVMX_ADD_IO_SEG(0x000168000000C720ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_DBOFF(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_DBOFF(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_DBOFF(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000014ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_DBOFF(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000014ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_DBOFF(block_id) (CVMX_ADD_IO_SEG(0x0001680000000014ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_DBOFF(offset) (CVMX_ADD_IO_SEG(0x0001680000000014ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_USBDRDX_UAHC_DBX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 64)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 64)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 64)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 64)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_DBX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000480ull) + (((offset) & 127) + ((block_id) & 1) * 0x4000000000ull) * 4;
 }
@@ -119,43 +131,51 @@ static inline uint64_t CVMX_USBDRDX_UAHC_DBX(unsigned long offset, unsigned long
 #define CVMX_USBDRDX_UAHC_DBX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001680000000480ull) + (((offset) & 127) + ((block_id) & 1) * 0x4000000000ull) * 4)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_DCBAAP(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_DCBAAP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_DCBAAP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000050ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_DCBAAP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000050ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_DCBAAP(block_id) (CVMX_ADD_IO_SEG(0x0001680000000050ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_DCBAAP(offset) (CVMX_ADD_IO_SEG(0x0001680000000050ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_DCFG(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_DCFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_DCFG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C700ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_DCFG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C700ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_DCFG(block_id) (CVMX_ADD_IO_SEG(0x000168000000C700ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_DCFG(offset) (CVMX_ADD_IO_SEG(0x000168000000C700ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_DCTL(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_DCTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_DCTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C704ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_DCTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C704ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_DCTL(block_id) (CVMX_ADD_IO_SEG(0x000168000000C704ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_DCTL(offset) (CVMX_ADD_IO_SEG(0x000168000000C704ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_USBDRDX_UAHC_DEPCMDPAR0_X(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 15)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 15)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 15)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 15)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_DEPCMDPAR0_X(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C808ull) + (((offset) & 15) + ((block_id) & 1) * 0x1000000000ull) * 16;
 }
@@ -166,7 +186,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_DEPCMDPAR0_X(unsigned long offset, unsi
 static inline uint64_t CVMX_USBDRDX_UAHC_DEPCMDPAR1_X(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 15)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 15)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 15)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 15)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_DEPCMDPAR1_X(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C804ull) + (((offset) & 15) + ((block_id) & 1) * 0x1000000000ull) * 16;
 }
@@ -177,7 +199,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_DEPCMDPAR1_X(unsigned long offset, unsi
 static inline uint64_t CVMX_USBDRDX_UAHC_DEPCMDPAR2_X(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 15)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 15)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 15)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 15)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_DEPCMDPAR2_X(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C800ull) + (((offset) & 15) + ((block_id) & 1) * 0x1000000000ull) * 16;
 }
@@ -188,7 +212,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_DEPCMDPAR2_X(unsigned long offset, unsi
 static inline uint64_t CVMX_USBDRDX_UAHC_DEPCMDX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 15)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 15)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 15)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 15)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_DEPCMDX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C80Cull) + (((offset) & 15) + ((block_id) & 1) * 0x1000000000ull) * 16;
 }
@@ -196,65 +222,77 @@ static inline uint64_t CVMX_USBDRDX_UAHC_DEPCMDX(unsigned long offset, unsigned 
 #define CVMX_USBDRDX_UAHC_DEPCMDX(offset, block_id) (CVMX_ADD_IO_SEG(0x000168000000C80Cull) + (((offset) & 15) + ((block_id) & 1) * 0x1000000000ull) * 16)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_DEVTEN(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_DEVTEN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_DEVTEN(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C708ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_DEVTEN(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C708ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_DEVTEN(block_id) (CVMX_ADD_IO_SEG(0x000168000000C708ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_DEVTEN(offset) (CVMX_ADD_IO_SEG(0x000168000000C708ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_DGCMD(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_DGCMD(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_DGCMD(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C714ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_DGCMD(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C714ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_DGCMD(block_id) (CVMX_ADD_IO_SEG(0x000168000000C714ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_DGCMD(offset) (CVMX_ADD_IO_SEG(0x000168000000C714ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_DGCMDPAR(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_DGCMDPAR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_DGCMDPAR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C710ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_DGCMDPAR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C710ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_DGCMDPAR(block_id) (CVMX_ADD_IO_SEG(0x000168000000C710ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_DGCMDPAR(offset) (CVMX_ADD_IO_SEG(0x000168000000C710ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_DNCTRL(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_DNCTRL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_DNCTRL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000034ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_DNCTRL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000034ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_DNCTRL(block_id) (CVMX_ADD_IO_SEG(0x0001680000000034ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_DNCTRL(offset) (CVMX_ADD_IO_SEG(0x0001680000000034ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_DSTS(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_DSTS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_DSTS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C70Cull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_DSTS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C70Cull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_DSTS(block_id) (CVMX_ADD_IO_SEG(0x000168000000C70Cull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_DSTS(offset) (CVMX_ADD_IO_SEG(0x000168000000C70Cull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_USBDRDX_UAHC_ERDPX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_ERDPX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000478ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -265,7 +303,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_ERDPX(unsigned long offset, unsigned lo
 static inline uint64_t CVMX_USBDRDX_UAHC_ERSTBAX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_ERSTBAX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000470ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -276,7 +316,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_ERSTBAX(unsigned long offset, unsigned 
 static inline uint64_t CVMX_USBDRDX_UAHC_ERSTSZX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_ERSTSZX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000468ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -284,120 +326,142 @@ static inline uint64_t CVMX_USBDRDX_UAHC_ERSTSZX(unsigned long offset, unsigned 
 #define CVMX_USBDRDX_UAHC_ERSTSZX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001680000000468ull) + ((block_id) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GBUSERRADDR(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GBUSERRADDR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GBUSERRADDR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C130ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GBUSERRADDR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C130ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GBUSERRADDR(block_id) (CVMX_ADD_IO_SEG(0x000168000000C130ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GBUSERRADDR(offset) (CVMX_ADD_IO_SEG(0x000168000000C130ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GCTL(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GCTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GCTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C110ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GCTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C110ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GCTL(block_id) (CVMX_ADD_IO_SEG(0x000168000000C110ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GCTL(offset) (CVMX_ADD_IO_SEG(0x000168000000C110ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GDBGBMU(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GDBGBMU(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGBMU(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C16Cull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGBMU(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C16Cull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GDBGBMU(block_id) (CVMX_ADD_IO_SEG(0x000168000000C16Cull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GDBGBMU(offset) (CVMX_ADD_IO_SEG(0x000168000000C16Cull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GDBGEPINFO(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GDBGEPINFO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGEPINFO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C178ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGEPINFO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C178ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GDBGEPINFO(block_id) (CVMX_ADD_IO_SEG(0x000168000000C178ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GDBGEPINFO(offset) (CVMX_ADD_IO_SEG(0x000168000000C178ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GDBGFIFOSPACE(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GDBGFIFOSPACE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGFIFOSPACE(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C160ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGFIFOSPACE(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C160ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GDBGFIFOSPACE(block_id) (CVMX_ADD_IO_SEG(0x000168000000C160ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GDBGFIFOSPACE(offset) (CVMX_ADD_IO_SEG(0x000168000000C160ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GDBGLNMCC(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GDBGLNMCC(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGLNMCC(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C168ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGLNMCC(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C168ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GDBGLNMCC(block_id) (CVMX_ADD_IO_SEG(0x000168000000C168ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GDBGLNMCC(offset) (CVMX_ADD_IO_SEG(0x000168000000C168ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GDBGLSP(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GDBGLSP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGLSP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C174ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGLSP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C174ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GDBGLSP(block_id) (CVMX_ADD_IO_SEG(0x000168000000C174ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GDBGLSP(offset) (CVMX_ADD_IO_SEG(0x000168000000C174ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GDBGLSPMUX(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GDBGLSPMUX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGLSPMUX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C170ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGLSPMUX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C170ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GDBGLSPMUX(block_id) (CVMX_ADD_IO_SEG(0x000168000000C170ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GDBGLSPMUX(offset) (CVMX_ADD_IO_SEG(0x000168000000C170ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GDBGLTSSM(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GDBGLTSSM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGLTSSM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C164ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GDBGLTSSM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C164ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GDBGLTSSM(block_id) (CVMX_ADD_IO_SEG(0x000168000000C164ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GDBGLTSSM(offset) (CVMX_ADD_IO_SEG(0x000168000000C164ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GDMAHLRATIO(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GDMAHLRATIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GDMAHLRATIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C624ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GDMAHLRATIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C624ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GDMAHLRATIO(block_id) (CVMX_ADD_IO_SEG(0x000168000000C624ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GDMAHLRATIO(offset) (CVMX_ADD_IO_SEG(0x000168000000C624ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_USBDRDX_UAHC_GEVNTADRX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_GEVNTADRX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C400ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -408,7 +472,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_GEVNTADRX(unsigned long offset, unsigne
 static inline uint64_t CVMX_USBDRDX_UAHC_GEVNTCOUNTX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_GEVNTCOUNTX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C40Cull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -419,7 +485,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_GEVNTCOUNTX(unsigned long offset, unsig
 static inline uint64_t CVMX_USBDRDX_UAHC_GEVNTSIZX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_GEVNTSIZX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C408ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -427,197 +495,233 @@ static inline uint64_t CVMX_USBDRDX_UAHC_GEVNTSIZX(unsigned long offset, unsigne
 #define CVMX_USBDRDX_UAHC_GEVNTSIZX(offset, block_id) (CVMX_ADD_IO_SEG(0x000168000000C408ull) + ((block_id) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GFLADJ(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GFLADJ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GFLADJ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C630ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GFLADJ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C630ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GFLADJ(block_id) (CVMX_ADD_IO_SEG(0x000168000000C630ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GFLADJ(offset) (CVMX_ADD_IO_SEG(0x000168000000C630ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GGPIO(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GGPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GGPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C124ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GGPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C124ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GGPIO(block_id) (CVMX_ADD_IO_SEG(0x000168000000C124ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GGPIO(offset) (CVMX_ADD_IO_SEG(0x000168000000C124ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS0(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C140ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C140ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GHWPARAMS0(block_id) (CVMX_ADD_IO_SEG(0x000168000000C140ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GHWPARAMS0(offset) (CVMX_ADD_IO_SEG(0x000168000000C140ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS1(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C144ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C144ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GHWPARAMS1(block_id) (CVMX_ADD_IO_SEG(0x000168000000C144ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GHWPARAMS1(offset) (CVMX_ADD_IO_SEG(0x000168000000C144ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS2(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C148ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C148ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GHWPARAMS2(block_id) (CVMX_ADD_IO_SEG(0x000168000000C148ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GHWPARAMS2(offset) (CVMX_ADD_IO_SEG(0x000168000000C148ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS3(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS3(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C14Cull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C14Cull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GHWPARAMS3(block_id) (CVMX_ADD_IO_SEG(0x000168000000C14Cull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GHWPARAMS3(offset) (CVMX_ADD_IO_SEG(0x000168000000C14Cull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS4(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS4(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS4(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C150ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS4(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C150ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GHWPARAMS4(block_id) (CVMX_ADD_IO_SEG(0x000168000000C150ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GHWPARAMS4(offset) (CVMX_ADD_IO_SEG(0x000168000000C150ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS5(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS5(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS5(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C154ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS5(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C154ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GHWPARAMS5(block_id) (CVMX_ADD_IO_SEG(0x000168000000C154ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GHWPARAMS5(offset) (CVMX_ADD_IO_SEG(0x000168000000C154ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS6(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS6(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS6(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C158ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS6(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C158ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GHWPARAMS6(block_id) (CVMX_ADD_IO_SEG(0x000168000000C158ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GHWPARAMS6(offset) (CVMX_ADD_IO_SEG(0x000168000000C158ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS7(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS7(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS7(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C15Cull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS7(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C15Cull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GHWPARAMS7(block_id) (CVMX_ADD_IO_SEG(0x000168000000C15Cull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GHWPARAMS7(offset) (CVMX_ADD_IO_SEG(0x000168000000C15Cull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS8(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GHWPARAMS8(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS8(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C600ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GHWPARAMS8(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C600ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GHWPARAMS8(block_id) (CVMX_ADD_IO_SEG(0x000168000000C600ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GHWPARAMS8(offset) (CVMX_ADD_IO_SEG(0x000168000000C600ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GPMSTS(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GPMSTS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GPMSTS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C114ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GPMSTS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C114ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GPMSTS(block_id) (CVMX_ADD_IO_SEG(0x000168000000C114ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GPMSTS(offset) (CVMX_ADD_IO_SEG(0x000168000000C114ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GPRTBIMAP(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GPRTBIMAP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GPRTBIMAP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C138ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GPRTBIMAP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C138ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GPRTBIMAP(block_id) (CVMX_ADD_IO_SEG(0x000168000000C138ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GPRTBIMAP(offset) (CVMX_ADD_IO_SEG(0x000168000000C138ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GPRTBIMAP_FS(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GPRTBIMAP_FS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GPRTBIMAP_FS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C188ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GPRTBIMAP_FS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C188ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GPRTBIMAP_FS(block_id) (CVMX_ADD_IO_SEG(0x000168000000C188ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GPRTBIMAP_FS(offset) (CVMX_ADD_IO_SEG(0x000168000000C188ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GPRTBIMAP_HS(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GPRTBIMAP_HS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GPRTBIMAP_HS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C180ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GPRTBIMAP_HS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C180ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GPRTBIMAP_HS(block_id) (CVMX_ADD_IO_SEG(0x000168000000C180ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GPRTBIMAP_HS(offset) (CVMX_ADD_IO_SEG(0x000168000000C180ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GRLSID(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GRLSID(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GRLSID(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C120ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GRLSID(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C120ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GRLSID(block_id) (CVMX_ADD_IO_SEG(0x000168000000C120ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GRLSID(offset) (CVMX_ADD_IO_SEG(0x000168000000C120ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GRXFIFOPRIHST(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GRXFIFOPRIHST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GRXFIFOPRIHST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C61Cull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GRXFIFOPRIHST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C61Cull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GRXFIFOPRIHST(block_id) (CVMX_ADD_IO_SEG(0x000168000000C61Cull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GRXFIFOPRIHST(offset) (CVMX_ADD_IO_SEG(0x000168000000C61Cull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_USBDRDX_UAHC_GRXFIFOSIZX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 2)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 2)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 2)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_GRXFIFOSIZX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C380ull) + (((offset) & 3) + ((block_id) & 1) * 0x4000000000ull) * 4;
 }
@@ -625,76 +729,90 @@ static inline uint64_t CVMX_USBDRDX_UAHC_GRXFIFOSIZX(unsigned long offset, unsig
 #define CVMX_USBDRDX_UAHC_GRXFIFOSIZX(offset, block_id) (CVMX_ADD_IO_SEG(0x000168000000C380ull) + (((offset) & 3) + ((block_id) & 1) * 0x4000000000ull) * 4)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GRXTHRCFG(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GRXTHRCFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GRXTHRCFG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C10Cull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GRXTHRCFG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C10Cull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GRXTHRCFG(block_id) (CVMX_ADD_IO_SEG(0x000168000000C10Cull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GRXTHRCFG(offset) (CVMX_ADD_IO_SEG(0x000168000000C10Cull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GSBUSCFG0(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GSBUSCFG0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GSBUSCFG0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C100ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GSBUSCFG0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C100ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GSBUSCFG0(block_id) (CVMX_ADD_IO_SEG(0x000168000000C100ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GSBUSCFG0(offset) (CVMX_ADD_IO_SEG(0x000168000000C100ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GSBUSCFG1(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GSBUSCFG1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GSBUSCFG1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C104ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GSBUSCFG1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C104ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GSBUSCFG1(block_id) (CVMX_ADD_IO_SEG(0x000168000000C104ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GSBUSCFG1(offset) (CVMX_ADD_IO_SEG(0x000168000000C104ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GSTS(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GSTS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GSTS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C118ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GSTS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C118ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GSTS(block_id) (CVMX_ADD_IO_SEG(0x000168000000C118ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GSTS(offset) (CVMX_ADD_IO_SEG(0x000168000000C118ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GTXFIFOPRIDEV(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GTXFIFOPRIDEV(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GTXFIFOPRIDEV(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C610ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GTXFIFOPRIDEV(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C610ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GTXFIFOPRIDEV(block_id) (CVMX_ADD_IO_SEG(0x000168000000C610ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GTXFIFOPRIDEV(offset) (CVMX_ADD_IO_SEG(0x000168000000C610ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GTXFIFOPRIHST(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GTXFIFOPRIHST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GTXFIFOPRIHST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C618ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GTXFIFOPRIHST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C618ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GTXFIFOPRIHST(block_id) (CVMX_ADD_IO_SEG(0x000168000000C618ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GTXFIFOPRIHST(offset) (CVMX_ADD_IO_SEG(0x000168000000C618ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_USBDRDX_UAHC_GTXFIFOSIZX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 3)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 3)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_GTXFIFOSIZX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C300ull) + (((offset) & 3) + ((block_id) & 1) * 0x4000000000ull) * 4;
 }
@@ -702,54 +820,64 @@ static inline uint64_t CVMX_USBDRDX_UAHC_GTXFIFOSIZX(unsigned long offset, unsig
 #define CVMX_USBDRDX_UAHC_GTXFIFOSIZX(offset, block_id) (CVMX_ADD_IO_SEG(0x000168000000C300ull) + (((offset) & 3) + ((block_id) & 1) * 0x4000000000ull) * 4)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GTXTHRCFG(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GTXTHRCFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GTXTHRCFG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C108ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GTXTHRCFG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C108ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GTXTHRCFG(block_id) (CVMX_ADD_IO_SEG(0x000168000000C108ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GTXTHRCFG(offset) (CVMX_ADD_IO_SEG(0x000168000000C108ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GUCTL(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GUCTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GUCTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C12Cull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GUCTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C12Cull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GUCTL(block_id) (CVMX_ADD_IO_SEG(0x000168000000C12Cull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GUCTL(offset) (CVMX_ADD_IO_SEG(0x000168000000C12Cull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GUCTL1(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GUCTL1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GUCTL1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C11Cull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GUCTL1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C11Cull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GUCTL1(block_id) (CVMX_ADD_IO_SEG(0x000168000000C11Cull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GUCTL1(offset) (CVMX_ADD_IO_SEG(0x000168000000C11Cull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_GUID(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_GUID(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_GUID(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000C128ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_GUID(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000C128ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_GUID(block_id) (CVMX_ADD_IO_SEG(0x000168000000C128ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_GUID(offset) (CVMX_ADD_IO_SEG(0x000168000000C128ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_USBDRDX_UAHC_GUSB2I2CCTLX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_GUSB2I2CCTLX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C240ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -760,7 +888,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_GUSB2I2CCTLX(unsigned long offset, unsi
 static inline uint64_t CVMX_USBDRDX_UAHC_GUSB2PHYCFGX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_GUSB2PHYCFGX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C200ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -771,7 +901,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_GUSB2PHYCFGX(unsigned long offset, unsi
 static inline uint64_t CVMX_USBDRDX_UAHC_GUSB3PIPECTLX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_GUSB3PIPECTLX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000C2C0ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -779,54 +911,64 @@ static inline uint64_t CVMX_USBDRDX_UAHC_GUSB3PIPECTLX(unsigned long offset, uns
 #define CVMX_USBDRDX_UAHC_GUSB3PIPECTLX(offset, block_id) (CVMX_ADD_IO_SEG(0x000168000000C2C0ull) + ((block_id) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_HCCPARAMS(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_HCCPARAMS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_HCCPARAMS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000010ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_HCCPARAMS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000010ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_HCCPARAMS(block_id) (CVMX_ADD_IO_SEG(0x0001680000000010ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_HCCPARAMS(offset) (CVMX_ADD_IO_SEG(0x0001680000000010ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_HCSPARAMS1(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_HCSPARAMS1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_HCSPARAMS1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000004ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_HCSPARAMS1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000004ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_HCSPARAMS1(block_id) (CVMX_ADD_IO_SEG(0x0001680000000004ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_HCSPARAMS1(offset) (CVMX_ADD_IO_SEG(0x0001680000000004ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_HCSPARAMS2(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_HCSPARAMS2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_HCSPARAMS2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000008ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_HCSPARAMS2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000008ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_HCSPARAMS2(block_id) (CVMX_ADD_IO_SEG(0x0001680000000008ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_HCSPARAMS2(offset) (CVMX_ADD_IO_SEG(0x0001680000000008ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_HCSPARAMS3(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_HCSPARAMS3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_HCSPARAMS3(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000000Cull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_HCSPARAMS3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000000Cull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_HCSPARAMS3(block_id) (CVMX_ADD_IO_SEG(0x000168000000000Cull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_HCSPARAMS3(offset) (CVMX_ADD_IO_SEG(0x000168000000000Cull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_USBDRDX_UAHC_IMANX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_IMANX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000460ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -837,7 +979,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_IMANX(unsigned long offset, unsigned lo
 static inline uint64_t CVMX_USBDRDX_UAHC_IMODX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_IMODX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000464ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -845,32 +989,38 @@ static inline uint64_t CVMX_USBDRDX_UAHC_IMODX(unsigned long offset, unsigned lo
 #define CVMX_USBDRDX_UAHC_IMODX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001680000000464ull) + ((block_id) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_MFINDEX(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_MFINDEX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_MFINDEX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000440ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_MFINDEX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000440ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_MFINDEX(block_id) (CVMX_ADD_IO_SEG(0x0001680000000440ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_MFINDEX(offset) (CVMX_ADD_IO_SEG(0x0001680000000440ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_PAGESIZE(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_PAGESIZE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_PAGESIZE(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000028ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_PAGESIZE(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000028ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_PAGESIZE(block_id) (CVMX_ADD_IO_SEG(0x0001680000000028ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_PAGESIZE(offset) (CVMX_ADD_IO_SEG(0x0001680000000028ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_USBDRDX_UAHC_PORTHLPMC_20X(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_PORTHLPMC_20X(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000042Cull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -881,7 +1031,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_PORTHLPMC_20X(unsigned long offset, uns
 static inline uint64_t CVMX_USBDRDX_UAHC_PORTHLPMC_SSX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 1)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 1)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 1)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 1)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_PORTHLPMC_SSX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x000168000000043Cull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -892,7 +1044,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_PORTHLPMC_SSX(unsigned long offset, uns
 static inline uint64_t CVMX_USBDRDX_UAHC_PORTLI_20X(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_PORTLI_20X(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000428ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -903,7 +1057,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_PORTLI_20X(unsigned long offset, unsign
 static inline uint64_t CVMX_USBDRDX_UAHC_PORTLI_SSX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 1)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 1)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 1)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 1)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_PORTLI_SSX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000438ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -914,7 +1070,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_PORTLI_SSX(unsigned long offset, unsign
 static inline uint64_t CVMX_USBDRDX_UAHC_PORTPMSC_20X(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_PORTPMSC_20X(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000424ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -925,7 +1083,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_PORTPMSC_20X(unsigned long offset, unsi
 static inline uint64_t CVMX_USBDRDX_UAHC_PORTPMSC_SSX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 1)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 1)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 1)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 1)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_PORTPMSC_SSX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000434ull) + ((block_id) & 1) * 0x10000000000ull;
 }
@@ -936,7 +1096,9 @@ static inline uint64_t CVMX_USBDRDX_UAHC_PORTPMSC_SSX(unsigned long offset, unsi
 static inline uint64_t CVMX_USBDRDX_UAHC_PORTSCX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 1)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 1)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UAHC_PORTSCX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001680000000420ull) + (((offset) & 1) + ((block_id) & 1) * 0x1000000000ull) * 16;
 }
@@ -944,208 +1106,246 @@ static inline uint64_t CVMX_USBDRDX_UAHC_PORTSCX(unsigned long offset, unsigned 
 #define CVMX_USBDRDX_UAHC_PORTSCX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001680000000420ull) + (((offset) & 1) + ((block_id) & 1) * 0x1000000000ull) * 16)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_RTSOFF(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_RTSOFF(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_RTSOFF(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000018ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_RTSOFF(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000018ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_RTSOFF(block_id) (CVMX_ADD_IO_SEG(0x0001680000000018ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_RTSOFF(offset) (CVMX_ADD_IO_SEG(0x0001680000000018ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT2_DW0(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT2_DW0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT2_DW0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000890ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT2_DW0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000890ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_SUPTPRT2_DW0(block_id) (CVMX_ADD_IO_SEG(0x0001680000000890ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_SUPTPRT2_DW0(offset) (CVMX_ADD_IO_SEG(0x0001680000000890ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT2_DW1(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT2_DW1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT2_DW1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000894ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT2_DW1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000894ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_SUPTPRT2_DW1(block_id) (CVMX_ADD_IO_SEG(0x0001680000000894ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_SUPTPRT2_DW1(offset) (CVMX_ADD_IO_SEG(0x0001680000000894ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT2_DW2(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT2_DW2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT2_DW2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000898ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT2_DW2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000898ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_SUPTPRT2_DW2(block_id) (CVMX_ADD_IO_SEG(0x0001680000000898ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_SUPTPRT2_DW2(offset) (CVMX_ADD_IO_SEG(0x0001680000000898ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT2_DW3(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT2_DW3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT2_DW3(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x000168000000089Cull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT2_DW3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x000168000000089Cull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_SUPTPRT2_DW3(block_id) (CVMX_ADD_IO_SEG(0x000168000000089Cull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_SUPTPRT2_DW3(offset) (CVMX_ADD_IO_SEG(0x000168000000089Cull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT3_DW0(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT3_DW0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT3_DW0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00016800000008A0ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT3_DW0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00016800000008A0ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_SUPTPRT3_DW0(block_id) (CVMX_ADD_IO_SEG(0x00016800000008A0ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_SUPTPRT3_DW0(offset) (CVMX_ADD_IO_SEG(0x00016800000008A0ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT3_DW1(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT3_DW1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT3_DW1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00016800000008A4ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT3_DW1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00016800000008A4ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_SUPTPRT3_DW1(block_id) (CVMX_ADD_IO_SEG(0x00016800000008A4ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_SUPTPRT3_DW1(offset) (CVMX_ADD_IO_SEG(0x00016800000008A4ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT3_DW2(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT3_DW2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT3_DW2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00016800000008A8ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT3_DW2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00016800000008A8ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_SUPTPRT3_DW2(block_id) (CVMX_ADD_IO_SEG(0x00016800000008A8ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_SUPTPRT3_DW2(offset) (CVMX_ADD_IO_SEG(0x00016800000008A8ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT3_DW3(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_SUPTPRT3_DW3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT3_DW3(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00016800000008ACull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_SUPTPRT3_DW3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00016800000008ACull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_SUPTPRT3_DW3(block_id) (CVMX_ADD_IO_SEG(0x00016800000008ACull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_SUPTPRT3_DW3(offset) (CVMX_ADD_IO_SEG(0x00016800000008ACull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_USBCMD(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_USBCMD(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_USBCMD(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000020ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_USBCMD(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000020ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_USBCMD(block_id) (CVMX_ADD_IO_SEG(0x0001680000000020ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_USBCMD(offset) (CVMX_ADD_IO_SEG(0x0001680000000020ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_USBLEGCTLSTS(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_USBLEGCTLSTS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_USBLEGCTLSTS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000884ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_USBLEGCTLSTS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000884ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_USBLEGCTLSTS(block_id) (CVMX_ADD_IO_SEG(0x0001680000000884ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_USBLEGCTLSTS(offset) (CVMX_ADD_IO_SEG(0x0001680000000884ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_USBLEGSUP(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_USBLEGSUP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_USBLEGSUP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000880ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_USBLEGSUP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000880ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_USBLEGSUP(block_id) (CVMX_ADD_IO_SEG(0x0001680000000880ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_USBLEGSUP(offset) (CVMX_ADD_IO_SEG(0x0001680000000880ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UAHC_USBSTS(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UAHC_USBSTS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UAHC_USBSTS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001680000000024ull) + ((block_id) & 1) * 0x10000000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UAHC_USBSTS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001680000000024ull) + ((offset) & 1) * 0x10000000000ull;
 }
 #else
-#define CVMX_USBDRDX_UAHC_USBSTS(block_id) (CVMX_ADD_IO_SEG(0x0001680000000024ull) + ((block_id) & 1) * 0x10000000000ull)
+#define CVMX_USBDRDX_UAHC_USBSTS(offset) (CVMX_ADD_IO_SEG(0x0001680000000024ull) + ((offset) & 1) * 0x10000000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UCTL_BIST_STATUS(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UCTL_BIST_STATUS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UCTL_BIST_STATUS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180068000008ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UCTL_BIST_STATUS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180068000008ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_USBDRDX_UCTL_BIST_STATUS(block_id) (CVMX_ADD_IO_SEG(0x0001180068000008ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_USBDRDX_UCTL_BIST_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180068000008ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UCTL_CTL(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UCTL_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UCTL_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180068000000ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UCTL_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180068000000ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_USBDRDX_UCTL_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180068000000ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_USBDRDX_UCTL_CTL(offset) (CVMX_ADD_IO_SEG(0x0001180068000000ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UCTL_ECC(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UCTL_ECC(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UCTL_ECC(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800680000F0ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UCTL_ECC(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800680000F0ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_USBDRDX_UCTL_ECC(block_id) (CVMX_ADD_IO_SEG(0x00011800680000F0ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_USBDRDX_UCTL_ECC(offset) (CVMX_ADD_IO_SEG(0x00011800680000F0ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UCTL_HOST_CFG(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UCTL_HOST_CFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UCTL_HOST_CFG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800680000E0ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UCTL_HOST_CFG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800680000E0ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_USBDRDX_UCTL_HOST_CFG(block_id) (CVMX_ADD_IO_SEG(0x00011800680000E0ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_USBDRDX_UCTL_HOST_CFG(offset) (CVMX_ADD_IO_SEG(0x00011800680000E0ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UCTL_INTSTAT(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UCTL_INTSTAT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UCTL_INTSTAT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180068000030ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UCTL_INTSTAT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180068000030ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_USBDRDX_UCTL_INTSTAT(block_id) (CVMX_ADD_IO_SEG(0x0001180068000030ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_USBDRDX_UCTL_INTSTAT(offset) (CVMX_ADD_IO_SEG(0x0001180068000030ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_USBDRDX_UCTL_PORTX_CFG_HS(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UCTL_PORTX_CFG_HS(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180068000040ull) + ((block_id) & 1) * 0x1000000ull;
 }
@@ -1156,7 +1356,9 @@ static inline uint64_t CVMX_USBDRDX_UCTL_PORTX_CFG_HS(unsigned long offset, unsi
 static inline uint64_t CVMX_USBDRDX_UCTL_PORTX_CFG_SS(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UCTL_PORTX_CFG_SS(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180068000048ull) + ((block_id) & 1) * 0x1000000ull;
 }
@@ -1167,7 +1369,9 @@ static inline uint64_t CVMX_USBDRDX_UCTL_PORTX_CFG_SS(unsigned long offset, unsi
 static inline uint64_t CVMX_USBDRDX_UCTL_PORTX_CR_DBG_CFG(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UCTL_PORTX_CR_DBG_CFG(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180068000050ull) + ((block_id) & 1) * 0x1000000ull;
 }
@@ -1178,7 +1382,9 @@ static inline uint64_t CVMX_USBDRDX_UCTL_PORTX_CR_DBG_CFG(unsigned long offset, 
 static inline uint64_t CVMX_USBDRDX_UCTL_PORTX_CR_DBG_STATUS(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id == 0))))))
 		cvmx_warn("CVMX_USBDRDX_UCTL_PORTX_CR_DBG_STATUS(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180068000058ull) + ((block_id) & 1) * 0x1000000ull;
 }
@@ -1186,37 +1392,63 @@ static inline uint64_t CVMX_USBDRDX_UCTL_PORTX_CR_DBG_STATUS(unsigned long offse
 #define CVMX_USBDRDX_UCTL_PORTX_CR_DBG_STATUS(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180068000058ull) + ((block_id) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UCTL_SHIM_CFG(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UCTL_SHIM_CFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UCTL_SHIM_CFG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800680000E8ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UCTL_SHIM_CFG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800680000E8ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_USBDRDX_UCTL_SHIM_CFG(block_id) (CVMX_ADD_IO_SEG(0x00011800680000E8ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_USBDRDX_UCTL_SHIM_CFG(offset) (CVMX_ADD_IO_SEG(0x00011800680000E8ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UCTL_SPARE0(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UCTL_SPARE0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UCTL_SPARE0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180068000010ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_USBDRDX_UCTL_SPARE0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180068000010ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_USBDRDX_UCTL_SPARE0(block_id) (CVMX_ADD_IO_SEG(0x0001180068000010ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_USBDRDX_UCTL_SPARE0(offset) (CVMX_ADD_IO_SEG(0x0001180068000010ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_USBDRDX_UCTL_SPARE1(unsigned long block_id)
+static inline uint64_t CVMX_USBDRDX_UCTL_SPARE0_ECO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_USBDRDX_UCTL_SPARE1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800680000F8ull) + ((block_id) & 1) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UCTL_SPARE0_ECO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180068000010ull) + ((offset) & 1) * 0x1000000ull;
 }
 #else
-#define CVMX_USBDRDX_UCTL_SPARE1(block_id) (CVMX_ADD_IO_SEG(0x00011800680000F8ull) + ((block_id) & 1) * 0x1000000ull)
+#define CVMX_USBDRDX_UCTL_SPARE0_ECO(offset) (CVMX_ADD_IO_SEG(0x0001180068000010ull) + ((offset) & 1) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_USBDRDX_UCTL_SPARE1(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_USBDRDX_UCTL_SPARE1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800680000F8ull) + ((offset) & 1) * 0x1000000ull;
+}
+#else
+#define CVMX_USBDRDX_UCTL_SPARE1(offset) (CVMX_ADD_IO_SEG(0x00011800680000F8ull) + ((offset) & 1) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_USBDRDX_UCTL_SPARE1_ECO(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_USBDRDX_UCTL_SPARE1_ECO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800680000F8ull) + ((offset) & 1) * 0x1000000ull;
+}
+#else
+#define CVMX_USBDRDX_UCTL_SPARE1_ECO(offset) (CVMX_ADD_IO_SEG(0x00011800680000F8ull) + ((offset) & 1) * 0x1000000ull)
 #endif
 
 /**
@@ -1240,6 +1472,8 @@ union cvmx_usbdrdx_uahc_caplength {
 	} s;
 	struct cvmx_usbdrdx_uahc_caplength_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_caplength_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_caplength_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_caplength_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_caplength cvmx_usbdrdx_uahc_caplength_t;
 
@@ -1266,6 +1500,8 @@ union cvmx_usbdrdx_uahc_config {
 	} s;
 	struct cvmx_usbdrdx_uahc_config_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_config_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_config_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_config_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_config cvmx_usbdrdx_uahc_config_t;
 
@@ -1300,6 +1536,8 @@ union cvmx_usbdrdx_uahc_crcr {
 	} s;
 	struct cvmx_usbdrdx_uahc_crcr_s       cn70xx;
 	struct cvmx_usbdrdx_uahc_crcr_s       cn70xxp1;
+	struct cvmx_usbdrdx_uahc_crcr_s       cn73xx;
+	struct cvmx_usbdrdx_uahc_crcr_s       cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_crcr cvmx_usbdrdx_uahc_crcr_t;
 
@@ -1343,6 +1581,8 @@ union cvmx_usbdrdx_uahc_dalepena {
 	} s;
 	struct cvmx_usbdrdx_uahc_dalepena_s   cn70xx;
 	struct cvmx_usbdrdx_uahc_dalepena_s   cn70xxp1;
+	struct cvmx_usbdrdx_uahc_dalepena_s   cn73xx;
+	struct cvmx_usbdrdx_uahc_dalepena_s   cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_dalepena cvmx_usbdrdx_uahc_dalepena_t;
 
@@ -1374,6 +1614,8 @@ union cvmx_usbdrdx_uahc_dbx {
 	} s;
 	struct cvmx_usbdrdx_uahc_dbx_s        cn70xx;
 	struct cvmx_usbdrdx_uahc_dbx_s        cn70xxp1;
+	struct cvmx_usbdrdx_uahc_dbx_s        cn73xx;
+	struct cvmx_usbdrdx_uahc_dbx_s        cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_dbx cvmx_usbdrdx_uahc_dbx_t;
 
@@ -1396,6 +1638,8 @@ union cvmx_usbdrdx_uahc_dboff {
 	} s;
 	struct cvmx_usbdrdx_uahc_dboff_s      cn70xx;
 	struct cvmx_usbdrdx_uahc_dboff_s      cn70xxp1;
+	struct cvmx_usbdrdx_uahc_dboff_s      cn73xx;
+	struct cvmx_usbdrdx_uahc_dboff_s      cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_dboff cvmx_usbdrdx_uahc_dboff_t;
 
@@ -1422,6 +1666,8 @@ union cvmx_usbdrdx_uahc_dcbaap {
 	} s;
 	struct cvmx_usbdrdx_uahc_dcbaap_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_dcbaap_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_dcbaap_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_dcbaap_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_dcbaap cvmx_usbdrdx_uahc_dcbaap_t;
 
@@ -1498,6 +1744,8 @@ union cvmx_usbdrdx_uahc_dcfg {
 	} s;
 	struct cvmx_usbdrdx_uahc_dcfg_s       cn70xx;
 	struct cvmx_usbdrdx_uahc_dcfg_s       cn70xxp1;
+	struct cvmx_usbdrdx_uahc_dcfg_s       cn73xx;
+	struct cvmx_usbdrdx_uahc_dcfg_s       cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_dcfg cvmx_usbdrdx_uahc_dcfg_t;
 
@@ -1693,6 +1941,8 @@ union cvmx_usbdrdx_uahc_dctl {
 	} s;
 	struct cvmx_usbdrdx_uahc_dctl_s       cn70xx;
 	struct cvmx_usbdrdx_uahc_dctl_s       cn70xxp1;
+	struct cvmx_usbdrdx_uahc_dctl_s       cn73xx;
+	struct cvmx_usbdrdx_uahc_dctl_s       cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_dctl cvmx_usbdrdx_uahc_dctl_t;
 
@@ -1847,6 +2097,8 @@ union cvmx_usbdrdx_uahc_depcmdx {
 	} s;
 	struct cvmx_usbdrdx_uahc_depcmdx_s    cn70xx;
 	struct cvmx_usbdrdx_uahc_depcmdx_s    cn70xxp1;
+	struct cvmx_usbdrdx_uahc_depcmdx_s    cn73xx;
+	struct cvmx_usbdrdx_uahc_depcmdx_s    cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_depcmdx cvmx_usbdrdx_uahc_depcmdx_t;
 
@@ -1873,6 +2125,8 @@ union cvmx_usbdrdx_uahc_depcmdpar0_x {
 	} s;
 	struct cvmx_usbdrdx_uahc_depcmdpar0_x_s cn70xx;
 	struct cvmx_usbdrdx_uahc_depcmdpar0_x_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_depcmdpar0_x_s cn73xx;
+	struct cvmx_usbdrdx_uahc_depcmdpar0_x_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_depcmdpar0_x cvmx_usbdrdx_uahc_depcmdpar0_x_t;
 
@@ -1899,6 +2153,8 @@ union cvmx_usbdrdx_uahc_depcmdpar1_x {
 	} s;
 	struct cvmx_usbdrdx_uahc_depcmdpar1_x_s cn70xx;
 	struct cvmx_usbdrdx_uahc_depcmdpar1_x_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_depcmdpar1_x_s cn73xx;
+	struct cvmx_usbdrdx_uahc_depcmdpar1_x_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_depcmdpar1_x cvmx_usbdrdx_uahc_depcmdpar1_x_t;
 
@@ -1925,6 +2181,8 @@ union cvmx_usbdrdx_uahc_depcmdpar2_x {
 	} s;
 	struct cvmx_usbdrdx_uahc_depcmdpar2_x_s cn70xx;
 	struct cvmx_usbdrdx_uahc_depcmdpar2_x_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_depcmdpar2_x_s cn73xx;
+	struct cvmx_usbdrdx_uahc_depcmdpar2_x_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_depcmdpar2_x cvmx_usbdrdx_uahc_depcmdpar2_x_t;
 
@@ -1974,6 +2232,8 @@ union cvmx_usbdrdx_uahc_devten {
 	} s;
 	struct cvmx_usbdrdx_uahc_devten_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_devten_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_devten_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_devten_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_devten cvmx_usbdrdx_uahc_devten_t;
 
@@ -2025,6 +2285,8 @@ union cvmx_usbdrdx_uahc_dgcmd {
 	} s;
 	struct cvmx_usbdrdx_uahc_dgcmd_s      cn70xx;
 	struct cvmx_usbdrdx_uahc_dgcmd_s      cn70xxp1;
+	struct cvmx_usbdrdx_uahc_dgcmd_s      cn73xx;
+	struct cvmx_usbdrdx_uahc_dgcmd_s      cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_dgcmd cvmx_usbdrdx_uahc_dgcmd_t;
 
@@ -2054,6 +2316,8 @@ union cvmx_usbdrdx_uahc_dgcmdpar {
 	} s;
 	struct cvmx_usbdrdx_uahc_dgcmdpar_s   cn70xx;
 	struct cvmx_usbdrdx_uahc_dgcmdpar_s   cn70xxp1;
+	struct cvmx_usbdrdx_uahc_dgcmdpar_s   cn73xx;
+	struct cvmx_usbdrdx_uahc_dgcmdpar_s   cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_dgcmdpar cvmx_usbdrdx_uahc_dgcmdpar_t;
 
@@ -2080,6 +2344,8 @@ union cvmx_usbdrdx_uahc_dnctrl {
 	} s;
 	struct cvmx_usbdrdx_uahc_dnctrl_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_dnctrl_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_dnctrl_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_dnctrl_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_dnctrl cvmx_usbdrdx_uahc_dnctrl_t;
 
@@ -2187,6 +2453,8 @@ union cvmx_usbdrdx_uahc_dsts {
 	} s;
 	struct cvmx_usbdrdx_uahc_dsts_s       cn70xx;
 	struct cvmx_usbdrdx_uahc_dsts_s       cn70xxp1;
+	struct cvmx_usbdrdx_uahc_dsts_s       cn73xx;
+	struct cvmx_usbdrdx_uahc_dsts_s       cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_dsts cvmx_usbdrdx_uahc_dsts_t;
 
@@ -2215,6 +2483,8 @@ union cvmx_usbdrdx_uahc_erdpx {
 	} s;
 	struct cvmx_usbdrdx_uahc_erdpx_s      cn70xx;
 	struct cvmx_usbdrdx_uahc_erdpx_s      cn70xxp1;
+	struct cvmx_usbdrdx_uahc_erdpx_s      cn73xx;
+	struct cvmx_usbdrdx_uahc_erdpx_s      cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_erdpx cvmx_usbdrdx_uahc_erdpx_t;
 
@@ -2241,6 +2511,8 @@ union cvmx_usbdrdx_uahc_erstbax {
 	} s;
 	struct cvmx_usbdrdx_uahc_erstbax_s    cn70xx;
 	struct cvmx_usbdrdx_uahc_erstbax_s    cn70xxp1;
+	struct cvmx_usbdrdx_uahc_erstbax_s    cn73xx;
+	struct cvmx_usbdrdx_uahc_erstbax_s    cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_erstbax cvmx_usbdrdx_uahc_erstbax_t;
 
@@ -2249,7 +2521,7 @@ typedef union cvmx_usbdrdx_uahc_erstbax cvmx_usbdrdx_uahc_erstbax_t;
  *
  * For information on this register, refer to the xHCI Specification, v1.0, section 5.5.2.3.1.
  *
- * This register can be reset by IOI reset,
+ * This register can be reset by NCB reset,
  * or USBDRD()_UCTL_CTL[UAHC_RST],
  * or USBDRD()_UAHC_GCTL[CORESOFTRESET],
  * or USBDRD()_UAHC_USBCMD[HCRST], or USBDRD()_UAHC_USBCMD[LHCRST].
@@ -2267,6 +2539,8 @@ union cvmx_usbdrdx_uahc_erstszx {
 	} s;
 	struct cvmx_usbdrdx_uahc_erstszx_s    cn70xx;
 	struct cvmx_usbdrdx_uahc_erstszx_s    cn70xxp1;
+	struct cvmx_usbdrdx_uahc_erstszx_s    cn73xx;
+	struct cvmx_usbdrdx_uahc_erstszx_s    cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_erstszx cvmx_usbdrdx_uahc_erstszx_t;
 
@@ -2281,8 +2555,7 @@ typedef union cvmx_usbdrdx_uahc_erstszx cvmx_usbdrdx_uahc_erstszx_t;
  * outstanding transactions. Instead, it keeps track of the start address of the DMA transfer
  * associated with all active transactions. It is this address that is reported in
  * USBDRD()_UAHC_GBUSERRADDR when a bus error occurs. For example, if the host controller
- * initiates
- * a DMA
+ * initiates a DMA
  * transfer to write 1k of packet data starting at buffer address 0xABCD0000, and this DMA is
  * broken up into multiple 256B bursts on the AXI, then if a bus error occurs on any of these
  * associated AXI transfers, USBDRD()_UAHC_GBUSERRADDR reflects the DMA start address of
@@ -2306,6 +2579,8 @@ union cvmx_usbdrdx_uahc_gbuserraddr {
 	} s;
 	struct cvmx_usbdrdx_uahc_gbuserraddr_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gbuserraddr_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gbuserraddr_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gbuserraddr_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gbuserraddr cvmx_usbdrdx_uahc_gbuserraddr_t;
 
@@ -2358,8 +2633,8 @@ union cvmx_usbdrdx_uahc_gctl {
                                                          0x2 = Interval is 31.25 us.
                                                          0x3 = Interval is 15.625 us.
                                                          For full-speed mode, the scale-down value is multiplied by 8. */
-	uint32_t prtcapdir                    : 2;  /**< 0x1: for Host configurations.
-                                                         0x2: for Device configurations. */
+	uint32_t prtcapdir                    : 2;  /**< 0x1 = for Host configurations.
+                                                         0x2 = for Device configurations. */
 	uint32_t coresoftreset                : 1;  /**< Core soft reset: 1 = soft reset to core, 0 = no soft reset.
                                                          Clears the interrupts and all the USBDRD()_UAHC_* CSRs except the
                                                          following registers: USBDRD()_UAHC_GCTL, USBDRD()_UAHC_GUCTL, USBDRD()_UAHC_GSTS,
@@ -2463,6 +2738,8 @@ union cvmx_usbdrdx_uahc_gctl {
 	} s;
 	struct cvmx_usbdrdx_uahc_gctl_s       cn70xx;
 	struct cvmx_usbdrdx_uahc_gctl_s       cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gctl_s       cn73xx;
+	struct cvmx_usbdrdx_uahc_gctl_s       cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gctl cvmx_usbdrdx_uahc_gctl_t;
 
@@ -2490,6 +2767,8 @@ union cvmx_usbdrdx_uahc_gdbgbmu {
 	} s;
 	struct cvmx_usbdrdx_uahc_gdbgbmu_s    cn70xx;
 	struct cvmx_usbdrdx_uahc_gdbgbmu_s    cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gdbgbmu_s    cn73xx;
+	struct cvmx_usbdrdx_uahc_gdbgbmu_s    cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gdbgbmu cvmx_usbdrdx_uahc_gdbgbmu_t;
 
@@ -2511,6 +2790,8 @@ union cvmx_usbdrdx_uahc_gdbgepinfo {
 	} s;
 	struct cvmx_usbdrdx_uahc_gdbgepinfo_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gdbgepinfo_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gdbgepinfo_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gdbgepinfo_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gdbgepinfo cvmx_usbdrdx_uahc_gdbgepinfo_t;
 
@@ -2555,6 +2836,8 @@ union cvmx_usbdrdx_uahc_gdbgfifospace {
 	} s;
 	struct cvmx_usbdrdx_uahc_gdbgfifospace_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gdbgfifospace_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gdbgfifospace_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gdbgfifospace_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gdbgfifospace cvmx_usbdrdx_uahc_gdbgfifospace_t;
 
@@ -2582,6 +2865,8 @@ union cvmx_usbdrdx_uahc_gdbglnmcc {
 	} s;
 	struct cvmx_usbdrdx_uahc_gdbglnmcc_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_gdbglnmcc_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gdbglnmcc_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_gdbglnmcc_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gdbglnmcc cvmx_usbdrdx_uahc_gdbglnmcc_t;
 
@@ -2603,6 +2888,8 @@ union cvmx_usbdrdx_uahc_gdbglsp {
 	} s;
 	struct cvmx_usbdrdx_uahc_gdbglsp_s    cn70xx;
 	struct cvmx_usbdrdx_uahc_gdbglsp_s    cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gdbglsp_s    cn73xx;
+	struct cvmx_usbdrdx_uahc_gdbglsp_s    cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gdbglsp cvmx_usbdrdx_uahc_gdbglsp_t;
 
@@ -2641,6 +2928,8 @@ union cvmx_usbdrdx_uahc_gdbglspmux {
 	} s;
 	struct cvmx_usbdrdx_uahc_gdbglspmux_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gdbglspmux_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gdbglspmux_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gdbglspmux_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gdbglspmux cvmx_usbdrdx_uahc_gdbglspmux_t;
 
@@ -2699,6 +2988,8 @@ union cvmx_usbdrdx_uahc_gdbgltssm {
 	} s;
 	struct cvmx_usbdrdx_uahc_gdbgltssm_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_gdbgltssm_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gdbgltssm_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_gdbgltssm_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gdbgltssm cvmx_usbdrdx_uahc_gdbgltssm_t;
 
@@ -2745,6 +3036,8 @@ union cvmx_usbdrdx_uahc_gdmahlratio {
 	} s;
 	struct cvmx_usbdrdx_uahc_gdmahlratio_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gdmahlratio_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gdmahlratio_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gdmahlratio_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gdmahlratio cvmx_usbdrdx_uahc_gdmahlratio_t;
 
@@ -2777,6 +3070,8 @@ union cvmx_usbdrdx_uahc_gevntadrx {
 	} s;
 	struct cvmx_usbdrdx_uahc_gevntadrx_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_gevntadrx_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gevntadrx_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_gevntadrx_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gevntadrx cvmx_usbdrdx_uahc_gevntadrx_t;
 
@@ -2818,6 +3113,8 @@ union cvmx_usbdrdx_uahc_gevntcountx {
 	} s;
 	struct cvmx_usbdrdx_uahc_gevntcountx_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gevntcountx_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gevntcountx_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gevntcountx_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gevntcountx cvmx_usbdrdx_uahc_gevntcountx_t;
 
@@ -2853,8 +3150,23 @@ union cvmx_usbdrdx_uahc_gevntsizx {
 	uint32_t evntintmask                  : 1;
 #endif
 	} s;
-	struct cvmx_usbdrdx_uahc_gevntsizx_s  cn70xx;
-	struct cvmx_usbdrdx_uahc_gevntsizx_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gevntsizx_cn70xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t evntintmask                  : 1;  /**< When set to 1, this prevents the interrupt from being generated.
+                                                         However, even when the mask is set, the events are queued. */
+	uint32_t reserved_30_16               : 15;
+	uint32_t evntsiz                      : 16; /**< Holds the size of the Event Buffer in bytes; must be a multiple of
+                                                         four. This is programmed by software once during initialization.
+                                                         The minimum size of the event buffer is 32 bytes. */
+#else
+	uint32_t evntsiz                      : 16;
+	uint32_t reserved_30_16               : 15;
+	uint32_t evntintmask                  : 1;
+#endif
+	} cn70xx;
+	struct cvmx_usbdrdx_uahc_gevntsizx_cn70xx cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gevntsizx_cn70xx cn73xx;
+	struct cvmx_usbdrdx_uahc_gevntsizx_cn70xx cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gevntsizx cvmx_usbdrdx_uahc_gevntsizx_t;
 
@@ -2959,6 +3271,8 @@ union cvmx_usbdrdx_uahc_gfladj {
 	} s;
 	struct cvmx_usbdrdx_uahc_gfladj_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_gfladj_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gfladj_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_gfladj_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gfladj cvmx_usbdrdx_uahc_gfladj_t;
 
@@ -2985,6 +3299,8 @@ union cvmx_usbdrdx_uahc_ggpio {
 	} s;
 	struct cvmx_usbdrdx_uahc_ggpio_s      cn70xx;
 	struct cvmx_usbdrdx_uahc_ggpio_s      cn70xxp1;
+	struct cvmx_usbdrdx_uahc_ggpio_s      cn73xx;
+	struct cvmx_usbdrdx_uahc_ggpio_s      cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_ggpio cvmx_usbdrdx_uahc_ggpio_t;
 
@@ -3016,6 +3332,8 @@ union cvmx_usbdrdx_uahc_ghwparams0 {
 	} s;
 	struct cvmx_usbdrdx_uahc_ghwparams0_s cn70xx;
 	struct cvmx_usbdrdx_uahc_ghwparams0_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_ghwparams0_s cn73xx;
+	struct cvmx_usbdrdx_uahc_ghwparams0_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_ghwparams0 cvmx_usbdrdx_uahc_ghwparams0_t;
 
@@ -3068,6 +3386,8 @@ union cvmx_usbdrdx_uahc_ghwparams1 {
 	} s;
 	struct cvmx_usbdrdx_uahc_ghwparams1_s cn70xx;
 	struct cvmx_usbdrdx_uahc_ghwparams1_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_ghwparams1_s cn73xx;
+	struct cvmx_usbdrdx_uahc_ghwparams1_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_ghwparams1 cvmx_usbdrdx_uahc_ghwparams1_t;
 
@@ -3089,6 +3409,8 @@ union cvmx_usbdrdx_uahc_ghwparams2 {
 	} s;
 	struct cvmx_usbdrdx_uahc_ghwparams2_s cn70xx;
 	struct cvmx_usbdrdx_uahc_ghwparams2_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_ghwparams2_s cn73xx;
+	struct cvmx_usbdrdx_uahc_ghwparams2_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_ghwparams2 cvmx_usbdrdx_uahc_ghwparams2_t;
 
@@ -3130,6 +3452,8 @@ union cvmx_usbdrdx_uahc_ghwparams3 {
 	} s;
 	struct cvmx_usbdrdx_uahc_ghwparams3_s cn70xx;
 	struct cvmx_usbdrdx_uahc_ghwparams3_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_ghwparams3_s cn73xx;
+	struct cvmx_usbdrdx_uahc_ghwparams3_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_ghwparams3 cvmx_usbdrdx_uahc_ghwparams3_t;
 
@@ -3167,6 +3491,8 @@ union cvmx_usbdrdx_uahc_ghwparams4 {
 	} s;
 	struct cvmx_usbdrdx_uahc_ghwparams4_s cn70xx;
 	struct cvmx_usbdrdx_uahc_ghwparams4_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_ghwparams4_s cn73xx;
+	struct cvmx_usbdrdx_uahc_ghwparams4_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_ghwparams4 cvmx_usbdrdx_uahc_ghwparams4_t;
 
@@ -3198,6 +3524,8 @@ union cvmx_usbdrdx_uahc_ghwparams5 {
 	} s;
 	struct cvmx_usbdrdx_uahc_ghwparams5_s cn70xx;
 	struct cvmx_usbdrdx_uahc_ghwparams5_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_ghwparams5_s cn73xx;
+	struct cvmx_usbdrdx_uahc_ghwparams5_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_ghwparams5 cvmx_usbdrdx_uahc_ghwparams5_t;
 
@@ -3239,6 +3567,8 @@ union cvmx_usbdrdx_uahc_ghwparams6 {
 	} s;
 	struct cvmx_usbdrdx_uahc_ghwparams6_s cn70xx;
 	struct cvmx_usbdrdx_uahc_ghwparams6_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_ghwparams6_s cn73xx;
+	struct cvmx_usbdrdx_uahc_ghwparams6_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_ghwparams6 cvmx_usbdrdx_uahc_ghwparams6_t;
 
@@ -3262,13 +3592,15 @@ union cvmx_usbdrdx_uahc_ghwparams7 {
 	} s;
 	struct cvmx_usbdrdx_uahc_ghwparams7_s cn70xx;
 	struct cvmx_usbdrdx_uahc_ghwparams7_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_ghwparams7_s cn73xx;
+	struct cvmx_usbdrdx_uahc_ghwparams7_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_ghwparams7 cvmx_usbdrdx_uahc_ghwparams7_t;
 
 /**
  * cvmx_usbdrd#_uahc_ghwparams8
  *
- * These registers contain the hardware configuration options selected at compile-time.
+ * This register contains the hardware configuration options selected at compile-time.
  * INTERNAL: Register field names refer to Synopsys DWC_USB3_* parameters of the same suffix.
  *           See Synopsys DWC_usb3 Databook v2.20a, section 6.2.3.9.
  */
@@ -3283,6 +3615,8 @@ union cvmx_usbdrdx_uahc_ghwparams8 {
 	} s;
 	struct cvmx_usbdrdx_uahc_ghwparams8_s cn70xx;
 	struct cvmx_usbdrdx_uahc_ghwparams8_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_ghwparams8_s cn73xx;
+	struct cvmx_usbdrdx_uahc_ghwparams8_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_ghwparams8 cvmx_usbdrdx_uahc_ghwparams8_t;
 
@@ -3334,6 +3668,8 @@ union cvmx_usbdrdx_uahc_gpmsts {
 	} s;
 	struct cvmx_usbdrdx_uahc_gpmsts_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_gpmsts_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gpmsts_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_gpmsts_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gpmsts cvmx_usbdrdx_uahc_gpmsts_t;
 
@@ -3363,6 +3699,8 @@ union cvmx_usbdrdx_uahc_gprtbimap {
 	} s;
 	struct cvmx_usbdrdx_uahc_gprtbimap_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_gprtbimap_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gprtbimap_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_gprtbimap_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gprtbimap cvmx_usbdrdx_uahc_gprtbimap_t;
 
@@ -3392,6 +3730,8 @@ union cvmx_usbdrdx_uahc_gprtbimap_fs {
 	} s;
 	struct cvmx_usbdrdx_uahc_gprtbimap_fs_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gprtbimap_fs_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gprtbimap_fs_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gprtbimap_fs_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gprtbimap_fs cvmx_usbdrdx_uahc_gprtbimap_fs_t;
 
@@ -3421,6 +3761,8 @@ union cvmx_usbdrdx_uahc_gprtbimap_hs {
 	} s;
 	struct cvmx_usbdrdx_uahc_gprtbimap_hs_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gprtbimap_hs_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gprtbimap_hs_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gprtbimap_hs_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gprtbimap_hs cvmx_usbdrdx_uahc_gprtbimap_hs_t;
 
@@ -3437,15 +3779,17 @@ union cvmx_usbdrdx_uahc_grlsid {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t releaseid                    : 32; /**< Software can use this register to configure release-specific features in the driver.
                                                          INTERNAL: Synopsys ID
-                                                                 * SynopsysID[31:16] indicates Core Identification Number. 0x5533 is ASCII for U3
-                                                         (DWC_usb3).
-                                                                 * SynopsysID[15:0] indicates the release number. Current Release is 2.50a. */
+                                                          * SynopsysID[31:16] indicates Core Identification Number. 0x5533 is ASCII for
+                                                         U3 (DWC_usb3).
+                                                          * SynopsysID[15:0] indicates the release number. Current Release is 2.50a. */
 #else
 	uint32_t releaseid                    : 32;
 #endif
 	} s;
 	struct cvmx_usbdrdx_uahc_grlsid_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_grlsid_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_grlsid_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_grlsid_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_grlsid cvmx_usbdrdx_uahc_grlsid_t;
 
@@ -3490,6 +3834,8 @@ union cvmx_usbdrdx_uahc_grxfifoprihst {
 	} s;
 	struct cvmx_usbdrdx_uahc_grxfifoprihst_s cn70xx;
 	struct cvmx_usbdrdx_uahc_grxfifoprihst_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_grxfifoprihst_s cn73xx;
+	struct cvmx_usbdrdx_uahc_grxfifoprihst_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_grxfifoprihst cvmx_usbdrdx_uahc_grxfifoprihst_t;
 
@@ -3526,6 +3872,8 @@ union cvmx_usbdrdx_uahc_grxfifosizx {
 	} s;
 	struct cvmx_usbdrdx_uahc_grxfifosizx_s cn70xx;
 	struct cvmx_usbdrdx_uahc_grxfifosizx_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_grxfifosizx_s cn73xx;
+	struct cvmx_usbdrdx_uahc_grxfifosizx_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_grxfifosizx cvmx_usbdrdx_uahc_grxfifosizx_t;
 
@@ -3596,6 +3944,8 @@ union cvmx_usbdrdx_uahc_grxthrcfg {
 	} s;
 	struct cvmx_usbdrdx_uahc_grxthrcfg_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_grxthrcfg_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_grxthrcfg_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_grxthrcfg_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_grxthrcfg cvmx_usbdrdx_uahc_grxthrcfg_t;
 
@@ -3663,6 +4013,8 @@ union cvmx_usbdrdx_uahc_gsbuscfg0 {
 	} s;
 	struct cvmx_usbdrdx_uahc_gsbuscfg0_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_gsbuscfg0_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gsbuscfg0_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_gsbuscfg0_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gsbuscfg0 cvmx_usbdrdx_uahc_gsbuscfg0_t;
 
@@ -3708,6 +4060,8 @@ union cvmx_usbdrdx_uahc_gsbuscfg1 {
 	} s;
 	struct cvmx_usbdrdx_uahc_gsbuscfg1_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_gsbuscfg1_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gsbuscfg1_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_gsbuscfg1_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gsbuscfg1 cvmx_usbdrdx_uahc_gsbuscfg1_t;
 
@@ -3748,6 +4102,8 @@ union cvmx_usbdrdx_uahc_gsts {
 	} s;
 	struct cvmx_usbdrdx_uahc_gsts_s       cn70xx;
 	struct cvmx_usbdrdx_uahc_gsts_s       cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gsts_s       cn73xx;
+	struct cvmx_usbdrdx_uahc_gsts_s       cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gsts cvmx_usbdrdx_uahc_gsts_t;
 
@@ -3797,6 +4153,8 @@ union cvmx_usbdrdx_uahc_gtxfifopridev {
 	} s;
 	struct cvmx_usbdrdx_uahc_gtxfifopridev_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gtxfifopridev_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gtxfifopridev_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gtxfifopridev_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gtxfifopridev cvmx_usbdrdx_uahc_gtxfifopridev_t;
 
@@ -3844,6 +4202,8 @@ union cvmx_usbdrdx_uahc_gtxfifoprihst {
 	} s;
 	struct cvmx_usbdrdx_uahc_gtxfifoprihst_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gtxfifoprihst_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gtxfifoprihst_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gtxfifoprihst_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gtxfifoprihst cvmx_usbdrdx_uahc_gtxfifoprihst_t;
 
@@ -3881,6 +4241,8 @@ union cvmx_usbdrdx_uahc_gtxfifosizx {
 	} s;
 	struct cvmx_usbdrdx_uahc_gtxfifosizx_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gtxfifosizx_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gtxfifosizx_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gtxfifosizx_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gtxfifosizx cvmx_usbdrdx_uahc_gtxfifosizx_t;
 
@@ -3942,6 +4304,8 @@ union cvmx_usbdrdx_uahc_gtxthrcfg {
 	} s;
 	struct cvmx_usbdrdx_uahc_gtxthrcfg_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_gtxthrcfg_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gtxthrcfg_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_gtxthrcfg_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gtxthrcfg cvmx_usbdrdx_uahc_gtxthrcfg_t;
 
@@ -3958,6 +4322,115 @@ typedef union cvmx_usbdrdx_uahc_gtxthrcfg cvmx_usbdrdx_uahc_gtxthrcfg_t;
 union cvmx_usbdrdx_uahc_guctl {
 	uint32_t u32;
 	struct cvmx_usbdrdx_uahc_guctl_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t refclkper                    : 10; /**< Reference-clock period. Indicates (in terms of ns) the period of REF_CLK. The default
+                                                         value is set to 0x8
+                                                         (8 ns/125 MHz). This field must be updated during power on initialization if
+                                                         USBDRD()_UAHC_GCTL[SOFITPSYNC] = 1 or USBDRD()_UAHC_GFLADJ [GFLADJ_REFCLK_LPM_SEL] = 1.
+                                                         The
+                                                         programmable maximum value 62 ns, and the minimum value is 8 ns. You use a reference clock
+                                                         with a period that is a integer multiple, so that ITP can meet the jitter margin of 32 ns.
+                                                         The allowable REF_CLK frequencies whose period is not integer multiples are
+                                                         16/17/19.2/24/39.7 MHz.
+                                                         This field should not be set to 0x0 at any time. If you do not plan to use this feature,
+                                                         then you need to set this field to 0x8, the default value. */
+	uint32_t noextrdl                     : 1;  /**< No extra delay between SOF and the first packet.
+                                                         Some high-speed devices misbehave when the host sends a packet immediately after an SOF.
+                                                         However, adding an extra delay between an SOF and the first packet can reduce the USB data
+                                                         rate and performance.
+                                                         This bit is used to control whether the host should wait for 2 us before it sends the
+                                                         first packet after a SOF, or not. You can set this bit to 1 to improve the performance if
+                                                         those problematic devices are not a concern in your host environment.
+                                                         0 = host waits for 2 us after an SOF before it sends the first USB packet.
+                                                         1 = host does not wait after an SOF before it sends the first USB packet. */
+	uint32_t psqextrressp                 : 3;  /**< PSQ extra reserved space. This is a debug feature, and is not intended for normal usage.
+                                                         This parameter specifies how much additional space in the PSQ (protocol-status queue) must
+                                                         be reserved before the U3PTL initiates a new USB transaction and burst beats. */
+	uint32_t sprsctrltransen              : 1;  /**< Sparse control transaction enable. Some devices are slow in responding to control
+                                                         transfers. Scheduling multiple transactions in one microframe/frame can cause these
+                                                         devices to misbehave. If this bit is set to 1, the host controller schedules transactions
+                                                         for a control transfer in different microframes/frames. */
+	uint32_t resbwhseps                   : 1;  /**< Reserving 85% bandwidth for high-speed periodic EPs. By default, host controller reserves
+                                                         80% of the bandwidth for periodic EPs. If this bit is set, the bandwidth is relaxed to 85%
+                                                         to accommodate two high-speed, high-bandwidth ISOC EPs.
+                                                         USB 2.0 required 80% bandwidth allocated for ISOC traffic. If two high bandwidth ISOC
+                                                         devices (HD webcams) are connected, and if each requires 1024-bytes * 3 packets per
+                                                         microframe, then the bandwidth required is around 82%. If this bit is set to 1, it is
+                                                         possible to connect two webcams of 1024 bytes * 3 payload per microframe each. Otherwise,
+                                                         you may have to reduce the resolution of the webcams. */
+	uint32_t cmdevaddr                    : 1;  /**< Compliance mode for device address. When set to 1, slot ID can have different value than
+                                                         device address if max_slot_enabled < 128.
+                                                         0 = Device address is equal to slot ID.
+                                                         1 = Increment device address on each address device command.
+                                                         The xHCI compliance requires this bit to be set to 1. The 0 mode is for debug purpose
+                                                         only. This allows you to easily identify a device connected to a port in the Lecroy or
+                                                         Eliisys trace during hardware debug.
+                                                         This bit is used in host mode only. */
+	uint32_t reserved_14_14               : 1;
+	uint32_t enoverlapchk                 : 1;  /**< Enable check for LFPS overlap during remote Ux Exit. If this bit is set to:
+                                                         0 = When the link exists U1/U2/U3 because of a remote exit, it does not look for an LFPS
+                                                         overlap.
+                                                         1 = The SuperSpeed link, when exiting U1/U2/U3, waits for either the remote link LFPS or
+                                                         TS1/TS2 training symbols before it confirms that the LFPS handshake is complete. This is
+                                                         done to handle the case where the LFPS glitch causes the link to start exiting from the
+                                                         low power state. Looking for the LFPS overlap makes sure that the link partner also sees
+                                                         the LFPS. */
+	uint32_t extcapsupten                 : 1;  /**< External extended capability support enable. If disabled, a read
+                                                         USBDRD()_UAHC_SUPTPRT3_DW0
+                                                         [NEXTCAPPTR] returns 0 in the next capability pointer field. This indicates there are no
+                                                         more capabilities. If enabled, a read to USBDRD()_UAHC_SUPTPRT3_DW0[NEXTCAPPTR] returns 4
+                                                         in
+                                                         the
+                                                         next capability pointer field.
+                                                         Always set to 0x0. */
+	uint32_t insrtextrfsbodi              : 1;  /**< Insert extra delay between full-speed bulk OUT transactions. Some full-speed devices are
+                                                         slow to receive bulk OUT data and can get stuck when there are consecutive bulk OUT
+                                                         transactions with short inter-transaction delays. This bit is used to control whether the
+                                                         host inserts extra delay between consecutive bulk OUT transactions to a full-speed
+                                                         endpoint.
+                                                         0 = Host does not insert extra delay.
+                                                         Setting this bit to 1 reduces the bulk OUT transfer performance for most of the full-speed
+                                                         devices.
+                                                         1 = Host inserts about 12 us extra delay between consecutive bulk OUT transactions to an
+                                                         full-speed endpoint to work around the device issue. */
+	uint32_t dtct                         : 2;  /**< Device timeout coarse tuning. This field determines how long the host waits for a response
+                                                         from device before considering a timeout.
+                                                         The core first checks the DTCT value. If it is 0, then the timeout value is defined by the
+                                                         DTFT. If it is non-zero, then it uses the following timeout values:
+                                                         0x0 = 0 us; use DTFT value instead.
+                                                         0x1 = 500 us.
+                                                         0x2 = 1.5 ms.
+                                                         0x3 = 6.5 ms. */
+	uint32_t dtft                         : 9;  /**< Device timeout fine tuning. This field determines how long the host waits for a response
+                                                         from a device before considering a timeout. For DTFT to take effect, DTCT must be set to
+                                                         0x0.
+                                                         The DTFT value specifies the number of 125MHz clock cycles * 256 to count before
+                                                         considering a device timeout. For the 125 MHz clock cycles (8 ns period), this is
+                                                         calculated as follows:
+                                                         _ [DTFT value] * 256 * 8 (ns)
+                                                         0x2 = 2 * 256 * 8 -> 4 us.
+                                                         0x5 = 5 * 256 * 8 -> 10 us.
+                                                         0xA = 10 * 256 * 8 -> 20 us.
+                                                         0x10 = 16 * 256 * 8 -> 32 us.
+                                                         0x19 = 25 * 256 * 8 -> 51 us.
+                                                         0x31 = 49 * 256 * 8 -> 100 us.
+                                                         0x62 = 98 * 256 * 8 -> 200 us. */
+#else
+	uint32_t dtft                         : 9;
+	uint32_t dtct                         : 2;
+	uint32_t insrtextrfsbodi              : 1;
+	uint32_t extcapsupten                 : 1;
+	uint32_t enoverlapchk                 : 1;
+	uint32_t reserved_14_14               : 1;
+	uint32_t cmdevaddr                    : 1;
+	uint32_t resbwhseps                   : 1;
+	uint32_t sprsctrltransen              : 1;
+	uint32_t psqextrressp                 : 3;
+	uint32_t noextrdl                     : 1;
+	uint32_t refclkper                    : 10;
+#endif
+	} s;
+	struct cvmx_usbdrdx_uahc_guctl_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t refclkper                    : 10; /**< Reference-clock period. Indicates (in terms of ns) the period of REF_CLK. The default
                                                          value is set to 0x8
@@ -4070,9 +4543,123 @@ union cvmx_usbdrdx_uahc_guctl {
 	uint32_t noextrdl                     : 1;
 	uint32_t refclkper                    : 10;
 #endif
-	} s;
-	struct cvmx_usbdrdx_uahc_guctl_s      cn70xx;
-	struct cvmx_usbdrdx_uahc_guctl_s      cn70xxp1;
+	} cn70xx;
+	struct cvmx_usbdrdx_uahc_guctl_cn70xx cn70xxp1;
+	struct cvmx_usbdrdx_uahc_guctl_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t refclkper                    : 10; /**< Reference-clock period. Indicates (in terms of ns) the period of REF_CLK. The default
+                                                         value is set to 0x8
+                                                         (8 ns/125 MHz). This field must be updated during power on initialization if
+                                                         USBDRD()_UAHC_GCTL[SOFITPSYNC] = 1 or USBDRD()_UAHC_GFLADJ [GFLADJ_REFCLK_LPM_SEL] = 1.
+                                                         The
+                                                         programmable maximum value 62 ns, and the minimum value is 8 ns. You use a reference clock
+                                                         with a period that is a integer multiple, so that ITP can meet the jitter margin of 32 ns.
+                                                         The allowable REF_CLK frequencies whose period is not integer multiples are
+                                                         16/17/19.2/24/39.7 MHz.
+                                                         This field should not be set to 0x0 at any time. If you do not plan to use this feature,
+                                                         then you need to set this field to 0x8, the default value. */
+	uint32_t noextrdl                     : 1;  /**< No extra delay between SOF and the first packet.
+                                                         Some high-speed devices misbehave when the host sends a packet immediately after an SOF.
+                                                         However, adding an extra delay between an SOF and the first packet can reduce the USB data
+                                                         rate and performance.
+                                                         This bit is used to control whether the host should wait for 2 us before it sends the
+                                                         first packet after a SOF, or not. You can set this bit to 1 to improve the performance if
+                                                         those problematic devices are not a concern in your host environment.
+                                                         0 = host waits for 2 us after an SOF before it sends the first USB packet.
+                                                         1 = host does not wait after an SOF before it sends the first USB packet. */
+	uint32_t psqextrressp                 : 3;  /**< PSQ extra reserved space. This is a debug feature, and is not intended for normal usage.
+                                                         This parameter specifies how much additional space in the PSQ (protocol-status queue) must
+                                                         be reserved before the U3PTL initiates a new USB transaction and burst beats. */
+	uint32_t sprsctrltransen              : 1;  /**< Sparse control transaction enable. Some devices are slow in responding to control
+                                                         transfers. Scheduling multiple transactions in one microframe/frame can cause these
+                                                         devices to misbehave. If this bit is set to 1, the host controller schedules transactions
+                                                         for a control transfer in different microframes/frames. */
+	uint32_t resbwhseps                   : 1;  /**< Reserving 85% bandwidth for high-speed periodic EPs. By default, host controller reserves
+                                                         80% of the bandwidth for periodic EPs. If this bit is set, the bandwidth is relaxed to 85%
+                                                         to accommodate two high-speed, high-bandwidth ISOC EPs.
+                                                         USB 2.0 required 80% bandwidth allocated for ISOC traffic. If two high bandwidth ISOC
+                                                         devices (HD webcams) are connected, and if each requires 1024-bytes * 3 packets per
+                                                         microframe, then the bandwidth required is around 82%. If this bit is set to 1, it is
+                                                         possible to connect two webcams of 1024 bytes * 3 payload per microframe each. Otherwise,
+                                                         you may have to reduce the resolution of the webcams. */
+	uint32_t cmdevaddr                    : 1;  /**< Compliance mode for device address. When set to 1, slot ID can have different value than
+                                                         device address if max_slot_enabled < 128.
+                                                         0 = Device address is equal to slot ID.
+                                                         1 = Increment device address on each address device command.
+                                                         The xHCI compliance requires this bit to be set to 1. The 0 mode is for debug purpose
+                                                         only. This allows you to easily identify a device connected to a port in the Lecroy or
+                                                         Eliisys trace during hardware debug.
+                                                         This bit is used in host mode only. */
+	uint32_t usbdrdstinautoretryen        : 1;  /**< Host IN auto-retry enable. When set, this field enables the auto-retry feature. For IN
+                                                         transfers (non-isochronous) that encounter data packets with CRC errors or internal
+                                                         overrun scenarios, the auto-retry feature causes the host core to reply to the device with
+                                                         a non-terminating retry ACK (i.e. an ACK transaction packet with Retry = 1 and NumP != 0).
+                                                         If the auto-retry feature is disabled (default), the core responds with a terminating
+                                                         retry ACK (i.e. an ACK transaction packet with Retry = 1 and NumP = 0). */
+	uint32_t enoverlapchk                 : 1;  /**< Enable check for LFPS overlap during remote Ux Exit. If this bit is set to:
+                                                         0 = When the link exists U1/U2/U3 because of a remote exit, it does not look for an LFPS
+                                                         overlap.
+                                                         1 = The SuperSpeed link, when exiting U1/U2/U3, waits for either the remote link LFPS or
+                                                         TS1/TS2 training symbols before it confirms that the LFPS handshake is complete. This is
+                                                         done to handle the case where the LFPS glitch causes the link to start exiting from the
+                                                         low power state. Looking for the LFPS overlap makes sure that the link partner also sees
+                                                         the LFPS. */
+	uint32_t extcapsupten                 : 1;  /**< External extended capability support enable. If disabled, a read
+                                                         USBDRD()_UAHC_SUPTPRT3_DW0
+                                                         [NEXTCAPPTR] returns 0 in the next capability pointer field. This indicates there are no
+                                                         more capabilities. If enabled, a read to USBDRD()_UAHC_SUPTPRT3_DW0[NEXTCAPPTR] returns 4
+                                                         in
+                                                         the
+                                                         next capability pointer field.
+                                                         Always set to 0x0. */
+	uint32_t insrtextrfsbodi              : 1;  /**< Insert extra delay between full-speed bulk OUT transactions. Some full-speed devices are
+                                                         slow to receive bulk OUT data and can get stuck when there are consecutive bulk OUT
+                                                         transactions with short inter-transaction delays. This bit is used to control whether the
+                                                         host inserts extra delay between consecutive bulk OUT transactions to a full-speed
+                                                         endpoint.
+                                                         0 = Host does not insert extra delay.
+                                                         Setting this bit to 1 reduces the bulk OUT transfer performance for most of the full-speed
+                                                         devices.
+                                                         1 = Host inserts about 12 us extra delay between consecutive bulk OUT transactions to an
+                                                         full-speed endpoint to work around the device issue. */
+	uint32_t dtct                         : 2;  /**< Device timeout coarse tuning. This field determines how long the host waits for a response
+                                                         from device before considering a timeout.
+                                                         The core first checks the DTCT value. If it is 0, then the timeout value is defined by the
+                                                         DTFT. If it is non-zero, then it uses the following timeout values:
+                                                         0x0 = 0 us; use DTFT value instead.
+                                                         0x1 = 500 us.
+                                                         0x2 = 1.5 ms.
+                                                         0x3 = 6.5 ms. */
+	uint32_t dtft                         : 9;  /**< Device timeout fine tuning. This field determines how long the host waits for a response
+                                                         from a device before considering a timeout. For DTFT to take effect, DTCT must be set to
+                                                         0x0.
+                                                         The DTFT value specifies the number of 125MHz clock cycles * 256 to count before
+                                                         considering a device timeout. For the 125 MHz clock cycles (8 ns period), this is
+                                                         calculated as follows:
+                                                         _ [DTFT value] * 256 * 8 (ns)
+                                                         0x2 = 2 * 256 * 8 -> 4 us.
+                                                         0x5 = 5 * 256 * 8 -> 10 us.
+                                                         0xA = 10 * 256 * 8 -> 20 us.
+                                                         0x10 = 16 * 256 * 8 -> 32 us.
+                                                         0x19 = 25 * 256 * 8 -> 51 us.
+                                                         0x31 = 49 * 256 * 8 -> 100 us.
+                                                         0x62 = 98 * 256 * 8 -> 200 us. */
+#else
+	uint32_t dtft                         : 9;
+	uint32_t dtct                         : 2;
+	uint32_t insrtextrfsbodi              : 1;
+	uint32_t extcapsupten                 : 1;
+	uint32_t enoverlapchk                 : 1;
+	uint32_t usbdrdstinautoretryen        : 1;
+	uint32_t cmdevaddr                    : 1;
+	uint32_t resbwhseps                   : 1;
+	uint32_t sprsctrltransen              : 1;
+	uint32_t psqextrressp                 : 3;
+	uint32_t noextrdl                     : 1;
+	uint32_t refclkper                    : 10;
+#endif
+	} cn73xx;
+	struct cvmx_usbdrdx_uahc_guctl_cn73xx cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_guctl cvmx_usbdrdx_uahc_guctl_t;
 
@@ -4101,6 +4688,8 @@ union cvmx_usbdrdx_uahc_guctl1 {
 	} s;
 	struct cvmx_usbdrdx_uahc_guctl1_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_guctl1_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_guctl1_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_guctl1_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_guctl1 cvmx_usbdrdx_uahc_guctl1_t;
 
@@ -4129,6 +4718,8 @@ union cvmx_usbdrdx_uahc_guid {
 	} s;
 	struct cvmx_usbdrdx_uahc_guid_s       cn70xx;
 	struct cvmx_usbdrdx_uahc_guid_s       cn70xxp1;
+	struct cvmx_usbdrdx_uahc_guid_s       cn73xx;
+	struct cvmx_usbdrdx_uahc_guid_s       cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_guid cvmx_usbdrdx_uahc_guid_t;
 
@@ -4152,6 +4743,8 @@ union cvmx_usbdrdx_uahc_gusb2i2cctlx {
 	} s;
 	struct cvmx_usbdrdx_uahc_gusb2i2cctlx_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gusb2i2cctlx_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gusb2i2cctlx_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gusb2i2cctlx_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gusb2i2cctlx cvmx_usbdrdx_uahc_gusb2i2cctlx_t;
 
@@ -4261,6 +4854,8 @@ union cvmx_usbdrdx_uahc_gusb2phycfgx {
 	} s;
 	struct cvmx_usbdrdx_uahc_gusb2phycfgx_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gusb2phycfgx_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gusb2phycfgx_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gusb2phycfgx_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gusb2phycfgx cvmx_usbdrdx_uahc_gusb2phycfgx_t;
 
@@ -4435,6 +5030,8 @@ union cvmx_usbdrdx_uahc_gusb3pipectlx {
 	} s;
 	struct cvmx_usbdrdx_uahc_gusb3pipectlx_s cn70xx;
 	struct cvmx_usbdrdx_uahc_gusb3pipectlx_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_gusb3pipectlx_s cn73xx;
+	struct cvmx_usbdrdx_uahc_gusb3pipectlx_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_gusb3pipectlx cvmx_usbdrdx_uahc_gusb3pipectlx_t;
 
@@ -4477,6 +5074,8 @@ union cvmx_usbdrdx_uahc_hccparams {
 	} s;
 	struct cvmx_usbdrdx_uahc_hccparams_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_hccparams_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_hccparams_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_hccparams_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_hccparams cvmx_usbdrdx_uahc_hccparams_t;
 
@@ -4503,6 +5102,8 @@ union cvmx_usbdrdx_uahc_hcsparams1 {
 	} s;
 	struct cvmx_usbdrdx_uahc_hcsparams1_s cn70xx;
 	struct cvmx_usbdrdx_uahc_hcsparams1_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_hcsparams1_s cn73xx;
+	struct cvmx_usbdrdx_uahc_hcsparams1_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_hcsparams1 cvmx_usbdrdx_uahc_hcsparams1_t;
 
@@ -4533,6 +5134,8 @@ union cvmx_usbdrdx_uahc_hcsparams2 {
 	} s;
 	struct cvmx_usbdrdx_uahc_hcsparams2_s cn70xx;
 	struct cvmx_usbdrdx_uahc_hcsparams2_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_hcsparams2_s cn73xx;
+	struct cvmx_usbdrdx_uahc_hcsparams2_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_hcsparams2 cvmx_usbdrdx_uahc_hcsparams2_t;
 
@@ -4557,6 +5160,8 @@ union cvmx_usbdrdx_uahc_hcsparams3 {
 	} s;
 	struct cvmx_usbdrdx_uahc_hcsparams3_s cn70xx;
 	struct cvmx_usbdrdx_uahc_hcsparams3_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_hcsparams3_s cn73xx;
+	struct cvmx_usbdrdx_uahc_hcsparams3_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_hcsparams3 cvmx_usbdrdx_uahc_hcsparams3_t;
 
@@ -4585,6 +5190,8 @@ union cvmx_usbdrdx_uahc_imanx {
 	} s;
 	struct cvmx_usbdrdx_uahc_imanx_s      cn70xx;
 	struct cvmx_usbdrdx_uahc_imanx_s      cn70xxp1;
+	struct cvmx_usbdrdx_uahc_imanx_s      cn73xx;
+	struct cvmx_usbdrdx_uahc_imanx_s      cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_imanx cvmx_usbdrdx_uahc_imanx_t;
 
@@ -4611,6 +5218,8 @@ union cvmx_usbdrdx_uahc_imodx {
 	} s;
 	struct cvmx_usbdrdx_uahc_imodx_s      cn70xx;
 	struct cvmx_usbdrdx_uahc_imodx_s      cn70xxp1;
+	struct cvmx_usbdrdx_uahc_imodx_s      cn73xx;
+	struct cvmx_usbdrdx_uahc_imodx_s      cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_imodx cvmx_usbdrdx_uahc_imodx_t;
 
@@ -4637,6 +5246,8 @@ union cvmx_usbdrdx_uahc_mfindex {
 	} s;
 	struct cvmx_usbdrdx_uahc_mfindex_s    cn70xx;
 	struct cvmx_usbdrdx_uahc_mfindex_s    cn70xxp1;
+	struct cvmx_usbdrdx_uahc_mfindex_s    cn73xx;
+	struct cvmx_usbdrdx_uahc_mfindex_s    cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_mfindex cvmx_usbdrdx_uahc_mfindex_t;
 
@@ -4659,6 +5270,8 @@ union cvmx_usbdrdx_uahc_pagesize {
 	} s;
 	struct cvmx_usbdrdx_uahc_pagesize_s   cn70xx;
 	struct cvmx_usbdrdx_uahc_pagesize_s   cn70xxp1;
+	struct cvmx_usbdrdx_uahc_pagesize_s   cn73xx;
+	struct cvmx_usbdrdx_uahc_pagesize_s   cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_pagesize cvmx_usbdrdx_uahc_pagesize_t;
 
@@ -4700,6 +5313,8 @@ union cvmx_usbdrdx_uahc_porthlpmc_20x {
 	} s;
 	struct cvmx_usbdrdx_uahc_porthlpmc_20x_s cn70xx;
 	struct cvmx_usbdrdx_uahc_porthlpmc_20x_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_porthlpmc_20x_s cn73xx;
+	struct cvmx_usbdrdx_uahc_porthlpmc_20x_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_porthlpmc_20x cvmx_usbdrdx_uahc_porthlpmc_20x_t;
 
@@ -4725,6 +5340,8 @@ union cvmx_usbdrdx_uahc_porthlpmc_ssx {
 	} s;
 	struct cvmx_usbdrdx_uahc_porthlpmc_ssx_s cn70xx;
 	struct cvmx_usbdrdx_uahc_porthlpmc_ssx_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_porthlpmc_ssx_s cn73xx;
+	struct cvmx_usbdrdx_uahc_porthlpmc_ssx_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_porthlpmc_ssx cvmx_usbdrdx_uahc_porthlpmc_ssx_t;
 
@@ -4745,6 +5362,8 @@ union cvmx_usbdrdx_uahc_portli_20x {
 	} s;
 	struct cvmx_usbdrdx_uahc_portli_20x_s cn70xx;
 	struct cvmx_usbdrdx_uahc_portli_20x_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_portli_20x_s cn73xx;
+	struct cvmx_usbdrdx_uahc_portli_20x_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_portli_20x cvmx_usbdrdx_uahc_portli_20x_t;
 
@@ -4767,6 +5386,8 @@ union cvmx_usbdrdx_uahc_portli_ssx {
 	} s;
 	struct cvmx_usbdrdx_uahc_portli_ssx_s cn70xx;
 	struct cvmx_usbdrdx_uahc_portli_ssx_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_portli_ssx_s cn73xx;
+	struct cvmx_usbdrdx_uahc_portli_ssx_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_portli_ssx cvmx_usbdrdx_uahc_portli_ssx_t;
 
@@ -4803,6 +5424,8 @@ union cvmx_usbdrdx_uahc_portpmsc_20x {
 	} s;
 	struct cvmx_usbdrdx_uahc_portpmsc_20x_s cn70xx;
 	struct cvmx_usbdrdx_uahc_portpmsc_20x_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_portpmsc_20x_s cn73xx;
+	struct cvmx_usbdrdx_uahc_portpmsc_20x_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_portpmsc_20x cvmx_usbdrdx_uahc_portpmsc_20x_t;
 
@@ -4833,6 +5456,8 @@ union cvmx_usbdrdx_uahc_portpmsc_ssx {
 	} s;
 	struct cvmx_usbdrdx_uahc_portpmsc_ssx_s cn70xx;
 	struct cvmx_usbdrdx_uahc_portpmsc_ssx_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_portpmsc_ssx_s cn73xx;
+	struct cvmx_usbdrdx_uahc_portpmsc_ssx_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_portpmsc_ssx cvmx_usbdrdx_uahc_portpmsc_ssx_t;
 
@@ -4904,6 +5529,8 @@ union cvmx_usbdrdx_uahc_portscx {
 	} s;
 	struct cvmx_usbdrdx_uahc_portscx_s    cn70xx;
 	struct cvmx_usbdrdx_uahc_portscx_s    cn70xxp1;
+	struct cvmx_usbdrdx_uahc_portscx_s    cn73xx;
+	struct cvmx_usbdrdx_uahc_portscx_s    cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_portscx cvmx_usbdrdx_uahc_portscx_t;
 
@@ -4926,6 +5553,8 @@ union cvmx_usbdrdx_uahc_rtsoff {
 	} s;
 	struct cvmx_usbdrdx_uahc_rtsoff_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_rtsoff_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_rtsoff_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_rtsoff_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_rtsoff cvmx_usbdrdx_uahc_rtsoff_t;
 
@@ -4952,6 +5581,8 @@ union cvmx_usbdrdx_uahc_suptprt2_dw0 {
 	} s;
 	struct cvmx_usbdrdx_uahc_suptprt2_dw0_s cn70xx;
 	struct cvmx_usbdrdx_uahc_suptprt2_dw0_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_suptprt2_dw0_s cn73xx;
+	struct cvmx_usbdrdx_uahc_suptprt2_dw0_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_suptprt2_dw0 cvmx_usbdrdx_uahc_suptprt2_dw0_t;
 
@@ -4972,6 +5603,8 @@ union cvmx_usbdrdx_uahc_suptprt2_dw1 {
 	} s;
 	struct cvmx_usbdrdx_uahc_suptprt2_dw1_s cn70xx;
 	struct cvmx_usbdrdx_uahc_suptprt2_dw1_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_suptprt2_dw1_s cn73xx;
+	struct cvmx_usbdrdx_uahc_suptprt2_dw1_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_suptprt2_dw1 cvmx_usbdrdx_uahc_suptprt2_dw1_t;
 
@@ -5008,6 +5641,8 @@ union cvmx_usbdrdx_uahc_suptprt2_dw2 {
 	} s;
 	struct cvmx_usbdrdx_uahc_suptprt2_dw2_s cn70xx;
 	struct cvmx_usbdrdx_uahc_suptprt2_dw2_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_suptprt2_dw2_s cn73xx;
+	struct cvmx_usbdrdx_uahc_suptprt2_dw2_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_suptprt2_dw2 cvmx_usbdrdx_uahc_suptprt2_dw2_t;
 
@@ -5030,6 +5665,8 @@ union cvmx_usbdrdx_uahc_suptprt2_dw3 {
 	} s;
 	struct cvmx_usbdrdx_uahc_suptprt2_dw3_s cn70xx;
 	struct cvmx_usbdrdx_uahc_suptprt2_dw3_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_suptprt2_dw3_s cn73xx;
+	struct cvmx_usbdrdx_uahc_suptprt2_dw3_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_suptprt2_dw3 cvmx_usbdrdx_uahc_suptprt2_dw3_t;
 
@@ -5059,6 +5696,8 @@ union cvmx_usbdrdx_uahc_suptprt3_dw0 {
 	} s;
 	struct cvmx_usbdrdx_uahc_suptprt3_dw0_s cn70xx;
 	struct cvmx_usbdrdx_uahc_suptprt3_dw0_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_suptprt3_dw0_s cn73xx;
+	struct cvmx_usbdrdx_uahc_suptprt3_dw0_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_suptprt3_dw0 cvmx_usbdrdx_uahc_suptprt3_dw0_t;
 
@@ -5079,6 +5718,8 @@ union cvmx_usbdrdx_uahc_suptprt3_dw1 {
 	} s;
 	struct cvmx_usbdrdx_uahc_suptprt3_dw1_s cn70xx;
 	struct cvmx_usbdrdx_uahc_suptprt3_dw1_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_suptprt3_dw1_s cn73xx;
+	struct cvmx_usbdrdx_uahc_suptprt3_dw1_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_suptprt3_dw1 cvmx_usbdrdx_uahc_suptprt3_dw1_t;
 
@@ -5105,6 +5746,8 @@ union cvmx_usbdrdx_uahc_suptprt3_dw2 {
 	} s;
 	struct cvmx_usbdrdx_uahc_suptprt3_dw2_s cn70xx;
 	struct cvmx_usbdrdx_uahc_suptprt3_dw2_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_suptprt3_dw2_s cn73xx;
+	struct cvmx_usbdrdx_uahc_suptprt3_dw2_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_suptprt3_dw2 cvmx_usbdrdx_uahc_suptprt3_dw2_t;
 
@@ -5127,6 +5770,8 @@ union cvmx_usbdrdx_uahc_suptprt3_dw3 {
 	} s;
 	struct cvmx_usbdrdx_uahc_suptprt3_dw3_s cn70xx;
 	struct cvmx_usbdrdx_uahc_suptprt3_dw3_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_suptprt3_dw3_s cn73xx;
+	struct cvmx_usbdrdx_uahc_suptprt3_dw3_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_suptprt3_dw3 cvmx_usbdrdx_uahc_suptprt3_dw3_t;
 
@@ -5171,6 +5816,8 @@ union cvmx_usbdrdx_uahc_usbcmd {
 	} s;
 	struct cvmx_usbdrdx_uahc_usbcmd_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_usbcmd_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_usbcmd_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_usbcmd_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_usbcmd cvmx_usbdrdx_uahc_usbcmd_t;
 
@@ -5230,6 +5877,8 @@ union cvmx_usbdrdx_uahc_usblegctlsts {
 	} s;
 	struct cvmx_usbdrdx_uahc_usblegctlsts_s cn70xx;
 	struct cvmx_usbdrdx_uahc_usblegctlsts_s cn70xxp1;
+	struct cvmx_usbdrdx_uahc_usblegctlsts_s cn73xx;
+	struct cvmx_usbdrdx_uahc_usblegctlsts_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_usblegctlsts cvmx_usbdrdx_uahc_usblegctlsts_t;
 
@@ -5264,6 +5913,8 @@ union cvmx_usbdrdx_uahc_usblegsup {
 	} s;
 	struct cvmx_usbdrdx_uahc_usblegsup_s  cn70xx;
 	struct cvmx_usbdrdx_uahc_usblegsup_s  cn70xxp1;
+	struct cvmx_usbdrdx_uahc_usblegsup_s  cn73xx;
+	struct cvmx_usbdrdx_uahc_usblegsup_s  cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_usblegsup cvmx_usbdrdx_uahc_usblegsup_t;
 
@@ -5310,13 +5961,16 @@ union cvmx_usbdrdx_uahc_usbsts {
 	} s;
 	struct cvmx_usbdrdx_uahc_usbsts_s     cn70xx;
 	struct cvmx_usbdrdx_uahc_usbsts_s     cn70xxp1;
+	struct cvmx_usbdrdx_uahc_usbsts_s     cn73xx;
+	struct cvmx_usbdrdx_uahc_usbsts_s     cnf75xx;
 };
 typedef union cvmx_usbdrdx_uahc_usbsts cvmx_usbdrdx_uahc_usbsts_t;
 
 /**
  * cvmx_usbdrd#_uctl_bist_status
  *
- * This register indicates the results from the built-in self-test (BIST) runs of USBH memories.
+ * This register indicates the results from the built-in self-test (BIST) runs of USBDRD
+ * memories.
  * A 0 indicates pass or never run, a 1 indicates fail. This register can be reset by IOI reset.
  */
 union cvmx_usbdrdx_uctl_bist_status {
@@ -5356,6 +6010,8 @@ union cvmx_usbdrdx_uctl_bist_status {
 	} s;
 	struct cvmx_usbdrdx_uctl_bist_status_s cn70xx;
 	struct cvmx_usbdrdx_uctl_bist_status_s cn70xxp1;
+	struct cvmx_usbdrdx_uctl_bist_status_s cn73xx;
+	struct cvmx_usbdrdx_uctl_bist_status_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uctl_bist_status cvmx_usbdrdx_uctl_bist_status_t;
 
@@ -5370,7 +6026,8 @@ union cvmx_usbdrdx_uctl_ctl {
 	uint64_t u64;
 	struct cvmx_usbdrdx_uctl_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t clear_bist                   : 1;  /**< BIST fast-clear mode select. A BIST run with this bit set clears all entries in USBH RAMs
+	uint64_t clear_bist                   : 1;  /**< BIST fast-clear mode select. A BIST run with this bit set clears all entries in USBDRD
+                                                         RAMs
                                                          to 0x0.
                                                          There are two major modes of BIST: full and clear. Full BIST is run by the BIST state
                                                          machine when CLEAR_BIST is deasserted during BIST. Clear BIST is run if CLEAR_BIST is
@@ -5391,18 +6048,17 @@ union cvmx_usbdrdx_uctl_ctl {
                                                          cycles
                                                          for
                                                          the largest RAM. */
-	uint64_t ref_clk_sel                  : 2;  /**< Choose reference clock source for the SuperSpeed and HighSpeed PLL blocks.
-                                                           0x0 = Reference clock source for both PLLs is DLMC_REF_CLK0.
-                                                           0x1 = Reference clock source for both PLLs is DLMC_REF_CLK1.
-                                                           0x2 = Reference clock source for SuperSpeed PLL is DLMC_REF_CLK0,
-                                                                 reference clock source for HighSpeed PLL is PLL_REF_CLK.
-                                                           0x3 = Reference clock source for SuperSpeed PLL is DLMC_REF_CLK1,
-                                                                 reference clock source for HighSpeed PLL is PLL_REF_CLK.
-                                                         The DLMC_REF_CLK*'s are the shared reference clocks from the SERDES blocks.
-                                                         The PLL_REF_CLK is a 50MHz reference clock from an on-chip PLL.
+	uint64_t ref_clk_sel                  : 2;  /**< Reference clock select. Choose reference-clock source for the SuperSpeed and high-speed
+                                                         PLL blocks.
+                                                         0x0 = Reference clock source for both PLLs come from the USB pads.
+                                                         0x1 = Reserved.
+                                                         0x2 = Reserved.
+                                                         0x3 = Reserved.
                                                          This value can be changed only during UPHY_RST.
-                                                         Note: If REF_CLK_SEL = 0x0 or 0x1, then the DLMC_REF_CLK* input chosen
-                                                         cannot be spread-spectrum. */
+                                                         If REF_CLK_SEL = 0x0, then the reference clock input cannot be spread-spectrum.
+                                                         INTERNAL: For the 0x1 selection, reference clock source for SuperSpeed PLL is from the USB
+                                                         pads, reference clock source for HighSpeed PLL is PLL_REF_CLK. But in 78xx, PLL_REF_CLK
+                                                         cannot be routed to USB without violating jitter requirements */
 	uint64_t ssc_en                       : 1;  /**< Spread-spectrum clock enable. Enables spread-spectrum clock production in the SuperSpeed
                                                          function. If the input reference clock for the SuperSpeed PLL is already spread-spectrum,
                                                          then do not enable this feature. The clocks sourced to the SuperSpeed function must have
@@ -5537,7 +6193,8 @@ union cvmx_usbdrdx_uctl_ctl {
                                                          being reset.
                                                          This also resets the suspend-clock divider. */
 	uint64_t reserved_27_27               : 1;
-	uint64_t h_clkdiv_sel                 : 3;  /**< The hclk frequency is sclk frequency divided by H_CLKDIV_SEL.
+	uint64_t h_clkdiv_sel                 : 3;  /**< Controller clock-frequency-divider select. The controller-clock frequency is the
+                                                         coprocessor-clock frequency divided by H_CLKDIV_SEL and must be at or below 300 MHz.
                                                          The divider values are the following:
                                                          0x0 = divide by 1.
                                                          0x1 = divide by 2.
@@ -5604,14 +6261,14 @@ union cvmx_usbdrdx_uctl_ctl {
 	uint64_t uphy_rst                     : 1;  /**< PHY reset; resets UPHY; active-high. */
 	uint64_t uahc_rst                     : 1;  /**< Software reset; resets UAHC; active-high.
                                                          INTERNAL: Note that soft-resetting the UAHC while it is active may cause violations of RSL
-                                                         or IOI protocols. */
+                                                         or NCB protocols. */
 	uint64_t uctl_rst                     : 1;  /**< Software reset; resets UCTL; active-high.
                                                          Resets UAHC DMA and register shims. Resets UCTL RSL registers 0x30-0xF8.
                                                          Does not reset UCTL RSL registers 0x0-0x28.
                                                          UCTL RSL registers starting from 0x30 can be accessed only after the controller clock is
                                                          active and UCTL_RST is deasserted.
                                                          INTERNAL: Note that soft-resetting the UCTL while it is active may cause violations of
-                                                         RSL, IOI, and CIB protocols. */
+                                                         RSL, NCB, and CIB protocols. */
 #else
 	uint64_t uctl_rst                     : 1;
 	uint64_t uahc_rst                     : 1;
@@ -5650,13 +6307,14 @@ union cvmx_usbdrdx_uctl_ctl {
 	} s;
 	struct cvmx_usbdrdx_uctl_ctl_s        cn70xx;
 	struct cvmx_usbdrdx_uctl_ctl_s        cn70xxp1;
+	struct cvmx_usbdrdx_uctl_ctl_s        cn73xx;
+	struct cvmx_usbdrdx_uctl_ctl_s        cnf75xx;
 };
 typedef union cvmx_usbdrdx_uctl_ctl cvmx_usbdrdx_uctl_ctl_t;
 
 /**
  * cvmx_usbdrd#_uctl_ecc
  *
- * Accessible by: only when H_CLKDIV_EN.
  * This register can be used to disable ECC correction, insert ECC errors, and debug ECC
  * failures.
  * * The ECC_ERR* fields are captured when there are no outstanding ECC errors indicated in
@@ -5673,11 +6331,50 @@ typedef union cvmx_usbdrdx_uctl_ctl cvmx_usbdrdx_uctl_ctl_t;
  * 0x2 = SBE on bit[1].
  * 0x3 = DBE on bit[1:0].
  *
+ * This register is accessible only when USBDRD()_UCTL_CTL[H_CLK_EN] = 1.
+ *
  * This register can be reset by IOI reset or with USBDRD()_UCTL_CTL[UCTL_RST].
  */
 union cvmx_usbdrdx_uctl_ecc {
 	uint64_t u64;
 	struct cvmx_usbdrdx_uctl_ecc_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_60_63               : 4;
+	uint64_t ecc_err_source               : 4;  /**< Source of ECC error, see USBDRD_UCTL_ECC_ERR_SOURCE_E. */
+	uint64_t ecc_err_syndrome             : 8;  /**< Syndrome bits of the ECC error. */
+	uint64_t ecc_err_address              : 16; /**< RAM address of the ECC error. */
+	uint64_t reserved_21_31               : 11;
+	uint64_t uctl_xm_r_ecc_flip_synd      : 2;  /**< Insert ECC error for testing purposes. */
+	uint64_t uctl_xm_r_ecc_cor_dis        : 1;  /**< Enables ECC correction on UCTL AxiMaster read-data FIFO. */
+	uint64_t uctl_xm_w_ecc_flip_synd      : 2;  /**< Insert ECC error for testing purposes. */
+	uint64_t uctl_xm_w_ecc_cor_dis        : 1;  /**< Enables ECC correction on UCTL AxiMaster write-data FIFO. */
+	uint64_t reserved_9_14                : 6;
+	uint64_t uahc_ram2_ecc_flip_synd      : 2;  /**< Insert ECC error for testing purposes. */
+	uint64_t uahc_ram2_ecc_cor_dis        : 1;  /**< Enables ECC correction on UAHC RxFIFO RAMs (RAM2). */
+	uint64_t uahc_ram1_ecc_flip_synd      : 2;  /**< Insert ECC error for testing purposes. */
+	uint64_t uahc_ram1_ecc_cor_dis        : 1;  /**< Enables ECC correction on UAHC TxFIFO RAMs (RAM1). */
+	uint64_t uahc_ram0_ecc_flip_synd      : 2;  /**< Insert ECC error for testing purposes. */
+	uint64_t uahc_ram0_ecc_cor_dis        : 1;  /**< Enables ECC correction on UAHC Desc/Reg cache (RAM0). */
+#else
+	uint64_t uahc_ram0_ecc_cor_dis        : 1;
+	uint64_t uahc_ram0_ecc_flip_synd      : 2;
+	uint64_t uahc_ram1_ecc_cor_dis        : 1;
+	uint64_t uahc_ram1_ecc_flip_synd      : 2;
+	uint64_t uahc_ram2_ecc_cor_dis        : 1;
+	uint64_t uahc_ram2_ecc_flip_synd      : 2;
+	uint64_t reserved_9_14                : 6;
+	uint64_t uctl_xm_w_ecc_cor_dis        : 1;
+	uint64_t uctl_xm_w_ecc_flip_synd      : 2;
+	uint64_t uctl_xm_r_ecc_cor_dis        : 1;
+	uint64_t uctl_xm_r_ecc_flip_synd      : 2;
+	uint64_t reserved_21_31               : 11;
+	uint64_t ecc_err_address              : 16;
+	uint64_t ecc_err_syndrome             : 8;
+	uint64_t ecc_err_source               : 4;
+	uint64_t reserved_60_63               : 4;
+#endif
+	} s;
+	struct cvmx_usbdrdx_uctl_ecc_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_60_63               : 4;
 	uint64_t ecc_err_source               : 4;  /**< Source of ECC error, see USBDRD_UCTL_ECC_ERR_SOURCE_E. */
@@ -5703,19 +6400,20 @@ union cvmx_usbdrdx_uctl_ecc {
 	uint64_t ecc_err_source               : 4;
 	uint64_t reserved_60_63               : 4;
 #endif
-	} s;
-	struct cvmx_usbdrdx_uctl_ecc_s        cn70xx;
-	struct cvmx_usbdrdx_uctl_ecc_s        cn70xxp1;
+	} cn70xx;
+	struct cvmx_usbdrdx_uctl_ecc_cn70xx   cn70xxp1;
+	struct cvmx_usbdrdx_uctl_ecc_s        cn73xx;
+	struct cvmx_usbdrdx_uctl_ecc_s        cnf75xx;
 };
 typedef union cvmx_usbdrdx_uctl_ecc cvmx_usbdrdx_uctl_ecc_t;
 
 /**
  * cvmx_usbdrd#_uctl_host_cfg
  *
- * Accessible by: only when H_CLKDIV_EN.
- *
  * This register allows configuration of various host controller (UAHC) features. Most of these
  * are strap signals and should be modified only while the controller is not running.
+ *
+ * This register is accessible only when USBDRD()_UCTL_CTL[H_CLK_EN] = 1.
  *
  * This register can be reset by IOI reset or with USBDRD()_UCTL_CTL[UCTL_RST].
  */
@@ -5785,6 +6483,8 @@ union cvmx_usbdrdx_uctl_host_cfg {
 	} s;
 	struct cvmx_usbdrdx_uctl_host_cfg_s   cn70xx;
 	struct cvmx_usbdrdx_uctl_host_cfg_s   cn70xxp1;
+	struct cvmx_usbdrdx_uctl_host_cfg_s   cn73xx;
+	struct cvmx_usbdrdx_uctl_host_cfg_s   cnf75xx;
 };
 typedef union cvmx_usbdrdx_uctl_host_cfg cvmx_usbdrdx_uctl_host_cfg_t;
 
@@ -5800,6 +6500,52 @@ typedef union cvmx_usbdrdx_uctl_host_cfg cvmx_usbdrdx_uctl_host_cfg_t;
 union cvmx_usbdrdx_uctl_intstat {
 	uint64_t u64;
 	struct cvmx_usbdrdx_uctl_intstat_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_30_63               : 34;
+	uint64_t xm_r_dbe                     : 1;  /**< Detected double-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t xm_r_sbe                     : 1;  /**< Detected single-bit error on the UCTL AxiMaster read-data FIFO. */
+	uint64_t xm_w_dbe                     : 1;  /**< Detected double-bit error on the UCTL AxiMaster write-data FIFO. */
+	uint64_t xm_w_sbe                     : 1;  /**< Detected single-bit error on the UCTL AxiMaster write-data FIFO. */
+	uint64_t reserved_22_25               : 4;
+	uint64_t ram2_dbe                     : 1;  /**< Detected double-bit error on the UAHC RxFIFO RAMs (RAM2). */
+	uint64_t ram2_sbe                     : 1;  /**< Detected single-bit error on the UAHC RxFIFO RAMs (RAM2). */
+	uint64_t ram1_dbe                     : 1;  /**< Detected double-bit error on the UAHC TxFIFO RAMs (RAM1). */
+	uint64_t ram1_sbe                     : 1;  /**< Detected single-bit error on the UAHC TxFIFO RAMs (RAM1). */
+	uint64_t ram0_dbe                     : 1;  /**< Detected double-bit error on the UAHC Desc/Reg Cache (RAM0). */
+	uint64_t ram0_sbe                     : 1;  /**< Detected single-bit error on the UAHC Desc/Reg Cache (RAM0). */
+	uint64_t reserved_3_15                : 13;
+	uint64_t xm_bad_dma                   : 1;  /**< Detected bad DMA access from UAHC to IOI. Error information is logged in
+                                                         USBDRD()_UCTL_SHIM_CFG[XM_BAD_DMA_*]. Received a DMA request from UAHC that violates
+                                                         the assumptions made by the AXI-to-IOI shim. Such scenarios include: illegal length/size
+                                                         combinations and address out-of-bounds.
+                                                         For more information on exact failures, see the description in
+                                                         USBDRD()_UCTL_SHIM_CFG[XM_BAD_DMA_TYPE]. The hardware does not translate the request
+                                                         correctly
+                                                         and results may violate IOI protocols. */
+	uint64_t xs_ncb_oob                   : 1;  /**< Detected out-of-bound register access to UAHC over IOI. The UAHC defines 1MB of register
+                                                         space, starting at offset 0x0. Any accesses outside of this register space cause this bit
+                                                         to be set to 1. Error information is logged in USBDRD()_UCTL_SHIM_CFG[XS_NCB_OOB_*]. */
+	uint64_t reserved_0_0                 : 1;
+#else
+	uint64_t reserved_0_0                 : 1;
+	uint64_t xs_ncb_oob                   : 1;
+	uint64_t xm_bad_dma                   : 1;
+	uint64_t reserved_3_15                : 13;
+	uint64_t ram0_sbe                     : 1;
+	uint64_t ram0_dbe                     : 1;
+	uint64_t ram1_sbe                     : 1;
+	uint64_t ram1_dbe                     : 1;
+	uint64_t ram2_sbe                     : 1;
+	uint64_t ram2_dbe                     : 1;
+	uint64_t reserved_22_25               : 4;
+	uint64_t xm_w_sbe                     : 1;
+	uint64_t xm_w_dbe                     : 1;
+	uint64_t xm_r_sbe                     : 1;
+	uint64_t xm_r_dbe                     : 1;
+	uint64_t reserved_30_63               : 34;
+#endif
+	} s;
+	struct cvmx_usbdrdx_uctl_intstat_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_22_63               : 42;
 	uint64_t ram2_dbe                     : 1;  /**< Detected double-bit error on the UAHC RxFIFO RAMs (RAM2). */
@@ -5834,16 +6580,17 @@ union cvmx_usbdrdx_uctl_intstat {
 	uint64_t ram2_dbe                     : 1;
 	uint64_t reserved_22_63               : 42;
 #endif
-	} s;
-	struct cvmx_usbdrdx_uctl_intstat_s    cn70xx;
-	struct cvmx_usbdrdx_uctl_intstat_s    cn70xxp1;
+	} cn70xx;
+	struct cvmx_usbdrdx_uctl_intstat_cn70xx cn70xxp1;
+	struct cvmx_usbdrdx_uctl_intstat_s    cn73xx;
+	struct cvmx_usbdrdx_uctl_intstat_s    cnf75xx;
 };
 typedef union cvmx_usbdrdx_uctl_intstat cvmx_usbdrdx_uctl_intstat_t;
 
 /**
  * cvmx_usbdrd#_uctl_port#_cfg_hs
  *
- * This register controls configuration and test controls for the HS port 0 PHY.
+ * This register controls configuration and test controls for the high-speed port 0 PHY.
  *
  * This register is accessible only when USBDRD()_UCTL_CTL[H_CLK_EN] = 1.
  *
@@ -5874,10 +6621,10 @@ union cvmx_usbdrdx_uctl_portx_cfg_hs {
 	uint64_t reserved_46_47               : 2;
 	uint64_t tx_hs_xv_tune                : 2;  /**< Transmitter high-speed crossover adjustment. This bus adjusts the voltage at which the DP0
                                                          and DM0 signals cross while transmitting in high-speed mode.
-                                                         0x3 = default setting.
-                                                         0x2 = +15 mV.
+                                                         0x0 = reserved.
                                                          0x1 = -15 mV.
-                                                         0x0 = reserved. */
+                                                         0x2 = +15 mV.
+                                                         0x3 = default setting. */
 	uint64_t tx_preemp_amp_tune           : 2;  /**< High-speed transmitter pre-emphasis current control. Controls the amount of current
                                                          sourced to DP0 and DM0 after a J-to-K or K-to-J transition. The high-speed transmitter
                                                          preemphasis current is defined in terms of unit amounts. One unit amount is approximately
@@ -5960,14 +6707,17 @@ union cvmx_usbdrdx_uctl_portx_cfg_hs {
 	} s;
 	struct cvmx_usbdrdx_uctl_portx_cfg_hs_s cn70xx;
 	struct cvmx_usbdrdx_uctl_portx_cfg_hs_s cn70xxp1;
+	struct cvmx_usbdrdx_uctl_portx_cfg_hs_s cn73xx;
+	struct cvmx_usbdrdx_uctl_portx_cfg_hs_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uctl_portx_cfg_hs cvmx_usbdrdx_uctl_portx_cfg_hs_t;
 
 /**
  * cvmx_usbdrd#_uctl_port#_cfg_ss
  *
- * Accessible by: only when H_CLKDIV_EN.
  * This register controls configuration and test controls for the SS port 0 PHY.
+ *
+ * This register is accessible only when USBDRD()_UCTL_CTL[H_CLK_EN] = 1.
  *
  * This register can be reset by IOI reset or with USBDRD()_UCTL_CTL[UCTL_RST].
  *
@@ -6093,16 +6843,18 @@ union cvmx_usbdrdx_uctl_portx_cfg_ss {
 	} s;
 	struct cvmx_usbdrdx_uctl_portx_cfg_ss_s cn70xx;
 	struct cvmx_usbdrdx_uctl_portx_cfg_ss_s cn70xxp1;
+	struct cvmx_usbdrdx_uctl_portx_cfg_ss_s cn73xx;
+	struct cvmx_usbdrdx_uctl_portx_cfg_ss_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uctl_portx_cfg_ss cvmx_usbdrdx_uctl_portx_cfg_ss_t;
 
 /**
  * cvmx_usbdrd#_uctl_port#_cr_dbg_cfg
  *
- * Accessible by: only when H_CLKDIV_EN
- *
  * This register allows indirect access to the configuration and test controls for the port 0
  * PHY.
+ *
+ * This register is accessible only when USBDRD()_UCTL_CTL[H_CLK_EN] = 1.
  *
  * This register can be reset by IOI reset or with USBDRD()_UCTL_CTL[UCTL_RST].
  *
@@ -6184,15 +6936,18 @@ union cvmx_usbdrdx_uctl_portx_cr_dbg_cfg {
 	} s;
 	struct cvmx_usbdrdx_uctl_portx_cr_dbg_cfg_s cn70xx;
 	struct cvmx_usbdrdx_uctl_portx_cr_dbg_cfg_s cn70xxp1;
+	struct cvmx_usbdrdx_uctl_portx_cr_dbg_cfg_s cn73xx;
+	struct cvmx_usbdrdx_uctl_portx_cr_dbg_cfg_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uctl_portx_cr_dbg_cfg cvmx_usbdrdx_uctl_portx_cr_dbg_cfg_t;
 
 /**
  * cvmx_usbdrd#_uctl_port#_cr_dbg_status
  *
- * Accessible by: only when H_CLKDIV_EN.
  * This register allows indirect access to the configuration and test controls for the port 0
  * PHY.
+ *
+ * This register is accessible only when USBDRD()_UCTL_CTL[H_CLK_EN] = 1.
  *
  * This register can be reset by IOI reset or with USBDRD()_UCTL_CTL[UCTL_RST].
  */
@@ -6213,23 +6968,66 @@ union cvmx_usbdrdx_uctl_portx_cr_dbg_status {
 	} s;
 	struct cvmx_usbdrdx_uctl_portx_cr_dbg_status_s cn70xx;
 	struct cvmx_usbdrdx_uctl_portx_cr_dbg_status_s cn70xxp1;
+	struct cvmx_usbdrdx_uctl_portx_cr_dbg_status_s cn73xx;
+	struct cvmx_usbdrdx_uctl_portx_cr_dbg_status_s cnf75xx;
 };
 typedef union cvmx_usbdrdx_uctl_portx_cr_dbg_status cvmx_usbdrdx_uctl_portx_cr_dbg_status_t;
 
 /**
  * cvmx_usbdrd#_uctl_shim_cfg
  *
- * Accessible by: only when H_CLKDIV_EN.
  * This register allows configuration of various shim (UCTL) features. The fields XS_NCB_OOB_*
  * are captured when there are no outstanding OOB errors indicated in INTSTAT and a new OOB error
  * arrives. The fields XS_BAD_DMA_* are captured when there are no outstanding DMA errors
  * indicated in INTSTAT and a new DMA error arrives.
+ *
+ * This register is accessible only when USBDRD()_UCTL_CTL[H_CLK_EN] = 1.
  *
  * This register can be reset by IOI reset or with USBDRD()_UCTL_CTL[UCTL_RST].
  */
 union cvmx_usbdrdx_uctl_shim_cfg {
 	uint64_t u64;
 	struct cvmx_usbdrdx_uctl_shim_cfg_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t xs_ncb_oob_wrn               : 1;  /**< Read/write error log for out-of-bound UAHC register access.
+                                                         0 = read, 1 = write. */
+	uint64_t reserved_60_62               : 3;
+	uint64_t xs_ncb_oob_osrc              : 12; /**< SRCID error log for out-of-bound UAHC register access. The IOI outbound SRCID for the OOB
+                                                         error.
+                                                         <59:58> = chipID.
+                                                         <57> = Request source: 0 = core, 1 = IOI-device.
+                                                         <56:51> = Core/IOI-device number. Note that for IOI devices, <56> is always 0.
+                                                         <50:48> = SubID. */
+	uint64_t xm_bad_dma_wrn               : 1;  /**< Read/write error log for bad DMA access from UAHC.
+                                                         0 = read error log, 1 = write error log */
+	uint64_t reserved_44_46               : 3;
+	uint64_t xm_bad_dma_type              : 4;  /**< ErrType error log for bad DMA access from UAHC. Encodes the type of error encountered
+                                                         (error largest encoded value has priority). See USBDRD_UCTL_XM_BAD_DMA_TYPE_E. */
+	uint64_t reserved_14_39               : 26;
+	uint64_t dma_read_cmd                 : 2;  /**< Selects the IOI read command used by DMA accesses. See USBDRD_UCTL_DMA_READ_CMD_E. */
+	uint64_t reserved_11_11               : 1;
+	uint64_t dma_write_cmd                : 1;  /**< Selects the NCB write command used by DMA accesses. See UCTL_DMA_WRITE_CMD_E. */
+	uint64_t dma_endian_mode              : 2;  /**< Selects the endian format for DMA accesses to the L2C. See USBDRD_UCTL_ENDIAN_MODE_E. */
+	uint64_t reserved_2_7                 : 6;
+	uint64_t csr_endian_mode              : 2;  /**< Selects the endian format for IOI CSR accesses to the UAHC. Note that when UAHC CSRs are
+                                                         accessed via RSL, they are returned as big-endian. See USBDRD_UCTL_ENDIAN_MODE_E. */
+#else
+	uint64_t csr_endian_mode              : 2;
+	uint64_t reserved_2_7                 : 6;
+	uint64_t dma_endian_mode              : 2;
+	uint64_t dma_write_cmd                : 1;
+	uint64_t reserved_11_11               : 1;
+	uint64_t dma_read_cmd                 : 2;
+	uint64_t reserved_14_39               : 26;
+	uint64_t xm_bad_dma_type              : 4;
+	uint64_t reserved_44_46               : 3;
+	uint64_t xm_bad_dma_wrn               : 1;
+	uint64_t xs_ncb_oob_osrc              : 12;
+	uint64_t reserved_60_62               : 3;
+	uint64_t xs_ncb_oob_wrn               : 1;
+#endif
+	} s;
+	struct cvmx_usbdrdx_uctl_shim_cfg_cn70xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t xs_ncb_oob_wrn               : 1;  /**< Read/write error log for out-of-bound UAHC register access.
                                                          0 = read, 1 = write. */
@@ -6266,9 +7064,10 @@ union cvmx_usbdrdx_uctl_shim_cfg {
 	uint64_t reserved_60_62               : 3;
 	uint64_t xs_ncb_oob_wrn               : 1;
 #endif
-	} s;
-	struct cvmx_usbdrdx_uctl_shim_cfg_s   cn70xx;
-	struct cvmx_usbdrdx_uctl_shim_cfg_s   cn70xxp1;
+	} cn70xx;
+	struct cvmx_usbdrdx_uctl_shim_cfg_cn70xx cn70xxp1;
+	struct cvmx_usbdrdx_uctl_shim_cfg_s   cn73xx;
+	struct cvmx_usbdrdx_uctl_shim_cfg_s   cnf75xx;
 };
 typedef union cvmx_usbdrdx_uctl_shim_cfg cvmx_usbdrdx_uctl_shim_cfg_t;
 
@@ -6294,6 +7093,28 @@ union cvmx_usbdrdx_uctl_spare0 {
 typedef union cvmx_usbdrdx_uctl_spare0 cvmx_usbdrdx_uctl_spare0_t;
 
 /**
+ * cvmx_usbdrd#_uctl_spare0_eco
+ *
+ * This register is a spare register. This register can be reset by IOI reset.
+ *
+ */
+union cvmx_usbdrdx_uctl_spare0_eco {
+	uint64_t u64;
+	struct cvmx_usbdrdx_uctl_spare0_eco_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t eco_rw                       : 32; /**< INTERNAL: Reserved for ECO usage. */
+#else
+	uint64_t eco_rw                       : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_usbdrdx_uctl_spare0_eco_s cn73xx;
+	struct cvmx_usbdrdx_uctl_spare0_eco_s cnf75xx;
+};
+typedef union cvmx_usbdrdx_uctl_spare0_eco cvmx_usbdrdx_uctl_spare0_eco_t;
+
+/**
  * cvmx_usbdrd#_uctl_spare1
  *
  * Accessible by: only when H_CLKDIV_EN.
@@ -6313,5 +7134,28 @@ union cvmx_usbdrdx_uctl_spare1 {
 	struct cvmx_usbdrdx_uctl_spare1_s     cn70xxp1;
 };
 typedef union cvmx_usbdrdx_uctl_spare1 cvmx_usbdrdx_uctl_spare1_t;
+
+/**
+ * cvmx_usbdrd#_uctl_spare1_eco
+ *
+ * This register is accessible only when USBDRD()_UCTL_CTL[H_CLK_EN] = 1.
+ *
+ * This register can be reset by IOI reset or with USBDRD()_UCTL_CTL[UCTL_RST].
+ */
+union cvmx_usbdrdx_uctl_spare1_eco {
+	uint64_t u64;
+	struct cvmx_usbdrdx_uctl_spare1_eco_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t eco_rw                       : 32; /**< INTERNAL: Reserved for ECO usage. */
+#else
+	uint64_t eco_rw                       : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_usbdrdx_uctl_spare1_eco_s cn73xx;
+	struct cvmx_usbdrdx_uctl_spare1_eco_s cnf75xx;
+};
+typedef union cvmx_usbdrdx_uctl_spare1_eco cvmx_usbdrdx_uctl_spare1_eco_t;
 
 #endif

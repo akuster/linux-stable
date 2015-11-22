@@ -42,7 +42,7 @@
  *
  * This file provides atomic operations
  *
- * <hr>$Revision: 73845 $<hr>
+ * <hr>$Revision: 106271 $<hr>
  *
  *
  */
@@ -79,19 +79,16 @@ static inline void cvmx_atomic_add32_nosync(int32_t * ptr, int32_t incr)
 				     :"memory");
 	}
 #else
-	if (OCTEON_IS_MODEL(OCTEON_CN3XXX)) {
+	{
 		uint32_t tmp;
 
-		__asm__ __volatile__(".set noreorder         \n"
+		__asm__ __volatile__(".set push         \n"
+				     ".set noreorder         \n"
 				     "1: ll   %[tmp], %[val] \n"
 				     "   addu %[tmp], %[inc] \n"
 				     "   sc   %[tmp], %[val] \n"
-				     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp)
+				     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set pop           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp)
 				     :[inc] "r"(incr)
-				     :"memory");
-	} else {
-		__asm__ __volatile__("   saa %[inc], (%[base]) \n":"+m"(*ptr)
-				     :[inc] "r"(incr),[base] "r"(ptr)
 				     :"memory");
 	}
 #endif
@@ -161,11 +158,12 @@ static inline void cvmx_atomic_add64_nosync(int64_t * ptr, int64_t incr)
 #else
 	if (OCTEON_IS_MODEL(OCTEON_CN3XXX)) {
 		uint64_t tmp;
-		__asm__ __volatile__(".set noreorder         \n"
+		__asm__ __volatile__(".set push         \n"
+				     ".set noreorder         \n"
 				     "1: lld  %[tmp], %[val] \n"
 				     "   daddu %[tmp], %[inc] \n"
 				     "   scd  %[tmp], %[val] \n"
-				     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp)
+				     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set pop           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp)
 				     :[inc] "r"(incr)
 				     :"memory");
 	} else {
@@ -234,14 +232,15 @@ static inline uint32_t cvmx_atomic_compare_and_store32_nosync(uint32_t * ptr, ui
 {
 	uint32_t tmp, ret;
 
-	__asm__ __volatile__(".set noreorder         \n"
+	__asm__ __volatile__(".set push         \n"
+			     ".set noreorder         \n"
 			     "1: ll   %[tmp], %[val] \n"
 			     "   li   %[ret], 0     \n"
 			     "   bne  %[tmp], %[old], 2f \n"
 			     "   move %[tmp], %[new_val] \n"
 			     "   sc   %[tmp], %[val] \n"
 			     "   beqz %[tmp], 1b     \n"
-			     "   li   %[ret], 1      \n" "2: nop               \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
+			     "   li   %[ret], 1      \n" "2: nop               \n" ".set pop           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
 			     :[old] "r"(old_val),[new_val] "r"(new_val)
 			     :"memory");
 
@@ -287,14 +286,15 @@ static inline uint64_t cvmx_atomic_compare_and_store64_nosync(uint64_t * ptr, ui
 {
 	uint64_t tmp, ret;
 
-	__asm__ __volatile__(".set noreorder         \n"
+	__asm__ __volatile__(".set push         \n"
+			     ".set noreorder         \n"
 			     "1: lld  %[tmp], %[val] \n"
 			     "   li   %[ret], 0     \n"
 			     "   bne  %[tmp], %[old], 2f \n"
 			     "   move %[tmp], %[new_val] \n"
 			     "   scd  %[tmp], %[val] \n"
 			     "   beqz %[tmp], 1b     \n"
-			     "   li   %[ret], 1      \n" "2: nop               \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
+			     "   li   %[ret], 1      \n" "2: nop               \n" ".set pop           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
 			     :[old] "r"(old_val),[new_val] "r"(new_val)
 			     :"memory");
 
@@ -356,12 +356,13 @@ static inline int64_t cvmx_atomic_fetch_and_add64_nosync(int64_t * ptr, int64_t 
 #else
 	{
 		uint64_t tmp;
-		__asm__ __volatile__(".set noreorder          \n"
+		__asm__ __volatile__(".set push         \n"
+				     ".set noreorder         \n"
 				     "1: lld   %[tmp], %[val] \n"
 				     "   move  %[ret], %[tmp] \n"
 				     "   daddu %[tmp], %[inc] \n"
 				     "   scd   %[tmp], %[val] \n"
-				     "   beqz  %[tmp], 1b     \n" "   nop                  \n" ".set reorder            \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
+				     "   beqz  %[tmp], 1b     \n" "   nop                  \n" ".set pop            \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
 				     :[inc] "r"(incr)
 				     :"memory");
 	}
@@ -425,12 +426,13 @@ static inline int32_t cvmx_atomic_fetch_and_add32_nosync(int32_t * ptr, int32_t 
 	{
 		uint32_t tmp;
 
-		__asm__ __volatile__(".set noreorder         \n"
+		__asm__ __volatile__(".set push         \n"
+				     ".set noreorder         \n"
 				     "1: ll   %[tmp], %[val] \n"
 				     "   move %[ret], %[tmp] \n"
 				     "   addu %[tmp], %[inc] \n"
 				     "   sc   %[tmp], %[val] \n"
-				     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
+				     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set pop           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
 				     :[inc] "r"(incr)
 				     :"memory");
 	}
@@ -477,12 +479,13 @@ static inline uint64_t cvmx_atomic_fetch_and_bset64_nosync(uint64_t * ptr, uint6
 {
 	uint64_t tmp, ret;
 
-	__asm__ __volatile__(".set noreorder         \n"
+	__asm__ __volatile__(".set push         \n"
+			     ".set noreorder         \n"
 			     "1: lld  %[tmp], %[val] \n"
 			     "   move %[ret], %[tmp] \n"
 			     "   or   %[tmp], %[msk] \n"
 			     "   scd  %[tmp], %[val] \n"
-			     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
+			     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set pop           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
 			     :[msk] "r"(mask)
 			     :"memory");
 
@@ -506,12 +509,13 @@ static inline uint32_t cvmx_atomic_fetch_and_bset32_nosync(uint32_t * ptr, uint3
 {
 	uint32_t tmp, ret;
 
-	__asm__ __volatile__(".set noreorder         \n"
+	__asm__ __volatile__(".set push         \n"
+			     ".set noreorder         \n"
 			     "1: ll   %[tmp], %[val] \n"
 			     "   move %[ret], %[tmp] \n"
 			     "   or   %[tmp], %[msk] \n"
 			     "   sc   %[tmp], %[val] \n"
-			     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
+			     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set pop           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
 			     :[msk] "r"(mask)
 			     :"memory");
 
@@ -535,13 +539,14 @@ static inline uint64_t cvmx_atomic_fetch_and_bclr64_nosync(uint64_t * ptr, uint6
 {
 	uint64_t tmp, ret;
 
-	__asm__ __volatile__(".set noreorder         \n"
+	__asm__ __volatile__(".set push         \n"
+			     ".set noreorder         \n"
 			     "   nor  %[msk], 0      \n"
 			     "1: lld  %[tmp], %[val] \n"
 			     "   move %[ret], %[tmp] \n"
 			     "   and  %[tmp], %[msk] \n"
 			     "   scd  %[tmp], %[val] \n"
-			     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret),[msk] "+r"(mask)
+			     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set pop           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret),[msk] "+r"(mask)
 			     ::"memory");
 
 	return (ret);
@@ -564,13 +569,14 @@ static inline uint32_t cvmx_atomic_fetch_and_bclr32_nosync(uint32_t * ptr, uint3
 {
 	uint32_t tmp, ret;
 
-	__asm__ __volatile__(".set noreorder         \n"
+	__asm__ __volatile__(".set push         \n"
+			     ".set noreorder         \n"
 			     "   nor  %[msk], 0      \n"
 			     "1: ll   %[tmp], %[val] \n"
 			     "   move %[ret], %[tmp] \n"
 			     "   and  %[tmp], %[msk] \n"
 			     "   sc   %[tmp], %[val] \n"
-			     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret),[msk] "+r"(mask)
+			     "   beqz %[tmp], 1b     \n" "   nop                 \n" ".set pop           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret),[msk] "+r"(mask)
 			     ::"memory");
 
 	return (ret);
@@ -608,13 +614,17 @@ static inline uint64_t cvmx_atomic_swap64_nosync(uint64_t * ptr, uint64_t new_va
 #else
 	{
 		uint64_t tmp;
-		__asm__ __volatile__(".set noreorder         \n"
+		__asm__ __volatile__(".set push         \n"
+				     ".set noreorder         \n"
 				     "1: lld  %[ret], %[val] \n"
 				     "   move %[tmp], %[new_val] \n"
 				     "   scd  %[tmp], %[val] \n"
-				     "   beqz %[tmp],  1b    \n" "   nop                 \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
-				     :[new_val] "r"(new_val)
-				     :"memory");
+				     "   beqz %[tmp],  1b    \n"
+				     "     nop                 \n"
+				     ".set pop           \n"
+				     : [val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
+				     : [new_val] "r"(new_val)
+				     : "memory");
 	}
 #endif
 
@@ -654,11 +664,12 @@ static inline uint32_t cvmx_atomic_swap32_nosync(uint32_t * ptr, uint32_t new_va
 	{
 		uint32_t tmp;
 
-		__asm__ __volatile__(".set noreorder         \n"
+		__asm__ __volatile__(".set push         \n"
+				     ".set noreorder         \n"
 				     "1: ll   %[ret], %[val] \n"
 				     "   move %[tmp], %[new_val] \n"
 				     "   sc   %[tmp], %[val] \n"
-				     "   beqz %[tmp],  1b    \n" "   nop                 \n" ".set reorder           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
+				     "   beqz %[tmp],  1b    \n" "   nop                 \n" ".set pop           \n":[val] "+m"(*ptr),[tmp] "=&r"(tmp),[ret] "=&r"(ret)
 				     :[new_val] "r"(new_val)
 				     :"memory");
 	}

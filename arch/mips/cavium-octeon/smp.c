@@ -54,7 +54,7 @@ static octeon_message_fn_t  octeon_message_functions[8] = {
 #endif
 };
 
-static  int octeon_message_free_mask = 0xf8;
+static  int octeon_message_free_mask = IS_ENABLED(KEXEC) ? 0xf0 : 0xf8;
 static DEFINE_SPINLOCK(octeon_message_functions_lock);
 
 int octeon_request_ipi_handler(octeon_message_fn_t fn)
@@ -159,7 +159,6 @@ static inline void octeon_send_ipi_mask(const struct cpumask *mask,
 	for_each_cpu(cpu, mask)
 		octeon_send_ipi_single(cpu, action);
 }
-
 
 static void octeon_smp_setup(void)
 {
@@ -273,6 +272,14 @@ static void octeon_init_secondary(void)
 	octeon_irq_setup_secondary();
 }
 
+static irqreturn_t octeon_78xx_smp_dump_interrupt(int irq, void *dev_id)
+{
+#ifdef CONFIG_KEXEC
+	octeon_crash_dump();
+#endif
+	return IRQ_HANDLED;
+}
+
 /**
  * Callout to firmware before smp_init
  *
@@ -373,7 +380,7 @@ static int octeon_up_prepare(unsigned int cpu)
 	if (octeon_has_feature(OCTEON_FEATURE_CIU3))
 		cvmx_write_csr_node(node, CVMX_CIU3_NMI, (1ull << coreid));
 	else
-		cvmx_write_csr(CVMX_CIU_NMI, (1 << coreid));
+		cvmx_write_csr(CVMX_CIU_NMI, (1ull << coreid));
 	return 0;
 }
 
@@ -470,6 +477,11 @@ static void octeon_78xx_prepare_cpus(unsigned int max_cpus)
 			IRQF_PERCPU | IRQF_NO_THREAD, "ICache-Flush",
 			octeon_78xx_icache_flush_interrupt)) {
 		panic("Cannot request_irq for ICache-Flush");
+	}
+	if (request_irq(OCTEON_IRQ_MBOX0 + 3, octeon_78xx_smp_dump_interrupt,
+			IRQF_PERCPU | IRQF_NO_THREAD, "SMP-Dump",
+			octeon_78xx_smp_dump_interrupt)) {
+		panic("Cannot request_irq for SMP-Dump");
 	}
 }
 

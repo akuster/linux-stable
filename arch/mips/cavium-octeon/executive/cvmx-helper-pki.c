@@ -51,6 +51,7 @@
 #include <asm/octeon/cvmx-pki-resources.h>
 #include <asm/octeon/cvmx-helper-util.h>
 #include <asm/octeon/cvmx-ipd.h>
+#include <asm/octeon/cvmx-helper-pki.h>
 #include <asm/octeon/cvmx-global-resources.h>
 #else
 #include "cvmx.h"
@@ -292,7 +293,7 @@ int __cvmx_helper_pki_setup_sso_groups(int node)
 	uint8_t core_mask_set;
 
 	/* try to reserve sso groups and configure them if they are not configured */
-	grp = cvmx_sso_allocate_group_range(node, &pki_dflt_sso_grp[node].group, 1);
+	grp = cvmx_sso_reserve_group_range(node, &pki_dflt_sso_grp[node].group, 1);
 	if (grp == CVMX_RESOURCE_ALLOC_FAILED)
 		return -1;
 	else if (grp == CVMX_RESOURCE_ALREADY_RESERVED)
@@ -542,6 +543,7 @@ int cvmx_helper_pki_port_shutdown(int ipd_port)
 	/* __cvmx_pki_port_rsrc_free(node); */
 	return 0;
 }
+EXPORT_SYMBOL(cvmx_helper_pki_port_shutdown);
 
 /**
  * This function shuts down complete PKI hardware
@@ -550,6 +552,7 @@ int cvmx_helper_pki_port_shutdown(int ipd_port)
  */
 void cvmx_helper_pki_shutdown(int node)
 {
+	int i, k;
 	/* remove pcam entries */
 	/* Disable PKI */
 	cvmx_pki_disable(node);
@@ -560,7 +563,27 @@ void cvmx_helper_pki_shutdown(int node)
 	/* Free all the allocated PKI resources
 	except fpa pools & aura which will be done in fpa block */
 	__cvmx_pki_global_rsrc_free(node);
+	/* Setup some configuration registers to the reset state.*/
+	for (i = 0; i < CVMX_PKI_NUM_PKIND; i++) {
+		for (k = 0; k < (int)CVMX_PKI_NUM_CLUSTER; k++) {
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_CFG(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_STYLE(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_SKIP(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_L2_CUSTOM(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_PKINDX_LG_CUSTOM(i, k), 0);			
+		}
+		cvmx_write_csr_node(node, CVMX_PKI_PKINDX_ICGSEL(k), 0);			
+	}
+	for (i = 0; i < CVMX_PKI_NUM_FINAL_STYLE; i++) {
+		for (k = 0; k < (int)CVMX_PKI_NUM_CLUSTER; k++) {
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_STYLEX_CFG(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_STYLEX_CFG2(i, k), 0);			
+			cvmx_write_csr_node(node, CVMX_PKI_CLX_STYLEX_ALG(i, k), 0);			
+		}
+		cvmx_write_csr_node(node, CVMX_PKI_STYLEX_BUF(k), (0x5 << 22) | 0x20);			
+	}
 }
+EXPORT_SYMBOL(cvmx_helper_pki_shutdown);
 
 /**
  * This function calculates how mant qpf entries will be needed for
@@ -751,13 +774,16 @@ int __cvmx_helper_pki_qos_rsrcs(int node, struct cvmx_pki_qos_schd *qossch)
 			cvmx_dprintf("aura alloced is %d\n", qossch->aura_num);
 	}
 	/* Reserve sso group resources */
+	/* Find which node work needs to be schedules vinita_to_do to extract node*/
 	if (qossch->sso_grp_per_qos && qossch->sso_grp < 0) {
-		rs = cvmx_sso_allocate_group(node);
+		//unsigned grp_node;
+		//grp_node = (abs)(qossch->sso_grp + CVMX_PKI_FIND_AVAILABLE_RSRC);
+		rs = cvmx_sso_reserve_group(node);
 		if (rs < 0) {
 			cvmx_dprintf("pki-helper:qos-rsrc: ERROR: sso grp not available\n");
 			return rs;
 		}
-		qossch->sso_grp = rs;
+		qossch->sso_grp = rs | (node<<8);
 		if (pki_helper_debug)
 			cvmx_dprintf("pki-helper:qos-rsrc: sso grp alloced is %d\n", qossch->sso_grp);
 	}
@@ -770,6 +796,16 @@ int __cvmx_helper_pki_port_rsrcs(int node, struct cvmx_pki_prt_schd *prtsch)
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL
 	int rs;
 
+	/* Erratum 22557: Disable per-port allocation for CN78XX pass 1.X */
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) { 
+		static bool warned = false;
+		prtsch->pool_per_prt = 0;
+		if (!warned)
+			cvmx_printf("WARNING: %s: "
+			"Ports configured in single-pool mode "
+			"per erratum 22557.\n", __func__);
+		warned = true;
+	}
 	/* Reserve pool resources */
 	if (prtsch->pool_per_prt && prtsch->pool_num < 0) {
 		if (pki_helper_debug)
@@ -809,14 +845,16 @@ int __cvmx_helper_pki_port_rsrcs(int node, struct cvmx_pki_prt_schd *prtsch)
 		if (pki_helper_debug)
 			cvmx_dprintf("aura alloced is %d\n", prtsch->aura_num);
 	}
-	/* Reserve sso group resources */
+	/* Reserve sso group resources , vinita_to_do to extract node*/
 	if (prtsch->sso_grp_per_prt && prtsch->sso_grp < 0) {
-		rs = cvmx_sso_allocate_group(node);
+		//unsigned grp_node;
+		//grp_node = (abs)(prtsch->sso_grp + CVMX_PKI_FIND_AVAILABLE_RSRC);
+		rs = cvmx_sso_reserve_group(node);
 		if (rs < 0) {
 			cvmx_printf("ERROR: %s: sso grp not available\n", __func__);
 			return rs;
 		}
-		prtsch->sso_grp = rs;
+		prtsch->sso_grp = rs | (node << 8);
 		if (pki_helper_debug)
 			cvmx_dprintf("pki-helper:port-rsrc: sso grp alloced is %d\n", prtsch->sso_grp);
 	}
@@ -869,13 +907,16 @@ int __cvmx_helper_pki_intf_rsrcs(int node, struct cvmx_pki_intf_schd *intf)
 		if (pki_helper_debug)
 			cvmx_dprintf("aura alloced is %d\n", intf->aura_num);
 	}
+	/* vinita_to_do to extract node */
 	if (intf->sso_grp_per_intf && intf->sso_grp < 0) {
-		rs = cvmx_sso_allocate_group(node);
+		//unsigned grp_node;
+		//grp_node = (abs)(intf->sso_grp + CVMX_PKI_FIND_AVAILABLE_RSRC);
+		rs = cvmx_sso_reserve_group(node);
 		if (rs < 0) {
 			cvmx_printf("ERROR: %s: sso grp not available\n", __func__);
 			return rs;
 		}
-		intf->sso_grp = rs;
+		intf->sso_grp = rs | (node << 8);
 	}
 #endif /* CVMX_BUILD_FOR_LINUX_KERNEL */
 	return 0;
@@ -926,7 +967,7 @@ int cvmx_helper_pki_set_gbl_schd(int node, struct cvmx_pki_global_schd *gblsch)
 {
 	int rs;
 
-	if (gblsch->setup_pool) {
+	if (gblsch->setup_pool && gblsch->pool_num < 0) {
 		if (pki_helper_debug)
 			cvmx_dprintf("%s: gbl setup global pool %d buff_size %d blocks %d\n",
 				__func__, gblsch->pool_num,
@@ -949,7 +990,7 @@ int cvmx_helper_pki_set_gbl_schd(int node, struct cvmx_pki_global_schd *gblsch)
 		if (pki_helper_debug)
 			cvmx_dprintf("pool alloced is %d\n", gblsch->pool_num);
 	}
-	if (gblsch->setup_aura) {
+	if (gblsch->setup_aura && gblsch->aura_num < 0) {
 		if (pki_helper_debug)
 			cvmx_dprintf("%s: gbl setup global aura %d pool %d blocks %d\n",
 				__func__, gblsch->aura_num, gblsch->pool_num,
@@ -973,13 +1014,15 @@ int cvmx_helper_pki_set_gbl_schd(int node, struct cvmx_pki_global_schd *gblsch)
 			cvmx_dprintf("aura alloced is %d\n", gblsch->aura_num);
 
 	}
-	if (gblsch->setup_sso_grp) {
-		rs = cvmx_sso_allocate_group(node);
+	if (gblsch->setup_sso_grp && gblsch->sso_grp < 0) {
+		//unsigned grp_node;
+		//grp_node = (abs)(gblsch->setup_sso_grp + CVMX_PKI_FIND_AVAILABLE_RSRC);/*vinita_to_do to extract node*/
+		rs = cvmx_sso_reserve_group(node);
 		if (rs < 0) {
 			cvmx_dprintf("pki-helper:gbl: ERROR: sso grp not available\n");
 			return rs;
 		}
-		gblsch->sso_grp = rs;
+		gblsch->sso_grp = rs | (node << 8);
 		if (pki_helper_debug)
 			cvmx_dprintf("pki-helper:gbl: sso grp alloced is %d\n", gblsch->sso_grp);
 	}
@@ -1095,9 +1138,9 @@ EXPORT_SYMBOL(cvmx_helper_pki_init_port);
  * This function sets up scheduling parameters (pool, aura, sso group etc)
  * of an interface (all ports/channels on that interface).
  * @param xiface        interface number with node.
- * @param intf_sch      pointer to struct containing interface
+ * @param intfsch      pointer to struct containing interface
  *                      scheduling parameters.
- * @param gbl_sch       pointer to struct containing global scheduling parameters
+ * @param gblsch       pointer to struct containing global scheduling parameters
  *                      (can be NULL if not used)
  */
 int cvmx_helper_pki_init_interface(const int xiface, struct cvmx_pki_intf_schd *intfsch,
@@ -1636,7 +1679,6 @@ void cvmx_pki_dump_wqe(const cvmx_wqe_78xx_t *wqp)
  * Modifies maximum frame length to check.
  * It modifies the global frame length set used by this port, any other
  * port using the same set will get affected too.
- * @param node		node number
  * @param ipd_port	ipd port for which to modify max len.
  * @param max_size	maximum frame length
  */
@@ -1669,9 +1711,10 @@ void cvmx_pki_set_max_frm_len(int ipd_port, uint32_t max_size)
 /**
  * This function sets up all th eports of particular interface
  * for chosen fcs mode. (only use for backward compatibility).
- * New application can control it via init_interfcae calls.
+ * New application can control it via init_interface calls.
  * @param node		node number.
- * @param interfcae	interfcae number.
+ * @param interface	interface number.
+ * @param nports	number of ports
  * @param has_fcs	1 -- enable fcs check and fcs strip.
  *			0 -- disable fcs check.
  */
@@ -1679,7 +1722,7 @@ void cvmx_helper_pki_set_fcs_op(int node, int interface, int nports, int has_fcs
 {
 	int index;
 	int pknd;
-	int cluster = 0;
+	unsigned cluster = 0;
 	cvmx_pki_clx_pkindx_cfg_t pkind_cfg;
 
 	for (index = 0; index < nports; index++) {
@@ -1702,7 +1745,7 @@ void cvmx_helper_pki_set_fcs_op(int node, int interface, int nports, int has_fcs
  * either in same buffer as wqe OR it can go in separate buffer. If used the later mode,
  * make sure software allocate enough buffers to now have wqe separate from packet data.
  * @param node			node number.
- * @param pkt_outside_wqe.	0 = The packet link pointer will be at word [FIRST_SKIP]
+ * @param pkt_outside_wqe	0 = The packet link pointer will be at word [FIRST_SKIP]
  *				immediately followed by packet data, in the same buffer
  *				as the work queue entry.
  *				1 = The packet link pointer will be at word [FIRST_SKIP] in a new

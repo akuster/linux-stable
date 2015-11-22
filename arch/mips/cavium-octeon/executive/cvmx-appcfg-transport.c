@@ -209,6 +209,7 @@ static void __cvmx_export_fpa_config(uint64_t fpa_config_addr)
 	/* copy wqe pool information */
 	fpa_config.pool_config.pool_num = cvmx_fpa_get_wqe_pool();
 	fpa_config.pool_config.buffer_size = cvmx_fpa_get_wqe_pool_block_size();
+	fpa_config.pool_config.buffer_count = 0;	/* not used */
 	fpa_config.pool_type = FPA_WQE_POOL;
 
 	__cvmx_copy_to_bootmem(&fpa_config, fpa_config_addr, 

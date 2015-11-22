@@ -204,7 +204,7 @@ int cvmx_spi_restart_interface(int interface, cvmx_spi_mode_t mode, int timeout)
 
 	return res;
 }
-EXPORT_SYMBOL_GPL(cvmx_spi_restart_interface);
+EXPORT_SYMBOL(cvmx_spi_restart_interface);
 
 /**
  * Callback to perform SPI4 reset
@@ -215,8 +215,7 @@ EXPORT_SYMBOL_GPL(cvmx_spi_restart_interface);
  *                  can operate as a full duplex (both Tx and Rx data paths
  *                  active) or as a halfplex (either the Tx data path is
  *                  active or the Rx data path is active, but not both).
- * @return Zero on success, non-zero error code on failure (will cause 
- *                  SPI initialization to abort)
+ * @return Zero on success, non-zero error code on failure (will cause SPI initialization to abort)
  */
 int cvmx_spi_reset_cb(int interface, cvmx_spi_mode_t mode)
 {
