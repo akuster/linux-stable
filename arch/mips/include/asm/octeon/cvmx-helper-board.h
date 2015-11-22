@@ -1,5 +1,4 @@
 /***********************license start***************
- * Author: Cavium Networks
  * Copyright (c) 2003-2010  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
@@ -20,12 +19,12 @@
  *     its contributors may be used to endorse or promote products
  *     derived from this software without specific prior written
  *     permission.
- *
+
  * This Software, including technical data, may be subject to U.S. export  control
  * laws, including the U.S. Export Administration Act and its  associated
  * regulations, and may be subject to export or import  regulations in other
  * countries.
- *
+
  * TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
  * AND WITH ALL FAULTS AND CAVIUM INC. MAKES NO PROMISES, REPRESENTATIONS OR
  * WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT TO
@@ -44,7 +43,7 @@
  * Helper functions to abstract board specific data about
  * network ports from the rest of the cvmx-helper files.
  *
- * <hr>$Revision: 103898 $<hr>
+ * <hr>$Revision: 121712 $<hr>
  */
 #ifndef __CVMX_HELPER_BOARD_H__
 #define __CVMX_HELPER_BOARD_H__
@@ -66,10 +65,13 @@ typedef enum cvmx_phy_type {
 	BROADCOM_GENERIC_PHY,
 	MARVELL_GENERIC_PHY,
 	CORTINA_PHY,
+	AQUANTIA_PHY,
 	GENERIC_8023_C22_PHY,
 	GENERIC_8023_C45_PHY,
  	INBAND_PHY,
-	QUALCOMM_S17,	/** Qualcomm QCA833X switch */
+	QUALCOMM_S17,		/** Qualcomm QCA833X switch */
+	VITESSE_VSC8490_PHY,	/** Vitesse VSC8490 is non-standard for SGMII */
+	FAKE_PHY,		/** Unsupported or no PHY, use GPIOs for LEDs */
 } cvmx_phy_type_t;
 
 /** Used to record the host mode used by the Cortina CS4321 PHY */
@@ -114,10 +116,30 @@ typedef enum {
 	GPIO_OCTEON,	/** Native OCTEON */
 	GPIO_PCA8574	/** TWSI mux device */
 } cvmx_phy_gpio_type_t;
-
-struct cvmx_phy_device;
-struct cvmx_phy_info;
 #endif
+
+/**
+ * @INTERNAL
+ * This data structure is used when the port LEDs are wired up to Octeon's GPIO
+ * lines instead of to a traditional PHY.
+ */
+typedef struct cvmx_phy_gpio_leds {
+	uint64_t last_rx_count;		/** Counters used to check for activity */
+	uint64_t last_tx_count;		/** Counters used to check for activity */
+	int link_polling_interval_ms;	/** Link polling interval in ms */
+	int link_status_gpio;		/** Link status LED GPIO, -1 if not used */
+	int error_gpio;			/** Error status LED GPIO, -1 if not used */
+	int rx_activity_gpio;		/** RX activity LED GPIO, -1 if not used */
+	int tx_activity_gpio;		/** TX activity LED GPIO, -1 if not used */
+	uint16_t rx_activity_on_ms;	/** RX activity on time in ms */
+	uint16_t rx_activity_off_ms;	/** RX activity off time in ms */
+	uint16_t tx_activity_on_ms;	/** TX activity on time in ms */
+	uint16_t tx_activity_off_ms;	/** TX activity off time in ms */
+	bool link_status_active_low;	/** True if active link is active low */
+	bool err_active_low;		/** True if error is active low */
+	bool rx_activity_active_low;	/** True if rx activity is active low */
+	bool tx_activity_active_low;	/** True if tx activity is active low */
+} cvmx_phy_gpio_leds_t;
 
 /**
  * @INTERNAL
@@ -151,10 +173,15 @@ typedef struct cvmx_phy_info {
 	cvmx_phy_mux_type_t mux_type;	/** Type of MDIO mux */
 	int mux_twsi_addr;		/** Address of the MDIO mux */
 	cvmx_phy_host_mode_t host_mode;	/** Used by Cortina PHY */
-	struct cvmx_phy_device *phydev;	/** Pointer to parent phy device */
+	void *phydev;			/** Pointer to parent phy device */
 #endif
 	/** Pointer to function to return link information */
 	cvmx_helper_link_info_t (*link_function)(struct cvmx_phy_info *phy_info);
+	/**
+	 * If there are LEDs driven by GPIO lines instead of by a PHY device
+	 * then they are described here, otherwise gpio_leds should be NULL.
+	 */
+	struct cvmx_phy_gpio_leds *gpio_leds;
 } cvmx_phy_info_t;
 
 /* Fake IPD port, the RGMII/MII interface may use different PHY, use this
@@ -331,7 +358,17 @@ int cvmx_helper_board_get_phy_info(cvmx_phy_info_t *phy_info, int ipd_port);
  *
  * @return 0 for success, -1 on error.
  */
-int __cvmx_helper_parse_78xx_bgx_dt(void *fdt_addr);
+int __cvmx_helper_parse_bgx_dt(void *fdt_addr);
+
+/**
+ * @INTERNAL
+ * Parse the device tree and set whether a port is valid or not.
+ *
+ * @param fdt_addr	Pointer to device tree
+ *
+ * @return 0 for success, -1 on error.
+ */
+int __cvmx_helper_parse_bgx_rgmii_dt(const void *fdt_addr);
 #endif
 
 #ifdef	__cplusplus

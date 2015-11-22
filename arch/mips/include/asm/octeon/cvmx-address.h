@@ -382,7 +382,7 @@ typedef union {
 #define CVMX_OCT_DID_MIS_CSR        CVMX_FULL_DID(CVMX_OCT_DID_MIS,7ULL)
 #define CVMX_OCT_DID_ZIP_CSR        CVMX_FULL_DID(CVMX_OCT_DID_ZIP,0ULL)
 
-//Cast to unsigned long long, mainly for use in printfs.
+/* Cast to unsigned long long, mainly for use in printfs. */
 #define CAST_ULL(v) ((unsigned long long) (v))
 
 #ifndef CVMX_BUILD_FOR_LINUX_KERNEL

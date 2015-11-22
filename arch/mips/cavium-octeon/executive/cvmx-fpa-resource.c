@@ -73,7 +73,7 @@ get_fpa3_pool_resource_tag(int node)
 int cvmx_fpa_get_max_pools(void)
 {
 	if (octeon_has_feature(OCTEON_FEATURE_FPA3))
-		return CVMX_FPA3_NUM_AURAS;
+		return cvmx_fpa3_num_auras();
 	else if (OCTEON_IS_MODEL(OCTEON_CN68XX))
 		/* 68xx pool 8 is not available via API */
 		return  CVMX_FPA1_NUM_POOLS;
@@ -118,7 +118,8 @@ cvmx_fpa3_reserve_aura(int node, int desired_aura_num)
 
 	tag = get_fpa3_aura_resource_tag(node);
 
-	if (cvmx_create_global_resource_range(tag, CVMX_FPA3_NUM_AURAS) != 0) {
+	if (cvmx_create_global_resource_range(tag,
+			cvmx_fpa3_num_auras()) != 0) {
 		cvmx_printf("ERROR: %s: global resource create node=%u\n",
 			__func__, node);
 		return CVMX_FPA3_INVALID_GAURA;
@@ -167,7 +168,8 @@ cvmx_fpa3_reserve_pool(int node, int desired_pool_num)
 
 	tag = get_fpa3_pool_resource_tag(node);
 
-	if (cvmx_create_global_resource_range(tag, CVMX_FPA3_NUM_POOLX) != 0) {
+	if (cvmx_create_global_resource_range(tag,
+			cvmx_fpa3_num_pools()) != 0) {
 		cvmx_printf("ERROR: %s: global resource create node=%u\n",
 			__func__, node);
 		return CVMX_FPA3_INVALID_POOL;
@@ -180,8 +182,7 @@ cvmx_fpa3_reserve_pool(int node, int desired_pool_num)
 		rv = cvmx_resource_alloc_reverse(tag, owner);
 
 	if (rv < 0) {
-		cvmx_printf("ERROR: %s: node=%u desired_pool=%d\n",
-			__func__, node, desired_pool_num);
+		/* Desired pool is already in use */
 		return CVMX_FPA3_INVALID_POOL;
 	}
 
@@ -198,7 +199,8 @@ int cvmx_fpa3_release_pool(cvmx_fpa3_pool_t pool)
 	if (!__cvmx_fpa3_pool_valid(pool))
 		return -1;
 
-	if (cvmx_create_global_resource_range(tag, CVMX_FPA3_NUM_POOLX) != 0) {
+	if (cvmx_create_global_resource_range(tag,
+			cvmx_fpa3_num_pools()) != 0) {
 		cvmx_printf("ERROR: %s: global resource create node=%u\n",
 			__func__, pool.node);
 		return -1;
@@ -251,6 +253,7 @@ int cvmx_fpa1_release_pool(cvmx_fpa1_pool_t pool)
 /**
  * Query if an FPA pool is available for reservation
  * using global resources
+ * @note This function is no longer in use, and will be removed in a future release
  */
 int cvmx_fpa1_is_pool_available(cvmx_fpa1_pool_t pool)
 {
@@ -260,11 +263,14 @@ int cvmx_fpa1_is_pool_available(cvmx_fpa1_pool_t pool)
 	return 1;
 }
 
+/**
+ * @INTERNAL
+ *
+ * This function is no longer in use, and will be removed in a future release
+ */
 int cvmx_fpa3_is_pool_available(int node, int lpool)
 {
 	cvmx_fpa3_pool_t pool;
-	if (lpool < 0)
-		return 1;
 
 	pool = cvmx_fpa3_reserve_pool(node, lpool);
 
@@ -275,12 +281,14 @@ int cvmx_fpa3_is_pool_available(int node, int lpool)
 	return 1;
 }
 
+/**
+ * @INTERNAL
+ *
+ * This function is no longer in use, and will be removed in a future release
+ */
 int cvmx_fpa3_is_aura_available(int node, int laura)
 {
 	cvmx_fpa3_gaura_t aura;
-
-	if (laura < 0)
-		return 1;
 
 	aura = cvmx_fpa3_reserve_aura(node, laura);
 
@@ -293,9 +301,10 @@ int cvmx_fpa3_is_aura_available(int node, int laura)
 
 /**
  * Return if aura/pool is already reserved
- * @param node - node of fpa to check, -1 for current node
  * @param pool_num - pool to check (aura for o78+)
  * @return 0 if reserved, 1 if available
+ *
+ * @note This function is no longer in use, and will be removed in a future release
  */
 int cvmx_fpa_is_pool_available(int pool_num)
 {

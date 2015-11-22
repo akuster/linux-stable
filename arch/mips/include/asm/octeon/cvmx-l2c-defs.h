@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -56,7 +56,7 @@
 #define CVMX_L2C_BIG_CTL CVMX_L2C_BIG_CTL_FUNC()
 static inline uint64_t CVMX_L2C_BIG_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_L2C_BIG_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180080800030ull);
 }
@@ -108,141 +108,174 @@ static inline uint64_t CVMX_L2C_BST2_FUNC(void)
 #define CVMX_L2C_BST2 (CVMX_ADD_IO_SEG(0x00011800800007E8ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_BST_MEMX(unsigned long block_id)
+static inline uint64_t CVMX_L2C_BST_MEMX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_BST_MEMX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080C007F8ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_BST_MEMX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080C007F8ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_BST_MEMX(block_id) (CVMX_ADD_IO_SEG(0x0001180080C007F8ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_BST_MEMX(offset) (CVMX_ADD_IO_SEG(0x0001180080C007F8ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_BST_TDTX(unsigned long block_id)
+static inline uint64_t CVMX_L2C_BST_TDTX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_BST_TDTX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007F0ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_BST_TDTX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007F0ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_BST_TDTX(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007F0ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_BST_TDTX(offset) (CVMX_ADD_IO_SEG(0x0001180080A007F0ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_BST_TTGX(unsigned long block_id)
+static inline uint64_t CVMX_L2C_BST_TTGX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_BST_TTGX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007F8ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_BST_TTGX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007F8ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_BST_TTGX(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007F8ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_BST_TTGX(offset) (CVMX_ADD_IO_SEG(0x0001180080A007F8ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_CBCX_BIST_STATUS(unsigned long block_id)
+static inline uint64_t CVMX_L2C_CBCX_BIST_STATUS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_CBCX_BIST_STATUS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080E007F8ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_L2C_CBCX_BIST_STATUS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080E007F8ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_CBCX_BIST_STATUS(block_id) (CVMX_ADD_IO_SEG(0x0001180080E007F8ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_CBCX_BIST_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180080E007F8ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_CBCX_DLL(unsigned long block_id)
+static inline uint64_t CVMX_L2C_CBCX_DLL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_CBCX_DLL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080E00018ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_L2C_CBCX_DLL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080E00018ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_CBCX_DLL(block_id) (CVMX_ADD_IO_SEG(0x0001180080E00018ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_CBCX_DLL(offset) (CVMX_ADD_IO_SEG(0x0001180080E00018ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_CBCX_HOLEERR(unsigned long block_id)
+static inline uint64_t CVMX_L2C_CBCX_HOLEERR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_CBCX_HOLEERR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080E007D0ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_L2C_CBCX_HOLEERR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080E007D0ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_CBCX_HOLEERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080E007D0ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_CBCX_HOLEERR(offset) (CVMX_ADD_IO_SEG(0x0001180080E007D0ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_CBCX_INT(unsigned long block_id)
+static inline uint64_t CVMX_L2C_CBCX_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_CBCX_INT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080E00028ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_L2C_CBCX_INT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080E00028ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_CBCX_INT(block_id) (CVMX_ADD_IO_SEG(0x0001180080E00028ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_CBCX_INT(offset) (CVMX_ADD_IO_SEG(0x0001180080E00028ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_CBCX_IOCERR(unsigned long block_id)
+static inline uint64_t CVMX_L2C_CBCX_IOCERR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_CBCX_IOCERR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080E007E8ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_L2C_CBCX_IOCERR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080E007E8ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_CBCX_IOCERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080E007E8ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_CBCX_IOCERR(offset) (CVMX_ADD_IO_SEG(0x0001180080E007E8ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_CBCX_IODISOCIERR(unsigned long block_id)
+static inline uint64_t CVMX_L2C_CBCX_IODISOCIERR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_CBCX_IODISOCIERR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080E007D8ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_L2C_CBCX_IODISOCIERR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080E007D8ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_CBCX_IODISOCIERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080E007D8ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_CBCX_IODISOCIERR(offset) (CVMX_ADD_IO_SEG(0x0001180080E007D8ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_CBCX_MIBERR(unsigned long block_id)
+static inline uint64_t CVMX_L2C_CBCX_MIBERR(unsigned long offset)
 {
-	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((block_id >= 2) && (block_id <= 3))))))
-		cvmx_warn("CVMX_L2C_CBCX_MIBERR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080E807E0ull) + ((block_id) & 3) * 0x40000ull - 262144*2;
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset == 1))
+				return CVMX_ADD_IO_SEG(0x0001180080E807E0ull) + ((offset) & 1) * 0x40000ull - 262144*1;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if (((offset >= 2) && (offset <= 3)))
+				return CVMX_ADD_IO_SEG(0x0001180080E807E0ull) + ((offset) & 3) * 0x40000ull - 262144*2;
+			break;
+	}
+	cvmx_warn("CVMX_L2C_CBCX_MIBERR (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080E807E0ull) + ((offset) & 1) * 0x40000ull - 262144*1;
 }
 #else
-#define CVMX_L2C_CBCX_MIBERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080E807E0ull) + ((block_id) & 3) * 0x40000ull - 262144*2)
+static inline uint64_t CVMX_L2C_CBCX_MIBERR(unsigned long offset)
+{
+	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080E807E0ull) + (offset) * 0x40000ull - 262144*1;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080E807E0ull) + (offset) * 0x40000ull - 262144*2;
+	}
+	return CVMX_ADD_IO_SEG(0x0001180080E807E0ull) + (offset) * 0x40000ull - 262144*1;
+}
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_CBCX_RSDERR(unsigned long block_id)
+static inline uint64_t CVMX_L2C_CBCX_RSDERR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_CBCX_RSDERR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080E007F0ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_L2C_CBCX_RSDERR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080E007F0ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_CBCX_RSDERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080E007F0ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_CBCX_RSDERR(offset) (CVMX_ADD_IO_SEG(0x0001180080E007F0ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_L2C_CFG CVMX_L2C_CFG_FUNC()
@@ -259,7 +292,7 @@ static inline uint64_t CVMX_L2C_CFG_FUNC(void)
 #define CVMX_L2C_COP0_ADR CVMX_L2C_COP0_ADR_FUNC()
 static inline uint64_t CVMX_L2C_COP0_ADR_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_L2C_COP0_ADR not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180080800038ull);
 }
@@ -270,7 +303,7 @@ static inline uint64_t CVMX_L2C_COP0_ADR_FUNC(void)
 #define CVMX_L2C_COP0_DAT CVMX_L2C_COP0_DAT_FUNC()
 static inline uint64_t CVMX_L2C_COP0_DAT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_L2C_COP0_DAT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180080800040ull);
 }
@@ -296,7 +329,7 @@ static inline uint64_t CVMX_L2C_COP0_MAPX(unsigned long offset)
 #define CVMX_L2C_CTL CVMX_L2C_CTL_FUNC()
 static inline uint64_t CVMX_L2C_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_L2C_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180080800000ull);
 }
@@ -344,7 +377,7 @@ static inline uint64_t CVMX_L2C_DUT_MAPX(unsigned long offset)
 #define CVMX_L2C_ECC_CTL CVMX_L2C_ECC_CTL_FUNC()
 static inline uint64_t CVMX_L2C_ECC_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_L2C_ECC_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180080800010ull);
 }
@@ -352,49 +385,49 @@ static inline uint64_t CVMX_L2C_ECC_CTL_FUNC(void)
 #define CVMX_L2C_ECC_CTL (CVMX_ADD_IO_SEG(0x0001180080800010ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_ERR_TDTX(unsigned long block_id)
+static inline uint64_t CVMX_L2C_ERR_TDTX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_ERR_TDTX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007E0ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_ERR_TDTX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007E0ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_ERR_TDTX(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007E0ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_ERR_TDTX(offset) (CVMX_ADD_IO_SEG(0x0001180080A007E0ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_ERR_TTGX(unsigned long block_id)
+static inline uint64_t CVMX_L2C_ERR_TTGX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_ERR_TTGX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007E8ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_ERR_TTGX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007E8ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_ERR_TTGX(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007E8ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_ERR_TTGX(offset) (CVMX_ADD_IO_SEG(0x0001180080A007E8ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_ERR_VBFX(unsigned long block_id)
+static inline uint64_t CVMX_L2C_ERR_VBFX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_ERR_VBFX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080C007F0ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_ERR_VBFX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080C007F0ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_ERR_VBFX(block_id) (CVMX_ADD_IO_SEG(0x0001180080C007F0ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_ERR_VBFX(offset) (CVMX_ADD_IO_SEG(0x0001180080C007F0ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_L2C_ERR_XMC CVMX_L2C_ERR_XMC_FUNC()
@@ -478,7 +511,9 @@ static inline uint64_t CVMX_L2C_INVX_PFC(unsigned long offset)
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
 		cvmx_warn("CVMX_L2C_INVX_PFC(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180080800820ull) + ((offset) & 7) * 64;
 }
@@ -486,79 +521,87 @@ static inline uint64_t CVMX_L2C_INVX_PFC(unsigned long offset)
 #define CVMX_L2C_INVX_PFC(offset) (CVMX_ADD_IO_SEG(0x0001180080800820ull) + ((offset) & 7) * 64)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_IOCX_PFC(unsigned long block_id)
+static inline uint64_t CVMX_L2C_IOCX_PFC(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180080800828ull);
+			break;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
+			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001180080800420ull);
 			break;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x0001180080800828ull);
-			break;
 	}
-	cvmx_warn("CVMX_L2C_IOCX_PFC (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080800420ull);
+	cvmx_warn("CVMX_L2C_IOCX_PFC (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080800828ull);
 }
 #else
-static inline uint64_t CVMX_L2C_IOCX_PFC(unsigned long block_id __attribute__ ((unused)))
+static inline uint64_t CVMX_L2C_IOCX_PFC(unsigned long offset __attribute__ ((unused)))
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800828ull);
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180080800420ull);
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180080800828ull);
 	}
-	return CVMX_ADD_IO_SEG(0x0001180080800420ull);
+	return CVMX_ADD_IO_SEG(0x0001180080800828ull);
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_IORX_PFC(unsigned long block_id)
+static inline uint64_t CVMX_L2C_IORX_PFC(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180080800830ull);
+			break;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
+			if ((offset == 0))
 				return CVMX_ADD_IO_SEG(0x0001180080800428ull);
 			break;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if ((block_id == 0))
-				return CVMX_ADD_IO_SEG(0x0001180080800830ull);
-			break;
 	}
-	cvmx_warn("CVMX_L2C_IORX_PFC (block_id = %lu) not supported on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080800428ull);
+	cvmx_warn("CVMX_L2C_IORX_PFC (offset = %lu) not supported on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080800830ull);
 }
 #else
-static inline uint64_t CVMX_L2C_IORX_PFC(unsigned long block_id __attribute__ ((unused)))
+static inline uint64_t CVMX_L2C_IORX_PFC(unsigned long offset __attribute__ ((unused)))
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800830ull);
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180080800428ull);
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180080800830ull);
 	}
-	return CVMX_ADD_IO_SEG(0x0001180080800428ull);
+	return CVMX_ADD_IO_SEG(0x0001180080800830ull);
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -628,46 +671,52 @@ static inline uint64_t CVMX_L2C_LFB3_FUNC(void)
 #define CVMX_L2C_LFB3 (CVMX_ADD_IO_SEG(0x00011800800000B8ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_MCIX_BIST_STATUS(unsigned long block_id)
+static inline uint64_t CVMX_L2C_MCIX_BIST_STATUS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_MCIX_BIST_STATUS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080C007F8ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_L2C_MCIX_BIST_STATUS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080C007F8ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_MCIX_BIST_STATUS(block_id) (CVMX_ADD_IO_SEG(0x0001180080C007F8ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_MCIX_BIST_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180080C007F8ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_MCIX_ERR(unsigned long block_id)
+static inline uint64_t CVMX_L2C_MCIX_ERR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_MCIX_ERR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080C007F0ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_L2C_MCIX_ERR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080C007F0ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_MCIX_ERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080C007F0ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_MCIX_ERR(offset) (CVMX_ADD_IO_SEG(0x0001180080C007F0ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_MCIX_INT(unsigned long block_id)
+static inline uint64_t CVMX_L2C_MCIX_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 3)))))
-		cvmx_warn("CVMX_L2C_MCIX_INT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080C00028ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_L2C_MCIX_INT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080C00028ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_MCIX_INT(block_id) (CVMX_ADD_IO_SEG(0x0001180080C00028ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_MCIX_INT(offset) (CVMX_ADD_IO_SEG(0x0001180080C00028ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_L2C_OCI_CTL CVMX_L2C_OCI_CTL_FUNC()
 static inline uint64_t CVMX_L2C_OCI_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_L2C_OCI_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180080800020ull);
 }
@@ -770,8 +819,10 @@ static inline uint64_t CVMX_L2C_QOS_IOBX(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_L2C_QOS_IOBX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180080880200ull) + ((offset) & 1) * 8;
 }
@@ -787,8 +838,10 @@ static inline uint64_t CVMX_L2C_QOS_PPX(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 9))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 47))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 3)))))
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_L2C_QOS_PPX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180080880000ull) + ((offset) & 63) * 8;
 }
@@ -799,7 +852,7 @@ static inline uint64_t CVMX_L2C_QOS_PPX(unsigned long offset)
 #define CVMX_L2C_QOS_WGT CVMX_L2C_QOS_WGT_FUNC()
 static inline uint64_t CVMX_L2C_QOS_WGT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_L2C_QOS_WGT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180080800008ull);
 }
@@ -810,6 +863,19 @@ static inline uint64_t CVMX_L2C_QOS_WGT_FUNC(void)
 static inline uint64_t CVMX_L2C_RSCX_PFC(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180080800810ull) + ((offset) & 0) * 64;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 3))
+				return CVMX_ADD_IO_SEG(0x0001180080800810ull) + ((offset) & 3) * 64;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 9))
+				return CVMX_ADD_IO_SEG(0x0001180080800810ull) + ((offset) & 15) * 64;
+			break;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
@@ -821,22 +887,21 @@ static inline uint64_t CVMX_L2C_RSCX_PFC(unsigned long offset)
 			if ((offset <= 3))
 				return CVMX_ADD_IO_SEG(0x0001180080800410ull) + ((offset) & 3) * 64;
 			break;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			if ((offset == 0))
-				return CVMX_ADD_IO_SEG(0x0001180080800810ull) + ((offset) & 0) * 64;
-			break;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if ((offset <= 9))
-				return CVMX_ADD_IO_SEG(0x0001180080800810ull) + ((offset) & 15) * 64;
-			break;
 	}
 	cvmx_warn("CVMX_L2C_RSCX_PFC (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180080800410ull) + ((offset) & 0) * 64;
+	return CVMX_ADD_IO_SEG(0x0001180080800810ull) + ((offset) & 3) * 64;
 }
 #else
 static inline uint64_t CVMX_L2C_RSCX_PFC(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800810ull) + (offset) * 64;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800810ull) + (offset) * 64;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800810ull) + (offset) * 64;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
@@ -844,18 +909,27 @@ static inline uint64_t CVMX_L2C_RSCX_PFC(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001180080800410ull);
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180080800410ull) + (offset) * 64;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180080800810ull) + (offset) * 64;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180080800810ull) + (offset) * 64;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180080800410ull) + (offset) * 64;
+	return CVMX_ADD_IO_SEG(0x0001180080800810ull) + (offset) * 64;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_L2C_RSDX_PFC(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180080800818ull) + ((offset) & 0) * 64;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 3))
+				return CVMX_ADD_IO_SEG(0x0001180080800818ull) + ((offset) & 3) * 64;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 9))
+				return CVMX_ADD_IO_SEG(0x0001180080800818ull) + ((offset) & 15) * 64;
+			break;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
@@ -867,22 +941,21 @@ static inline uint64_t CVMX_L2C_RSDX_PFC(unsigned long offset)
 			if ((offset <= 3))
 				return CVMX_ADD_IO_SEG(0x0001180080800418ull) + ((offset) & 3) * 64;
 			break;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			if ((offset == 0))
-				return CVMX_ADD_IO_SEG(0x0001180080800818ull) + ((offset) & 0) * 64;
-			break;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if ((offset <= 9))
-				return CVMX_ADD_IO_SEG(0x0001180080800818ull) + ((offset) & 15) * 64;
-			break;
 	}
 	cvmx_warn("CVMX_L2C_RSDX_PFC (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180080800418ull) + ((offset) & 0) * 64;
+	return CVMX_ADD_IO_SEG(0x0001180080800818ull) + ((offset) & 3) * 64;
 }
 #else
 static inline uint64_t CVMX_L2C_RSDX_PFC(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800818ull) + (offset) * 64;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800818ull) + (offset) * 64;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800818ull) + (offset) * 64;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
@@ -890,13 +963,20 @@ static inline uint64_t CVMX_L2C_RSDX_PFC(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001180080800418ull);
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180080800418ull) + (offset) * 64;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180080800818ull) + (offset) * 64;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180080800818ull) + (offset) * 64;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180080800418ull) + (offset) * 64;
+	return CVMX_ADD_IO_SEG(0x0001180080800818ull) + (offset) * 64;
 }
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_L2C_RTGX_ERR(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7)))))
+		cvmx_warn("CVMX_L2C_RTGX_ERR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00800ull) + ((offset) & 7) * 0x40000ull;
+}
+#else
+#define CVMX_L2C_RTGX_ERR(offset) (CVMX_ADD_IO_SEG(0x0001180080A00800ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_L2C_SPAR0 CVMX_L2C_SPAR0_FUNC()
@@ -954,157 +1034,165 @@ static inline uint64_t CVMX_L2C_SPAR4_FUNC(void)
 #define CVMX_L2C_SPAR4 (CVMX_ADD_IO_SEG(0x0001180080000088ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_DLL(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_DLL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7)))))
-		cvmx_warn("CVMX_L2C_TADX_DLL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00018ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TADX_DLL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00018ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_DLL(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00018ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TADX_DLL(offset) (CVMX_ADD_IO_SEG(0x0001180080A00018ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_ECC0(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_ECC0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_TADX_ECC0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00018ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_TADX_ECC0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00018ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_ECC0(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00018ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_TADX_ECC0(offset) (CVMX_ADD_IO_SEG(0x0001180080A00018ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_ECC1(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_ECC1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_TADX_ECC1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00020ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_TADX_ECC1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00020ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_ECC1(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00020ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_TADX_ECC1(offset) (CVMX_ADD_IO_SEG(0x0001180080A00020ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_ERR(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_ERR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7)))))
-		cvmx_warn("CVMX_L2C_TADX_ERR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007D0ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TADX_ERR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007D0ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_ERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007D0ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TADX_ERR(offset) (CVMX_ADD_IO_SEG(0x0001180080A007D0ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_IEN(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_IEN(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_TADX_IEN(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00000ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_TADX_IEN(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00000ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_IEN(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00000ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_TADX_IEN(offset) (CVMX_ADD_IO_SEG(0x0001180080A00000ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_INT(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_TADX_INT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00028ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TADX_INT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00028ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_INT(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00028ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TADX_INT(offset) (CVMX_ADD_IO_SEG(0x0001180080A00028ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_PFC0(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_PFC0(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_TADX_PFC0(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00400ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_TADX_PFC0(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00400ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_PFC0(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00400ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_TADX_PFC0(offset) (CVMX_ADD_IO_SEG(0x0001180080A00400ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_PFC1(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_PFC1(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_TADX_PFC1(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00408ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_TADX_PFC1(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00408ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_PFC1(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00408ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_TADX_PFC1(offset) (CVMX_ADD_IO_SEG(0x0001180080A00408ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_PFC2(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_PFC2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_TADX_PFC2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00410ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_TADX_PFC2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00410ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_PFC2(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00410ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_TADX_PFC2(offset) (CVMX_ADD_IO_SEG(0x0001180080A00410ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_PFC3(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_PFC3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_TADX_PFC3(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00418ull) + ((block_id) & 3) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_L2C_TADX_PFC3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00418ull) + ((offset) & 3) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_PFC3(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00418ull) + ((block_id) & 3) * 0x40000ull)
+#define CVMX_L2C_TADX_PFC3(offset) (CVMX_ADD_IO_SEG(0x0001180080A00418ull) + ((offset) & 3) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_L2C_TADX_PFCX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 3)) && ((block_id == 0)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 7))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 3)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 7)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 3))))))
 		cvmx_warn("CVMX_L2C_TADX_PFCX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001180080A00400ull) + (((offset) & 3) + ((block_id) & 7) * 0x8000ull) * 8;
 }
@@ -1112,66 +1200,87 @@ static inline uint64_t CVMX_L2C_TADX_PFCX(unsigned long offset, unsigned long bl
 #define CVMX_L2C_TADX_PFCX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180080A00400ull) + (((offset) & 3) + ((block_id) & 7) * 0x8000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_PRF(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_PRF(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_TADX_PRF(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00008ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TADX_PRF(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00008ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_PRF(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00008ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TADX_PRF(offset) (CVMX_ADD_IO_SEG(0x0001180080A00008ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_TAG(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_STAT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 3))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_L2C_TADX_TAG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A00010ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TADX_STAT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00020ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_TAG(block_id) (CVMX_ADD_IO_SEG(0x0001180080A00010ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TADX_STAT(offset) (CVMX_ADD_IO_SEG(0x0001180080A00020ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_TIMEOUT(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_TAG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7)))))
-		cvmx_warn("CVMX_L2C_TADX_TIMEOUT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007C8ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN61XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TADX_TAG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A00010ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_TIMEOUT(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007C8ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TADX_TAG(offset) (CVMX_ADD_IO_SEG(0x0001180080A00010ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TADX_TIMETWO(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TADX_TIMEOUT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7)))))
-		cvmx_warn("CVMX_L2C_TADX_TIMETWO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007C0ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TADX_TIMEOUT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007C8ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TADX_TIMETWO(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007C0ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TADX_TIMEOUT(offset) (CVMX_ADD_IO_SEG(0x0001180080A007C8ull) + ((offset) & 7) * 0x40000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_L2C_TADX_TIMETWO(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TADX_TIMETWO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007C0ull) + ((offset) & 7) * 0x40000ull;
+}
+#else
+#define CVMX_L2C_TADX_TIMETWO(offset) (CVMX_ADD_IO_SEG(0x0001180080A007C0ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_L2C_TAD_CTL CVMX_L2C_TAD_CTL_FUNC()
 static inline uint64_t CVMX_L2C_TAD_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_L2C_TAD_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180080800018ull);
 }
@@ -1179,64 +1288,74 @@ static inline uint64_t CVMX_L2C_TAD_CTL_FUNC(void)
 #define CVMX_L2C_TAD_CTL (CVMX_ADD_IO_SEG(0x0001180080800018ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TBFX_BIST_STATUS(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TBFX_BIST_STATUS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7)))))
-		cvmx_warn("CVMX_L2C_TBFX_BIST_STATUS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007E8ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TBFX_BIST_STATUS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007E8ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TBFX_BIST_STATUS(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007E8ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TBFX_BIST_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180080A007E8ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TDTX_BIST_STATUS(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TDTX_BIST_STATUS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7)))))
-		cvmx_warn("CVMX_L2C_TDTX_BIST_STATUS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007F0ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TDTX_BIST_STATUS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007F0ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TDTX_BIST_STATUS(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007F0ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TDTX_BIST_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180080A007F0ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TQDX_ERR(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TQDX_ERR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7)))))
-		cvmx_warn("CVMX_L2C_TQDX_ERR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007D8ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TQDX_ERR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007D8ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TQDX_ERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007D8ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TQDX_ERR(offset) (CVMX_ADD_IO_SEG(0x0001180080A007D8ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TTGX_BIST_STATUS(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TTGX_BIST_STATUS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7)))))
-		cvmx_warn("CVMX_L2C_TTGX_BIST_STATUS(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007F8ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TTGX_BIST_STATUS(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007F8ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TTGX_BIST_STATUS(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007F8ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TTGX_BIST_STATUS(offset) (CVMX_ADD_IO_SEG(0x0001180080A007F8ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_L2C_TTGX_ERR(unsigned long block_id)
+static inline uint64_t CVMX_L2C_TTGX_ERR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 7)))))
-		cvmx_warn("CVMX_L2C_TTGX_ERR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001180080A007E0ull) + ((block_id) & 7) * 0x40000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 7))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 3)))))
+		cvmx_warn("CVMX_L2C_TTGX_ERR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001180080A007E0ull) + ((offset) & 7) * 0x40000ull;
 }
 #else
-#define CVMX_L2C_TTGX_ERR(block_id) (CVMX_ADD_IO_SEG(0x0001180080A007E0ull) + ((block_id) & 7) * 0x40000ull)
+#define CVMX_L2C_TTGX_ERR(offset) (CVMX_ADD_IO_SEG(0x0001180080A007E0ull) + ((offset) & 7) * 0x40000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_L2C_VER_ID CVMX_L2C_VER_ID_FUNC()
@@ -1347,8 +1466,10 @@ static inline uint64_t CVMX_L2C_WPAR_IOBX(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset == 0))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0)))))
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_L2C_WPAR_IOBX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180080840200ull) + ((offset) & 1) * 8;
 }
@@ -1364,8 +1485,10 @@ static inline uint64_t CVMX_L2C_WPAR_PPX(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 9))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 15))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 47))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 3)))))
+	      (OCTEON_IS_MODEL(OCTEON_CNF71XX) && ((offset <= 3))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 15)))))
 		cvmx_warn("CVMX_L2C_WPAR_PPX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001180080840000ull) + ((offset) & 63) * 8;
 }
@@ -1376,6 +1499,19 @@ static inline uint64_t CVMX_L2C_WPAR_PPX(unsigned long offset)
 static inline uint64_t CVMX_L2C_XMCX_PFC(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180080800800ull) + ((offset) & 0) * 64;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 3))
+				return CVMX_ADD_IO_SEG(0x0001180080800800ull) + ((offset) & 3) * 64;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 9))
+				return CVMX_ADD_IO_SEG(0x0001180080800800ull) + ((offset) & 15) * 64;
+			break;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
@@ -1387,22 +1523,21 @@ static inline uint64_t CVMX_L2C_XMCX_PFC(unsigned long offset)
 			if ((offset <= 3))
 				return CVMX_ADD_IO_SEG(0x0001180080800400ull) + ((offset) & 3) * 64;
 			break;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			if ((offset == 0))
-				return CVMX_ADD_IO_SEG(0x0001180080800800ull) + ((offset) & 0) * 64;
-			break;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if ((offset <= 9))
-				return CVMX_ADD_IO_SEG(0x0001180080800800ull) + ((offset) & 15) * 64;
-			break;
 	}
 	cvmx_warn("CVMX_L2C_XMCX_PFC (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180080800400ull) + ((offset) & 0) * 64;
+	return CVMX_ADD_IO_SEG(0x0001180080800800ull) + ((offset) & 3) * 64;
 }
 #else
 static inline uint64_t CVMX_L2C_XMCX_PFC(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800800ull) + (offset) * 64;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800800ull) + (offset) * 64;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800800ull) + (offset) * 64;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
@@ -1410,19 +1545,15 @@ static inline uint64_t CVMX_L2C_XMCX_PFC(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001180080800400ull);
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180080800400ull) + (offset) * 64;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180080800800ull) + (offset) * 64;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180080800800ull) + (offset) * 64;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180080800400ull) + (offset) * 64;
+	return CVMX_ADD_IO_SEG(0x0001180080800800ull) + (offset) * 64;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_L2C_XMC_CMD CVMX_L2C_XMC_CMD_FUNC()
 static inline uint64_t CVMX_L2C_XMC_CMD_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN61XX) || OCTEON_IS_MODEL(OCTEON_CN63XX) || OCTEON_IS_MODEL(OCTEON_CN66XX) || OCTEON_IS_MODEL(OCTEON_CN68XX) || OCTEON_IS_MODEL(OCTEON_CN70XX) || OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF71XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_L2C_XMC_CMD not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001180080800028ull);
 }
@@ -1433,6 +1564,19 @@ static inline uint64_t CVMX_L2C_XMC_CMD_FUNC(void)
 static inline uint64_t CVMX_L2C_XMDX_PFC(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			if ((offset == 0))
+				return CVMX_ADD_IO_SEG(0x0001180080800808ull) + ((offset) & 0) * 64;
+			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 3))
+				return CVMX_ADD_IO_SEG(0x0001180080800808ull) + ((offset) & 3) * 64;
+			break;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 9))
+				return CVMX_ADD_IO_SEG(0x0001180080800808ull) + ((offset) & 15) * 64;
+			break;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
@@ -1444,22 +1588,21 @@ static inline uint64_t CVMX_L2C_XMDX_PFC(unsigned long offset)
 			if ((offset <= 3))
 				return CVMX_ADD_IO_SEG(0x0001180080800408ull) + ((offset) & 3) * 64;
 			break;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			if ((offset == 0))
-				return CVMX_ADD_IO_SEG(0x0001180080800808ull) + ((offset) & 0) * 64;
-			break;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			if ((offset <= 9))
-				return CVMX_ADD_IO_SEG(0x0001180080800808ull) + ((offset) & 15) * 64;
-			break;
 	}
 	cvmx_warn("CVMX_L2C_XMDX_PFC (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180080800408ull) + ((offset) & 0) * 64;
+	return CVMX_ADD_IO_SEG(0x0001180080800808ull) + ((offset) & 3) * 64;
 }
 #else
 static inline uint64_t CVMX_L2C_XMDX_PFC(unsigned long offset)
 {
 	switch(cvmx_get_octeon_family()) {
+		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800808ull) + (offset) * 64;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800808ull) + (offset) * 64;
+		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001180080800808ull) + (offset) * 64;
 		case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
@@ -1467,12 +1610,8 @@ static inline uint64_t CVMX_L2C_XMDX_PFC(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001180080800408ull);
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180080800408ull) + (offset) * 64;
-		case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180080800808ull) + (offset) * 64;
-		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
-			return CVMX_ADD_IO_SEG(0x0001180080800808ull) + (offset) * 64;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180080800408ull) + (offset) * 64;
+	return CVMX_ADD_IO_SEG(0x0001180080800808ull) + (offset) * 64;
 }
 #endif
 
@@ -1494,20 +1633,22 @@ union cvmx_l2c_big_ctl {
 	struct cvmx_l2c_big_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_8_63                : 56;
-	uint64_t maxdram                      : 4;  /**< Amount of configured DRAM
-                                                             0 = reserved
-                                                             1 = 512MB
-                                                             2 = 1GB
-                                                             3 = 2GB
-                                                             4 = 4GB
-                                                             5 = 8GB
-                                                             6 = 16GB
-                                                             7 = 32GB
-                                                             8 = 64GB     (**reserved in 63xx**)
-                                                             9 = 128GB    (**reserved in 63xx**)
-                                                             10-15 reserved
-                                                         Violations of this limit causes
-                                                         L2C to set L2C_INT_REG[BIGRD/BIGWR]. */
+	uint64_t maxdram                      : 4;  /**< Amount of configured DRAM.
+                                                         0x0 = reserved.
+                                                         0x1 = 512 MB.
+                                                         0x2 = 1 GB.
+                                                         0x3 = 2 GB.
+                                                         0x4 = 4 GB.
+                                                         0x5 = 8 GB.
+                                                         0x6 = 16 GB.
+                                                         0x7 = 32 GB.
+                                                         0x8 = 64 GB.
+                                                         0x9 = 128 GB.
+                                                         0xA = 256 GB.
+                                                         0xB = 512 GB.
+                                                         0xC = 1 TB.
+                                                         0xD-0xF= reserved.
+                                                         Violations of this limit cause L2C to set L2C_TAD()_INT[BIGRD/BIGWR]. */
 	uint64_t reserved_0_3                 : 4;
 #else
 	uint64_t reserved_0_3                 : 4;
@@ -1581,8 +1722,11 @@ union cvmx_l2c_big_ctl {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_big_ctl_cn70xx        cn70xxp1;
+	struct cvmx_l2c_big_ctl_cn70xx        cn73xx;
 	struct cvmx_l2c_big_ctl_cn70xx        cn78xx;
+	struct cvmx_l2c_big_ctl_cn70xx        cn78xxp2;
 	struct cvmx_l2c_big_ctl_cn61xx        cnf71xx;
+	struct cvmx_l2c_big_ctl_cn70xx        cnf75xx;
 };
 typedef union cvmx_l2c_big_ctl cvmx_l2c_big_ctl_t;
 
@@ -2321,17 +2465,20 @@ union cvmx_l2c_cbcx_bist_status {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_cbcx_bist_status_cn70xx cn70xxp1;
-	struct cvmx_l2c_cbcx_bist_status_cn78xx {
+	struct cvmx_l2c_cbcx_bist_status_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_37_63               : 27;
-	uint64_t mibfl                        : 5;  /**< BIST failure status for various MIB memories. ([XMD, IPM, IRM, MXD, MXN]) */
+	uint64_t mibfl                        : 5;  /**< Reserved. */
 	uint64_t rsdfl                        : 32; /**< BIST failure status for RSDQW0-31. */
 #else
 	uint64_t rsdfl                        : 32;
 	uint64_t mibfl                        : 5;
 	uint64_t reserved_37_63               : 27;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_l2c_cbcx_bist_status_cn73xx cn78xx;
+	struct cvmx_l2c_cbcx_bist_status_cn73xx cn78xxp2;
+	struct cvmx_l2c_cbcx_bist_status_cn73xx cnf75xx;
 };
 typedef union cvmx_l2c_cbcx_bist_status cvmx_l2c_cbcx_bist_status_t;
 
@@ -2366,7 +2513,10 @@ union cvmx_l2c_cbcx_dll {
 	uint64_t reserved_36_63               : 28;
 #endif
 	} s;
+	struct cvmx_l2c_cbcx_dll_s            cn73xx;
 	struct cvmx_l2c_cbcx_dll_s            cn78xx;
+	struct cvmx_l2c_cbcx_dll_s            cn78xxp2;
+	struct cvmx_l2c_cbcx_dll_s            cnf75xx;
 };
 typedef union cvmx_l2c_cbcx_dll cvmx_l2c_cbcx_dll_t;
 
@@ -2383,13 +2533,11 @@ union cvmx_l2c_cbcx_holeerr {
 	uint64_t holerd                       : 1;  /**< Logged information is for a HOLERD error. */
 	uint64_t holewr                       : 1;  /**< Logged information is for a HOLEWR error. */
 	uint64_t reserved_59_61               : 3;
-	uint64_t cmd                          : 8;  /**< Encoding of XMC or CCPI command causing error. INTERNAL: If CMD[7]==1, use XMC_CMD_E to
-                                                         decode CMD[6:0]. If CMD[7:5]==0, use OCI_MREQ_CMD_E to decode CMD[4:0]. If CMD[7:5]==1,
-                                                         use OCI_MFWD_CMD_E to decode CMD[4:0]. If CMD[7:5]==2, use OCI_MRSP_CMD_E to decode
-                                                         CMD[4:0]. */
+	uint64_t cmd                          : 8;  /**< Encoding of XMC command causing error. INTERNAL: CMD[7] should always be 1, use
+                                                         XMC_CMD_E to decode CMD[6:0]. */
 	uint64_t source                       : 7;  /**< XMC 'source' of request causing error. If SOURCE<6>==0, then SOURCE<5:0> is PPID, else
                                                          SOURCE<3:0> is BUSID of the IOB which made the request. */
-	uint64_t node                         : 4;  /**< CCPI node of XMC request causing error. For HOLE* errors, is the NODE the request is directed to. */
+	uint64_t node                         : 4;  /**< CCPI is not present. Should always read 0. */
 	uint64_t addr                         : 40; /**< XMC address causing the error. This field is the physical address after hole removal and
                                                          index aliasing (if enabled). (The hole is between DR0 and DR1. Remove the hole by
                                                          subtracting 256MB from all L2/DRAM physical addresses >= 512 MB.) */
@@ -2403,7 +2551,10 @@ union cvmx_l2c_cbcx_holeerr {
 	uint64_t holerd                       : 1;
 #endif
 	} s;
+	struct cvmx_l2c_cbcx_holeerr_s        cn73xx;
 	struct cvmx_l2c_cbcx_holeerr_s        cn78xx;
+	struct cvmx_l2c_cbcx_holeerr_s        cn78xxp2;
+	struct cvmx_l2c_cbcx_holeerr_s        cnf75xx;
 };
 typedef union cvmx_l2c_cbcx_holeerr cvmx_l2c_cbcx_holeerr_t;
 
@@ -2420,14 +2571,10 @@ union cvmx_l2c_cbcx_int {
 	uint64_t reserved_10_63               : 54;
 	uint64_t holerd                       : 1;  /**< Read reference to 256MB hole occurred. */
 	uint64_t holewr                       : 1;  /**< Write reference to 256MB hole occurred. */
-	uint64_t iowrdisoci                   : 1;  /**< Illegal I/O write operation to a remote node with L2C_OCI_CTL[ENAOCI][node] clear. See
-                                                         L2C_CBC()_IODISOCIERR for logged information. This interrupt applies to IOBST8,
-                                                         IOBST16, IOBST32, IOBST64, IOBADDR, LMTST, and LMTDMA XMC commands. */
-	uint64_t iorddisoci                   : 1;  /**< Illegal I/O read operation to a remote node with L2C_OCI_CTL[ENAOCI][node] clear. See
-                                                         L2C_CBC()_IODISOCIERR for logged information. This interrupt applies to IOBLD8,
-                                                         IOBLD16, IOBLD32, IOBLD64, IOBDMA, and LMTDMA XMC commands. */
-	uint64_t mibdbe                       : 1;  /**< MIB double-bit error occurred. See L2C_CBC()_MIBERR for logged information. */
-	uint64_t mibsbe                       : 1;  /**< MIB double-bit error occurred. See L2C_CBC()_MIBERR for logged information. */
+	uint64_t iowrdisoci                   : 1;  /**< Reserved. */
+	uint64_t iorddisoci                   : 1;  /**< Reserved. */
+	uint64_t mibdbe                       : 1;  /**< Reserved. */
+	uint64_t mibsbe                       : 1;  /**< Reserved. */
 	uint64_t ioccmddbe                    : 1;  /**< IOCCMD double-bit error occurred. See L2C_CBC(0..3)_IOCERR for logged information. */
 	uint64_t ioccmdsbe                    : 1;  /**< IOCCMD single-bit error occurred. See L2C_CBC(0..3)_IOCERR for logged information. */
 	uint64_t rsddbe                       : 1;  /**< RSD double-bit error occurred. See L2C_CBC()_RSDERR for logged information. */
@@ -2462,19 +2609,15 @@ union cvmx_l2c_cbcx_int {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_cbcx_int_cn70xx       cn70xxp1;
-	struct cvmx_l2c_cbcx_int_cn78xx {
+	struct cvmx_l2c_cbcx_int_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_10_63               : 54;
 	uint64_t holerd                       : 1;  /**< Read reference to 256MB hole occurred. */
 	uint64_t holewr                       : 1;  /**< Write reference to 256MB hole occurred. */
-	uint64_t iowrdisoci                   : 1;  /**< Illegal I/O write operation to a remote node with L2C_OCI_CTL[ENAOCI][node] clear. See
-                                                         L2C_CBC()_IODISOCIERR for logged information. This interrupt applies to IOBST8,
-                                                         IOBST16, IOBST32, IOBST64, IOBADDR, LMTST, and LMTDMA XMC commands. */
-	uint64_t iorddisoci                   : 1;  /**< Illegal I/O read operation to a remote node with L2C_OCI_CTL[ENAOCI][node] clear. See
-                                                         L2C_CBC()_IODISOCIERR for logged information. This interrupt applies to IOBLD8,
-                                                         IOBLD16, IOBLD32, IOBLD64, IOBDMA, and LMTDMA XMC commands. */
-	uint64_t mibdbe                       : 1;  /**< MIB double-bit error occurred. See L2C_CBC()_MIBERR for logged information. */
-	uint64_t mibsbe                       : 1;  /**< MIB double-bit error occurred. See L2C_CBC()_MIBERR for logged information. */
+	uint64_t iowrdisoci                   : 1;  /**< Reserved. */
+	uint64_t iorddisoci                   : 1;  /**< Reserved. */
+	uint64_t mibdbe                       : 1;  /**< Reserved. */
+	uint64_t mibsbe                       : 1;  /**< Reserved. */
 	uint64_t reserved_2_3                 : 2;
 	uint64_t rsddbe                       : 1;  /**< RSD double-bit error occurred. See L2C_CBC()_RSDERR for logged information. */
 	uint64_t rsdsbe                       : 1;  /**< RSD single-bit error occurred. See L2C_CBC()_RSDERR for logged information. */
@@ -2490,7 +2633,10 @@ union cvmx_l2c_cbcx_int {
 	uint64_t holerd                       : 1;
 	uint64_t reserved_10_63               : 54;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_l2c_cbcx_int_cn73xx       cn78xx;
+	struct cvmx_l2c_cbcx_int_cn73xx       cn78xxp2;
+	struct cvmx_l2c_cbcx_int_cn73xx       cnf75xx;
 };
 typedef union cvmx_l2c_cbcx_int cvmx_l2c_cbcx_int_t;
 
@@ -2521,24 +2667,24 @@ union cvmx_l2c_cbcx_iocerr {
 	} s;
 	struct cvmx_l2c_cbcx_iocerr_s         cn70xx;
 	struct cvmx_l2c_cbcx_iocerr_s         cn70xxp1;
-	struct cvmx_l2c_cbcx_iocerr_cn78xx {
+	struct cvmx_l2c_cbcx_iocerr_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_0_63                : 64;
 #else
 	uint64_t reserved_0_63                : 64;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_l2c_cbcx_iocerr_cn73xx    cn78xx;
+	struct cvmx_l2c_cbcx_iocerr_cn73xx    cn78xxp2;
+	struct cvmx_l2c_cbcx_iocerr_cn73xx    cnf75xx;
 };
 typedef union cvmx_l2c_cbcx_iocerr cvmx_l2c_cbcx_iocerr_t;
 
 /**
  * cvmx_l2c_cbc#_iodisocierr
  *
- * This register records error information associated with IORDDISOCI/IOWRDISOCI interrupts.
- * IOWRDISOCI events take priority over previously captured IORDDISOCI events. Of the available
- * I/O transactions, some commands will either set IORDDISOCI, set IOWRDISOCI, or set both
- * IORDDISOCI and IOWRDISOCI. See L2C_CBC()_INT for information about which I/O transactions
- * may result in IORDDISOCI/IOWRDISOCI interrupts.
+ * Reserved.
+ *
  */
 union cvmx_l2c_cbcx_iodisocierr {
 	uint64_t u64;
@@ -2547,11 +2693,11 @@ union cvmx_l2c_cbcx_iodisocierr {
 	uint64_t iorddisoci                   : 1;  /**< Reserved. */
 	uint64_t iowrdisoci                   : 1;  /**< Reserved. */
 	uint64_t reserved_59_61               : 3;
-	uint64_t cmd                          : 7;  /**< Encoding of XMC command.  INTERNAL: Enumerated with XMC_CMD_E. */
-	uint64_t ppvid                        : 6;  /**< CMB source PPVID. */
-	uint64_t node                         : 2;  /**< Destination node ID. */
-	uint64_t did                          : 8;  /**< Destination device ID. */
-	uint64_t addr                         : 36; /**< I/O address. */
+	uint64_t cmd                          : 7;  /**< Reserved. */
+	uint64_t ppvid                        : 6;  /**< Reserved. */
+	uint64_t node                         : 2;  /**< Reserved. */
+	uint64_t did                          : 8;  /**< Reserved. */
+	uint64_t addr                         : 36; /**< Reserved. */
 #else
 	uint64_t addr                         : 36;
 	uint64_t did                          : 8;
@@ -2563,34 +2709,30 @@ union cvmx_l2c_cbcx_iodisocierr {
 	uint64_t iorddisoci                   : 1;
 #endif
 	} s;
+	struct cvmx_l2c_cbcx_iodisocierr_s    cn73xx;
 	struct cvmx_l2c_cbcx_iodisocierr_s    cn78xx;
+	struct cvmx_l2c_cbcx_iodisocierr_s    cn78xxp2;
+	struct cvmx_l2c_cbcx_iodisocierr_s    cnf75xx;
 };
 typedef union cvmx_l2c_cbcx_iodisocierr cvmx_l2c_cbcx_iodisocierr_t;
 
 /**
  * cvmx_l2c_cbc#_miberr
  *
- * This register records error information for all CBC MIB errors. An error locks the INDEX, and
- * SYN fields and set the bit corresponding to the error received. MIBDBE errors take priority
- * and overwrite an earlier logged MIBSBE error. Only one of MIBSBE/MIBDBE is set at any given
- * time and serves to document which error the INDEX/SYN is associated with. The syndrome is
- * recorded for DBE errors, though the utility of the value is not clear.
+ * Reserved.
+ *
  */
 union cvmx_l2c_cbcx_miberr {
 	uint64_t u64;
 	struct cvmx_l2c_cbcx_miberr_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t mibdbe                       : 1;  /**< INDEX/SYN corresponds to a double-bit MIB ECC error. */
-	uint64_t mibsbe                       : 1;  /**< INDEX/SYN corresponds to a single-bit MIB ECC error. */
+	uint64_t mibdbe                       : 1;  /**< Reserved. */
+	uint64_t mibsbe                       : 1;  /**< Reserved. */
 	uint64_t reserved_40_61               : 22;
-	uint64_t syn                          : 8;  /**< Error syndrome. */
+	uint64_t syn                          : 8;  /**< Reserved. */
 	uint64_t reserved_3_31                : 29;
-	uint64_t memid                        : 2;  /**< Indicates the memory that had the error.
-                                                         0x0 = Error from MXB_VC_MRN, MXB_VC_MFN, MXB_VC_MPN VCs.
-                                                         0x1 = Error from MXB_VC_MRD, MXB_VC_MPD VCs.
-                                                         0x2 = Error from MXB_VC_IRM VC.
-                                                         0x3 = Error from MXB_VC_IPM VC. */
-	uint64_t mibnum                       : 1;  /**< Indicates the MIB bus that had the error. */
+	uint64_t memid                        : 2;  /**< Reserved. */
+	uint64_t mibnum                       : 1;  /**< Reserved. */
 #else
 	uint64_t mibnum                       : 1;
 	uint64_t memid                        : 2;
@@ -2601,7 +2743,10 @@ union cvmx_l2c_cbcx_miberr {
 	uint64_t mibdbe                       : 1;
 #endif
 	} s;
+	struct cvmx_l2c_cbcx_miberr_s         cn73xx;
 	struct cvmx_l2c_cbcx_miberr_s         cn78xx;
+	struct cvmx_l2c_cbcx_miberr_s         cn78xxp2;
+	struct cvmx_l2c_cbcx_miberr_s         cnf75xx;
 };
 typedef union cvmx_l2c_cbcx_miberr cvmx_l2c_cbcx_miberr_t;
 
@@ -2640,7 +2785,10 @@ union cvmx_l2c_cbcx_rsderr {
 	} s;
 	struct cvmx_l2c_cbcx_rsderr_s         cn70xx;
 	struct cvmx_l2c_cbcx_rsderr_s         cn70xxp1;
+	struct cvmx_l2c_cbcx_rsderr_s         cn73xx;
 	struct cvmx_l2c_cbcx_rsderr_s         cn78xx;
+	struct cvmx_l2c_cbcx_rsderr_s         cn78xxp2;
+	struct cvmx_l2c_cbcx_rsderr_s         cnf75xx;
 };
 typedef union cvmx_l2c_cbcx_rsderr cvmx_l2c_cbcx_rsderr_t;
 
@@ -3195,17 +3343,15 @@ typedef union cvmx_l2c_cfg cvmx_l2c_cfg_t;
  *
  * Provides the address of the COP0 register to read/write when L2C_COP0_DAT is accessed.
  *
- * NOTE: for 78xx, if the PPID is outside the range of 0-47,255 the write will be ignored and
- * reads will return 0x2bad2bad2bad2bad
- *
  * 1. RD and SEL are as defined in the description of Core Coprocessor 0 registers.
  *
- * 2. If a COP0 register cannot be accessed by this mechanism the write be silently ignored and
- * the read data will be 0x2bad2bad2bad2bad. Otherwise, if the COP0 register doesn't exist,
- * the read data value will be 0x000000000BADDEED.
+ * 2. If the PPID is outside the range of valid cores, and not 255 (broadcast), or if
+ * the core in question is in reset a write will be ignored and reads will timeout the
+ * RSL bus.
  *
- * 3. If the PPID is outside the range of 0-47,255 or if the core in question is in reset
- * a write will be ignored and reads will timeout the RSL bus.
+ * 3. If a COP0 register cannot be accessed by this mechanism the write be silently
+ * ignored and the read data will be 0x2bad2bad2bad2bad. Otherwise, if the COP0
+ * register doesn't exist, the read data value will be 0x000000000baddeed.
  *
  * INTERNAL: In HRM, see table in L2C chapter body text.
  * Referring to note 1 above, the following root/rd/sel values are supported:
@@ -3353,7 +3499,10 @@ union cvmx_l2c_cop0_adr {
 	} s;
 	struct cvmx_l2c_cop0_adr_s            cn70xx;
 	struct cvmx_l2c_cop0_adr_s            cn70xxp1;
+	struct cvmx_l2c_cop0_adr_s            cn73xx;
 	struct cvmx_l2c_cop0_adr_s            cn78xx;
+	struct cvmx_l2c_cop0_adr_s            cn78xxp2;
+	struct cvmx_l2c_cop0_adr_s            cnf75xx;
 };
 typedef union cvmx_l2c_cop0_adr cvmx_l2c_cop0_adr_t;
 
@@ -3374,7 +3523,10 @@ union cvmx_l2c_cop0_dat {
 	} s;
 	struct cvmx_l2c_cop0_dat_s            cn70xx;
 	struct cvmx_l2c_cop0_dat_s            cn70xxp1;
+	struct cvmx_l2c_cop0_dat_s            cn73xx;
 	struct cvmx_l2c_cop0_dat_s            cn78xx;
+	struct cvmx_l2c_cop0_dat_s            cn78xxp2;
+	struct cvmx_l2c_cop0_dat_s            cnf75xx;
 };
 typedef union cvmx_l2c_cop0_dat cvmx_l2c_cop0_dat_t;
 
@@ -3533,26 +3685,23 @@ union cvmx_l2c_ctl {
                                                          cycle.  Needed when DCLK:RCLK ratio > 3:1.  Should be
                                                          set before DDR traffic begins and only changed when
                                                          memory traffic is idle. */
-	uint64_t disstgl2i                    : 1;  /**< Disable STGL2I's from changing the tags */
+	uint64_t disstgl2i                    : 1;  /**< Disable STGL2Is from changing the tags. */
 	uint64_t l2dfsbe                      : 1;  /**< Force single bit ECC error on PL2 allocates (2) */
 	uint64_t l2dfdbe                      : 1;  /**< Force double bit ECC error on PL2 allocates (2) */
-	uint64_t discclk                      : 1;  /**< Disable conditional clocking in L2C PNR blocks */
+	uint64_t discclk                      : 1;  /**< Disable conditional clocking in L2C PNR blocks. */
 	uint64_t maxvab                       : 4;  /**< Maximum VABs in use at once
                                                          (0 means 16, 1-15 as expected) */
 	uint64_t maxlfb                       : 4;  /**< Maximum LFBs in use at once
                                                          (0 means 16, 1-15 as expected) */
-	uint64_t rsp_arb_mode                 : 1;  /**< Arbitration mode for RSC/RSD bus
-                                                         == 0, round-robin
-                                                         == 1, static priority
-                                                             1. IOR data
-                                                             2. STIN/FILLs
-                                                             3. STDN/SCDN/SCFL */
-	uint64_t xmc_arb_mode                 : 1;  /**< Arbitration mode for XMC QOS queues
-                                                         == 0, fully determined through QOS
-                                                         == 1, QOS0 highest priority, QOS1-3 use normal mode */
+	uint64_t rsp_arb_mode                 : 1;  /**< Arbitration mode for RSC/RSD bus. 0 = round-robin; 1 = static priority.
+                                                         1. IOR data.
+                                                         2. STIN/FILLs.
+                                                         3. STDN/SCDN/SCFL. */
+	uint64_t xmc_arb_mode                 : 1;  /**< Arbitration mode for ADD bus QOS queues. 0 = fully determined through QOS, 1 = QOS0
+                                                         highest priority; QOS 1-7 use normal mode. */
 	uint64_t reserved_2_13                : 12;
-	uint64_t disecc                       : 1;  /**< Tag and Data ECC Disable */
-	uint64_t disidxalias                  : 1;  /**< Index Alias Disable */
+	uint64_t disecc                       : 1;  /**< Tag and data ECC disable. */
+	uint64_t disidxalias                  : 1;  /**< Index alias disable. */
 #else
 	uint64_t disidxalias                  : 1;
 	uint64_t disecc                       : 1;
@@ -3869,7 +4018,7 @@ union cvmx_l2c_ctl {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_ctl_cn70xx            cn70xxp1;
-	struct cvmx_l2c_ctl_cn78xx {
+	struct cvmx_l2c_ctl_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
 	uint64_t ocla_qos                     : 3;  /**< QOS level for the transactions from OCLA to L2C. */
@@ -3890,10 +4039,8 @@ union cvmx_l2c_ctl {
                                                          To disable set to 0. All other values are reserved. */
 	uint64_t reserved_4_5                 : 2;
 	uint64_t disldwb                      : 1;  /**< Suppresses the DWB functionality of any received LDWB, effectively turning them into LDTs. */
-	uint64_t dissblkdty                   : 1;  /**< Disable bandwidth optimization between L2 and LMC and MOB which only transfers modified
-                                                         sub-blocks when possible. In an CCPI system all nodes must use the same setting of
-                                                         DISSBLKDTY or operation is undefined.
-                                                         INTERNAL: PASS2: DISSBLKDTY should reset to 0, once verif supports it. */
+	uint64_t dissblkdty                   : 1;  /**< Disable bandwidth optimization between L2 and LMC which only transfers modified
+                                                         sub-blocks when possible. */
 	uint64_t disecc                       : 1;  /**< Tag and data ECC disable. */
 	uint64_t disidxalias                  : 1;  /**< Index alias disable. */
 #else
@@ -3913,8 +4060,11 @@ union cvmx_l2c_ctl {
 	uint64_t ocla_qos                     : 3;
 	uint64_t reserved_32_63               : 32;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_l2c_ctl_cn73xx            cn78xx;
+	struct cvmx_l2c_ctl_cn73xx            cn78xxp2;
 	struct cvmx_l2c_ctl_cn61xx            cnf71xx;
+	struct cvmx_l2c_ctl_cn73xx            cnf75xx;
 };
 typedef union cvmx_l2c_ctl cvmx_l2c_ctl_t;
 
@@ -4572,7 +4722,7 @@ union cvmx_l2c_ecc_ctl {
 	struct cvmx_l2c_ecc_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t mibflip                      : 2;  /**< Generate an ECC error in the MIB. See note above. */
+	uint64_t mibflip                      : 2;  /**< Reserved. */
 	uint64_t l2dflip                      : 2;  /**< Generate an ECC error in the L2D. See note above. */
 	uint64_t l2tflip                      : 2;  /**< Generate an ECC error in the L2T. */
 	uint64_t rdfflip                      : 2;  /**< Generate an ECC error in RDF memory. */
@@ -4606,10 +4756,10 @@ union cvmx_l2c_ecc_ctl {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_ecc_ctl_cn70xx        cn70xxp1;
-	struct cvmx_l2c_ecc_ctl_cn78xx {
+	struct cvmx_l2c_ecc_ctl_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_12_63               : 52;
-	uint64_t mibflip                      : 2;  /**< Generate an ECC error in the MIB. See note above. */
+	uint64_t mibflip                      : 2;  /**< Reserved. */
 	uint64_t l2dflip                      : 2;  /**< Generate an ECC error in the L2D. See note above. */
 	uint64_t l2tflip                      : 2;  /**< Generate an ECC error in the L2T. */
 	uint64_t rdfflip                      : 2;  /**< Generate an ECC error in RDF memory. */
@@ -4624,7 +4774,10 @@ union cvmx_l2c_ecc_ctl {
 	uint64_t mibflip                      : 2;
 	uint64_t reserved_12_63               : 52;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_l2c_ecc_ctl_cn73xx        cn78xx;
+	struct cvmx_l2c_ecc_ctl_cn73xx        cn78xxp2;
+	struct cvmx_l2c_ecc_ctl_cn73xx        cnf75xx;
 };
 typedef union cvmx_l2c_ecc_ctl cvmx_l2c_ecc_ctl_t;
 
@@ -5469,7 +5622,10 @@ union cvmx_l2c_invx_pfc {
 	} s;
 	struct cvmx_l2c_invx_pfc_s            cn70xx;
 	struct cvmx_l2c_invx_pfc_s            cn70xxp1;
+	struct cvmx_l2c_invx_pfc_s            cn73xx;
 	struct cvmx_l2c_invx_pfc_s            cn78xx;
+	struct cvmx_l2c_invx_pfc_s            cn78xxp2;
+	struct cvmx_l2c_invx_pfc_s            cnf75xx;
 };
 typedef union cvmx_l2c_invx_pfc cvmx_l2c_invx_pfc_t;
 
@@ -5496,8 +5652,11 @@ union cvmx_l2c_iocx_pfc {
 	struct cvmx_l2c_iocx_pfc_s            cn68xxp1;
 	struct cvmx_l2c_iocx_pfc_s            cn70xx;
 	struct cvmx_l2c_iocx_pfc_s            cn70xxp1;
+	struct cvmx_l2c_iocx_pfc_s            cn73xx;
 	struct cvmx_l2c_iocx_pfc_s            cn78xx;
+	struct cvmx_l2c_iocx_pfc_s            cn78xxp2;
 	struct cvmx_l2c_iocx_pfc_s            cnf71xx;
+	struct cvmx_l2c_iocx_pfc_s            cnf75xx;
 };
 typedef union cvmx_l2c_iocx_pfc cvmx_l2c_iocx_pfc_t;
 
@@ -5524,8 +5683,11 @@ union cvmx_l2c_iorx_pfc {
 	struct cvmx_l2c_iorx_pfc_s            cn68xxp1;
 	struct cvmx_l2c_iorx_pfc_s            cn70xx;
 	struct cvmx_l2c_iorx_pfc_s            cn70xxp1;
+	struct cvmx_l2c_iorx_pfc_s            cn73xx;
 	struct cvmx_l2c_iorx_pfc_s            cn78xx;
+	struct cvmx_l2c_iorx_pfc_s            cn78xxp2;
 	struct cvmx_l2c_iorx_pfc_s            cnf71xx;
+	struct cvmx_l2c_iorx_pfc_s            cnf75xx;
 };
 typedef union cvmx_l2c_iorx_pfc cvmx_l2c_iorx_pfc_t;
 
@@ -6079,7 +6241,10 @@ union cvmx_l2c_mcix_bist_status {
 	} s;
 	struct cvmx_l2c_mcix_bist_status_s    cn70xx;
 	struct cvmx_l2c_mcix_bist_status_s    cn70xxp1;
+	struct cvmx_l2c_mcix_bist_status_s    cn73xx;
 	struct cvmx_l2c_mcix_bist_status_s    cn78xx;
+	struct cvmx_l2c_mcix_bist_status_s    cn78xxp2;
+	struct cvmx_l2c_mcix_bist_status_s    cnf75xx;
 };
 typedef union cvmx_l2c_mcix_bist_status cvmx_l2c_mcix_bist_status_t;
 
@@ -6124,7 +6289,10 @@ union cvmx_l2c_mcix_err {
 	} s;
 	struct cvmx_l2c_mcix_err_s            cn70xx;
 	struct cvmx_l2c_mcix_err_s            cn70xxp1;
+	struct cvmx_l2c_mcix_err_s            cn73xx;
 	struct cvmx_l2c_mcix_err_s            cn78xx;
+	struct cvmx_l2c_mcix_err_s            cn78xxp2;
+	struct cvmx_l2c_mcix_err_s            cnf75xx;
 };
 typedef union cvmx_l2c_mcix_err cvmx_l2c_mcix_err_t;
 
@@ -6149,7 +6317,10 @@ union cvmx_l2c_mcix_int {
 	} s;
 	struct cvmx_l2c_mcix_int_s            cn70xx;
 	struct cvmx_l2c_mcix_int_s            cn70xxp1;
+	struct cvmx_l2c_mcix_int_s            cn73xx;
 	struct cvmx_l2c_mcix_int_s            cn78xx;
+	struct cvmx_l2c_mcix_int_s            cn78xxp2;
+	struct cvmx_l2c_mcix_int_s            cnf75xx;
 };
 typedef union cvmx_l2c_mcix_int cvmx_l2c_mcix_int_t;
 
@@ -6160,70 +6331,63 @@ union cvmx_l2c_oci_ctl {
 	uint64_t u64;
 	struct cvmx_l2c_oci_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_31_63               : 33;
+	uint64_t ncpend                       : 1;  /**< An indication that a node change is pending.  Hardware sets this bit when
+                                                         OCX_COM_NODE[ID] is changed and clears the bit when the node change has taken
+                                                         effect.  Added in pass 2. */
+	uint64_t lock_local_cas               : 1;  /**< Reserved. */
+	uint64_t lock_local_stc               : 1;  /**< Reserved. */
+	uint64_t lock_local_pp                : 1;  /**< Reserved. */
+	uint64_t lngtolen                     : 5;  /**< Reserved. */
+	uint64_t shtolen                      : 5;  /**< Reserved. */
+	uint64_t shtoioen                     : 1;  /**< Reserved. */
+	uint64_t shtoen                       : 3;  /**< Reserved. */
+	uint64_t shto                         : 1;  /**< Reserved. */
+	uint64_t inv_mode                     : 2;  /**< Reserved. */
+	uint64_t cas_fdx                      : 1;  /**< Reserved. */
+	uint64_t rldd_psha                    : 1;  /**< Reserved. */
+	uint64_t lock_local_iob               : 1;  /**< Reserved. */
+	uint64_t iofrcl                       : 1;  /**< Reserved. */
+	uint64_t gksegnode                    : 2;  /**< Reserved. */
+	uint64_t enaoci                       : 4;  /**< CCPI is not present. Any attempt to enable it will be ignored. */
+#else
+	uint64_t enaoci                       : 4;
+	uint64_t gksegnode                    : 2;
+	uint64_t iofrcl                       : 1;
+	uint64_t lock_local_iob               : 1;
+	uint64_t rldd_psha                    : 1;
+	uint64_t cas_fdx                      : 1;
+	uint64_t inv_mode                     : 2;
+	uint64_t shto                         : 1;
+	uint64_t shtoen                       : 3;
+	uint64_t shtoioen                     : 1;
+	uint64_t shtolen                      : 5;
+	uint64_t lngtolen                     : 5;
+	uint64_t lock_local_pp                : 1;
+	uint64_t lock_local_stc               : 1;
+	uint64_t lock_local_cas               : 1;
+	uint64_t ncpend                       : 1;
+	uint64_t reserved_31_63               : 33;
+#endif
+	} s;
+	struct cvmx_l2c_oci_ctl_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_30_63               : 34;
-	uint64_t lock_local_cas               : 1;  /**< When set, L2 CAS operations to remote addresses which miss at the requester will be
-                                                         performed locally (if possible) on the requesting node. Default operation will instead
-                                                         send the CAS request to be performed on the home node. For STC ops LOCK_LOCAL_STC. */
-	uint64_t lock_local_stc               : 1;  /**< When set, L2 STC operations to remote addresses which miss at the requester will be
-                                                         performed locally (if possible) on the requesting node. Default operation will instead
-                                                         send the STC request to be performed on the home node. For CAS ops LOCK_LOCAL_CAS. */
-	uint64_t lock_local_pp                : 1;  /**< When clear, L2 atomic operations (excluding CAS/STC) core initiated requests to remote
-                                                         addresses which miss at the requester will send the atomic request to be performed on the
-                                                         home node. Default operation will instead  be performed locally on the requesting node.
-                                                         For request initiated by IOB & for STC & CAS ops, see
-                                                         LOCK_LOCAL_IOB/LOCK_LOCAL_STC/LOCK_LOCAL_CAS. */
-	uint64_t lngtolen                     : 5;  /**< Selects the bit in the counter for the long timeout value (timeout used when [SHTO] is
-                                                         clear). Values supported are between 11 and 29 (for a timeout values between 2^11 and
-                                                         2^29). Actual timeout is between 1x and 2x this interval. For example if LNGTOLEN = 28
-                                                         (the reset value), the timeout is between 256M and 512M core clocks. Note: a value of 0
-                                                         disables this timer. */
-	uint64_t shtolen                      : 5;  /**< Selects the bit in the counter for the short timeout value (timeout used when [SHTO] is
-                                                         set). Values supported are between 9 and 29 (for a timeout values between 2^9 and 2^29).
-                                                         Actual timeout is between 1x and 2x this interval. For example if SHTOLEN = 14 (the reset
-                                                         value), the timeout is between 16K and 32K core clocks. Note: a value of 0 disables this
-                                                         timer. */
-	uint64_t shtoioen                     : 1;  /**< When set, any core issues any of an IO load, acking store, IOBDMA, LMTDMA, acking IOBADDR,
-                                                         or acking LMTST to a node that doesn't exist (existence defined by the ENAOCI bits), then
-                                                         the hardware sets [SHTO]. */
-	uint64_t shtoen                       : 3;  /**< When set, if the corresponding CCPI link is down, the hardware sets [SHTO].
-                                                         See OCX_COM_LINK(0..2)_CTL for a description of what events can contribute to the
-                                                         link_down condition. */
-	uint64_t shto                         : 1;  /**< Use short timeout intervals. When set, core uses SDIDTTO for both DID and commit counter
-                                                         timeouts, rather than DIDTTO/DIDTTO2. Similarly, L2C will use short instead of long
-                                                         timeout. */
-	uint64_t inv_mode                     : 2;  /**< Describes how aggressive to be when waiting for local invalidates before sending CCPI
-                                                         responses which act like commits at the remote.
-                                                         0x0 = Conservative mode, waits until all local invalidates have been sent by their
-                                                         respective CBCs to the cores.
-                                                         0x1 = Moderate mode, waits until all local invalidates have been sent to their respective
-                                                         CBCs, but not necessarily actually sent to the cores themselves.
-                                                         0x2 = Aggressive mode, does not wait for local invalidates to begin their processing. */
-	uint64_t cas_fdx                      : 1;  /**< When set, L2 STC/CAS operations performed at the home will immediately bring the block
-                                                         exclusive into the home. Default operation is to first request the block shared and only
-                                                         invalidate the remote if the compare succeeds. */
-	uint64_t rldd_psha                    : 1;  /**< When set, RLDD is assumed to return a shared response (PSHA). Default operation assumes an
-                                                         exclusive response (PEMD). Note that an incorrect assumption only causes an extra tag
-                                                         write to be done upon receiving the response. */
-	uint64_t lock_local_iob               : 1;  /**< When set, L2 atomic operations (excluding CAS/STC) initiated by IOB to remote addresses
-                                                         which miss at the requester are performed locally on the requesting node. When clear the
-                                                         operation instead sends the atomic request to be performed on the home node. For request
-                                                         initiated by core for STC and CAS ops; see LOCK_LOCAL_PP/LOCK_LOCAL_STC/LOCK_LOCAL_CAS.
-                                                         Default is set to 1 (local locks). */
-	uint64_t iofrcl                       : 1;  /**< When set, L2C services all I/O read and write operations on the local node, regardless of
-                                                         the value of the node ID bits in the physical address. During normal operation this bit is
-                                                         expected to be 0. Will only transition from 1 to 0, never from 0 to 1. */
-	uint64_t gksegnode                    : 2;  /**< Initialized to the OCX_COM_NODE[ID] value on reset, which will equal the OCI_NODE_ID pins
-                                                         on a cold reset, but could be something else on a chip warm or soft reset; writable by
-                                                         software. */
-	uint64_t enaoci                       : 4;  /**< Enable CCPI processing (one bit per node_id). When set, perform CCPI
-                                                         processing. When clear, CCPI memory writes are blocked and CCPI memory reads
-                                                         return unpredictable data. When clear,
-                                                         CCPI I/O requests and MOC references are processed and sent to OCX where they are
-                                                         ultimately discarded. RDDISOCI/WRDISOCI/IORDDISOCI/IOWRDISOCI interrupts occur if and only
-                                                         if the corresponding ENAOCI<node> bit is clear. References to the local node (configured
-                                                         via OCX_COM_NODE[ID]) ignore the value of ENAOCI<node> because no CCPI processing is
-                                                         required. Similarly, all I/O references ignore the value of ENAOCI when
-                                                         L2C_OCI_CTL[IOFRCL] is set. */
+	uint64_t lock_local_cas               : 1;  /**< Reserved. */
+	uint64_t lock_local_stc               : 1;  /**< Reserved. */
+	uint64_t lock_local_pp                : 1;  /**< Reserved. */
+	uint64_t lngtolen                     : 5;  /**< Reserved. */
+	uint64_t shtolen                      : 5;  /**< Reserved. */
+	uint64_t shtoioen                     : 1;  /**< Reserved. */
+	uint64_t shtoen                       : 3;  /**< Reserved. */
+	uint64_t shto                         : 1;  /**< Reserved. */
+	uint64_t inv_mode                     : 2;  /**< Reserved. */
+	uint64_t cas_fdx                      : 1;  /**< Reserved. */
+	uint64_t rldd_psha                    : 1;  /**< Reserved. */
+	uint64_t lock_local_iob               : 1;  /**< Reserved. */
+	uint64_t iofrcl                       : 1;  /**< Reserved. */
+	uint64_t gksegnode                    : 2;  /**< Reserved. */
+	uint64_t enaoci                       : 4;  /**< CCPI is not present. Any attempt to enable it will be ignored. */
 #else
 	uint64_t enaoci                       : 4;
 	uint64_t gksegnode                    : 2;
@@ -6242,8 +6406,10 @@ union cvmx_l2c_oci_ctl {
 	uint64_t lock_local_cas               : 1;
 	uint64_t reserved_30_63               : 34;
 #endif
-	} s;
-	struct cvmx_l2c_oci_ctl_s             cn78xx;
+	} cn73xx;
+	struct cvmx_l2c_oci_ctl_cn73xx        cn78xx;
+	struct cvmx_l2c_oci_ctl_s             cn78xxp2;
+	struct cvmx_l2c_oci_ctl_cn73xx        cnf75xx;
 };
 typedef union cvmx_l2c_oci_ctl cvmx_l2c_oci_ctl_t;
 
@@ -6747,8 +6913,11 @@ union cvmx_l2c_qos_iobx {
 	struct cvmx_l2c_qos_iobx_s            cn68xxp1;
 	struct cvmx_l2c_qos_iobx_s            cn70xx;
 	struct cvmx_l2c_qos_iobx_s            cn70xxp1;
+	struct cvmx_l2c_qos_iobx_s            cn73xx;
 	struct cvmx_l2c_qos_iobx_s            cn78xx;
+	struct cvmx_l2c_qos_iobx_s            cn78xxp2;
 	struct cvmx_l2c_qos_iobx_cn61xx       cnf71xx;
+	struct cvmx_l2c_qos_iobx_s            cnf75xx;
 };
 typedef union cvmx_l2c_qos_iobx cvmx_l2c_qos_iobx_t;
 
@@ -6764,7 +6933,7 @@ union cvmx_l2c_qos_ppx {
 	struct cvmx_l2c_qos_ppx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_3_63                : 61;
-	uint64_t lvl                          : 3;  /**< QOS level to use for this PP. */
+	uint64_t lvl                          : 3;  /**< QOS level to use for this core. */
 #else
 	uint64_t lvl                          : 3;
 	uint64_t reserved_3_63                : 61;
@@ -6786,8 +6955,11 @@ union cvmx_l2c_qos_ppx {
 	struct cvmx_l2c_qos_ppx_s             cn68xxp1;
 	struct cvmx_l2c_qos_ppx_s             cn70xx;
 	struct cvmx_l2c_qos_ppx_s             cn70xxp1;
+	struct cvmx_l2c_qos_ppx_s             cn73xx;
 	struct cvmx_l2c_qos_ppx_s             cn78xx;
+	struct cvmx_l2c_qos_ppx_s             cn78xxp2;
 	struct cvmx_l2c_qos_ppx_cn61xx        cnf71xx;
+	struct cvmx_l2c_qos_ppx_s             cnf75xx;
 };
 typedef union cvmx_l2c_qos_ppx cvmx_l2c_qos_ppx_t;
 
@@ -6805,10 +6977,10 @@ union cvmx_l2c_qos_wgt {
 	uint64_t wgt6                         : 8;  /**< Weight for QOS level 6. */
 	uint64_t wgt5                         : 8;  /**< Weight for QOS level 5. */
 	uint64_t wgt4                         : 8;  /**< Weight for QOS level 4. */
-	uint64_t wgt3                         : 8;  /**< Weight for QOS level 3 */
-	uint64_t wgt2                         : 8;  /**< Weight for QOS level 2 */
-	uint64_t wgt1                         : 8;  /**< Weight for QOS level 1 */
-	uint64_t wgt0                         : 8;  /**< Weight for QOS level 0 */
+	uint64_t wgt3                         : 8;  /**< Weight for QOS level 3. */
+	uint64_t wgt2                         : 8;  /**< Weight for QOS level 2. */
+	uint64_t wgt1                         : 8;  /**< Weight for QOS level 1. */
+	uint64_t wgt0                         : 8;  /**< Weight for QOS level 0. */
 #else
 	uint64_t wgt0                         : 8;
 	uint64_t wgt1                         : 8;
@@ -6842,8 +7014,11 @@ union cvmx_l2c_qos_wgt {
 	struct cvmx_l2c_qos_wgt_s             cn68xxp1;
 	struct cvmx_l2c_qos_wgt_s             cn70xx;
 	struct cvmx_l2c_qos_wgt_s             cn70xxp1;
+	struct cvmx_l2c_qos_wgt_s             cn73xx;
 	struct cvmx_l2c_qos_wgt_s             cn78xx;
+	struct cvmx_l2c_qos_wgt_s             cn78xxp2;
 	struct cvmx_l2c_qos_wgt_cn61xx        cnf71xx;
+	struct cvmx_l2c_qos_wgt_s             cnf75xx;
 };
 typedef union cvmx_l2c_qos_wgt cvmx_l2c_qos_wgt_t;
 
@@ -6870,8 +7045,11 @@ union cvmx_l2c_rscx_pfc {
 	struct cvmx_l2c_rscx_pfc_s            cn68xxp1;
 	struct cvmx_l2c_rscx_pfc_s            cn70xx;
 	struct cvmx_l2c_rscx_pfc_s            cn70xxp1;
+	struct cvmx_l2c_rscx_pfc_s            cn73xx;
 	struct cvmx_l2c_rscx_pfc_s            cn78xx;
+	struct cvmx_l2c_rscx_pfc_s            cn78xxp2;
 	struct cvmx_l2c_rscx_pfc_s            cnf71xx;
+	struct cvmx_l2c_rscx_pfc_s            cnf75xx;
 };
 typedef union cvmx_l2c_rscx_pfc cvmx_l2c_rscx_pfc_t;
 
@@ -6898,10 +7076,50 @@ union cvmx_l2c_rsdx_pfc {
 	struct cvmx_l2c_rsdx_pfc_s            cn68xxp1;
 	struct cvmx_l2c_rsdx_pfc_s            cn70xx;
 	struct cvmx_l2c_rsdx_pfc_s            cn70xxp1;
+	struct cvmx_l2c_rsdx_pfc_s            cn73xx;
 	struct cvmx_l2c_rsdx_pfc_s            cn78xx;
+	struct cvmx_l2c_rsdx_pfc_s            cn78xxp2;
 	struct cvmx_l2c_rsdx_pfc_s            cnf71xx;
+	struct cvmx_l2c_rsdx_pfc_s            cnf75xx;
 };
 typedef union cvmx_l2c_rsdx_pfc cvmx_l2c_rsdx_pfc_t;
+
+/**
+ * cvmx_l2c_rtg#_err
+ *
+ * This register records error information for all RTG SBE/DBE errors.
+ * The priority of errors (lowest to highest) is SBE, DBE. An error locks the SYN, WAY,
+ * and L2IDX fields for equal or lower priority errors until cleared by software.
+ * The syndrome is recorded for DBE errors, though the utility of the value is not clear.
+ * L2IDX[19:7] is the L2 block index associated with the command which had no way to allocate.
+ * Added in pass 2.
+ */
+union cvmx_l2c_rtgx_err {
+	uint64_t u64;
+	struct cvmx_l2c_rtgx_err_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t rtgdbe                       : 1;  /**< Information refers to a double-bit RTG ECC error. */
+	uint64_t rtgsbe                       : 1;  /**< Information refers to a single-bit RTG ECC error. */
+	uint64_t reserved_39_61               : 23;
+	uint64_t syn                          : 7;  /**< Syndrome for the single-bit error. */
+	uint64_t reserved_24_31               : 8;
+	uint64_t way                          : 4;  /**< Way of the L2 block containing the error */
+	uint64_t l2idx                        : 13; /**< Index of the L2 block containing the error */
+	uint64_t reserved_0_6                 : 7;
+#else
+	uint64_t reserved_0_6                 : 7;
+	uint64_t l2idx                        : 13;
+	uint64_t way                          : 4;
+	uint64_t reserved_24_31               : 8;
+	uint64_t syn                          : 7;
+	uint64_t reserved_39_61               : 23;
+	uint64_t rtgsbe                       : 1;
+	uint64_t rtgdbe                       : 1;
+#endif
+	} s;
+	struct cvmx_l2c_rtgx_err_s            cn78xxp2;
+};
+typedef union cvmx_l2c_rtgx_err cvmx_l2c_rtgx_err_t;
 
 /**
  * cvmx_l2c_spar0
@@ -7188,7 +7406,10 @@ union cvmx_l2c_tadx_dll {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_tadx_dll_cn70xx       cn70xxp1;
+	struct cvmx_l2c_tadx_dll_s            cn73xx;
 	struct cvmx_l2c_tadx_dll_s            cn78xx;
+	struct cvmx_l2c_tadx_dll_s            cn78xxp2;
+	struct cvmx_l2c_tadx_dll_s            cnf75xx;
 };
 typedef union cvmx_l2c_tadx_dll cvmx_l2c_tadx_dll_t;
 
@@ -7275,11 +7496,9 @@ typedef union cvmx_l2c_tadx_ecc1 cvmx_l2c_tadx_ecc1_t;
 /**
  * cvmx_l2c_tad#_err
  *
- * This register records error information for *DISOCI and BIG* interrupts. The BIG logic only
- * applies to local addresses. A command for a remote address does not cause a BIGRD/BIGWR on the
- * requesting node. Similary RDDISOCI/WRDISOCI is always for a remote address. The first
- * WRDISOCI/BIGWR error will lock the register until the logged error type is cleared;
- * RDDISOCI/BIGRD never locks the register.
+ * This register records error information for BIG* interrupts. The BIG logic only
+ * applies to local addresses. The first BIGWR error will lock the register until the
+ * logged error type is cleared; BIGRD never locks the register.
  */
 union cvmx_l2c_tadx_err {
 	uint64_t u64;
@@ -7288,20 +7507,16 @@ union cvmx_l2c_tadx_err {
 	uint64_t bigrd                        : 1;  /**< Logged information is for a BIGRD error. */
 	uint64_t bigwr                        : 1;  /**< Logged information is for a BIGWR error. */
 	uint64_t reserved_59_61               : 3;
-	uint64_t cmd                          : 8;  /**< Encoding of XMC or CCPI command causing error. INTERNAL: If CMD[7]==1, use XMC_CMD_E to
-                                                         decode CMD[6:0]. If CMD[7:5]==0, use OCI_MREQ_CMD_E to decode CMD[4:0]. If CMD[7:5]==1,
-                                                         use OCI_MFWD_CMD_E to decode CMD[4:0]. If CMD[7:5]==2, use OCI_MRSP_CMD_E to decode
-                                                         CMD[4:0]. */
+	uint64_t cmd                          : 8;  /**< Encoding of XMC command causing error.
+                                                         INTERNAL: CMD[7] should always be 1, use XMC_CMD_E to decode CMD[6:0]. */
 	uint64_t source                       : 7;  /**< XMC source of request causing error. If SOURCE<6>==0, then SOURCE<5:0> is PPID, else
                                                          SOURCE<3:0> is BUSID of the IOB which made the request. If CMD[7]==0, this field is
                                                          unpredictable. */
-	uint64_t node                         : 4;  /**< CCPI node of XMC request causing error. For BIG* errors NODE is always the node that
-                                                         generated request causing the error (BIG* errors are logged at the home node). For *DISOCI
-                                                         errors, is the NODE the request is directed to (DISOCI request is always the current
-                                                         Node). */
-	uint64_t addr                         : 40; /**< XMC address causing the error. This field is the physical address after hole removal and
-                                                         index aliasing (if enabled). (The hole is between DR0 and DR1. Remove the hole by
-                                                         subtracting 256MB from all L2/DRAM physical addresses >= 512 MB.) */
+	uint64_t node                         : 4;  /**< Reserved.  Will always be 0. */
+	uint64_t addr                         : 40; /**< XMC address causing the error. ADDR<6:0> is unpredictable for *DISOCI and BIG*
+                                                         errors. This field is the physical address after hole removal and index aliasing
+                                                         (if enabled). (The hole is between DR0 and DR1. Remove the hole by subtracting
+                                                         256MB from all L2/DRAM physical addresses >= 512 MB.) */
 #else
 	uint64_t addr                         : 40;
 	uint64_t node                         : 4;
@@ -7339,27 +7554,23 @@ union cvmx_l2c_tadx_err {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_tadx_err_cn70xx       cn70xxp1;
-	struct cvmx_l2c_tadx_err_cn78xx {
+	struct cvmx_l2c_tadx_err_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t bigrd                        : 1;  /**< Logged information is for a BIGRD error. */
 	uint64_t bigwr                        : 1;  /**< Logged information is for a BIGWR error. */
-	uint64_t rddisoci                     : 1;  /**< Logged information is for a RDDISOCI error. */
-	uint64_t wrdisoci                     : 1;  /**< Logged information is for a WRDISOCI error. */
+	uint64_t rddisoci                     : 1;  /**< Reserved. */
+	uint64_t wrdisoci                     : 1;  /**< Reserved. */
 	uint64_t reserved_59_59               : 1;
-	uint64_t cmd                          : 8;  /**< Encoding of XMC or CCPI command causing error. INTERNAL: If CMD[7]==1, use XMC_CMD_E to
-                                                         decode CMD[6:0]. If CMD[7:5]==0, use OCI_MREQ_CMD_E to decode CMD[4:0]. If CMD[7:5]==1,
-                                                         use OCI_MFWD_CMD_E to decode CMD[4:0]. If CMD[7:5]==2, use OCI_MRSP_CMD_E to decode
-                                                         CMD[4:0]. */
+	uint64_t cmd                          : 8;  /**< Encoding of XMC command causing error.
+                                                         INTERNAL: CMD[7] should always be 1, use XMC_CMD_E to decode CMD[6:0]. */
 	uint64_t source                       : 7;  /**< XMC source of request causing error. If SOURCE<6>==0, then SOURCE<5:0> is PPID, else
                                                          SOURCE<3:0> is BUSID of the IOB which made the request. If CMD[7]==0, this field is
                                                          unpredictable. */
-	uint64_t node                         : 4;  /**< CCPI node of XMC request causing error. For BIG* errors NODE is always the node that
-                                                         generated request causing the error (BIG* errors are logged at the home node). For *DISOCI
-                                                         errors, is the NODE the request is directed to (DISOCI request is always the current
-                                                         Node). */
-	uint64_t addr                         : 40; /**< XMC address causing the error. This field is the physical address after hole removal and
-                                                         index aliasing (if enabled). (The hole is between DR0 and DR1. Remove the hole by
-                                                         subtracting 256MB from all L2/DRAM physical addresses >= 512 MB.) */
+	uint64_t node                         : 4;  /**< Reserved.  Will always be 0. */
+	uint64_t addr                         : 40; /**< XMC address causing the error. ADDR<6:0> is unpredictable for *DISOCI and BIG*
+                                                         errors. This field is the physical address after hole removal and index aliasing
+                                                         (if enabled). (The hole is between DR0 and DR1. Remove the hole by subtracting
+                                                         256MB from all L2/DRAM physical addresses >= 512 MB.) */
 #else
 	uint64_t addr                         : 40;
 	uint64_t node                         : 4;
@@ -7371,7 +7582,10 @@ union cvmx_l2c_tadx_err {
 	uint64_t bigwr                        : 1;
 	uint64_t bigrd                        : 1;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_l2c_tadx_err_cn73xx       cn78xx;
+	struct cvmx_l2c_tadx_err_cn73xx       cn78xxp2;
+	struct cvmx_l2c_tadx_err_cn73xx       cnf75xx;
 };
 typedef union cvmx_l2c_tadx_err cvmx_l2c_tadx_err_t;
 
@@ -7481,12 +7695,8 @@ union cvmx_l2c_tadx_int {
 	struct cvmx_l2c_tadx_int_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_36_63               : 28;
-	uint64_t wrdisoci                     : 1;  /**< Illegal write operation to a remote node with L2C_OCI_CTL[ENAOCI][node] clear. See
-                                                         L2C_TAD()_ERR for for logged information. */
-	uint64_t rddisoci                     : 1;  /**< Illegal read operation to a remote node with L2C_OCI_CTL[ENAOCI][node] clear. Note
-                                                         RDDISOCI interrupts can occur during normal operation as the cores are allowed to prefetch
-                                                         to nonexistent memory locations. Therefore, RDDISOCI is for informational purposes only.
-                                                         See L2C_TAD()_ERR for logged information. */
+	uint64_t wrdisoci                     : 1;  /**< Reserved. */
+	uint64_t rddisoci                     : 1;  /**< Reserved. */
 	uint64_t rtgdbe                       : 1;  /**< RTG double-bit error. */
 	uint64_t rtgsbe                       : 1;  /**< RTG single-bit error. */
 	uint64_t reserved_18_31               : 14;
@@ -7503,12 +7713,8 @@ union cvmx_l2c_tadx_int {
 	uint64_t holerd                       : 1;  /**< Read reference to 256MB hole occurred. */
 	uint64_t holewr                       : 1;  /**< Write reference to 256MB hole occurred. */
 	uint64_t reserved_2_10                : 9;
-	uint64_t l2ddbe                       : 1;  /**< L2D Double-Bit Error
-                                                         Shadow copy of L2C_ERR_TDTX[DBE]
-                                                         Writes of 1 also clear L2C_ERR_TDTX[DBE] */
-	uint64_t l2dsbe                       : 1;  /**< L2D Single-Bit Error
-                                                         Shadow copy of L2C_ERR_TDTX[SBE]
-                                                         Writes of 1 also clear L2C_ERR_TDTX[SBE] */
+	uint64_t l2ddbe                       : 1;  /**< L2D double-bit error occurred. See L2C_TQD()_ERR for logged information. */
+	uint64_t l2dsbe                       : 1;  /**< L2D single-bit error occurred. See L2C_TQD()_ERR for logged information. */
 #else
 	uint64_t l2dsbe                       : 1;
 	uint64_t l2ddbe                       : 1;
@@ -7625,15 +7831,11 @@ union cvmx_l2c_tadx_int {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_tadx_int_cn70xx       cn70xxp1;
-	struct cvmx_l2c_tadx_int_cn78xx {
+	struct cvmx_l2c_tadx_int_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_36_63               : 28;
-	uint64_t wrdisoci                     : 1;  /**< Illegal write operation to a remote node with L2C_OCI_CTL[ENAOCI][node] clear. See
-                                                         L2C_TAD()_ERR for for logged information. */
-	uint64_t rddisoci                     : 1;  /**< Illegal read operation to a remote node with L2C_OCI_CTL[ENAOCI][node] clear. Note
-                                                         RDDISOCI interrupts can occur during normal operation as the cores are allowed to prefetch
-                                                         to nonexistent memory locations. Therefore, RDDISOCI is for informational purposes only.
-                                                         See L2C_TAD()_ERR for logged information. */
+	uint64_t wrdisoci                     : 1;  /**< Reserved. */
+	uint64_t rddisoci                     : 1;  /**< Reserved. */
 	uint64_t rtgdbe                       : 1;  /**< RTG double-bit error. */
 	uint64_t rtgsbe                       : 1;  /**< RTG single-bit error. */
 	uint64_t reserved_18_31               : 14;
@@ -7690,8 +7892,11 @@ union cvmx_l2c_tadx_int {
 	uint64_t wrdisoci                     : 1;
 	uint64_t reserved_36_63               : 28;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_l2c_tadx_int_cn73xx       cn78xx;
+	struct cvmx_l2c_tadx_int_cn73xx       cn78xxp2;
 	struct cvmx_l2c_tadx_int_cn61xx       cnf71xx;
+	struct cvmx_l2c_tadx_int_cn73xx       cnf75xx;
 };
 typedef union cvmx_l2c_tadx_int cvmx_l2c_tadx_int_t;
 
@@ -7709,7 +7914,10 @@ union cvmx_l2c_tadx_pfcx {
 	} s;
 	struct cvmx_l2c_tadx_pfcx_s           cn70xx;
 	struct cvmx_l2c_tadx_pfcx_s           cn70xxp1;
+	struct cvmx_l2c_tadx_pfcx_s           cn73xx;
 	struct cvmx_l2c_tadx_pfcx_s           cn78xx;
+	struct cvmx_l2c_tadx_pfcx_s           cn78xxp2;
+	struct cvmx_l2c_tadx_pfcx_s           cnf75xx;
 };
 typedef union cvmx_l2c_tadx_pfcx cvmx_l2c_tadx_pfcx_t;
 
@@ -7824,10 +8032,10 @@ union cvmx_l2c_tadx_prf {
 	struct cvmx_l2c_tadx_prf_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t cnt3sel                      : 8;  /**< Selects event to count for L2C_TAD_PFC3 */
-	uint64_t cnt2sel                      : 8;  /**< Selects event to count for L2C_TAD_PFC2 */
-	uint64_t cnt1sel                      : 8;  /**< Selects event to count for L2C_TAD_PFC1 */
-	uint64_t cnt0sel                      : 8;  /**< Selects event to count for L2C_TAD_PFC0 */
+	uint64_t cnt3sel                      : 8;  /**< Selects event to count for L2C_TAD(0..3)_PFC3. Enumerated by L2C_TAD_PRF_SEL_E. */
+	uint64_t cnt2sel                      : 8;  /**< Selects event to count for L2C_TAD(0..3)_PFC2. Enumerated by L2C_TAD_PRF_SEL_E. */
+	uint64_t cnt1sel                      : 8;  /**< Selects event to count for L2C_TAD(0..3)_PFC1. Enumerated by L2C_TAD_PRF_SEL_E. */
+	uint64_t cnt0sel                      : 8;  /**< Selects event to count for L2C_TAD(0..3)_PFC0. Enumerated by L2C_TAD_PRF_SEL_E. */
 #else
 	uint64_t cnt0sel                      : 8;
 	uint64_t cnt1sel                      : 8;
@@ -7844,10 +8052,40 @@ union cvmx_l2c_tadx_prf {
 	struct cvmx_l2c_tadx_prf_s            cn68xxp1;
 	struct cvmx_l2c_tadx_prf_s            cn70xx;
 	struct cvmx_l2c_tadx_prf_s            cn70xxp1;
+	struct cvmx_l2c_tadx_prf_s            cn73xx;
 	struct cvmx_l2c_tadx_prf_s            cn78xx;
+	struct cvmx_l2c_tadx_prf_s            cn78xxp2;
 	struct cvmx_l2c_tadx_prf_s            cnf71xx;
+	struct cvmx_l2c_tadx_prf_s            cnf75xx;
 };
 typedef union cvmx_l2c_tadx_prf cvmx_l2c_tadx_prf_t;
+
+/**
+ * cvmx_l2c_tad#_stat
+ *
+ * This register holds information about the instantaneous state of the TAD.
+ *
+ */
+union cvmx_l2c_tadx_stat {
+	uint64_t u64;
+	struct cvmx_l2c_tadx_stat_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_14_63               : 50;
+	uint64_t lfb_valid_cnt                : 6;  /**< The number of LFBs in use. */
+	uint64_t reserved_5_7                 : 3;
+	uint64_t vbf_inuse_cnt                : 5;  /**< The number of MCI VBFs in use. */
+#else
+	uint64_t vbf_inuse_cnt                : 5;
+	uint64_t reserved_5_7                 : 3;
+	uint64_t lfb_valid_cnt                : 6;
+	uint64_t reserved_14_63               : 50;
+#endif
+	} s;
+	struct cvmx_l2c_tadx_stat_s           cn73xx;
+	struct cvmx_l2c_tadx_stat_s           cn78xxp2;
+	struct cvmx_l2c_tadx_stat_s           cnf75xx;
+};
+typedef union cvmx_l2c_tadx_stat cvmx_l2c_tadx_stat_t;
 
 /**
  * cvmx_l2c_tad#_tag
@@ -7862,9 +8100,10 @@ union cvmx_l2c_tadx_tag {
 	uint64_t sblkdty                      : 4;  /**< Sub-block dirty bits. Ignored/loaded with 0 for RTG accesses. If TS is Invalid (0) SBLKDTY
                                                          must be 0 or operation is undefined. */
 	uint64_t reserved_6_59                : 54;
-	uint64_t node                         : 2;  /**< The node ID for the remote node which holds this block. Ignored/loaded with 0 for TAG accesses. */
+	uint64_t node                         : 2;  /**< Reserved. */
 	uint64_t reserved_1_3                 : 3;
-	uint64_t lock                         : 1;  /**< The lock bit */
+	uint64_t lock                         : 1;  /**< The lock bit. If setting the LOCK bit, the USE bit should also be set or the operation is
+                                                         undefined.  Ignored/loaded with 0 for RTG accesses. */
 #else
 	uint64_t lock                         : 1;
 	uint64_t reserved_1_3                 : 3;
@@ -7937,6 +8176,47 @@ union cvmx_l2c_tadx_tag {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_tadx_tag_cn70xx       cn70xxp1;
+	struct cvmx_l2c_tadx_tag_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t sblkdty                      : 4;  /**< Sub-block dirty bits. Ignored/loaded with 0 for RTG accesses. If TS is Invalid (0) SBLKDTY
+                                                         must be 0 or operation is undefined. */
+	uint64_t reserved_58_59               : 2;
+	uint64_t businfo                      : 9;  /**< The bus information bits. Legal values: when [57]==1, we are in idmode and
+                                                         [56:53] must be 0, [52:49] are the PPVID of the PP which could be holding the
+                                                         block; when [57]==0, we are in bus mask mode and [56:52] must be 0 and if any of
+                                                         [51:48] is 1 then any of the PP's on that bus (3..0) could contain the
+                                                         block. Operation is undefined if an STGL2I causes an illegal value to be written
+                                                         to the L2 TAGs. LTGL2Is will only load legal values into this register. */
+	uint64_t ecc                          : 7;  /**< The tag ECC. This field is undefined if L2C_CTL[DISECC] is not 1 when the LTGL2I reads the tags. */
+	uint64_t reserved_40_41               : 2;
+	uint64_t tag                          : 22; /**< The tag. TAG<39:18> is the corresponding bits from the L2C+LMC internal L2/DRAM byte
+                                                         address. */
+	uint64_t reserved_6_17                : 12;
+	uint64_t node                         : 2;  /**< Reserved. */
+	uint64_t ts                           : 2;  /**< The tag state.
+                                                         0x0 = Invalid.
+                                                         0x1 = Shared.
+                                                         0x2 = Exclusive.
+                                                         Note that a local address will never have the value of exclusive as that state is incloded
+                                                         as shared in the TAG and invalid in the RTG. */
+	uint64_t used                         : 1;  /**< The LRU use bit. If setting the LOCK bit, the USE bit should also be set or the operation
+                                                         is undefined.  Ignored/loaded with 0 for RTG accesses. */
+	uint64_t lock                         : 1;  /**< The lock bit. If setting the LOCK bit, the USE bit should also be set or the operation is
+                                                         undefined.  Ignored/loaded with 0 for RTG accesses. */
+#else
+	uint64_t lock                         : 1;
+	uint64_t used                         : 1;
+	uint64_t ts                           : 2;
+	uint64_t node                         : 2;
+	uint64_t reserved_6_17                : 12;
+	uint64_t tag                          : 22;
+	uint64_t reserved_40_41               : 2;
+	uint64_t ecc                          : 7;
+	uint64_t businfo                      : 9;
+	uint64_t reserved_58_59               : 2;
+	uint64_t sblkdty                      : 4;
+#endif
+	} cn73xx;
 	struct cvmx_l2c_tadx_tag_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t sblkdty                      : 4;  /**< Sub-block dirty bits. Ignored/loaded with 0 for RTG accesses. If TS is Invalid (0) SBLKDTY
@@ -7972,7 +8252,9 @@ union cvmx_l2c_tadx_tag {
 	uint64_t sblkdty                      : 4;
 #endif
 	} cn78xx;
+	struct cvmx_l2c_tadx_tag_cn78xx       cn78xxp2;
 	struct cvmx_l2c_tadx_tag_cn61xx       cnf71xx;
+	struct cvmx_l2c_tadx_tag_cn73xx       cnf75xx;
 };
 typedef union cvmx_l2c_tadx_tag cvmx_l2c_tadx_tag_t;
 
@@ -7994,11 +8276,8 @@ union cvmx_l2c_tadx_timeout {
                                                          then both could have timed out, but info captured is from the original LFB. */
 	uint64_t reserved_57_61               : 5;
 	uint64_t lfbnum                       : 5;  /**< The LFB number of the entry that timed out, and have its info captures in this register. */
-	uint64_t cmd                          : 8;  /**< Encoding of XMC or CCPI command causing error.
-                                                         INTERNAL: If CMD[7]==1, use XMC_CMD_E to decode CMD[6:0]. If CMD[7:5]==0, use
-                                                         OCI_MREQ_CMD_E to
-                                                         decode CMD[4:0]. If CMD[7:5]==1, use OCI_MFWD_CMD_E to decode CMD[4:0]. If CMD[7:5]==2,
-                                                         use OCI_MRSP_CMD_E to decode CMD[4:0]. */
+	uint64_t cmd                          : 8;  /**< Encoding of XMC command causing error.
+                                                         INTERNAL: CMD[7] should always be 1, use XMC_CMD_E to decode CMD[6:0]. */
 	uint64_t node                         : 4;  /**< Home node of the address causing the error. Similar the ADDR below, this can be the
                                                          request address (if INFOLFB is set), else it is the replacement address (if INFOLFB is
                                                          clear & INFOVAB is set). */
@@ -8019,7 +8298,10 @@ union cvmx_l2c_tadx_timeout {
 	uint64_t infolfb                      : 1;
 #endif
 	} s;
+	struct cvmx_l2c_tadx_timeout_s        cn73xx;
 	struct cvmx_l2c_tadx_timeout_s        cn78xx;
+	struct cvmx_l2c_tadx_timeout_s        cn78xxp2;
+	struct cvmx_l2c_tadx_timeout_s        cnf75xx;
 };
 typedef union cvmx_l2c_tadx_timeout cvmx_l2c_tadx_timeout_t;
 
@@ -8034,9 +8316,7 @@ union cvmx_l2c_tadx_timetwo {
 	struct cvmx_l2c_tadx_timetwo_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_33_63               : 31;
-	uint64_t sid                          : 4;  /**< Source id of the original request, that is 'source' of request. This is only valid if the
-                                                         request is a local request (valid if L2C_TAD()_TIMEOUT[CMD] is an XMC request and not
-                                                         relevant if it is an CCPI request). */
+	uint64_t sid                          : 4;  /**< Source id of the original request, that is 'source' of request. */
 	uint64_t busid                        : 4;  /**< Busid of the original request, that is 'source' of request. */
 	uint64_t vabst                        : 3;  /**< This is the LFB internal state if INFOLFB is set, else will contain VAB internal state if
                                                          INFOVAB is set. */
@@ -8053,42 +8333,37 @@ union cvmx_l2c_tadx_timetwo {
 	uint64_t reserved_33_63               : 31;
 #endif
 	} s;
+	struct cvmx_l2c_tadx_timetwo_s        cn73xx;
 	struct cvmx_l2c_tadx_timetwo_s        cn78xx;
+	struct cvmx_l2c_tadx_timetwo_s        cn78xxp2;
+	struct cvmx_l2c_tadx_timetwo_s        cnf75xx;
 };
 typedef union cvmx_l2c_tadx_timetwo cvmx_l2c_tadx_timetwo_t;
 
 /**
  * cvmx_l2c_tad_ctl
  *
- * On CN78XX, MAXLFB, EXLRQ, EXRRQ, EXFWD, EXVIC refer to half-TAD LFBs/VABs. Therefore, even
- * though there are 24 LFBs/VABs in a full TAD, the number applies to both halves.
- * * If MAXLFB is written to 0 or 13-15 operation is undefined. (CN78XX pass 1.0).
- * * If MAXLFB is != 0, VBF_THRESH should be less than MAXLFB.
- * * If MAXVBF is != 0, VBF_THRESH should be less than MAXVBF.
- * * If MAXLFB != 0, EXLRQ + EXRRQ + EXFWD + EXVIC must be less than or equal to MAXLFB - 3.
+ * "* If MAXLFB is != 0, VBF_THRESH should be less than MAXLFB.
+ * * If MAXVBF is != 0, VBF_THRESH should be less than MAXVBF."
  */
 union cvmx_l2c_tad_ctl {
 	uint64_t u64;
 	struct cvmx_l2c_tad_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_33_63               : 31;
-	uint64_t frcnalc                      : 1;  /**< Reserved. */
-	uint64_t disrstp                      : 1;  /**< When set, if the L2 receives an RSTP XMC command, it treats it as a STP. */
+	uint64_t frcnalc                      : 1;  /**< When set, all cache accesses are forced to not allocate in the local L2. */
+	uint64_t disrstp                      : 1;  /**< Reserved. */
 	uint64_t wtlmcwrdn                    : 1;  /**< Be more conservative with LFB done relative to LMC writes. */
 	uint64_t wtinvdn                      : 1;  /**< Be more conservative with LFB done relative to invalidates. */
 	uint64_t wtfilldn                     : 1;  /**< Be more conservative with LFB done relative to fills. */
-	uint64_t exlrq                        : 4;  /**< Extra LFBs to reserve for locally generated XMC commands. None are reserved for functional
-                                                         correctness. Ignored if L2C_OCI_CTL[ENAOCI] is 0. */
-	uint64_t exrrq                        : 4;  /**< Extra LFBs to reserve for Rxxx CCPI commands beyond the 1 required for CCPI protocol
-                                                         functional correctness. Ignored if L2C_OCI_CTL[ENAOCI] is 0. */
-	uint64_t exfwd                        : 4;  /**< Extra LFBs to reserve for Fxxx/SINV CCPI commands beyond the 1 required for CCPI protocol
-                                                         functional correctness. Ignored if L2C_OCI_CTL[ENAOCI] is 0. */
-	uint64_t exvic                        : 4;  /**< Extra LFBs to reserve for VICx CCPI commands beyond the 1 required for CCPI protocol
-                                                         functional correctness. Ignored if L2C_OCI_CTL[ENAOCI] is 0. */
+	uint64_t exlrq                        : 4;  /**< Reserved. */
+	uint64_t exrrq                        : 4;  /**< Reserved. */
+	uint64_t exfwd                        : 4;  /**< Reserved. */
+	uint64_t exvic                        : 4;  /**< Reserved. */
 	uint64_t vbf_thresh                   : 4;  /**< VBF threshold. When the number of in-use VBFs exceeds this number the L2C TAD increases
                                                          the priority of all its write operations in the LMC. */
 	uint64_t maxvbf                       : 4;  /**< Maximum VBFs in use at once (0 means 16, 1-15 as expected). */
-	uint64_t maxlfb                       : 4;  /**< Maximum VABs/LFBs in use at once (0, 13-15 illegal, 1-12 as expected). */
+	uint64_t maxlfb                       : 4;  /**< Maximum VABs/LFBs in use at once (0 means 16, 1-15 as expected). */
 #else
 	uint64_t maxlfb                       : 4;
 	uint64_t maxvbf                       : 4;
@@ -8124,7 +8399,10 @@ union cvmx_l2c_tad_ctl {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_tad_ctl_cn70xx        cn70xxp1;
+	struct cvmx_l2c_tad_ctl_s             cn73xx;
 	struct cvmx_l2c_tad_ctl_s             cn78xx;
+	struct cvmx_l2c_tad_ctl_s             cn78xxp2;
+	struct cvmx_l2c_tad_ctl_s             cnf75xx;
 };
 typedef union cvmx_l2c_tad_ctl cvmx_l2c_tad_ctl_t;
 
@@ -8148,7 +8426,10 @@ union cvmx_l2c_tbfx_bist_status {
 	} s;
 	struct cvmx_l2c_tbfx_bist_status_s    cn70xx;
 	struct cvmx_l2c_tbfx_bist_status_s    cn70xxp1;
+	struct cvmx_l2c_tbfx_bist_status_s    cn73xx;
 	struct cvmx_l2c_tbfx_bist_status_s    cn78xx;
+	struct cvmx_l2c_tbfx_bist_status_s    cn78xxp2;
+	struct cvmx_l2c_tbfx_bist_status_s    cnf75xx;
 };
 typedef union cvmx_l2c_tbfx_bist_status cvmx_l2c_tbfx_bist_status_t;
 
@@ -8168,7 +8449,10 @@ union cvmx_l2c_tdtx_bist_status {
 	} s;
 	struct cvmx_l2c_tdtx_bist_status_s    cn70xx;
 	struct cvmx_l2c_tdtx_bist_status_s    cn70xxp1;
+	struct cvmx_l2c_tdtx_bist_status_s    cn73xx;
 	struct cvmx_l2c_tdtx_bist_status_s    cn78xx;
+	struct cvmx_l2c_tdtx_bist_status_s    cn78xxp2;
+	struct cvmx_l2c_tdtx_bist_status_s    cnf75xx;
 };
 typedef union cvmx_l2c_tdtx_bist_status cvmx_l2c_tdtx_bist_status_t;
 
@@ -8215,7 +8499,10 @@ union cvmx_l2c_tqdx_err {
 	} s;
 	struct cvmx_l2c_tqdx_err_s            cn70xx;
 	struct cvmx_l2c_tqdx_err_s            cn70xxp1;
+	struct cvmx_l2c_tqdx_err_s            cn73xx;
 	struct cvmx_l2c_tqdx_err_s            cn78xx;
+	struct cvmx_l2c_tqdx_err_s            cn78xxp2;
+	struct cvmx_l2c_tqdx_err_s            cnf75xx;
 };
 typedef union cvmx_l2c_tqdx_err cvmx_l2c_tqdx_err_t;
 
@@ -8228,7 +8515,7 @@ union cvmx_l2c_ttgx_bist_status {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_50_63               : 14;
 	uint64_t xmdmskfl                     : 2;  /**< BIST failure status for RSTP XMDMSK memories. */
-	uint64_t rtgfl                        : 16; /**< BIST failure status for RTG ways. */
+	uint64_t rtgfl                        : 16; /**< Reserved. */
 	uint64_t reserved_18_31               : 14;
 	uint64_t lrulfbfl                     : 1;  /**< Reserved, always zero. */
 	uint64_t lrufl                        : 1;  /**< BIST failure status for tag LRU. */
@@ -8261,7 +8548,10 @@ union cvmx_l2c_ttgx_bist_status {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_ttgx_bist_status_cn70xx cn70xxp1;
+	struct cvmx_l2c_ttgx_bist_status_s    cn73xx;
 	struct cvmx_l2c_ttgx_bist_status_s    cn78xx;
+	struct cvmx_l2c_ttgx_bist_status_s    cn78xxp2;
+	struct cvmx_l2c_ttgx_bist_status_s    cnf75xx;
 };
 typedef union cvmx_l2c_ttgx_bist_status cvmx_l2c_ttgx_bist_status_t;
 
@@ -8273,7 +8563,7 @@ typedef union cvmx_l2c_ttgx_bist_status cvmx_l2c_ttgx_bist_status_t;
  * and L2IDX fields for equal or lower priority errors until cleared by software.
  * The syndrome is recorded for DBE errors, though the utility of the value is not clear.
  * A NOWAY error does not change the value of the SYN field, and leaves WAY unpredictable.
- * L2IDX[19:7] is the L2 block index associated with the command which had no way to allocate.
+ * L2IDX[17:7] is the L2 block index associated with the command which had no way to allocate.
  */
 union cvmx_l2c_ttgx_err {
 	uint64_t u64;
@@ -8318,6 +8608,29 @@ union cvmx_l2c_ttgx_err {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_ttgx_err_cn70xx       cn70xxp1;
+	struct cvmx_l2c_ttgx_err_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t tagdbe                       : 1;  /**< Information refers to a double-bit TAG ECC error. */
+	uint64_t tagsbe                       : 1;  /**< Information refers to a single-bit TAG ECC error. */
+	uint64_t noway                        : 1;  /**< Information refers to a NOWAY error. */
+	uint64_t reserved_39_60               : 22;
+	uint64_t syn                          : 7;  /**< Syndrome for the single-bit error. */
+	uint64_t reserved_22_31               : 10;
+	uint64_t way                          : 4;  /**< Way of the L2 block containing the error. */
+	uint64_t l2idx                        : 11; /**< Index of the L2 block containing the error. */
+	uint64_t reserved_0_6                 : 7;
+#else
+	uint64_t reserved_0_6                 : 7;
+	uint64_t l2idx                        : 11;
+	uint64_t way                          : 4;
+	uint64_t reserved_22_31               : 10;
+	uint64_t syn                          : 7;
+	uint64_t reserved_39_60               : 22;
+	uint64_t noway                        : 1;
+	uint64_t tagsbe                       : 1;
+	uint64_t tagdbe                       : 1;
+#endif
+	} cn73xx;
 	struct cvmx_l2c_ttgx_err_cn78xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t tagdbe                       : 1;  /**< Information refers to a double-bit TAG ECC error. */
@@ -8326,8 +8639,8 @@ union cvmx_l2c_ttgx_err {
 	uint64_t reserved_39_60               : 22;
 	uint64_t syn                          : 7;  /**< Syndrome for the single-bit error. */
 	uint64_t reserved_24_31               : 8;
-	uint64_t way                          : 4;  /**< Way of the L2 block containing the error */
-	uint64_t l2idx                        : 13; /**< Index of the L2 block containing the error */
+	uint64_t way                          : 4;  /**< Way of the L2 block containing the error. */
+	uint64_t l2idx                        : 13; /**< Index of the L2 block containing the error. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -8341,6 +8654,8 @@ union cvmx_l2c_ttgx_err {
 	uint64_t tagdbe                       : 1;
 #endif
 	} cn78xx;
+	struct cvmx_l2c_ttgx_err_cn78xx       cn78xxp2;
+	struct cvmx_l2c_ttgx_err_cn73xx       cnf75xx;
 };
 typedef union cvmx_l2c_ttgx_err cvmx_l2c_ttgx_err_t;
 
@@ -8696,7 +9011,8 @@ union cvmx_l2c_wpar_iobx {
 	struct cvmx_l2c_wpar_iobx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t mask                         : 16; /**< Way partitioning mask. (1 means do not use) */
+	uint64_t mask                         : 16; /**< Way partitioning mask (1 means do not use). The read value of MASK includes bits set
+                                                         because of the L2C cripple fuses. */
 #else
 	uint64_t mask                         : 16;
 	uint64_t reserved_16_63               : 48;
@@ -8719,8 +9035,11 @@ union cvmx_l2c_wpar_iobx {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_wpar_iobx_cn70xx      cn70xxp1;
+	struct cvmx_l2c_wpar_iobx_s           cn73xx;
 	struct cvmx_l2c_wpar_iobx_s           cn78xx;
+	struct cvmx_l2c_wpar_iobx_s           cn78xxp2;
 	struct cvmx_l2c_wpar_iobx_s           cnf71xx;
+	struct cvmx_l2c_wpar_iobx_s           cnf75xx;
 };
 typedef union cvmx_l2c_wpar_iobx cvmx_l2c_wpar_iobx_t;
 
@@ -8739,7 +9058,8 @@ union cvmx_l2c_wpar_ppx {
 	struct cvmx_l2c_wpar_ppx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t mask                         : 16; /**< Way partitioning mask. (1 means do not use) */
+	uint64_t mask                         : 16; /**< Way partitioning mask (1 means do not use). The read value of MASK includes bits set
+                                                         because of the L2C cripple fuses. */
 #else
 	uint64_t mask                         : 16;
 	uint64_t reserved_16_63               : 48;
@@ -8762,8 +9082,11 @@ union cvmx_l2c_wpar_ppx {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_wpar_ppx_cn70xx       cn70xxp1;
+	struct cvmx_l2c_wpar_ppx_s            cn73xx;
 	struct cvmx_l2c_wpar_ppx_s            cn78xx;
+	struct cvmx_l2c_wpar_ppx_s            cn78xxp2;
 	struct cvmx_l2c_wpar_ppx_s            cnf71xx;
+	struct cvmx_l2c_wpar_ppx_s            cnf75xx;
 };
 typedef union cvmx_l2c_wpar_ppx cvmx_l2c_wpar_ppx_t;
 
@@ -8790,8 +9113,11 @@ union cvmx_l2c_xmcx_pfc {
 	struct cvmx_l2c_xmcx_pfc_s            cn68xxp1;
 	struct cvmx_l2c_xmcx_pfc_s            cn70xx;
 	struct cvmx_l2c_xmcx_pfc_s            cn70xxp1;
+	struct cvmx_l2c_xmcx_pfc_s            cn73xx;
 	struct cvmx_l2c_xmcx_pfc_s            cn78xx;
+	struct cvmx_l2c_xmcx_pfc_s            cn78xxp2;
 	struct cvmx_l2c_xmcx_pfc_s            cnf71xx;
+	struct cvmx_l2c_xmcx_pfc_s            cnf75xx;
 };
 typedef union cvmx_l2c_xmcx_pfc cvmx_l2c_xmcx_pfc_t;
 
@@ -8831,14 +9157,17 @@ union cvmx_l2c_xmc_cmd {
 	uint64_t u64;
 	struct cvmx_l2c_xmc_cmd_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t inuse                        : 1;  /**< Set to 1 by HW upon receiving a write, cleared when
-                                                         command has issued (not necessarily completed, but
-                                                         ordered relative to other traffic) and HW can accept
+	uint64_t inuse                        : 1;  /**< Set to 1 by hardware upon receiving a write; cleared when command has issued (not
+                                                         necessarily completed, but ordered relative to other traffic) and hardware can accept
                                                          another command. */
 	uint64_t reserved_47_62               : 16;
 	uint64_t qos                          : 3;  /**< QOS level to use for simulated ADD bus request. */
-	uint64_t node                         : 4;  /**< CCPI node to use for simulated ADD bus request. */
-	uint64_t addr                         : 40; /**< Address to use for simulated XMC request (see Note 6) */
+	uint64_t node                         : 4;  /**< Ignored because CCPI is not present. Will return the value written, but the
+                                                         simulated ADD bus request will use a node of 0. */
+	uint64_t addr                         : 40; /**< Address to use for simulated ADD bus request. (The address written to L2C_XMC_CMD is a
+                                                         physical address. L2C performs hole removal and index aliasing (if enabled) on the written
+                                                         address and uses that for the command. This hole-removed/index-aliased address is what is
+                                                         returned on a read of L2C_XMC_CMD.) */
 #else
 	uint64_t addr                         : 40;
 	uint64_t node                         : 4;
@@ -8892,8 +9221,11 @@ union cvmx_l2c_xmc_cmd {
 #endif
 	} cn70xx;
 	struct cvmx_l2c_xmc_cmd_cn70xx        cn70xxp1;
+	struct cvmx_l2c_xmc_cmd_cn70xx        cn73xx;
 	struct cvmx_l2c_xmc_cmd_cn70xx        cn78xx;
+	struct cvmx_l2c_xmc_cmd_cn70xx        cn78xxp2;
 	struct cvmx_l2c_xmc_cmd_cn61xx        cnf71xx;
+	struct cvmx_l2c_xmc_cmd_cn70xx        cnf75xx;
 };
 typedef union cvmx_l2c_xmc_cmd cvmx_l2c_xmc_cmd_t;
 
@@ -8920,8 +9252,11 @@ union cvmx_l2c_xmdx_pfc {
 	struct cvmx_l2c_xmdx_pfc_s            cn68xxp1;
 	struct cvmx_l2c_xmdx_pfc_s            cn70xx;
 	struct cvmx_l2c_xmdx_pfc_s            cn70xxp1;
+	struct cvmx_l2c_xmdx_pfc_s            cn73xx;
 	struct cvmx_l2c_xmdx_pfc_s            cn78xx;
+	struct cvmx_l2c_xmdx_pfc_s            cn78xxp2;
 	struct cvmx_l2c_xmdx_pfc_s            cnf71xx;
+	struct cvmx_l2c_xmdx_pfc_s            cnf75xx;
 };
 typedef union cvmx_l2c_xmdx_pfc cvmx_l2c_xmdx_pfc_t;
 

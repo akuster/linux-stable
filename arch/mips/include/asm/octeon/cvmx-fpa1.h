@@ -43,7 +43,7 @@
  * Interface to the hardware Free Pool Allocator on Octeon chips.
  * These are the legacy models, i.e. prior to CN78XX/CN76XX.
  *
- * <hr>$Revision: 104152 $<hr>
+ * <hr>$Revision: 120123 $<hr>
  *
  */
 
@@ -70,15 +70,6 @@ typedef	int cvmx_fpa1_pool_t;
 #define CVMX_FPA1_NUM_POOLS      8
 #define CVMX_FPA1_INVALID_POOL ((cvmx_fpa1_pool_t)-1)
 #define	CVMX_FPA1_NAME_SIZE	16
-
-/* FIXME: To be reworked for named blocks */
-typedef struct {
-	char name[CVMX_FPA1_NAME_SIZE];
-//	uint64_t buffer_size;
-	uint64_t size; /* Block size of pool buffers */
-	uint64_t buffer_count;
-	uint64_t base_paddr; /* Base of buffer is allocated at initialization */
-} cvmx_fpa1_pool_info_t;
 
 /**
  * Structure describing the data format used for stores to the FPA.

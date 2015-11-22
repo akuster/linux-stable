@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -53,1236 +53,1236 @@
 #define __CVMX_CIU2_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_ACK_IOX_INT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_ACK_IOX_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_ACK_IOX_INT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080C0800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_ACK_IOX_INT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080C0800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_ACK_IOX_INT(block_id) (CVMX_ADD_IO_SEG(0x00010701080C0800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_ACK_IOX_INT(offset) (CVMX_ADD_IO_SEG(0x00010701080C0800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_ACK_PPX_IP2(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_ACK_PPX_IP2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_ACK_PPX_IP2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000C0000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_ACK_PPX_IP2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000C0000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_ACK_PPX_IP2(block_id) (CVMX_ADD_IO_SEG(0x00010701000C0000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_ACK_PPX_IP2(offset) (CVMX_ADD_IO_SEG(0x00010701000C0000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_ACK_PPX_IP3(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_ACK_PPX_IP3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_ACK_PPX_IP3(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000C0200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_ACK_PPX_IP3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000C0200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_ACK_PPX_IP3(block_id) (CVMX_ADD_IO_SEG(0x00010701000C0200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_ACK_PPX_IP3(offset) (CVMX_ADD_IO_SEG(0x00010701000C0200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_ACK_PPX_IP4(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_ACK_PPX_IP4(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_ACK_PPX_IP4(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000C0400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_ACK_PPX_IP4(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000C0400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_ACK_PPX_IP4(block_id) (CVMX_ADD_IO_SEG(0x00010701000C0400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_ACK_PPX_IP4(offset) (CVMX_ADD_IO_SEG(0x00010701000C0400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108097800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108097800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070108097800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070108097800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_GPIO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_GPIO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_GPIO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080B7800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_GPIO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080B7800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_GPIO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701080B7800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_GPIO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701080B7800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_GPIO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_GPIO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_GPIO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080A7800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_GPIO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080A7800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_GPIO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701080A7800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_GPIO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701080A7800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108094800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108094800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070108094800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_IO(offset) (CVMX_ADD_IO_SEG(0x0001070108094800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_IO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_IO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_IO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080B4800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_IO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080B4800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_IO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701080B4800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_IO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701080B4800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_IO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_IO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_IO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080A4800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_IO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080A4800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_IO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701080A4800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_IO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701080A4800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_MBOX(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_MBOX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MBOX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108098800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MBOX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108098800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_MBOX(block_id) (CVMX_ADD_IO_SEG(0x0001070108098800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_MBOX(offset) (CVMX_ADD_IO_SEG(0x0001070108098800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_MBOX_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_MBOX_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MBOX_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080B8800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MBOX_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080B8800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_MBOX_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701080B8800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_MBOX_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701080B8800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_MBOX_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_MBOX_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MBOX_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080A8800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MBOX_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080A8800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_MBOX_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701080A8800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_MBOX_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701080A8800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108095800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108095800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070108095800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070108095800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_MEM_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_MEM_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MEM_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080B5800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MEM_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080B5800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_MEM_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701080B5800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_MEM_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701080B5800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_MEM_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_MEM_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MEM_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080A5800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MEM_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080A5800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_MEM_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701080A5800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_MEM_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701080A5800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108093800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108093800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070108093800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070108093800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_MIO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_MIO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MIO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080B3800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MIO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080B3800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_MIO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701080B3800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_MIO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701080B3800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_MIO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_MIO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MIO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080A3800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_MIO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080A3800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_MIO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701080A3800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_MIO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701080A3800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108096800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108096800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070108096800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070108096800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_PKT_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_PKT_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_PKT_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080B6800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_PKT_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080B6800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_PKT_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701080B6800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_PKT_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701080B6800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_PKT_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_PKT_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_PKT_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080A6800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_PKT_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080A6800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_PKT_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701080A6800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_PKT_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701080A6800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108092800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108092800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070108092800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_RML(offset) (CVMX_ADD_IO_SEG(0x0001070108092800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_RML_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_RML_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_RML_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080B2800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_RML_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080B2800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_RML_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701080B2800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_RML_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701080B2800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_RML_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_RML_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_RML_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080A2800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_RML_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080A2800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_RML_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701080A2800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_RML_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701080A2800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108091800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108091800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070108091800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070108091800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_WDOG_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_WDOG_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WDOG_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080B1800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WDOG_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080B1800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_WDOG_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701080B1800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_WDOG_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701080B1800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_WDOG_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_WDOG_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WDOG_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080A1800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WDOG_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080A1800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_WDOG_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701080A1800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_WDOG_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701080A1800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108090800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108090800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070108090800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070108090800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_WRKQ_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_WRKQ_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WRKQ_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080B0800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WRKQ_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080B0800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_WRKQ_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701080B0800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_WRKQ_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701080B0800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_IOX_INT_WRKQ_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_IOX_INT_WRKQ_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WRKQ_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701080A0800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_EN_IOX_INT_WRKQ_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701080A0800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_IOX_INT_WRKQ_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701080A0800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_EN_IOX_INT_WRKQ_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701080A0800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100097000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100097000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100097000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070100097000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_GPIO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_GPIO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_GPIO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B7000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_GPIO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B7000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_GPIO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B7000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_GPIO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B7000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_GPIO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_GPIO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_GPIO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A7000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_GPIO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A7000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_GPIO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A7000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_GPIO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A7000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100094000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100094000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070100094000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_IO(offset) (CVMX_ADD_IO_SEG(0x0001070100094000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_IO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_IO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_IO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B4000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_IO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B4000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_IO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B4000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_IO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B4000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_IO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_IO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_IO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A4000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_IO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A4000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_IO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A4000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_IO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A4000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MBOX(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MBOX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MBOX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100098000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MBOX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100098000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_MBOX(block_id) (CVMX_ADD_IO_SEG(0x0001070100098000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_MBOX(offset) (CVMX_ADD_IO_SEG(0x0001070100098000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MBOX_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MBOX_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MBOX_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B8000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MBOX_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B8000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_MBOX_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B8000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_MBOX_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B8000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MBOX_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MBOX_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MBOX_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A8000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MBOX_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A8000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_MBOX_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A8000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_MBOX_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A8000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100095000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100095000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070100095000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070100095000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MEM_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MEM_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MEM_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B5000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MEM_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B5000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_MEM_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B5000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_MEM_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B5000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MEM_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MEM_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MEM_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A5000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MEM_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A5000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_MEM_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A5000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_MEM_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A5000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100093000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100093000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100093000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070100093000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MIO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MIO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MIO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B3000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MIO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B3000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_MIO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B3000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_MIO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B3000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MIO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_MIO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MIO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A3000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_MIO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A3000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_MIO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A3000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_MIO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A3000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100096000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100096000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070100096000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070100096000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_PKT_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_PKT_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_PKT_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B6000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_PKT_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B6000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_PKT_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B6000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_PKT_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B6000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_PKT_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_PKT_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_PKT_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A6000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_PKT_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A6000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_PKT_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A6000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_PKT_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A6000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100092000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100092000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070100092000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_RML(offset) (CVMX_ADD_IO_SEG(0x0001070100092000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_RML_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_RML_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_RML_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B2000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_RML_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B2000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_RML_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B2000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_RML_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B2000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_RML_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_RML_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_RML_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A2000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_RML_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A2000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_RML_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A2000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_RML_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A2000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100091000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100091000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070100091000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070100091000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WDOG_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WDOG_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WDOG_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B1000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WDOG_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B1000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_WDOG_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B1000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_WDOG_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B1000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WDOG_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WDOG_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WDOG_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A1000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WDOG_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A1000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_WDOG_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A1000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_WDOG_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A1000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100090000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100090000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070100090000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070100090000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WRKQ_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WRKQ_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WRKQ_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B0000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WRKQ_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B0000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_WRKQ_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B0000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_WRKQ_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B0000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WRKQ_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP2_WRKQ_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WRKQ_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A0000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP2_WRKQ_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A0000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP2_WRKQ_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A0000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP2_WRKQ_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A0000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100097200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100097200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100097200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070100097200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_GPIO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_GPIO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_GPIO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B7200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_GPIO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B7200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_GPIO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B7200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_GPIO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B7200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_GPIO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_GPIO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_GPIO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A7200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_GPIO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A7200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_GPIO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A7200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_GPIO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A7200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100094200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100094200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070100094200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_IO(offset) (CVMX_ADD_IO_SEG(0x0001070100094200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_IO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_IO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_IO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B4200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_IO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B4200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_IO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B4200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_IO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B4200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_IO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_IO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_IO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A4200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_IO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A4200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_IO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A4200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_IO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A4200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MBOX(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MBOX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MBOX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100098200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MBOX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100098200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_MBOX(block_id) (CVMX_ADD_IO_SEG(0x0001070100098200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_MBOX(offset) (CVMX_ADD_IO_SEG(0x0001070100098200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MBOX_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MBOX_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MBOX_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B8200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MBOX_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B8200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_MBOX_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B8200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_MBOX_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B8200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MBOX_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MBOX_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MBOX_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A8200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MBOX_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A8200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_MBOX_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A8200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_MBOX_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A8200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100095200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100095200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070100095200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070100095200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MEM_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MEM_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MEM_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B5200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MEM_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B5200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_MEM_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B5200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_MEM_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B5200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MEM_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MEM_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MEM_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A5200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MEM_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A5200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_MEM_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A5200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_MEM_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A5200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100093200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100093200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100093200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070100093200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MIO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MIO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MIO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B3200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MIO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B3200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_MIO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B3200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_MIO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B3200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MIO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_MIO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MIO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A3200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_MIO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A3200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_MIO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A3200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_MIO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A3200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100096200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100096200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070100096200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070100096200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_PKT_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_PKT_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_PKT_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B6200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_PKT_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B6200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_PKT_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B6200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_PKT_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B6200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_PKT_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_PKT_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_PKT_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A6200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_PKT_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A6200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_PKT_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A6200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_PKT_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A6200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100092200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100092200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070100092200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_RML(offset) (CVMX_ADD_IO_SEG(0x0001070100092200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_RML_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_RML_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_RML_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B2200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_RML_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B2200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_RML_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B2200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_RML_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B2200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_RML_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_RML_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_RML_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A2200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_RML_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A2200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_RML_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A2200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_RML_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A2200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100091200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100091200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070100091200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070100091200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WDOG_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WDOG_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WDOG_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B1200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WDOG_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B1200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_WDOG_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B1200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_WDOG_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B1200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WDOG_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WDOG_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WDOG_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A1200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WDOG_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A1200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_WDOG_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A1200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_WDOG_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A1200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100090200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100090200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070100090200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070100090200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WRKQ_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WRKQ_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WRKQ_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B0200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WRKQ_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B0200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_WRKQ_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B0200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_WRKQ_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B0200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WRKQ_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP3_WRKQ_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WRKQ_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A0200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP3_WRKQ_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A0200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP3_WRKQ_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A0200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP3_WRKQ_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A0200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100097400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100097400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100097400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070100097400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_GPIO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_GPIO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_GPIO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B7400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_GPIO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B7400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_GPIO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B7400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_GPIO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B7400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_GPIO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_GPIO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_GPIO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A7400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_GPIO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A7400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_GPIO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A7400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_GPIO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A7400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100094400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100094400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070100094400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_IO(offset) (CVMX_ADD_IO_SEG(0x0001070100094400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_IO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_IO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_IO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B4400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_IO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B4400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_IO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B4400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_IO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B4400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_IO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_IO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_IO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A4400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_IO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A4400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_IO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A4400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_IO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A4400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MBOX(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MBOX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MBOX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100098400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MBOX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100098400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_MBOX(block_id) (CVMX_ADD_IO_SEG(0x0001070100098400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_MBOX(offset) (CVMX_ADD_IO_SEG(0x0001070100098400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MBOX_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MBOX_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MBOX_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B8400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MBOX_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B8400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_MBOX_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B8400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_MBOX_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B8400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MBOX_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MBOX_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MBOX_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A8400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MBOX_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A8400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_MBOX_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A8400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_MBOX_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A8400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100095400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100095400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070100095400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070100095400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MEM_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MEM_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MEM_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B5400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MEM_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B5400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_MEM_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B5400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_MEM_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B5400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MEM_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MEM_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MEM_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A5400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MEM_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A5400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_MEM_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A5400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_MEM_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A5400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100093400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100093400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100093400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070100093400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MIO_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MIO_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MIO_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B3400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MIO_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B3400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_MIO_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B3400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_MIO_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B3400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MIO_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_MIO_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MIO_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A3400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_MIO_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A3400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_MIO_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A3400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_MIO_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A3400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100096400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100096400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070100096400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070100096400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_PKT_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_PKT_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_PKT_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B6400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_PKT_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B6400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_PKT_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B6400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_PKT_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B6400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_PKT_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_PKT_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_PKT_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A6400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_PKT_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A6400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_PKT_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A6400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_PKT_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A6400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100092400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100092400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070100092400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_RML(offset) (CVMX_ADD_IO_SEG(0x0001070100092400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_RML_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_RML_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_RML_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B2400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_RML_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B2400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_RML_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B2400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_RML_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B2400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_RML_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_RML_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_RML_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A2400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_RML_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A2400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_RML_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A2400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_RML_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A2400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100091400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100091400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070100091400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070100091400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WDOG_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WDOG_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WDOG_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B1400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WDOG_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B1400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_WDOG_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B1400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_WDOG_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B1400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WDOG_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WDOG_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WDOG_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A1400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WDOG_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A1400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_WDOG_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A1400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_WDOG_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A1400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100090400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100090400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070100090400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070100090400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WRKQ_W1C(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WRKQ_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WRKQ_W1C(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000B0400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WRKQ_W1C(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000B0400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_WRKQ_W1C(block_id) (CVMX_ADD_IO_SEG(0x00010701000B0400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_WRKQ_W1C(offset) (CVMX_ADD_IO_SEG(0x00010701000B0400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WRKQ_W1S(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_EN_PPX_IP4_WRKQ_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WRKQ_W1S(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000A0400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_EN_PPX_IP4_WRKQ_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000A0400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_EN_PPX_IP4_WRKQ_W1S(block_id) (CVMX_ADD_IO_SEG(0x00010701000A0400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_EN_PPX_IP4_WRKQ_W1S(offset) (CVMX_ADD_IO_SEG(0x00010701000A0400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_CIU2_INTR_CIU_READY CVMX_CIU2_INTR_CIU_READY_FUNC()
@@ -1329,37 +1329,37 @@ static inline uint64_t CVMX_CIU2_INTR_SLOWDOWN_FUNC(void)
 #define CVMX_CIU2_INTR_SLOWDOWN (CVMX_ADD_IO_SEG(0x0001070100102000ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_MSIRED_PPX_IP2(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_MSIRED_PPX_IP2(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_MSIRED_PPX_IP2(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000C1000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_MSIRED_PPX_IP2(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000C1000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_MSIRED_PPX_IP2(block_id) (CVMX_ADD_IO_SEG(0x00010701000C1000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_MSIRED_PPX_IP2(offset) (CVMX_ADD_IO_SEG(0x00010701000C1000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_MSIRED_PPX_IP3(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_MSIRED_PPX_IP3(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_MSIRED_PPX_IP3(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000C1200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_MSIRED_PPX_IP3(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000C1200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_MSIRED_PPX_IP3(block_id) (CVMX_ADD_IO_SEG(0x00010701000C1200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_MSIRED_PPX_IP3(offset) (CVMX_ADD_IO_SEG(0x00010701000C1200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_MSIRED_PPX_IP4(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_MSIRED_PPX_IP4(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_MSIRED_PPX_IP4(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00010701000C1400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_MSIRED_PPX_IP4(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00010701000C1400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_MSIRED_PPX_IP4(block_id) (CVMX_ADD_IO_SEG(0x00010701000C1400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_MSIRED_PPX_IP4(offset) (CVMX_ADD_IO_SEG(0x00010701000C1400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_CIU2_MSI_RCVX(unsigned long offset)
@@ -1384,752 +1384,752 @@ static inline uint64_t CVMX_CIU2_MSI_SELX(unsigned long offset)
 #define CVMX_CIU2_MSI_SELX(offset) (CVMX_ADD_IO_SEG(0x00010701000C3000ull) + ((offset) & 255) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_IOX_INT_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_IOX_INT_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108047800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108047800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_IOX_INT_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070108047800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_RAW_IOX_INT_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070108047800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_IOX_INT_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_IOX_INT_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108044800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108044800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_IOX_INT_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070108044800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_RAW_IOX_INT_IO(offset) (CVMX_ADD_IO_SEG(0x0001070108044800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_IOX_INT_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_IOX_INT_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108045800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108045800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_IOX_INT_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070108045800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_RAW_IOX_INT_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070108045800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_IOX_INT_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_IOX_INT_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108043800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108043800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_IOX_INT_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070108043800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_RAW_IOX_INT_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070108043800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_IOX_INT_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_IOX_INT_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108046800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108046800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_IOX_INT_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070108046800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_RAW_IOX_INT_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070108046800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_IOX_INT_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_IOX_INT_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108042800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108042800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_IOX_INT_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070108042800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_RAW_IOX_INT_RML(offset) (CVMX_ADD_IO_SEG(0x0001070108042800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_IOX_INT_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_IOX_INT_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108041800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108041800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_IOX_INT_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070108041800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_RAW_IOX_INT_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070108041800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_IOX_INT_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_IOX_INT_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108040800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_RAW_IOX_INT_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108040800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_IOX_INT_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070108040800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_RAW_IOX_INT_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070108040800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100047000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100047000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP2_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100047000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP2_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070100047000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100044000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100044000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP2_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070100044000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP2_IO(offset) (CVMX_ADD_IO_SEG(0x0001070100044000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100045000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100045000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP2_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070100045000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP2_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070100045000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100043000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100043000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP2_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100043000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP2_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070100043000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100046000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100046000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP2_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070100046000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP2_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070100046000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100042000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100042000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP2_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070100042000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP2_RML(offset) (CVMX_ADD_IO_SEG(0x0001070100042000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100041000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100041000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP2_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070100041000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP2_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070100041000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP2_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100040000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP2_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100040000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP2_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070100040000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP2_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070100040000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100047200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100047200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP3_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100047200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP3_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070100047200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100044200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100044200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP3_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070100044200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP3_IO(offset) (CVMX_ADD_IO_SEG(0x0001070100044200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100045200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100045200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP3_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070100045200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP3_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070100045200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100043200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100043200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP3_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100043200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP3_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070100043200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100046200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100046200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP3_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070100046200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP3_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070100046200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100042200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100042200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP3_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070100042200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP3_RML(offset) (CVMX_ADD_IO_SEG(0x0001070100042200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100041200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100041200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP3_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070100041200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP3_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070100041200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP3_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100040200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP3_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100040200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP3_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070100040200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP3_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070100040200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100047400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100047400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP4_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100047400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP4_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070100047400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100044400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100044400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP4_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070100044400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP4_IO(offset) (CVMX_ADD_IO_SEG(0x0001070100044400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100045400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100045400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP4_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070100045400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP4_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070100045400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100043400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100043400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP4_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100043400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP4_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070100043400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100046400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100046400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP4_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070100046400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP4_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070100046400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100042400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100042400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP4_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070100042400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP4_RML(offset) (CVMX_ADD_IO_SEG(0x0001070100042400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100041400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100041400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP4_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070100041400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP4_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070100041400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_RAW_PPX_IP4_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100040400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_RAW_PPX_IP4_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100040400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_RAW_PPX_IP4_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070100040400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_RAW_PPX_IP4_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070100040400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_IOX_INT_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_IOX_INT_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108087800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108087800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_IOX_INT_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070108087800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_SRC_IOX_INT_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070108087800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_IOX_INT_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_IOX_INT_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108084800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108084800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_IOX_INT_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070108084800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_SRC_IOX_INT_IO(offset) (CVMX_ADD_IO_SEG(0x0001070108084800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_IOX_INT_MBOX(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_IOX_INT_MBOX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_MBOX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108088800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_MBOX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108088800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_IOX_INT_MBOX(block_id) (CVMX_ADD_IO_SEG(0x0001070108088800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_SRC_IOX_INT_MBOX(offset) (CVMX_ADD_IO_SEG(0x0001070108088800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_IOX_INT_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_IOX_INT_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108085800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108085800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_IOX_INT_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070108085800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_SRC_IOX_INT_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070108085800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_IOX_INT_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_IOX_INT_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108083800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108083800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_IOX_INT_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070108083800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_SRC_IOX_INT_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070108083800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_IOX_INT_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_IOX_INT_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108086800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108086800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_IOX_INT_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070108086800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_SRC_IOX_INT_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070108086800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_IOX_INT_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_IOX_INT_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108082800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108082800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_IOX_INT_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070108082800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_SRC_IOX_INT_RML(offset) (CVMX_ADD_IO_SEG(0x0001070108082800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_IOX_INT_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_IOX_INT_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108081800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108081800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_IOX_INT_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070108081800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_SRC_IOX_INT_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070108081800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_IOX_INT_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_IOX_INT_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 1)))))
-		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070108080800ull) + ((block_id) & 1) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_CIU2_SRC_IOX_INT_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070108080800ull) + ((offset) & 1) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_IOX_INT_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070108080800ull) + ((block_id) & 1) * 0x200000ull)
+#define CVMX_CIU2_SRC_IOX_INT_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070108080800ull) + ((offset) & 1) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100087000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100087000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP2_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100087000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP2_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070100087000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100084000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100084000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP2_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070100084000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP2_IO(offset) (CVMX_ADD_IO_SEG(0x0001070100084000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_MBOX(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_MBOX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_MBOX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100088000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_MBOX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100088000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP2_MBOX(block_id) (CVMX_ADD_IO_SEG(0x0001070100088000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP2_MBOX(offset) (CVMX_ADD_IO_SEG(0x0001070100088000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100085000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100085000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP2_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070100085000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP2_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070100085000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100083000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100083000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP2_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100083000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP2_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070100083000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100086000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100086000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP2_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070100086000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP2_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070100086000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100082000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100082000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP2_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070100082000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP2_RML(offset) (CVMX_ADD_IO_SEG(0x0001070100082000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100081000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100081000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP2_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070100081000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP2_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070100081000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP2_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100080000ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP2_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100080000ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP2_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070100080000ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP2_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070100080000ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100087200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100087200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP3_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100087200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP3_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070100087200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100084200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100084200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP3_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070100084200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP3_IO(offset) (CVMX_ADD_IO_SEG(0x0001070100084200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_MBOX(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_MBOX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_MBOX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100088200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_MBOX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100088200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP3_MBOX(block_id) (CVMX_ADD_IO_SEG(0x0001070100088200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP3_MBOX(offset) (CVMX_ADD_IO_SEG(0x0001070100088200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100085200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100085200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP3_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070100085200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP3_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070100085200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100083200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100083200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP3_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100083200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP3_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070100083200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100086200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100086200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP3_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070100086200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP3_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070100086200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100082200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100082200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP3_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070100082200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP3_RML(offset) (CVMX_ADD_IO_SEG(0x0001070100082200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100081200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100081200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP3_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070100081200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP3_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070100081200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP3_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100080200ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP3_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100080200ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP3_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070100080200ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP3_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070100080200ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_GPIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_GPIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_GPIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100087400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_GPIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100087400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP4_GPIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100087400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP4_GPIO(offset) (CVMX_ADD_IO_SEG(0x0001070100087400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_IO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_IO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100084400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_IO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100084400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP4_IO(block_id) (CVMX_ADD_IO_SEG(0x0001070100084400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP4_IO(offset) (CVMX_ADD_IO_SEG(0x0001070100084400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_MBOX(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_MBOX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_MBOX(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100088400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_MBOX(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100088400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP4_MBOX(block_id) (CVMX_ADD_IO_SEG(0x0001070100088400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP4_MBOX(offset) (CVMX_ADD_IO_SEG(0x0001070100088400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_MEM(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_MEM(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_MEM(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100085400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_MEM(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100085400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP4_MEM(block_id) (CVMX_ADD_IO_SEG(0x0001070100085400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP4_MEM(offset) (CVMX_ADD_IO_SEG(0x0001070100085400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_MIO(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_MIO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_MIO(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100083400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_MIO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100083400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP4_MIO(block_id) (CVMX_ADD_IO_SEG(0x0001070100083400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP4_MIO(offset) (CVMX_ADD_IO_SEG(0x0001070100083400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_PKT(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_PKT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_PKT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100086400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_PKT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100086400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP4_PKT(block_id) (CVMX_ADD_IO_SEG(0x0001070100086400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP4_PKT(offset) (CVMX_ADD_IO_SEG(0x0001070100086400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_RML(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_RML(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_RML(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100082400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_RML(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100082400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP4_RML(block_id) (CVMX_ADD_IO_SEG(0x0001070100082400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP4_RML(offset) (CVMX_ADD_IO_SEG(0x0001070100082400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_WDOG(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_WDOG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_WDOG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100081400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_WDOG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100081400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP4_WDOG(block_id) (CVMX_ADD_IO_SEG(0x0001070100081400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP4_WDOG(offset) (CVMX_ADD_IO_SEG(0x0001070100081400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_WRKQ(unsigned long block_id)
+static inline uint64_t CVMX_CIU2_SRC_PPX_IP4_WRKQ(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id <= 31)))))
-		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_WRKQ(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x0001070100080400ull) + ((block_id) & 31) * 0x200000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset <= 31)))))
+		cvmx_warn("CVMX_CIU2_SRC_PPX_IP4_WRKQ(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070100080400ull) + ((offset) & 31) * 0x200000ull;
 }
 #else
-#define CVMX_CIU2_SRC_PPX_IP4_WRKQ(block_id) (CVMX_ADD_IO_SEG(0x0001070100080400ull) + ((block_id) & 31) * 0x200000ull)
+#define CVMX_CIU2_SRC_PPX_IP4_WRKQ(offset) (CVMX_ADD_IO_SEG(0x0001070100080400ull) + ((offset) & 31) * 0x200000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_CIU2_SUM_IOX_INT(unsigned long offset)

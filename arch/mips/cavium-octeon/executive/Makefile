@@ -24,10 +24,10 @@ obj-y += cvmx-pko.o cvmx-spi.o cvmx-cmd-queue.o cvmx-helper-cfg.o	\
 	cvmx-helper-bgx.o cvmx-pko3.o cvmx-helper-pki.o			\
 	cvmx-helper-pko3.o cvmx-pko3-resources.o cvmx-helper-pko.o	\
 	cvmx-helper-ipd.o cvmx-sso-resources.o cvmx-ocla.o cvmx-boot-vector.o \
-	cvmx-lap.o cvmx-osm.o
+	cvmx-lap.o cvmx-osm.o cvmx-ila.o
 
 obj-y += cvmx-helper-errata.o cvmx-helper-jtag.o
-obj-y += cvmx-pcie.o
+obj-$(CONFIG_PCI) += cvmx-pcie.o
 
 obj-$(CONFIG_USB_OCTEON_HCD)		+= cvmx-usb.o
 obj-$(CONFIG_CAVIUM_OCTEON_RAPIDIO) 	+= cvmx-dma-engine.o

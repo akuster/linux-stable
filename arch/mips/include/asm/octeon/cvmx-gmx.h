@@ -42,7 +42,7 @@
  *
  * Interface to the GMX hardware.
  *
- * <hr>$Revision: 94283 $<hr>
+ * <hr>$Revision: 112021 $<hr>
  */
 
 #ifndef __CVMX_GMX_H__
@@ -59,8 +59,6 @@ extern "C" {
 int cvmx_gmx_set_backpressure_override(uint32_t interface, uint32_t port_mask);
 
 int cvmx_agl_set_backpressure_override(uint32_t interface, uint32_t port_mask);
-
-int cvmx_bgx_set_backpressure_override(uint32_t interface, uint32_t port_mask);
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */

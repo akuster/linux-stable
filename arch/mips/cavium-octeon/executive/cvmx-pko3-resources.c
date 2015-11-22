@@ -46,12 +46,14 @@
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <linux/module.h>
 #include <asm/octeon/cvmx.h>
+#include <asm/octeon/cvmx-bootmem.h>
 #include <asm/octeon/cvmx-pko3.h>
 #include "asm/octeon/cvmx-global-resources.h"
 #include <asm/octeon/cvmx-pko3-resources.h>
 #include "asm/octeon/cvmx-range.h"
 #else
 #include "cvmx.h"
+#include "cvmx-bootmem.h"
 #include "cvmx-pko3.h"
 #include "cvmx-global-resources.h"
 #include "cvmx-pko3-resources.h"
@@ -66,7 +68,13 @@
 #define CVMX_GR_TAG_PKO_DESCR_QUEUES(x)  cvmx_get_gr_tag('c','v','m','_','p','k','o','d','e','q','_',(x+'0'),'.','.','.','.')
 #define CVMX_GR_TAG_PKO_PORT_INDEX(x)  	 cvmx_get_gr_tag('c','v','m','_','p','k','o','p','i','d','_',(x+'0'),'.','.','.','.')
 
-const int cvmx_pko_num_queues_78XX[CVMX_PKO_NUM_QUEUE_LEVELS] = 
+/*
+ * @INRWENAL
+ * Per-DQ parameters, current and maximum queue depth counters
+ */
+CVMX_SHARED cvmx_pko3_dq_params_t  *__cvmx_pko3_dq_params[CVMX_MAX_NODES];
+
+static const short cvmx_pko_num_queues_78XX[256] = 
 {
 	[CVMX_PKO_PORT_QUEUES] = 32,
 	[CVMX_PKO_L2_QUEUES] = 512,
@@ -76,15 +84,47 @@ const int cvmx_pko_num_queues_78XX[CVMX_PKO_NUM_QUEUE_LEVELS] =
 	[CVMX_PKO_DESCR_QUEUES] = 1024
 };
 
-static inline int __cvmx_pko3_get_num_queues(int level)
+static const short cvmx_pko_num_queues_73XX[256] = 
 {
-	if(OCTEON_IS_MODEL(OCTEON_CN78XX))
-		return cvmx_pko_num_queues_78XX[level];
-	return -1;
+	[CVMX_PKO_PORT_QUEUES] = 16,
+	[CVMX_PKO_L2_QUEUES] = 256,
+	[CVMX_PKO_L3_QUEUES] = 256,
+	[CVMX_PKO_L4_QUEUES] = 0,
+	[CVMX_PKO_L5_QUEUES] = 0,
+	[CVMX_PKO_DESCR_QUEUES] = 256
+};
+
+int cvmx_pko3_num_level_queues(enum cvmx_pko3_level_e level)
+{
+	unsigned nq = 0, ne = 0;
+
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		ne = NUM_ELEMENTS(cvmx_pko_num_queues_78XX);
+		nq =  cvmx_pko_num_queues_78XX[level];
+	}
+	if (OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		ne = NUM_ELEMENTS(cvmx_pko_num_queues_73XX);
+		nq =  cvmx_pko_num_queues_73XX[level];
+	}
+
+	if (nq == 0 || level >= ne) {
+		cvmx_printf("ERROR: %s: queue level %#x invalid\n",
+			__func__, level);
+		return -1;
+	}
+
+	return nq;
 }
 
-static inline struct global_resource_tag __cvmx_pko_get_queues_resource_tag(int node, int queue_level)
+static inline struct global_resource_tag
+__cvmx_pko_get_queues_resource_tag(int node, enum cvmx_pko3_level_e queue_level)
 {
+	if (cvmx_pko3_num_level_queues(queue_level) == 0) {
+		cvmx_printf("ERROR: %s: queue level %#x invalid\n",
+				__func__, queue_level);
+		return CVMX_GR_TAG_INVALID;
+	}
+
 	switch(queue_level) {
 		case CVMX_PKO_PORT_QUEUES:
 			return CVMX_GR_TAG_PKO_PORT_QUEUES(node);
@@ -99,6 +139,8 @@ static inline struct global_resource_tag __cvmx_pko_get_queues_resource_tag(int 
 		case CVMX_PKO_DESCR_QUEUES:
 			return CVMX_GR_TAG_PKO_DESCR_QUEUES(node);
 		default:
+			cvmx_printf("ERROR: %s: queue level %#x invalid\n",
+				__func__, queue_level);
 			return CVMX_GR_TAG_INVALID;
 	}
 }
@@ -148,7 +190,7 @@ int cvmx_pko_alloc_global_resource(struct global_resource_tag tag, int base_queu
 int cvmx_pko_alloc_queues(int node, int level, int owner, int base_queue, int num_queues)
 {
 	struct global_resource_tag tag = __cvmx_pko_get_queues_resource_tag(node, level);
-	int max_num_queues = __cvmx_pko3_get_num_queues(level);
+	int max_num_queues = cvmx_pko3_num_level_queues(level);
 
 	return cvmx_pko_alloc_global_resource(tag, base_queue, owner, num_queues, max_num_queues);
 }
@@ -169,5 +211,44 @@ int cvmx_pko_free_queues(int node, int level, int owner)
 	return cvmx_free_global_resource_range_with_owner(tag, owner);
 }
 EXPORT_SYMBOL(cvmx_pko_free_queues);
+
+/**
+ * @INTERNAL
+ *
+ * Initialize the pointer to the descriptor queue parameter table.
+ * The table is one named block per node, and may be shared between
+ * applications.
+ */
+int __cvmx_pko3_dq_param_setup(unsigned node)
+{
+	cvmx_pko3_dq_params_t  *pParam;
+	char block_name[] = "cvmx_pko3_dq_param_0";
+	unsigned i;
+
+	pParam = __cvmx_pko3_dq_params[node];
+	if (pParam != NULL)
+		return 0;
+
+	/* Adjust block name with node# */
+	i = strlen(block_name);
+	block_name[i-1] += node;
+
+	/* Get number of descriptor queues for sizing the table */
+	i = cvmx_pko3_num_level_queues(CVMX_PKO_DESCR_QUEUES);
+
+	pParam = cvmx_bootmem_alloc_named_range_once(
+		/* size */
+		sizeof(cvmx_pko3_dq_params_t) * i,
+		/* min_addr, max_addr, align */
+		0ull, 0ull, sizeof(cvmx_pko3_dq_params_t),
+		block_name, NULL);
+
+	if (pParam == NULL)
+		return -1;
+
+	__cvmx_pko3_dq_params[node] = pParam;
+
+	return 0;
+}
 
 

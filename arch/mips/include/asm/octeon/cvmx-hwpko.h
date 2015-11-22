@@ -240,8 +240,8 @@ typedef union {
  * Call before any other calls to initialize the packet
  * output system.
  */
-// extern void cvmx_pko_initialize_global(void);
-// extern int cvmx_pko_initialize_local(void);
+/* extern void cvmx_pko_initialize_global(void); */
+/* extern int cvmx_pko_initialize_local(void); */
 
 extern void cvmx_pko_hw_init(uint8_t pool, unsigned bufsize);
 

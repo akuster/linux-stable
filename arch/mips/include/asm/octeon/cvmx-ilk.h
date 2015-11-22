@@ -96,7 +96,7 @@ static inline int CVMX_ILK_MAX_LANES(void) {
 		return 16;
 	return -1;
 }
-extern CVMX_SHARED unsigned short cvmx_ilk_lane_mask[CVMX_NUM_ILK_INTF];
+extern CVMX_SHARED unsigned short cvmx_ilk_lane_mask[CVMX_MAX_NODES][CVMX_NUM_ILK_INTF];
 
 typedef struct {
 	unsigned int pipe;
@@ -107,7 +107,7 @@ typedef struct {
 /* Max number of channels allowed */
 #define CVMX_ILK_MAX_CHANS 8
 
-extern CVMX_SHARED unsigned char cvmx_ilk_chans[CVMX_NUM_ILK_INTF];
+extern CVMX_SHARED unsigned char cvmx_ilk_chans[CVMX_MAX_NODES][CVMX_NUM_ILK_INTF];
 extern unsigned char cvmx_ilk_chan_map[CVMX_NUM_ILK_INTF][CVMX_ILK_MAX_CHANS];
 
 typedef struct {
@@ -167,29 +167,32 @@ typedef union {
 
 	struct {
 #ifdef __BIG_ENDIAN_BITFIELD
-		uint32_t reserved_63_57:7;	// bits 63...57
-		uint32_t nsp_cmd:5;	// bits 56...52
-		uint32_t nsp_flags:4;	// bits 51...48
-		uint32_t nsp_grp_id_upper:6;	// bits 47...42
-		uint32_t reserved_41_40:2;	// bits 41...40
-		uint32_t la_mode:1;	// bit  39      /* Protocol type, 1 for LA mode packet */
-		uint32_t nsp_grp_id_lower:2;	// bits 38...37
-		uint32_t nsp_xid_upper:4;	// bits 36...33
-		uint32_t ilk_channel:1;	// bit  32      /* ILK channel number, 0 or 1 */
-		uint32_t nsp_xid_lower:8;	// bits 31...24
-		uint32_t reserved_23_0:24;	// bits 23...0  /* Unpredictable, may be any value */
+		uint32_t reserved_63_57:7;	/* bits 63...57 */
+		uint32_t nsp_cmd:5;		/* bits 56...52 */
+		uint32_t nsp_flags:4;		/* bits 51...48 */
+		uint32_t nsp_grp_id_upper:6;	/* bits 47...42 */
+		uint32_t reserved_41_40:2;	/* bits 41...40 */
+		/* Protocol type, 1 for LA mode packet */
+		uint32_t la_mode:1;		/* bit  39      */
+		uint32_t nsp_grp_id_lower:2;	/* bits 38...37 */
+		uint32_t nsp_xid_upper:4;	/* bits 36...33 */
+		/* ILK channel number, 0 or 1 */
+		uint32_t ilk_channel:1;		/* bit  32      */
+		uint32_t nsp_xid_lower:8;	/* bits 31...24 */
+		/* Unpredictable, may be any value */
+		uint32_t reserved_23_0:24;	/* bits 23...0  */
 #else
-		uint32_t reserved_23_0:24;	// bits 23...0
-		uint32_t nsp_xid_lower:8;	// bits 31...24
-		uint32_t ilk_channel:1;	// bit  32
-		uint32_t nsp_xid_upper:4;	// bits 36...33
-		uint32_t nsp_grp_id_lower:2;	// bits 38...37
-		uint32_t la_mode:1;	// bit  39
-		uint32_t reserved_41_40:2;	// bits 41...40
-		uint32_t nsp_grp_id_upper:6;	// bits 47...42
-		uint32_t nsp_flags:4;	// bits 51...48
-		uint32_t nsp_cmd:5;	// bits 56...52
-		uint32_t reserved_63_57:7;	// bits 63...57
+		uint32_t reserved_23_0:24;	/* bits 23...0  */
+		uint32_t nsp_xid_lower:8;	/* bits 31...24 */
+		uint32_t ilk_channel:1;		/* bit  32      */
+		uint32_t nsp_xid_upper:4;	/* bits 36...33 */
+		uint32_t nsp_grp_id_lower:2;	/* bits 38...37 */
+		uint32_t la_mode:1;		/* bit  39      */
+		uint32_t reserved_41_40:2;	/* bits 41...40 */
+		uint32_t nsp_grp_id_upper:6;	/* bits 47...42 */
+		uint32_t nsp_flags:4;		/* bits 51...48 */
+		uint32_t nsp_cmd:5;		/* bits 56...52 */
+		uint32_t reserved_63_57:7;	/* bits 63...57 */
 #endif
 	} s;
 } cvmx_ilk_la_nsp_compact_hdr_t;

@@ -59,6 +59,8 @@ extern "C" {
 #include <asm/octeon/cvmx-ilk.h>
 #include <asm/octeon/cvmx-scratch.h>
 #include <asm/octeon/cvmx-atomic.h>
+#include <asm/octeon/cvmx-clock.h>
+#include <asm/octeon/cvmx-pow.h>
 #else
 #include "cvmx-pko-defs.h"
 #include "cvmx-pko3-queue.h"
@@ -66,30 +68,29 @@ extern "C" {
 #include "cvmx-ilk.h"
 #include "cvmx-scratch.h"
 #include "cvmx-atomic.h"
+#include "cvmx-pow.h"
 #endif
 
 /* Use full LMTDMA when PARAMETER_CHECKINS is enabled */
 #undef	CVMX_ENABLE_PARAMETER_CHECKING
 #define	CVMX_ENABLE_PARAMETER_CHECKING 0
 
-#define	CVMX_PKO3_DQ_MAX_DEPTH	(48*256)
-
 /* dwords count from 1-16 */
 /* scratch line for LMT operations */
 /* Should be unique wrt other uses of CVMSEG, e.g. IOBDMA */
 #define CVMX_PKO_LMTLINE 2ull
 
-enum {
-	CVMX_PKO_PORT_QUEUES = 0,
-	CVMX_PKO_L2_QUEUES,
-	CVMX_PKO_L3_QUEUES,
-	CVMX_PKO_L4_QUEUES,
-	CVMX_PKO_L5_QUEUES,
-	CVMX_PKO_DESCR_QUEUES,
-	CVMX_PKO_NUM_QUEUE_LEVELS
+/* PKO3 queue level identifier */
+enum cvmx_pko3_level_e {
+	CVMX_PKO_LEVEL_INVAL = 0,
+	CVMX_PKO_PORT_QUEUES = 0xd1,
+	CVMX_PKO_L2_QUEUES = 0xc2,
+	CVMX_PKO_L3_QUEUES = 0xb3,
+	CVMX_PKO_L4_QUEUES = 0xa4,
+	CVMX_PKO_L5_QUEUES = 0x95,
+	CVMX_PKO_DESCR_QUEUES = 0x86,
 };
 
-#define CVMX_PKO_MAX_MACS 28
 
 enum cvmx_pko_dqop {
 	CVMX_PKO_DQ_SEND = 0ULL,
@@ -97,6 +98,141 @@ enum cvmx_pko_dqop {
 	CVMX_PKO_DQ_CLOSE = 2ULL,
 	CVMX_PKO_DQ_QUERY = 3ULL
 };
+
+/**
+ * Returns the PKO DQ..L2 Shaper Time-Wheel clock rate for specified node.
+ */
+static inline
+uint64_t cvmx_pko3_dq_tw_clock_rate_node(int node)
+{
+	return cvmx_clock_get_rate_node(node, CVMX_CLOCK_SCLK) / 768;
+}
+
+/**
+ * Returns the PKO Port Shaper Time-Wheel clock rate for specified node.
+ */
+static inline
+uint64_t cvmx_pko3_pq_tw_clock_rate_node(int node)
+{
+	int div;
+
+	if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		div = 96;
+	else
+		div = 48;
+	return cvmx_clock_get_rate_node(node, CVMX_CLOCK_SCLK) / div;
+}
+
+/**
+ * @INTERNAL
+ * Return the number of MACs in the PKO (exclusing the NULL MAC)
+ * in a model-dependent manner.
+ */
+static inline unsigned __cvmx_pko3_num_macs(void)
+{
+        if(OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		return 10;
+        if(OCTEON_IS_MODEL(OCTEON_CN73XX))
+		return 14;
+        if(OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return 28;
+	return 0;
+}
+
+/**
+ * @INTERNAL
+ * Return the number of queue levels, depending on SoC model
+ */
+static inline int __cvmx_pko3_sq_lvl_max(void)
+{
+        if (OCTEON_IS_MODEL(OCTEON_CN73XX))
+		return CVMX_PKO_L3_QUEUES;
+        if (OCTEON_IS_MODEL(OCTEON_CNF75XX))
+		return CVMX_PKO_L3_QUEUES;
+        if (OCTEON_IS_MODEL(OCTEON_CN78XX))
+		return CVMX_PKO_L5_QUEUES;
+	return -1;
+}
+
+/**
+ * @INTERNAL
+ * Return the next (lower) queue level for a given level
+ */
+static inline enum cvmx_pko3_level_e
+__cvmx_pko3_sq_lvl_next(enum cvmx_pko3_level_e level)
+{
+	switch(level) {
+		default:
+			return CVMX_PKO_LEVEL_INVAL;
+		case CVMX_PKO_PORT_QUEUES:
+			return CVMX_PKO_L2_QUEUES;
+		case CVMX_PKO_L2_QUEUES:
+			return CVMX_PKO_L3_QUEUES;
+		case CVMX_PKO_L3_QUEUES:
+			if (OCTEON_IS_MODEL(OCTEON_CN73XX) ||
+			    OCTEON_IS_MODEL(OCTEON_CNF75XX))
+				return CVMX_PKO_DESCR_QUEUES;
+			return CVMX_PKO_L4_QUEUES;
+		case CVMX_PKO_L4_QUEUES:
+			if (OCTEON_IS_MODEL(OCTEON_CN73XX) ||
+			    OCTEON_IS_MODEL(OCTEON_CNF75XX))
+				return CVMX_PKO_LEVEL_INVAL;
+			return CVMX_PKO_L5_QUEUES;
+		case CVMX_PKO_L5_QUEUES:
+			if (OCTEON_IS_MODEL(OCTEON_CN73XX) ||
+			    OCTEON_IS_MODEL(OCTEON_CNF75XX))
+				return CVMX_PKO_LEVEL_INVAL;
+			return CVMX_PKO_DESCR_QUEUES;
+	}
+}
+
+/**
+ * @INTERNAL
+ * Return an SQ identifier string, for debug messages.
+ */
+static inline char *
+__cvmx_pko3_sq_str(char * buf, enum cvmx_pko3_level_e level, unsigned q)
+{
+	char *p;
+
+	switch(level) {
+		default:
+			strcpy(buf, "ERR-SQ/");
+			break;
+		case CVMX_PKO_PORT_QUEUES:
+			strcpy(buf, "PQ_L1/");
+			break;
+		case CVMX_PKO_L2_QUEUES:
+			strcpy(buf, "SQ_L2/");
+			break;
+		case CVMX_PKO_L3_QUEUES:
+			strcpy(buf, "SQ_L3/");
+			break;
+		case CVMX_PKO_L4_QUEUES:
+			strcpy(buf, "SQ_L4/");
+			break;
+		case CVMX_PKO_L5_QUEUES:
+			strcpy(buf, "SQ_L5/");
+			break;
+		case CVMX_PKO_DESCR_QUEUES:
+			strcpy(buf, "DQ/");
+			break;
+	}
+
+	for(p=buf; *p; p++)
+		;
+	*p++ = '0' + q / 1000;
+	q -= (q / 1000) * 1000;
+	*p++ = '0' + q / 100;
+	q -= (q / 100) * 100;
+	*p++ = '0' + q / 10;
+	q -= (q / 10) * 10;
+	*p++ = '0' + q;
+	*p++ = ':';
+	*p++ = '\0';
+	return buf;
+}
+
 
 union cvmx_pko_query_rtn {
 	uint64_t u64;
@@ -328,12 +464,55 @@ union cvmx_pko_lmtdma_data {
 };
 typedef union cvmx_pko_lmtdma_data cvmx_pko_lmtdma_data_t;
 
-/* per-core DQ depth cached value */
-extern CVMX_TLS int32_t __cvmx_pko3_dq_depth[1024];
+typedef struct cvmx_pko3_dq_params_s {
+#ifdef __LITTLE_ENDIAN_BITFIELD
+	int32_t limit;
+	int32_t	depth;
+#else
+	int32_t	depth;
+	int32_t limit;
+#endif
+} cvmx_pko3_dq_params_t;
+
+/* DQ depth cached value */
+extern CVMX_SHARED
+cvmx_pko3_dq_params_t  *__cvmx_pko3_dq_params[CVMX_MAX_NODES];
+
 
 extern int cvmx_pko3_internal_buffer_count(unsigned node);
 
-/*
+/**
+ * @INTERNAL
+ * PKO3 DQ parameter location
+ * @param node      node
+ * @param dq        dq
+ */
+static inline cvmx_pko3_dq_params_t *
+cvmx_pko3_dq_parameters(unsigned node, unsigned dq)
+{
+	cvmx_pko3_dq_params_t *pParam = NULL;
+	static cvmx_pko3_dq_params_t dummy = {.depth = 0, .limit = (1<<16)};
+
+	if (cvmx_likely(node < CVMX_MAX_NODES))
+		pParam = __cvmx_pko3_dq_params[node];
+
+	if (cvmx_likely(pParam != NULL))
+		pParam += dq;
+	else
+		pParam = &dummy;
+
+	return pParam;
+}
+
+static inline void cvmx_pko3_dq_set_limit(unsigned node, unsigned dq,
+	unsigned limit)
+{
+	cvmx_pko3_dq_params_t *pParam;
+	pParam = cvmx_pko3_dq_parameters(node, dq);
+	pParam->limit = limit;
+}
+
+/**
  * PKO descriptor queue operation error string
  *
  * @param dqstatus is the enumeration returned from hardware,
@@ -356,6 +535,20 @@ static inline int __cvmx_pko3_get_mac_num(int xiface, int index)
 	struct cvmx_xiface xi = cvmx_helper_xiface_to_node_interface(xiface);
 	cvmx_helper_interface_mode_t mode;
 	int interface_index;
+	int ilk_mac_base = -1, bgx_mac_base = -1, bgx_ports = 4;
+
+	if (OCTEON_IS_MODEL(OCTEON_CN73XX)) {
+		bgx_mac_base = 2;
+	}
+
+	if (OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		bgx_mac_base = 2;
+	}
+
+        if (OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		ilk_mac_base = 2;
+		bgx_mac_base = 4;
+	}
 
 	mode = cvmx_helper_interface_get_mode(xiface);
 	switch (mode) {
@@ -364,39 +557,22 @@ static inline int __cvmx_pko3_get_mac_num(int xiface, int index)
 		case CVMX_HELPER_INTERFACE_MODE_NPI:
 			return 1;
 		case CVMX_HELPER_INTERFACE_MODE_ILK:
+			if (ilk_mac_base < 0)
+				return -1;
 			interface_index = (xi.interface - CVMX_ILK_GBL_BASE());
 			if (interface_index < 0)
 				return -1;
-			return (2 + interface_index);
+			return (ilk_mac_base + interface_index);
+		case CVMX_HELPER_INTERFACE_MODE_SRIO:
+			return (4 + 2 * xi.interface + index);
 		default:
-			if (xi.interface >= CVMX_ILK_GBL_BASE())
+			if (xi.interface >= CVMX_ILK_GBL_BASE() &&
+			    ilk_mac_base >= 0)
 				return -1;
 			/* All other modes belong to BGX */
-			return (4 + 4 * xi.interface + index);
+			return (bgx_mac_base +
+				bgx_ports * xi.interface + index);
 	}
-}
-
-/*
- * Configure Channel credit level in PKO.
- *
- * @param node is to specify the node to which this configuration is applied.
- * @param level specifies the level at which pko channel queues will be configured,
- *              level : 0 -> L2, level : 1 -> L3 queues.
- * @return returns 0 if successful and -1 on failure.
- */
-static inline int cvmx_pko_setup_channel_credit_level(int node, int level)
-{
-	union cvmx_pko_channel_level channel_level;
-
-	if (level != 0 || level != 1)
-		return -1;
-
-	channel_level.u64 = 0;
-	channel_level.s.cc_level = level;
-	cvmx_write_csr_node(node, CVMX_PKO_CHANNEL_LEVEL, channel_level.u64);
-
-	return 0;
-
 }
 
 /**
@@ -430,8 +606,9 @@ cvmx_pko3_cvmseg_addr(void)
  * The command should be already stored in the CVMSEG address.
  *
  * @param node is the destination node
- * @param dq is the destonation descriptor queue.
- * @param numworkds is the number of outgoing words
+ * @param dq is the destination descriptor queue.
+ * @param numwords is the number of outgoing words
+ * @param tag_wait Wait to finish tag switch just before issueing LMTDMA
  * @return the PKO3 native query result structure.
  *
  * <numwords> must be between 1 and 15 for CVMX_PKO_DQ_SEND command
@@ -439,7 +616,7 @@ cvmx_pko3_cvmseg_addr(void)
  * NOTE: Internal use only.
  */
 static inline cvmx_pko_query_rtn_t
-__cvmx_pko3_lmtdma(uint8_t node, uint16_t dq, unsigned numwords)
+__cvmx_pko3_lmtdma(uint8_t node, uint16_t dq, unsigned numwords, bool tag_wait)
 {
 	const enum cvmx_pko_dqop dqop = CVMX_PKO_DQ_SEND;
 	cvmx_pko_query_rtn_t pko_status;
@@ -447,27 +624,7 @@ __cvmx_pko3_lmtdma(uint8_t node, uint16_t dq, unsigned numwords)
 	uint64_t dma_addr;
 	unsigned scr_base = cvmx_pko3_lmtdma_scr_base();
 	unsigned scr_off;
-
-	pko_status.u64 = 0;
-
-	/* LMTDMA address offset is (nWords-1) */
-	dma_addr = CVMX_LMTDMA_ORDERED_IO_ADDR;
-	dma_addr += (numwords - 1) << 3;
-
-#ifdef	CVMX_PKO3_DQ_MAX_DEPTH
-	/* If cached depth exceeds limit, check the real depth */
-	if (cvmx_unlikely(__cvmx_pko3_dq_depth[dq] > CVMX_PKO3_DQ_MAX_DEPTH)) {
-		cvmx_pko_dqx_wm_cnt_t wm_cnt;
-		wm_cnt.u64 = cvmx_read_csr_node(node,CVMX_PKO_DQX_WM_CNT(dq));
-		__cvmx_pko3_dq_depth[dq] = pko_status.s.depth = wm_cnt.s.count;
-
-		if (pko_status.s.depth > CVMX_PKO3_DQ_MAX_DEPTH) {
-			pko_status.s.dqop = dqop;
-			pko_status.s.dqstatus = PKO_DQSTATUS_NOFPABUF;
-			return pko_status;
-		}
-	}
-#endif	/* CVMX_PKO3_DQ_MAX_DEPTH */
+	cvmx_pko3_dq_params_t *pParam;
 
 	if (cvmx_unlikely(numwords < 1 || numwords > 15)) {
 		cvmx_dprintf("%s: ERROR: Internal error\n",
@@ -476,15 +633,41 @@ __cvmx_pko3_lmtdma(uint8_t node, uint16_t dq, unsigned numwords)
 		return pko_status;
 	}
 
-	scr_off = scr_base + numwords * sizeof(uint64_t);
+	pParam = cvmx_pko3_dq_parameters(node, dq);
+
+	pko_status.u64 = 0;
 	pko_send_dma_data.u64 = 0;
+
+	/* LMTDMA address offset is (nWords-1) */
+	dma_addr = CVMX_LMTDMA_ORDERED_IO_ADDR;
+	dma_addr += (numwords - 1) << 3;
+
+	scr_off = scr_base + numwords * sizeof(uint64_t);
+
+	/* Write all-ones into the return area */
+	cvmx_scratch_write64(scr_off, ~0ull);
+
+	/* Barrier: make sure all prior writes complete before the following */
+	CVMX_SYNCWS;
+
+	/* If cached depth exceeds limit, check the real depth */
+	if (cvmx_unlikely(pParam->depth > pParam->limit)) {
+		cvmx_pko_dqx_wm_cnt_t wm_cnt;
+		wm_cnt.u64 = cvmx_read_csr_node(node,CVMX_PKO_DQX_WM_CNT(dq));
+		pParam->depth = pko_status.s.depth = wm_cnt.s.count;
+
+		if (pParam->depth > pParam->limit) {
+			pko_status.s.dqop = dqop;
+			pko_status.s.dqstatus = PKO_DQSTATUS_NOFPABUF;
+			return pko_status;
+		}
+	} else {
+		cvmx_atomic_add32_nosync( &(pParam->depth), 1);
+	}
 
 	if (CVMX_ENABLE_PARAMETER_CHECKING) {
 		/* Request one return word */
 		pko_send_dma_data.s.rtnlen = 1;
-
-		/* Write all-ones into the return area */
-		cvmx_scratch_write64(scr_off, ~0ull);
 	} else {
 		/* Do not expext a return word */
 		pko_send_dma_data.s.rtnlen = 0;
@@ -497,8 +680,9 @@ __cvmx_pko3_lmtdma(uint8_t node, uint16_t dq, unsigned numwords)
 	pko_send_dma_data.s.dqop = dqop;
 	pko_send_dma_data.s.dq = dq;
 
-	/* Barrier: make sure all prior writes complete before the following */
-	CVMX_SYNCWS;
+	/* Wait to finish tag switch just before issueing LMTDMA */
+	if (tag_wait)
+		cvmx_pow_tag_sw_wait();
 
 	/* issue PKO DMA */
 	cvmx_write64_uint64(dma_addr, pko_send_dma_data.u64);
@@ -509,16 +693,11 @@ __cvmx_pko3_lmtdma(uint8_t node, uint16_t dq, unsigned numwords)
 
 		/* Retreive real result */
 		pko_status.u64 = cvmx_scratch_read64(scr_off);
-#ifdef	CVMX_PKO3_DQ_MAX_DEPTH
-		__cvmx_pko3_dq_depth[dq] = pko_status.s.depth;
-#endif	/* CVMX_PKO3_DQ_MAX_DEPTH */
+		pParam->depth = pko_status.s.depth;
 	} else {
 		/* Fake positive result */
 		pko_status.s.dqop = dqop;
 		pko_status.s.dqstatus = PKO_DQSTATUS_PASS;
-#ifdef	CVMX_PKO3_DQ_MAX_DEPTH
-		__cvmx_pko3_dq_depth[dq] += 48;
-#endif	/* CVMX_PKO3_DQ_MAX_DEPTH */
 	}
 
 	return pko_status;
@@ -549,6 +728,9 @@ __cvmx_pko3_do_dma(uint8_t node, uint16_t dq, uint64_t cmds[],
 	cvmx_pko_lmtdma_data_t pko_send_dma_data;
 	uint64_t dma_addr;
 	unsigned i, scr_off;
+	cvmx_pko3_dq_params_t *pParam;
+
+	pParam = cvmx_pko3_dq_parameters(node, dq);
 
 	pko_status.u64 = 0;
 
@@ -561,20 +743,20 @@ __cvmx_pko3_do_dma(uint8_t node, uint16_t dq, uint64_t cmds[],
 		dma_addr += (numwords - 1) << 3;
 	}
 
-#ifdef	CVMX_PKO3_DQ_MAX_DEPTH
-	if (cvmx_unlikely(__cvmx_pko3_dq_depth[dq] > CVMX_PKO3_DQ_MAX_DEPTH) &&
+	if (cvmx_unlikely(pParam->depth > pParam->limit) &&
 	    dqop == CVMX_PKO_DQ_SEND) {
 		cvmx_pko_dqx_wm_cnt_t wm_cnt;
 		wm_cnt.u64 = cvmx_read_csr_node(node,CVMX_PKO_DQX_WM_CNT(dq));
-		__cvmx_pko3_dq_depth[dq] = pko_status.s.depth = wm_cnt.s.count;
+		pParam->depth = pko_status.s.depth = wm_cnt.s.count;
 
-		if (pko_status.s.depth > CVMX_PKO3_DQ_MAX_DEPTH) {
+		if (pParam->depth > pParam->limit) {
 			pko_status.s.dqop = dqop;
 			pko_status.s.dqstatus = PKO_DQSTATUS_NOFPABUF;
 			return pko_status;
 		}
+	} else {
+		cvmx_atomic_add32_nosync( &(pParam->depth), 1);
 	}
-#endif
 
 	if (numwords > 15) {
 		cvmx_dprintf("%s: ERROR: Internal error\n",
@@ -611,6 +793,9 @@ __cvmx_pko3_do_dma(uint8_t node, uint16_t dq, uint64_t cmds[],
 	/* Barrier: make sure all prior writes complete before the following */
 	CVMX_SYNCWS;
 
+	/* Wait to finish tag switch just before issueing LMTDMA */
+	cvmx_pow_tag_sw_wait();
+
 	/* issue PKO DMA */
 	cvmx_write64_uint64(dma_addr, pko_send_dma_data.u64);
 
@@ -620,16 +805,11 @@ __cvmx_pko3_do_dma(uint8_t node, uint16_t dq, uint64_t cmds[],
 
 		/* Retreive real result */
 		pko_status.u64 = cvmx_scratch_read64(scr_off);
-#ifdef	CVMX_PKO3_DQ_MAX_DEPTH
-		__cvmx_pko3_dq_depth[dq] = pko_status.s.depth;
-#endif	/* CVMX_PKO3_DQ_MAX_DEPTH */
+		pParam->depth = pko_status.s.depth;
 	} else {
 		/* Fake positive result */
 		pko_status.s.dqop = dqop;
 		pko_status.s.dqstatus = PKO_DQSTATUS_PASS;
-#ifdef	CVMX_PKO3_DQ_MAX_DEPTH
-		__cvmx_pko3_dq_depth[dq] += 48;
-#endif	/* CVMX_PKO3_DQ_MAX_DEPTH */
 	}
 
 	return pko_status;
@@ -647,6 +827,7 @@ __cvmx_pko3_do_dma(uint8_t node, uint16_t dq, uint64_t cmds[],
  * @param len is the total number of bytes in the packet.
  * @param gaura is the aura to free packet buffers after trasnmit.
  * @param pCounter is an address of a 64-bit counter to atomically
+ * @param ptag is a Flow Tag pointer for packet odering or NULL
  * decrement when packet transmission is complete.
  *
  * @return returns 0 if successful and -1 on failure.
@@ -656,7 +837,7 @@ __cvmx_pko3_do_dma(uint8_t node, uint16_t dq, uint64_t cmds[],
  */
 static inline int
 cvmx_pko3_xmit_link_buf(int dq,cvmx_buf_ptr_pki_t pki_ptr,
-	unsigned len, int gaura, uint64_t *pCounter)
+	unsigned len, int gaura, uint64_t *pCounter, uint32_t *ptag)
 {
 	cvmx_pko_query_rtn_t pko_status;
 	cvmx_pko_send_hdr_t hdr_s;
@@ -703,8 +884,12 @@ cvmx_pko3_xmit_link_buf(int dq,cvmx_buf_ptr_pki_t pki_ptr,
 			mem_s.u64);
 	}
 
+	/* To preserve packet order, go atomic with DQ-specific tag */
+	if (ptag != NULL)
+		cvmx_pow_tag_sw_nocheck(*ptag ^ dq, CVMX_POW_TAG_TYPE_ATOMIC);
+ 
 	/* Do LMTDMA */
-	pko_status = __cvmx_pko3_lmtdma(node, dq, nwords);
+	pko_status = __cvmx_pko3_lmtdma(node, dq, nwords, ptag != NULL);
 
 	if (cvmx_likely(pko_status.s.dqstatus == PKO_DQSTATUS_PASS))
 		return 0;
@@ -825,6 +1010,10 @@ extern int cvmx_pko3_interface_options(int xiface, int index,
 extern void cvmx_pko3_dq_options(unsigned node, unsigned dq, bool min_pad);
 
 extern int cvmx_pko3_port_fifo_size(unsigned int xiface, unsigned index);
+extern int cvmx_pko3_channel_credit_level(int node,
+	enum cvmx_pko3_level_e level);
+extern int cvmx_pko3_port_xoff(unsigned int xiface, unsigned index);
+extern int cvmx_pko3_port_xon(unsigned int xiface, unsigned index);
 
 /* Packet descriptor - PKO3 command buffer + internal state */
 typedef struct cvmx_pko3_pdesc_s {
@@ -851,7 +1040,8 @@ typedef struct cvmx_pko3_pdesc_s {
 void cvmx_pko3_pdesc_init(cvmx_pko3_pdesc_t *pdesc);
 int cvmx_pko3_pdesc_from_wqe(cvmx_pko3_pdesc_t *pdesc, cvmx_wqe_78xx_t *wqe,
 	bool free_bufs);
-int cvmx_pko3_pdesc_transmit(cvmx_pko3_pdesc_t *pdesc, uint16_t dq);
+int cvmx_pko3_pdesc_transmit(cvmx_pko3_pdesc_t *pdesc, uint16_t dq,
+	uint32_t *flow_tag);
 int cvmx_pko3_pdesc_notify_decrement(cvmx_pko3_pdesc_t *pdesc,
         volatile uint64_t *p_counter);
 int cvmx_pko3_pdesc_notify_wqe(cvmx_pko3_pdesc_t *pdesc, cvmx_wqe_78xx_t *wqe,

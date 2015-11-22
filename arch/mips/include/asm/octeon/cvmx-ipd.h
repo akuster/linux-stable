@@ -42,7 +42,7 @@
  *
  * Interface to the hardware Input Packet Data unit.
  *
- * <hr>$Revision: 98855 $<hr>
+ * <hr>$Revision: 116854 $<hr>
  */
 
 #ifndef __CVMX_IPD_H__
@@ -50,12 +50,12 @@
 
 #ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx.h>
+#include <asm/octeon/cvmx-fpa.h>
 #include <asm/octeon/cvmx-ipd-defs.h>
-#include <asm/octeon/cvmx-helper-pki.h>
+#include <asm/octeon/cvmx-pki.h>
 #else
-#include "cvmx-helper-pki.h"
+#include "cvmx-pki.h"
 #endif
-
 
 #ifdef	__cplusplus
 /* *INDENT-OFF* */
@@ -109,10 +109,6 @@ extern CVMX_SHARED cvmx_ipd_config_t cvmx_ipd_cfg;
  */
 static inline int64_t cvmx_fpa_get_packet_pool(void)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
-		int node = cvmx_get_node_num();
-		return pki_dflt_aura[node].aura_num;
-	}
 	return (cvmx_ipd_cfg.packet_pool.pool_num);
 }
 
@@ -121,10 +117,6 @@ static inline int64_t cvmx_fpa_get_packet_pool(void)
  */
 static inline uint64_t cvmx_fpa_get_packet_pool_block_size(void)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
-		int node = cvmx_get_node_num();
-		return pki_dflt_pool[node].buffer_size;
-	}
 	return (cvmx_ipd_cfg.packet_pool.buffer_size);
 }
 
@@ -133,10 +125,6 @@ static inline uint64_t cvmx_fpa_get_packet_pool_block_size(void)
  */
 static inline uint64_t cvmx_fpa_get_packet_pool_buffer_count(void)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
-		int node = cvmx_get_node_num();
-		return pki_dflt_pool[node].buffer_count;
-	}
 	return (cvmx_ipd_cfg.packet_pool.buffer_count);
 }
 
@@ -145,10 +133,6 @@ static inline uint64_t cvmx_fpa_get_packet_pool_buffer_count(void)
  */
 static inline int64_t cvmx_fpa_get_wqe_pool(void)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
-		int node = cvmx_get_node_num();
-		return pki_dflt_aura[node].aura_num;
-	}
 	return (cvmx_ipd_cfg.wqe_pool.pool_num);
 }
 
@@ -157,10 +141,6 @@ static inline int64_t cvmx_fpa_get_wqe_pool(void)
  */
 static inline uint64_t cvmx_fpa_get_wqe_pool_block_size(void)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
-		int node = cvmx_get_node_num();
-		return pki_dflt_pool[node].buffer_size;
-	}
 	return (cvmx_ipd_cfg.wqe_pool.buffer_size);
 }
 
@@ -169,10 +149,6 @@ static inline uint64_t cvmx_fpa_get_wqe_pool_block_size(void)
  */
 static inline uint64_t cvmx_fpa_get_wqe_pool_buffer_count(void)
 {
-	if (octeon_has_feature(OCTEON_FEATURE_PKI)) {
-		int node = cvmx_get_node_num();
-		return pki_dflt_pool[node].buffer_count;
-	}
 	return (cvmx_ipd_cfg.wqe_pool.buffer_count);
 }
 
@@ -204,6 +180,52 @@ void cvmx_ipd_set_packet_pool_config(int64_t pool, uint64_t buffer_size,
  */
 void cvmx_ipd_set_wqe_pool_config(int64_t pool, uint64_t buffer_size,
 				       uint64_t buffer_count);
+
+/**
+ * Gets the FPA packet buffer pool parameters.
+ */
+static inline void cvmx_fpa_get_packet_pool_config(int64_t *pool,
+						uint64_t *buffer_size, uint64_t *buffer_count)
+{
+	if (pool != NULL)
+		*pool = cvmx_ipd_cfg.packet_pool.pool_num;
+	if (buffer_size != NULL)
+		*buffer_size = cvmx_ipd_cfg.packet_pool.buffer_size;
+	if (buffer_count != NULL)
+		*buffer_count = cvmx_ipd_cfg.packet_pool.buffer_count;
+}
+
+/**
+ * Sets the FPA packet buffer pool parameters.
+ */
+static inline void cvmx_fpa_set_packet_pool_config(int64_t pool,
+						uint64_t buffer_size, uint64_t buffer_count)
+{
+	cvmx_ipd_set_packet_pool_config(pool, buffer_size, buffer_count);
+}
+
+/**
+ * Gets the FPA WQE pool parameters.
+ */
+static inline void cvmx_fpa_get_wqe_pool_config(int64_t *pool,
+						uint64_t *buffer_size, uint64_t *buffer_count)
+{
+	if (pool != NULL)
+		*pool = cvmx_ipd_cfg.wqe_pool.pool_num;
+	if (buffer_size != NULL)
+		*buffer_size = cvmx_ipd_cfg.wqe_pool.buffer_size;
+	if (buffer_count != NULL)
+		*buffer_count = cvmx_ipd_cfg.wqe_pool.buffer_count;
+}
+
+/**
+ * Sets the FPA WQE pool parameters.
+ */
+static inline void cvmx_fpa_set_wqe_pool_config(int64_t pool,
+						uint64_t buffer_size, uint64_t buffer_count)
+{
+	cvmx_ipd_set_wqe_pool_config(pool, buffer_size, buffer_count);
+}
 
 /**
  * Configure IPD

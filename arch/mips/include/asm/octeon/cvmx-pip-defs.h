@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -864,15 +864,15 @@ static inline uint64_t CVMX_PIP_STAT_INB_PKTS_PKNDX(unsigned long offset)
 #define CVMX_PIP_STAT_INB_PKTS_PKNDX(offset) (CVMX_ADD_IO_SEG(0x00011800A0020000ull) + ((offset) & 63) * 32)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_PIP_SUB_PKIND_FCSX(unsigned long block_id)
+static inline uint64_t CVMX_PIP_SUB_PKIND_FCSX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((block_id == 0)))))
-		cvmx_warn("CVMX_PIP_SUB_PKIND_FCSX(%lu) is invalid on this chip\n", block_id);
+	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0)))))
+		cvmx_warn("CVMX_PIP_SUB_PKIND_FCSX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00011800A0080000ull);
 }
 #else
-#define CVMX_PIP_SUB_PKIND_FCSX(block_id) (CVMX_ADD_IO_SEG(0x00011800A0080000ull))
+#define CVMX_PIP_SUB_PKIND_FCSX(offset) (CVMX_ADD_IO_SEG(0x00011800A0080000ull))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_PIP_TAG_INCX(unsigned long offset)

@@ -657,8 +657,6 @@ cvmx_nand_status_t cvmx_nand_initialize(cvmx_nand_initialize_flags_t flags,
 
 	nand_selected = __cvmx_nand_select(1);
 
-	nand_selected = __cvmx_nand_select(1);
-
 	/* Disable boot mode and reset the fifo */
 	ndf_misc.u64 = cvmx_read_csr(CVMX_NDF_MISC);
 	ndf_misc.s.rd_cmd = 0;
@@ -1170,9 +1168,8 @@ cvmx_nand_status_t cvmx_nand_submit(cvmx_nand_cmd_t cmd)
 		break;
 
 	case 11:		/* Wait status commands take two 64bit words */
-		if (__cvmx_nand_get_free_cmd_bytes() < 16) {
+		if (__cvmx_nand_get_free_cmd_bytes() < 16)
 			CVMX_NAND_RETURN(CVMX_NAND_NO_MEMORY);
-		}
 		cvmx_write_csr(CVMX_NDF_CMD, cmd.u64[1]);
 		cvmx_write_csr(CVMX_NDF_CMD, cmd.u64[0]);
 		break;

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -56,7 +56,7 @@
 #define CVMX_CIU3_BIST CVMX_CIU3_BIST_FUNC()
 static inline uint64_t CVMX_CIU3_BIST_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_CIU3_BIST not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00010100000001C0ull);
 }
@@ -67,7 +67,7 @@ static inline uint64_t CVMX_CIU3_BIST_FUNC(void)
 #define CVMX_CIU3_CONST CVMX_CIU3_CONST_FUNC()
 static inline uint64_t CVMX_CIU3_CONST_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_CIU3_CONST not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001010000000220ull);
 }
@@ -78,7 +78,7 @@ static inline uint64_t CVMX_CIU3_CONST_FUNC(void)
 #define CVMX_CIU3_CTL CVMX_CIU3_CTL_FUNC()
 static inline uint64_t CVMX_CIU3_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_CIU3_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00010100000000E0ull);
 }
@@ -89,7 +89,9 @@ static inline uint64_t CVMX_CIU3_CTL_FUNC(void)
 static inline uint64_t CVMX_CIU3_DESTX_IO_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 4)))))
 		cvmx_warn("CVMX_CIU3_DESTX_IO_INT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001010000210000ull) + ((offset) & 7) * 8;
 }
@@ -100,7 +102,9 @@ static inline uint64_t CVMX_CIU3_DESTX_IO_INT(unsigned long offset)
 static inline uint64_t CVMX_CIU3_DESTX_PP_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 143)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 47))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 143))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 47)))))
 		cvmx_warn("CVMX_CIU3_DESTX_PP_INT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001010000200000ull) + ((offset) & 255) * 8;
 }
@@ -111,7 +115,7 @@ static inline uint64_t CVMX_CIU3_DESTX_PP_INT(unsigned long offset)
 #define CVMX_CIU3_GSTOP CVMX_CIU3_GSTOP_FUNC()
 static inline uint64_t CVMX_CIU3_GSTOP_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_CIU3_GSTOP not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001010000000140ull);
 }
@@ -122,7 +126,9 @@ static inline uint64_t CVMX_CIU3_GSTOP_FUNC(void)
 static inline uint64_t CVMX_CIU3_IDTX_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 255)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_CIU3_IDTX_CTL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001010000110000ull) + ((offset) & 255) * 8;
 }
@@ -133,7 +139,9 @@ static inline uint64_t CVMX_CIU3_IDTX_CTL(unsigned long offset)
 static inline uint64_t CVMX_CIU3_IDTX_IO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 255)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 255))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 255)))))
 		cvmx_warn("CVMX_CIU3_IDTX_IO(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001010000130000ull) + ((offset) & 255) * 8;
 }
@@ -144,7 +152,9 @@ static inline uint64_t CVMX_CIU3_IDTX_IO(unsigned long offset)
 static inline uint64_t CVMX_CIU3_IDTX_PPX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset == 0)) && ((block_id <= 255))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset == 0)) && ((block_id <= 255)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset == 0)) && ((block_id <= 255)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset == 0)) && ((block_id <= 255))))))
 		cvmx_warn("CVMX_CIU3_IDTX_PPX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x0001010000120000ull) + ((block_id) & 255) * 0x20ull;
 }
@@ -155,7 +165,7 @@ static inline uint64_t CVMX_CIU3_IDTX_PPX(unsigned long offset, unsigned long bl
 #define CVMX_CIU3_INTR_RAM_ECC_CTL CVMX_CIU3_INTR_RAM_ECC_CTL_FUNC()
 static inline uint64_t CVMX_CIU3_INTR_RAM_ECC_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_CIU3_INTR_RAM_ECC_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001010000000260ull);
 }
@@ -166,7 +176,7 @@ static inline uint64_t CVMX_CIU3_INTR_RAM_ECC_CTL_FUNC(void)
 #define CVMX_CIU3_INTR_RAM_ECC_ST CVMX_CIU3_INTR_RAM_ECC_ST_FUNC()
 static inline uint64_t CVMX_CIU3_INTR_RAM_ECC_ST_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_CIU3_INTR_RAM_ECC_ST not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001010000000280ull);
 }
@@ -177,7 +187,7 @@ static inline uint64_t CVMX_CIU3_INTR_RAM_ECC_ST_FUNC(void)
 #define CVMX_CIU3_INTR_READY CVMX_CIU3_INTR_READY_FUNC()
 static inline uint64_t CVMX_CIU3_INTR_READY_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_CIU3_INTR_READY not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00010100000002A0ull);
 }
@@ -188,7 +198,7 @@ static inline uint64_t CVMX_CIU3_INTR_READY_FUNC(void)
 #define CVMX_CIU3_INTR_SLOWDOWN CVMX_CIU3_INTR_SLOWDOWN_FUNC()
 static inline uint64_t CVMX_CIU3_INTR_SLOWDOWN_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_CIU3_INTR_SLOWDOWN not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001010000000240ull);
 }
@@ -199,7 +209,9 @@ static inline uint64_t CVMX_CIU3_INTR_SLOWDOWN_FUNC(void)
 static inline uint64_t CVMX_CIU3_ISCX_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1048575)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1048575))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1048575))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1048575)))))
 		cvmx_warn("CVMX_CIU3_ISCX_CTL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001010080000000ull) + ((offset) & 1048575) * 8;
 }
@@ -210,7 +222,9 @@ static inline uint64_t CVMX_CIU3_ISCX_CTL(unsigned long offset)
 static inline uint64_t CVMX_CIU3_ISCX_W1C(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1048575)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1048575))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1048575))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1048575)))))
 		cvmx_warn("CVMX_CIU3_ISCX_W1C(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001010090000000ull) + ((offset) & 1048575) * 8;
 }
@@ -221,7 +235,9 @@ static inline uint64_t CVMX_CIU3_ISCX_W1C(unsigned long offset)
 static inline uint64_t CVMX_CIU3_ISCX_W1S(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1048575)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1048575))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1048575))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1048575)))))
 		cvmx_warn("CVMX_CIU3_ISCX_W1S(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x00010100A0000000ull) + ((offset) & 1048575) * 8;
 }
@@ -232,7 +248,7 @@ static inline uint64_t CVMX_CIU3_ISCX_W1S(unsigned long offset)
 #define CVMX_CIU3_NMI CVMX_CIU3_NMI_FUNC()
 static inline uint64_t CVMX_CIU3_NMI_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_CIU3_NMI not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001010000000160ull);
 }
@@ -243,7 +259,9 @@ static inline uint64_t CVMX_CIU3_NMI_FUNC(void)
 static inline uint64_t CVMX_CIU3_SISCX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 191)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 191))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 191))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 191)))))
 		cvmx_warn("CVMX_CIU3_SISCX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001010000220000ull) + ((offset) & 255) * 8;
 }
@@ -254,7 +272,9 @@ static inline uint64_t CVMX_CIU3_SISCX(unsigned long offset)
 static inline uint64_t CVMX_CIU3_TIMX(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 9)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 9))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 9))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 9)))))
 		cvmx_warn("CVMX_CIU3_TIMX(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001010000010000ull) + ((offset) & 15) * 8;
 }
@@ -285,7 +305,10 @@ union cvmx_ciu3_bist {
 	uint64_t reserved_9_63                : 55;
 #endif
 	} s;
+	struct cvmx_ciu3_bist_s               cn73xx;
 	struct cvmx_ciu3_bist_s               cn78xx;
+	struct cvmx_ciu3_bist_s               cn78xxp2;
+	struct cvmx_ciu3_bist_s               cnf75xx;
 };
 typedef union cvmx_ciu3_bist cvmx_ciu3_bist_t;
 
@@ -298,7 +321,7 @@ union cvmx_ciu3_const {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t dests_io                     : 16; /**< Number of entries in CIU3_DEST(0..4)_IO_INT. */
 	uint64_t pintsn                       : 16; /**< Physical INTSNs implemented. */
-	uint64_t dests_pp                     : 16; /**< Number of entries in CIU3_DEST(0..143)_PP_INT. */
+	uint64_t dests_pp                     : 16; /**< Number of entries in CIU3_DEST(0..47)_PP_INT. */
 	uint64_t idt                          : 16; /**< Number of entries in CIU3_IDT(0..255)_CTL. */
 #else
 	uint64_t idt                          : 16;
@@ -307,7 +330,10 @@ union cvmx_ciu3_const {
 	uint64_t dests_io                     : 16;
 #endif
 	} s;
+	struct cvmx_ciu3_const_s              cn73xx;
 	struct cvmx_ciu3_const_s              cn78xx;
+	struct cvmx_ciu3_const_s              cn78xxp2;
+	struct cvmx_ciu3_const_s              cnf75xx;
 };
 typedef union cvmx_ciu3_const cvmx_ciu3_const_t;
 
@@ -336,7 +362,10 @@ union cvmx_ciu3_ctl {
 	uint64_t reserved_5_63                : 59;
 #endif
 	} s;
+	struct cvmx_ciu3_ctl_s                cn73xx;
 	struct cvmx_ciu3_ctl_s                cn78xx;
+	struct cvmx_ciu3_ctl_s                cn78xxp2;
+	struct cvmx_ciu3_ctl_s                cnf75xx;
 };
 typedef union cvmx_ciu3_ctl cvmx_ciu3_ctl_t;
 
@@ -368,7 +397,10 @@ union cvmx_ciu3_destx_io_int {
 	uint64_t reserved_52_63               : 12;
 #endif
 	} s;
+	struct cvmx_ciu3_destx_io_int_s       cn73xx;
 	struct cvmx_ciu3_destx_io_int_s       cn78xx;
+	struct cvmx_ciu3_destx_io_int_s       cn78xxp2;
+	struct cvmx_ciu3_destx_io_int_s       cnf75xx;
 };
 typedef union cvmx_ciu3_destx_io_int cvmx_ciu3_destx_io_int_t;
 
@@ -400,7 +432,10 @@ union cvmx_ciu3_destx_pp_int {
 	uint64_t reserved_52_63               : 12;
 #endif
 	} s;
+	struct cvmx_ciu3_destx_pp_int_s       cn73xx;
 	struct cvmx_ciu3_destx_pp_int_s       cn78xx;
+	struct cvmx_ciu3_destx_pp_int_s       cn78xxp2;
+	struct cvmx_ciu3_destx_pp_int_s       cnf75xx;
 };
 typedef union cvmx_ciu3_destx_pp_int cvmx_ciu3_destx_pp_int_t;
 
@@ -418,7 +453,10 @@ union cvmx_ciu3_gstop {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_ciu3_gstop_s              cn73xx;
 	struct cvmx_ciu3_gstop_s              cn78xx;
+	struct cvmx_ciu3_gstop_s              cn78xxp2;
+	struct cvmx_ciu3_gstop_s              cnf75xx;
 };
 typedef union cvmx_ciu3_gstop cvmx_ciu3_gstop_t;
 
@@ -454,7 +492,10 @@ union cvmx_ciu3_idtx_ctl {
 	uint64_t reserved_52_63               : 12;
 #endif
 	} s;
+	struct cvmx_ciu3_idtx_ctl_s           cn73xx;
 	struct cvmx_ciu3_idtx_ctl_s           cn78xx;
+	struct cvmx_ciu3_idtx_ctl_s           cn78xxp2;
+	struct cvmx_ciu3_idtx_ctl_s           cnf75xx;
 };
 typedef union cvmx_ciu3_idtx_ctl cvmx_ciu3_idtx_ctl_t;
 
@@ -470,13 +511,16 @@ union cvmx_ciu3_idtx_io {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_5_63                : 59;
 	uint64_t io                           : 5;  /**< Bitmask of which IO bridges or MCD to receive interrupts via this IDT.
-                                                         Enumerated with CIU_DEST_IO_E. */
+                                                         Enumerated by CIU_DEST_IO_E. */
 #else
 	uint64_t io                           : 5;
 	uint64_t reserved_5_63                : 59;
 #endif
 	} s;
+	struct cvmx_ciu3_idtx_io_s            cn73xx;
 	struct cvmx_ciu3_idtx_io_s            cn78xx;
+	struct cvmx_ciu3_idtx_io_s            cn78xxp2;
+	struct cvmx_ciu3_idtx_io_s            cnf75xx;
 };
 typedef union cvmx_ciu3_idtx_io cvmx_ciu3_idtx_io_t;
 
@@ -497,7 +541,18 @@ union cvmx_ciu3_idtx_ppx {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_ciu3_idtx_ppx_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t pp                           : 16; /**< Bitmask of which cores receive interrupts via this IDT. */
+#else
+	uint64_t pp                           : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
 	struct cvmx_ciu3_idtx_ppx_s           cn78xx;
+	struct cvmx_ciu3_idtx_ppx_s           cn78xxp2;
+	struct cvmx_ciu3_idtx_ppx_cn73xx      cnf75xx;
 };
 typedef union cvmx_ciu3_idtx_ppx cvmx_ciu3_idtx_ppx_t;
 
@@ -520,7 +575,10 @@ union cvmx_ciu3_intr_ram_ecc_ctl {
 	uint64_t reserved_3_63                : 61;
 #endif
 	} s;
+	struct cvmx_ciu3_intr_ram_ecc_ctl_s   cn73xx;
 	struct cvmx_ciu3_intr_ram_ecc_ctl_s   cn78xx;
+	struct cvmx_ciu3_intr_ram_ecc_ctl_s   cn78xxp2;
+	struct cvmx_ciu3_intr_ram_ecc_ctl_s   cnf75xx;
 };
 typedef union cvmx_ciu3_intr_ram_ecc_ctl cvmx_ciu3_intr_ram_ecc_ctl_t;
 
@@ -552,7 +610,10 @@ union cvmx_ciu3_intr_ram_ecc_st {
 	uint64_t reserved_52_63               : 12;
 #endif
 	} s;
+	struct cvmx_ciu3_intr_ram_ecc_st_s    cn73xx;
 	struct cvmx_ciu3_intr_ram_ecc_st_s    cn78xx;
+	struct cvmx_ciu3_intr_ram_ecc_st_s    cn78xxp2;
+	struct cvmx_ciu3_intr_ram_ecc_st_s    cnf75xx;
 };
 typedef union cvmx_ciu3_intr_ram_ecc_st cvmx_ciu3_intr_ram_ecc_st_t;
 
@@ -567,8 +628,9 @@ union cvmx_ciu3_intr_ready {
 	uint64_t index                        : 14; /**< Scanner index. If [READY] set, the current index, else the index the scanner stopped at.
                                                          For diagnostic use only. */
 	uint64_t reserved_1_31                : 31;
-	uint64_t ready                        : 1;  /**< CIU is idle. If clear, CIU is performing a background scan searching for secondary
-                                                         interrupts. Write one to force a new scan. For diagnostic use only. */
+	uint64_t ready                        : 1;  /**< CIU background scanner is running. If set, CIU is performing a background scan searching
+                                                         for
+                                                         secondary interrupts. Write one to force a new scan. For diagnostic use only. */
 #else
 	uint64_t ready                        : 1;
 	uint64_t reserved_1_31                : 31;
@@ -576,7 +638,10 @@ union cvmx_ciu3_intr_ready {
 	uint64_t reserved_46_63               : 18;
 #endif
 	} s;
+	struct cvmx_ciu3_intr_ready_s         cn73xx;
 	struct cvmx_ciu3_intr_ready_s         cn78xx;
+	struct cvmx_ciu3_intr_ready_s         cn78xxp2;
+	struct cvmx_ciu3_intr_ready_s         cnf75xx;
 };
 typedef union cvmx_ciu3_intr_ready cvmx_ciu3_intr_ready_t;
 
@@ -599,7 +664,10 @@ union cvmx_ciu3_intr_slowdown {
 	uint64_t reserved_3_63                : 61;
 #endif
 	} s;
+	struct cvmx_ciu3_intr_slowdown_s      cn73xx;
 	struct cvmx_ciu3_intr_slowdown_s      cn78xx;
+	struct cvmx_ciu3_intr_slowdown_s      cn78xxp2;
+	struct cvmx_ciu3_intr_slowdown_s      cnf75xx;
 };
 typedef union cvmx_ciu3_intr_slowdown cvmx_ciu3_intr_slowdown_t;
 
@@ -638,7 +706,10 @@ union cvmx_ciu3_iscx_ctl {
 	uint64_t reserved_24_63               : 40;
 #endif
 	} s;
+	struct cvmx_ciu3_iscx_ctl_s           cn73xx;
 	struct cvmx_ciu3_iscx_ctl_s           cn78xx;
+	struct cvmx_ciu3_iscx_ctl_s           cn78xxp2;
+	struct cvmx_ciu3_iscx_ctl_s           cnf75xx;
 };
 typedef union cvmx_ciu3_iscx_ctl cvmx_ciu3_iscx_ctl_t;
 
@@ -658,7 +729,10 @@ union cvmx_ciu3_iscx_w1c {
 	uint64_t reserved_2_63                : 62;
 #endif
 	} s;
+	struct cvmx_ciu3_iscx_w1c_s           cn73xx;
 	struct cvmx_ciu3_iscx_w1c_s           cn78xx;
+	struct cvmx_ciu3_iscx_w1c_s           cn78xxp2;
+	struct cvmx_ciu3_iscx_w1c_s           cnf75xx;
 };
 typedef union cvmx_ciu3_iscx_w1c cvmx_ciu3_iscx_w1c_t;
 
@@ -678,7 +752,10 @@ union cvmx_ciu3_iscx_w1s {
 	uint64_t reserved_2_63                : 62;
 #endif
 	} s;
+	struct cvmx_ciu3_iscx_w1s_s           cn73xx;
 	struct cvmx_ciu3_iscx_w1s_s           cn78xx;
+	struct cvmx_ciu3_iscx_w1s_s           cn78xxp2;
+	struct cvmx_ciu3_iscx_w1s_s           cnf75xx;
 };
 typedef union cvmx_ciu3_iscx_w1s cvmx_ciu3_iscx_w1s_t;
 
@@ -696,7 +773,18 @@ union cvmx_ciu3_nmi {
 	uint64_t reserved_48_63               : 16;
 #endif
 	} s;
+	struct cvmx_ciu3_nmi_cn73xx {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_16_63               : 48;
+	uint64_t nmi                          : 16; /**< Writing a 1 to a bit sends an NMI pulse to the corresponding core vector. */
+#else
+	uint64_t nmi                          : 16;
+	uint64_t reserved_16_63               : 48;
+#endif
+	} cn73xx;
 	struct cvmx_ciu3_nmi_s                cn78xx;
+	struct cvmx_ciu3_nmi_s                cn78xxp2;
+	struct cvmx_ciu3_nmi_cn73xx           cnf75xx;
 };
 typedef union cvmx_ciu3_nmi cvmx_ciu3_nmi_t;
 
@@ -712,7 +800,10 @@ union cvmx_ciu3_siscx {
 	uint64_t en                           : 64;
 #endif
 	} s;
+	struct cvmx_ciu3_siscx_s              cn73xx;
 	struct cvmx_ciu3_siscx_s              cn78xx;
+	struct cvmx_ciu3_siscx_s              cn78xxp2;
+	struct cvmx_ciu3_siscx_s              cnf75xx;
 };
 typedef union cvmx_ciu3_siscx cvmx_ciu3_siscx_t;
 
@@ -735,7 +826,10 @@ union cvmx_ciu3_timx {
 	uint64_t reserved_37_63               : 27;
 #endif
 	} s;
+	struct cvmx_ciu3_timx_s               cn73xx;
 	struct cvmx_ciu3_timx_s               cn78xx;
+	struct cvmx_ciu3_timx_s               cn78xxp2;
+	struct cvmx_ciu3_timx_s               cnf75xx;
 };
 typedef union cvmx_ciu3_timx cvmx_ciu3_timx_t;
 

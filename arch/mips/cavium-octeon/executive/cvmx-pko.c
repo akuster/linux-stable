@@ -508,7 +508,6 @@ void cvmx_pko_disable(void)
 	pko_reg_flags.s.ena_pko = 0;
 	cvmx_write_csr(CVMX_PKO_REG_FLAGS, pko_reg_flags.u64);
 }
-EXPORT_SYMBOL_GPL(cvmx_pko_disable);
 
 /**
  * @INTERNAL
@@ -527,10 +526,10 @@ static void __cvmx_pko_reset(void)
  */
 void cvmx_pko_shutdown(void)
 {
- 	int queue;
- 
- 	cvmx_pko_disable();
- 
+	int queue;
+
+	cvmx_pko_disable();
+
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 		union cvmx_pko_mem_iqueue_ptrs config;
 		config.u64 = 0;

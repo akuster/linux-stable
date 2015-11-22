@@ -45,12 +45,14 @@
 #include <asm/octeon/cvmx-clock.h>
 #include <asm/octeon/cvmx-hwpko.h>
 #include <asm/octeon/cvmx-pko3.h>
+#include <asm/octeon/cvmx-pko3-resources.h>
 #include <asm/octeon/cvmx-helper-pko3.h>
 #else
 #include "cvmx.h"
 #include "cvmx-hwpko.h"	/* For legacy support */
-#include "cvmx-pko3.h"
 #include "cvmx-fpa3.h"
+#include "cvmx-pko3.h"
+#include "cvmx-pko3-resources.h"
 #include "cvmx-helper-pko3.h"
 #include <errno.h>
 #endif
@@ -66,8 +68,6 @@ static const bool __native_le = 1;
 #define CVMX_DUMP_REGX(reg) 	\
 	if(debug)		\
 	cvmx_dprintf("%s=%#llx\n",#reg,(long long)cvmx_read_csr_node(node,reg))
-
-CVMX_TLS int32_t __cvmx_pko3_dq_depth[1024];
 
 static int cvmx_pko_setup_macs(int node);
 
@@ -131,15 +131,23 @@ int cvmx_pko3_hw_init_global(int node, uint16_t aura)
 	cvmx_pko_enable_t pko_enable;
 	cvmx_pko_dpfi_status_t dpfi_status;
 	cvmx_pko_status_t pko_status;
+	cvmx_pko_shaper_cfg_t shaper_cfg;
 	uint64_t cycles;
 	const unsigned timeout = 100;	/* 100 milliseconds */
 
+	if (node != (aura >> 10))
+		cvmx_printf("WARNING: AURA vs PKO node mismatch\n");
+
 	pko_enable.u64 = cvmx_read_csr_node(node, CVMX_PKO_ENABLE);
 	if (pko_enable.s.enable) {
-		cvmx_dprintf("WARNING: %s: PKO already enabled on node %u\n",
+		cvmx_printf("WARNING: %s: PKO already enabled on node %u\n",
 			__func__, node);
 		return 0;
 	}
+	/* Enable color awareness. */
+	shaper_cfg.u64 = cvmx_read_csr_node(node, CVMX_PKO_SHAPER_CFG);
+	shaper_cfg.s.color_aware = 1;
+	cvmx_write_csr_node(node, CVMX_PKO_SHAPER_CFG, shaper_cfg.u64);
 
 	/* Clear FLUSH command to be sure */
 	pko_flush.u64 = 0;
@@ -171,7 +179,7 @@ int cvmx_pko3_hw_init_global(int node, uint16_t aura)
 
 	if (!pko_status.s.pko_rdy) {
 		dpfi_status.u64 = cvmx_read_csr_node(node, CVMX_PKO_DPFI_STATUS);
-		cvmx_dprintf("ERROR: %s: PKO DFPI failed, "
+		cvmx_printf("ERROR: %s: PKO DFPI failed, "
 			"PKO_STATUS=%#llx DPFI_STATUS=%#llx\n", __func__,
 			(unsigned long long) pko_status.u64,
 			(unsigned long long) dpfi_status.u64);
@@ -201,7 +209,7 @@ int cvmx_pko3_hw_init_global(int node, uint16_t aura)
 	if (pko_status.s.pko_rdy)
 		return 0;
 
-	cvmx_dprintf("ERROR: %s: failed, PKO_STATUS=%#llx\n", __func__,
+	cvmx_printf("ERROR: %s: failed, PKO_STATUS=%#llx\n", __func__,
 		(unsigned long long) pko_status.u64);
 	return -1;
 }
@@ -217,13 +225,14 @@ int cvmx_pko3_hw_disable(int node)
 	cvmx_pko_enable_t pko_enable;
 	cvmx_pko_status_t pko_status;
 	uint64_t cycles;
-	const unsigned timeout = 100;	/* 100 milliseconds */
+	const unsigned timeout = 10;	/* 10 milliseconds */
 	unsigned mac_num, fifo, i;
+	unsigned null_mac_num, null_fifo_num, fifo_grp_count, pq_count;
 
 	(void) pko_status;
 
 	/* Wait until there are no in-flight packets */
-	for(i = mac_num = 0; mac_num < CVMX_PKO_MAX_MACS; mac_num++) {
+	for(i = mac_num = 0; mac_num < __cvmx_pko3_num_macs(); mac_num++) {
 		cvmx_pko_ptfx_status_t ptf_status;
 		ptf_status.u64 =
 			cvmx_read_csr_node(node, CVMX_PKO_PTFX_STATUS(mac_num));
@@ -235,51 +244,63 @@ int cvmx_pko3_hw_disable(int node)
 		if (ptf_status.s.mac_num == 0x1f)
 			continue;
 		if (ptf_status.s.in_flight_cnt != 0) {
-			cvmx_dprintf("%s: MAC %d in-flight %d\n",
+			cvmx_printf("WARNING: %s: MAC %d in-flight %d\n",
 				__func__, mac_num, ptf_status.s.in_flight_cnt);
 			mac_num --;
 			cvmx_wait(1000);
 		}
 	}
 
-	//XXX- try to disable PKO first, then flush the DPFI
 	/* disable PKO - all packets should be out by now */
 	pko_enable.u64 = 0;
 	pko_enable.s.enable = 0;
 	cvmx_write_csr_node(node, CVMX_PKO_ENABLE, pko_enable.u64);
 
-	/* Reset L1_SQ */
-	for(i = 0; i < 32; i++) {
+	/* Assign NULL MAC# for L1/SQ disabled state */
+        if(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		null_mac_num = 0x0f;
+		null_fifo_num = 0x1f;
+		fifo_grp_count = 4;
+		pq_count = 16;
+	} else {
+		null_mac_num = 0x1c;
+		null_fifo_num = 0x1f;
+		fifo_grp_count = 8;
+		pq_count = 32;
+	}
+
+	/* Reset L1_PQ */
+	for(i = 0; i < pq_count; i++) {
 		cvmx_pko_l1_sqx_topology_t pko_l1_topology;
 		cvmx_pko_l1_sqx_shape_t pko_l1_shape;
 		cvmx_pko_l1_sqx_link_t pko_l1_link;
 		pko_l1_topology.u64 = 0;
-		pko_l1_topology.s.link = 0x1c;
+		pko_l1_topology.s.link = null_mac_num;
 		cvmx_write_csr_node(node, CVMX_PKO_L1_SQX_TOPOLOGY(i),
 			pko_l1_topology.u64);
 
 		pko_l1_shape.u64 = 0;
-		pko_l1_shape.s.link = 0x1c;
+		pko_l1_shape.s.link = null_mac_num;
 		cvmx_write_csr_node(node, CVMX_PKO_L1_SQX_SHAPE(i), pko_l1_shape.u64);
 
 		pko_l1_link.u64 = 0;
-		pko_l1_link.s.link = 0x1c;
+		pko_l1_link.s.link = null_mac_num;
 		cvmx_write_csr_node(node, CVMX_PKO_L1_SQX_LINK(i), pko_l1_link.u64);
 
 	}
 
 	/* Reset all MAC configurations */
-	for(mac_num = 0; mac_num < CVMX_PKO_MAX_MACS; mac_num++) {
+	for(mac_num = 0; mac_num < __cvmx_pko3_num_macs(); mac_num++) {
 		cvmx_pko_macx_cfg_t pko_mac_cfg;
 
 		pko_mac_cfg.u64 = 0;
-		pko_mac_cfg.s.fifo_num = 0x1f;
+		pko_mac_cfg.s.fifo_num = null_fifo_num;
 		cvmx_write_csr_node(node, CVMX_PKO_MACX_CFG(mac_num),
 			pko_mac_cfg.u64);
 	}
 
 	/* Reset all FIFO groups */
-	for(fifo = 0; fifo < 8; fifo++) {
+	for(fifo = 0; fifo < fifo_grp_count; fifo++) {
 		cvmx_pko_ptgfx_cfg_t pko_ptgfx_cfg;
 
 		pko_ptgfx_cfg.u64 = cvmx_read_csr_node(node, CVMX_PKO_PTGFX_CFG(fifo));
@@ -298,8 +319,8 @@ int cvmx_pko3_hw_disable(int node)
 	cvmx_write_csr_node(node, CVMX_PKO_DPFI_FLUSH, pko_flush.u64);
 
 	/* Prepare timeout */
-        cycles = cvmx_get_cycle();
-        cycles += cvmx_clock_get_rate(CVMX_CLOCK_CORE)/1000 * timeout;
+	cycles = cvmx_get_cycle();
+	cycles += cvmx_clock_get_rate(CVMX_CLOCK_CORE)/1000 * timeout;
 
 	/* Wait until all pointers have been returned */
 	do {
@@ -307,8 +328,6 @@ int cvmx_pko3_hw_disable(int node)
 		if (cycles < cvmx_get_cycle())
 			break;
 	} while (!dpfi_status.s.cache_flushed);
-
-
 
 	/* disable PKO buffer manager, should return all buffers to FPA */
 	dpfi_enable.u64 = 0;
@@ -325,7 +344,7 @@ int cvmx_pko3_hw_disable(int node)
 	CVMX_DUMP_REGX(CVMX_PKO_DPFI_FLUSH);
 
 	if (dpfi_status.s.cache_flushed == 0) {
-		cvmx_dprintf("%s: ERROR: timeout waiting for PKO3 ptr flush\n",
+		cvmx_printf("%s: ERROR: timeout waiting for PKO3 ptr flush\n",
 			__FUNCTION__);
 		return -1;
 	}
@@ -333,7 +352,33 @@ int cvmx_pko3_hw_disable(int node)
 	return 0;
 }
 
- /** Open configured descriptor queues before queueing packets into them.
+/*
+ * Configure Channel credit level in PKO.
+ *
+ * @param node is to specify the node to which this configuration is applied.
+ * @param level specifies the level at which pko channel queues will be configured,
+ * @return returns 0 if successful and -1 on failure.
+ */
+int cvmx_pko3_channel_credit_level(int node, enum cvmx_pko3_level_e level)
+{
+	union cvmx_pko_channel_level channel_level;
+
+	channel_level.u64 = 0;
+
+	if (level == CVMX_PKO_L2_QUEUES)
+		channel_level.s.cc_level = 0;
+	else if (level == CVMX_PKO_L3_QUEUES)
+		channel_level.s.cc_level = 1;
+	else
+		return -1;
+
+	cvmx_write_csr_node(node, CVMX_PKO_CHANNEL_LEVEL, channel_level.u64);
+
+	return 0;
+
+}
+
+/** Open configured descriptor queues before queueing packets into them.
  *
  * @param node is to specify the node to which this configuration is applied.
  * @param dq is the descriptor queue number to be opened.
@@ -343,9 +388,12 @@ int cvmx_pko_dq_open(int node, int dq)
 {
 	cvmx_pko_query_rtn_t pko_status;
 	pko_query_dqstatus_t dqstatus;
+	cvmx_pko3_dq_params_t *pParam;
 
 	if(debug)
 		cvmx_dprintf("%s: DEBUG: dq %u\n", __FUNCTION__, dq);
+
+	__cvmx_pko3_dq_param_setup(node);
 
 	pko_status = __cvmx_pko3_do_dma(node, dq, NULL, 0, CVMX_PKO_DQ_OPEN);
 
@@ -354,17 +402,25 @@ int cvmx_pko_dq_open(int node, int dq)
 	if (dqstatus == PKO_DQSTATUS_ALREADY)
 		return 0;
 	if (dqstatus != PKO_DQSTATUS_PASS) {
-		cvmx_dprintf("%s: ERROR: Failed to open dq :%u: %s\n",
+		cvmx_printf("%s: ERROR: Failed to open dq :%u: %s\n",
 				__FUNCTION__, dq,
 				pko_dqstatus_error(dqstatus));
 		return -1;
+	}
+
+	/* Setup the descriptor queue software parameters */
+	pParam = cvmx_pko3_dq_parameters(node, dq);
+	if (pParam != NULL) {
+		pParam->depth = pko_status.s.depth;
+		if (pParam->limit == 0)
+			pParam->limit = 1024;	/* last-resort default */
 	}
 
 	return 0;
 }
 
 
- /*
+/**
  * Close a descriptor queue
  *
  * @param node is to specify the node to which this configuration is applied.
@@ -390,7 +446,7 @@ int cvmx_pko3_dq_close(int node, int dq)
 		return 0;
 
 	if (dqstatus != PKO_DQSTATUS_PASS) {
-		cvmx_dprintf("WARNING: %s: Failed to close dq :%u: %s\n",
+		cvmx_printf("WARNING: %s: Failed to close dq :%u: %s\n",
 				__FUNCTION__, dq,
 				pko_dqstatus_error(dqstatus));
 		cvmx_dprintf("DEBUG: %s: dq %u depth %u\n",
@@ -406,6 +462,9 @@ int cvmx_pko3_dq_close(int node, int dq)
  * Before closing a DQ, this call will drain all pending traffic
  * on the DQ to the NULL MAC, which will circumvent any traffic
  * shaping and flow control to quickly reclaim all packet buffers.
+ *
+ * @param node is to specify the node to which this configuration is applied.
+ * @param dq is the descriptor queue number to be drained.
  */
 void cvmx_pko3_dq_drain(int node, int dq)
 {
@@ -444,7 +503,7 @@ int cvmx_pko3_dq_query(int node, int dq)
 	dqstatus = pko_status.s.dqstatus;
 
 	if (dqstatus != PKO_DQSTATUS_PASS) {
-		cvmx_dprintf("%s: ERROR: Failed to query dq :%u: %s\n",
+		cvmx_printf("%s: ERROR: Failed to query dq :%u: %s\n",
 				__FUNCTION__, dq,
 				pko_dqstatus_error(dqstatus));
 		return -1;
@@ -458,15 +517,6 @@ int cvmx_pko3_dq_query(int node, int dq)
 	return pko_status.s.depth;
 }
 
-static struct cvmx_pko3_mac_s {
-	cvmx_helper_interface_mode_t mac_mode;
-	uint8_t fifo_cnt;
-	uint8_t fifo_id;
-	uint8_t pri;
-	uint8_t spd;
-	uint8_t mac_fifo_cnt;
-} cvmx_pko3_mac_table[ CVMX_PKO_MAX_MACS ];
-
 /*
  * PKO initialization of MACs and FIFOs
  *
@@ -476,6 +526,8 @@ static struct cvmx_pko3_mac_s {
  *
  * @param node is to specify which node's pko block for this setup.
  * @return returns 0 if successful and -1 on failure.
+ *
+ * Note: This function contains model-specific code.
  */
 static int cvmx_pko_setup_macs(int node)
 {
@@ -487,13 +539,32 @@ static int cvmx_pko_setup_macs(int node)
 	uint8_t fifo_group_cfg[8];
 	uint8_t fifo_group_spd[8];
 	unsigned fifo_count = 0;
+	unsigned max_fifos = 0, fifo_groups = 0;
+	struct {
+		cvmx_helper_interface_mode_t mac_mode;
+		uint8_t fifo_cnt;
+		uint8_t fifo_id;
+		uint8_t pri;
+		uint8_t spd;
+		uint8_t mac_fifo_cnt;
+	} cvmx_pko3_mac_table[32];
+
+        if(OCTEON_IS_MODEL(OCTEON_CN78XX)) {
+		max_fifos = 28;	/* exclusive of NULL FIFO */
+		fifo_groups = 8;/* inclusive of NULL PTGF */
+	}
+        if(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)) {
+		max_fifos = 16;
+		fifo_groups = 5;
+	}
 
 	/* Initialize FIFO allocation table */
 	memset(&fifo_group_cfg, 0, sizeof(fifo_group_cfg));
 	memset(&fifo_group_spd, 0, sizeof(fifo_group_spd));
+	memset(cvmx_pko3_mac_table, 0, sizeof(cvmx_pko3_mac_table));
 
 	/* Initialize all MACs as disabled */
-	for(mac_num = 0; mac_num < CVMX_PKO_MAX_MACS; mac_num++) {
+	for(mac_num = 0; mac_num < __cvmx_pko3_num_macs(); mac_num++) {
 		cvmx_pko3_mac_table[mac_num].mac_mode =
 			CVMX_HELPER_INTERFACE_MODE_DISABLED;
 		cvmx_pko3_mac_table[mac_num].pri = 0;
@@ -502,8 +573,9 @@ static int cvmx_pko_setup_macs(int node)
 	}
 
 	for(interface = 0; interface < num_interfaces; interface ++) {
-		mode = cvmx_helper_interface_get_mode(interface);
-		num_ports = cvmx_helper_interface_enumerate(interface);
+		int xiface =  cvmx_helper_node_interface_to_xiface(node, interface);
+		mode = cvmx_helper_interface_get_mode(xiface);
+		num_ports = cvmx_helper_interface_enumerate(xiface);
 
 		if(mode == CVMX_HELPER_INTERFACE_MODE_DISABLED)
 			continue;
@@ -519,10 +591,12 @@ static int cvmx_pko_setup_macs(int node)
 			int i;
 
 			/* convert interface/port to mac number */
-			i = __cvmx_pko3_get_mac_num(interface, port);
-			if (i < 0 || i>= CVMX_PKO_MAX_MACS) {
-				cvmx_dprintf("%s: ERROR: interface %d port %d has no MAC\n",
-					__func__, interface, port);
+			i = __cvmx_pko3_get_mac_num(xiface, port);
+			if (i < 0 || i >= (int) __cvmx_pko3_num_macs()) {
+				cvmx_printf("%s: ERROR: interface %d:%u "
+				    "port %d has no MAC %d/%d\n",
+				    __func__, node, interface, port,
+				    i, __cvmx_pko3_num_macs());
 				continue;
 			}
 
@@ -548,10 +622,11 @@ static int cvmx_pko_setup_macs(int node)
 				cvmx_pko3_mac_table[i].pri = 4;
 				cvmx_pko3_mac_table[i].spd = 40;
 				cvmx_pko3_mac_table[i].mac_fifo_cnt = 4;
-			} else if (mode == CVMX_HELPER_INTERFACE_MODE_ILK) {
+			} else if (mode == CVMX_HELPER_INTERFACE_MODE_ILK ||
+				mode == CVMX_HELPER_INTERFACE_MODE_SRIO) {
 				cvmx_pko3_mac_table[i].fifo_cnt = 4;
 				cvmx_pko3_mac_table[i].pri = 3;
-				/* ILK: 40 Gbps or 20 Gbps */
+				/* ILK/SRIO: speed depends on lane count */
 				cvmx_pko3_mac_table[i].spd = 40;
 				cvmx_pko3_mac_table[i].mac_fifo_cnt = 4;
 			} else {
@@ -562,9 +637,8 @@ static int cvmx_pko_setup_macs(int node)
 			}
 
 			if(debug)
-				cvmx_dprintf("%s: intf %u port %u %s "
-					"mac %02u cnt %u spd %u\n",
-				__FUNCTION__, interface, port,
+				cvmx_dprintf("%s: intf %d:%u port %u %s mac %02u cnt %u spd %u\n",
+					     __FUNCTION__, node, interface, port,
 				cvmx_helper_interface_mode_to_string(mode),
 				i, cvmx_pko3_mac_table[i].fifo_cnt,
 				cvmx_pko3_mac_table[i].spd);
@@ -573,7 +647,7 @@ static int cvmx_pko_setup_macs(int node)
 	} /* for interface */
 
 	/* Count the number of requested FIFOs */
-	for(fifo_count = mac_num = 0; mac_num < CVMX_PKO_MAX_MACS; mac_num ++)
+	for(fifo_count = mac_num = 0; mac_num < __cvmx_pko3_num_macs(); mac_num ++)
 		fifo_count += cvmx_pko3_mac_table[mac_num].fifo_cnt;
 
 	if(debug)
@@ -582,15 +656,15 @@ static int cvmx_pko_setup_macs(int node)
 
 	/* Heuristically trim FIFO count to fit in available number */
 	pri = 1; cnt = 4;
-	while(fifo_count > 28) {
-		for(mac_num=0; mac_num < CVMX_PKO_MAX_MACS; mac_num ++) {
+	while(fifo_count > max_fifos) {
+		for(mac_num=0; mac_num < __cvmx_pko3_num_macs(); mac_num ++) {
 			if (cvmx_pko3_mac_table[mac_num].fifo_cnt == cnt &&
 			    cvmx_pko3_mac_table[mac_num].pri <= pri) {
 				cvmx_pko3_mac_table[mac_num].fifo_cnt >>= 1;
 				fifo_count -=
 					cvmx_pko3_mac_table[mac_num].fifo_cnt;
 			}
-			if (fifo_count <= 28)
+			if (fifo_count <= max_fifos)
 				break;
 		}
 		if (pri >= 4) {
@@ -608,13 +682,13 @@ static int cvmx_pko_setup_macs(int node)
 
 
 	/* Special case for NULL Virtual FIFO */
-	fifo_group_cfg[28 >> 2] = 0;
+	fifo_group_cfg[fifo_groups-1] = 0;
 	/* there is no MAC connected to NULL FIFO */
 
 	/* Configure MAC units, and attach a FIFO to each */
 	for(fifo = 0, cnt = 4; cnt > 0; cnt >>= 1 ) {
 		unsigned g;
-		for(mac_num = 0; mac_num < CVMX_PKO_MAX_MACS; mac_num++) {
+		for(mac_num = 0; mac_num < __cvmx_pko3_num_macs(); mac_num++) {
 			if(cvmx_pko3_mac_table[mac_num].fifo_cnt < cnt ||
 			  cvmx_pko3_mac_table[mac_num].fifo_id != 0x1f)
 				continue;
@@ -639,16 +713,16 @@ static int cvmx_pko_setup_macs(int node)
 			else if (cnt == 1)
 				fifo_group_cfg[g] = 0; /* 2.5k x 4 */
 			else
-				cvmx_dprintf("%s: internal error\n",__func__);
+				cvmx_printf("ERROR: %s: internal error\n",__func__);
 
 			fifo += cnt;
 		}
 	}
 
 	/* Check if there was no error in FIFO allocation */
-	if( fifo > 28 ){
-		cvmx_dprintf("%s: ERROR: Internal error FIFO %u\n",
-			__FUNCTION__, fifo);
+	if (fifo > max_fifos) {
+		cvmx_printf("ERROR: %s: Internal error FIFO %u\n",
+			__func__, fifo);
 		return -1;
 	}
 
@@ -657,7 +731,7 @@ static int cvmx_pko_setup_macs(int node)
 			__FUNCTION__, fifo);
 
 	/* Now configure all FIFO groups */
-	for(fifo = 0; fifo < 8; fifo++) {
+	for(fifo = 0; fifo < fifo_groups; fifo++) {
 		cvmx_pko_ptgfx_cfg_t pko_ptgfx_cfg;
 
 		pko_ptgfx_cfg.u64 =
@@ -689,8 +763,8 @@ static int cvmx_pko_setup_macs(int node)
 					pko_ptgfx_cfg.u64);
 	}
 
-	/* Configure all 28 MACs assigned FIFO number */
-	for(mac_num = 0; mac_num < CVMX_PKO_MAX_MACS; mac_num++) {
+	/* Configure all MACs assigned FIFO number */
+	for(mac_num = 0; mac_num < __cvmx_pko3_num_macs(); mac_num++) {
 		cvmx_pko_macx_cfg_t pko_mac_cfg;
 
 		if(debug)
@@ -707,9 +781,8 @@ static int cvmx_pko_setup_macs(int node)
 			pko_mac_cfg.u64);
 	}
 
-
 	/* Setup PKO MCI0/MCI1/SKID credits */
-	for(mac_num = 0; mac_num < CVMX_PKO_MAX_MACS; mac_num++) {
+	for(mac_num = 0; mac_num < __cvmx_pko3_num_macs(); mac_num++) {
 		cvmx_pko_mci0_max_credx_t pko_mci0_max_cred;
 		cvmx_pko_mci1_max_credx_t pko_mci1_max_cred;
 		cvmx_pko_macx_cfg_t pko_mac_cfg;
@@ -731,28 +804,32 @@ static int cvmx_pko_setup_macs(int node)
 
 		fifo_size = (2 * 1024) + (1024 / 2); /* 2.5KiB */
 		fifo_credit = pko_fifo_cnt * fifo_size;
+		
+		if (mac_num == 0) {
+			/* loopback */
+			mac_credit = 4096; /* From HRM Sec 13.0 */
+			skid_credit = 0;
+		} else if (mac_num == 1) {
+			 /* DPI */
+			mac_credit = 2 * 1024;
+			skid_credit = 0;
+		} else if (octeon_has_feature(OCTEON_FEATURE_ILK) &&
+			(mac_num & 0xfe) == 2) {
+			/* ILK0, ILK1: MAC 2,3 */
+			mac_credit = 4 * 1024; /* 4KB fifo */
+			skid_credit = 0;
+		} else if (octeon_has_feature(OCTEON_FEATURE_SRIO) &&
+			(mac_num >= 6) && (mac_num <= 9)) {
+			/* SRIO0, SRIO1: MAC 6..9 */
+			mac_credit = 1024 / 2;
+			skid_credit = 0;
+		} else {
+			/* BGX */
+			mac_credit = mac_fifo_cnt * 8 * 1024;
+			skid_credit = mac_fifo_cnt * 256;
+		}
 
-		switch (mac_num) {
-			case 0: /* loopback */
-				mac_credit = 4096; /* From HRM Sec 13.0 */
-				skid_credit = 0;
-				break;
-			case 1: /* DPI */
-				mac_credit = 2 * 1024;
-				skid_credit = 0;
-				break;
-			case 2: /* ILK0 */
-			case 3: /* ILK1 */
-				mac_credit = 4 * 1024; /* 4KB fifo */
-				skid_credit = 0;
-				break;
-			default: /* BGX */
-				mac_credit = mac_fifo_cnt * 8 * 1024;
-				skid_credit = mac_fifo_cnt * 256;
-				break;
-		} /* switch mac_num */
-
-		if(debug) cvmx_dprintf(
+		if (debug) cvmx_dprintf(
 			"%s: mac %u "
 			"pko_fifo_credit=%u mac_credit=%u\n",
 			__FUNCTION__, mac_num, fifo_credit, mac_credit);
@@ -763,11 +840,14 @@ static int cvmx_pko_setup_macs(int node)
 
 		/* Check for overflow */
 		if (pko_mci0_max_cred.s.max_cred_lim != tmp) {
-			cvmx_dprintf("%s: MCI0 credit overflow\n",__FUNCTION__);
+			cvmx_printf("WARNING: %s: MCI0 credit overflow\n",__func__);
 			pko_mci0_max_cred.s.max_cred_lim = 0xfff;
 		}
 
-		cvmx_write_csr_node(node, CVMX_PKO_MCI0_MAX_CREDX(mac_num),
+		/* Pass 2 PKO hardware does not use the MCI0 credits */
+		if(OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
+			cvmx_write_csr_node(node,
+					CVMX_PKO_MCI0_MAX_CREDX(mac_num),
 					pko_mci0_max_cred.u64);
 
 		/* The original CSR formula is the correct one after all */
@@ -777,7 +857,7 @@ static int cvmx_pko_setup_macs(int node)
 
 		/* Check for overflow */
 		if (pko_mci1_max_cred.s.max_cred_lim != tmp) {
-			cvmx_dprintf("%s: MCI1 credit overflow\n",__FUNCTION__);
+			cvmx_printf("WARNING: %s: MCI1 credit overflow\n",__func__);
 			pko_mci1_max_cred.s.max_cred_lim = 0xfff;
 		}
 
@@ -874,7 +954,7 @@ int cvmx_pko3_interface_options(int xiface, int index,
 
 	mac_num = __cvmx_pko3_get_mac_num(xiface, index);
 	if(mac_num < 0) {
-		cvmx_dprintf("ERROR: %s: invalid interface %u:%u/%u\n",
+		cvmx_printf("ERROR: %s: invalid interface %u:%u/%u\n",
 			__func__, xi.node, xi.interface, index);
 		return -1;
 	}
@@ -883,7 +963,7 @@ int cvmx_pko3_interface_options(int xiface, int index,
 
 	/* If MAC is not assigned, return an error */
 	if (pko_mac_cfg.s.fifo_num == 0x1f) {
-		cvmx_dprintf("ERROR: %s: unused interface %u:%u/%u\n",
+		cvmx_printf("ERROR: %s: unused interface %u:%u/%u\n",
 			__func__, xi.node, xi.interface, index);
 		return -1;
 	}
@@ -923,6 +1003,10 @@ EXPORT_SYMBOL(cvmx_pko3_interface_options);
  * The `min_pad` parameter must be in agreement with the interface-level
  * padding option for all descriptor queues assigned to that particular
  * interface/port.
+ *
+ * @param node on which to operate
+ * @param dq descriptor queue to set
+ * @param min_pad minimum padding to set for dq
  */
 void cvmx_pko3_dq_options(unsigned node, unsigned dq, bool min_pad)
 {
@@ -1060,6 +1144,165 @@ cvmx_pko3_port_fifo_size(unsigned int xiface, unsigned index)
 }
 EXPORT_SYMBOL(cvmx_pko3_port_fifo_size);
 
+/**
+ * @INTERNAL
+ *
+ * Stop an interface port transmission and wait until its FIFO is emopty.
+ *
+ */
+int cvmx_pko3_port_xoff(unsigned int xiface, unsigned index)
+{
+	cvmx_pko_l1_sqx_topology_t pko_l1_topology;
+	cvmx_pko_l1_sqx_sw_xoff_t pko_l1_xoff;
+	cvmx_pko_ptfx_status_t pko_ptfx_status;
+	cvmx_pko_macx_cfg_t pko_mac_cfg;
+	cvmx_pko_mci1_cred_cntx_t cred_cnt;
+	unsigned node, pq, num_pq, mac_num, fifo_num;
+	int ret;
+	cvmx_xiface_t xi = cvmx_helper_xiface_to_node_interface(xiface);
+
+	node = xi.node;
+	ret = __cvmx_pko3_get_mac_num(xiface, index);
+
+	if (debug)
+		cvmx_dprintf("%s: iface=%u:%u/%u mac %d\n",
+			__func__, xi.node, xi.interface, index, ret);
+
+	if (ret < 0)
+		return ret;
+
+	mac_num = ret;
+
+	if (mac_num == 0x1f)
+		return 0;
+
+	pko_mac_cfg.u64 = cvmx_read_csr_node(node, CVMX_PKO_MACX_CFG(mac_num));
+	fifo_num = pko_mac_cfg.s.fifo_num;
+
+	/* Verify the FIFO number is correct */
+	pko_ptfx_status.u64 = cvmx_read_csr_node(node,
+			CVMX_PKO_PTFX_STATUS(fifo_num));
+
+	if (debug)
+		cvmx_dprintf("%s: mac %d fifo %d, fifo mac %d\n",
+		__func__, mac_num, fifo_num, pko_ptfx_status.s.mac_num);
+
+	cvmx_warn_if (pko_ptfx_status.s.mac_num != mac_num,
+		"PKO3 FIFO number does not match MAC\n");
+
+	num_pq = cvmx_pko3_num_level_queues(CVMX_PKO_PORT_QUEUES);
+	/* Fint the L1/PQ connected to the MAC for this interface */
+	for (pq = 0; pq < num_pq; pq ++) {
+		pko_l1_topology.u64 = cvmx_read_csr_node(node,
+			CVMX_PKO_L1_SQX_TOPOLOGY(pq));
+		if (pko_l1_topology.s.link == mac_num)
+			break;
+	}
+
+
+	if (debug)
+		cvmx_dprintf("%s: L1_PQ%u LINK %d MAC_NUM %d\n",
+			__func__, pq, pko_l1_topology.s.link, mac_num);
+
+	if (pq >= num_pq)
+		return -1;
+
+	if (debug) {
+		pko_ptfx_status.u64 = cvmx_read_csr_node(node,
+			CVMX_PKO_PTFX_STATUS(fifo_num));
+		ret = pko_ptfx_status.s.in_flight_cnt;
+		cvmx_dprintf("%s: FIFO %d in-flight %d packets\n",
+		    __func__, fifo_num, ret);
+	}
+
+	/* Turn the XOFF bit on */
+	pko_l1_xoff.u64 = cvmx_read_csr_node(node,
+		CVMX_PKO_L1_SQX_SW_XOFF(pq));
+	pko_l1_xoff.s.xoff = 1;
+	cvmx_write_csr_node(node,
+		CVMX_PKO_L1_SQX_SW_XOFF(pq), pko_l1_xoff.u64);
+
+	ret = 1 << 22;
+	/* Wait for PKO TX FIFO to drain */
+	do {
+		CVMX_SYNC;
+		pko_ptfx_status.u64 = cvmx_read_csr_node(node,
+			CVMX_PKO_PTFX_STATUS(fifo_num));
+	} while (pko_ptfx_status.s.in_flight_cnt != 0 && ret--);
+
+	if (pko_ptfx_status.s.in_flight_cnt != 0) {
+		cvmx_warn("%s: FIFO %d failed to drain\n",
+		    __func__, fifo_num);
+	}
+
+	if (debug)
+		cvmx_dprintf("%s: FIFO %d drained in %d cycles\n",
+		    __func__, fifo_num, (1 << 22) - ret);
+
+	/* Wait for MAC TX FIFO to drain. */
+	do {
+		cred_cnt.u64 = cvmx_read_csr_node(node, CVMX_PKO_MCI1_CRED_CNTX(mac_num));
+	} while (cred_cnt.s.cred_cnt != 0);
+
+	return 0;
+}
+
+/**
+ * @INTERNAL
+ *
+ * Resume transmission on an interface port.
+ *
+ */
+int cvmx_pko3_port_xon(unsigned int xiface, unsigned index)
+{
+	cvmx_pko_l1_sqx_topology_t pko_l1_topology;
+	cvmx_pko_l1_sqx_sw_xoff_t pko_l1_xoff;
+	unsigned node, pq, num_pq, mac_num;
+	int ret;
+        cvmx_xiface_t xi = cvmx_helper_xiface_to_node_interface(xiface);
+
+	num_pq = cvmx_pko3_num_level_queues(CVMX_PKO_PORT_QUEUES);
+	node = xi.node;
+	ret = __cvmx_pko3_get_mac_num(xiface, index);
+
+	if (debug)
+		cvmx_dprintf("%s: iface=%u:%u/%u mac %d\n",
+			__func__, xi.node, xi.interface, index, ret);
+
+	if (ret < 0)
+		return ret;
+
+	mac_num = ret;
+
+	if (mac_num == 0x1f)
+		return 0;
+
+	/* Fint the L1/PQ connected to the MAC for this interface */
+	for (pq = 0; pq < num_pq; pq ++) {
+		pko_l1_topology.u64 = cvmx_read_csr_node(node,
+			CVMX_PKO_L1_SQX_TOPOLOGY(pq));
+		if (pko_l1_topology.s.link == mac_num)
+			break;
+	}
+
+	if (debug)
+		cvmx_dprintf("%s: L1_PQ%u LINK %d MAC_NUM %d\n",
+			__func__, pq, pko_l1_topology.s.link, mac_num);
+
+	if (pq >= num_pq)
+		return -1;
+
+	/* Turn the XOFF bit off */
+	pko_l1_xoff.u64 = cvmx_read_csr_node(node,
+		CVMX_PKO_L1_SQX_SW_XOFF(pq));
+	ret = pko_l1_xoff.s.xoff;
+	pko_l1_xoff.s.xoff = 0;
+	cvmx_write_csr_node(node,
+		CVMX_PKO_L1_SQX_SW_XOFF(pq), pko_l1_xoff.u64);
+
+	return ret;
+}
+
 /******************************************************************************
 *
 * New PKO3 API - Experimental
@@ -1135,7 +1378,7 @@ int cvmx_pko3_pdesc_from_wqe(cvmx_pko3_pdesc_t *pdesc, cvmx_wqe_78xx_t *wqe,
 
 	/* Verufy the WQE is legit */
 	if (cvmx_unlikely(wqe->word2.software || wqe->pki_wqe_translated)) {
-		cvmx_dprintf("%s: ERROR: invalid WQE\n", __func__);
+		cvmx_printf("%s: ERROR: invalid WQE\n", __func__);
 		return -1;
 	}
 
@@ -1179,7 +1422,7 @@ int cvmx_pko3_pdesc_from_wqe(cvmx_pko3_pdesc_t *pdesc, cvmx_wqe_78xx_t *wqe,
 	hdr_s->s.le = style_buf_reg.s.pkt_lend;
 #if	CVMX_ENABLE_PARAMETER_CHECKING
 	if (hdr_s->s.le != __native_le)
-		cvmx_dprintf("%s: WARNING: "
+		cvmx_printf("%s: WARNING: "
 			"packet endianness mismatch\n",__func__);
 #endif
 
@@ -1256,7 +1499,7 @@ static int cvmx_pko3_pdesc_subdc_add(cvmx_pko3_pdesc_t *pdesc,
 
         /* SEND_JUMP_S missing on Pass1 */
         if(OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X)) {
-                cvmx_dprintf("%s: ERROR: too many segments\n",__func__);
+                cvmx_printf("%s: ERROR: too many segments\n",__func__);
                 return -E2BIG;
         }
 
@@ -1300,7 +1543,7 @@ static int cvmx_pko3_pdesc_subdc_add(cvmx_pko3_pdesc_t *pdesc,
 
 	/* Avoid overrunning jump buffer */
 	if (i >= (jump_buf_size-2)) {
-                cvmx_dprintf("%s: ERROR: too many segments\n",__func__);
+                cvmx_printf("%s: ERROR: too many segments\n",__func__);
 		return -E2BIG;
 	}
 
@@ -1323,10 +1566,12 @@ static int cvmx_pko3_pdesc_subdc_add(cvmx_pko3_pdesc_t *pdesc,
  *
  * @param pdesc Packet Desciptor.
  * @param dq Descriptor Queue associated with the desired output port
+ * @param tag Flow Tag pointer for packet ordering or NULL
  * @return Returns 0 on success, -1 on error.
  *
  */
-int cvmx_pko3_pdesc_transmit(cvmx_pko3_pdesc_t *pdesc, uint16_t dq)
+int cvmx_pko3_pdesc_transmit(cvmx_pko3_pdesc_t *pdesc, uint16_t dq,
+	uint32_t *tag)
 {
         cvmx_pko_query_rtn_t pko_status;
 	cvmx_pko_send_aura_t aura_s;
@@ -1360,6 +1605,10 @@ int cvmx_pko3_pdesc_transmit(cvmx_pko3_pdesc_t *pdesc, uint16_t dq)
 	port_node = dq >> 10;
 	dq &= (1<<10)-1;
 
+	/* To preserve packet order, go atomic with DQ-specific tag */
+	if (tag != NULL)
+		cvmx_pow_tag_sw_nocheck(*tag ^ dq, CVMX_POW_TAG_TYPE_ATOMIC);
+
         /* Send the PKO3 command into the Descriptor Queue */
         pko_status = __cvmx_pko3_do_dma(port_node, dq,
                 pdesc->word, pdesc->num_words, CVMX_PKO_DQ_SEND);
@@ -1369,7 +1618,7 @@ int cvmx_pko3_pdesc_transmit(cvmx_pko3_pdesc_t *pdesc, uint16_t dq)
                 return 0;
 
 #if 0
-        cvmx_dprintf("%s: ERROR: failed to enqueue: %s\n",
+        cvmx_printf("%s: ERROR: failed to enqueue: %s\n",
                                 __FUNCTION__,
                                 pko_dqstatus_error(pko_status.s.dqstatus));
 #endif
@@ -1442,7 +1691,7 @@ int cvmx_pko3_pdesc_buf_append(cvmx_pko3_pdesc_t *pdesc, void *p_data,
 	int rc;
 
 	if (pdesc->mem_s_ix > 0) {
-		cvmx_dprintf("%s: subcommand restriction violated\n", __func__);
+		cvmx_printf("ERROR: %s: subcommand restriction violated\n", __func__);
 		return -1;
 	}
 
@@ -1497,8 +1746,9 @@ int cvmx_pko3_pdesc_buf_append(cvmx_pko3_pdesc_t *pdesc, void *p_data,
  * @param wqe Work Queue Entry in a model-native format.
  * @param node The OCI node of the SSO where the WQE will be delivered.
  * @param group The SSO group where the WQE is delivered.
- * @param tt The SSO Tag Type for the WQE. If tt is not NULL, WQE should
- * contain a valid tag value for the work entry.
+ * @param tt The SSO Tag Type for the WQE. If tt is not NULL, tag should be a
+ * valid tag value.
+ * @param tag Valid tag value to assign to WQE
  *
  * @return Returns 0 on success, -1 on error.
  *
@@ -1519,7 +1769,7 @@ int cvmx_pko3_pdesc_notify_wqe(cvmx_pko3_pdesc_t *pdesc, cvmx_wqe_78xx_t *wqe,
 	 * and it must be the very last subcommand
 	 */
 	if (pdesc->send_work_s != 0) {
-		cvmx_dprintf("%s: Only one SEND_WORK_S is allowed\n", __func__);
+		cvmx_printf("ERROR: %s: Only one SEND_WORK_S is allowed\n", __func__);
 		return -1;
 	}
 
@@ -1599,7 +1849,7 @@ int cvmx_pko3_pdesc_notify_decrement(cvmx_pko3_pdesc_t *pdesc,
  * Clearing of a single byte is requested by this function.
  *
  * @param pdesc Packet Descriptor.
- * @param p_counter A pointer to a byte location.
+ * @param p_mem A pointer to a byte location.
  *
  * @return Returns 0 on success, -1 on failure.
  */

@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -64,12 +64,14 @@ static inline uint64_t CVMX_FPA_ADDR_RANGE_ERROR_FUNC(void)
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180028000458ull);
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001280000000458ull);
 			break;
 	}
 	cvmx_warn("CVMX_FPA_ADDR_RANGE_ERROR not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x0001180028000458ull);
+	return CVMX_ADD_IO_SEG(0x0001280000000458ull);
 }
 #else
 #define CVMX_FPA_ADDR_RANGE_ERROR CVMX_FPA_ADDR_RANGE_ERROR_FUNC()
@@ -82,17 +84,21 @@ static inline uint64_t CVMX_FPA_ADDR_RANGE_ERROR_FUNC(void)
 		case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180028000458ull);
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001280000000458ull);
 	}
-	return CVMX_ADD_IO_SEG(0x0001180028000458ull);
+	return CVMX_ADD_IO_SEG(0x0001280000000458ull);
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_FPA_AURAX_CFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 511)))))
 		cvmx_warn("CVMX_FPA_AURAX_CFG(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280020100000ull) + ((offset) & 1023) * 8;
 }
@@ -103,7 +109,9 @@ static inline uint64_t CVMX_FPA_AURAX_CFG(unsigned long offset)
 static inline uint64_t CVMX_FPA_AURAX_CNT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 511)))))
 		cvmx_warn("CVMX_FPA_AURAX_CNT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280020200000ull) + ((offset) & 1023) * 8;
 }
@@ -114,7 +122,9 @@ static inline uint64_t CVMX_FPA_AURAX_CNT(unsigned long offset)
 static inline uint64_t CVMX_FPA_AURAX_CNT_ADD(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 511)))))
 		cvmx_warn("CVMX_FPA_AURAX_CNT_ADD(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280020300000ull) + ((offset) & 1023) * 8;
 }
@@ -125,7 +135,9 @@ static inline uint64_t CVMX_FPA_AURAX_CNT_ADD(unsigned long offset)
 static inline uint64_t CVMX_FPA_AURAX_CNT_LEVELS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 511)))))
 		cvmx_warn("CVMX_FPA_AURAX_CNT_LEVELS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280020800000ull) + ((offset) & 1023) * 8;
 }
@@ -136,7 +148,9 @@ static inline uint64_t CVMX_FPA_AURAX_CNT_LEVELS(unsigned long offset)
 static inline uint64_t CVMX_FPA_AURAX_CNT_LIMIT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 511)))))
 		cvmx_warn("CVMX_FPA_AURAX_CNT_LIMIT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280020400000ull) + ((offset) & 1023) * 8;
 }
@@ -147,7 +161,9 @@ static inline uint64_t CVMX_FPA_AURAX_CNT_LIMIT(unsigned long offset)
 static inline uint64_t CVMX_FPA_AURAX_CNT_THRESHOLD(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 511)))))
 		cvmx_warn("CVMX_FPA_AURAX_CNT_THRESHOLD(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280020500000ull) + ((offset) & 1023) * 8;
 }
@@ -158,7 +174,9 @@ static inline uint64_t CVMX_FPA_AURAX_CNT_THRESHOLD(unsigned long offset)
 static inline uint64_t CVMX_FPA_AURAX_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 511)))))
 		cvmx_warn("CVMX_FPA_AURAX_INT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280020600000ull) + ((offset) & 1023) * 8;
 }
@@ -169,7 +187,9 @@ static inline uint64_t CVMX_FPA_AURAX_INT(unsigned long offset)
 static inline uint64_t CVMX_FPA_AURAX_POOL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 511)))))
 		cvmx_warn("CVMX_FPA_AURAX_POOL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280020000000ull) + ((offset) & 1023) * 8;
 }
@@ -180,7 +200,9 @@ static inline uint64_t CVMX_FPA_AURAX_POOL(unsigned long offset)
 static inline uint64_t CVMX_FPA_AURAX_POOL_LEVELS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 511))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1023))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 511)))))
 		cvmx_warn("CVMX_FPA_AURAX_POOL_LEVELS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280020700000ull) + ((offset) & 1023) * 8;
 }
@@ -207,12 +229,14 @@ static inline uint64_t CVMX_FPA_BIST_STATUS_FUNC(void)
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00011800280000E8ull);
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00012800000000E8ull);
 			break;
 	}
 	cvmx_warn("CVMX_FPA_BIST_STATUS not supported on this chip\n");
-	return CVMX_ADD_IO_SEG(0x00011800280000E8ull);
+	return CVMX_ADD_IO_SEG(0x00012800000000E8ull);
 }
 #else
 #define CVMX_FPA_BIST_STATUS CVMX_FPA_BIST_STATUS_FUNC()
@@ -233,17 +257,19 @@ static inline uint64_t CVMX_FPA_BIST_STATUS_FUNC(void)
 		case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00011800280000E8ull);
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x00012800000000E8ull);
 	}
-	return CVMX_ADD_IO_SEG(0x00011800280000E8ull);
+	return CVMX_ADD_IO_SEG(0x00012800000000E8ull);
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 #define CVMX_FPA_CLK_COUNT CVMX_FPA_CLK_COUNT_FUNC()
 static inline uint64_t CVMX_FPA_CLK_COUNT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_FPA_CLK_COUNT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x00012800000000F0ull);
 }
@@ -255,7 +281,7 @@ static inline uint64_t CVMX_FPA_CLK_COUNT_FUNC(void)
 #define CVMX_FPA_ECC_CTL CVMX_FPA_ECC_CTL_FUNC()
 static inline uint64_t CVMX_FPA_ECC_CTL_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_FPA_ECC_CTL not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001280000000058ull);
 }
@@ -266,7 +292,7 @@ static inline uint64_t CVMX_FPA_ECC_CTL_FUNC(void)
 #define CVMX_FPA_ECC_INT CVMX_FPA_ECC_INT_FUNC()
 static inline uint64_t CVMX_FPA_ECC_INT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_FPA_ECC_INT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001280000000068ull);
 }
@@ -277,7 +303,7 @@ static inline uint64_t CVMX_FPA_ECC_INT_FUNC(void)
 #define CVMX_FPA_ERR_INT CVMX_FPA_ERR_INT_FUNC()
 static inline uint64_t CVMX_FPA_ERR_INT_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_FPA_ERR_INT not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001280000000040ull);
 }
@@ -377,7 +403,7 @@ static inline uint64_t CVMX_FPA_FPFX_SIZE(unsigned long offset)
 #define CVMX_FPA_GEN_CFG CVMX_FPA_GEN_CFG_FUNC()
 static inline uint64_t CVMX_FPA_GEN_CFG_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_FPA_GEN_CFG not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001280000000050ull);
 }
@@ -401,7 +427,9 @@ static inline uint64_t CVMX_FPA_PACKET_THRESHOLD_FUNC(void)
 static inline uint64_t CVMX_FPA_POOLX_AVAILABLE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_FPA_POOLX_AVAILABLE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280010300000ull) + ((offset) & 63) * 8;
 }
@@ -412,7 +440,9 @@ static inline uint64_t CVMX_FPA_POOLX_AVAILABLE(unsigned long offset)
 static inline uint64_t CVMX_FPA_POOLX_CFG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_FPA_POOLX_CFG(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280010000000ull) + ((offset) & 63) * 8;
 }
@@ -434,13 +464,18 @@ static inline uint64_t CVMX_FPA_POOLX_END_ADDR(unsigned long offset)
 			if ((offset <= 8))
 				return CVMX_ADD_IO_SEG(0x0001180028000358ull) + ((offset) & 15) * 8;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return CVMX_ADD_IO_SEG(0x0001280010600000ull) + ((offset) & 31) * 8;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 63))
 				return CVMX_ADD_IO_SEG(0x0001280010600000ull) + ((offset) & 63) * 8;
 			break;
 	}
 	cvmx_warn("CVMX_FPA_POOLX_END_ADDR (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180028000358ull) + ((offset) & 7) * 8;
+	return CVMX_ADD_IO_SEG(0x0001280010600000ull) + ((offset) & 31) * 8;
 }
 #else
 static inline uint64_t CVMX_FPA_POOLX_END_ADDR(unsigned long offset)
@@ -453,17 +488,22 @@ static inline uint64_t CVMX_FPA_POOLX_END_ADDR(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001180028000358ull) + (offset) * 8;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180028000358ull) + (offset) * 8;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001280010600000ull) + (offset) * 8;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001280010600000ull) + (offset) * 8;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180028000358ull) + (offset) * 8;
+	return CVMX_ADD_IO_SEG(0x0001280010600000ull) + (offset) * 8;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_FPA_POOLX_FPF_MARKS(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_FPA_POOLX_FPF_MARKS(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280010100000ull) + ((offset) & 63) * 8;
 }
@@ -474,7 +514,9 @@ static inline uint64_t CVMX_FPA_POOLX_FPF_MARKS(unsigned long offset)
 static inline uint64_t CVMX_FPA_POOLX_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_FPA_POOLX_INT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280010A00000ull) + ((offset) & 63) * 8;
 }
@@ -485,7 +527,9 @@ static inline uint64_t CVMX_FPA_POOLX_INT(unsigned long offset)
 static inline uint64_t CVMX_FPA_POOLX_OP_PC(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_FPA_POOLX_OP_PC(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280010F00000ull) + ((offset) & 63) * 8;
 }
@@ -496,7 +540,9 @@ static inline uint64_t CVMX_FPA_POOLX_OP_PC(unsigned long offset)
 static inline uint64_t CVMX_FPA_POOLX_STACK_ADDR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_FPA_POOLX_STACK_ADDR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280010900000ull) + ((offset) & 63) * 8;
 }
@@ -507,7 +553,9 @@ static inline uint64_t CVMX_FPA_POOLX_STACK_ADDR(unsigned long offset)
 static inline uint64_t CVMX_FPA_POOLX_STACK_BASE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_FPA_POOLX_STACK_BASE(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280010700000ull) + ((offset) & 63) * 8;
 }
@@ -518,7 +566,9 @@ static inline uint64_t CVMX_FPA_POOLX_STACK_BASE(unsigned long offset)
 static inline uint64_t CVMX_FPA_POOLX_STACK_END(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 31))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 63))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 31)))))
 		cvmx_warn("CVMX_FPA_POOLX_STACK_END(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001280010800000ull) + ((offset) & 63) * 8;
 }
@@ -540,13 +590,18 @@ static inline uint64_t CVMX_FPA_POOLX_START_ADDR(unsigned long offset)
 			if ((offset <= 8))
 				return CVMX_ADD_IO_SEG(0x0001180028000258ull) + ((offset) & 15) * 8;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return CVMX_ADD_IO_SEG(0x0001280010500000ull) + ((offset) & 31) * 8;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 63))
 				return CVMX_ADD_IO_SEG(0x0001280010500000ull) + ((offset) & 63) * 8;
 			break;
 	}
 	cvmx_warn("CVMX_FPA_POOLX_START_ADDR (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180028000258ull) + ((offset) & 7) * 8;
+	return CVMX_ADD_IO_SEG(0x0001280010500000ull) + ((offset) & 31) * 8;
 }
 #else
 static inline uint64_t CVMX_FPA_POOLX_START_ADDR(unsigned long offset)
@@ -559,10 +614,13 @@ static inline uint64_t CVMX_FPA_POOLX_START_ADDR(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001180028000258ull) + (offset) * 8;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180028000258ull) + (offset) * 8;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001280010500000ull) + (offset) * 8;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001280010500000ull) + (offset) * 8;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180028000258ull) + (offset) * 8;
+	return CVMX_ADD_IO_SEG(0x0001280010500000ull) + (offset) * 8;
 }
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
@@ -581,13 +639,18 @@ static inline uint64_t CVMX_FPA_POOLX_THRESHOLD(unsigned long offset)
 			if ((offset <= 8))
 				return CVMX_ADD_IO_SEG(0x0001180028000140ull) + ((offset) & 15) * 8;
 			break;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			if ((offset <= 31))
+				return CVMX_ADD_IO_SEG(0x0001280010400000ull) + ((offset) & 31) * 8;
+			break;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			if ((offset <= 63))
 				return CVMX_ADD_IO_SEG(0x0001280010400000ull) + ((offset) & 63) * 8;
 			break;
 	}
 	cvmx_warn("CVMX_FPA_POOLX_THRESHOLD (offset = %lu) not supported on this chip\n", offset);
-	return CVMX_ADD_IO_SEG(0x0001180028000140ull) + ((offset) & 7) * 8;
+	return CVMX_ADD_IO_SEG(0x0001280010400000ull) + ((offset) & 31) * 8;
 }
 #else
 static inline uint64_t CVMX_FPA_POOLX_THRESHOLD(unsigned long offset)
@@ -601,10 +664,13 @@ static inline uint64_t CVMX_FPA_POOLX_THRESHOLD(unsigned long offset)
 			return CVMX_ADD_IO_SEG(0x0001180028000140ull) + (offset) * 8;
 		case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001180028000140ull) + (offset) * 8;
+		case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+		case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+			return CVMX_ADD_IO_SEG(0x0001280010400000ull) + (offset) * 8;
 		case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
 			return CVMX_ADD_IO_SEG(0x0001280010400000ull) + (offset) * 8;
 	}
-	return CVMX_ADD_IO_SEG(0x0001180028000140ull) + (offset) * 8;
+	return CVMX_ADD_IO_SEG(0x0001280010400000ull) + (offset) * 8;
 }
 #endif
 #define CVMX_FPA_QUE0_PAGE_INDEX CVMX_FPA_QUEX_PAGE_INDEX(0)
@@ -678,7 +744,7 @@ static inline uint64_t CVMX_FPA_QUEX_PAGE_INDEX(unsigned long offset)
 #define CVMX_FPA_RD_LATENCY_PC CVMX_FPA_RD_LATENCY_PC_FUNC()
 static inline uint64_t CVMX_FPA_RD_LATENCY_PC_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_FPA_RD_LATENCY_PC not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001280000000610ull);
 }
@@ -689,7 +755,7 @@ static inline uint64_t CVMX_FPA_RD_LATENCY_PC_FUNC(void)
 #define CVMX_FPA_RD_REQ_PC CVMX_FPA_RD_REQ_PC_FUNC()
 static inline uint64_t CVMX_FPA_RD_REQ_PC_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_FPA_RD_REQ_PC not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001280000000600ull);
 }
@@ -700,7 +766,7 @@ static inline uint64_t CVMX_FPA_RD_REQ_PC_FUNC(void)
 #define CVMX_FPA_RED_DELAY CVMX_FPA_RED_DELAY_FUNC()
 static inline uint64_t CVMX_FPA_RED_DELAY_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_FPA_RED_DELAY not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001280000000100ull);
 }
@@ -711,7 +777,7 @@ static inline uint64_t CVMX_FPA_RED_DELAY_FUNC(void)
 #define CVMX_FPA_SFT_RST CVMX_FPA_SFT_RST_FUNC()
 static inline uint64_t CVMX_FPA_SFT_RST_FUNC(void)
 {
-	if (!(OCTEON_IS_MODEL(OCTEON_CN78XX)))
+	if (!(OCTEON_IS_MODEL(OCTEON_CN73XX) || OCTEON_IS_MODEL(OCTEON_CN78XX) || OCTEON_IS_MODEL(OCTEON_CNF75XX)))
 		cvmx_warn("CVMX_FPA_SFT_RST not supported on this chip\n");
 	return CVMX_ADD_IO_SEG(0x0001280000000000ull);
 }
@@ -783,7 +849,7 @@ union cvmx_fpa_addr_range_error {
 	struct cvmx_fpa_addr_range_error_cn61xx cn68xxp1;
 	struct cvmx_fpa_addr_range_error_cn61xx cn70xx;
 	struct cvmx_fpa_addr_range_error_cn61xx cn70xxp1;
-	struct cvmx_fpa_addr_range_error_cn78xx {
+	struct cvmx_fpa_addr_range_error_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_54_63               : 10;
 	uint64_t pool                         : 6;  /**< Pool that address was sent to. */
@@ -795,8 +861,11 @@ union cvmx_fpa_addr_range_error {
 	uint64_t pool                         : 6;
 	uint64_t reserved_54_63               : 10;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_fpa_addr_range_error_cn73xx cn78xx;
+	struct cvmx_fpa_addr_range_error_cn73xx cn78xxp2;
 	struct cvmx_fpa_addr_range_error_cn61xx cnf71xx;
+	struct cvmx_fpa_addr_range_error_cn73xx cnf75xx;
 };
 typedef union cvmx_fpa_addr_range_error cvmx_fpa_addr_range_error_t;
 
@@ -836,7 +905,10 @@ union cvmx_fpa_aurax_cfg {
 	uint64_t reserved_10_63               : 54;
 #endif
 	} s;
+	struct cvmx_fpa_aurax_cfg_s           cn73xx;
 	struct cvmx_fpa_aurax_cfg_s           cn78xx;
+	struct cvmx_fpa_aurax_cfg_s           cn78xxp2;
+	struct cvmx_fpa_aurax_cfg_s           cnf75xx;
 };
 typedef union cvmx_fpa_aurax_cfg cvmx_fpa_aurax_cfg_t;
 
@@ -854,7 +926,10 @@ union cvmx_fpa_aurax_cnt {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} s;
+	struct cvmx_fpa_aurax_cnt_s           cn73xx;
 	struct cvmx_fpa_aurax_cnt_s           cn78xx;
+	struct cvmx_fpa_aurax_cnt_s           cn78xxp2;
+	struct cvmx_fpa_aurax_cnt_s           cnf75xx;
 };
 typedef union cvmx_fpa_aurax_cnt cvmx_fpa_aurax_cnt_t;
 
@@ -878,7 +953,10 @@ union cvmx_fpa_aurax_cnt_add {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} s;
+	struct cvmx_fpa_aurax_cnt_add_s       cn73xx;
 	struct cvmx_fpa_aurax_cnt_add_s       cn78xx;
+	struct cvmx_fpa_aurax_cnt_add_s       cn78xxp2;
+	struct cvmx_fpa_aurax_cnt_add_s       cnf75xx;
 };
 typedef union cvmx_fpa_aurax_cnt_add cvmx_fpa_aurax_cnt_add_t;
 
@@ -890,7 +968,7 @@ union cvmx_fpa_aurax_cnt_levels {
 	struct cvmx_fpa_aurax_cnt_levels_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t drop_dis                     : 1;  /**< Reserved. */
+	uint64_t drop_dis                     : 1;  /**< Disable aura DROP based on the [DROP] level. */
 	uint64_t bp_ena                       : 1;  /**< Enable backpressure based on [BP] level. If set FPA_GEN_CFG[LVL_DLY] must be nonzero.
                                                          PKI_AURA()_CFG[ENA_BP] must also be set for backpressure to propagate through PKI. */
 	uint64_t red_ena                      : 1;  /**< Enable aura RED based on [DROP] and [PASS] levels. If set FPA_GEN_CFG[LVL_DLY] must be
@@ -907,11 +985,11 @@ union cvmx_fpa_aurax_cnt_levels {
                                                          calculations. */
 	uint64_t bp                           : 8;  /**< Backpressure can assert if the current 8-bit shifted and saturated FPA_AURA()_CNT[CNT] is
                                                          equal to or greater than this value. */
-	uint64_t drop                         : 8;  /**< If [RED_ENA]==1 and RED processing is requested, the packet will be dropped if
+	uint64_t drop                         : 8;  /**< If [RED_ENA]=1 and RED processing is requested, the packet will be dropped if
                                                          [LEVEL] is equal to or greater than this value.
-                                                         If DROP processing is requested, the packet will be dropped if the current 8-bit
-                                                         shifted and saturated FPA_AURA()_CNT[CNT] is equal to or greater than this
-                                                         value. */
+                                                         If [DROP_DIS]=0 and DROP processing is requested, the packet will be dropped if
+                                                         the current 8-bit shifted and saturated FPA_AURA()_CNT[CNT] is equal to or greater
+                                                         than this value. */
 	uint64_t pass                         : 8;  /**< Aura RED processing will not drop an allocation request if [LEVEL] is less than this value. */
 	uint64_t level                        : 8;  /**< Current moving average of the 8-bit shifted and saturated FPA_AURA()_CNT[CNT].
                                                          The lower [LEVEL] is, the more free resources. The highest [LEVEL]'s indicate buffer
@@ -929,7 +1007,10 @@ union cvmx_fpa_aurax_cnt_levels {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_fpa_aurax_cnt_levels_s    cn73xx;
 	struct cvmx_fpa_aurax_cnt_levels_s    cn78xx;
+	struct cvmx_fpa_aurax_cnt_levels_s    cn78xxp2;
+	struct cvmx_fpa_aurax_cnt_levels_s    cnf75xx;
 };
 typedef union cvmx_fpa_aurax_cnt_levels cvmx_fpa_aurax_cnt_levels_t;
 
@@ -949,7 +1030,10 @@ union cvmx_fpa_aurax_cnt_limit {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} s;
+	struct cvmx_fpa_aurax_cnt_limit_s     cn73xx;
 	struct cvmx_fpa_aurax_cnt_limit_s     cn78xx;
+	struct cvmx_fpa_aurax_cnt_limit_s     cn78xxp2;
+	struct cvmx_fpa_aurax_cnt_limit_s     cnf75xx;
 };
 typedef union cvmx_fpa_aurax_cnt_limit cvmx_fpa_aurax_cnt_limit_t;
 
@@ -969,7 +1053,10 @@ union cvmx_fpa_aurax_cnt_threshold {
 	uint64_t reserved_40_63               : 24;
 #endif
 	} s;
+	struct cvmx_fpa_aurax_cnt_threshold_s cn73xx;
 	struct cvmx_fpa_aurax_cnt_threshold_s cn78xx;
+	struct cvmx_fpa_aurax_cnt_threshold_s cn78xxp2;
+	struct cvmx_fpa_aurax_cnt_threshold_s cnf75xx;
 };
 typedef union cvmx_fpa_aurax_cnt_threshold cvmx_fpa_aurax_cnt_threshold_t;
 
@@ -982,7 +1069,7 @@ union cvmx_fpa_aurax_int {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_1_63                : 63;
 	uint64_t thresh                       : 1;  /**< Watermark interrupt pending. Set and throws FPA_INTSN_E::FPA_AURA()_THRESH when
-                                                         FPA_AURA()_INT, after being modified, is equal to or crosses
+                                                         FPA_AURA()_CNT, after being modified, is equal to or crosses
                                                          FPA_AURA()_CNT_THRESHOLD (i.e. value was greater than, then becomes less then, or
                                                          value was less than, and becomes greater than). */
 #else
@@ -990,7 +1077,10 @@ union cvmx_fpa_aurax_int {
 	uint64_t reserved_1_63                : 63;
 #endif
 	} s;
+	struct cvmx_fpa_aurax_int_s           cn73xx;
 	struct cvmx_fpa_aurax_int_s           cn78xx;
+	struct cvmx_fpa_aurax_int_s           cn78xxp2;
+	struct cvmx_fpa_aurax_int_s           cnf75xx;
 };
 typedef union cvmx_fpa_aurax_int cvmx_fpa_aurax_int_t;
 
@@ -1005,13 +1095,16 @@ union cvmx_fpa_aurax_pool {
 	struct cvmx_fpa_aurax_pool_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_6_63                : 58;
-	uint64_t pool                         : 6;  /**< Indicates which pool corresponds to each aura. */
+	uint64_t pool                         : 6;  /**< Indicates which pool corresponds to each aura. Bit 5 should always be 0 (limit 32 pools) */
 #else
 	uint64_t pool                         : 6;
 	uint64_t reserved_6_63                : 58;
 #endif
 	} s;
+	struct cvmx_fpa_aurax_pool_s          cn73xx;
 	struct cvmx_fpa_aurax_pool_s          cn78xx;
+	struct cvmx_fpa_aurax_pool_s          cn78xxp2;
+	struct cvmx_fpa_aurax_pool_s          cnf75xx;
 };
 typedef union cvmx_fpa_aurax_pool cvmx_fpa_aurax_pool_t;
 
@@ -1023,7 +1116,7 @@ union cvmx_fpa_aurax_pool_levels {
 	struct cvmx_fpa_aurax_pool_levels_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_41_63               : 23;
-	uint64_t drop_dis                     : 1;  /**< Reserved. */
+	uint64_t drop_dis                     : 1;  /**< Disables aura-unique pool DROP based on the [DROP] level. */
 	uint64_t bp_ena                       : 1;  /**< Enable aura-unique pool backpressure based on [BP] level. If set FPA_GEN_CFG[LVL_DLY] must
                                                          be nonzero. */
 	uint64_t red_ena                      : 1;  /**< Enable aura-unique pool RED based on [DROP] and [PASS] levels. If set FPA_GEN_CFG[LVL_DLY]
@@ -1044,11 +1137,11 @@ union cvmx_fpa_aurax_pool_levels {
                                                          processing. */
 	uint64_t bp                           : 8;  /**< Backpressure can assert if the current 8-bit shifted and saturated
                                                          FPA_POOL()_AVAILABLE[COUNT] for the aura is equal to or less than this value. */
-	uint64_t drop                         : 8;  /**< If [RED_ENA]==1 and RED processing is requested, the packet will be dropped if
+	uint64_t drop                         : 8;  /**< If [RED_ENA]=1 and RED processing is requested, the packet will be dropped if
                                                          [LEVEL] is equal to or less than this value.
-                                                         If DROP processing is requested, the packet will be dropped if the current 8-bit
-                                                         shifted and saturated FPA_POOL()_AVAILABLE[COUNT] for the aura is equal to or
-                                                         less than this value. */
+                                                         If [DROP_DIS]=0 and DROP processing is requested, the packet will be dropped
+                                                         if the current 8-bit shifted and saturated FPA_POOL()_AVAILABLE[COUNT] for the
+                                                         aura is equal to or less than this value. */
 	uint64_t pass                         : 8;  /**< Aura-unique pool RED processing will not drop an allocation request if [LEVEL] is larger
                                                          than this value. */
 	uint64_t level                        : 8;  /**< Current moving average of the 8-bit shifted and saturated FPA_POOL()_AVAILABLE[COUNT] for
@@ -1068,7 +1161,10 @@ union cvmx_fpa_aurax_pool_levels {
 	uint64_t reserved_41_63               : 23;
 #endif
 	} s;
+	struct cvmx_fpa_aurax_pool_levels_s   cn73xx;
 	struct cvmx_fpa_aurax_pool_levels_s   cn78xx;
+	struct cvmx_fpa_aurax_pool_levels_s   cn78xxp2;
+	struct cvmx_fpa_aurax_pool_levels_s   cnf75xx;
 };
 typedef union cvmx_fpa_aurax_pool_levels cvmx_fpa_aurax_pool_levels_t;
 
@@ -1122,7 +1218,7 @@ union cvmx_fpa_bist_status {
 	struct cvmx_fpa_bist_status_cn30xx    cn68xxp1;
 	struct cvmx_fpa_bist_status_cn30xx    cn70xx;
 	struct cvmx_fpa_bist_status_cn30xx    cn70xxp1;
-	struct cvmx_fpa_bist_status_cn78xx {
+	struct cvmx_fpa_bist_status_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_38_63               : 26;
 	uint64_t status                       : 38; /**< Memory BIST status. */
@@ -1130,8 +1226,11 @@ union cvmx_fpa_bist_status {
 	uint64_t status                       : 38;
 	uint64_t reserved_38_63               : 26;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_fpa_bist_status_cn73xx    cn78xx;
+	struct cvmx_fpa_bist_status_cn73xx    cn78xxp2;
 	struct cvmx_fpa_bist_status_cn30xx    cnf71xx;
+	struct cvmx_fpa_bist_status_cn73xx    cnf75xx;
 };
 typedef union cvmx_fpa_bist_status cvmx_fpa_bist_status_t;
 
@@ -1151,7 +1250,10 @@ union cvmx_fpa_clk_count {
 	uint64_t clk_cnt                      : 64;
 #endif
 	} s;
+	struct cvmx_fpa_clk_count_s           cn73xx;
 	struct cvmx_fpa_clk_count_s           cn78xx;
+	struct cvmx_fpa_clk_count_s           cn78xxp2;
+	struct cvmx_fpa_clk_count_s           cnf75xx;
 };
 typedef union cvmx_fpa_clk_count cvmx_fpa_clk_count_t;
 
@@ -1277,7 +1379,10 @@ union cvmx_fpa_ecc_ctl {
 	uint64_t reserved_62_63               : 2;
 #endif
 	} s;
+	struct cvmx_fpa_ecc_ctl_s             cn73xx;
 	struct cvmx_fpa_ecc_ctl_s             cn78xx;
+	struct cvmx_fpa_ecc_ctl_s             cn78xxp2;
+	struct cvmx_fpa_ecc_ctl_s             cnf75xx;
 };
 typedef union cvmx_fpa_ecc_ctl cvmx_fpa_ecc_ctl_t;
 
@@ -1304,7 +1409,10 @@ union cvmx_fpa_ecc_int {
 	uint64_t reserved_52_63               : 12;
 #endif
 	} s;
+	struct cvmx_fpa_ecc_int_s             cn73xx;
 	struct cvmx_fpa_ecc_int_s             cn78xx;
+	struct cvmx_fpa_ecc_int_s             cn78xxp2;
+	struct cvmx_fpa_ecc_int_s             cnf75xx;
 };
 typedef union cvmx_fpa_ecc_int cvmx_fpa_ecc_int_t;
 
@@ -1335,7 +1443,10 @@ union cvmx_fpa_err_int {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_fpa_err_int_s             cn73xx;
 	struct cvmx_fpa_err_int_s             cn78xx;
+	struct cvmx_fpa_err_int_s             cn78xxp2;
+	struct cvmx_fpa_err_int_s             cnf75xx;
 };
 typedef union cvmx_fpa_err_int cvmx_fpa_err_int_t;
 
@@ -1628,12 +1739,12 @@ union cvmx_fpa_gen_cfg {
 	uint64_t pools                        : 2;  /**< Number of pools. Each halving of the number of pools doubles the buffering available to
                                                          the remaining pools, leading to some improvement in memory bandwidth. Value must not be
                                                          changed if FPA_POOL()_CFG[ENA] is set for any pool.
-                                                         0x0 = 64 pools, 320 FPF entries per pool.
-                                                         0x1 = 32 pools, 640 FPF entries per pool.
-                                                         0x2 = 16 pools, 1280 FPF entries per pool.
+                                                         0x0 = Reserved.
+                                                         0x1 = 32 pools, 216 FPF entries per pool.
+                                                         0x2 = 16 pools, 432 FPF entries per pool.
                                                          0x3 = Reserved. */
-	uint64_t avg_en                       : 1;  /**< QoS averaging enable. When set, compute average buffer levels, and [LVL_DLY] must be non-
-                                                         zero. When clear, do not compute averages and save a few mW of power. */
+	uint64_t avg_en                       : 1;  /**< QoS averaging enable. When set, RED calculations use average buffer levels. When clear,
+                                                         RED calcuations use the current values. */
 	uint64_t clk_override                 : 1;  /**< Conditional clock override. */
 #else
 	uint64_t clk_override                 : 1;
@@ -1645,7 +1756,10 @@ union cvmx_fpa_gen_cfg {
 	uint64_t reserved_12_63               : 52;
 #endif
 	} s;
+	struct cvmx_fpa_gen_cfg_s             cn73xx;
 	struct cvmx_fpa_gen_cfg_s             cn78xx;
+	struct cvmx_fpa_gen_cfg_s             cn78xxp2;
+	struct cvmx_fpa_gen_cfg_s             cnf75xx;
 };
 typedef union cvmx_fpa_gen_cfg cvmx_fpa_gen_cfg_t;
 
@@ -3187,7 +3301,10 @@ union cvmx_fpa_poolx_available {
 	uint64_t reserved_36_63               : 28;
 #endif
 	} s;
+	struct cvmx_fpa_poolx_available_s     cn73xx;
 	struct cvmx_fpa_poolx_available_s     cn78xx;
+	struct cvmx_fpa_poolx_available_s     cn78xxp2;
+	struct cvmx_fpa_poolx_available_s     cnf75xx;
 };
 typedef union cvmx_fpa_poolx_available cvmx_fpa_poolx_available_t;
 
@@ -3236,7 +3353,10 @@ union cvmx_fpa_poolx_cfg {
 	uint64_t reserved_43_63               : 21;
 #endif
 	} s;
+	struct cvmx_fpa_poolx_cfg_s           cn73xx;
 	struct cvmx_fpa_poolx_cfg_s           cn78xx;
+	struct cvmx_fpa_poolx_cfg_s           cn78xxp2;
+	struct cvmx_fpa_poolx_cfg_s           cnf75xx;
 };
 typedef union cvmx_fpa_poolx_cfg cvmx_fpa_poolx_cfg_t;
 
@@ -3269,7 +3389,7 @@ union cvmx_fpa_poolx_end_addr {
 	struct cvmx_fpa_poolx_end_addr_cn61xx cn68xxp1;
 	struct cvmx_fpa_poolx_end_addr_cn61xx cn70xx;
 	struct cvmx_fpa_poolx_end_addr_cn61xx cn70xxp1;
-	struct cvmx_fpa_poolx_end_addr_cn78xx {
+	struct cvmx_fpa_poolx_end_addr_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
 	uint64_t addr                         : 35; /**< Address. */
@@ -3279,8 +3399,11 @@ union cvmx_fpa_poolx_end_addr {
 	uint64_t addr                         : 35;
 	uint64_t reserved_42_63               : 22;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_fpa_poolx_end_addr_cn73xx cn78xx;
+	struct cvmx_fpa_poolx_end_addr_cn73xx cn78xxp2;
 	struct cvmx_fpa_poolx_end_addr_cn61xx cnf71xx;
+	struct cvmx_fpa_poolx_end_addr_cn73xx cnf75xx;
 };
 typedef union cvmx_fpa_poolx_end_addr cvmx_fpa_poolx_end_addr_t;
 
@@ -3299,7 +3422,7 @@ union cvmx_fpa_poolx_fpf_marks {
                                                          page pointers in DRAM, the FPA reads one page of pointers from DRAM. The recommended value
                                                          for this field is:
                                                          _  fpf_sz * 0.75
-                                                         _  where, fpf_sz = 320 * 2^FPA_GEN_CFG[POOLS].
+                                                         _  where, fpf_sz = 108 * 2^FPA_GEN_CFG[POOLS].
                                                          The maximum value is fpf_sz - 48.
                                                          It is recommended that software APIs represent this value as a percentage of fpf_sz, as
                                                          fpf_sz may vary between products.
@@ -3314,7 +3437,10 @@ union cvmx_fpa_poolx_fpf_marks {
 	uint64_t reserved_27_63               : 37;
 #endif
 	} s;
+	struct cvmx_fpa_poolx_fpf_marks_s     cn73xx;
 	struct cvmx_fpa_poolx_fpf_marks_s     cn78xx;
+	struct cvmx_fpa_poolx_fpf_marks_s     cn78xxp2;
+	struct cvmx_fpa_poolx_fpf_marks_s     cnf75xx;
 };
 typedef union cvmx_fpa_poolx_fpf_marks cvmx_fpa_poolx_fpf_marks_t;
 
@@ -3347,7 +3473,10 @@ union cvmx_fpa_poolx_int {
 	uint64_t reserved_4_63                : 60;
 #endif
 	} s;
+	struct cvmx_fpa_poolx_int_s           cn73xx;
 	struct cvmx_fpa_poolx_int_s           cn78xx;
+	struct cvmx_fpa_poolx_int_s           cn78xxp2;
+	struct cvmx_fpa_poolx_int_s           cnf75xx;
 };
 typedef union cvmx_fpa_poolx_int cvmx_fpa_poolx_int_t;
 
@@ -3358,12 +3487,17 @@ union cvmx_fpa_poolx_op_pc {
 	uint64_t u64;
 	struct cvmx_fpa_poolx_op_pc_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t count                        : 64; /**< Number of allocations or returns performed to this pool, including those that fail due to RED/DROP. */
+	uint64_t count                        : 64; /**< Number of allocations or returns performed to this pool, including those that
+                                                         fail due to RED/DROP. Does not include aura count change requests (from PKI/PKO)
+                                                         that come without allocation/returns. */
 #else
 	uint64_t count                        : 64;
 #endif
 	} s;
+	struct cvmx_fpa_poolx_op_pc_s         cn73xx;
 	struct cvmx_fpa_poolx_op_pc_s         cn78xx;
+	struct cvmx_fpa_poolx_op_pc_s         cn78xxp2;
+	struct cvmx_fpa_poolx_op_pc_s         cnf75xx;
 };
 typedef union cvmx_fpa_poolx_op_pc cvmx_fpa_poolx_op_pc_t;
 
@@ -3384,7 +3518,10 @@ union cvmx_fpa_poolx_stack_addr {
 	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
+	struct cvmx_fpa_poolx_stack_addr_s    cn73xx;
 	struct cvmx_fpa_poolx_stack_addr_s    cn78xx;
+	struct cvmx_fpa_poolx_stack_addr_s    cn78xxp2;
+	struct cvmx_fpa_poolx_stack_addr_s    cnf75xx;
 };
 typedef union cvmx_fpa_poolx_stack_addr cvmx_fpa_poolx_stack_addr_t;
 
@@ -3404,7 +3541,10 @@ union cvmx_fpa_poolx_stack_base {
 	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
+	struct cvmx_fpa_poolx_stack_base_s    cn73xx;
 	struct cvmx_fpa_poolx_stack_base_s    cn78xx;
+	struct cvmx_fpa_poolx_stack_base_s    cn78xxp2;
+	struct cvmx_fpa_poolx_stack_base_s    cnf75xx;
 };
 typedef union cvmx_fpa_poolx_stack_base cvmx_fpa_poolx_stack_base_t;
 
@@ -3425,7 +3565,10 @@ union cvmx_fpa_poolx_stack_end {
 	uint64_t reserved_42_63               : 22;
 #endif
 	} s;
+	struct cvmx_fpa_poolx_stack_end_s     cn73xx;
 	struct cvmx_fpa_poolx_stack_end_s     cn78xx;
+	struct cvmx_fpa_poolx_stack_end_s     cn78xxp2;
+	struct cvmx_fpa_poolx_stack_end_s     cnf75xx;
 };
 typedef union cvmx_fpa_poolx_stack_end cvmx_fpa_poolx_stack_end_t;
 
@@ -3458,7 +3601,7 @@ union cvmx_fpa_poolx_start_addr {
 	struct cvmx_fpa_poolx_start_addr_cn61xx cn68xxp1;
 	struct cvmx_fpa_poolx_start_addr_cn61xx cn70xx;
 	struct cvmx_fpa_poolx_start_addr_cn61xx cn70xxp1;
-	struct cvmx_fpa_poolx_start_addr_cn78xx {
+	struct cvmx_fpa_poolx_start_addr_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
 	uint64_t addr                         : 35; /**< Address. Defaults to 1 so that a NULL pointer free will cause an exception. */
@@ -3468,8 +3611,11 @@ union cvmx_fpa_poolx_start_addr {
 	uint64_t addr                         : 35;
 	uint64_t reserved_42_63               : 22;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_fpa_poolx_start_addr_cn73xx cn78xx;
+	struct cvmx_fpa_poolx_start_addr_cn73xx cn78xxp2;
 	struct cvmx_fpa_poolx_start_addr_cn61xx cnf71xx;
+	struct cvmx_fpa_poolx_start_addr_cn73xx cnf75xx;
 };
 typedef union cvmx_fpa_poolx_start_addr cvmx_fpa_poolx_start_addr_t;
 
@@ -3486,7 +3632,9 @@ union cvmx_fpa_poolx_threshold {
 	struct cvmx_fpa_poolx_threshold_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_36_63               : 28;
-	uint64_t thresh                       : 36; /**< The Threshold. */
+	uint64_t thresh                       : 36; /**< Threshold for the pool. When the value of FPA_POOL()_AVAILABLE[COUNT] is equal to
+                                                         [THRESH] and a pointer is allocated or freed, set interrupt
+                                                         FPA_INTSN_E::FPA_POOL()_THRESH. */
 #else
 	uint64_t thresh                       : 36;
 	uint64_t reserved_36_63               : 28;
@@ -3515,8 +3663,11 @@ union cvmx_fpa_poolx_threshold {
 	struct cvmx_fpa_poolx_threshold_cn68xx cn68xxp1;
 	struct cvmx_fpa_poolx_threshold_cn61xx cn70xx;
 	struct cvmx_fpa_poolx_threshold_cn61xx cn70xxp1;
+	struct cvmx_fpa_poolx_threshold_s     cn73xx;
 	struct cvmx_fpa_poolx_threshold_s     cn78xx;
+	struct cvmx_fpa_poolx_threshold_s     cn78xxp2;
 	struct cvmx_fpa_poolx_threshold_cn61xx cnf71xx;
+	struct cvmx_fpa_poolx_threshold_s     cnf75xx;
 };
 typedef union cvmx_fpa_poolx_threshold cvmx_fpa_poolx_threshold_t;
 
@@ -3727,13 +3878,17 @@ union cvmx_fpa_rd_latency_pc {
 	uint64_t u64;
 	struct cvmx_fpa_rd_latency_pc_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t count                        : 64; /**< Number of cycles waiting for L2C pool read returns. This may be divided by FPA_RD_REQ_PC
-                                                         to determine the average read latency. */
+	uint64_t count                        : 64; /**< Number of cycles waiting for L2C pool read returns. Incremented every
+                                                         coprocessor-clock by the number of transactions outstanding in that cycle. This
+                                                         may be divided by FPA_RD_REQ_PC to determine the average read latency. */
 #else
 	uint64_t count                        : 64;
 #endif
 	} s;
+	struct cvmx_fpa_rd_latency_pc_s       cn73xx;
 	struct cvmx_fpa_rd_latency_pc_s       cn78xx;
+	struct cvmx_fpa_rd_latency_pc_s       cn78xxp2;
+	struct cvmx_fpa_rd_latency_pc_s       cnf75xx;
 };
 typedef union cvmx_fpa_rd_latency_pc cvmx_fpa_rd_latency_pc_t;
 
@@ -3749,7 +3904,10 @@ union cvmx_fpa_rd_req_pc {
 	uint64_t count                        : 64;
 #endif
 	} s;
+	struct cvmx_fpa_rd_req_pc_s           cn73xx;
 	struct cvmx_fpa_rd_req_pc_s           cn78xx;
+	struct cvmx_fpa_rd_req_pc_s           cn78xxp2;
+	struct cvmx_fpa_rd_req_pc_s           cnf75xx;
 };
 typedef union cvmx_fpa_rd_req_pc cvmx_fpa_rd_req_pc_t;
 
@@ -3777,7 +3935,10 @@ union cvmx_fpa_red_delay {
 	uint64_t reserved_14_63               : 50;
 #endif
 	} s;
+	struct cvmx_fpa_red_delay_s           cn73xx;
 	struct cvmx_fpa_red_delay_s           cn78xx;
+	struct cvmx_fpa_red_delay_s           cn78xxp2;
+	struct cvmx_fpa_red_delay_s           cnf75xx;
 };
 typedef union cvmx_fpa_red_delay cvmx_fpa_red_delay_t;
 
@@ -3803,7 +3964,10 @@ union cvmx_fpa_sft_rst {
 	uint64_t busy                         : 1;
 #endif
 	} s;
+	struct cvmx_fpa_sft_rst_s             cn73xx;
 	struct cvmx_fpa_sft_rst_s             cn78xx;
+	struct cvmx_fpa_sft_rst_s             cn78xxp2;
+	struct cvmx_fpa_sft_rst_s             cnf75xx;
 };
 typedef union cvmx_fpa_sft_rst cvmx_fpa_sft_rst_t;
 

@@ -2109,8 +2109,8 @@ static void __cvmx_usb_schedule(cvmx_usb_internal_state_t * usb, int is_sof)
 		channel = 31 - channel;
 		if (cvmx_unlikely(channel > 7)) {
 			if (cvmx_unlikely(usb->init_flags & CVMX_USB_INITIALIZE_FLAGS_DEBUG_INFO))
-				cvmx_dprintf("%s: Idle hardware channels has a channel higher than 7. This is wrong\n",
-					     __func__);
+				cvmx_dprintf("%s: Idle hardware channel %d has a channel higher than 7. This is wrong\n",
+					     __func__, channel);
 			break;
 		}
 

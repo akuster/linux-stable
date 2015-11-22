@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -53,23 +53,27 @@
 #define __CVMX_OCLAX_DEFS_H__
 
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_BIST_RESULT(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_BIST_RESULT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_BIST_RESULT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000040ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_BIST_RESULT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000040ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_BIST_RESULT(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000040ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_BIST_RESULT(offset) (CVMX_ADD_IO_SEG(0x00011800A8000040ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OCLAX_CDHX_CTL(unsigned long offset, unsigned long block_id)
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 1)) && ((block_id == 0)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 4))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 2)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 4)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCLAX_CDHX_CTL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800A8000600ull) + (((offset) & 1) + ((block_id) & 7) * 0x200000ull) * 8;
 }
@@ -77,23 +81,27 @@ static inline uint64_t CVMX_OCLAX_CDHX_CTL(unsigned long offset, unsigned long b
 #define CVMX_OCLAX_CDHX_CTL(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800A8000600ull) + (((offset) & 1) + ((block_id) & 7) * 0x200000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_CONST(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_CONST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_CONST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000000ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_CONST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000000ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_CONST(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000000ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_CONST(offset) (CVMX_ADD_IO_SEG(0x00011800A8000000ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OCLAX_DATX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 8191)) && ((block_id == 0)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 8191)) && ((block_id <= 4))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 8191)) && ((block_id <= 2)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 8191)) && ((block_id <= 4)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 8191)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCLAX_DATX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800A8400000ull) + (((offset) & 8191) + ((block_id) & 7) * 0x200000ull) * 8;
 }
@@ -101,83 +109,111 @@ static inline uint64_t CVMX_OCLAX_DATX(unsigned long offset, unsigned long block
 #define CVMX_OCLAX_DATX(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800A8400000ull) + (((offset) & 8191) + ((block_id) & 7) * 0x200000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_DAT_POP(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_DAT_POP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_DAT_POP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000800ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_DAT_POP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000800ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_DAT_POP(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000800ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_DAT_POP(offset) (CVMX_ADD_IO_SEG(0x00011800A8000800ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_FIFO_DEPTH(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_ECO(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_FIFO_DEPTH(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000200ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_ECO(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A80000D0ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_FIFO_DEPTH(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000200ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_ECO(offset) (CVMX_ADD_IO_SEG(0x00011800A80000D0ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_FIFO_LIMIT(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_FIFO_DEPTH(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_FIFO_LIMIT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000240ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_FIFO_DEPTH(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000200ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_FIFO_LIMIT(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000240ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_FIFO_DEPTH(offset) (CVMX_ADD_IO_SEG(0x00011800A8000200ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_FIFO_TAIL(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_FIFO_LIMIT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_FIFO_TAIL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000260ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_FIFO_LIMIT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000240ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_FIFO_TAIL(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000260ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_FIFO_LIMIT(offset) (CVMX_ADD_IO_SEG(0x00011800A8000240ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_FIFO_TRIG(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_FIFO_TAIL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_FIFO_TRIG(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A80002A0ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_FIFO_TAIL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000260ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_FIFO_TRIG(block_id) (CVMX_ADD_IO_SEG(0x00011800A80002A0ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_FIFO_TAIL(offset) (CVMX_ADD_IO_SEG(0x00011800A8000260ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_FIFO_WRAP(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_FIFO_TRIG(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_FIFO_WRAP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000280ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_FIFO_TRIG(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A80002A0ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_FIFO_WRAP(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000280ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_FIFO_TRIG(offset) (CVMX_ADD_IO_SEG(0x00011800A80002A0ull) + ((offset) & 7) * 0x1000000ull)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_OCLAX_FIFO_WRAP(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_FIFO_WRAP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000280ull) + ((offset) & 7) * 0x1000000ull;
+}
+#else
+#define CVMX_OCLAX_FIFO_WRAP(offset) (CVMX_ADD_IO_SEG(0x00011800A8000280ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OCLAX_FSMX_ANDX_IX(unsigned long a, unsigned long b, unsigned long c, unsigned long d)
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((a == 0)) && ((b <= 1)) && ((c <= 15)) && ((d <= 1)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((a <= 4)) && ((b <= 1)) && ((c <= 15)) && ((d <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((a <= 2)) && ((b <= 1)) && ((c <= 15)) && ((d <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((a <= 4)) && ((b <= 1)) && ((c <= 15)) && ((d <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((a <= 2)) && ((b <= 1)) && ((c <= 15)) && ((d <= 1))))))
 		cvmx_warn("CVMX_OCLAX_FSMX_ANDX_IX(%lu,%lu,%lu,%lu) is invalid on this chip\n", a, b, c, d);
 	return CVMX_ADD_IO_SEG(0x00011800A8300000ull) + ((a) << 24) + ((b) << 12) + ((c) << 4) + ((d) << 3);
 }
@@ -189,7 +225,9 @@ static inline uint64_t CVMX_OCLAX_FSMX_ORX(unsigned long a, unsigned long b, uns
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((a == 0)) && ((b <= 1)) && ((c <= 15)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((a <= 4)) && ((b <= 1)) && ((c <= 15))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((a <= 2)) && ((b <= 1)) && ((c <= 15)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((a <= 4)) && ((b <= 1)) && ((c <= 15)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((a <= 2)) && ((b <= 1)) && ((c <= 15))))))
 		cvmx_warn("CVMX_OCLAX_FSMX_ORX(%lu,%lu,%lu) is invalid on this chip\n", a, b, c);
 	return CVMX_ADD_IO_SEG(0x00011800A8310000ull) + ((a) << 24) + ((b) << 12) + ((c) << 3);
 }
@@ -201,7 +239,9 @@ static inline uint64_t CVMX_OCLAX_FSMX_STATEX(unsigned long a, unsigned long b, 
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((a == 0)) && ((b <= 1)) && ((c <= 15)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((a <= 4)) && ((b <= 1)) && ((c <= 15))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((a <= 2)) && ((b <= 1)) && ((c <= 15)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((a <= 4)) && ((b <= 1)) && ((c <= 15)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((a <= 2)) && ((b <= 1)) && ((c <= 15))))))
 		cvmx_warn("CVMX_OCLAX_FSMX_STATEX(%lu,%lu,%lu) is invalid on this chip\n", a, b, c);
 	return CVMX_ADD_IO_SEG(0x00011800A8320000ull) + ((a) << 24) + ((b) << 12) + ((c) << 3);
 }
@@ -209,23 +249,27 @@ static inline uint64_t CVMX_OCLAX_FSMX_STATEX(unsigned long a, unsigned long b, 
 #define CVMX_OCLAX_FSMX_STATEX(a, b, c) (CVMX_ADD_IO_SEG(0x00011800A8320000ull) + ((a) << 24) + ((b) << 12) + ((c) << 3))
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_GEN_CTL(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_GEN_CTL(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_GEN_CTL(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000060ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_GEN_CTL(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000060ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_GEN_CTL(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000060ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_GEN_CTL(offset) (CVMX_ADD_IO_SEG(0x00011800A8000060ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OCLAX_MATX_COUNT(unsigned long offset, unsigned long block_id)
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 3)) && ((block_id == 0)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 4))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 2)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 4)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCLAX_MATX_COUNT(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800A8230000ull) + (((offset) & 3) + ((block_id) & 7) * 0x1000ull) * 4096;
 }
@@ -237,7 +281,9 @@ static inline uint64_t CVMX_OCLAX_MATX_CTL(unsigned long offset, unsigned long b
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 3)) && ((block_id == 0)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 4))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 2)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 4)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCLAX_MATX_CTL(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800A8200000ull) + (((offset) & 3) + ((block_id) & 7) * 0x1000ull) * 4096;
 }
@@ -249,7 +295,9 @@ static inline uint64_t CVMX_OCLAX_MATX_MASKX(unsigned long a, unsigned long b, u
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((a == 0)) && ((b <= 3)) && ((c <= 1)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((a <= 4)) && ((b <= 3)) && ((c <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((a <= 2)) && ((b <= 3)) && ((c <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((a <= 4)) && ((b <= 3)) && ((c <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((a <= 2)) && ((b <= 3)) && ((c <= 1))))))
 		cvmx_warn("CVMX_OCLAX_MATX_MASKX(%lu,%lu,%lu) is invalid on this chip\n", a, b, c);
 	return CVMX_ADD_IO_SEG(0x00011800A8220000ull) + ((a) << 24) + ((b) << 12) + ((c) << 3);
 }
@@ -261,7 +309,9 @@ static inline uint64_t CVMX_OCLAX_MATX_THRESH(unsigned long offset, unsigned lon
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 3)) && ((block_id == 0)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 4))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 3)) && ((block_id <= 2)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 3)) && ((block_id <= 4)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 3)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCLAX_MATX_THRESH(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800A8240000ull) + (((offset) & 3) + ((block_id) & 7) * 0x1000ull) * 4096;
 }
@@ -273,7 +323,9 @@ static inline uint64_t CVMX_OCLAX_MATX_VALUEX(unsigned long a, unsigned long b, 
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((a == 0)) && ((b <= 3)) && ((c <= 1)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((a <= 4)) && ((b <= 3)) && ((c <= 1))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((a <= 2)) && ((b <= 3)) && ((c <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((a <= 4)) && ((b <= 3)) && ((c <= 1)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((a <= 2)) && ((b <= 3)) && ((c <= 1))))))
 		cvmx_warn("CVMX_OCLAX_MATX_VALUEX(%lu,%lu,%lu) is invalid on this chip\n", a, b, c);
 	return CVMX_ADD_IO_SEG(0x00011800A8210000ull) + ((a) << 24) + ((b) << 12) + ((c) << 3);
 }
@@ -285,7 +337,9 @@ static inline uint64_t CVMX_OCLAX_RAWX(unsigned long offset, unsigned long block
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 1)) && ((block_id == 0)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 4))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 1)) && ((block_id <= 2)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 1)) && ((block_id <= 4)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 1)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCLAX_RAWX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800A8000100ull) + (((offset) & 1) + ((block_id) & 7) * 0x200000ull) * 8;
 }
@@ -293,83 +347,97 @@ static inline uint64_t CVMX_OCLAX_RAWX(unsigned long offset, unsigned long block
 #define CVMX_OCLAX_RAWX(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800A8000100ull) + (((offset) & 1) + ((block_id) & 7) * 0x200000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_SFT_RST(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_SFT_RST(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_SFT_RST(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000020ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_SFT_RST(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000020ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_SFT_RST(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000020ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_SFT_RST(offset) (CVMX_ADD_IO_SEG(0x00011800A8000020ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_STACK_BASE(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_STACK_BASE(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_STACK_BASE(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000400ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_STACK_BASE(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000400ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_STACK_BASE(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000400ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_STACK_BASE(offset) (CVMX_ADD_IO_SEG(0x00011800A8000400ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_STACK_CUR(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_STACK_CUR(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_STACK_CUR(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000480ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_STACK_CUR(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000480ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_STACK_CUR(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000480ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_STACK_CUR(offset) (CVMX_ADD_IO_SEG(0x00011800A8000480ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_STACK_STORE_CNT(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_STACK_STORE_CNT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_STACK_STORE_CNT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000460ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_STACK_STORE_CNT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000460ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_STACK_STORE_CNT(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000460ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_STACK_STORE_CNT(offset) (CVMX_ADD_IO_SEG(0x00011800A8000460ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_STACK_TOP(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_STACK_TOP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_STACK_TOP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000420ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_STACK_TOP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000420ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_STACK_TOP(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000420ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_STACK_TOP(offset) (CVMX_ADD_IO_SEG(0x00011800A8000420ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_STACK_WRAP(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_STACK_WRAP(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_STACK_WRAP(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000440ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_STACK_WRAP(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000440ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_STACK_WRAP(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000440ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_STACK_WRAP(offset) (CVMX_ADD_IO_SEG(0x00011800A8000440ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_OCLAX_STAGEX(unsigned long offset, unsigned long block_id)
 {
 	if (!(
 	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && (((offset <= 71)) && ((block_id == 0)))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 71)) && ((block_id <= 4))))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && (((offset <= 71)) && ((block_id <= 2)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && (((offset <= 71)) && ((block_id <= 4)))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && (((offset <= 71)) && ((block_id <= 2))))))
 		cvmx_warn("CVMX_OCLAX_STAGEX(%lu,%lu) is invalid on this chip\n", offset, block_id);
 	return CVMX_ADD_IO_SEG(0x00011800A8100000ull) + (((offset) & 127) + ((block_id) & 7) * 0x200000ull) * 8;
 }
@@ -377,40 +445,46 @@ static inline uint64_t CVMX_OCLAX_STAGEX(unsigned long offset, unsigned long blo
 #define CVMX_OCLAX_STAGEX(offset, block_id) (CVMX_ADD_IO_SEG(0x00011800A8100000ull) + (((offset) & 127) + ((block_id) & 7) * 0x200000ull) * 8)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_STATE_INT(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_STATE_INT(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_STATE_INT(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A8000080ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_STATE_INT(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A8000080ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_STATE_INT(block_id) (CVMX_ADD_IO_SEG(0x00011800A8000080ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_STATE_INT(offset) (CVMX_ADD_IO_SEG(0x00011800A8000080ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_STATE_SET(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_STATE_SET(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_STATE_SET(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A80000A0ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_STATE_SET(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A80000A0ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_STATE_SET(block_id) (CVMX_ADD_IO_SEG(0x00011800A80000A0ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_STATE_SET(offset) (CVMX_ADD_IO_SEG(0x00011800A80000A0ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
-static inline uint64_t CVMX_OCLAX_TIME(unsigned long block_id)
+static inline uint64_t CVMX_OCLAX_TIME(unsigned long offset)
 {
 	if (!(
-	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((block_id == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((block_id <= 4)))))
-		cvmx_warn("CVMX_OCLAX_TIME(%lu) is invalid on this chip\n", block_id);
-	return CVMX_ADD_IO_SEG(0x00011800A80000C0ull) + ((block_id) & 7) * 0x1000000ull;
+	      (OCTEON_IS_MODEL(OCTEON_CN70XX) && ((offset == 0))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 2))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 4))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 2)))))
+		cvmx_warn("CVMX_OCLAX_TIME(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x00011800A80000C0ull) + ((offset) & 7) * 0x1000000ull;
 }
 #else
-#define CVMX_OCLAX_TIME(block_id) (CVMX_ADD_IO_SEG(0x00011800A80000C0ull) + ((block_id) & 7) * 0x1000000ull)
+#define CVMX_OCLAX_TIME(offset) (CVMX_ADD_IO_SEG(0x00011800A80000C0ull) + ((offset) & 7) * 0x1000000ull)
 #endif
 
 /**
@@ -432,7 +506,10 @@ union cvmx_oclax_bist_result {
 	} s;
 	struct cvmx_oclax_bist_result_s       cn70xx;
 	struct cvmx_oclax_bist_result_s       cn70xxp1;
+	struct cvmx_oclax_bist_result_s       cn73xx;
 	struct cvmx_oclax_bist_result_s       cn78xx;
+	struct cvmx_oclax_bist_result_s       cn78xxp2;
+	struct cvmx_oclax_bist_result_s       cnf75xx;
 };
 typedef union cvmx_oclax_bist_result cvmx_oclax_bist_result_t;
 
@@ -448,18 +525,19 @@ union cvmx_oclax_cdhx_ctl {
 	uint64_t dis_stamp                    : 1;  /**< Remove time stamps from data stream. */
 	uint64_t cap_ctl                      : 4;  /**< Minterms that will cause data to be captured. These minterms are the four inputs to a 4-1
                                                          mux selected by PLA1 and 0. The output is thus calculated from the equation:
-                                                           fsmcap0 = OCLA(0..4)_FSM(0)_STATE[state0][CAP].
-                                                           fsmcap1 = OCLA(0..4)_FSM(1)_STATE[state1][CAP].
-                                                           out = (   (<3> & fsmcap0 & fsmcap0)
+                                                           fsmcap0 = OCLA(0..2)_FSM(0)_STATE[state0][CAP].
+                                                           fsmcap1 = OCLA(0..2)_FSM(1)_STATE[state1][CAP].
+                                                           out = (   (<3> & fsmcap1 & fsmcap0)
                                                          _        || (<2> & fsmcap1 & !fsmcap0)
                                                          _        || (<1> & !fsmcap1 & fsmcap0)
                                                          _        || (<0> & !fsmcap1 & !fsmcap0)).
                                                          Common examples:
                                                          0x0 = No capture.
-                                                         0x2 = Capture when fsmcap0 requests capture.
-                                                         0x4 = Capture when fsmcap1 requests capture.
-                                                         0x6 = Capture on fsmcap0 | fsmcap1.
+                                                         0xA = Capture when fsmcap0 requests capture.
+                                                         0xC = Capture when fsmcap1 requests capture.
+                                                         0x6 = Capture on fsmcap0 EXOR fsmcap1.
                                                          0x8 = Capture on fsmcap0 & fsmcap1.
+                                                         0xE = Capture on fsmcap0 | fsmcap1.
                                                          0xF = Always capture. */
 #else
 	uint64_t cap_ctl                      : 4;
@@ -470,7 +548,10 @@ union cvmx_oclax_cdhx_ctl {
 	} s;
 	struct cvmx_oclax_cdhx_ctl_s          cn70xx;
 	struct cvmx_oclax_cdhx_ctl_s          cn70xxp1;
+	struct cvmx_oclax_cdhx_ctl_s          cn73xx;
 	struct cvmx_oclax_cdhx_ctl_s          cn78xx;
+	struct cvmx_oclax_cdhx_ctl_s          cn78xxp2;
+	struct cvmx_oclax_cdhx_ctl_s          cnf75xx;
 };
 typedef union cvmx_oclax_cdhx_ctl cvmx_oclax_cdhx_ctl_t;
 
@@ -484,7 +565,7 @@ union cvmx_oclax_const {
 	uint64_t reserved_16_63               : 48;
 	uint64_t dat_size                     : 16; /**< Size of data RAM in units of 36-bit entries. This value is subject to change between chip
                                                          passes, and software should thus use this value rather than a hard coded constant.
-                                                         OCLA(0..3) size is 4096, OCLA(4) size is 8192. */
+                                                         OCLA(0..1) size is 4096, OCLA(2) size is 8192. */
 #else
 	uint64_t dat_size                     : 16;
 	uint64_t reserved_16_63               : 48;
@@ -492,7 +573,10 @@ union cvmx_oclax_const {
 	} s;
 	struct cvmx_oclax_const_s             cn70xx;
 	struct cvmx_oclax_const_s             cn70xxp1;
+	struct cvmx_oclax_const_s             cn73xx;
 	struct cvmx_oclax_const_s             cn78xx;
+	struct cvmx_oclax_const_s             cn78xxp2;
+	struct cvmx_oclax_const_s             cnf75xx;
 };
 typedef union cvmx_oclax_const cvmx_oclax_const_t;
 
@@ -504,7 +588,7 @@ union cvmx_oclax_datx {
 	struct cvmx_oclax_datx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_38_63               : 26;
-	uint64_t entry                        : 38; /**< Captured entry. Data is in the format described by OCLA_CAP_DAT_S or OCLA_CAP_CTL_S. */
+	uint64_t entry                        : 38; /**< Captured ent */
 #else
 	uint64_t entry                        : 38;
 	uint64_t reserved_38_63               : 26;
@@ -512,7 +596,10 @@ union cvmx_oclax_datx {
 	} s;
 	struct cvmx_oclax_datx_s              cn70xx;
 	struct cvmx_oclax_datx_s              cn70xxp1;
+	struct cvmx_oclax_datx_s              cn73xx;
 	struct cvmx_oclax_datx_s              cn78xx;
+	struct cvmx_oclax_datx_s              cn78xxp2;
+	struct cvmx_oclax_datx_s              cnf75xx;
 };
 typedef union cvmx_oclax_datx cvmx_oclax_datx_t;
 
@@ -542,9 +629,36 @@ union cvmx_oclax_dat_pop {
 	} s;
 	struct cvmx_oclax_dat_pop_s           cn70xx;
 	struct cvmx_oclax_dat_pop_s           cn70xxp1;
+	struct cvmx_oclax_dat_pop_s           cn73xx;
 	struct cvmx_oclax_dat_pop_s           cn78xx;
+	struct cvmx_oclax_dat_pop_s           cn78xxp2;
+	struct cvmx_oclax_dat_pop_s           cnf75xx;
 };
 typedef union cvmx_oclax_dat_pop cvmx_oclax_dat_pop_t;
+
+/**
+ * cvmx_ocla#_eco
+ *
+ * Added in pass 2.
+ *
+ */
+union cvmx_oclax_eco {
+	uint64_t u64;
+	struct cvmx_oclax_eco_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t eco_rw                       : 32; /**< INTERNAL: Reserved for ECO usage. */
+#else
+	uint64_t eco_rw                       : 32;
+	uint64_t reserved_32_63               : 32;
+#endif
+	} s;
+	struct cvmx_oclax_eco_s               cn70xx;
+	struct cvmx_oclax_eco_s               cn73xx;
+	struct cvmx_oclax_eco_s               cn78xxp2;
+	struct cvmx_oclax_eco_s               cnf75xx;
+};
+typedef union cvmx_oclax_eco cvmx_oclax_eco_t;
 
 /**
  * cvmx_ocla#_fifo_depth
@@ -562,7 +676,10 @@ union cvmx_oclax_fifo_depth {
 	} s;
 	struct cvmx_oclax_fifo_depth_s        cn70xx;
 	struct cvmx_oclax_fifo_depth_s        cn70xxp1;
+	struct cvmx_oclax_fifo_depth_s        cn73xx;
 	struct cvmx_oclax_fifo_depth_s        cn78xx;
+	struct cvmx_oclax_fifo_depth_s        cn78xxp2;
+	struct cvmx_oclax_fifo_depth_s        cnf75xx;
 };
 typedef union cvmx_oclax_fifo_depth cvmx_oclax_fifo_depth_t;
 
@@ -579,7 +696,7 @@ union cvmx_oclax_fifo_limit {
                                                          detected. */
 	uint64_t ddr                          : 16; /**< DDR level. When OCLA()_FIFO_DEPTH > [DDR], FIFO entries will be removed, packed into a
                                                          cache line, and overflowed to DDR/L2. All-ones disables overflow to DDR/L2. If non-zero
-                                                         must be at least 28. */
+                                                         must be at least 52. */
 	uint64_t bp                           : 16; /**< Backpressure level. When OCLA()_FIFO_DEPTH > [BP], OCLA will signal backpressure to
                                                          coprocessors. All-ones disables indicating backpressure. */
 	uint64_t wmark                        : 16; /**< Interrupt watermark level. When OCLA()_FIFO_DEPTH > [WMARK], OCLA will set
@@ -593,7 +710,10 @@ union cvmx_oclax_fifo_limit {
 	} s;
 	struct cvmx_oclax_fifo_limit_s        cn70xx;
 	struct cvmx_oclax_fifo_limit_s        cn70xxp1;
+	struct cvmx_oclax_fifo_limit_s        cn73xx;
 	struct cvmx_oclax_fifo_limit_s        cn78xx;
+	struct cvmx_oclax_fifo_limit_s        cn78xxp2;
+	struct cvmx_oclax_fifo_limit_s        cnf75xx;
 };
 typedef union cvmx_oclax_fifo_limit cvmx_oclax_fifo_limit_t;
 
@@ -613,7 +733,10 @@ union cvmx_oclax_fifo_tail {
 	} s;
 	struct cvmx_oclax_fifo_tail_s         cn70xx;
 	struct cvmx_oclax_fifo_tail_s         cn70xxp1;
+	struct cvmx_oclax_fifo_tail_s         cn73xx;
 	struct cvmx_oclax_fifo_tail_s         cn78xx;
+	struct cvmx_oclax_fifo_tail_s         cn78xxp2;
+	struct cvmx_oclax_fifo_tail_s         cnf75xx;
 };
 typedef union cvmx_oclax_fifo_tail cvmx_oclax_fifo_tail_t;
 
@@ -637,7 +760,10 @@ union cvmx_oclax_fifo_trig {
 	} s;
 	struct cvmx_oclax_fifo_trig_s         cn70xx;
 	struct cvmx_oclax_fifo_trig_s         cn70xxp1;
+	struct cvmx_oclax_fifo_trig_s         cn73xx;
 	struct cvmx_oclax_fifo_trig_s         cn78xx;
+	struct cvmx_oclax_fifo_trig_s         cn78xxp2;
+	struct cvmx_oclax_fifo_trig_s         cnf75xx;
 };
 typedef union cvmx_oclax_fifo_trig cvmx_oclax_fifo_trig_t;
 
@@ -649,7 +775,9 @@ union cvmx_oclax_fifo_wrap {
 	struct cvmx_oclax_fifo_wrap_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_32_63               : 32;
-	uint64_t wraps                        : 32; /**< Number of times FIFO has wrapped since trigger. Cleared when OCLA()_STATE_INT[TRIG] clear. */
+	uint64_t wraps                        : 32; /**< Number of times FIFO has wrapped since trigger.
+                                                         Cleared when OCLA()_STATE_INT[TRIG] is clear.
+                                                         This count has a one cycle lag observing when a trigger event occurs. */
 #else
 	uint64_t wraps                        : 32;
 	uint64_t reserved_32_63               : 32;
@@ -657,14 +785,17 @@ union cvmx_oclax_fifo_wrap {
 	} s;
 	struct cvmx_oclax_fifo_wrap_s         cn70xx;
 	struct cvmx_oclax_fifo_wrap_s         cn70xxp1;
+	struct cvmx_oclax_fifo_wrap_s         cn73xx;
 	struct cvmx_oclax_fifo_wrap_s         cn78xx;
+	struct cvmx_oclax_fifo_wrap_s         cn78xxp2;
+	struct cvmx_oclax_fifo_wrap_s         cnf75xx;
 };
 typedef union cvmx_oclax_fifo_wrap cvmx_oclax_fifo_wrap_t;
 
 /**
  * cvmx_ocla#_fsm#_and#_i#
  *
- * Values for PLA-AND plane. AND(0..15) represents the 15 allowed AND terms. I(0..1) for I=0
+ * Values for PLA-AND plane. AND(0..15) represents the 16 allowed AND terms. I(0..1) for I=0
  * indicates the term non-inverted, for I=1 indicates the term inverted. Any AND tree may be
  * disabled by setting the same bit in both _I(0) and _I(1), as '((1) & !(1))' is always false.
  */
@@ -672,22 +803,27 @@ union cvmx_oclax_fsmx_andx_ix {
 	uint64_t u64;
 	struct cvmx_oclax_fsmx_andx_ix_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_15_63               : 49;
-	uint64_t mcd                          : 3;  /**< Multichip debug (MCD) 0..2 inputs. */
-	uint64_t match                        : 4;  /**< Matcher 0..3 input. */
-	uint64_t fsm1_state                   : 4;  /**< FSM 1 last state. */
-	uint64_t fsm0_state                   : 4;  /**< FSM 0 last state. */
+	uint64_t reserved_16_63               : 48;
+	uint64_t trig                         : 1;  /**< AND plane control for trigger FSM input. */
+	uint64_t mcd                          : 3;  /**< AND plane control for multichip debug (MCD) 0..2 FSM inputs. */
+	uint64_t match                        : 4;  /**< AND plane control for matcher 0..3 FSM inputs. */
+	uint64_t fsm1_state                   : 4;  /**< AND plane control for FSM 1 last state input. */
+	uint64_t fsm0_state                   : 4;  /**< AND plane control for FSM 0 last state input. */
 #else
 	uint64_t fsm0_state                   : 4;
 	uint64_t fsm1_state                   : 4;
 	uint64_t match                        : 4;
 	uint64_t mcd                          : 3;
-	uint64_t reserved_15_63               : 49;
+	uint64_t trig                         : 1;
+	uint64_t reserved_16_63               : 48;
 #endif
 	} s;
 	struct cvmx_oclax_fsmx_andx_ix_s      cn70xx;
 	struct cvmx_oclax_fsmx_andx_ix_s      cn70xxp1;
+	struct cvmx_oclax_fsmx_andx_ix_s      cn73xx;
 	struct cvmx_oclax_fsmx_andx_ix_s      cn78xx;
+	struct cvmx_oclax_fsmx_andx_ix_s      cn78xxp2;
+	struct cvmx_oclax_fsmx_andx_ix_s      cnf75xx;
 };
 typedef union cvmx_oclax_fsmx_andx_ix cvmx_oclax_fsmx_andx_ix_t;
 
@@ -699,7 +835,7 @@ union cvmx_oclax_fsmx_orx {
 	struct cvmx_oclax_fsmx_orx_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_16_63               : 48;
-	uint64_t or_state                     : 16; /**< Column to drive on PLA OR-plane. Widened to 16-bits in pass 2. */
+	uint64_t or_state                     : 16; /**< Column to drive on PLA OR-plane. */
 #else
 	uint64_t or_state                     : 16;
 	uint64_t reserved_16_63               : 48;
@@ -709,13 +845,16 @@ union cvmx_oclax_fsmx_orx {
 	struct cvmx_oclax_fsmx_orx_cn70xxp1 {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_4_63                : 60;
-	uint64_t or_state                     : 4;  /**< Column to drive on PLA OR-plane. Widened to 16-bits in pass 2. */
+	uint64_t or_state                     : 4;  /**< Column to drive on PLA OR-plane. */
 #else
 	uint64_t or_state                     : 4;
 	uint64_t reserved_4_63                : 60;
 #endif
 	} cn70xxp1;
+	struct cvmx_oclax_fsmx_orx_s          cn73xx;
 	struct cvmx_oclax_fsmx_orx_cn70xxp1   cn78xx;
+	struct cvmx_oclax_fsmx_orx_s          cn78xxp2;
+	struct cvmx_oclax_fsmx_orx_s          cnf75xx;
 };
 typedef union cvmx_oclax_fsmx_orx cvmx_oclax_fsmx_orx_t;
 
@@ -731,8 +870,7 @@ union cvmx_oclax_fsmx_statex {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_31_63               : 33;
 	uint64_t sinfo_set                    : 1;  /**< If a control packet is generated in this state (due to capture starting
-                                                         in the next cycle), set OCLA_CAP_CTL_S[SINFO].
-                                                         Added in pass 2. */
+                                                         in the next cycle), set OCLA_CAP_CTL_S[SINFO]. */
 	uint64_t set_int                      : 1;  /**< In this state set interrupt. */
 	uint64_t cap                          : 1;  /**< In this state request capture this cycle. */
 	uint64_t set_mcd                      : 3;  /**< In this state set MCD. */
@@ -760,35 +898,11 @@ union cvmx_oclax_fsmx_statex {
 #endif
 	} s;
 	struct cvmx_oclax_fsmx_statex_s       cn70xx;
-	struct cvmx_oclax_fsmx_statex_cn70xxp1 {
-#ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_30_63               : 34;
-	uint64_t set_int                      : 1;  /**< In this state set interrupt. */
-	uint64_t cap                          : 1;  /**< In this state request capture this cycle. */
-	uint64_t set_mcd                      : 3;  /**< In this state set MCD. */
-	uint64_t set_trig                     : 1;  /**< In this state set internal trigger indication. */
-	uint64_t reserved_20_23               : 4;
-	uint64_t set_val                      : 4;  /**< In this state store match value into matcher 0..3. */
-	uint64_t reserved_12_15               : 4;
-	uint64_t clr_cnt                      : 4;  /**< In this state clear match counter. */
-	uint64_t reserved_4_7                 : 4;
-	uint64_t inc_cnt                      : 4;  /**< In this state increment match counter. See State Outputs for more information on this or
-                                                         any of the bits above. */
-#else
-	uint64_t inc_cnt                      : 4;
-	uint64_t reserved_4_7                 : 4;
-	uint64_t clr_cnt                      : 4;
-	uint64_t reserved_12_15               : 4;
-	uint64_t set_val                      : 4;
-	uint64_t reserved_20_23               : 4;
-	uint64_t set_trig                     : 1;
-	uint64_t set_mcd                      : 3;
-	uint64_t cap                          : 1;
-	uint64_t set_int                      : 1;
-	uint64_t reserved_30_63               : 34;
-#endif
-	} cn70xxp1;
-	struct cvmx_oclax_fsmx_statex_cn70xxp1 cn78xx;
+	struct cvmx_oclax_fsmx_statex_s       cn70xxp1;
+	struct cvmx_oclax_fsmx_statex_s       cn73xx;
+	struct cvmx_oclax_fsmx_statex_s       cn78xx;
+	struct cvmx_oclax_fsmx_statex_s       cn78xxp2;
+	struct cvmx_oclax_fsmx_statex_s       cnf75xx;
 };
 typedef union cvmx_oclax_fsmx_statex cvmx_oclax_fsmx_statex_t;
 
@@ -799,12 +913,16 @@ union cvmx_oclax_gen_ctl {
 	uint64_t u64;
 	struct cvmx_oclax_gen_ctl_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_4_63                : 60;
+	uint64_t reserved_7_63                : 57;
+	uint64_t mcdtrig                      : 3;  /**< Enable MCD triggering. For each bit corresponding to the three MCDs:
+                                                         0 = MCD does not cause trigger.
+                                                         1 = When the corresponding MCD is received it will cause
+                                                         triggerring and set OCLA()_STATE_SET[TRIG]. */
 	uint64_t exten                        : 1;  /**< Enable external triggering.
                                                          0 = External triggering ignored.
                                                          1 = When the external trigger pin selected with GPIO_OCLA_EXTEN_TRIG is high it will cause
                                                          triggerring and set OCLA()_STATE_SET[TRIG]. The external device must de-assert the
-                                                         signal to release the trigger (it is not edge sensitive.) */
+                                                         signal (it is not edge sensitive.) */
 	uint64_t den                          : 1;  /**< Enable data bus and counter clocking. When set, the OCLA inbound data bus may be used and
                                                          counters may increment. When clear, the bus is always zero and internal flops may be clock
                                                          gated off to save power. Must be set for normal operation. */
@@ -815,12 +933,16 @@ union cvmx_oclax_gen_ctl {
 	uint64_t stt                          : 1;
 	uint64_t den                          : 1;
 	uint64_t exten                        : 1;
-	uint64_t reserved_4_63                : 60;
+	uint64_t mcdtrig                      : 3;
+	uint64_t reserved_7_63                : 57;
 #endif
 	} s;
 	struct cvmx_oclax_gen_ctl_s           cn70xx;
 	struct cvmx_oclax_gen_ctl_s           cn70xxp1;
+	struct cvmx_oclax_gen_ctl_s           cn73xx;
 	struct cvmx_oclax_gen_ctl_s           cn78xx;
+	struct cvmx_oclax_gen_ctl_s           cn78xxp2;
+	struct cvmx_oclax_gen_ctl_s           cnf75xx;
 };
 typedef union cvmx_oclax_gen_ctl cvmx_oclax_gen_ctl_t;
 
@@ -841,7 +963,10 @@ union cvmx_oclax_matx_count {
 	} s;
 	struct cvmx_oclax_matx_count_s        cn70xx;
 	struct cvmx_oclax_matx_count_s        cn70xxp1;
+	struct cvmx_oclax_matx_count_s        cn73xx;
 	struct cvmx_oclax_matx_count_s        cn78xx;
+	struct cvmx_oclax_matx_count_s        cn78xxp2;
+	struct cvmx_oclax_matx_count_s        cnf75xx;
 };
 typedef union cvmx_oclax_matx_count cvmx_oclax_matx_count_t;
 
@@ -868,7 +993,10 @@ union cvmx_oclax_matx_ctl {
 	} s;
 	struct cvmx_oclax_matx_ctl_s          cn70xx;
 	struct cvmx_oclax_matx_ctl_s          cn70xxp1;
+	struct cvmx_oclax_matx_ctl_s          cn73xx;
 	struct cvmx_oclax_matx_ctl_s          cn78xx;
+	struct cvmx_oclax_matx_ctl_s          cn78xxp2;
+	struct cvmx_oclax_matx_ctl_s          cnf75xx;
 };
 typedef union cvmx_oclax_matx_ctl cvmx_oclax_matx_ctl_t;
 
@@ -886,7 +1014,7 @@ union cvmx_oclax_matx_maskx {
                                                          _ If MASK = 1 and VALUE = 0, matches when data = "0".
                                                          _ If MASK = 1 and VALUE = 1, matches when data = "1".
                                                          _ If MASK = 0 and VALUE = 0, matches any data.
-                                                         _ If MASK = 0 and VALUE = 1, reserved in pass 1, matches any data pass 2 and later. */
+                                                         _ If MASK = 0 and VALUE = 1, matches any data. */
 #else
 	uint64_t mask                         : 36;
 	uint64_t reserved_36_63               : 28;
@@ -894,7 +1022,10 @@ union cvmx_oclax_matx_maskx {
 	} s;
 	struct cvmx_oclax_matx_maskx_s        cn70xx;
 	struct cvmx_oclax_matx_maskx_s        cn70xxp1;
+	struct cvmx_oclax_matx_maskx_s        cn73xx;
 	struct cvmx_oclax_matx_maskx_s        cn78xx;
+	struct cvmx_oclax_matx_maskx_s        cn78xxp2;
+	struct cvmx_oclax_matx_maskx_s        cnf75xx;
 };
 typedef union cvmx_oclax_matx_maskx cvmx_oclax_matx_maskx_t;
 
@@ -915,7 +1046,10 @@ union cvmx_oclax_matx_thresh {
 	} s;
 	struct cvmx_oclax_matx_thresh_s       cn70xx;
 	struct cvmx_oclax_matx_thresh_s       cn70xxp1;
+	struct cvmx_oclax_matx_thresh_s       cn73xx;
 	struct cvmx_oclax_matx_thresh_s       cn78xx;
+	struct cvmx_oclax_matx_thresh_s       cn78xxp2;
+	struct cvmx_oclax_matx_thresh_s       cnf75xx;
 };
 typedef union cvmx_oclax_matx_thresh cvmx_oclax_matx_thresh_t;
 
@@ -936,7 +1070,10 @@ union cvmx_oclax_matx_valuex {
 	} s;
 	struct cvmx_oclax_matx_valuex_s       cn70xx;
 	struct cvmx_oclax_matx_valuex_s       cn70xxp1;
+	struct cvmx_oclax_matx_valuex_s       cn73xx;
 	struct cvmx_oclax_matx_valuex_s       cn78xx;
+	struct cvmx_oclax_matx_valuex_s       cn78xxp2;
+	struct cvmx_oclax_matx_valuex_s       cnf75xx;
 };
 typedef union cvmx_oclax_matx_valuex cvmx_oclax_matx_valuex_t;
 
@@ -956,7 +1093,10 @@ union cvmx_oclax_rawx {
 	} s;
 	struct cvmx_oclax_rawx_s              cn70xx;
 	struct cvmx_oclax_rawx_s              cn70xxp1;
+	struct cvmx_oclax_rawx_s              cn73xx;
 	struct cvmx_oclax_rawx_s              cn78xx;
+	struct cvmx_oclax_rawx_s              cn78xxp2;
+	struct cvmx_oclax_rawx_s              cnf75xx;
 };
 typedef union cvmx_oclax_rawx cvmx_oclax_rawx_t;
 
@@ -976,7 +1116,10 @@ union cvmx_oclax_sft_rst {
 	} s;
 	struct cvmx_oclax_sft_rst_s           cn70xx;
 	struct cvmx_oclax_sft_rst_s           cn70xxp1;
+	struct cvmx_oclax_sft_rst_s           cn73xx;
 	struct cvmx_oclax_sft_rst_s           cn78xx;
+	struct cvmx_oclax_sft_rst_s           cn78xxp2;
+	struct cvmx_oclax_sft_rst_s           cnf75xx;
 };
 typedef union cvmx_oclax_sft_rst cvmx_oclax_sft_rst_t;
 
@@ -988,7 +1131,8 @@ union cvmx_oclax_stack_base {
 	struct cvmx_oclax_stack_base_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t ptr                          : 35; /**< Memory address for base of overflow stack. This address must be on the local node in a CCPI system. */
+	uint64_t ptr                          : 35; /**< Memory address for base of overflow stack.
+                                                         INTERNAL: This address must be on the local node in a CCPI system. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -998,7 +1142,10 @@ union cvmx_oclax_stack_base {
 	} s;
 	struct cvmx_oclax_stack_base_s        cn70xx;
 	struct cvmx_oclax_stack_base_s        cn70xxp1;
+	struct cvmx_oclax_stack_base_s        cn73xx;
 	struct cvmx_oclax_stack_base_s        cn78xx;
+	struct cvmx_oclax_stack_base_s        cn78xxp2;
+	struct cvmx_oclax_stack_base_s        cnf75xx;
 };
 typedef union cvmx_oclax_stack_base cvmx_oclax_stack_base_t;
 
@@ -1010,9 +1157,9 @@ union cvmx_oclax_stack_cur {
 	struct cvmx_oclax_stack_cur_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t ptr                          : 35; /**< Next address to write for overflow stack. This address must be on the local node in a
-                                                         CCPI system. During initialization this must be between OCLA()_STACK_BASE and
-                                                         OCLA()_STACK_TOP. */
+	uint64_t ptr                          : 35; /**< Next address to write for overflow stack.
+                                                         During initialization this must be between OCLA()_STACK_BASE and OCLA()_STACK_TOP.
+                                                         INTERNAL: This address must be on the local node in a CCPI system. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -1022,7 +1169,10 @@ union cvmx_oclax_stack_cur {
 	} s;
 	struct cvmx_oclax_stack_cur_s         cn70xx;
 	struct cvmx_oclax_stack_cur_s         cn70xxp1;
+	struct cvmx_oclax_stack_cur_s         cn73xx;
 	struct cvmx_oclax_stack_cur_s         cn78xx;
+	struct cvmx_oclax_stack_cur_s         cn78xxp2;
+	struct cvmx_oclax_stack_cur_s         cnf75xx;
 };
 typedef union cvmx_oclax_stack_cur cvmx_oclax_stack_cur_t;
 
@@ -1042,7 +1192,10 @@ union cvmx_oclax_stack_store_cnt {
 	} s;
 	struct cvmx_oclax_stack_store_cnt_s   cn70xx;
 	struct cvmx_oclax_stack_store_cnt_s   cn70xxp1;
+	struct cvmx_oclax_stack_store_cnt_s   cn73xx;
 	struct cvmx_oclax_stack_store_cnt_s   cn78xx;
+	struct cvmx_oclax_stack_store_cnt_s   cn78xxp2;
+	struct cvmx_oclax_stack_store_cnt_s   cnf75xx;
 };
 typedef union cvmx_oclax_stack_store_cnt cvmx_oclax_stack_store_cnt_t;
 
@@ -1054,8 +1207,8 @@ union cvmx_oclax_stack_top {
 	struct cvmx_oclax_stack_top_s {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t reserved_42_63               : 22;
-	uint64_t ptr                          : 35; /**< Memory address for top of overflow stack plus one. This address must be on the
-                                                         local node in a CCPI system. */
+	uint64_t ptr                          : 35; /**< Memory address for top of overflow stack plus one.
+                                                         INTERNAL: This address must be on the local node in a CCPI system. */
 	uint64_t reserved_0_6                 : 7;
 #else
 	uint64_t reserved_0_6                 : 7;
@@ -1065,7 +1218,10 @@ union cvmx_oclax_stack_top {
 	} s;
 	struct cvmx_oclax_stack_top_s         cn70xx;
 	struct cvmx_oclax_stack_top_s         cn70xxp1;
+	struct cvmx_oclax_stack_top_s         cn73xx;
 	struct cvmx_oclax_stack_top_s         cn78xx;
+	struct cvmx_oclax_stack_top_s         cn78xxp2;
+	struct cvmx_oclax_stack_top_s         cnf75xx;
 };
 typedef union cvmx_oclax_stack_top cvmx_oclax_stack_top_t;
 
@@ -1086,7 +1242,10 @@ union cvmx_oclax_stack_wrap {
 	} s;
 	struct cvmx_oclax_stack_wrap_s        cn70xx;
 	struct cvmx_oclax_stack_wrap_s        cn70xxp1;
+	struct cvmx_oclax_stack_wrap_s        cn73xx;
 	struct cvmx_oclax_stack_wrap_s        cn78xx;
+	struct cvmx_oclax_stack_wrap_s        cn78xxp2;
+	struct cvmx_oclax_stack_wrap_s        cnf75xx;
 };
 typedef union cvmx_oclax_stack_wrap cvmx_oclax_stack_wrap_t;
 
@@ -1106,7 +1265,10 @@ union cvmx_oclax_stagex {
 	} s;
 	struct cvmx_oclax_stagex_s            cn70xx;
 	struct cvmx_oclax_stagex_s            cn70xxp1;
+	struct cvmx_oclax_stagex_s            cn73xx;
 	struct cvmx_oclax_stagex_s            cn78xx;
+	struct cvmx_oclax_stagex_s            cn78xxp2;
+	struct cvmx_oclax_stagex_s            cnf75xx;
 };
 typedef union cvmx_oclax_stagex cvmx_oclax_stagex_t;
 
@@ -1169,7 +1331,10 @@ union cvmx_oclax_state_int {
 	} s;
 	struct cvmx_oclax_state_int_s         cn70xx;
 	struct cvmx_oclax_state_int_s         cn70xxp1;
+	struct cvmx_oclax_state_int_s         cn73xx;
 	struct cvmx_oclax_state_int_s         cn78xx;
+	struct cvmx_oclax_state_int_s         cn78xxp2;
+	struct cvmx_oclax_state_int_s         cnf75xx;
 };
 typedef union cvmx_oclax_state_int cvmx_oclax_state_int_t;
 
@@ -1226,7 +1391,10 @@ union cvmx_oclax_state_set {
 	} s;
 	struct cvmx_oclax_state_set_s         cn70xx;
 	struct cvmx_oclax_state_set_s         cn70xxp1;
+	struct cvmx_oclax_state_set_s         cn73xx;
 	struct cvmx_oclax_state_set_s         cn78xx;
+	struct cvmx_oclax_state_set_s         cn78xxp2;
+	struct cvmx_oclax_state_set_s         cnf75xx;
 };
 typedef union cvmx_oclax_state_set cvmx_oclax_state_set_t;
 
@@ -1237,17 +1405,26 @@ union cvmx_oclax_time {
 	uint64_t u64;
 	struct cvmx_oclax_time_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-	uint64_t reserved_32_63               : 32;
-	uint64_t cycle                        : 32; /**< Current time as free running counter. Loaded into captured control packets.
+	uint64_t cycle                        : 64; /**< Current time as free running counter. Loaded into captured control packets.
                                                          Unconditionally clocked, independent of OCLA()_SFT_RST. */
+#else
+	uint64_t cycle                        : 64;
+#endif
+	} s;
+	struct cvmx_oclax_time_s              cn70xx;
+	struct cvmx_oclax_time_cn70xxp1 {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_32_63               : 32;
+	uint64_t cycle                        : 32; /**< Current time as free running counter. Loaded into captured control packets. */
 #else
 	uint64_t cycle                        : 32;
 	uint64_t reserved_32_63               : 32;
 #endif
-	} s;
-	struct cvmx_oclax_time_s              cn70xx;
-	struct cvmx_oclax_time_s              cn70xxp1;
-	struct cvmx_oclax_time_s              cn78xx;
+	} cn70xxp1;
+	struct cvmx_oclax_time_s              cn73xx;
+	struct cvmx_oclax_time_cn70xxp1       cn78xx;
+	struct cvmx_oclax_time_s              cn78xxp2;
+	struct cvmx_oclax_time_s              cnf75xx;
 };
 typedef union cvmx_oclax_time cvmx_oclax_time_t;
 

@@ -1,4 +1,4 @@
- /*
+/*
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
@@ -684,20 +684,27 @@ int __init octeon_prune_device_tree(void)
 	else
 		max_port = 1;
 
-	for (i = 0; i < 2; i++) {
-		int i2c;
+	/*
+	 * Landbird NIC card does not have PHY. Probing MDIO is putting
+	 * XAUI in interface 0 in bad state.
+	 */
+	if (octeon_bootinfo->board_type == CVMX_BOARD_TYPE_NIC_XLE_10G)
+		max_port = 0;
+
+	for (i = 0; i < 4; i++) {
+		int smi;
 		snprintf(name_buffer, sizeof(name_buffer),
 			 "twsi%d", i);
 		alias_prop = fdt_getprop(initial_boot_params, aliases,
 					name_buffer, NULL);
 
 		if (alias_prop) {
-			i2c = fdt_path_offset(initial_boot_params, alias_prop);
-			if (i2c < 0)
+			smi = fdt_path_offset(initial_boot_params, alias_prop);
+			if (smi < 0)
 				continue;
 			if (i >= max_port) {
 				pr_debug("Deleting twsi%d\n", i);
-				fdt_nop_node(initial_boot_params, i2c);
+				fdt_nop_node(initial_boot_params, smi);
 				fdt_nop_property(initial_boot_params, aliases,
 						 name_buffer);
 			}
@@ -714,27 +721,20 @@ int __init octeon_prune_device_tree(void)
 	else
 		max_port = 1;
 
-	/*
-	 * Landbird NIC card does not have PHY. Probing MDIO is putting
-	 * XAUI in interface 0 in bad state.
-	 */
-	if (octeon_bootinfo->board_type == CVMX_BOARD_TYPE_NIC_XLE_10G)
-		max_port = 0;
-
-	for (i = 0; i < 4; i++) {
-		int smi;
+	for (i = 0; i < 2; i++) {
+		int i2c;
 		snprintf(name_buffer, sizeof(name_buffer),
 			 "smi%d", i);
 		alias_prop = fdt_getprop(initial_boot_params, aliases,
 					name_buffer, NULL);
 
 		if (alias_prop) {
-			smi = fdt_path_offset(initial_boot_params, alias_prop);
-			if (smi < 0)
+			i2c = fdt_path_offset(initial_boot_params, alias_prop);
+			if (i2c < 0)
 				continue;
 			if (i >= max_port) {
 				pr_debug("Deleting smi%d\n", i);
-				fdt_nop_node(initial_boot_params, smi);
+				fdt_nop_node(initial_boot_params, i2c);
 				fdt_nop_property(initial_boot_params, aliases,
 						 name_buffer);
 			}
@@ -952,6 +952,7 @@ end_led:
 	alias_prop = fdt_getprop(initial_boot_params, aliases,
 				 "usbn", NULL);
 	if (alias_prop) {
+
 		int usbn = fdt_path_offset(initial_boot_params, alias_prop);
 
 		if (usbn >= 0 && (current_cpu_type() == CPU_CAVIUM_OCTEON2 ||

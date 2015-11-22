@@ -85,6 +85,10 @@ static inline unsigned int cvmx_get_node_num(void)
 	unsigned int core_num = cvmx_get_core_num();
 	return (core_num >> CVMX_NODE_NO_SHIFT) & CVMX_NODE_MASK;
 }
+static inline unsigned int cvmx_get_local_core_num(void)
+{
+	return cvmx_get_core_num() & ((1 << CVMX_NODE_NO_SHIFT) - 1);
+}
 
 #include "cvmx-sysinfo.h"
 
@@ -591,6 +595,18 @@ struct cvmx_error_78xx {
 	u8 block_csr_bitpos;	/* Bit position in the CSR */
 };
 
-extern struct cvmx_error_78xx error_array_cn78xxp1[];
+extern unsigned int cvmx_error_78xx_array_sizes[3];
+
+extern struct cvmx_error_78xx error_array_cn78xx[2682];
+extern struct cvmx_error_78xx error_array_cn78xxp2[2682];
+extern struct cvmx_error_78xx error_array_cn73xx[1846];
+
+struct cvmx_error_array {
+	struct cvmx_error_78xx *array;
+	uint32_t prid_mask;
+	uint32_t prid_val;
+};
+
+extern struct cvmx_error_array octeon_error_arrays[4];
 
 #endif /*  __CVMX_H__  */

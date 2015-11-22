@@ -1,5 +1,5 @@
 /***********************license start***************
- * Copyright (c) 2003-2014  Cavium Inc. (support@cavium.com). All rights
+ * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  *
  *
@@ -62,7 +62,9 @@ static inline uint64_t CVMX_MIXX_BIST(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_BIST(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100078ull) + ((offset) & 1) * 2048;
 }
@@ -79,7 +81,9 @@ static inline uint64_t CVMX_MIXX_CTL(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_CTL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100020ull) + ((offset) & 1) * 2048;
 }
@@ -112,7 +116,9 @@ static inline uint64_t CVMX_MIXX_IRCNT(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_IRCNT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100030ull) + ((offset) & 1) * 2048;
 }
@@ -129,7 +135,9 @@ static inline uint64_t CVMX_MIXX_IRHWM(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_IRHWM(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100028ull) + ((offset) & 1) * 2048;
 }
@@ -146,7 +154,9 @@ static inline uint64_t CVMX_MIXX_IRING1(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_IRING1(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100010ull) + ((offset) & 1) * 2048;
 }
@@ -163,7 +173,9 @@ static inline uint64_t CVMX_MIXX_IRING2(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_IRING2(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100018ull) + ((offset) & 1) * 2048;
 }
@@ -180,12 +192,27 @@ static inline uint64_t CVMX_MIXX_ISR(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_ISR(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100048ull) + ((offset) & 1) * 2048;
 }
 #else
 #define CVMX_MIXX_ISR(offset) (CVMX_ADD_IO_SEG(0x0001070000100048ull) + ((offset) & 1) * 2048)
+#endif
+#if CVMX_ENABLE_CSR_ADDRESS_CHECKING
+static inline uint64_t CVMX_MIXX_ISR_W1S(unsigned long offset)
+{
+	if (!(
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
+		cvmx_warn("CVMX_MIXX_ISR_W1S(%lu) is invalid on this chip\n", offset);
+	return CVMX_ADD_IO_SEG(0x0001070000100050ull) + ((offset) & 1) * 2048;
+}
+#else
+#define CVMX_MIXX_ISR_W1S(offset) (CVMX_ADD_IO_SEG(0x0001070000100050ull) + ((offset) & 1) * 2048)
 #endif
 #if CVMX_ENABLE_CSR_ADDRESS_CHECKING
 static inline uint64_t CVMX_MIXX_ORCNT(unsigned long offset)
@@ -197,7 +224,9 @@ static inline uint64_t CVMX_MIXX_ORCNT(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_ORCNT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100040ull) + ((offset) & 1) * 2048;
 }
@@ -214,7 +243,9 @@ static inline uint64_t CVMX_MIXX_ORHWM(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_ORHWM(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100038ull) + ((offset) & 1) * 2048;
 }
@@ -231,7 +262,9 @@ static inline uint64_t CVMX_MIXX_ORING1(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_ORING1(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100000ull) + ((offset) & 1) * 2048;
 }
@@ -248,7 +281,9 @@ static inline uint64_t CVMX_MIXX_ORING2(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_ORING2(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100008ull) + ((offset) & 1) * 2048;
 }
@@ -265,7 +300,9 @@ static inline uint64_t CVMX_MIXX_REMCNT(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_REMCNT(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100058ull) + ((offset) & 1) * 2048;
 }
@@ -280,7 +317,9 @@ static inline uint64_t CVMX_MIXX_TSCTL(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_TSCTL(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100068ull) + ((offset) & 1) * 2048;
 }
@@ -295,7 +334,9 @@ static inline uint64_t CVMX_MIXX_TSTAMP(unsigned long offset)
 	      (OCTEON_IS_MODEL(OCTEON_CN63XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN66XX) && ((offset <= 1))) ||
 	      (OCTEON_IS_MODEL(OCTEON_CN68XX) && ((offset == 0))) ||
-	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1)))))
+	      (OCTEON_IS_MODEL(OCTEON_CN73XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CN78XX) && ((offset <= 1))) ||
+	      (OCTEON_IS_MODEL(OCTEON_CNF75XX) && ((offset <= 1)))))
 		cvmx_warn("CVMX_MIXX_TSTAMP(%lu) is invalid on this chip\n", offset);
 	return CVMX_ADD_IO_SEG(0x0001070000100060ull) + ((offset) & 1) * 2048;
 }
@@ -362,7 +403,10 @@ union cvmx_mixx_bist {
 	struct cvmx_mixx_bist_s               cn66xx;
 	struct cvmx_mixx_bist_s               cn68xx;
 	struct cvmx_mixx_bist_s               cn68xxp1;
+	struct cvmx_mixx_bist_s               cn73xx;
 	struct cvmx_mixx_bist_s               cn78xx;
+	struct cvmx_mixx_bist_s               cn78xxp2;
+	struct cvmx_mixx_bist_s               cnf75xx;
 };
 typedef union cvmx_mixx_bist cvmx_mixx_bist_t;
 
@@ -538,7 +582,10 @@ union cvmx_mixx_ctl {
 	struct cvmx_mixx_ctl_s                cn66xx;
 	struct cvmx_mixx_ctl_s                cn68xx;
 	struct cvmx_mixx_ctl_s                cn68xxp1;
+	struct cvmx_mixx_ctl_s                cn73xx;
 	struct cvmx_mixx_ctl_s                cn78xx;
+	struct cvmx_mixx_ctl_s                cn78xxp2;
+	struct cvmx_mixx_ctl_s                cnf75xx;
 };
 typedef union cvmx_mixx_ctl cvmx_mixx_ctl_t;
 
@@ -710,7 +757,10 @@ union cvmx_mixx_ircnt {
 	struct cvmx_mixx_ircnt_s              cn66xx;
 	struct cvmx_mixx_ircnt_s              cn68xx;
 	struct cvmx_mixx_ircnt_s              cn68xxp1;
+	struct cvmx_mixx_ircnt_s              cn73xx;
 	struct cvmx_mixx_ircnt_s              cn78xx;
+	struct cvmx_mixx_ircnt_s              cn78xxp2;
+	struct cvmx_mixx_ircnt_s              cnf75xx;
 };
 typedef union cvmx_mixx_ircnt cvmx_mixx_ircnt_t;
 
@@ -753,7 +803,10 @@ union cvmx_mixx_irhwm {
 	struct cvmx_mixx_irhwm_s              cn66xx;
 	struct cvmx_mixx_irhwm_s              cn68xx;
 	struct cvmx_mixx_irhwm_s              cn68xxp1;
+	struct cvmx_mixx_irhwm_s              cn73xx;
 	struct cvmx_mixx_irhwm_s              cn78xx;
+	struct cvmx_mixx_irhwm_s              cn78xxp2;
+	struct cvmx_mixx_irhwm_s              cnf75xx;
 };
 typedef union cvmx_mixx_irhwm cvmx_mixx_irhwm_t;
 
@@ -823,7 +876,7 @@ union cvmx_mixx_iring1 {
 	struct cvmx_mixx_iring1_cn61xx        cn66xx;
 	struct cvmx_mixx_iring1_cn61xx        cn68xx;
 	struct cvmx_mixx_iring1_cn61xx        cn68xxp1;
-	struct cvmx_mixx_iring1_cn78xx {
+	struct cvmx_mixx_iring1_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t isize                        : 20; /**< Represents the inbound ring (I-Ring) buffer's size (in 8-byte words). The ring can be as
                                                          large as 1MB entries.
@@ -839,7 +892,10 @@ union cvmx_mixx_iring1 {
 	uint64_t reserved_42_43               : 2;
 	uint64_t isize                        : 20;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_mixx_iring1_cn73xx        cn78xx;
+	struct cvmx_mixx_iring1_cn73xx        cn78xxp2;
+	struct cvmx_mixx_iring1_cn73xx        cnf75xx;
 };
 typedef union cvmx_mixx_iring1 cvmx_mixx_iring1_t;
 
@@ -887,7 +943,10 @@ union cvmx_mixx_iring2 {
 	struct cvmx_mixx_iring2_s             cn66xx;
 	struct cvmx_mixx_iring2_s             cn68xx;
 	struct cvmx_mixx_iring2_s             cn68xxp1;
+	struct cvmx_mixx_iring2_s             cn73xx;
 	struct cvmx_mixx_iring2_s             cn78xx;
+	struct cvmx_mixx_iring2_s             cn78xxp2;
+	struct cvmx_mixx_iring2_s             cnf75xx;
 };
 typedef union cvmx_mixx_iring2 cvmx_mixx_iring2_t;
 
@@ -1083,9 +1142,96 @@ union cvmx_mixx_isr {
 	struct cvmx_mixx_isr_s                cn66xx;
 	struct cvmx_mixx_isr_s                cn68xx;
 	struct cvmx_mixx_isr_s                cn68xxp1;
+	struct cvmx_mixx_isr_s                cn73xx;
 	struct cvmx_mixx_isr_s                cn78xx;
+	struct cvmx_mixx_isr_s                cn78xxp2;
+	struct cvmx_mixx_isr_s                cnf75xx;
 };
 typedef union cvmx_mixx_isr cvmx_mixx_isr_t;
+
+/**
+ * cvmx_mix#_isr_w1s
+ */
+union cvmx_mixx_isr_w1s {
+	uint64_t u64;
+	struct cvmx_mixx_isr_w1s_s {
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint64_t reserved_8_63                : 56;
+	uint64_t ts                           : 1;  /**< Timestamp interrupt. Throws MIX_INTSN_E:MIX(0..1)_INT_TS. This bit is set and the
+                                                         interrupt generated when the number of pending timestamp interrupts
+                                                         (MIX(0..1)_TSCTL[TSCNT]) is greater than the timestamp interrupt threshold
+                                                         (MIX(0..1)_CTL[TS_THRESH]) value. */
+	uint64_t orun                         : 1;  /**< O-ring packet count underflow detected. Throws MIX_INTSN_E::MIX(0..1)_INT_ORUN. If
+                                                         software writes a larger value than what is currently in the MIX(0..1)_ORCNT[ORCNT], then
+                                                         hardware reports the underflow condition.
+                                                         The MIX(0..1)_ORCNT[IOCNT] will clamp to zero.
+                                                         If an ORUN underflow condition is detected, the integrity of the MIX hardware state has
+                                                         been compromised. To recover, software must issue a software reset sequence. (See
+                                                         MIX(0..1)_CTL[RESET.] */
+	uint64_t irun                         : 1;  /**< I-ring packet count underflow detected. Throws MIX_INTSN_E::MIX(0..1)_INT_IRUN. If
+                                                         software writes a larger value than what is currently in the MIX(0..1)_IRCNT[IRCNT], then
+                                                         hardware reports the underflow condition.
+                                                         The MIX(0..1)_IRCNT[IRCNT] will clamp to zero.
+                                                         If an IRUN underflow condition is detected, the integrity of the MIX hardware state has
+                                                         been compromised. To recover, software must issue a software reset sequence. (See
+                                                         MIX(0..1)_CTL[RESET]). */
+	uint64_t data_drp                     : 1;  /**< Data was dropped due to RX FIFO full. Throws MIX_INTSN_E::MIX(0..1)_INT_DATA_DRP. If this
+                                                         event does occur, DATA_DRP is set and the interrupt is generated. */
+	uint64_t irthresh                     : 1;  /**< Inbound ring packet threshold exceeded. Throws MIX_INTSN_E::MIX(0..1)_INT_IRTHRESH. When
+                                                         the pending number of inbound packets in system memory (IRCNT) has exceeded a programmable
+                                                         threshold (IRHWM), this bit is set and the interrupt is generated. To service this
+                                                         interrupt, the IRCNT must first be lowered below the IRHWM before the W1C to this field. */
+	uint64_t orthresh                     : 1;  /**< Outbound ring packet threshold exceeded. Throws MIX_INTSN_E::MIX(0..1)_INT_ORTHRESH. When
+                                                         the pending number of outbound packets in system memory (ORCNT) has exceeded a
+                                                         programmable threshold (ORHWM), this bit is set and the interrupt is generated. To service
+                                                         this interrupt, the ORCNT must first be lowered below the ORHWM before the W1C to this
+                                                         field. */
+	uint64_t idblovf                      : 1;  /**< Inbound doorbell (IDBELL) overflow detected. Throws MIX_INTSN_E::MIX(0..1)_INT_IDBLOVF.
+                                                         If software attempts to write to the MIX(0..1)_IRING2[IDBELL] with a value greater than
+                                                         the remaining number of I-Ring buffer entries (MIX(0..1)_REMCNT[IREMCNT]), then the
+                                                         following occurs:
+                                                         * The MIX(0..1)_IRING2[IDBELL] write is IGNORED.
+                                                         * IDBLOVF is set and the interrupt is generated.
+                                                         Software should keep track of the number of I-Ring entries in use (i.e. the cumulative
+                                                         number
+                                                         of IDBELL write operations), and ensure that future IDBELL write operations don't exceed
+                                                         the size of the I-Ring Buffer (MIX(0..1)_IRING2[ISIZE]). Software must reclaim I-Ring
+                                                         entries by keeping track of the number of I-Ring entries, and writing to the
+                                                         MIX(0..1)_IRCNT[IRCNT].
+                                                         The MIX(0..1)_IRCNT[IRCNT] register represents the total number of packets (not I-Ring
+                                                         entries) and software must further keep track of the number of I-Ring entries associated
+                                                         with each packet as they are processed.
+                                                         If an IDBLOVF occurs, it is an indication that software has overwritten the I-Ring buffer,
+                                                         and the only recourse for recovery is a hardware reset. */
+	uint64_t odblovf                      : 1;  /**< Outbound doorbell (ODBELL) overflow detected. Throws MIX_INTSN_E::MIX(0..1)_INT_ODBLOVF.
+                                                         If software attempts to write to MIX(0..1)_ORING2[ODBELL] with a value greater than the
+                                                         remaining number of O-Ring buffer entries (MIX(0..1)_REMCNT[OREMCNT]), then the following
+                                                         occurs:
+                                                         * The MIX(0..1)_IRING2[ODBELL] write operation is IGNORED.
+                                                         * ODBLOVF is set and the interrupt is generated.
+                                                         Software should keep track of the number of I-Ring entries in use (i.e. the cumulative
+                                                         number of ODBELL write operations), and ensure that future ODBELL write operations don't
+                                                         exceed the size of the O-Ring buffer (MIX(0..1)_ORING2[OSIZE]). Software must reclaim
+                                                         O-Ring entries by writing to MIX(0..1)_ORCNT[ORCNT].
+                                                         If an ODBLOVF occurs, it is an indication that software has overwritten the O-Ring buffer,
+                                                         and the only recourse for recovery is a hardware reset. */
+#else
+	uint64_t odblovf                      : 1;
+	uint64_t idblovf                      : 1;
+	uint64_t orthresh                     : 1;
+	uint64_t irthresh                     : 1;
+	uint64_t data_drp                     : 1;
+	uint64_t irun                         : 1;
+	uint64_t orun                         : 1;
+	uint64_t ts                           : 1;
+	uint64_t reserved_8_63                : 56;
+#endif
+	} s;
+	struct cvmx_mixx_isr_w1s_s            cn73xx;
+	struct cvmx_mixx_isr_w1s_s            cn78xxp2;
+	struct cvmx_mixx_isr_w1s_s            cnf75xx;
+};
+typedef union cvmx_mixx_isr_w1s cvmx_mixx_isr_w1s_t;
 
 /**
  * cvmx_mix#_orcnt
@@ -1126,7 +1272,10 @@ union cvmx_mixx_orcnt {
 	struct cvmx_mixx_orcnt_s              cn66xx;
 	struct cvmx_mixx_orcnt_s              cn68xx;
 	struct cvmx_mixx_orcnt_s              cn68xxp1;
+	struct cvmx_mixx_orcnt_s              cn73xx;
 	struct cvmx_mixx_orcnt_s              cn78xx;
+	struct cvmx_mixx_orcnt_s              cn78xxp2;
+	struct cvmx_mixx_orcnt_s              cnf75xx;
 };
 typedef union cvmx_mixx_orcnt cvmx_mixx_orcnt_t;
 
@@ -1162,7 +1311,10 @@ union cvmx_mixx_orhwm {
 	struct cvmx_mixx_orhwm_s              cn66xx;
 	struct cvmx_mixx_orhwm_s              cn68xx;
 	struct cvmx_mixx_orhwm_s              cn68xxp1;
+	struct cvmx_mixx_orhwm_s              cn73xx;
 	struct cvmx_mixx_orhwm_s              cn78xx;
+	struct cvmx_mixx_orhwm_s              cn78xxp2;
+	struct cvmx_mixx_orhwm_s              cnf75xx;
 };
 typedef union cvmx_mixx_orhwm cvmx_mixx_orhwm_t;
 
@@ -1232,7 +1384,7 @@ union cvmx_mixx_oring1 {
 	struct cvmx_mixx_oring1_cn61xx        cn66xx;
 	struct cvmx_mixx_oring1_cn61xx        cn68xx;
 	struct cvmx_mixx_oring1_cn61xx        cn68xxp1;
-	struct cvmx_mixx_oring1_cn78xx {
+	struct cvmx_mixx_oring1_cn73xx {
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint64_t osize                        : 20; /**< Represents the outbound ring (O-Ring) buffer's size (in 8-byte words). The ring can be as
                                                          large as 1MB entries.
@@ -1248,7 +1400,10 @@ union cvmx_mixx_oring1 {
 	uint64_t reserved_42_43               : 2;
 	uint64_t osize                        : 20;
 #endif
-	} cn78xx;
+	} cn73xx;
+	struct cvmx_mixx_oring1_cn73xx        cn78xx;
+	struct cvmx_mixx_oring1_cn73xx        cn78xxp2;
+	struct cvmx_mixx_oring1_cn73xx        cnf75xx;
 };
 typedef union cvmx_mixx_oring1 cvmx_mixx_oring1_t;
 
@@ -1296,7 +1451,10 @@ union cvmx_mixx_oring2 {
 	struct cvmx_mixx_oring2_s             cn66xx;
 	struct cvmx_mixx_oring2_s             cn68xx;
 	struct cvmx_mixx_oring2_s             cn68xxp1;
+	struct cvmx_mixx_oring2_s             cn73xx;
 	struct cvmx_mixx_oring2_s             cn78xx;
+	struct cvmx_mixx_oring2_s             cn78xxp2;
+	struct cvmx_mixx_oring2_s             cnf75xx;
 };
 typedef union cvmx_mixx_oring2 cvmx_mixx_oring2_t;
 
@@ -1345,7 +1503,10 @@ union cvmx_mixx_remcnt {
 	struct cvmx_mixx_remcnt_s             cn66xx;
 	struct cvmx_mixx_remcnt_s             cn68xx;
 	struct cvmx_mixx_remcnt_s             cn68xxp1;
+	struct cvmx_mixx_remcnt_s             cn73xx;
 	struct cvmx_mixx_remcnt_s             cn78xx;
+	struct cvmx_mixx_remcnt_s             cn78xxp2;
+	struct cvmx_mixx_remcnt_s             cnf75xx;
 };
 typedef union cvmx_mixx_remcnt cvmx_mixx_remcnt_t;
 
@@ -1399,7 +1560,10 @@ union cvmx_mixx_tsctl {
 	struct cvmx_mixx_tsctl_s              cn66xx;
 	struct cvmx_mixx_tsctl_s              cn68xx;
 	struct cvmx_mixx_tsctl_s              cn68xxp1;
+	struct cvmx_mixx_tsctl_s              cn73xx;
 	struct cvmx_mixx_tsctl_s              cn78xx;
+	struct cvmx_mixx_tsctl_s              cn78xxp2;
+	struct cvmx_mixx_tsctl_s              cnf75xx;
 };
 typedef union cvmx_mixx_tsctl cvmx_mixx_tsctl_t;
 
@@ -1447,7 +1611,10 @@ union cvmx_mixx_tstamp {
 	struct cvmx_mixx_tstamp_s             cn66xx;
 	struct cvmx_mixx_tstamp_s             cn68xx;
 	struct cvmx_mixx_tstamp_s             cn68xxp1;
+	struct cvmx_mixx_tstamp_s             cn73xx;
 	struct cvmx_mixx_tstamp_s             cn78xx;
+	struct cvmx_mixx_tstamp_s             cn78xxp2;
+	struct cvmx_mixx_tstamp_s             cnf75xx;
 };
 typedef union cvmx_mixx_tstamp cvmx_mixx_tstamp_t;
 
