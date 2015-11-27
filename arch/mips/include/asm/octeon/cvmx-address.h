@@ -46,16 +46,6 @@
 #ifndef __CVMX_ADDRESS_H__
 #define __CVMX_ADDRESS_H__
 
-#ifndef CVMX_BUILD_FOR_LINUX_KERNEL
-#include "cvmx-abi.h"
-#endif
-
-#ifdef	__cplusplus
-/* *INDENT-OFF* */
-extern "C" {
-/* *INDENT-ON* */
-#endif
-
 typedef enum {
 	CVMX_MIPS_SPACE_XKSEG = 3LL,
 	CVMX_MIPS_SPACE_XKPHYS = 2LL,
@@ -249,73 +239,6 @@ typedef union {
 		uint64_t didspace:24;
 	} sfilldidspace;
 #endif
-
-#else
-	struct {
-		uint64_t offset:62;
-		cvmx_mips_space_t R:2;
-	} sva;
-
-	struct {
-		uint64_t offset:31;
-		uint64_t zeroes:33;
-	} suseg;
-
-	struct {
-		uint64_t offset:29;
-		cvmx_mips_xkseg_space_t sp:2;
-		uint64_t ones:33;
-	} sxkseg;
-
-	struct {
-		uint64_t pa:49;
-		uint64_t mbz:10;
-		uint64_t cca:3;
-		cvmx_mips_space_t R:2;
-	} sxkphys;
-
-	struct {
-		uint64_t offset:36;
-		uint64_t unaddr:4;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t mbz:15;
-	} sphys;
-
-	struct {
-		uint64_t offset:36;
-		uint64_t unaddr:4;
-		uint64_t zeroes:24;
-	} smem;
-
-	struct {
-		uint64_t offset:36;
-		uint64_t unaddr:4;
-		uint64_t did:8;
-		uint64_t is_io:1;
-		uint64_t mbz:13;
-		uint64_t mem_region:2;
-	} sio;
-
-	struct {
-		uint64_t addr:13;
-		cvmx_add_win_dec_t csrdec:2;
-		uint64_t ones:49;
-	} sscr;
-
-	struct {
-		uint64_t addr:7;
-		cvmx_add_win_dma_dec_t type:3;
-		uint64_t unused2:3;
-		cvmx_add_win_dec_t csrdec:2;
-		uint64_t ones:49;
-	} sdma;
-
-	struct {
-		uint64_t unused:40;
-		uint64_t didspace:24;
-	} sfilldidspace;
-#endif
 } cvmx_addr_t;
 
 /* These macros for used by 32 bit applications */
@@ -399,9 +322,4 @@ typedef union {
 #define CVMX_BITFIELD_FIELD(field, more) more field;
 #endif
 
-#ifdef	__cplusplus
-/* *INDENT-OFF* */
-}
-/* *INDENT-ON* */
-#endif
 #endif /* __CVMX_ADDRESS_H__ */
