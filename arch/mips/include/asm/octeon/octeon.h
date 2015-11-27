@@ -147,7 +147,6 @@ struct octeon_boot_descriptor {
 union octeon_cvmemctl {
 	uint64_t u64;
 	struct {
-#ifdef __BIG_ENDIAN_BITFIELD
 		/* RO 1 = BIST fail, 0 = BIST pass */
 		__BITFIELD_FIELD(uint64_t tlbbist:1,
 		/* RO 1 = BIST fail, 0 = BIST pass */
@@ -161,28 +160,14 @@ union octeon_cvmemctl {
 		/* RO 1 = BIST fail, 0 = BIST pass */
 		__BITFIELD_FIELD(uint64_t wbfbist:1,
 		/* Reserved */
-<<<<<<< HEAD
 		__BITFIELD_FIELD(uint64_t reserved:17,
-=======
-		uint64_t reserved:6;
 		/* When set, LMTDMA/LMTST operations are permitted */
-		uint64_t lmtena:1;
+		__BITFIELD_FIELD(uint64_t lmtena:1,
 		/* Selects the CVMSEG LM cacheline used by LMTDMA
-		   LMTST and wide atomic store operations */
-		uint64_t lmtline:6;
+		LMTST and wide atomic store operations */
+		__BITFIELD_FIELD(uint64_t lmtline:6,
 		/* When set, TLB parity errors can occur. */
-		uint64_t tlbperrena:1;
-		/* OCTEON II - When set, CVMSET LM parity errors are enabled. */
-		uint64_t lmemperrena:1;
-		/* OCTEON II - If set, NUDGE/WRITEBACK_INVALIDATE,
-		 * NUDGE_WB, EVICT_SOON, LC, CONT_WRITE_BACK,
-		 * PREPARE_FOR_STORE and PREPARE_FOR_STORE_THROUGH
-		 * prefetch operations become NOPs. */
-		uint64_t disstpref:1;
-		/* OCTEON II - If set, NORMAL and NOTL2 prefetch
-		 * operations become NOPs. */
-		uint64_t disldpref:1;
->>>>>>> 6e8be96... Sync
+		__BITFIELD_FIELD(uint64_t tlbperrena:1,
 		/* OCTEON II - TLB replacement policy: 0 = bitmask LRU; 1 = NLU.
 		 * This field selects between the TLB replacement policies:
 		 * bitmask LRU or NLU. Bitmask LRU maintains a mask of
@@ -277,52 +262,8 @@ union octeon_cvmemctl {
 		__BITFIELD_FIELD(uint64_t cvmsegenau:1,
 		/* R/W Size of local memory in cache blocks, 54 (6912
 		 * bytes) is max legal value. */
-<<<<<<< HEAD
 		__BITFIELD_FIELD(uint64_t lmemsz:6,
-=======
-		uint64_t lmemsz:6;
-#else
-		uint64_t lmemsz:6;
-		uint64_t cvmsegenau:1;
-		uint64_t cvmsegenas:1;
-		uint64_t cvmsegenak:1;
-		uint64_t reserved2:2;
-		uint64_t wbthresh:4;
-		uint64_t istrnol2:1;
-		uint64_t wbfltime:3;
-		uint64_t mclkalwys:1;
-		uint64_t csrckalwys:1;
-		uint64_t didtto:2;
-		uint64_t nomerge:1;
-		uint64_t allsyncw:1;
-		uint64_t xkioenau:1;
-		uint64_t xkioenas:1;
-		uint64_t xkmemenau:1;
-		uint64_t xkmemenas:1;
-		uint64_t diswbfst:1;
-		uint64_t dissyncws:1;
-		uint64_t syncwsmarked:1;
-		uint64_t iobdmascrmsb:2;
-		uint64_t dismrgclrwbto:1;
-		uint64_t dismarkwblongto:1;
-		uint64_t didtto2:1;
-		uint64_t pausetime:3;
-		uint64_t tlbnlu:1;
-		uint64_t disldpref:1;
-		uint64_t disstpref:1;
-		uint64_t lmemperrena:1;
-		uint64_t tlbperrena:1;
-		uint64_t lmtline:6;
-		uint64_t lmtena:1;
-		uint64_t reserved:6;
-		uint64_t wbfbist:1;
-		uint64_t ptgbist:1;
-		uint64_t dcmbist:1;
-		uint64_t l1dbist:1;
-		uint64_t l1cbist:1;
-		uint64_t tlbbist:1;
-#endif
->>>>>>> 6e8be96... Sync
+        ;))))))))))))))))))))))))))))))))))))
 	} s;
 };
 
