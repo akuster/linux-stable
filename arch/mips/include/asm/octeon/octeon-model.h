@@ -49,12 +49,6 @@
 #ifndef __OCTEON_MODEL_H__
 #define __OCTEON_MODEL_H__
 
-#ifdef	__cplusplus
-/* *INDENT-OFF* */
-extern "C" {
-/* *INDENT-ON* */
-#endif
-
 /* NOTE: These must match what is checked in common-config.mk */
 /* Defines to represent the different versions of Octeon.  */
 
@@ -75,29 +69,6 @@ extern "C" {
 ** should be used outside of this file.  All other macros are for internal
 ** use only, and may change without notice.
 */
-
-#define OCTEON_FAMILY_MASK      0x00ffff00
-#define OCTEON_PRID_MASK	0x00ffffff
-
-/* Flag bits in top byte */
-#define OM_IGNORE_REVISION        0x01000000	/* Ignores revision in model checks */
-#define OM_CHECK_SUBMODEL         0x02000000	/* Check submodels */
-#define OM_MATCH_PREVIOUS_MODELS  0x04000000	/* Match all models previous than the one specified */
-#define OM_IGNORE_MINOR_REVISION  0x08000000	/* Ignores the minor revison on newer parts */
-#define OM_FLAG_MASK              0xff000000
-
-#define OM_MATCH_5XXX_FAMILY_MODELS     0x20000000	/* Match all cn5XXX Octeon models. */
-#define OM_MATCH_6XXX_FAMILY_MODELS     0x40000000	/* Match all cn6XXX Octeon models. */
-#define OM_MATCH_F7XXX_FAMILY_MODELS    0x80000000	/* Match all cnf7XXX Octeon models. */
-#define OM_MATCH_7XXX_FAMILY_MODELS     0x10000000	/* Match all cn7XXX Octeon models. */
-#define OM_MATCH_FAMILY_MODELS		(OM_MATCH_5XXX_FAMILY_MODELS | \
-					 OM_MATCH_6XXX_FAMILY_MODELS | \
-					 OM_MATCH_F7XXX_FAMILY_MODELS | \
-					 OM_MATCH_7XXX_FAMILY_MODELS)
-
-/*
- * CN7XXX models with new revision encoding
- */
 
 #define OCTEON_FAMILY_MASK	0x00ffff00
 #define OCTEON_PRID_MASK	0x00ffffff
@@ -212,6 +183,9 @@ extern "C" {
 #define OCTEON_CN61XX_PASS1_0	0x000d9300
 #define OCTEON_CN61XX_PASS1_1   0x000d9301
 
+#define OCTEON_CN61XX       (OCTEON_CN61XX_PASS1_0 | OM_IGNORE_REVISION)
+#define OCTEON_CN61XX_PASS1_X   (OCTEON_CN61XX_PASS1_0 | OM_IGNORE_MINOR_REVISION)
+
 /* CN60XX is same as CN61XX with 512 KB cache */
 #define OCTEON_CN60XX           OCTEON_CN61XX
 
@@ -322,7 +296,6 @@ extern "C" {
 /*
  * CN3XXX models with old revision enconding
  */
-//#define OCTEON_CN38XX_PASS1     0x000d0000    // is not supported
 #define OCTEON_CN38XX_PASS2     0x000d0001
 #define OCTEON_CN38XX_PASS3     0x000d0003
 #define OCTEON_CN38XX           (OCTEON_CN38XX_PASS3 | OM_IGNORE_REVISION)
@@ -484,17 +457,6 @@ int __octeon_is_model_runtime__(uint32_t model);
 #define OCTEON_IS_MODEL(x) __octeon_is_model_runtime__(x)
 #define OCTEON_IS_COMMON_BINARY() 1
 #undef OCTEON_MODEL
-#else
-#define CVMX_COMPILED_FOR(x) __OCTEON_IS_MODEL_COMPILE__(x, OCTEON_MODEL)
-
-#define OCTEON_IS_MODEL(x) \
-    (((x & (OM_IGNORE_REVISION | OM_IGNORE_MINOR_REVISION | OM_MATCH_FAMILY_MODELS)) != 0) \
-    ? __OCTEON_IS_MODEL_COMPILE__(x, OCTEON_MODEL) \
-    : __OCTEON_IS_MODEL_COMPILE__(x, cvmx_get_proc_id()))
-
-#define OCTEON_IS_COMMON_BINARY() 0
-#endif
-#endif
 
 #define OCTEON_IS_OCTEON1()	OCTEON_IS_MODEL(OCTEON_CN3XXX)
 #define OCTEON_IS_OCTEONPLUS()	OCTEON_IS_MODEL(OCTEON_CN5XXX)
@@ -514,16 +476,7 @@ const char *__init octeon_model_get_string(uint32_t chip_id);
  */
 static inline uint32_t cvmx_get_octeon_family(void)
 {
-#if defined(USE_RUNTIME_MODEL_CHECKS) || defined(__U_BOOT__) || (defined(__linux__) && defined(__KERNEL__)) || defined(CVMX_BUILD_FOR_TOOLCHAIN)
 	return (cvmx_get_proc_id() & OCTEON_FAMILY_MASK);
-#else
-	return (OCTEON_MODEL & OCTEON_FAMILY_MASK);
-#endif
 }
 
-#ifdef	__cplusplus
-/* *INDENT-OFF* */
-}
-/* *INDENT-ON* */
-#endif
 #endif /* __OCTEON_MODEL_H__ */
