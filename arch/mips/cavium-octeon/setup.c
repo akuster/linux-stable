@@ -994,8 +994,8 @@ void __init plat_mem_setup(void)
 #endif
 
 	if (named_memory_blocks[0][0]) {
-		phys_t kernel_begin, kernel_end;
-		phys_t block_begin, block_size;
+		phys_addr_t kernel_begin, kernel_end;
+		phys_addr_t block_begin, block_size;
 		/* Memory from named blocks only */
 		int i;
 
