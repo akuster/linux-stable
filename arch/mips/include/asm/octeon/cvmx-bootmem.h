@@ -125,7 +125,7 @@ typedef struct cvmx_bootmem_named_block_desc cvmx_bootmem_named_block_desc_t;
  * positions for backwards compatibility.
  */
 struct cvmx_bootmem_desc {
-#if defined(__BIG_ENDIAN_BITFIELD) || defined(CVMX_BUILD_FOR_LINUX_HOST)
+#if defined(__BIG_ENDIAN_BITFIELD)
 	/* spinlock to control access to list */
 	uint32_t lock;
 			    /**< spinlock to control access to list */
@@ -160,6 +160,8 @@ struct cvmx_bootmem_desc {
 	uint64_t named_block_array_addr;
 #endif
 };
+
+typedef struct cvmx_bootmem_desc cvmx_bootmem_desc_t;
 
 /**
  * Initialize the boot alloc memory structures. This is
