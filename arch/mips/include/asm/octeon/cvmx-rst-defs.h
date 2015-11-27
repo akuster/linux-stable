@@ -151,20 +151,11 @@ union cvmx_rst_cfg {
 	uint64_t u64;
 	struct cvmx_rst_cfg_s {
 #ifdef __BIG_ENDIAN_BITFIELD
-<<<<<<< HEAD
 		uint64_t bist_delay:58;
 		uint64_t reserved_3_5:3;
 		uint64_t cntl_clr_bist:1;
 		uint64_t warm_clr_bist:1;
 		uint64_t soft_clr_bist:1;
-=======
-	uint64_t bist_delay                   : 58; /**< Reserved. */
-	uint64_t reserved_3_5                 : 3;
-	uint64_t cntl_clr_bist                : 1;  /**< Perform clear BIST during control-only reset, instead of a full BIST. A warm/soft reset
-                                                         will not change this field. */
-	uint64_t warm_clr_bist                : 1;  /**< Perform clear BIST during warm reset, instead of a full BIST. A warm/soft reset does not
-                                                         change this field. Note that a cold reset always performs a full BIST. */
-	uint64_t reserved_0_0                 : 1;
 #else
 	uint64_t reserved_0_0                 : 1;
 	uint64_t warm_clr_bist                : 1;
@@ -183,7 +174,6 @@ union cvmx_rst_cfg {
                                                          change this field. Note that a cold reset always performs a full BIST. */
 	uint64_t soft_clr_bist                : 1;  /**< Perform clear BIST during soft reset, instead of a full BIST. A warm/soft reset does not
                                                          change this field. Note that a cold reset always performs a full BIST. */
->>>>>>> 6e8be96... Sync
 #else
 		uint64_t soft_clr_bist:1;
 		uint64_t warm_clr_bist:1;
@@ -191,12 +181,6 @@ union cvmx_rst_cfg {
 		uint64_t reserved_3_5:3;
 		uint64_t bist_delay:58;
 #endif
-<<<<<<< HEAD
-	} s;
-	struct cvmx_rst_cfg_s cn70xx;
-	struct cvmx_rst_cfg_s cn70xxp1;
-	struct cvmx_rst_cfg_s cn78xx;
-=======
 	} cn70xx;
 	struct cvmx_rst_cfg_cn70xx            cn70xxp1;
 	struct cvmx_rst_cfg_cn73xx {
@@ -214,7 +198,6 @@ union cvmx_rst_cfg {
 	struct cvmx_rst_cfg_cn70xx            cn78xx;
 	struct cvmx_rst_cfg_cn70xx            cn78xxp2;
 	struct cvmx_rst_cfg_cn73xx            cnf75xx;
->>>>>>> 6e8be96... Sync
 };
 
 union cvmx_rst_ckill {
