@@ -1,128 +1,36 @@
 /***********************license start***************
- * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
- * reserved.
+ * Author: Cavium Networks
  *
+ * Contact: support@caviumnetworks.com
+ * This file is part of the OCTEON SDK
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
+ * Copyright (c) 2003-2015 Cavium Networks
  *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ * This file is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, Version 2, as
+ * published by the Free Software Foundation.
  *
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
+ * This file is distributed in the hope that it will be useful, but
+ * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+ * NONINFRINGEMENT.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this file; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * or visit http://www.gnu.org/licenses/.
+ *
+ * This file may also be available under a different license from Cavium.
+ * Contact Cavium Networks for more information
+***********************license end**************************************/
 
- *   * Neither the name of Cavium Inc. nor the names of
- *     its contributors may be used to endorse or promote products
- *     derived from this software without specific prior written
- *     permission.
-
- * This Software, including technical data, may be subject to U.S. export  control
- * laws, including the U.S. Export Administration Act and its  associated
- * regulations, and may be subject to export or import  regulations in other
- * countries.
-
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
- * AND WITH ALL FAULTS AND CAVIUM INC. MAKES NO PROMISES, REPRESENTATIONS OR
- * WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT TO
- * THE SOFTWARE, INCLUDING ITS CONDITION, ITS CONFORMITY TO ANY REPRESENTATION OR
- * DESCRIPTION, OR THE EXISTENCE OF ANY LATENT OR PATENT DEFECTS, AND CAVIUM
- * SPECIFICALLY DISCLAIMS ALL IMPLIED (IF ANY) WARRANTIES OF TITLE,
- * MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A PARTICULAR PURPOSE, LACK OF
- * VIRUSES, ACCURACY OR COMPLETENESS, QUIET ENJOYMENT, QUIET POSSESSION OR
- * CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK ARISING OUT OF USE OR
- * PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
- ***********************license end**************************************/
-
-/**
- * @file
- *
- * File defining functions for working with different Octeon
- * models.
- *
- * <hr>$Revision: 122055 $<hr>
- */
-#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-clock.h>
 #include <asm/octeon/cvmx-ciu3-defs.h>
-#else
-#include "cvmx.h"
-#include "cvmx-pow.h"
-#include "cvmx-warn.h"
-#endif
-
-#if defined(CVMX_BUILD_FOR_LINUX_USER) || defined(CVMX_BUILD_FOR_STANDALONE)
-#include <octeon-boot-info.h>
-#include "cvmx-sysinfo.h"
-
-/**
- * This function checks to see if the software is compatible with the
- * chip it is running on.  This is called in the application startup code
- * and does not need to be called directly by the application.
- * Does not return if software is incompatible.
- *
- * @param chip_id chip id that the software is being run on.
- *
- * @return 0: runtime checking or exact version match
- *         1: chip is newer revision than compiled for, but software will run properly.
- */
-int octeon_model_version_check(uint32_t chip_id __attribute__ ((unused)))
-{
-	//printf("Model Number: %s\n", octeon_model_get_string(chip_id));
-#if !OCTEON_IS_COMMON_BINARY()
-	/* Check for special case of mismarked 3005 samples, and adjust cpuid */
-	if (chip_id == OCTEON_CN3010_PASS1 && (cvmx_read_csr(0x80011800800007B8ull) & (1ull << 34)))
-		chip_id |= 0x10;
-
-	if ((OCTEON_MODEL & 0xffffff) != chip_id) {
-		if (!OCTEON_IS_MODEL((OM_IGNORE_REVISION | chip_id)) || (OCTEON_MODEL & 0xffffff) > chip_id || (((OCTEON_MODEL & 0xffffff) ^ chip_id) & 0x10)) {
-			printf("ERROR: Software not configured for this chip\n" "         Expecting ID=0x%08x, Chip is 0x%08x\n", (OCTEON_MODEL & 0xffffff), (unsigned int)chip_id);
-			if ((OCTEON_MODEL & 0xffffff) > chip_id)
-				printf("Refusing to run on older revision than program was compiled for.\n");
-			exit(-1);
-		} else {
-			printf("\n###################################################\n");
-			printf("WARNING: Software configured for older revision than running on.\n"
-			       "         Compiled for ID=0x%08x, Chip is 0x%08x\n", (OCTEON_MODEL & 0xffffff), (unsigned int)chip_id);
-			printf("###################################################\n\n");
-			return (1);
-		}
-	}
-#endif
-
-	cvmx_warn_if(CVMX_ENABLE_PARAMETER_CHECKING, "Parameter checks are enabled. Expect some performance loss due to the extra checking\n");
-	cvmx_warn_if(CVMX_ENABLE_CSR_ADDRESS_CHECKING, "CSR address checks are enabled. Expect some performance loss due to the extra checking\n");
-	cvmx_warn_if(CVMX_ENABLE_POW_CHECKS, "POW state checks are enabled. Expect some performance loss due to the extra checking\n");
-
-	return (0);
-}
 
 enum octeon_feature_bits __octeon_feature_bits __read_mostly;
 EXPORT_SYMBOL_GPL(__octeon_feature_bits);
-
-/**
- * Read a byte of fuse data
- * @byte_addr:	 address to read
- *
- * Returns fuse value: 0 or 1
- */
-static uint8_t __init cvmx_fuse_read_byte(int byte_addr)
-{
-	union cvmx_mio_fus_rcmd read_cmd;
-
-	read_cmd.u64 = 0;
-	read_cmd.s.addr = byte_addr;
-	read_cmd.s.pend = 1;
-	cvmx_write_csr(CVMX_MIO_FUS_RCMD, read_cmd.u64);
-	while ((read_cmd.u64 = cvmx_read_csr(CVMX_MIO_FUS_RCMD))
-	       && read_cmd.s.pend)
-		;
-	return read_cmd.s.dat;
-}
 
 /*
  * Version of octeon_model_get_string() that takes buffer as argument,
@@ -135,9 +43,7 @@ static const char *__init octeon_model_get_string_buffer(uint32_t chip_id,
 	const char *family;
 	const char *core_model;
 	char pass[4];
-#ifndef CVMX_BUILD_FOR_UBOOT
 	int clock_mhz;
-#endif
 	const char *suffix;
 	cvmx_l2d_fus3_t fus3;
 	int num_cores;
@@ -522,9 +428,7 @@ static const char *__init octeon_model_get_string_buffer(uint32_t chip_id,
 		break;
 	}
 
-#ifndef CVMX_BUILD_FOR_UBOOT
 	clock_mhz = cvmx_clock_get_rate(CVMX_CLOCK_RCLK) / 1000000;
-#endif
 
 	if (family[0] != '3') {
 		if (OCTEON_IS_OCTEON1PLUS() || OCTEON_IS_OCTEON2()) {
@@ -606,11 +510,7 @@ static const char *__init octeon_model_get_string_buffer(uint32_t chip_id,
 			}
 		}
 	}
-#ifdef CVMX_BUILD_FOR_UBOOT
-	sprintf(buffer, "CN%s%s-%s pass %s", family, core_model, suffix, pass);
-#else
 	sprintf(buffer, "CN%s%sp%s-%d-%s", family, core_model, pass, clock_mhz, suffix);
-#endif
 	return buffer;
 }
 
