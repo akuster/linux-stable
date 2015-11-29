@@ -29,7 +29,6 @@ static DEFINE_PER_CPU(raw_spinlock_t, octeon_irq_ciu_spinlock);
 struct octeon_irq_ciu_domain_data {
 	int num_sum;  /* number of sum registers (2 or 3). */
 };
-static struct irq_domain *octeon_irq_ciu3_domain;
 static DEFINE_PER_CPU(unsigned int, octeon_irq_ciu3_idt_ip2);
 static DEFINE_PER_CPU(unsigned int, octeon_irq_ciu3_idt_ip3);
 static DEFINE_PER_CPU(struct octeon_ciu3_info *, octeon_ciu3_info);
@@ -64,10 +63,6 @@ struct octeon_ciu3_errbits_cfg {
 
 static struct octeon_ciu3_errbits_cfg octeon_ciu3_errbits_per_node[4];
 static void (* octeon_ciu3_errbits_handler)(int node , int intsn);
-
-struct octeon_irq_ciu_domain_data {
-	int num_sum;  /* number of sum registers (2 or 3). */
-};
 
 /* Register offsets from ciu3_addr */
 #define CIU3_CONST		0x220
@@ -345,13 +340,13 @@ static void octeon_irq_ciu_enable_local(struct irq_data *data)
 	unsigned long *pen;
 	unsigned long flags;
 	struct octeon_ciu_chip_data *cd;
-	raw_spinlock_t *lock = &__get_cpu_var(octeon_irq_ciu_spinlock);
+	raw_spinlock_t *lock = this_cpu_ptr(&octeon_irq_ciu_spinlock);
 
 	cd = irq_data_get_irq_chip_data(data);
 
 	raw_spin_lock_irqsave(lock, flags);
 	if (cd->line == 0) {
-		pen = &__get_cpu_var(octeon_irq_ciu0_en_mirror);
+		pen = this_cpu_ptr(&octeon_irq_ciu0_en_mirror);
 		__set_bit(cd->bit, pen);
 		/*
 		 * Must be visible to octeon_irq_ip{2,3}_ciu() before
@@ -360,7 +355,7 @@ static void octeon_irq_ciu_enable_local(struct irq_data *data)
 		wmb();
 		cvmx_write_csr(CVMX_CIU_INTX_EN0(cvmx_get_core_num() * 2), *pen);
 	} else {
-		pen = &__get_cpu_var(octeon_irq_ciu1_en_mirror);
+		pen = this_cpu_ptr(&octeon_irq_ciu1_en_mirror);
 		__set_bit(cd->bit, pen);
 		/*
 		 * Must be visible to octeon_irq_ip{2,3}_ciu() before
@@ -377,13 +372,13 @@ static void octeon_irq_ciu_disable_local(struct irq_data *data)
 	unsigned long *pen;
 	unsigned long flags;
 	struct octeon_ciu_chip_data *cd;
-	raw_spinlock_t *lock = &__get_cpu_var(octeon_irq_ciu_spinlock);
+	raw_spinlock_t *lock = this_cpu_ptr(&octeon_irq_ciu_spinlock);
 
 	cd = irq_data_get_irq_chip_data(data);
 
 	raw_spin_lock_irqsave(lock, flags);
 	if (cd->line == 0) {
-		pen = &__get_cpu_var(octeon_irq_ciu0_en_mirror);
+		pen = this_cpu_ptr(&octeon_irq_ciu0_en_mirror);
 		__clear_bit(cd->bit, pen);
 		/*
 		 * Must be visible to octeon_irq_ip{2,3}_ciu() before
@@ -392,7 +387,7 @@ static void octeon_irq_ciu_disable_local(struct irq_data *data)
 		wmb();
 		cvmx_write_csr(CVMX_CIU_INTX_EN0(cvmx_get_core_num() * 2), *pen);
 	} else {
-		pen = &__get_cpu_var(octeon_irq_ciu1_en_mirror);
+		pen = this_cpu_ptr(&octeon_irq_ciu1_en_mirror);
 		__clear_bit(cd->bit, pen);
 		/*
 		 * Must be visible to octeon_irq_ip{2,3}_ciu() before
@@ -572,11 +567,11 @@ static void octeon_irq_ciu_enable_local_v2(struct irq_data *data)
 
 	if (cd->line == 0) {
 		int index = cvmx_get_core_num() * 2;
-		set_bit(cd->bit, &__get_cpu_var(octeon_irq_ciu0_en_mirror));
+		set_bit(cd->bit, this_cpu_ptr(&octeon_irq_ciu0_en_mirror));
 		cvmx_write_csr(CVMX_CIU_INTX_EN0_W1S(index), mask);
 	} else {
 		int index = cvmx_get_core_num() * 2 + 1;
-		set_bit(cd->bit, &__get_cpu_var(octeon_irq_ciu1_en_mirror));
+		set_bit(cd->bit, this_cpu_ptr(&octeon_irq_ciu1_en_mirror));
 		cvmx_write_csr(CVMX_CIU_INTX_EN1_W1S(index), mask);
 	}
 }
@@ -591,11 +586,11 @@ static void octeon_irq_ciu_disable_local_v2(struct irq_data *data)
 
 	if (cd->line == 0) {
 		int index = cvmx_get_core_num() * 2;
-		clear_bit(cd->bit, &__get_cpu_var(octeon_irq_ciu0_en_mirror));
+		clear_bit(cd->bit, this_cpu_ptr(&octeon_irq_ciu0_en_mirror));
 		cvmx_write_csr(CVMX_CIU_INTX_EN0_W1C(index), mask);
 	} else {
 		int index = cvmx_get_core_num() * 2 + 1;
-		clear_bit(cd->bit, &__get_cpu_var(octeon_irq_ciu1_en_mirror));
+		clear_bit(cd->bit, this_cpu_ptr(&octeon_irq_ciu1_en_mirror));
 		cvmx_write_csr(CVMX_CIU_INTX_EN1_W1C(index), mask);
 	}
 }
@@ -1217,6 +1212,7 @@ static int octeon_irq_ciu_map(struct irq_domain *d,
 	int rv;
 	unsigned int line = hw >> 6;
 	unsigned int bit = hw & 63;
+    struct octeon_irq_ciu_domain_data *dd = d->host_data;
 
 	/* Don't map irq if it is reserved for GPIO. */
 	if (line == 0 && bit >= 16 && bit <32)
@@ -1282,7 +1278,7 @@ static void octeon_irq_ip2_ciu(void)
 	const unsigned long core_id = cvmx_get_core_num();
 	u64 ciu_sum = cvmx_read_csr(CVMX_CIU_INTX_SUM0(core_id * 2));
 
-	ciu_sum &= __get_cpu_var(octeon_irq_ciu0_en_mirror);
+	ciu_sum &= __this_cpu_read(octeon_irq_ciu0_en_mirror);
 	if (likely(ciu_sum)) {
 		int bit = fls64(ciu_sum) - 1;
 		int irq = octeon_irq_ciu_to_irq[0][bit];
@@ -1299,7 +1295,7 @@ static void octeon_irq_ip3_ciu(void)
 {
 	u64 ciu_sum = cvmx_read_csr(CVMX_CIU_INT_SUM1);
 
-	ciu_sum &= __get_cpu_var(octeon_irq_ciu1_en_mirror);
+	ciu_sum &= __this_cpu_read(octeon_irq_ciu1_en_mirror);
 	if (likely(ciu_sum)) {
 		int bit = fls64(ciu_sum) - 1;
 		int irq = octeon_irq_ciu_to_irq[1][bit];
@@ -1355,10 +1351,10 @@ static void octeon_irq_init_ciu_percpu(void)
 	int coreid = cvmx_get_core_num();
 
 
-	__get_cpu_var(octeon_irq_ciu0_en_mirror) = 0;
-	__get_cpu_var(octeon_irq_ciu1_en_mirror) = 0;
+	__this_cpu_write(octeon_irq_ciu0_en_mirror,0);
+	__this_cpu_write(octeon_irq_ciu1_en_mirror,0);
 	wmb();
-	raw_spin_lock_init(&__get_cpu_var(octeon_irq_ciu_spinlock));
+	raw_spin_lock_init(this_cpu_ptr(&octeon_irq_ciu_spinlock));
 	/*
 	 * Disable All CIU Interrupts. The ones we need will be
 	 * enabled later.  Read the SUM register so we know the write
@@ -1370,6 +1366,7 @@ static void octeon_irq_init_ciu_percpu(void)
 	cvmx_write_csr(CVMX_CIU_INTX_EN1((coreid * 2 + 1)), 0);
 	cvmx_read_csr(CVMX_CIU_INTX_SUM0((coreid * 2)));
 }
+
 
 static void octeon_irq_init_ciu2_percpu(void)
 {
@@ -2034,6 +2031,7 @@ out:
 	return;
 }
 
+
 static int __init octeon_irq_init_ciu2(
 	struct device_node *ciu_node, struct device_node *parent)
 {
@@ -2337,7 +2335,7 @@ static int __init octeon_irq_init_cib(struct device_node *ciu_node,
 	return 0;
 }
 
-static void octeon_irq_ciu3_enable(struct irq_data *data)
+void octeon_irq_ciu3_enable(struct irq_data *data)
 {
 	int cpu;
 	union cvmx_ciu3_iscx_ctl isc_ctl;
@@ -3016,7 +3014,6 @@ int octeon_ciu3_errbits_disable_intsn(int node, int intsn)
 	return 0;
 }
 
-
 static int __init octeon_irq_init_ciu3(struct device_node *ciu_node,
 				       struct device_node *parent)
 {
@@ -3073,6 +3070,8 @@ static int __init octeon_irq_init_ciu3(struct device_node *ciu_node,
 	for (i = 0; i < MAX_CIU3_DOMAINS; i++)
 		ciu3_info->domain[i] = domain;
 
+	if (node < 0)
+    	node = 0;
 	octeon_ciu3_info_per_node[node] = ciu3_info;
 
 	if (node == cvmx_get_node_num()) {
@@ -3086,222 +3085,6 @@ static int __init octeon_irq_init_ciu3(struct device_node *ciu_node,
 		set_c0_status(STATUSF_IP2 | STATUSF_IP3 | STATUSF_IP4);
 	}
 
-	return 0;
-}
-
-struct octeon_irq_cib_host_data {
-	raw_spinlock_t lock;
-	u64 raw_reg;
-	u64 en_reg;
-	int max_bits;
-};
-
-struct octeon_irq_cib_chip_data {
-	struct octeon_irq_cib_host_data *host_data;
-	int bit;
-};
-
-static void octeon_irq_cib_enable(struct irq_data *data)
-{
-	unsigned long flags;
-	u64 en;
-	struct octeon_irq_cib_chip_data *cd = irq_data_get_irq_chip_data(data);
-	struct octeon_irq_cib_host_data *host_data = cd->host_data;
-
-	raw_spin_lock_irqsave(&host_data->lock, flags);
-	en = cvmx_read_csr(host_data->en_reg);
-	en |= 1ull << cd->bit;
-	cvmx_write_csr(host_data->en_reg, en);
-	raw_spin_unlock_irqrestore(&host_data->lock, flags);
-}
-
-static void octeon_irq_cib_disable(struct irq_data *data)
-{
-	unsigned long flags;
-	u64 en;
-	struct octeon_irq_cib_chip_data *cd = irq_data_get_irq_chip_data(data);
-	struct octeon_irq_cib_host_data *host_data = cd->host_data;
-
-	raw_spin_lock_irqsave(&host_data->lock, flags);
-	en = cvmx_read_csr(host_data->en_reg);
-	en &= ~(1ull << cd->bit);
-	cvmx_write_csr(host_data->en_reg, en);
-	raw_spin_unlock_irqrestore(&host_data->lock, flags);
-}
-
-static int octeon_irq_cib_set_type(struct irq_data *data, unsigned int t)
-{
-	irqd_set_trigger_type(data, t);
-	return IRQ_SET_MASK_OK;
-}
-
-static struct irq_chip octeon_irq_chip_cib = {
-	.name = "CIB",
-	.irq_enable = octeon_irq_cib_enable,
-	.irq_disable = octeon_irq_cib_disable,
-	.irq_mask = octeon_irq_cib_disable,
-	.irq_unmask = octeon_irq_cib_enable,
-	.irq_set_type = octeon_irq_cib_set_type,
-};
-
-static int octeon_irq_cib_xlat(struct irq_domain *d,
-				   struct device_node *node,
-				   const u32 *intspec,
-				   unsigned int intsize,
-				   unsigned long *out_hwirq,
-				   unsigned int *out_type)
-{
-	unsigned int type = 0;
-
-	if (intsize == 2)
-		type = intspec[1];
-
-	switch (type) {
-	case 0: /* unofficial value, but we might as well let it work. */
-	case 4: /* official value for level triggering. */
-		*out_type = IRQ_TYPE_LEVEL_HIGH;
-		break;
-	case 1: /* official value for edge triggering. */
-		*out_type = IRQ_TYPE_EDGE_RISING;
-		break;
-	default: /* Nothing else is acceptable. */
-		return -EINVAL;
-	}
-
-	*out_hwirq = intspec[0];
-
-	return 0;
-}
-
-static int octeon_irq_cib_map(struct irq_domain *d,
-			      unsigned int virq, irq_hw_number_t hw)
-{
-	struct octeon_irq_cib_host_data *host_data = d->host_data;
-	struct octeon_irq_cib_chip_data *cd;
-
-	if (hw >= host_data->max_bits) {
-		pr_err("ERROR: %s mapping %u is to big!\n",
-		       d->of_node->name, (unsigned)hw);
-		return -EINVAL;
-	}
-
-	cd = kzalloc(sizeof(*cd), GFP_KERNEL);
-	cd->host_data = host_data;
-	cd->bit = hw;
-
-	irq_set_chip_and_handler(virq, &octeon_irq_chip_cib,
-				 handle_simple_irq);
-	irq_set_chip_data(virq, cd);
-	return 0;
-}
-
-static struct irq_domain_ops octeon_irq_domain_cib_ops = {
-	.map = octeon_irq_cib_map,
-	.unmap = octeon_irq_free_cd,
-	.xlate = octeon_irq_cib_xlat,
-};
-
-/* Chain to real handler. */
-static irqreturn_t octeon_irq_cib_handler(int my_irq, void *data)
-{
-	u64 en;
-	u64 raw;
-	u64 bits;
-	int i;
-	int irq;
-	struct irq_domain *cib_domain = data;
-	struct octeon_irq_cib_host_data *host_data = cib_domain->host_data;
-
-	en = cvmx_read_csr(host_data->en_reg);
-	raw = cvmx_read_csr(host_data->raw_reg);
-
-	bits = en & raw;
-
-	for (i = 0; i < host_data->max_bits; i++) {
-		if ((bits & 1ull << i) == 0)
-			continue;
-		irq = irq_find_mapping(cib_domain, i);
-		if (!irq) {
-			unsigned long flags;
-			pr_err("ERROR: CIB bit %d@%llx IRQ unhandled, disabling\n", i, host_data->raw_reg);
-			raw_spin_lock_irqsave(&host_data->lock, flags);
-			en = cvmx_read_csr(host_data->en_reg);
-			en &= ~(1ull << i);
-			cvmx_write_csr(host_data->en_reg, en);
-			cvmx_write_csr(host_data->raw_reg, 1ull << i);
-			raw_spin_unlock_irqrestore(&host_data->lock, flags);
-		} else {
-			struct irq_desc *desc = irq_to_desc(irq);
-			struct irq_data *irq_data = irq_desc_get_irq_data(desc);
-			/* If edge, acknowledge the bit we will be sending. */
-			if (irqd_get_trigger_type(irq_data) & IRQ_TYPE_EDGE_BOTH)
-				cvmx_write_csr(host_data->raw_reg, 1ull << i);
-			generic_handle_irq_desc(irq, desc);
-		}
-	}
-
-	return IRQ_HANDLED;
-}
-
-static int __init octeon_irq_init_cib(struct device_node *ciu_node,
-				      struct device_node *parent)
-{
-	const __be32 *addr;
-	u32 val;
-	struct octeon_irq_cib_host_data *host_data;
-	int parent_irq;
-	int r;
-	struct irq_domain *cib_domain;
-
-	parent_irq = irq_of_parse_and_map(ciu_node, 0);
-	if (!parent_irq) {
-		pr_err("ERROR: Couldn't acquire parent_irq for %s\n.", ciu_node->name);
-		return -EINVAL;
-	}
-
-	host_data = kzalloc(sizeof(*host_data), GFP_KERNEL);
-	raw_spin_lock_init(&host_data->lock);
-
-	addr = of_get_address(ciu_node, 0, NULL, NULL);
-	if (!addr) {
-		pr_err("ERROR: Couldn't acquire reg(0) %s\n.", ciu_node->name);
-		return -EINVAL;
-	}
-	host_data->raw_reg = (u64)phys_to_virt(of_translate_address(ciu_node, addr));
-
-	addr = of_get_address(ciu_node, 1, NULL, NULL);
-	if (!addr) {
-		pr_err("ERROR: Couldn't acquire reg(1) %s\n.", ciu_node->name);
-		return -EINVAL;
-	}
-	host_data->en_reg = (u64)phys_to_virt(of_translate_address(ciu_node, addr));
-
-	r = of_property_read_u32(ciu_node, "cavium,max-bits", &val);
-	if (r) {
-		pr_err("ERROR: Couldn't read cavium,max-bits from %s\n.", ciu_node->name);
-		return r;
-	}
-	host_data->max_bits = val;
-
-	cib_domain = irq_domain_add_linear(ciu_node, host_data->max_bits,
-					   &octeon_irq_domain_cib_ops,
-					   host_data);
-	if (!cib_domain) {
-		pr_err("ERROR: Couldn't irq_domain_add_linear()\n.");
-		return -ENOMEM;
-	}
-
-	cvmx_write_csr(host_data->en_reg, 0); /* disable all IRQs */
-	cvmx_write_csr(host_data->raw_reg, ~0); /* ack any outstanding */
-
-	r = request_irq(parent_irq, octeon_irq_cib_handler,
-			IRQF_NO_THREAD, "cib", cib_domain);
-	if (r) {
-		pr_err("request_irq cib failed %d\n", r);
-		return r;
-	}
-	pr_info("CIB interrupt controller probed: %llx %d bits\n",
-		host_data->raw_reg, host_data->max_bits);
 	return 0;
 }
 
