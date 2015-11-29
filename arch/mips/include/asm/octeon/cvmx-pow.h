@@ -68,19 +68,8 @@
 #include "cvmx-scratch.h"
 #include "cvmx-wqe.h"
 
-#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
 #include <asm/octeon/cvmx-sso-defs.h>
 #include <asm/octeon/cvmx-address.h>
-#else
-#include "cvmx-warn.h"
-#include "cvmx-address.h"
-#endif
-
-#ifdef  __cplusplus
-/* *INDENT-OFF* */
-extern "C" {
-/* *INDENT-ON* */
-#endif
 
 /* Default to having all POW constancy checks turned on */
 #ifndef CVMX_ENABLE_POW_CHECKS
@@ -1784,24 +1773,12 @@ static inline void __cvmx_pow_warn_if_pending_switch(const char *function)
  */
 static inline void cvmx_pow_tag_sw_wait(void)
 {
-	const uint64_t MAX_CYCLES = 1ull << 31;
 	uint64_t switch_complete;
-	uint64_t start_cycle;
-
-	if (CVMX_ENABLE_POW_CHECKS)
-		start_cycle = cvmx_get_cycle();
 
 	while (1) {
 		CVMX_MF_CHORD(switch_complete);
 		if (cvmx_likely(switch_complete))
 			break;
-		if (CVMX_ENABLE_POW_CHECKS) {
-			if (cvmx_unlikely(cvmx_get_cycle() >
-				(start_cycle + MAX_CYCLES))) {
-			    pr_warn("Tag switch is taking a long time, possible deadlock\n");
-			start_cycle += MAX_CYCLES - 1;
-			}
-		}
 	}
 }
 
@@ -1819,9 +1796,6 @@ static inline cvmx_wqe_t *cvmx_pow_work_request_sync_nocheck(cvmx_pow_wait_t wai
 {
 	cvmx_pow_load_addr_t ptr;
 	cvmx_pow_tag_load_resp_t result;
-
-	if (CVMX_ENABLE_POW_CHECKS)
-		__cvmx_pow_warn_if_pending_switch(__func__);
 
 	ptr.u64 = 0;
 
@@ -1859,9 +1833,6 @@ static inline cvmx_wqe_t *cvmx_pow_work_request_sync_nocheck(cvmx_pow_wait_t wai
  */
 static inline cvmx_wqe_t *cvmx_pow_work_request_sync(cvmx_pow_wait_t wait)
 {
-	if (CVMX_ENABLE_POW_CHECKS)
-		__cvmx_pow_warn_if_pending_switch(__func__);
-
 	/* Must not have a switch pending when requesting work */
 	cvmx_pow_tag_sw_wait();
 	return (cvmx_pow_work_request_sync_nocheck(wait));
@@ -1879,9 +1850,6 @@ static inline cvmx_pow_tag_type_t cvmx_pow_work_request_null_rd(void)
 {
 	cvmx_pow_load_addr_t ptr;
 	cvmx_pow_tag_load_resp_t result;
-
-	if (CVMX_ENABLE_POW_CHECKS)
-		__cvmx_pow_warn_if_pending_switch(__func__);
 
 	/* Must not have a switch pending when requesting work */
 	cvmx_pow_tag_sw_wait();
@@ -1911,9 +1879,6 @@ static inline cvmx_pow_tag_type_t cvmx_pow_work_request_null_rd(void)
 static inline void cvmx_pow_work_request_async_nocheck(int scr_addr, cvmx_pow_wait_t wait)
 {
 	cvmx_pow_iobdma_store_t data;
-
-	if (CVMX_ENABLE_POW_CHECKS)
-		__cvmx_pow_warn_if_pending_switch(__func__);
 
 	/* scr_addr must be 8 byte aligned */
 	data.u64 = 0;
@@ -1952,10 +1917,6 @@ static inline void cvmx_sso_work_request_grp_async_nocheck(int scr_addr,
 {
 	cvmx_pow_iobdma_store_t data;
 	unsigned int node = cvmx_get_node_num();
-	if (CVMX_ENABLE_POW_CHECKS) {
-		__cvmx_pow_warn_if_pending_switch(__func__);
-		cvmx_warn_if(!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE), "Not CN78XX");
-	}
 
 	/* scr_addr must be 8 byte aligned */
 	data.u64 = 0;
@@ -1989,11 +1950,6 @@ static inline void *cvmx_sso_work_request_grp_sync_nocheck(unsigned int lgrp, cv
 	cvmx_pow_tag_load_resp_t result;
 	unsigned int node = cvmx_get_node_num() & 3;
 
-	if (CVMX_ENABLE_POW_CHECKS) {
-		__cvmx_pow_warn_if_pending_switch(__func__);
-		cvmx_warn_if(!octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE), "Not CN78XX");
-	}
-
 	ptr.u64 = 0;
 
 	ptr.swork_78xx.mem_region = CVMX_IO_SEG;
@@ -2026,9 +1982,6 @@ static inline void *cvmx_sso_work_request_grp_sync_nocheck(unsigned int lgrp, cv
  */
 static inline void cvmx_pow_work_request_async(int scr_addr, cvmx_pow_wait_t wait)
 {
-	if (CVMX_ENABLE_POW_CHECKS)
-		__cvmx_pow_warn_if_pending_switch(__func__);
-
 	/* Must not have a switch pending when requesting work */
 	cvmx_pow_tag_sw_wait();
 	cvmx_pow_work_request_async_nocheck(scr_addr, wait);
@@ -2094,23 +2047,6 @@ static inline void cvmx_pow_tag_sw_nocheck(uint32_t tag, cvmx_pow_tag_type_t tag
 	union cvmx_pow_tag_req_addr ptr;
 	cvmx_pow_tag_req_t tag_req;
 
-	if (CVMX_ENABLE_POW_CHECKS) {
-		cvmx_pow_tag_info_t current_tag;
-		__cvmx_pow_warn_if_pending_switch(__func__);
-		current_tag = cvmx_pow_get_current_tag();
-		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL_NULL)
-			pr_warn("%s called with NULL_NULL tag\n", __func__);
-		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
-			pr_warn("%s called with NULL tag\n", __func__);
-		if ((current_tag.s.type == tag_type)
-		   && (current_tag.s.tag == tag))
-			pr_warn("%s called to perform a tag switch to the same tag\n",
-				__func__);
-		if (tag_type == CVMX_POW_TAG_TYPE_NULL)
-			pr_warn("%s called to perform a tag switch to NULL. Use cvmx_pow_tag_sw_null() instead\n",
-				__func__);
-	}
-
 	/* Note that WQE in DRAM is not updated here, as the POW does not read from DRAM
 	 ** once the WQE is in flight.  See hardware manual for complete details.
 	 ** It is the application's responsibility to keep track of the current tag
@@ -2170,9 +2106,6 @@ static inline void cvmx_pow_tag_sw_nocheck(uint32_t tag, cvmx_pow_tag_type_t tag
  */
 static inline void cvmx_pow_tag_sw(uint32_t tag, cvmx_pow_tag_type_t tag_type)
 {
-	if (CVMX_ENABLE_POW_CHECKS)
-		__cvmx_pow_warn_if_pending_switch(__func__);
-
 	/* Note that WQE in DRAM is not updated here, as the POW does not read from DRAM
 	 ** once the WQE is in flight.  See hardware manual for complete details.
 	 ** It is the application's responsibility to keep track of the current tag
@@ -2210,26 +2143,6 @@ static inline void cvmx_pow_tag_sw_full_nocheck(cvmx_wqe_t * wqp, uint32_t tag, 
 	union cvmx_pow_tag_req_addr ptr;
 	cvmx_pow_tag_req_t tag_req;
 	unsigned node = cvmx_get_node_num();
-
-	if (CVMX_ENABLE_POW_CHECKS) {
-		cvmx_pow_tag_info_t current_tag;
-		__cvmx_pow_warn_if_pending_switch(__func__);
-		current_tag = cvmx_pow_get_current_tag();
-		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL_NULL)
-			pr_warn("%s called with NULL_NULL tag\n", __func__);
-		if ((current_tag.s.type == tag_type)
-		   && (current_tag.s.tag == tag))
-			pr_warn("%s called to perform a tag switch to the same tag\n",
-				__func__);
-		if (tag_type == CVMX_POW_TAG_TYPE_NULL)
-			pr_warn("%s called to perform a tag switch to NULL. Use cvmx_pow_tag_sw_null() instead\n",
-				__func__);
-		if (wqp != cvmx_phys_to_ptr(0x80))
-			if (wqp != cvmx_pow_get_current_wqp())
-				pr_warn("%s passed WQE(%p) doesn't match the address in the POW(%p)\n",
-					__func__, wqp,
-					cvmx_pow_get_current_wqp());
-	}
 
 	/* Note that WQE in DRAM is not updated here, as the POW does not read from DRAM
 	 ** once the WQE is in flight.  See hardware manual for complete details.
@@ -2323,9 +2236,6 @@ static inline void cvmx_pow_tag_sw_full_nocheck(cvmx_wqe_t * wqp, uint32_t tag, 
  */
 static inline void cvmx_pow_tag_sw_full(cvmx_wqe_t * wqp, uint32_t tag, cvmx_pow_tag_type_t tag_type, uint64_t group)
 {
-	if (CVMX_ENABLE_POW_CHECKS)
-		__cvmx_pow_warn_if_pending_switch(__func__);
-
 	/* Ensure that there is not a pending tag switch, as a tag switch cannot be started
 	 ** if a previous switch is still pending.  */
 	cvmx_pow_tag_sw_wait();
@@ -2344,17 +2254,6 @@ static inline void cvmx_pow_tag_sw_null_nocheck(void)
 {
 	union cvmx_pow_tag_req_addr ptr;
 	cvmx_pow_tag_req_t tag_req;
-
-	if (CVMX_ENABLE_POW_CHECKS) {
-		cvmx_pow_tag_info_t current_tag;
-		__cvmx_pow_warn_if_pending_switch(__func__);
-		current_tag = cvmx_pow_get_current_tag();
-		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL_NULL)
-			pr_warn("%s called with NULL_NULL tag\n", __func__);
-		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
-			pr_warn("%s called when we already have a NULL tag\n",
-				__func__);
-	}
 
 	tag_req.u64 = 0;
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
@@ -2396,9 +2295,6 @@ static inline void cvmx_pow_tag_sw_null_nocheck(void)
  */
 static inline void cvmx_pow_tag_sw_null(void)
 {
-	if (CVMX_ENABLE_POW_CHECKS)
-		__cvmx_pow_warn_if_pending_switch(__func__);
-
 	/* Ensure that there is not a pending tag switch, as a tag switch cannot be started
 	 ** if a previous switch is still pending.  */
 	cvmx_pow_tag_sw_wait();
@@ -2975,21 +2871,6 @@ static inline void cvmx_pow_tag_sw_desched_nocheck(uint32_t tag, cvmx_pow_tag_ty
 	union cvmx_pow_tag_req_addr ptr;
 	cvmx_pow_tag_req_t tag_req;
 
-	if (CVMX_ENABLE_POW_CHECKS) {
-		cvmx_pow_tag_info_t current_tag;
-		__cvmx_pow_warn_if_pending_switch(__func__);
-		current_tag = cvmx_pow_get_current_tag();
-		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL_NULL)
-			pr_warn("%s called with NULL_NULL tag\n", __func__);
-		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
-			pr_warn("%s called with NULL tag. Deschedule not allowed from NULL state\n",
-				__func__);
-		if ((current_tag.s.type != CVMX_POW_TAG_TYPE_ATOMIC)
-			&& (tag_type != CVMX_POW_TAG_TYPE_ATOMIC))
-			pr_warn("%s called where neither the before or after tag is ATOMIC\n",
-				__func__);
-	}
-
 	tag_req.u64 = 0;
 	if (octeon_has_feature(OCTEON_FEATURE_CN78XX_WQE)) {
 		group &= 0x1f;
@@ -3072,8 +2953,6 @@ static inline void cvmx_pow_tag_sw_desched_nocheck(uint32_t tag, cvmx_pow_tag_ty
  */
 static inline void cvmx_pow_tag_sw_desched(uint32_t tag, cvmx_pow_tag_type_t tag_type, uint64_t group, uint64_t no_sched)
 {
-	if (CVMX_ENABLE_POW_CHECKS)
-		__cvmx_pow_warn_if_pending_switch(__func__);
 
 	/* Need to make sure any writes to the work queue entry are complete */
 	CVMX_SYNCWS;
@@ -3093,17 +2972,6 @@ static inline void cvmx_pow_desched(uint64_t no_sched)
 {
 	union cvmx_pow_tag_req_addr ptr;
 	cvmx_pow_tag_req_t tag_req;
-
-	if (CVMX_ENABLE_POW_CHECKS) {
-		cvmx_pow_tag_info_t current_tag;
-		__cvmx_pow_warn_if_pending_switch(__func__);
-		current_tag = cvmx_pow_get_current_tag();
-		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL_NULL)
-			pr_warn("%s called with NULL_NULL tag\n", __func__);
-		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
-			pr_warn("%s called with NULL tag. Deschedule not expected from NULL state\n",
-				__func__);
-	}
 
 	/* Need to make sure any writes to the work queue entry are complete */
 	CVMX_SYNCWS;
