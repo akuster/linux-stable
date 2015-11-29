@@ -962,7 +962,7 @@ end_led:
 			fdt_nop_property(initial_boot_params, aliases, "usbn");
 		} else  {
 			__be32 new_f[1];
-			enum cvmx_helper_board_usb_clock_types c;
+			cvmx_helper_board_usb_clock_types_t c;
 			c = __cvmx_helper_board_usb_get_clock_type();
 			switch (c) {
 			case USB_CLOCK_TYPE_REF_48:
@@ -985,7 +985,7 @@ end_led:
 						    "/dsr1000n-leds");
 		if (dsr1000n_leds >= 0)
 			fdt_nop_node(initial_boot_params, dsr1000n_leds);
-
+    }
 	/* DWC2 USB */
 	alias_prop = fdt_getprop(initial_boot_params, aliases,
 				 "usbn", NULL);
