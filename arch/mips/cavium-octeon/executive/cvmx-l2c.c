@@ -1,40 +1,30 @@
 /***********************license start***************
- * Copyright (c) 2003-2015  Cavium Inc. (support@cavium.com). All rights
- * reserved.
+ * Author: Cavium Networks
+ *
+ * Contact: support@caviumnetworks.com
  *
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
+ * This file is part of the OCTEON SDK
  *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ * Copyright (c) 2003-2015 Cavium Networks
  *
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
-
- *   * Neither the name of Cavium Inc. nor the names of
- *     its contributors may be used to endorse or promote products
- *     derived from this software without specific prior written
- *     permission.
-
- * This Software, including technical data, may be subject to U.S. export  control
- * laws, including the U.S. Export Administration Act and its  associated
- * regulations, and may be subject to export or import  regulations in other
- * countries.
-
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
- * AND WITH ALL FAULTS AND CAVIUM INC. MAKES NO PROMISES, REPRESENTATIONS OR
- * WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT TO
- * THE SOFTWARE, INCLUDING ITS CONDITION, ITS CONFORMITY TO ANY REPRESENTATION OR
- * DESCRIPTION, OR THE EXISTENCE OF ANY LATENT OR PATENT DEFECTS, AND CAVIUM
- * SPECIFICALLY DISCLAIMS ALL IMPLIED (IF ANY) WARRANTIES OF TITLE,
- * MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A PARTICULAR PURPOSE, LACK OF
- * VIRUSES, ACCURACY OR COMPLETENESS, QUIET ENJOYMENT, QUIET POSSESSION OR
- * CORRESPONDENCE TO DESCRIPTION. THE ENTIRE  RISK ARISING OUT OF USE OR
- * PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
+ * This file is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, Version 2, as
+ * published by the Free Software Foundation.
+ *
+ * This file is distributed in the hope that it will be useful, but
+ * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+ * NONINFRINGEMENT.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this file; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * or visit http://www.gnu.org/licenses/.
+ *
+ * This file may also be available under a different license from Cavium.
+ * Contact Cavium Networks for more information
  ***********************license end**************************************/
 
 /**
@@ -43,24 +33,16 @@
  * Implementation of the Level 2 Cache (L2C) control,
  * measurement, and debugging facilities.
  *
- * <hr>$Revision: 115982 $<hr>
- *
  */
 
-#ifdef CVMX_BUILD_FOR_LINUX_KERNEL
+#include <linux/compiler.h>
+#include <linux/irqflags.h>
 #include <asm/octeon/cvmx.h>
 #include <asm/octeon/cvmx-bootmem.h>
 #include <asm/octeon/cvmx-l2c.h>
 #include <asm/octeon/cvmx-spinlock.h>
-#else
-#include "cvmx.h"
-#include "cvmx-bootmem.h"
-#include "cvmx-l2c.h"
-#include "cvmx-spinlock.h"
-#include "cvmx-interrupt.h"
-#endif
 
-#ifndef CVMX_BUILD_FOR_LINUX_HOST
+
 /*
  * This spinlock is used internally to ensure that only one core is
  * performing certain L2 operations at a time.
@@ -69,8 +51,7 @@
  * if multiple applications or operating systems are running, then it
  * is up to the user program to coordinate between them.
  */
-CVMX_SHARED cvmx_spinlock_t cvmx_l2c_spinlock;
-#endif
+cvmx_spinlock_t cvmx_l2c_spinlock;
 
 int cvmx_l2c_get_core_way_partition(uint32_t core)
 {
@@ -330,7 +311,6 @@ uint64_t cvmx_l2c_read_perf(uint32_t counter)
 	}
 }
 
-#ifndef CVMX_BUILD_FOR_LINUX_HOST
 /**
  * @INTERNAL
  * Helper function use to fault in cache lines for L2 cache locking
