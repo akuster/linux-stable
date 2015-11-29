@@ -96,9 +96,6 @@ extern "C" {
 /* *INDENT-ON* */
 #endif
 
-#include <asm/compiler.h>
-
-#include <asm/octeon/cvmx-fpa.h>
 /**
  * By default we disable the max depth support. Most programs
  * don't use it and it slows down the command queue processing
@@ -302,47 +299,36 @@ static inline int __cvmx_cmd_queue_get_node(cvmx_cmd_queue_id_t queue_id)
 static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id)
 {
 #ifndef __U_BOOT__
-	extern CVMX_SHARED __cvmx_cmd_queue_all_state_t *__cvmx_cmd_queue_state_ptr;
-	int tmp;
-	int my_ticket;
-	prefetch(qptr);
-	asm volatile (
-		".set push\n"
-		".set noreorder\n"
-		"1:\n"
-		/* Atomic add one to ticket_ptr */
-		"ll	%[my_ticket], %[ticket_ptr]\n"
-		/* and store the original value */
-		"li	%[ticket], 1\n"
-		/* in my_ticket */
-		"baddu	%[ticket], %[my_ticket]\n"
-		"sc	%[ticket], %[ticket_ptr]\n"
-		"beqz	%[ticket], 1b\n"
-		" nop\n"
-		/* Load the current now_serving ticket */
-		"lbu	%[ticket], %[now_serving]\n"
-		"2:\n"
-		/* Jump out if now_serving == my_ticket */
-		"beq	%[ticket], %[my_ticket], 4f\n"
-		/* Find out how many tickets are in front of me */
-		" subu	 %[ticket], %[my_ticket], %[ticket]\n"
-		/* Use tickets in front of me minus one to delay */
-		"subu  %[ticket], 1\n"
-		/* Delay will be ((tickets in front)-1)*32 loops */
-		"cins	%[ticket], %[ticket], 5, 7\n"
-		"3:\n"
-		/* Loop here until our ticket might be up */
-		"bnez	%[ticket], 3b\n"
-		" subu	%[ticket], 1\n"
-		/* Jump back up to check out ticket again */
-		"b	2b\n"
-		/* Load the current now_serving ticket */
-		" lbu	%[ticket], %[now_serving]\n"
-		"4:\n"
-		".set pop\n" :
-		[ticket_ptr] "=" GCC_OFF_SMALL_ASM()(__cvmx_cmd_queue_state_ptr->ticket[__cvmx_cmd_queue_get_index(queue_id)]),
-		[now_serving] "=m"(qptr->now_serving), [ticket] "=r"(tmp),
-		[my_ticket] "=r"(my_ticket)
+	__cvmx_cmd_queue_lock_t *lock_ptr;
+	unsigned node;
+	uint64_t tmp;
+	uint64_t my_ticket;
+
+	tmp = __cvmx_cmd_queue_get_index(queue_id);
+	node = __cvmx_cmd_queue_get_node(queue_id);
+	lock_ptr = &__cvmx_cmd_queue_state_ptrs[node]->lock[tmp];
+
+	asm volatile (".set push\n"
+		      ".set noreorder\n"
+		      /* Atomic incremebt of 'ticket' with LL/SC */
+		      "1:\n"
+		      "lld     %[my_ticket], %[ticket_ptr]\n"
+		      "daddiu  %[ticket], %[my_ticket], 1\n"
+		      "scd     %[ticket], %[ticket_ptr]\n"
+		      "beqz    %[ticket], 1b\n"
+		      " lld    %[ticket], %[now_serving]\n"
+		      "2:\n"
+		      /* Wait until 'now_serving == ticket' with LL/PAUSE */
+		      "beq    %[ticket], %[my_ticket], 3f\n"
+		      " nop\n pause\n"	/* PAUSE is not allowed in delay slot */
+		      "b      2b\n"	/* check now_serving again */
+		      " lld    %[ticket], %[now_serving]\n"
+		      "3:\n"
+		      ".set pop\n"
+                      : [ticket_ptr] "=m"(lock_ptr->ticket),
+                      [now_serving] "=m"(lock_ptr->now_serving),
+                      [ticket] "=&r"(tmp),
+                      [my_ticket] "=&r"(my_ticket)
 	    );
 #endif
 }
