@@ -548,18 +548,15 @@ static ssize_t shared_cpu_map_show(struct kobject *k,
 {
 	struct cache_index_dir *index;
 	struct cache *cache;
-	int len;
-	int n = 0;
+	int n;
 
 	index = kobj_to_cache_index_dir(k);
 	cache = index->cache;
-	len = PAGE_SIZE - 2;
 
-	if (len > 1) {
-		n = cpumask_scnprintf(buf, len, &cache->shared_cpu_map);
-		buf[n++] = '\n';
-		buf[n] = '\0';
-	}
+	n = scnprintf(buf, PAGE_SIZE - 1, "%*pb\n",
+		cpumask_pr_args(&cache->shared_cpu_map));
+	buf[n++] = '\n';
+	buf[n] = '\0';
 	return n;
 }
 
