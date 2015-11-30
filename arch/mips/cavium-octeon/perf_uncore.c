@@ -78,7 +78,7 @@ static void safe_printk(const char *fmt, ...)
 		return;
 	va_start(ap, fmt);
 	if (irqs_disabled())
-		early_vprintk(fmt, ap);
+		early_printk(fmt, ap);
 	else
 		vprintk(fmt, ap);
 	va_end(ap);
