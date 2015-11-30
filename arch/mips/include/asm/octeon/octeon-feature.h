@@ -181,6 +181,21 @@ typedef enum {
 	OCTEON_MAX_FEATURE
 } octeon_feature_t;
 
+enum octeon_feature_bits {
+	OCTEON_HAS_CRYPTO = 0x0001, /* Crypto acceleration using COP2 */
+};
+extern enum octeon_feature_bits __octeon_feature_bits;
+
+/**
+ * octeon_has_crypto() - Check if this OCTEON has crypto acceleration support.
+ *
+ * Returns: Non-zero if the feature exists. Zero if the feature does not exist.
+ */
+static inline int octeon_has_crypto(void)
+{
+	return __octeon_feature_bits & OCTEON_HAS_CRYPTO;
+}
+
 static inline int octeon_has_feature_OCTEON_FEATURE_SAAD(void)
 {
 	return !OCTEON_IS_MODEL(OCTEON_CN3XXX);
