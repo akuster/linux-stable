@@ -510,37 +510,6 @@ static inline int cvmx_fuse_read(int fuse)
 
 #include "octeon-feature.h"
 
-static inline int cvmx_octeon_model_CN36XX(void)
-{
-	return OCTEON_IS_MODEL(OCTEON_CN38XX)
-		&& !cvmx_octeon_is_pass1()
-		&& cvmx_fuse_read(264);
-}
-
-static inline int cvmx_octeon_zip_present(void)
-{
-	return octeon_has_feature(OCTEON_FEATURE_ZIP);
-}
-
-static inline int cvmx_octeon_dfa_present(void)
-{
-	if (!OCTEON_IS_MODEL(OCTEON_CN38XX)
-	    && !OCTEON_IS_MODEL(OCTEON_CN31XX)
-	    && !OCTEON_IS_MODEL(OCTEON_CN58XX))
-		return 0;
-	else if (OCTEON_IS_MODEL(OCTEON_CN3020))
-		return 0;
-	else if (cvmx_octeon_is_pass1())
-		return 1;
-	else
-		return !cvmx_fuse_read(120);
-}
-
-static inline int cvmx_octeon_crypto_present(void)
-{
-	return octeon_has_feature(OCTEON_FEATURE_CRYPTO);
-}
-
 enum cvmx_error_groups {
 	CVMX_ERROR_GROUP_INTERNAL,
 	CVMX_ERROR_GROUP_ETHERNET,
