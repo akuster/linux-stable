@@ -119,11 +119,7 @@ static int octeon_flash_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
 static const struct of_device_id of_flash_match[] = {
-=======
-static struct of_device_id of_flash_match[] = {
->>>>>>> 40e41a1... MIPS: OCTEON: Use device tree to probe for flash chips.
 	{
 		.compatible	= "cfi-flash",
 	},
@@ -134,10 +130,6 @@ MODULE_DEVICE_TABLE(of, of_flash_match);
 static struct platform_driver of_flash_driver = {
 	.driver = {
 		.name = "octeon-of-flash",
-<<<<<<< HEAD
-=======
-		.owner = THIS_MODULE,
->>>>>>> 40e41a1... MIPS: OCTEON: Use device tree to probe for flash chips.
 		.of_match_table = of_flash_match,
 	},
 	.probe		= octeon_flash_probe,
