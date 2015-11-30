@@ -840,8 +840,6 @@ int __compute_return_epc_for_insn0(struct pt_regs *regs,
 	}
 
 	return ret;
-}
-EXPORT_SYMBOL_GPL(__compute_return_epc_for_insn0);
 
 sigill_dsp:
 	printk("%s: DSP branch but not DSP ASE - sending SIGBUS.\n", current->comm);
@@ -852,6 +850,9 @@ sigill_r6:
 		current->comm);
 	force_sig(SIGILL, current);
 	return -EFAULT;
+
+}
+EXPORT_SYMBOL_GPL(__compute_return_epc_for_insn0);
 
 static unsigned int __get_fcr31(void)
 {
