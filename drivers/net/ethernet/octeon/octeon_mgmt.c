@@ -1299,6 +1299,7 @@ static const struct net_device_ops octeon_mgmt_ops = {
 #endif
 };
 
+//1
 static int octeon_mgmt_remove(struct platform_device *pdev)
 {
 	struct net_device *netdev = dev_get_drvdata(&pdev->dev);
@@ -1466,15 +1467,6 @@ static int octeon_mgmt_probe(struct platform_device *pdev)
 err:
 	octeon_mgmt_remove(pdev);
 	return result;
-}
-
-static int octeon_mgmt_remove(struct platform_device *pdev)
-{
-	struct net_device *netdev = platform_get_drvdata(pdev);
-
-	unregister_netdev(netdev);
-	free_netdev(netdev);
-	return 0;
 }
 
 static const struct of_device_id octeon_mgmt_match[] = {
